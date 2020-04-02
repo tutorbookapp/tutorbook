@@ -1,0 +1,41 @@
+.wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,.3);
+  opacity: 1;
+  z-index: 1;
+  border-radius: inherit;
+  display: none;
+}
+
+.wrapperActive {
+  display: inherit;
+}
+
+.spinner {
+  border-radius: 50%;
+  border-color: #e3e8eb transparent transparent #e3e8eb;
+  border-style: solid;
+  border-width: 3px;
+  width: 60px;
+  height: 60px;
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -30px;
+  margin-left: -30px;
+  animation: spinner .35s linear infinite;
+}
+
+@keyframes spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

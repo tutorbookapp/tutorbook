@@ -6,6 +6,7 @@ import { Button } from '@rmwc/button'
 import { Card } from '@rmwc/card'
 
 import ArrowButton from '@tutorbook/arrow-btn'
+import Spinner from '@tutorbook/spinner'
 
 import styles from './index.module.scss'
 
@@ -23,8 +24,23 @@ interface FormProps {
   description: string;
 }
 
+interface FormState {
+  readonly submitting: boolean;
+  readonly submitted: boolean;
+}
+
 export default class Form extends React.Component<FormProps, {}> {
-  createInputs() {
+  readonly state: FormState;
+
+  constructor(props: FormProps) {
+    super(props);
+    this.state = {
+      submitting: false,
+      submitted: false,
+    };
+  }
+
+  createInputs(): JSX.Element[] {
     const inputs: JSX.Element[] = [];
     this.props.inputs.map((input, index) => {
       switch (input.el) {
@@ -59,7 +75,15 @@ export default class Form extends React.Component<FormProps, {}> {
     return inputs;
   }
 
-  render() {
+  submit(event: React.SyntheticEvent): void {
+    event.preventDefault();
+    this.setState({
+      submitting: true,
+      submitted: false,
+    });
+  }
+
+  render(): JSX.Element {
     return (
       <div className={styles.formWrapper}>
         <div className={styles.formContent}>
@@ -69,13 +93,20 @@ export default class Form extends React.Component<FormProps, {}> {
           <p className={styles.formDescription}>
             {this.props.description}
           </p>
-          <Card className={styles.form}>
-            {this.createInputs()}
-            <ArrowButton 
-              className={styles.formSubmitButton}
-              label={this.props.submitLabel} 
-              raised>
-            </ArrowButton>
+          <Card className={styles.formCard}>
+            <Spinner active={this.state.submitting} />
+            <form 
+              className={styles.form} 
+              onSubmit={e => this.submit(e)}
+            >
+              {this.createInputs()}
+              <ArrowButton 
+                className={styles.formSubmitButton}
+                label={this.props.submitLabel}
+                disabled={this.state.submitting || this.state.submitted}
+                raised>
+              </ArrowButton>
+            </form>
           </Card>
         </div>
       </div>

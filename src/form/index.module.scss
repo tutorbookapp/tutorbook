@@ -28,11 +28,15 @@
 
 .form {
   padding: 16px;
+}
+
+.formCard {
   margin: 24px 0;
 }
 
 .formField {
   margin: 8px 0;
+  width: 100%;
 }
 
 .formField:first-child {
@@ -45,4 +49,5 @@
 
 .formSubmitButton {
   margin-top: 8px;
+  width: 100%;
 }

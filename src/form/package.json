@@ -38,6 +38,7 @@
     "@rmwc/textfield": "^6.0.5",
     "@tutorbook/arrow-btn": "^0.0.0",
     "@tutorbook/covid-fonts": "^0.0.0",
+    "@tutorbook/spinner": "^0.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

@@ -1,0 +1,30 @@
+{
+  "name": "@tutorbook/spinner",
+  "version": "0.0.0",
+  "description": "Package that contains a fast-moving React spinner component made from pure CSS and HTML `div` tags.",
+  "keywords": [
+    "Tutorbook",
+    "COVID",
+    "Tutoring",
+    "React",
+    "Loader",
+    "Spinner"
+  ],
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "license": "MIT",
+  "main": "index.tsx",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  }
+}
