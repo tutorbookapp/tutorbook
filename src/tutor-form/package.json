@@ -1,13 +1,14 @@
 {
-  "name": "@tutorbook/covid",
+  "name": "@tutorbook/covid-tutor-form",
   "version": "0.0.0",
-  "description": "Package containing the COVID Tutoring Initiative's Next.js website pages.",
+  "description": "Package that contains the tutor sign-up form for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
     "COVID",
     "Tutoring",
-    "Next.js",
-    "Lerna"
+    "React",
+    "Typescript",
+    "Next.js"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://covidtutoring.org/",
@@ -26,18 +27,8 @@
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
-  "devDependencies": {
-    "@types/node": "^13.9.8",
-    "@types/react": "^16.9.31",
-    "typescript": "^3.8.3"
-  },
   "dependencies": {
-    "@material/select": "^5.1.0",
-    "@material/textfield": "^5.1.0",
-    "@tutorbook/covid-footer": "^0.0.0",
-    "@tutorbook/covid-header": "^0.0.0",
-    "@tutorbook/covid-tutor-form": "^0.0.0",
-    "next": "^9.3.4",
+    "@tutorbook/covid-form": "^0.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

@@ -33,6 +33,9 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@rmwc/card": "^6.0.5",
+    "@rmwc/select": "^6.0.7",
+    "@rmwc/textfield": "^6.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
