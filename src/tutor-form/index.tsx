@@ -36,5 +36,6 @@ export default function TutorForm() {
       label: 'Message',
       el: 'textarea',
     }]}
+    submitLabel='Volunteer to be a tutor'
   />
 }

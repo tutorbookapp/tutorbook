@@ -1,3 +1,31 @@
+.formWrapper {
+  text-align: center;
+}
+
+.formContent {
+  display: inline-block;
+  width: calc(100% - 100px);
+  max-width: 700px;
+}
+
 .form {
-  width: 100%;
+  padding: 20px;
+  margin: 8px 0; // Show shadow; without this, shadow is cut off by formWrapper
+}
+
+.formField {
+  margin: 8px 0;
+}
+
+.formField:first-child {
+  margin-top: 0;
+}
+
+.formField:last-child {
+  margin-bottom: 0;
+}
+
+.formSubmitButton {
+  text-transform: none;
+  font-weight: 700;
 }
