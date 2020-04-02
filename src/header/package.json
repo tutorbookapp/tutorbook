@@ -1,0 +1,39 @@
+{
+  "name": "@tutorbook/covid-header",
+  "version": "0.0.0",
+  "description": "Package containing the header component for the COVID Tutoring Initiative website.",
+  "keywords": [
+    "Tutorbook",
+    "COVID",
+    "Tutoring",
+    "Next.js",
+    "React",
+    "Typescript"
+  ],
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "homepage": "https://covidtutoring.org/",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "index.tsx",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^13.9.8",
+    "@types/react": "^16.9.31",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}

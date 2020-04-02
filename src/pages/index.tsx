@@ -1,15 +1,15 @@
 import React from 'react';
 
-import Header from '../components/header';
-import Footer from '../components/footer';
-import PupilForm from '../components/pupil-form';
+import Header from '@tutorbook/covid-header';
+import Footer from '@tutorbook/covid-footer';
+import Form from '@tutorbook/covid-form';
 
 class App extends React.Component {
   render() {
     return (
       <div>
         <Header/>
-        <PupilForm />
+        <Form />
         <Footer />
       </div>
     );

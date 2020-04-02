@@ -1,0 +1,42 @@
+{
+  "name": "@tutorbook/covid",
+  "version": "0.0.0",
+  "description": "Package containing the COVID Tutoring Initiative's Next.js website pages.",
+  "keywords": [
+    "Tutorbook",
+    "COVID",
+    "Tutoring",
+    "Next.js",
+    "Lerna"
+  ],
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "homepage": "https://covidtutoring.org/",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "index.tsx",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^13.9.8",
+    "@types/react": "^16.9.31",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@tutorbook/covid-footer": "^0.0.0",
+    "@tutorbook/covid-form": "^0.0.0",
+    "@tutorbook/covid-header": "^0.0.0",
+    "next": "^9.3.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
