@@ -35,7 +35,7 @@ export default class Form extends React.Component<FormProps, {}> {
             outlined 
             textarea
             key={index}
-            rows={8}
+            rows={4}
             {...input}
           />);
           break;
