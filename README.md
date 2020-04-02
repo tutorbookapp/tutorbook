@@ -59,28 +59,39 @@ Check out this project's [documentation](https://covidtutoring.org/docs/)
 documentation](https://tutorbook.app/docs/) for more detailed information.
 
 This project uses:
-- [React](https://reactjs.org) - As our front-end framework.
-- [TypeScript](https://www.typescriptlang.org) - As our language of choice
+
+**Languages**
+- [Typescript](https://www.typescriptlang.org) - As our language of choice
   (mostly for static typing, stronger linting capabilities, and the potential
-  for beautifully detailed--completely automatically generated--documentation).
+  for beautifully detailed--and completely automatically generated--
+  documentation). Typescript is also [well supported by 
+  Next.js](https://nextjs.org/docs/basic-features/typescript) and 
+  [React](https://reactjs.org/docs/static-type-checking.html#typescript).
+- [Sass](https://sass-lang.com) - For styling components. Sass, like Typescript,
+  is also [well supported by Next.js 
+  out-of-box](https://nextjs.org/docs/basic-features/built-in-css-support#sass-support)
+
+**Frameworks**
+- [React](https://reactjs.org) - As our front-end framework.
 - [Next.js](https://nextjs.org) - To easily support 
   [SSR](https://nextjs.org/docs/basic-features/pages#server-side-rendering) and
   other performance [PWA](https://web.dev/progressive-web-apps/) features.
+
+**Tooling**
 - [Lerna](https://lerna.js.org/) - To manage and re-use React components across
   repositories; mostly just to migrate code from this project back into
   [Tutorbook](https://tutorbook.app/docs/) when we get the chance.
+- [ESLint](https://github.com/eslint/eslint) - For code linting to avoid
+  common mistakes and to enforce styling. Follow [these
+  instructions](https://eslint.org/docs/user-guide/integrations) to install it 
+  in the text editor of your choice (such that you won't have to wait until our
+  pre-commit hooks fail to update your code).
+
+**Database**
 - [Google's Firebase](https://firebase.google.com/) - For their [NoSQL
-  Document-based Database](https://firebase.google.com/products/firestore),
+  document-based database](https://firebase.google.com/products/firestore),
   [Authentication](https://firebase.google.com/products/auth), and other
   useful (relatively drop-in) solutions.
-
-### Code Linting
-
-We use [ESLint](https://github.com/eslint/eslint) as our code linter to avoid
-common mistakes and to enforce styling. Follow [these
-instructions](https://eslint.org/docs/user-guide/integrations) to install it in
-the text editor of your choice (such that you won't have to wait until our
-pre-commit hooks fail to update your code).
 
 ### Available Scripts
 
