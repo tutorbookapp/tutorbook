@@ -34,6 +34,7 @@
   "dependencies": {
     "@material/select": "^5.1.0",
     "@material/textfield": "^5.1.0",
+    "@tutorbook/covid-about": "^0.0.0",
     "@tutorbook/covid-footer": "^0.0.0",
     "@tutorbook/covid-header": "^0.0.0",
     "@tutorbook/covid-tutor-form": "^0.0.0",

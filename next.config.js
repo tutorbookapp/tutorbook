@@ -1,10 +1,9 @@
-const withSass = require('@zeit/next-sass');
-module.exports = withSass({
-  cssModules: true,
+const path = require('path');
+
+module.exports = {
   sassLoaderOptions: {
-    implementation: require('sass'),
     sassOptions: {
-      includePaths: ['src/pages/node_modules'],
+      includePaths: [path.resolve(__dirname, 'node_modules')],
     },
   },
   webpack(config) {
@@ -14,4 +13,4 @@ module.exports = withSass({
     });
     return config;
   },
-});
+};

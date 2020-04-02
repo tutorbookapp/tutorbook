@@ -2,14 +2,14 @@ import React from 'react'
 
 import Header from '@tutorbook/covid-header'
 import Footer from '@tutorbook/covid-footer'
-import TutorForm from '@tutorbook/covid-tutor-form'
+import About from '@tutorbook/covid-about'
 
-export default class IndexPage extends React.Component {
+export default class AboutPage extends React.Component {
   render() {
     return (
       <>
         <Header />
-        <TutorForm />
+        <About />
         <Footer />
       </>
     );
