@@ -1,9 +1,11 @@
+import styles from './index.module.scss'
+
 function PupilForm() {
   return (
-    <div>
+    <div className={styles.form}>
       <p>This is the pupil form.</p>
     </div>
   );
 }
 
-export default PupilForm;
+export default PupilForm

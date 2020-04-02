@@ -1,0 +1,114 @@
+.logoImg {
+  width: 40px;
+}
+
+.contentWrapper {
+  grid-column: content;
+  grid-row: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: center;
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: [left-gutter] 1fr [content] 12fr [right-gutter] 1fr;
+  width: 100%;
+  height: calc(100% - 70px);
+  position: fixed;
+  top: 70px;
+  left: 0;
+  background-color: #ffffff;
+  transition: all 0.5s;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden; 
+}
+  
+.menuActive {
+  opacity: 1;
+  visibility: visible; 
+}
+
+.menuButtonWrapper {
+  width: 32px;
+  height: 24px;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  padding: 0;
+  text-align: inherit;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  line-height: normal;
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+  -webkit-appearance: none;
+}
+
+.menuButtonWrapper:focus {
+  outline: 1px dotted #181818;
+  outline-offset: 3px;
+}
+
+.menuButtonWrapperActive .menuLineTop {
+  transform: rotate(45deg);
+}
+
+.menuButtonWrapperActive .menuLineBottom {
+  transform: rotate(-45deg);
+}
+
+.menuLine {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  width: 100%;
+  height: 2px;
+  position: absolute;
+  left: 0;
+  top: 10px;
+  transform-origin: center center;
+  transition: transform 0.3s, background 0.3s;
+  background-image: url(svgs/menu-line.svg);
+}
+
+.menuLineTop {
+  transform: translateY(-4.5px);
+}
+
+.menuLineBottom {
+  transform: translateY(4.5px);
+}
+
+.categoryWrapper {
+  grid-column: content;
+  padding: 20px 0 0;
+}
+
+.mobileNavItem {
+  padding: 22px 0;
+  display: inline-block;
+  width: 100%;
+  border-bottom: 1px dotted #181818;
+  position: relative;
+}
+
+.mobileNavLink {
+  color: #181818;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .contentWrapper {
+    display: none;
+  }
+}

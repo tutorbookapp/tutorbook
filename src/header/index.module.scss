@@ -1,0 +1,16 @@
+.header {
+  position: sticky;
+  top: 0;
+  background-color: #FFF;
+  width: calc(100% - 80px);
+  padding: 30px 40px;
+  z-index: 100;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .header {
+    grid-template-rows: 51px;
+    margin-top: 20px;
+  }
+}
