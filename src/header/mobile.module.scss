@@ -1,3 +1,5 @@
+@use './index.module.scss' as settings;
+
 .logoImg {
   width: 40px;
 }
@@ -51,7 +53,7 @@
 }
 
 .menuButtonWrapper:focus {
-  outline: 1px dotted #181818;
+  outline: 1px dotted settings.$primary;
   outline-offset: 3px;
 }
 
@@ -73,7 +75,7 @@
   top: 10px;
   transform-origin: center center;
   transition: transform 0.3s, background 0.3s;
-  background-image: url(svgs/menu-line.svg);
+  background-image: url(./svgs/menu-line.svg);
 }
 
 .menuLineTop {
@@ -87,23 +89,27 @@
 .categoryWrapper {
   grid-column: content;
   padding: 20px 0 0;
+  display: inline-block;
+  list-style: none;
 }
 
 .mobileNavItem {
   padding: 22px 0;
   display: inline-block;
   width: 100%;
-  border-bottom: 1px dotted #181818;
+  border-bottom: 1px dotted settings.$primary;
   position: relative;
+  list-style: none;
 }
 
 .mobileNavLink {
-  color: #181818;
+  color: settings.$primary;
   text-decoration: none;
   display: inline-block;
   cursor: pointer;
-  font-size: 26px;
-  font-weight: 700;
+  font-family: settings.$title;
+  font-size: 1.5rem;
+  font-weight: settings.$bold;
   line-height: 1.2;
 }
 

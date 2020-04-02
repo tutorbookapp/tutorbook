@@ -1,16 +1,34 @@
+@use '@tutorbook/covid-fonts' as fonts;
+
 .formWrapper {
   text-align: center;
 }
 
 .formContent {
   display: inline-block;
-  width: calc(100% - 100px);
+  width: calc(100% - 32px);
   max-width: 700px;
 }
 
+.formTitle {
+  font-family: fonts.$title;
+  font-weight: fonts.$bold;
+  font-size: 4rem;
+  color: fonts.$primary; // TODO: Use SCSS variables from '@tutorbook/covid-styles'
+  padding: 0 16px;
+}
+
+.formDescription {
+  font-family: fonts.$body;
+  font-weight: fonts.$regular;
+  font-size: 1rem;
+  color: fonts.$secondary;
+  padding: 0 16px;
+}
+
 .form {
-  padding: 20px;
-  margin: 8px 0; // Show shadow; without this, shadow is cut off by formWrapper
+  padding: 16px;
+  margin: 24px 0;
 }
 
 .formField {
@@ -26,7 +44,5 @@
 }
 
 .formSubmitButton {
-  text-transform: none;
-  font-weight: 700;
   margin-top: 8px;
 }

@@ -1,19 +1,17 @@
 {
-  "name": "@tutorbook/covid-footer",
+  "name": "@tutorbook/covid-styles",
   "version": "0.0.0",
-  "description": "Package containing the footer component for the COVID Tutoring Initiative website.",
+  "description": "Package that contains the global styling variables for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
     "COVID",
     "Tutoring",
-    "Next.js",
-    "React",
-    "Typescript"
+    "SCSS"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://covidtutoring.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "index.tsx",
+  "main": "global.scss",
   "publishConfig": {
     "access": "public"
   },
@@ -26,15 +24,5 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  },
-  "devDependencies": {
-    "@types/node": "^13.9.8",
-    "@types/react": "^16.9.31",
-    "typescript": "^3.8.3"
-  },
-  "dependencies": {
-    "@tutorbook/covid-fonts": "^0.0.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
   }
 }

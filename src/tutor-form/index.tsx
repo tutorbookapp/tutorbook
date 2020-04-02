@@ -36,6 +36,11 @@ export default function TutorForm() {
       label: 'Message',
       el: 'textarea',
     }]}
-    submitLabel='Volunteer to be a tutor'
+    submitLabel='Volunteer to tutor'
+    title='Volunteer to Tutor'
+    description={'We are building a massive academic support network and ' +
+      'systems to bolster our educational infrastructure in this difficult ' +
+      'time. If you have expertise in marketing, management, teaching, tech, ' +
+      'or just want to help out we would love to have you!'} 
   />
 }

@@ -1,3 +1,5 @@
+@use './index.module.scss' as settings;
+
 .contentWrapper {
   display: none;
   max-width: 1290px;
@@ -71,12 +73,14 @@
 
 .menuItemLink {
   display: inline-block;
-  font-weight: 700;
-  font-size: 15px;
-  color: #181818;
+  font-family: settings.$title;
+  font-weight: settings.$bold;
+  font-size: 0.9rem;
+  color: settings.$primary;
   padding: 12px;
   position: relative;
   cursor: pointer;
+  text-decoration: none;
   /* Add a triangle-shaped hit zone above each menu */
 }
 

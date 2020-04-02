@@ -1,3 +1,5 @@
+@use '@tutorbook/covid-fonts' as fonts;
+
 .footer {
   display: grid;
   grid-template-columns: 1fr [content] 12fr 1fr; 
@@ -52,11 +54,12 @@
 }
 
 .secondaryLink {
-  color: #181818;
+  color: fonts.$primary;
   text-decoration: none;
   padding: 15px;
-  font-weight: 700;
-  font-size: 15px;
+  font-family: fonts.$body;
+  font-weight: fonts.$bold;
+  font-size: 0.9rem;
 }
 
 .secondaryLink[data-focus-visible-added] {

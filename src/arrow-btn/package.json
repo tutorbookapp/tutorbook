@@ -1,18 +1,15 @@
 {
-  "name": "@tutorbook/covid-footer",
+  "name": "@tutorbook/arrow-btn",
   "version": "0.0.0",
-  "description": "Package containing the footer component for the COVID Tutoring Initiative website.",
+  "description": "Package that contains a MDC arrow button React component.",
   "keywords": [
     "Tutorbook",
-    "COVID",
-    "Tutoring",
-    "Next.js",
     "React",
-    "Typescript"
+    "Button"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
-  "homepage": "https://covidtutoring.org/",
-  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "license": "MIT",
   "main": "index.tsx",
   "publishConfig": {
     "access": "public"
@@ -27,14 +24,7 @@
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
-  "devDependencies": {
-    "@types/node": "^13.9.8",
-    "@types/react": "^16.9.31",
-    "typescript": "^3.8.3"
-  },
   "dependencies": {
-    "@tutorbook/covid-fonts": "^0.0.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "@tutorbook/covid-fonts": "^0.0.0"
   }
 }

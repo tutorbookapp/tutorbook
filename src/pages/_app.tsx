@@ -1,6 +1,6 @@
 import { AppProps } from 'next/app'
 
-import './global.scss'
+import '@tutorbook/covid-styles'
 
 import '@material/textfield/dist/mdc.textfield.css'
 import '@material/select/dist/mdc.select.css'

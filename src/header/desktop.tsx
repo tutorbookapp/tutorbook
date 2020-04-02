@@ -35,6 +35,7 @@ function Nav() {
       <div className={styles.menuRightContainer}>
         <nav className={styles.menuItemWrapper}>
           <ul role="menubar" className={styles.menuOptionsList}>
+            <Item href='/pupils' label='For students' />
             <Item href='/tutors' label='For volunteers' />
             <Item href='/docs' label='For developers' />
             <Item href='#' label='FAQ' />

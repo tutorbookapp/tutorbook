@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { LinkProps } from './interfaces'
 
 import Logo from './svgs/logo.svg'
@@ -21,16 +23,29 @@ function Link(props: LinkProps) {
 }
 
 function Nav() {
+  const [open, setOpen] = useState(false);
   return (
     <div className={styles.contentWrapper}>
       <a href="/" aria-label="Tutorbook Home">
         <img className={styles.logoImg} src={Logo} />
       </a>
-      <button id="open-menu-btn" type="button" className={styles.menuButtonWrapper} aria-label="Open and close navigation menu" aria-haspopup="true">
+      <button 
+        id="open-menu-btn" 
+        type="button" 
+        onClick={() => setOpen(!open)}
+        className={styles.menuButtonWrapper + 
+          (open ? ' ' + styles.menuButtonWrapperActive : '')} 
+        aria-label="Open and close navigation menu" 
+        aria-haspopup="true"
+      >
         <span className={styles.menuLine + ' ' + styles.menuLineTop}></span>
         <span className={styles.menuLine + ' ' + styles.menuLineBottom}></span>
       </button>
-      <div className={styles.menu} aria-hidden="true" role="menu">
+      <div 
+        className={styles.menu + (open ? ' ' + styles.menuActive : '')} 
+        aria-hidden="true" 
+        role="menu"
+      >
         <ul className={styles.categoryWrapper}>
           <Item href="/pupils/" label="For students" />
           <Item href="/tutors/" label="For volunteers" />

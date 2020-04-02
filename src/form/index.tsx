@@ -5,6 +5,8 @@ import { Select } from '@rmwc/select'
 import { Button } from '@rmwc/button'
 import { Card } from '@rmwc/card'
 
+import ArrowButton from '@tutorbook/arrow-btn'
+
 import styles from './index.module.scss'
 
 interface InputProps { 
@@ -14,7 +16,12 @@ interface InputProps {
   readonly [propName: string]: any;
 }
 
-interface FormProps { inputs: InputProps[]; submitLabel: string; }
+interface FormProps { 
+  inputs: InputProps[]; 
+  submitLabel: string;
+  title: string;
+  description: string;
+}
 
 export default class Form extends React.Component<FormProps, {}> {
   createInputs() {
@@ -56,11 +63,19 @@ export default class Form extends React.Component<FormProps, {}> {
     return (
       <div className={styles.formWrapper}>
         <div className={styles.formContent}>
+          <h1 className={styles.formTitle}>
+            {this.props.title}
+          </h1>
+          <p className={styles.formDescription}>
+            {this.props.description}
+          </p>
           <Card className={styles.form}>
             {this.createInputs()}
-            <Button className={styles.formSubmitButton}
+            <ArrowButton 
+              className={styles.formSubmitButton}
               label={this.props.submitLabel} 
-              raised />
+              raised>
+            </ArrowButton>
           </Card>
         </div>
       </div>
