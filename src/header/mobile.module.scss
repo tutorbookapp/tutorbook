@@ -107,8 +107,9 @@
   text-decoration: none;
   display: inline-block;
   cursor: pointer;
-  font-family: settings.$title;
+  font-family: settings.$body;
   font-size: 1.5rem;
+  letter-spacing: -0.025rem;
   font-weight: settings.$bold;
   line-height: 1.2;
 }
