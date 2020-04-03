@@ -1,5 +1,7 @@
 import Form from '@tutorbook/covid-form'
 
+import firebase from '@tutorbook/next-firebase'
+
 /**
  * React component that collects the following information from tutors and 
  * create their Firestore user document:
@@ -48,5 +50,6 @@ export default function TutorForm() {
       'to help out we would love to have you!'
     } 
     submitLabel='Volunteer to tutor'
+    onSubmit={(formValues) => new Promise((res, rej) => {})}
   />
 }

@@ -1,0 +1,41 @@
+@use '@tutorbook/covid-fonts' as fonts;
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  opacity: 0;
+  z-index: -1;
+  border-radius: inherit;
+  transition: opacity 500ms;
+}
+
+.overlayActive {
+  opacity: 1;
+  z-index: 1;
+}
+
+.overlayContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.overlayLabel {
+  font-size: 1rem;
+  font-weight: fonts.$bold;
+  font-family: fonts.$body;
+  color: #fff;
+}
+
+.overlayCheckmark {
+  width: 80px !important;
+  height: 80px !important;
+  box-sizing: border-box;
+  display: inline-block;
+}

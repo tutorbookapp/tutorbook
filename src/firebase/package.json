@@ -1,19 +1,18 @@
 {
-  "name": "@tutorbook/covid-tutor-form",
+  "name": "@tutorbook/next-firebase",
   "version": "0.0.0",
-  "description": "Package that contains the tutor sign-up form for the COVID Tutoring Initiative website.",
+  "description": "Package that contains utilities for using Firebase with Next.js, Typescript, and React.",
   "keywords": [
     "Tutorbook",
-    "COVID",
-    "Tutoring",
-    "React",
+    "Next.js",
     "Typescript",
-    "Next.js"
+    "Firebase",
+    "React"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
-  "homepage": "https://covidtutoring.org/",
-  "license": "SEE LICENSE IN LICENSE",
-  "main": "index.tsx",
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "license": "MIT",
+  "main": "index.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -28,10 +27,9 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/covid-form": "^0.0.0",
-    "@tutorbook/next-firebase": "^0.0.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "@firebase/auth-types": "^0.10.0",
+    "@firebase/firestore-types": "^1.10.1",
+    "firebase": "^7.13.2"
   },
   "devDependencies": {
     "typescript": "^3.8.3"

@@ -32,6 +32,8 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@material/button": "^5.1.0",
+    "@material/card": "^5.1.0",
     "@material/select": "^5.1.0",
     "@material/textfield": "^5.1.0",
     "@tutorbook/covid-about": "^0.0.0",
@@ -40,6 +42,7 @@
     "@tutorbook/covid-pupil-form": "^0.0.0",
     "@tutorbook/covid-styles": "^0.0.0",
     "@tutorbook/covid-tutor-form": "^0.0.0",
+    "@tutorbook/next-firebase": "^0.0.0",
     "next": "^9.3.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

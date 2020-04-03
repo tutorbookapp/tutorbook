@@ -7,6 +7,7 @@ import { Card } from '@rmwc/card'
 
 import ArrowButton from '@tutorbook/arrow-btn'
 import Spinner from '@tutorbook/spinner'
+import LoadingOverlay from '@tutorbook/animated-checkmark-overlay'
 
 import styles from './index.module.scss'
 
@@ -22,6 +23,9 @@ interface FormProps {
   submitLabel: string;
   title: string;
   description: string;
+  onSubmit: (formValues: { 
+    readonly [formInputLabel: string]: string;
+  }) => Promise<void>;
 }
 
 interface FormState {
@@ -31,55 +35,75 @@ interface FormState {
 
 export default class Form extends React.Component<FormProps, {}> {
   readonly state: FormState;
+  readonly inputs: JSX.Element[];
+  readonly values: {
+    [formInputLabel: string]: string;
+  };
 
   constructor(props: FormProps) {
     super(props);
+    this.values = {};
+    this.inputs = [];
+    this.renderInputs();
     this.state = {
       submitting: false,
       submitted: false,
     };
+    this.submit = this.submit.bind(this);
   }
 
-  createInputs(): JSX.Element[] {
-    const inputs: JSX.Element[] = [];
+  renderInputs(): void {
     this.props.inputs.map((input, index) => {
       switch (input.el) {
         case 'textfield':
-          inputs.push(<TextField 
+          this.inputs.push(<TextField 
             className={styles.formField} 
+            onChange={event => this.handleChange(input, event)}
+            key={index}
             outlined 
-            key={index} 
             {...input} 
           />);
           break;
         case 'textarea':
-          inputs.push(<TextField 
+          this.inputs.push(<TextField 
             className={styles.formField} 
+            onChange={event => this.handleChange(input, event)}
+            key={index}
             outlined 
             textarea
-            key={index}
             rows={4}
             {...input}
           />);
           break;
         case 'select':
-          inputs.push(<Select 
-            className={styles.formField} 
-            outlined 
+          this.inputs.push(<Select 
+            className={styles.formField}
+            onChange={event => this.handleChange(input, event)}
             key={index} 
+            outlined 
             {...input} 
           />);
           break;
       }
     });
-    return inputs;
   }
 
-  submit(event: React.SyntheticEvent): void {
+  handleChange(
+    input: InputProps, 
+    event: React.SyntheticEvent<(HTMLInputElement | HTMLSelectElement)>,
+  ) {
+    this.values[input.label] = 
+      (event.target as HTMLInputElement | HTMLSelectElement).value;
+  }
+
+  async submit(event: React.SyntheticEvent): Promise<void> {
     event.preventDefault();
     this.setState({
       submitting: true,
-      submitted: false,
+    });
+    await this.props.onSubmit(this.values);
+    this.setState({
+      submitted: true,
     });
   }
 
@@ -94,12 +118,16 @@ export default class Form extends React.Component<FormProps, {}> {
             {this.props.description}
           </p>
           <Card className={styles.formCard}>
-            <Spinner active={this.state.submitting} />
+            <LoadingOverlay
+              active={this.state.submitting || this.state.submitted}
+              checked={this.state.submitted}
+              label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
+            />
             <form 
               className={styles.form} 
-              onSubmit={e => this.submit(e)}
+              onSubmit={this.submit}
             >
-              {this.createInputs()}
+              {this.inputs}
               <ArrowButton 
                 className={styles.formSubmitButton}
                 label={this.props.submitLabel}

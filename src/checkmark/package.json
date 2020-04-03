@@ -1,18 +1,17 @@
 {
-  "name": "@tutorbook/covid-tutor-form",
+  "name": "@tutorbook/animated-checkmark",
   "version": "0.0.0",
-  "description": "Package that contains the tutor sign-up form for the COVID Tutoring Initiative website.",
+  "description": "Package that contains a React component made up of a spinner that becomes a checkmark.",
   "keywords": [
     "Tutorbook",
-    "COVID",
-    "Tutoring",
-    "React",
-    "Typescript",
-    "Next.js"
+    "Checkmark",
+    "Spinner",
+    "Animation",
+    "React"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
-  "homepage": "https://covidtutoring.org/",
-  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "license": "MIT",
   "main": "index.tsx",
   "publishConfig": {
     "access": "public"
@@ -28,8 +27,6 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/covid-form": "^0.0.0",
-    "@tutorbook/next-firebase": "^0.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

@@ -30,7 +30,11 @@
   },
   "dependencies": {
     "@tutorbook/covid-form": "^0.0.0",
+    "@tutorbook/next-firebase": "^0.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
   }
 }

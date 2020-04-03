@@ -51,7 +51,7 @@ dev, here's what we're working on:
 - Check the `#development` channel pins for more information on how you can help
   out.
 
-## Developing 
+## Contributing 
 
 Check out this project's [documentation](https://covidtutoring.org/docs/)
 (automatically generated using [JSDoc 3](https://jsdoc.app)) or head over to our
@@ -92,6 +92,79 @@ This project uses:
   document-based database](https://firebase.google.com/products/firestore),
   [Authentication](https://firebase.google.com/products/auth), and other
   useful (relatively drop-in) solutions.
+
+### Development Environment 
+
+To setup a development environment for and to contribute to the COVID Tutoring
+Initiative website:
+
+1. Follow [these instructions](https://github.com/nvm-sh/nvm#installing-and-updating)
+   to install `nvm` (our suggested way to use Node.js) on your
+   machine. Verify that `nvm` is installed by running:
+
+```
+$ command -v nvm
+```
+
+2. Optionally (if you use [Vim](https://vim.org) as your preferred text editor),
+   follow [these instructions](https://freshman.tech/vim-javascript/) on setting
+   up [Vim](https://vim.org) for editing JavaScript.
+3. Run the following command to install Node.js v12.16.1 (our current version):
+
+```
+$ nvm i 12.16.1 
+```
+
+4. (optional) Run the following command to set Node.js v12.16.1 as your default
+   Node.js version (useful if you have multiple Node.js versions installed and
+   don't want to have to remember to switch to v12.16.1):
+
+```
+$ nvm alias default 12.16.1
+```
+
+5. Ensure that you have recent versions of Node.js and it's package manager
+   `npm` by running:
+
+```
+$ node -v
+12.16.1
+$ npm -v
+6.13.4
+```
+
+6. Make sure that you have [Lerna](https://lerna.js.org) installed by running:
+
+```
+$ npm i -g lerna
+```
+
+7. Clone and `cd` into this repository locally by running:
+
+```
+$ git clone https://github.com/tutorbookapp/covid-tutoring.git && cd covid-tutoring/
+```
+
+8. Then, install of our project's dependencies with the following command:
+
+```
+$ npm i && lerna bootstrap --hoist
+```
+
+9. Then, you'll most likely want to branch off of `develop` and `cd` into our
+   [app packages](https://npmjs.com/org/tutorbook) by running:
+
+```
+$ git checkout -b $my_branch && cd src/app/packages
+```
+
+10. Follow the instructions included below to start a
+   [Next.js](https://nextjs.org) development server (to see your updates affect 
+   the app live).
+11. From there, `cd` into your desired package (included in `src/`), make your 
+   changes, commit them to your branch off of `develop`, [fork our 
+   repository](https://github.com/tutorbookapp/covid-tutoring/fork), and open a 
+   PR on GitHub.
 
 ### Available Scripts
 

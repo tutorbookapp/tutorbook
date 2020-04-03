@@ -33,9 +33,11 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@rmwc/button": "^6.0.5",
     "@rmwc/card": "^6.0.5",
     "@rmwc/select": "^6.0.7",
     "@rmwc/textfield": "^6.0.5",
+    "@tutorbook/animated-checkmark-overlay": "^0.0.0",
     "@tutorbook/arrow-btn": "^0.0.0",
     "@tutorbook/covid-fonts": "^0.0.0",
     "@tutorbook/spinner": "^0.0.0",
