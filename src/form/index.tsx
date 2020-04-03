@@ -57,31 +57,31 @@ export default class Form extends React.Component<FormProps, {}> {
       switch (input.el) {
         case 'textfield':
           this.inputs.push(<TextField 
-            className={styles.formField} 
+            {...input} 
             onChange={event => this.handleChange(input, event)}
             key={index}
             outlined 
-            {...input} 
+            className={styles.formField} 
           />);
           break;
         case 'textarea':
           this.inputs.push(<TextField 
-            className={styles.formField} 
+            {...input}
             onChange={event => this.handleChange(input, event)}
             key={index}
             outlined 
             textarea
             rows={4}
-            {...input}
+            className={styles.formField} 
           />);
           break;
         case 'select':
           this.inputs.push(<Select 
-            className={styles.formField}
+            {...input} 
             onChange={event => this.handleChange(input, event)}
             key={index} 
             outlined 
-            {...input} 
+            className={styles.formField}
           />);
           break;
       }
