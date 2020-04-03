@@ -8,6 +8,8 @@ node_js:
 install:
 - npm install
 - lerna bootstrap --hoist
+before_script:
+- rm -r src/pages/node_modules/
 script:
 - npm run build
 deploy:
