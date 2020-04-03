@@ -1,5 +1,7 @@
 import Form from '@tutorbook/covid-form'
 
+import { useDB } from '@tutorbook/next-firebase/db'
+
 /**
  * React component that collects the following information from pupils and 
  * create their Firestore user document:
@@ -14,6 +16,7 @@ import Form from '@tutorbook/covid-form'
  * - Message
  */
 export default function PupilForm() {
+  const db = useDB();
   return <Form
     inputs={[{
       label: 'Parent name',
@@ -59,7 +62,7 @@ export default function PupilForm() {
     }
     submitLabel='Request your free tutor'
     onSubmit={(formValues) => {
-      return new Promise((res, rej) => {});
+      return db.collection('pupils').doc().set(formValues);
     }}
   />
 }

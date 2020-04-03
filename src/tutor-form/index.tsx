@@ -1,6 +1,6 @@
 import Form from '@tutorbook/covid-form'
 
-import firebase from '@tutorbook/next-firebase'
+import { useDB } from '@tutorbook/next-firebase/db'
 
 /**
  * React component that collects the following information from tutors and 
@@ -16,6 +16,7 @@ import firebase from '@tutorbook/next-firebase'
  * - Message
  */
 export default function TutorForm() {
+  const db = useDB();
   return <Form
     inputs={[{
       label: 'Your name',
@@ -50,6 +51,8 @@ export default function TutorForm() {
       'to help out we would love to have you!'
     } 
     submitLabel='Volunteer to tutor'
-    onSubmit={(formValues) => new Promise((res, rej) => {})}
+    onSubmit={(formValues) => {
+      return db.collection('tutors').doc().set(formValues);
+    }}
   />
 }
