@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Header from '@tutorbook/covid-header'
-import Footer from '@tutorbook/covid-footer'
-import PupilForm from '@tutorbook/covid-pupil-form'
+import Header from '../header'
+import Footer from '../footer'
+import PupilForm from '../pupil-form'
 
 export default class PupilsPage extends React.Component {
   render() {

@@ -1,9 +1,9 @@
 import { AppProps } from 'next/app'
 
-import DBProvider from '@tutorbook/next-firebase/db'
-import UserProvider from '@tutorbook/next-firebase/user'
+import DBProvider from '../firebase/db'
+import UserProvider from '../firebase/user'
 
-import '@tutorbook/covid-styles'
+import '../styles'
 
 import '@material/textfield/dist/mdc.textfield.css'
 import '@material/select/dist/mdc.select.css'

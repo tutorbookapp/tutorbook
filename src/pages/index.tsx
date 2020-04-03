@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Header from '@tutorbook/covid-header'
-import Footer from '@tutorbook/covid-footer'
-import TutorForm from '@tutorbook/covid-tutor-form'
+import Header from '../header'
+import Footer from '../footer'
+import TutorForm from '../tutor-form'
 
 export default class IndexPage extends React.Component {
   render() {

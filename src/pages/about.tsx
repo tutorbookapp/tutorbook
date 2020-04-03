@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Header from '@tutorbook/covid-header'
-import Footer from '@tutorbook/covid-footer'
-import About from '@tutorbook/covid-about'
+import Header from '../header'
+import Footer from '../footer'
+import About from '../about'
 
 export default class AboutPage extends React.Component {
   render() {
