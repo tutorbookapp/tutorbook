@@ -1,15 +1,15 @@
 @use '@tutorbook/covid-fonts' as fonts;
 
 .button {
-  height: 56px;
-  font-family: fonts.$body;
-  font-size: 105%;
-  font-weight: fonts.$black;
-  letter-spacing: 0.2px;
-  text-transform: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 0 20px;
+  height: 56px !important;
+  font-family: fonts.$body !important;
+  font-size: 105% !important;
+  font-weight: fonts.$medium !important;
+  letter-spacing: 0.2px !important;
+  text-transform: none !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  padding: 0 20px !important;
 }
 
 .button:hover .buttonArrow {
