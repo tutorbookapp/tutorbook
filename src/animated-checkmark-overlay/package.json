@@ -28,6 +28,7 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
+    "@rmwc/typography": "^6.0.9",
     "@tutorbook/animated-checkmark": "^0.0.1",
     "@tutorbook/covid-styles": "^0.0.1",
     "react": "^16.13.1",

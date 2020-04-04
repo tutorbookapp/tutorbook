@@ -1,5 +1,3 @@
-@use '@tutorbook/covid-styles/fonts';
-
 .formWrapper {
   text-align: center;
 }
@@ -11,18 +9,10 @@
 }
 
 .formTitle {
-  font-family: fonts.$title;
-  font-weight: fonts.$bold;
-  font-size: 3.5rem;
-  color: fonts.$primary; // TODO: Use SCSS variables from '@tutorbook/covid-styles'
   padding: 0 16px;
 }
 
 .formDescription {
-  font-family: fonts.$body;
-  font-weight: fonts.$regular;
-  font-size: 1rem;
-  color: fonts.$secondary;
   padding: 0 16px;
 }
 

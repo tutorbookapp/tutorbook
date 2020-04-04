@@ -1,5 +1,3 @@
-@use '@tutorbook/covid-styles/fonts';
-
 .overlay {
   position: absolute;
   top: 0;
@@ -27,9 +25,6 @@
 }
 
 .overlayLabel {
-  font-size: 1rem;
-  font-weight: fonts.$bold;
-  font-family: fonts.$body;
   color: #fff;
 }
 

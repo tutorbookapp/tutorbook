@@ -1,5 +1,3 @@
-@use './index.module.scss' as settings;
-
 .contentWrapper {
   display: none;
   max-width: 1290px;
@@ -73,11 +71,6 @@
 
 .menuItemLink {
   display: inline-block;
-  font-family: settings.$body;
-  font-weight: settings.$bold;
-  font-size: 1rem;
-  letter-spacing: -0.025rem;
-  color: settings.$primary;
   padding: 12px;
   position: relative;
   cursor: pointer;

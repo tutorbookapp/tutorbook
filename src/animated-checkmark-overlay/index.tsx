@@ -1,3 +1,5 @@
+import { Typography } from '@rmwc/typography'
+
 import AnimatedCheckmark from '@tutorbook/animated-checkmark'
 
 import styles from './index.module.scss'
@@ -19,9 +21,11 @@ export default function AnimatedCheckmarkOverlay(props: Props): JSX.Element {
           className={styles.overlayCheckmark} 
           checked={props.checked}
         />
-        <p className={styles.overlayLabel}>
-          {props.label}
-        </p>
+        <div className={styles.overlayLabel}>
+          <Typography use='body2'>
+            {props.label}
+          </Typography>
+        </div>
       </div>
     </div>
   );

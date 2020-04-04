@@ -1,12 +1,5 @@
-@use '@tutorbook/covid-styles/fonts';
-
 .button {
   height: 56px;
-  font-family: fonts.$body;
-  font-size: 105%;
-  font-weight: fonts.$bold;
-  letter-spacing: 0.2px;
-  text-transform: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 0 20px;

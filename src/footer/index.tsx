@@ -1,3 +1,5 @@
+import { Typography } from '@rmwc/typography'
+
 import styles from './index.module.scss'
 
 interface SecondaryLinkProps { href: string; label: string; }
@@ -5,7 +7,9 @@ interface SecondaryLinkProps { href: string; label: string; }
 function SecondaryLink(props: SecondaryLinkProps) {
   return (
     <li className={styles.secondaryLinkItem}>
-      <a href={props.href} className={styles.secondaryLink}>{props.label}</a>
+      <Typography use='headline6'>
+        <a href={props.href} className={styles.secondaryLink}>{props.label}</a>
+      </Typography>
     </li>
   );
 }

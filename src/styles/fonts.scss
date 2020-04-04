@@ -1,12 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,500');
 
-$body: 'Roboto', sans-serif;
-$title: 'Roboto', serif;
-
-$black: 900;
-$bold: 700;
-$medium: 500;
-$regular: 400;
-
-$primary: #181818;
-$secondary: #636363;
+$mdc-typography-styles-headline1: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 96
+);
+$mdc-typography-styles-headline2: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 60
+);
+$mdc-typography-styles-headline3: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 48
+);
+$mdc-typography-styles-headline4: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 34
+);
+$mdc-typography-styles-headline5: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 24
+);
+$mdc-typography-styles-headline6: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 20
+);
+$mdc-typography-styles-body1: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 16
+);
+$mdc-typography-styles-body2: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 14
+);
+$mdc-typography-styles-subtitle1: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 16
+);
+$mdc-typography-styles-subtitle2: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 14
+);
+$mdc-typography-styles-button: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 14
+);
+$mdc-typography-styles-overline: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 10
+);
+$mdc-typography-styles-caption: (
+  font-family: unquote("Roboto Condensed"),
+  font-size: 12
+);

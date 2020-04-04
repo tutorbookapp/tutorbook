@@ -4,6 +4,7 @@ import DBProvider from '../firebase/db'
 import UserProvider from '../firebase/user'
 
 import '../styles'
+import '../styles/fonts.scss'
 
 import '@material/textfield/dist/mdc.textfield.css'
 import '@material/select/dist/mdc.select.css'

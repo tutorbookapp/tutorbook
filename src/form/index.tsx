@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { Typography } from '@rmwc/typography'
 import { TextField } from '@rmwc/textfield'
 import { Select } from '@rmwc/select'
 import { Button } from '@rmwc/button'
@@ -111,12 +112,16 @@ export default class Form extends React.Component<FormProps, {}> {
     return (
       <div className={styles.formWrapper}>
         <div className={styles.formContent}>
-          <h1 className={styles.formTitle}>
-            {this.props.title}
-          </h1>
-          <p className={styles.formDescription}>
-            {this.props.description}
-          </p>
+          <div className={styles.formTitle}>
+            <Typography use='headline2'>
+              {this.props.title}
+            </Typography>
+          </div>
+          <div className={styles.formDescription}>
+            <Typography use='body1'>
+              {this.props.description}
+            </Typography>
+          </div>
           <Card className={styles.formCard}>
             <LoadingOverlay
               active={this.state.submitting || this.state.submitted}

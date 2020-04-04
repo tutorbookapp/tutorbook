@@ -1,5 +1,7 @@
 import { LinkProps } from './interfaces'
 
+import { Typography } from '@rmwc/typography'
+
 import Wordmark from './svgs/wordmark.svg'
 import Logo from './svgs/logo.svg'
 
@@ -16,7 +18,9 @@ function Item(props: LinkProps) {
 function Link(props: LinkProps) {
   return (
     <a href={props.href} className={styles.menuItemLink}>
-      {props.label}
+      <Typography use='headline6'>
+        {props.label}
+      </Typography>
     </a>
   );
 }

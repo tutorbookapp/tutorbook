@@ -36,6 +36,7 @@
     "@material/card": "^5.1.0",
     "@material/select": "^5.1.0",
     "@material/textfield": "^5.1.0",
+    "@material/typography": "^5.1.0",
     "@tutorbook/covid-about": "^0.0.1",
     "@tutorbook/covid-footer": "^0.0.1",
     "@tutorbook/covid-header": "^0.0.1",

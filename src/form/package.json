@@ -37,6 +37,7 @@
     "@rmwc/card": "^6.0.5",
     "@rmwc/select": "^6.0.7",
     "@rmwc/textfield": "^6.0.5",
+    "@rmwc/typography": "^6.0.9",
     "@tutorbook/animated-checkmark-overlay": "^0.0.1",
     "@tutorbook/arrow-btn": "^0.0.1",
     "@tutorbook/covid-styles": "^0.0.1",

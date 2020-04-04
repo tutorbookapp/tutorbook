@@ -1,5 +1,3 @@
-@use './index.module.scss' as settings;
-
 .logoImg {
   width: 40px;
 }
@@ -53,7 +51,7 @@
 }
 
 .menuButtonWrapper:focus {
-  outline: 1px dotted settings.$primary;
+  outline: 1px dotted #000;
   outline-offset: 3px;
 }
 
@@ -97,21 +95,15 @@
   padding: 22px 0;
   display: inline-block;
   width: 100%;
-  border-bottom: 1px dotted settings.$primary;
+  border-bottom: 1px dotted #000;
   position: relative;
   list-style: none;
 }
 
 .mobileNavLink {
-  color: settings.$primary;
   text-decoration: none;
   display: inline-block;
   cursor: pointer;
-  font-family: settings.$body;
-  font-size: 1.5rem;
-  letter-spacing: -0.025rem;
-  font-weight: settings.$bold;
-  line-height: 1.2;
 }
 
 @media (min-width: 768px) {
