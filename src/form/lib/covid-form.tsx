@@ -10,7 +10,7 @@ import ArrowButton from '@tutorbook/arrow-btn'
 import Spinner from '@tutorbook/spinner'
 import LoadingOverlay from '@tutorbook/animated-checkmark-overlay'
 
-import styles from './index.module.scss'
+import styles from './covid-form.module.scss'
 
 interface InputProps { 
   readonly el: 'textfield' | 'textarea' | 'select';
