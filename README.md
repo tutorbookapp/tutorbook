@@ -1,6 +1,6 @@
 # COVID Tutoring
 
-[![NPM Version](https://img.shields.io/npm/v/@tutorbook/covid)](https://npmjs.com/package/@tutorbook/covid)
+[![NPM Version](https://img.shields.io/npm/v/@tutorbook/covid?color=brightgreen)](https://npmjs.com/package/@tutorbook/covid)
 [![Dependencies](https://img.shields.io/david/tutorbookapp/covid-tutoring)](https://david-dm.org/tutorbookapp/covid-tutoring)
 [![Website Status](https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Fcovidtutoring.org%2F)](https://covidtutoring.org/)
 [![Typescript](https://img.shields.io/badge/uses-typescript-orange?styles=flat)](https://typescriptlang.org)
