@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-styles",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Package that contains the global styling variables for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",

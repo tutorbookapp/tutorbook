@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/spinner",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Package that contains a fast-moving React spinner component made from pure CSS and HTML `div` tags.",
   "keywords": [
     "Tutorbook",

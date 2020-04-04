@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/arrow-btn",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Package that contains a MDC arrow button React component.",
   "keywords": [
     "Tutorbook",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@rmwc/button": "^6.0.5",
-    "@tutorbook/covid-fonts": "^0.0.0",
+    "@tutorbook/covid-fonts": "^0.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

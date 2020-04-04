@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/next-firebase",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Package that contains utilities for using Firebase with Next.js, Typescript, and React.",
   "keywords": [
     "Tutorbook",

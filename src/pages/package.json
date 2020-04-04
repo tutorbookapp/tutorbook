@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Package containing the COVID Tutoring Initiative's Next.js website pages.",
   "keywords": [
     "Tutorbook",
@@ -36,13 +36,13 @@
     "@material/card": "^5.1.0",
     "@material/select": "^5.1.0",
     "@material/textfield": "^5.1.0",
-    "@tutorbook/covid-about": "^0.0.0",
-    "@tutorbook/covid-footer": "^0.0.0",
-    "@tutorbook/covid-header": "^0.0.0",
-    "@tutorbook/covid-pupil-form": "^0.0.0",
-    "@tutorbook/covid-styles": "^0.0.0",
-    "@tutorbook/covid-tutor-form": "^0.0.0",
-    "@tutorbook/next-firebase": "^0.0.0",
+    "@tutorbook/covid-about": "^0.0.1",
+    "@tutorbook/covid-footer": "^0.0.1",
+    "@tutorbook/covid-header": "^0.0.1",
+    "@tutorbook/covid-pupil-form": "^0.0.1",
+    "@tutorbook/covid-styles": "^0.0.1",
+    "@tutorbook/covid-tutor-form": "^0.0.1",
+    "@tutorbook/next-firebase": "^0.0.1",
     "next": "^9.3.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

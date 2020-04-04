@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/animated-checkmark-overlay",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Package that contains a React loading overlay that shows a spinner which becomes a checkmark.",
   "keywords": [
     "Tutorbook",
@@ -28,8 +28,8 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/animated-checkmark": "^0.0.0",
-    "@tutorbook/covid-fonts": "^0.0.0",
+    "@tutorbook/animated-checkmark": "^0.0.1",
+    "@tutorbook/covid-fonts": "^0.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
