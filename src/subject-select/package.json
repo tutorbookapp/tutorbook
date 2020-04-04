@@ -1,0 +1,42 @@
+{
+  "name": "@tutorbook/subject-select",
+  "version": "0.0.1",
+  "description": "Subject select React component for the COVID Tutoring Initiative website.",
+  "keywords": [
+    "Tutorbook",
+    "COVID",
+    "Tutoring",
+    "React",
+    "Subject Select"
+  ],
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "license": "MIT",
+  "main": "lib/subject-select.tsx",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  },
+  "dependencies": {
+    "@rmwc/chip": "^6.0.9",
+    "@rmwc/textfield": "^6.0.9",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
