@@ -66,7 +66,7 @@ documentation](https://tutorbook.app/docs/) for more detailed information.
 
 This project uses:
 
-**Languages**
+#### Languages
 - [Typescript](https://www.typescriptlang.org) - As our language of choice
   (mostly for static typing, stronger linting capabilities, and the potential
   for beautifully detailed--and completely automatically generated--
@@ -77,13 +77,13 @@ This project uses:
   is also [well supported by Next.js 
   out-of-box](https://nextjs.org/docs/basic-features/built-in-css-support#sass-support)
 
-**Frameworks**
+#### Frameworks
 - [React](https://reactjs.org) - As our front-end framework.
 - [Next.js](https://nextjs.org) - To easily support 
   [SSR](https://nextjs.org/docs/basic-features/pages#server-side-rendering) and
   other performance [PWA](https://web.dev/progressive-web-apps/) features.
 
-**Tooling**
+#### Tooling
 - [Lerna](https://lerna.js.org/) - To manage and re-use React components across
   repositories; mostly just to migrate code from this project back into
   [Tutorbook](https://tutorbook.app/docs/) when we get the chance.
@@ -93,7 +93,7 @@ This project uses:
   in the text editor of your choice (such that you won't have to wait until our
   pre-commit hooks fail to update your code).
 
-**Database**
+#### Database
 - [Google's Firebase](https://firebase.google.com/) - For their [NoSQL
   document-based database](https://firebase.google.com/products/firestore),
   [Authentication](https://firebase.google.com/products/auth), and other
@@ -112,7 +112,7 @@ Initiative website:
 $ command -v nvm
 ```
 
-2. Optionally (if you use [Vim](https://vim.org) as your preferred text editor),
+2. (Optional) If you use [Vim](https://vim.org) as your preferred text editor,
    follow [these instructions](https://freshman.tech/vim-javascript/) on setting
    up [Vim](https://vim.org) for editing JavaScript.
 3. Run the following command to install Node.js v12.16.1 (our current version):
@@ -121,7 +121,7 @@ $ command -v nvm
 $ nvm i 12.16.1 
 ```
 
-4. (optional) Run the following command to set Node.js v12.16.1 as your default
+4. (Optional) Run the following command to set Node.js v12.16.1 as your default
    Node.js version (useful if you have multiple Node.js versions installed and
    don't want to have to remember to switch to v12.16.1):
 
@@ -180,19 +180,16 @@ you can run:
 
 #### `npm run dev`
 
-Runs `next` which starts Next.js in development mode
+Runs `next` which starts Next.js in development mode.
 
 Open [http://localhost:3000](http://localhost:3000) to view the app in the 
-browser.
-
-The page will reload if you make edits.
-
-You will also see any lint errors in the console.
+browser. The page will reload if you make edits. You will also see any lint 
+errors in the console.
 
 #### `npm run build`
 
-Runs `next build` which builds the application for production usage
+Runs `next build` which builds the application for production usage.
 
 #### `npm run start`
 
-Runs `next start` which starts a Next.js production server
+Runs `next start` which starts a Next.js production server.
