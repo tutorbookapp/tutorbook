@@ -38,5 +38,14 @@
     "@rmwc/textfield": "^6.0.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.0",
+    "@types/react": "^16.9.32",
+    "jest": "^25.2.7",
+    "sass": "^1.26.3",
+    "ts-jest": "^25.3.1",
+    "typescript": "^3.8.3"
   }
 }
