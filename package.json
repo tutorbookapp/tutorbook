@@ -1,6 +1,9 @@
 {
   "name": "root",
   "private": true,
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "homepage": "https://covidtutoring.org/",
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "dev": "next",
     "build": "next build",
