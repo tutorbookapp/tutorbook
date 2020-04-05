@@ -1,3 +1,4 @@
+import React from 'react'
 import { Typography } from '@rmwc/typography'
 
 import styles from './index.module.scss'
