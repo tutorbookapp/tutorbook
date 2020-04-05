@@ -4,7 +4,6 @@ import DBProvider from '../firebase/db'
 import UserProvider from '../firebase/user'
 
 import '../styles'
-import '../styles/fonts.scss'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
