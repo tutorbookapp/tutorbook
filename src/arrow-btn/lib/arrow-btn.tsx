@@ -2,7 +2,7 @@ import { Button, ButtonProps } from '@rmwc/button'
 
 import Arrow from './arrow'
 
-import styles from './index.module.scss'
+import styles from './arrow-btn.module.scss'
 
 interface ArrowButtonProps extends ButtonProps {
   className: string;

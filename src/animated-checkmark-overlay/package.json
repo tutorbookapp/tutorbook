@@ -13,7 +13,14 @@
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
   "license": "MIT",
-  "main": "index.tsx",
+  "main": "lib/animated-checkmark-overlay.tsx",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -22,7 +29,7 @@
     "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
@@ -35,6 +42,15 @@
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.0",
+    "@types/react": "^16.9.32",
+    "@types/react-test-renderer": "^16.9.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^25.2.7",
+    "react-test-renderer": "^16.13.1",
+    "sass": "^1.26.3",
+    "ts-jest": "^25.3.1",
     "typescript": "^3.8.3"
   }
 }
