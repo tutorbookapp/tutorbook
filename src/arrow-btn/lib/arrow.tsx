@@ -1,3 +1,5 @@
+import React from 'react'
+
 export default function Arrow(props: { className: string; }) { 
   return (
     <svg
