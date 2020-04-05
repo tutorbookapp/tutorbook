@@ -1,5 +1,5 @@
 {
-  "name": "@tutorbook/arrow-btn",
+  "name": "@tutorbook/button",
   "version": "0.0.1",
   "description": "Package that contains a MDC arrow button React component.",
   "keywords": [
@@ -10,7 +10,7 @@
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
   "license": "MIT",
-  "main": "lib/arrow-btn.tsx",
+  "main": "lib/button.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
