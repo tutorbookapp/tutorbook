@@ -5,6 +5,8 @@ amount of tedious configuration for use with
 [Typescript](https://www.typescriptlang.org/), [React](https://reactjs.org/),
 and [Sass](https://sass-lang.com/).
 
+## Testing Frameworks
+
 Our tests are setup using [`ts-jest`](https://kulshekhar.github.io/ts-jest/) for
 Typescript type-checking (**not babel** due to what's outlined [here](:
 
@@ -22,3 +24,32 @@ to stub out our imported Sass modules (as recommended
 We'll soon start using Airbnb's 
 [Enzyme.js](https://enzymejs.github.io/enzyme/docs/) for jQuery-like support in 
 our tests.
+
+## File Structure
+
+Our repository file structure aims to place our tests as close to the code that
+they test (a good practice in any software development). As such, each
+sub-package (managed altogether with [Lerna](https://lerna.js.org)) contains
+it's own `__tests__/` and `__snapshots__/` directories.
+
+For example, here's the file structure of the `@tutorbook/covid-form` package
+(contained in `src/form/`):
+
+```
+.
+├── lib
+│   ├── covid-form.module.scss
+│   └── covid-form.tsx
+├── node_modules
+│   └── @tutorbook
+│       ├── animated-checkmark-overlay -> ../../../animated-checkmark-overlay
+│       ├── arrow-btn -> ../../../arrow-btn
+│       ├── covid-styles -> ../../../styles
+│       └── spinner -> ../../../spinner
+├── package.json
+├── package-lock.json
+└── __tests__
+    └── covid-form.test.tsx
+
+8 directories, 5 files
+```
