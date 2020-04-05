@@ -1,63 +1,35 @@
-$mdc-typography-styles-headline1: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 96
-);
-$mdc-typography-styles-headline2: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 60
-);
-$mdc-typography-styles-headline3: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 48
-);
-$mdc-typography-styles-headline4: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 34
-);
-$mdc-typography-styles-headline5: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 24
-);
-$mdc-typography-styles-headline6: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 20
-);
-$mdc-typography-styles-body1: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 16
-);
-$mdc-typography-styles-body2: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 14
-);
-$mdc-typography-styles-subtitle1: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 16
-);
-$mdc-typography-styles-subtitle2: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 14
-);
-$mdc-typography-styles-button: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 14
-);
-$mdc-typography-styles-overline: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 10
-);
-$mdc-typography-styles-caption: (
-  font-family: unquote("Roboto Condensed"),
-  font-size: 12
+@use 'sass:map';
+
+$font-weight-values: (
+  thin: 100,
+  light: 300,
+  regular: 400,
+  medium: 500,
+  bold: 700,
+  black: 900
 );
 
-@use '@material/typography/mdc-typography';
+@use '@material/typography' with (
+  $font-family: unquote('Poppins, sans-serif'),
+  $styles-button: (
+    font-size: 1.05rem,
+    font-weight: map.get($font-weight-values, bold),
+    letter-spacing: 0.0125rem,
+    text-transform: none,
+  ),
+  $styles-headline2: (
+    font-size: 3.5rem,
+    font-weight: map.get($font-weight-values, bold),
+    letter-spacing: -0.125rem,
+  ),
+);
 @use '@material/textfield/mdc-text-field';
 @use '@material/select/mdc-select';
 @use '@material/button/mdc-button';
 @use '@material/card/mdc-card';
 
-@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,500');
+@include typography.core-styles;
+@import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900');
 
 body {
   margin: 0;
