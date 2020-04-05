@@ -64,6 +64,10 @@ Check out this project's [documentation](https://covidtutoring.org/docs/)
 [main repository](https://github.com/tutorbookapp/tutorbook) and [main
 documentation](https://tutorbook.app/docs/) for more detailed information.
 
+Feel free to also check out our recently added `tutorials/` directory for
+additional information detailing different aspects of this project (e.g. tests,
+deployment workflows, CI/CD, etc).
+
 This project uses:
 
 #### Languages
