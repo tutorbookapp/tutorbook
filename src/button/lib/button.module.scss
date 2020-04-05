@@ -1,19 +1,8 @@
-@use '@material/typography' with (
-  $styles-button: (
-    font-family: unquote('Poppins, sans-serif'),
-    font-size: 1.05rem,
-    font-weight: 700,
-    letter-spacing: 0.0125rem,
-    text-transform: none,
-  ),
-);
-
 .button {
   height: 60px;
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 0 20px;
-  @include typography.typography('button');
 }
 
 .button:hover .buttonArrow {
