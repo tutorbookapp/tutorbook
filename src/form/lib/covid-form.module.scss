@@ -32,9 +32,14 @@
   @include elevation.elevation(8);
 }
 
+.formField :global(.mdc-select__anchor) {
+  width: 100%;
+}
+
 .formField {
   margin: 8px 0;
   width: 100%;
+  display: inline-flex;
 }
 
 .formField:first-child {
