@@ -19,7 +19,8 @@ interface SubjectSelectProps extends TextFieldProps {
 
 export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   state: SubjectSelectState;
-  mostRecentClosureEvent: React.SyntheticEvent<HTMLInputElement> | undefined;
+  suggestionsTimeoutID: number | undefined;
+
   static subjects: string[] = [
     'Algebra 1',
     'Algebra 2',
@@ -49,12 +50,27 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     console.log('[TODO] Show subject suggestions.');
   }
 
-  openSuggestions() {
-    this.setState({ suggestionsOpen: true });
+  /**
+   * We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event 
+   * before toggling. Waiting ensures that the user hasn't clicked on the 
+   * subject select menu (and thus called `this.openSuggestions`).
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  closeSuggestions() {
+    this.suggestionsTimeoutID = window.setTimeout(() => {
+      if (this.state.suggestionsOpen) this.setState({ suggestionsOpen: false });
+    }, 0);
   }
 
-  closeSuggestions(event: React.SyntheticEvent<HTMLInputElement>) {
-    this.setState({ suggestionsOpen: false });
+  /**
+   * We clear the timeout set by `this.closeSuggestions` to ensure that they 
+   * user doesn't get a blip where the subject select menu disappears and 
+   * reappears abruptly.
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  openSuggestions() {
+    window.clearTimeout(this.suggestionsTimeoutID);
+    if (!this.state.suggestionsOpen) this.setState({ suggestionsOpen: true });
   }
 
   render() {
@@ -62,6 +78,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       <MenuSurfaceAnchor className={this.props.className}>
         <MenuSurface
           open={this.state.suggestionsOpen}
+          onFocus={this.openSuggestions}
           anchorCorner='bottomStart'
         >
           <List>
