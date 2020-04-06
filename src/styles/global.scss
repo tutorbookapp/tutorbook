@@ -27,6 +27,10 @@ $font-weight-values: (
 @use '@material/select/mdc-select';
 @use '@material/button/mdc-button';
 @use '@material/card/mdc-card';
+@use '@material/menu/mdc-menu';
+@use '@material/menu-surface/mdc-menu-surface';
+@use '@material/checkbox/mdc-checkbox';
+@use '@material/list/mdc-list';
 
 @include typography.core-styles;
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900');
