@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-import { Typography } from '@rmwc/typography'
-
 import { LinkProps } from './interfaces'
 
 import Logo from './svgs/logo.svg'
@@ -19,9 +17,7 @@ function Item(props: LinkProps) {
 function Link(props: LinkProps) {
   return (
     <a className={styles.mobileNavLink} href={props.href}>
-      <Typography use='headline6'>
-        {props.label}
-      </Typography>
+      {props.label}
     </a>
   );
 }

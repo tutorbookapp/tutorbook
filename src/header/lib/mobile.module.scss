@@ -101,9 +101,14 @@
 }
 
 .mobileNavLink {
+  color: #181818;
   text-decoration: none;
   display: inline-block;
   cursor: pointer;
+  font-size: 26px;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
 }
 
 @media (min-width: 768px) {

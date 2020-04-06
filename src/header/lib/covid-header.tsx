@@ -1,7 +1,7 @@
 import MobileNav from './mobile'
 import DesktopNav from './desktop'
 
-import styles from './index.module.scss'
+import styles from './covid-header.module.scss'
 
 function Header() {
   return (
