@@ -52,7 +52,7 @@
     "@rmwc/textfield": "^6.0.9",
     "@rmwc/typography": "^6.0.9",
     "@tutorbook/animated-checkmark-overlay": "^0.0.1",
-    "@tutorbook/arrow-btn": "^0.0.1",
+    "@tutorbook/button": "^0.0.1",
     "@tutorbook/covid-styles": "^0.0.1",
     "@tutorbook/spinner": "^0.0.1",
     "react": "^16.13.1",

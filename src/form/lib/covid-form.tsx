@@ -3,10 +3,9 @@ import React from 'react'
 import { Typography } from '@rmwc/typography'
 import { TextField } from '@rmwc/textfield'
 import { Select } from '@rmwc/select'
-import { Button } from '@rmwc/button'
 import { Card } from '@rmwc/card'
 
-import ArrowButton from '@tutorbook/arrow-btn'
+import Button from '@tutorbook/button'
 import Spinner from '@tutorbook/spinner'
 import LoadingOverlay from '@tutorbook/animated-checkmark-overlay'
 
@@ -133,12 +132,13 @@ export default class Form extends React.Component<FormProps, {}> {
               onSubmit={this.submit}
             >
               {this.inputs}
-              <ArrowButton 
+              <Button 
+                arrow
                 className={styles.formSubmitButton}
                 label={this.props.submitLabel}
                 disabled={this.state.submitting || this.state.submitted}
                 raised>
-              </ArrowButton>
+              </Button>
             </form>
           </Card>
         </div>

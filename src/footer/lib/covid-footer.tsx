@@ -1,7 +1,7 @@
 import React from 'react'
 import { Typography } from '@rmwc/typography'
 
-import styles from './index.module.scss'
+import styles from './covid-footer.module.scss'
 
 interface SecondaryLinkProps { href: string; label: string; }
 
