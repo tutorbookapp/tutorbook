@@ -54,6 +54,7 @@
     "@tutorbook/animated-checkmark-overlay": "^0.0.1",
     "@tutorbook/button": "^0.0.1",
     "@tutorbook/covid-styles": "^0.0.1",
+    "@tutorbook/schedule-input": "^0.0.1",
     "@tutorbook/spinner": "^0.0.1",
     "@tutorbook/subject-select": "^0.0.1",
     "react": "^16.13.1",
