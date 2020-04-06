@@ -46,7 +46,6 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@rmwc/typography": "^6.0.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

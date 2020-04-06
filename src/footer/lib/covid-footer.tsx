@@ -1,5 +1,4 @@
 import React from 'react'
-import { Typography } from '@rmwc/typography'
 
 import styles from './covid-footer.module.scss'
 
@@ -8,9 +7,7 @@ interface SecondaryLinkProps { href: string; label: string; }
 function SecondaryLink(props: SecondaryLinkProps) {
   return (
     <li className={styles.secondaryLinkItem}>
-      <Typography use='headline6'>
-        <a href={props.href} className={styles.secondaryLink}>{props.label}</a>
-      </Typography>
+      <a href={props.href} className={styles.secondaryLink}>{props.label}</a>
     </li>
   );
 }
