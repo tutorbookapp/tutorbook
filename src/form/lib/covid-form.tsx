@@ -90,7 +90,7 @@ export default class Form extends React.Component<FormProps, {}> {
             {...input}
             onChange={event => this.handleChange(input, event)}
             key={index}
-            outlined
+            outlined 
             className={styles.formField}
           />);
           break;

@@ -85,12 +85,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
             {this.renderSubjectMenuItems()}
           </List>
         </MenuSurface>
-        <TextField 
-          outlined
+        <TextField
+          {...this.props}
           onFocus={this.openSuggestions}
           onBlur={this.closeSuggestions}
           onChange={this.onTextFieldChange}
-          label={this.props.label}
           className={styles.textField}
         >
         </TextField>
