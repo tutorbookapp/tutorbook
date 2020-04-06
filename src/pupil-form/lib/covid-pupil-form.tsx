@@ -2,6 +2,22 @@ import Form from '@tutorbook/covid-form'
 
 import { useDB } from '@tutorbook/next-firebase/db'
 
+const GRADES: Readonly<string[]> = [
+  'Senior',
+  'Junior',
+  'Sophomore',
+  'Freshman',
+  '8th Grade',
+  '7th Grade',
+  '6th Grade',
+  '5th Grade',
+  '4th Grade',
+  '3rd Grade',
+  '2nd Grade',
+  '1st Grade',
+  'Kindergarten',
+];
+
 /**
  * React component that collects the following information from pupils and 
  * create their Firestore user document:
@@ -41,8 +57,9 @@ export default function PupilForm() {
       el: 'textfield',
     }, {
       label: 'Your grade level',
-      el: 'textfield',
+      el: 'select',
       required: true,
+      options: GRADES,
     }, {
       label: 'Subjects you want tutoring for',
       el: 'subjectselect',
