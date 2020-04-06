@@ -1,5 +1,5 @@
 {
-  "name": "@tutorbook/schedule-card",
+  "name": "@tutorbook/react-schedule-card",
   "version": "0.0.1",
   "description": "Package that contains the schedule dashboard card used on the COVID Tutoring Initiative website.",
   "keywords": [

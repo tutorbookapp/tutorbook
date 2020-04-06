@@ -1,5 +1,5 @@
 {
-  "name": "@tutorbook/schedule",
+  "name": "@tutorbook/react-schedule",
   "version": "0.0.1",
   "description": "Package that contains the schedule React component used across the COVID Tutoring Initiative website.",
   "keywords": [

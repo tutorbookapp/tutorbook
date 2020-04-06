@@ -32,5 +32,8 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  },
+  "dependencies": {
+    "@tutorbook/react-schedule": "^0.0.1"
   }
 }
