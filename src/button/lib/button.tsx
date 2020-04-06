@@ -11,10 +11,14 @@ interface ButtonProps extends MDCButtonProps {
 }
 
 export default function Button(props: ButtonProps) {
+  const { arrow, className, children, ...rest } = props;
   return (
-    <MDCButton className={styles.button + ' ' + props.className}>
-      {props.children}
-      {props.arrow ? <Arrow className={styles.buttonArrow} /> : undefined}
+    <MDCButton 
+      {...rest} 
+      className={styles.button + (className ? ' ' + className : '')}
+    >
+      {children}
+      {arrow ? <Arrow className={styles.buttonArrow} /> : undefined}
     </MDCButton>
   );
 }
