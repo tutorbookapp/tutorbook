@@ -31,9 +31,11 @@ $font-weight-values: (
 @use '@material/menu-surface/mdc-menu-surface';
 @use '@material/checkbox/mdc-checkbox';
 @use '@material/list/mdc-list';
+@use '@material/chips/mdc-chips';
 
 @include typography.core-styles;
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 body {
   margin: 0;
