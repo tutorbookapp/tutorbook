@@ -4,12 +4,19 @@ import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu'
 import { TextField, TextFieldProps } from '@rmwc/textfield'
 import { ChipSet, Chip } from '@rmwc/chip'
 import { Checkbox } from '@rmwc/checkbox'
+import { ObjectWithObjectID } from '@algolia/client-search'
 
+import algoliasearch from 'algoliasearch/lite'
 import styles from './subject-select.module.scss'
+
+// TODO: Bring this up the React tree using `Context` and `Context.Provider`s.
+const client = algoliasearch('XCRT9EA6O8', 'aa1d293ac39b27e9671ece379c217da0');
 
 interface SubjectSelectState {
   suggestionsOpen: boolean;
+  suggestions: string[];
   subjects: { [subject: string]: boolean; };
+  inputValueWorkaround: string;
 }
 
 interface SubjectSelectProps extends TextFieldProps {
@@ -17,37 +24,41 @@ interface SubjectSelectProps extends TextFieldProps {
   className?: string;
 }
 
+interface SubjectHit extends ObjectWithObjectID {
+  readonly name?: string;
+}
+
 export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   state: SubjectSelectState;
   suggestionsTimeoutID: number | undefined;
 
-  static subjects: string[] = [
-    'Algebra 1',
-    'Algebra 2',
-    'Algebra 2 / Trigonometry H',
-    'Geometry H',
-    'Chemistry H',
-    'Biology H',
-    'AP Chemistry',
-    'AP Biology',
-    'AP Physics C',
-    'AP Art History',
-  ];
-
+  static searchIndex = client.initIndex('subjects');
+  
   constructor(props: SubjectSelectProps) {
     super(props);
     this.state = {
       suggestionsOpen: false,
+      suggestions: [],
       subjects: {},
+      inputValueWorkaround: '',
     };
-    SubjectSelect.subjects.map(subject => this.state.subjects[subject] = false);
-    this.onTextFieldChange = this.onTextFieldChange.bind(this);
     this.openSuggestions = this.openSuggestions.bind(this);
     this.closeSuggestions = this.closeSuggestions.bind(this);
+    this.updateInputValue = this.updateInputValue.bind(this);
+    this.updateSuggestions();
   }
 
-  onTextFieldChange(event: React.SyntheticEvent<HTMLInputElement>) {
-    console.log('[TODO] Show subject suggestions.');
+  /**
+   * Updates the suggestions shown in the select below the subjects input based
+   * on the results of the user's current input to an Algolia search query.
+   * @todo Add React `ErrorBoundries` and otherwise catch possible errors here.
+   * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
+   */
+  async updateSuggestions(query: string = ''): Promise<void> {
+    const res = await SubjectSelect.searchIndex.search(query);
+    this.setState({
+      suggestions: res.hits.map((subject: SubjectHit) => subject.name),
+    });
   }
 
   /**
@@ -56,7 +67,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * subject select menu (and thus called `this.openSuggestions`).
    * @see {@link https://bit.ly/2x9eM27}
    */
-  closeSuggestions() {
+  closeSuggestions(): void {
     this.suggestionsTimeoutID = window.setTimeout(() => {
       if (this.state.suggestionsOpen) this.setState({ suggestionsOpen: false });
     }, 0);
@@ -68,17 +79,51 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * reappears abruptly.
    * @see {@link https://bit.ly/2x9eM27}
    */
-  openSuggestions() {
+  openSuggestions(): void {
     window.clearTimeout(this.suggestionsTimeoutID);
     if (!this.state.suggestionsOpen) this.setState({ suggestionsOpen: true });
   }
 
-  render() {
+  /**
+   * Workaround for styling the input as if it has content. If there are 
+   * subjects selected (in the given `subjects` object), this will return a
+   * string containing a space (`' '`) so that the `TextField` styles itself as
+   * if it were filled.
+   * @todo Ideally, remove this workaround. But instead, make the `&nsbp;` 
+   * actually show up as a non-breaking space (i.e. nothing).
+   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
+   * @return {string} The input value (either `' '` or `''`).
+   */
+  getInputValue(
+    subjects: { [subject: string]: boolean } = this.state.subjects,
+  ): string {
+    const selected = Object.values(subjects).reduce((a, b) => a || b, false);
+    return selected ? '\xa0' : '';
+  }
+
+  /**
+   * Workaround for styling the input as if it has content. If there are 
+   * subjects selected (in the given `subjects` object) and the `TextField` 
+   * would otherwise be empty, this will update the current input's value to a 
+   * string containing a space (`' '`) so that the `TextField` styles itself as 
+   * if it were filled. Otherwise, this acts as it normally would by updating 
+   * the `TextField`'s value using `setState`.
+   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
+   */
+  updateInputValue(event: React.SyntheticEvent<HTMLInputElement>): void {
+    const value = 
+      (event.target as HTMLInputElement).value || this.getInputValue();
+    this.setState({ inputValueWorkaround: value });
+    this.updateSuggestions((event.target as HTMLInputElement).value);
+  }
+
+  render(): JSX.Element {
     return (
       <MenuSurfaceAnchor className={this.props.className}>
         <MenuSurface
           open={this.state.suggestionsOpen}
           onFocus={this.openSuggestions}
+          onBlur={this.closeSuggestions}
           anchorCorner='bottomStart'
         >
           <List>
@@ -87,31 +132,44 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
         </MenuSurface>
         <TextField
           {...this.props}
+          textarea
+          value={this.state.inputValueWorkaround}
           onFocus={this.openSuggestions}
           onBlur={this.closeSuggestions}
-          onChange={this.onTextFieldChange}
+          onChange={this.updateInputValue}
           className={styles.textField}
         >
+        <ChipSet className={styles.chipSet}>
+          {this.renderSubjectChipItems()}
+        </ChipSet>
         </TextField>
       </MenuSurfaceAnchor>
     );
   }
 
-  selectSubject(subject: string) {
+  /**
+   * Selects or un-selects the given subject string by setting it's value in 
+   * `this.state.subjects` to `true` which:
+   * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
+   * 2. Adding it as a chip to the `mdc-text-field` content.
+   */
+  updateSubject(subject: string): void {
+    const subjects = { 
+      ...this.state.subjects, 
+      [subject]: !this.state.subjects[subject], 
+    };
     this.setState({
-      subjects: {
-        ...this.state.subjects, 
-        [subject]: !this.state.subjects[subject]
-      },
+      subjects: subjects,
+      inputValueWorkaround: this.getInputValue(subjects),
     });
   }
 
-  renderSubjectMenuItems() {
+  renderSubjectMenuItems(): JSX.Element[] {
     const subjectMenuItems: JSX.Element[] = [];
-    SubjectSelect.subjects.map(subject => subjectMenuItems.push(
+    this.state.suggestions.map(subject => subjectMenuItems.push(
       <ListItem 
         key={subject} 
-        onClick={() => this.selectSubject(subject)}
+        onClick={() => this.updateSubject(subject)}
         className={styles.menuItem}
       >
         <ListItemGraphic icon={
@@ -121,5 +179,21 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       </ListItem>
     ));
     return subjectMenuItems;
+  }
+
+  renderSubjectChipItems(): JSX.Element[] {
+    const subjectChipItems: JSX.Element[] = [];
+    Object.entries(this.state.subjects).map(([subject, isSelected]) => {
+      if (isSelected) subjectChipItems.push(
+        <Chip 
+          key={subject}
+          label={subject} 
+          trailingIcon='close' 
+          onTrailingIconInteraction={() => this.updateSubject(subject)}
+        >
+        </Chip>
+      );
+    });
+    return subjectChipItems;
   }
 }

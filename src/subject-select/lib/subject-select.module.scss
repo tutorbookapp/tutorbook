@@ -1,5 +1,10 @@
 .textField {
   width: 100%;
+  flex-wrap: wrap;
+}
+
+.chipSet {
+  margin: 8px 0 -8px 0;
 }
 
 .menuItem {

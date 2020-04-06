@@ -39,6 +39,7 @@
     "@rmwc/list": "^6.0.11",
     "@rmwc/menu": "^6.0.11",
     "@rmwc/textfield": "^6.0.9",
+    "algoliasearch": "^4.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
