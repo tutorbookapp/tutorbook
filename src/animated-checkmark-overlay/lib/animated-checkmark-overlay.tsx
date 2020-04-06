@@ -22,7 +22,7 @@ export default function AnimatedCheckmarkOverlay(props: Props): JSX.Element {
           checked={props.checked}
         />
         <div className={styles.overlayLabel}>
-          <Typography use='body2'>
+          <Typography use='headline6'>
             {props.label}
           </Typography>
         </div>
