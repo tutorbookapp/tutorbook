@@ -32,6 +32,10 @@ export default function TutorForm() {
       type: 'tel',
       el: 'textfield',
     }, {
+      label: 'Subjects you can tutor',
+      el: 'subjectselect',
+      required: true,
+    }, {
       label: 'Education',
       el: 'textarea',
       required: true,
