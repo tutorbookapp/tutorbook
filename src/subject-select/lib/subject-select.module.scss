@@ -13,8 +13,7 @@
   resize: none;
 }
 
-// TODO: For some reason, I'm unable to use the `.mdc-notched-outline` selector.
-.textField div:last-child {
+.textField :global(.mdc-notched-outline) {
   top: 0;
 }
 
