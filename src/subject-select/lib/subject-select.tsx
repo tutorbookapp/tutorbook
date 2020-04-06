@@ -139,9 +139,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           onChange={this.updateInputValue}
           className={styles.textField}
         >
-        <ChipSet className={styles.chipSet}>
-          {this.renderSubjectChipItems()}
-        </ChipSet>
+        {this.renderSubjectChipItems()}
         </TextField>
       </MenuSurfaceAnchor>
     );
@@ -190,6 +188,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           label={subject} 
           trailingIcon='close' 
           onTrailingIconInteraction={() => this.updateSubject(subject)}
+          className={styles.chip}
         >
         </Chip>
       );

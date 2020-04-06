@@ -1,10 +1,26 @@
+@use '@material/chips/_index.scss' as chips;
+
 .textField {
   width: 100%;
   flex-wrap: wrap;
+  padding: 12px 16px 14px;
 }
 
-.chipSet {
-  margin: 8px 0 -8px 0;
+.textField textarea {
+  height: 30px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  resize: none;
+}
+
+// TODO: For some reason, I'm unable to use the `.mdc-notched-outline` selector.
+.textField div:last-child {
+  top: 0;
+}
+
+.chip {
+  margin: 4px 8px 4px 0;
+  @include chips.height(22px);
 }
 
 .menuItem {
