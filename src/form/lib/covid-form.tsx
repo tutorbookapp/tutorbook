@@ -55,10 +55,11 @@ export default class Form extends React.Component<FormProps, {}> {
 
   renderInputs(): void {
     this.props.inputs.map((input, index) => {
-      switch (input.el) {
+      const { el, ...props } = input;
+      switch (el) {
         case 'textfield':
           this.inputs.push(<TextField 
-            {...input} 
+            {...props} 
             onChange={event => this.handleChange(input, event)}
             key={index}
             outlined 
@@ -67,7 +68,7 @@ export default class Form extends React.Component<FormProps, {}> {
           break;
         case 'textarea':
           this.inputs.push(<TextField 
-            {...input}
+            {...props}
             onChange={event => this.handleChange(input, event)}
             key={index}
             outlined 
@@ -78,7 +79,7 @@ export default class Form extends React.Component<FormProps, {}> {
           break;
         case 'select':
           this.inputs.push(<Select 
-            {...input} 
+            {...props} 
             onChange={event => this.handleChange(input, event)}
             key={index} 
             outlined 
@@ -87,7 +88,7 @@ export default class Form extends React.Component<FormProps, {}> {
           break;
         case 'subjectselect':
           this.inputs.push(<SubjectSelect
-            {...input}
+            {...props}
             onChange={event => this.handleChange(input, event)}
             key={index}
             outlined 
