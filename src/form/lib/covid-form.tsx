@@ -7,12 +7,13 @@ import { Card } from '@rmwc/card'
 
 import Button from '@tutorbook/button'
 import Spinner from '@tutorbook/spinner'
+import SubjectSelect from '@tutorbook/subject-select'
 import LoadingOverlay from '@tutorbook/animated-checkmark-overlay'
 
 import styles from './covid-form.module.scss'
 
 interface InputProps { 
-  readonly el: 'textfield' | 'textarea' | 'select';
+  readonly el: 'textfield' | 'textarea' | 'select' | 'subjectselect';
   readonly label: string;
   readonly type?: 'email' | 'tel' | 'text';
   readonly [propName: string]: any;
@@ -81,6 +82,15 @@ export default class Form extends React.Component<FormProps, {}> {
             onChange={event => this.handleChange(input, event)}
             key={index} 
             outlined 
+            className={styles.formField}
+          />);
+          break;
+        case 'subjectselect':
+          this.inputs.push(<SubjectSelect
+            {...input}
+            onChange={event => this.handleChange(input, event)}
+            key={index}
+            outlined
             className={styles.formField}
           />);
           break;
