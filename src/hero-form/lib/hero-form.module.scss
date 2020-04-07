@@ -1,0 +1,34 @@
+.heroFormWrapper {
+  text-align: center;
+}
+
+.heroFormInnerWrapper {
+  display: inline-block;
+  width: calc(100% - 80px);
+  padding: 20px 40px 200px;
+  max-width: 1290px;
+}
+
+.heroBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background: url(./jpgs/tutor.jpg);
+  background-color: rgba(0, 0, 0, 0.25);
+  background-blend-mode: darken;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+  width: 100%;
+  height: calc(139px + 20px + 606px);
+}
+
+.heroFormCard {
+  width: 450px;
+  margin: 0;
+}
+
+.heroForm {
+  padding-top: 22px;
+}
