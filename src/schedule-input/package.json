@@ -34,6 +34,12 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/react-schedule": "^0.0.1"
+    "@rmwc/checkbox": "^6.0.14",
+    "@rmwc/data-table": "^6.0.14",
+    "@rmwc/menu": "^6.0.14",
+    "@rmwc/textfield": "^6.0.14",
+    "@tutorbook/button": "^0.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   }
 }
