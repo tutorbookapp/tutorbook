@@ -1,3 +1,5 @@
+$form-width: 450px;
+
 .heroFormWrapper {
   text-align: center;
 }
@@ -26,10 +28,16 @@
 }
 
 .heroFormCard {
-  width: 450px;
+  max-width: $form-width;
   margin: 0;
 }
 
 .heroForm {
   padding-top: 22px;
+}
+
+@media (max-width: calc($form-width + 64px)) {
+  .heroFormInnerWrapper {
+    width: calc(100% - 32px);
+  }
 }
