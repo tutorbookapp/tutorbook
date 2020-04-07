@@ -17,10 +17,19 @@ $font-weight-values: (
     letter-spacing: 0.0125rem,
     text-transform: none,
   ),
+  $styles-headline1: (
+    font-weight: map.get($font-weight-values, bold),
+  ),
   $styles-headline2: (
     font-size: 3.5rem,
     font-weight: map.get($font-weight-values, bold),
     letter-spacing: -0.125rem,
+  ),
+  $styles-headline3: (
+    font-weight: map.get($font-weight-values, bold),
+  ),
+  $styles-headline4: (
+    font-weight: map.get($font-weight-values, bold),
   ),
 );
 @use '@material/textfield/mdc-text-field';
@@ -42,4 +51,8 @@ body {
   padding: 0;
   outline: 0;
   overflow-x: hidden;
+}
+
+p+h1, p+h2, p+h3, p+h4, p+h5, p+h6 {
+  margin-bottom: 0.5em;
 }
