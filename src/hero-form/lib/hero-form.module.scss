@@ -36,7 +36,7 @@ $form-width: 450px;
   padding-top: 22px;
 }
 
-@media (max-width: calc($form-width + 64px)) {
+@media (max-width: $form-width + 64px) {
   .heroFormInnerWrapper {
     width: calc(100% - 32px);
   }
