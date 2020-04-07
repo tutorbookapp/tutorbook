@@ -2,13 +2,13 @@ $form-width: 450px;
 
 .heroFormWrapper {
   text-align: center;
+  min-height: 606px;
 }
 
 .heroFormInnerWrapper {
   display: inline-block;
   width: calc(100% - 80px);
   padding-top: 20px;
-  padding-bottom: 200px;
   max-width: 1290px;
 }
 
