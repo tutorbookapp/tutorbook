@@ -1,11 +1,25 @@
 .header {
-  position: sticky;
   top: 0;
-  background-color: #FFF;
   width: calc(100% - 80px);
   padding: 30px 40px;
   z-index: 100;
   margin: 0 auto;
+}
+
+.blackHeader {
+  background: #ffffff;
+}
+
+.blackHeader a {
+  color: #181818 !important;
+}
+
+.whiteHeader {
+  background: transparent;
+}
+
+.whiteHeader a {
+  color: #ffffff !important;
 }
 
 @media (min-width: 768px) {

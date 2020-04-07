@@ -1,7 +1,9 @@
 import { LinkProps } from './interfaces'
 
-import Wordmark from './svgs/wordmark.svg'
-import Logo from './svgs/logo.svg'
+import BlackWordmark from './svgs/black-wordmark.svg'
+import WhiteWordmark from './svgs/white-wordmark.svg'
+import BlackLogo from './svgs/black-logo.svg'
+import WhiteLogo from './svgs/white-logo.svg'
 
 import styles from './desktop.module.scss'
 
@@ -21,15 +23,21 @@ function Link(props: LinkProps) {
   );
 }
 
-function Nav() {
+export default function Nav(props: { white?: boolean; }) {
   return (
     <div className={styles.contentWrapper}>
       <a className={styles.logoLink} href="/" aria-label="Tutorbook Home">
         <div className={styles.wordmark}>
-          <img className={styles.wordmarkImg} src={Wordmark} />
+          <img 
+            className={styles.wordmarkImg} 
+            src={props.white ? WhiteWordmark : BlackWordmark} 
+          />
         </div>
         <div className={styles.logo}>
-          <img className={styles.logoImg} src={Logo} />
+          <img 
+            className={styles.logoImg} 
+            src={props.white ? WhiteLogo : BlackLogo} 
+          />
         </div>
       </a>
       <div className={styles.menuRightContainer}>
@@ -45,5 +53,3 @@ function Nav() {
     </div>
   );
 }
-
-export default Nav

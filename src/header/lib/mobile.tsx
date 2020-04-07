@@ -2,7 +2,8 @@ import { useState } from 'react'
 
 import { LinkProps } from './interfaces'
 
-import Logo from './svgs/logo.svg'
+import BlackLogo from './svgs/black-logo.svg'
+import WhiteLogo from './svgs/white-logo.svg'
 
 import styles from './mobile.module.scss'
 
@@ -22,12 +23,15 @@ function Link(props: LinkProps) {
   );
 }
 
-function Nav() {
+export default function Nav(props: { white?: boolean; }) {
   const [open, setOpen] = useState(false);
   return (
     <div className={styles.contentWrapper}>
       <a href="/" aria-label="Tutorbook Home">
-        <img className={styles.logoImg} src={Logo} />
+        <img 
+          className={styles.logoImg} 
+          src={props.white ? WhiteLogo : BlackLogo} 
+        />
       </a>
       <button 
         id="open-menu-btn" 
@@ -56,5 +60,3 @@ function Nav() {
     </div>
   );
 }
-
-export default Nav

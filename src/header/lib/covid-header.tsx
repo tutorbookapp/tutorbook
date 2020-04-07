@@ -3,11 +3,26 @@ import DesktopNav from './desktop'
 
 import styles from './covid-header.module.scss'
 
-function Header() {
+interface HeaderProps {
+  white?: boolean;
+  sticky?: boolean;
+  className?: string;
+}
+
+function Header(props: HeaderProps) {
+  const { white, sticky, className } = props;
   return (
-    <header className={styles.header}>
-      <MobileNav />
-      <DesktopNav />
+    <header
+      style={{
+        position: sticky ? 'sticky' : 'initial',
+      }}
+      className={styles.header + ' ' +
+        (white ? styles.whiteHeader : styles.blackHeader) + 
+        (className ? ' ' + className : '')
+      }
+    >
+      <MobileNav white={!!white} />
+      <DesktopNav white={!!white} />
     </header>
   );
 };
