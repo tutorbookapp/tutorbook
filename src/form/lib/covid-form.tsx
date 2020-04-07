@@ -8,7 +8,10 @@ import { Card, CardProps } from '@rmwc/card'
 import Button from '@tutorbook/button'
 import Spinner from '@tutorbook/spinner'
 import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select'
-import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input'
+import ScheduleInput, { 
+  ScheduleInputProps, 
+  AvailabilityInterface,
+} from '@tutorbook/schedule-input'
 import LoadingOverlay from '@tutorbook/animated-checkmark-overlay'
 
 import styles from './covid-form.module.scss'
@@ -104,8 +107,11 @@ export default class Form extends React.Component<FormProps, {}> {
         case 'scheduleinput':
           this.inputs.push(<ScheduleInput
             {...props}
-            onChange={event => this.handleChange(input, event)}
+            onChange={(availability: AvailabilityInterface) => {
+              this.values[input.label] = availability;
+            }}
             key={index}
+            outlined
             className={styles.formField}
           />);
           break;
