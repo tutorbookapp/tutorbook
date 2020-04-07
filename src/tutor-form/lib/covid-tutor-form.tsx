@@ -36,11 +36,11 @@ export default function TutorForm() {
       el: 'subjectselect',
       required: true,
     }, {
-      label: 'Education',
-      el: 'textarea',
+      label: 'Availability for tutoring',
+      el: 'textfield',
       required: true,
     }, {
-      label: 'Experience',
+      label: 'Education and experience',
       el: 'textarea',
       required: true,
     }, {

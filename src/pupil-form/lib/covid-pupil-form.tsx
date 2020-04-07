@@ -65,8 +65,8 @@ export default function PupilForm() {
       el: 'subjectselect',
       required: true,
     }, {
-      label: 'Your availability',
-      el: 'textarea',
+      label: 'Availability for tutoring',
+      el: 'textfield',
       required: true,
     }, {
       label: 'Message',
