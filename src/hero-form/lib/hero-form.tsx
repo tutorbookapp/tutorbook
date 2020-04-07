@@ -26,7 +26,7 @@ export default function HeroForm() {
               required: true,
             }, {
               label: 'When you want tutoring',
-              el: 'textfield',
+              el: 'scheduleinput',
               required: true,
             }]}
             submitLabel='Request free tutoring'
