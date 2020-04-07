@@ -1,18 +1,19 @@
 import React from 'react'
 
 import { Typography } from '@rmwc/typography'
-import { TextField } from '@rmwc/textfield'
-import { Select } from '@rmwc/select'
-import { Card } from '@rmwc/card'
+import { TextField, TextFieldProps } from '@rmwc/textfield'
+import { Select, SelectProps } from '@rmwc/select'
+import { Card, CardProps } from '@rmwc/card'
 
 import Button from '@tutorbook/button'
 import Spinner from '@tutorbook/spinner'
-import SubjectSelect from '@tutorbook/subject-select'
-import ScheduleInput from '@tutorbook/schedule-input'
+import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select'
+import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input'
 import LoadingOverlay from '@tutorbook/animated-checkmark-overlay'
 
 import styles from './covid-form.module.scss'
 
+// TODO: Make this somehow extend all the above imported props simultaneously.
 interface InputProps { 
   readonly el: 'textfield' | 'textarea' | 'select' | 'subjectselect' | 'scheduleinput';
   readonly label: string;
@@ -20,12 +21,13 @@ interface InputProps {
   readonly [propName: string]: any;
 }
 
-interface FormProps { 
-  inputs: InputProps[]; 
+interface FormProps extends React.HTMLProps<HTMLFormElement> { 
+  inputs: InputProps[];
   submitLabel: string;
+  cardProps?: CardProps & React.HTMLProps<HTMLDivElement>;
   title?: string;
   description?: string;
-  onSubmit: (formValues: { 
+  onFormSubmit: (formValues: { 
     readonly [formInputLabel: string]: string;
   }) => Promise<void>;
 }
@@ -124,40 +126,53 @@ export default class Form extends React.Component<FormProps, {}> {
     this.setState({
       submitting: true,
     });
-    await this.props.onSubmit(this.values);
+    await this.props.onFormSubmit(this.values);
     this.setState({
       submitted: true,
     });
   }
 
   render(): JSX.Element {
+    const { 
+      title, 
+      description, 
+      submitLabel, 
+      onFormSubmit, 
+      inputs,
+      className,
+      cardProps,
+      ...rest
+    } = this.props; 
     return (
       <>
-        {this.props.title ? <div className={styles.formTitle}>
+        {title ? <div className={styles.formTitle}>
           <Typography use='headline2'>
-            {this.props.title}
+            {title}
           </Typography>
         </div> : undefined}
-        {this.props.description ? <div className={styles.formDescription}>
+        {description ? <div className={styles.formDescription}>
           <Typography use='body1'>
-            {this.props.description}
+            {description}
           </Typography>
         </div> : undefined}
-        <Card className={styles.formCard}>
+        <Card {...cardProps} className={styles.formCard + 
+          (cardProps && cardProps.className ? ' ' + cardProps.className : '')}
+        >
           <LoadingOverlay
             active={this.state.submitting || this.state.submitted}
             checked={this.state.submitted}
             label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
           />
-          <form 
-            className={styles.form} 
+          <form
+            {...rest}
+            className={styles.form + (className ? ' ' + className : '')} 
             onSubmit={this.submit}
           >
             {this.inputs}
             <Button 
               arrow
               className={styles.formSubmitButton}
-              label={this.props.submitLabel}
+              label={submitLabel}
               disabled={this.state.submitting || this.state.submitted}
               raised>
             </Button>
