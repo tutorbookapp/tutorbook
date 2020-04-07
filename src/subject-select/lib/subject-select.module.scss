@@ -1,7 +1,7 @@
 @use '@material/chips/_index.scss' as chips;
 
 .textField {
-  width: 100%;
+  width: 100% !important;
   flex-wrap: wrap;
   padding: 12px 16px 14px;
 }
