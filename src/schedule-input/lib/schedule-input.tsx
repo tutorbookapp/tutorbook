@@ -1,7 +1,7 @@
 import React from 'react'
 import Schedule from '@tutorbook/react-schedule'
 
-interface ScheduleInputProps {
+export interface ScheduleInputProps {
   onChange: (event: React.SyntheticEvent<HTMLInputElement>) => any;
   className?: string;
 }

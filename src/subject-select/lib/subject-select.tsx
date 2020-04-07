@@ -19,7 +19,7 @@ interface SubjectSelectState {
   inputValueWorkaround: string;
 }
 
-interface SubjectSelectProps extends TextFieldProps {
+export interface SubjectSelectProps extends TextFieldProps {
   onChange: (subjects: string[]) => any;
   className?: string;
 }
