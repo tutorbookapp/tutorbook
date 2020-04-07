@@ -1,14 +1,19 @@
 import React from 'react'
-import { Button as MDCButton, ButtonProps as MDCButtonProps } from '@rmwc/button'
+import { 
+  Button as MDCButton, 
+  ButtonProps as MDCButtonProps, 
+  ButtonHTMLProps,
+} from '@rmwc/button'
 
 import Arrow from './arrow'
 
 import styles from './button.module.scss'
 
-interface ButtonProps extends MDCButtonProps {
-  className: string;
-  arrow: boolean;
+interface UniqueButtonProps {
+  arrow?: boolean;
 }
+
+type ButtonProps = UniqueButtonProps & MDCButtonProps & ButtonHTMLProps;
 
 export default function Button(props: ButtonProps) {
   const { arrow, className, children, ...rest } = props;
