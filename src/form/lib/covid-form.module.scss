@@ -1,15 +1,5 @@
 @use '@material/elevation';
 
-.formWrapper {
-  text-align: center;
-}
-
-.formContent {
-  display: inline-block;
-  width: calc(100% - 32px);
-  max-width: 720px;
-}
-
 .formTitle {
   padding: 8px 16px;
 }
@@ -38,7 +28,7 @@
 
 .formField {
   margin: 8px 0;
-  width: 100%;
+  width: 100% !important;
   display: inline-flex;
 }
 

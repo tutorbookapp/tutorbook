@@ -1,6 +1,7 @@
 import Form from '@tutorbook/covid-form'
-
 import { useDB } from '@tutorbook/next-firebase/db'
+
+import styles from './covid-pupil-form.module.scss'
 
 const GRADES: Readonly<string[]> = [
   'Senior',
@@ -33,53 +34,59 @@ const GRADES: Readonly<string[]> = [
  */
 export default function PupilForm() {
   const db = useDB();
-  return <Form
-    inputs={[{
-      label: 'Parent name',
-      el: 'textfield',
-      required: true,
-    }, {
-      label: 'Parent email',
-      type: 'email',
-      el: 'textfield',
-      required: true,
-    }, {
-      label: 'Parent phone number',
-      type: 'tel',
-      el: 'textfield',
-    }, {
-      label: 'Your name',
-      el: 'textfield',
-      required: true,
-    }, {
-      label: 'Your email',
-      type: 'email',
-      el: 'textfield',
-    }, {
-      label: 'Your grade level',
-      el: 'select',
-      required: true,
-      options: GRADES,
-    }, {
-      label: 'Subjects you want tutoring for',
-      el: 'subjectselect',
-      required: true,
-    }, {
-      label: 'Availability for tutoring',
-      el: 'textfield',
-      required: true,
-    }, {
-      label: 'Message',
-      el: 'textarea',
-    }]}
-    title='Request Free Tutoring'
-    description={
-      'Complete the form below. Within 72 hours we will reach out to confirm ' +
-      'and connect you with the latest resources! Read the FAQs for more info.'
-    }
-    submitLabel='Request your free tutor'
-    onSubmit={(formValues) => {
-      return db.collection('pupils').doc().set(formValues);
-    }}
-  />
+  return (
+    <div className={styles.formWrapper}>
+      <div className={styles.formContent}>
+        <Form
+          inputs={[{
+            label: 'Parent name',
+            el: 'textfield',
+            required: true,
+          }, {
+            label: 'Parent email',
+            type: 'email',
+            el: 'textfield',
+            required: true,
+          }, {
+            label: 'Parent phone number',
+            type: 'tel',
+            el: 'textfield',
+          }, {
+            label: 'Your name',
+            el: 'textfield',
+            required: true,
+          }, {
+            label: 'Your email',
+            type: 'email',
+            el: 'textfield',
+          }, {
+            label: 'Your grade level',
+            el: 'select',
+            required: true,
+            options: GRADES,
+          }, {
+            label: 'Subjects you want tutoring for',
+            el: 'subjectselect',
+            required: true,
+          }, {
+            label: 'Availability for tutoring',
+            el: 'textfield',
+            required: true,
+          }, {
+            label: 'Message',
+            el: 'textarea',
+          }]}
+          title='Request Free Tutoring'
+          description={
+            'Complete the form below. Within 72 hours we will reach out to confirm ' +
+            'and connect you with the latest resources! Read the FAQs for more info.'
+          }
+          submitLabel='Request your free tutor'
+          onSubmit={(formValues) => {
+            return db.collection('pupils').doc().set(formValues);
+          }}
+        />
+      </div>
+    </div>
+  );
 }

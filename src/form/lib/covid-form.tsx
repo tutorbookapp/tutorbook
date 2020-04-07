@@ -23,8 +23,8 @@ interface InputProps {
 interface FormProps { 
   inputs: InputProps[]; 
   submitLabel: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   onSubmit: (formValues: { 
     readonly [formInputLabel: string]: string;
   }) => Promise<void>;
@@ -132,40 +132,38 @@ export default class Form extends React.Component<FormProps, {}> {
 
   render(): JSX.Element {
     return (
-      <div className={styles.formWrapper}>
-        <div className={styles.formContent}>
-          <div className={styles.formTitle}>
-            <Typography use='headline2'>
-              {this.props.title}
-            </Typography>
-          </div>
-          <div className={styles.formDescription}>
-            <Typography use='body1'>
-              {this.props.description}
-            </Typography>
-          </div>
-          <Card className={styles.formCard}>
-            <LoadingOverlay
-              active={this.state.submitting || this.state.submitted}
-              checked={this.state.submitted}
-              label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
-            />
-            <form 
-              className={styles.form} 
-              onSubmit={this.submit}
-            >
-              {this.inputs}
-              <Button 
-                arrow
-                className={styles.formSubmitButton}
-                label={this.props.submitLabel}
-                disabled={this.state.submitting || this.state.submitted}
-                raised>
-              </Button>
-            </form>
-          </Card>
-        </div>
-      </div>
+      <>
+        {this.props.title ? <div className={styles.formTitle}>
+          <Typography use='headline2'>
+            {this.props.title}
+          </Typography>
+        </div> : undefined}
+        {this.props.description ? <div className={styles.formDescription}>
+          <Typography use='body1'>
+            {this.props.description}
+          </Typography>
+        </div> : undefined}
+        <Card className={styles.formCard}>
+          <LoadingOverlay
+            active={this.state.submitting || this.state.submitted}
+            checked={this.state.submitted}
+            label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
+          />
+          <form 
+            className={styles.form} 
+            onSubmit={this.submit}
+          >
+            {this.inputs}
+            <Button 
+              arrow
+              className={styles.formSubmitButton}
+              label={this.props.submitLabel}
+              disabled={this.state.submitting || this.state.submitted}
+              raised>
+            </Button>
+          </form>
+        </Card>
+      </>
     );
   }
 }
