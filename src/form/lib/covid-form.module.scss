@@ -32,12 +32,8 @@
   display: inline-flex;
 }
 
-.formField:first-child {
+.form .formField:first-child {
   margin-top: 0;
-}
-
-.formField:last-child {
-  margin-bottom: 0;
 }
 
 .formSubmitButton {
