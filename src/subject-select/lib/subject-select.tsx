@@ -20,7 +20,7 @@ interface SubjectSelectState {
 }
 
 interface SubjectSelectProps extends TextFieldProps {
-  onChange: (event: React.SyntheticEvent<HTMLInputElement>) => any;
+  onChange: (subjects: string[]) => any;
   className?: string;
 }
 
@@ -115,11 +115,16 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       (event.target as HTMLInputElement).value || this.getInputValue();
     this.setState({ inputValueWorkaround: value });
     this.updateSuggestions((event.target as HTMLInputElement).value);
+    const subjects: string[] = Object.entries(this.state.subjects)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([subject, _]) => subject);
+    this.props.onChange(subjects);
   }
 
   render(): JSX.Element {
+    const { className, onChange, ...rest } = this.props;
     return (
-      <MenuSurfaceAnchor className={this.props.className}>
+      <MenuSurfaceAnchor className={className}>
         <MenuSurface
           open={this.state.suggestionsOpen}
           onFocus={this.openSuggestions}
@@ -131,7 +136,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           </List>
         </MenuSurface>
         <TextField
-          {...this.props}
+          {...rest}
           textarea
           value={this.state.inputValueWorkaround}
           onFocus={this.openSuggestions}

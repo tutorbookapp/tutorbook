@@ -39,7 +39,7 @@ export default class Form extends React.Component<FormProps, {}> {
   readonly state: FormState;
   readonly inputs: JSX.Element[];
   readonly values: {
-    [formInputLabel: string]: string;
+    [formInputLabel: string]: any;
   };
 
   constructor(props: FormProps) {
@@ -91,7 +91,9 @@ export default class Form extends React.Component<FormProps, {}> {
         case 'subjectselect':
           this.inputs.push(<SubjectSelect
             {...props}
-            onChange={event => this.handleChange(input, event)}
+            onChange={(subjects: string[]) => {
+              this.values[input.label] = subjects;
+            }}
             key={index}
             outlined 
             className={styles.formField}
