@@ -82,7 +82,7 @@ export default function PupilForm() {
             'and connect you with the latest resources! Read the FAQs for more info.'
           }
           submitLabel='Request your free tutor'
-          onSubmit={(formValues) => {
+          onFormSubmit={(formValues) => {
             return db.collection('pupils').doc().set(formValues);
           }}
         />

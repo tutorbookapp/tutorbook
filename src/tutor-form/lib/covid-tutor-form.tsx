@@ -59,7 +59,7 @@ export default function TutorForm() {
             'to help out we would love to have you!'
           } 
           submitLabel='Volunteer to tutor'
-          onSubmit={(formValues) => {
+          onFormSubmit={(formValues) => {
             return db.collection('tutors').doc().set(formValues);
           }}
         />
