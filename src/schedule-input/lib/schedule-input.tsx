@@ -8,6 +8,8 @@ interface ScheduleInputProps {
 
 export default class ScheduleInput extends React.Component<ScheduleInputProps> {
   render(): JSX.Element {
-    return <Schedule />
+    return (
+      <Schedule />
+    );
   }
 }
