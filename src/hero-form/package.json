@@ -35,6 +35,7 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/covid-form": "^0.0.1"
+    "@tutorbook/covid-form": "^0.0.1",
+    "@tutorbook/next-firebase": "^0.0.1"
   }
 }

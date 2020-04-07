@@ -1,9 +1,11 @@
 import React from 'react'
 import Form from '@tutorbook/covid-form'
+import { useDB } from '@tutorbook/next-firebase/db'
 
 import styles from './hero-form.module.scss'
 
 export default function HeroForm() {
+  const db = useDB();
   return (
     <>
       <div className={styles.heroFormWrapper}>
@@ -28,7 +30,9 @@ export default function HeroForm() {
               required: true,
             }]}
             submitLabel='Request free tutoring'
-            onFormSubmit={(formValues) => new Promise((res, rej) => {})}
+            onFormSubmit={(formValues) => {
+              return db.collection('pupils').doc().set(formValues);
+            }}
             className={styles.heroForm}
             cardProps={{
               className: styles.heroFormCard,
