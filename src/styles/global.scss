@@ -41,6 +41,7 @@ $font-weight-values: (
 @use '@material/checkbox/mdc-checkbox';
 @use '@material/list/mdc-list';
 @use '@material/chips/mdc-chips';
+@use '@material/data-table/mdc-data-table';
 
 @include typography.core-styles;
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900');
