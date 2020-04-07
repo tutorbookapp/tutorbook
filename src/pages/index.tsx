@@ -10,7 +10,7 @@ export default class IndexPage extends React.Component {
   render() {
     return (
       <>
-        <Header />
+        <Header white />
         <HeroForm />
         <HeroAbout />
         <HowItWorks />

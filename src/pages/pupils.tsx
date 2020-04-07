@@ -8,7 +8,7 @@ export default class PupilsPage extends React.Component {
   render() {
     return (
       <>
-        <Header />
+        <Header sticky />
         <PupilForm />
         <Footer />
       </>

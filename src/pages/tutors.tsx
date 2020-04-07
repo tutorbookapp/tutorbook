@@ -8,7 +8,7 @@ export default class TutorsPage extends React.Component {
   render() {
     return (
       <>
-        <Header />
+        <Header sticky />
         <TutorForm />
         <Footer />
       </>
