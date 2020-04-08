@@ -1,8 +1,8 @@
 // See: https://github.com/zeit/next.js/tree/master/examples/with-firebase
 
-import * as firebase from 'firebase/app'
-import 'firebase/firestore' // Only import the Firebase modules you use. 
-import 'firebase/analytics'
+import * as firebase from 'firebase/app';
+import 'firebase/firestore'; // Only import the Firebase modules you use.
+import 'firebase/analytics';
 
 const clientCredentials = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -13,9 +13,9 @@ const clientCredentials = {
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
-}
+};
 
-if (!firebase.apps.length) firebase.initializeApp(clientCredentials)
+if (!firebase.apps.length) firebase.initializeApp(clientCredentials);
 if (typeof window !== 'undefined') firebase.analytics();
 
-export default firebase
+export default firebase;

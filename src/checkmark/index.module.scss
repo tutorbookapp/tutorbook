@@ -4,7 +4,7 @@
   border-radius: 50%;
   display: block;
   stroke-width: 3;
-  stroke: rgba(0,0,0,0.3);
+  stroke: rgba(0, 0, 0, 0.3);
   stroke-miterlimit: 10;
   margin: 10% auto;
   box-shadow: inset 0px 0px 0px #fff;
@@ -12,7 +12,8 @@
 }
 
 .checkmarkChecked {
-  animation: fill 0.3s ease-in-out 0.15s forwards, scale 0.4s ease-in-out 0.6s both;
+  animation: fill 0.3s ease-in-out 0.15s forwards,
+    scale 0.4s ease-in-out 0.6s both;
 }
 
 .checkmarkChecked .checkmarkCircle {
@@ -54,7 +55,8 @@
 }
 
 @keyframes scale {
-  0%, 100% {
+  0%,
+  100% {
     transform: none;
   }
   50% {

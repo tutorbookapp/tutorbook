@@ -23,12 +23,12 @@
   transition: all 0.5s;
   overflow-y: auto;
   opacity: 0;
-  visibility: hidden; 
+  visibility: hidden;
 }
-  
+
 .menuActive {
   opacity: 1;
-  visibility: visible; 
+  visibility: visible;
 }
 
 .menuButtonWrapper {

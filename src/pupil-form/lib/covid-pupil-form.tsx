@@ -1,7 +1,7 @@
-import Form from '@tutorbook/covid-form'
-import { useDB } from '@tutorbook/next-firebase/db'
+import Form from '@tutorbook/covid-form';
+import { useDB } from '@tutorbook/next-firebase/db';
 
-import styles from './covid-pupil-form.module.scss'
+import styles from './covid-pupil-form.module.scss';
 
 const GRADES: Readonly<string[]> = [
   'Senior',
@@ -20,7 +20,7 @@ const GRADES: Readonly<string[]> = [
 ];
 
 /**
- * React component that collects the following information from pupils and 
+ * React component that collects the following information from pupils and
  * create their Firestore user document:
  * - Parent name
  * - Parent email
@@ -38,44 +38,54 @@ export default function PupilForm() {
     <div className={styles.formWrapper}>
       <div className={styles.formContent}>
         <Form
-          inputs={[{
-            label: 'Parent name',
-            el: 'textfield',
-            required: true,
-          }, {
-            label: 'Parent email',
-            type: 'email',
-            el: 'textfield',
-            required: true,
-          }, {
-            label: 'Parent phone number',
-            type: 'tel',
-            el: 'textfield',
-          }, {
-            label: 'Your name',
-            el: 'textfield',
-            required: true,
-          }, {
-            label: 'Your email',
-            type: 'email',
-            el: 'textfield',
-          }, {
-            label: 'Your grade level',
-            el: 'select',
-            required: true,
-            options: GRADES,
-          }, {
-            label: 'Subjects you want tutoring for',
-            el: 'subjectselect',
-            required: true,
-          }, {
-            label: 'Availability for tutoring',
-            el: 'textfield',
-            required: true,
-          }, {
-            label: 'Message',
-            el: 'textarea',
-          }]}
+          inputs={[
+            {
+              label: 'Parent name',
+              el: 'textfield',
+              required: true,
+            },
+            {
+              label: 'Parent email',
+              type: 'email',
+              el: 'textfield',
+              required: true,
+            },
+            {
+              label: 'Parent phone number',
+              type: 'tel',
+              el: 'textfield',
+            },
+            {
+              label: 'Your name',
+              el: 'textfield',
+              required: true,
+            },
+            {
+              label: 'Your email',
+              type: 'email',
+              el: 'textfield',
+            },
+            {
+              label: 'Your grade level',
+              el: 'select',
+              required: true,
+              options: GRADES,
+            },
+            {
+              label: 'Subjects you want tutoring for',
+              el: 'subjectselect',
+              required: true,
+            },
+            {
+              label: 'Availability for tutoring',
+              el: 'textfield',
+              required: true,
+            },
+            {
+              label: 'Message',
+              el: 'textarea',
+            },
+          ]}
           title='Request Free Tutoring'
           description={
             'Complete the form below. Within 72 hours we will reach out to confirm ' +
