@@ -10,9 +10,11 @@ const main = async () => {
     columns: true,
     skip_empty_lines: true,
   });
-  const [err, res] = await to(client.initIndex('subjects').saveObjects(subjects, {
-    autoGenerateObjectIDIfNotExist: true,
-  }));
+  const [err, res] = await to(
+    client.initIndex('subjects').saveObjects(subjects, {
+      autoGenerateObjectIDIfNotExist: true,
+    })
+  );
   if (err) {
     console.error('[ERROR] While saving subjects:', err);
     debugger;

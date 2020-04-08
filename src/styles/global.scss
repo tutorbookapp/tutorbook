@@ -6,7 +6,7 @@ $font-weight-values: (
   regular: 400,
   medium: 500,
   bold: 700,
-  black: 900
+  black: 900,
 );
 
 @use '@material/typography' with (
@@ -54,6 +54,11 @@ body {
   overflow-x: hidden;
 }
 
-p+h1, p+h2, p+h3, p+h4, p+h5, p+h6 {
+p + h1,
+p + h2,
+p + h3,
+p + h4,
+p + h5,
+p + h6 {
   margin-bottom: 0.5em;
 }

@@ -2,14 +2,14 @@ branches:
   only:
 langauge: node_js
 node_js:
-- 12.16.1
+  - 12.16.1
 install:
-- npm install
-- lerna bootstrap --hoist
+  - npm install
+  - lerna bootstrap --hoist
 before_script:
-- rm -r src/pages/node_modules/
+  - rm -r src/pages/node_modules/
 script:
-- npm run build
+  - npm run build
 deploy:
   skip_cleanup: true
   provider: elasticbeanstalk

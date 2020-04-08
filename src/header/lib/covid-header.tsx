@@ -1,7 +1,7 @@
-import MobileNav from './mobile'
-import DesktopNav from './desktop'
+import MobileNav from './mobile';
+import DesktopNav from './desktop';
 
-import styles from './covid-header.module.scss'
+import styles from './covid-header.module.scss';
 
 interface HeaderProps {
   white?: boolean;
@@ -16,8 +16,10 @@ function Header(props: HeaderProps) {
       style={{
         position: sticky ? 'sticky' : 'initial',
       }}
-      className={styles.header + ' ' +
-        (white ? styles.whiteHeader : styles.blackHeader) + 
+      className={
+        styles.header +
+        ' ' +
+        (white ? styles.whiteHeader : styles.blackHeader) +
         (className ? ' ' + className : '')
       }
     >
@@ -25,6 +27,6 @@ function Header(props: HeaderProps) {
       <DesktopNav white={!!white} />
     </header>
   );
-};
+}
 
-export default Header
+export default Header;

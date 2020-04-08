@@ -1,8 +1,8 @@
-import React from 'react'
-import Form from '@tutorbook/covid-form'
-import { useDB } from '@tutorbook/next-firebase/db'
+import React from 'react';
+import Form from '@tutorbook/covid-form';
+import { useDB } from '@tutorbook/next-firebase/db';
 
-import styles from './hero-form.module.scss'
+import styles from './hero-form.module.scss';
 
 export default function HeroForm() {
   const db = useDB();
@@ -10,25 +10,30 @@ export default function HeroForm() {
     <>
       <div className={styles.heroFormWrapper}>
         <div className={styles.heroFormInnerWrapper}>
-          <Form 
-            inputs={[{
-              label: 'Your name',
-              el: 'textfield',
-              required: true,
-            }, {
-              label: 'Your email address',
-              el: 'textfield',
-              type: 'email',
-              required: true,
-            }, {
-              label: 'Subjects you want tutoring for',
-              el: 'subjectselect',
-              required: true,
-            }, {
-              label: 'When you want tutoring',
-              el: 'scheduleinput',
-              required: true,
-            }]}
+          <Form
+            inputs={[
+              {
+                label: 'Your name',
+                el: 'textfield',
+                required: true,
+              },
+              {
+                label: 'Your email address',
+                el: 'textfield',
+                type: 'email',
+                required: true,
+              },
+              {
+                label: 'Subjects you want tutoring for',
+                el: 'subjectselect',
+                required: true,
+              },
+              {
+                label: 'When you want tutoring',
+                el: 'scheduleinput',
+                required: true,
+              },
+            ]}
             submitLabel='Request free tutoring'
             onFormSubmit={(formValues) => {
               return db.collection('pupils').doc().set(formValues);
