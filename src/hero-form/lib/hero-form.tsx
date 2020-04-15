@@ -1,9 +1,19 @@
 import React from 'react';
-import Form from '@tutorbook/covid-form';
+import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { useDB } from '@tutorbook/next-firebase/db';
+import { User } from '@tutorbook/model';
 
 import styles from './hero-form.module.scss';
 
+/**
+ * React component that emulates AirBNB's landing page form and collects the
+ * following information from pupils (and creates their Firestore user document
+ * along the way).
+ * - (name) Your name
+ * - (email) Your email address
+ * - (searches.explicit) What do you want to learn?
+ * - (availability) When are you available?
+ */
 export default function HeroForm() {
   const db = useDB();
   return (
@@ -14,29 +24,34 @@ export default function HeroForm() {
             inputs={[
               {
                 label: 'Your name',
-                el: 'textfield',
+                el: 'textfield' as InputElAlias,
                 required: true,
+                key: 'name',
               },
               {
                 label: 'Your email address',
-                el: 'textfield',
+                el: 'textfield' as InputElAlias,
                 type: 'email',
                 required: true,
+                key: 'email',
               },
               {
-                label: 'Subjects you want tutoring for',
-                el: 'subjectselect',
+                label: 'What do you want to learn?',
+                el: 'subjectselect' as InputElAlias,
                 required: true,
+                key: 'searches',
               },
               {
-                label: 'When you want tutoring',
-                el: 'scheduleinput',
+                label: 'When are you available?',
+                el: 'scheduleinput' as InputElAlias,
                 required: true,
+                key: 'availability',
               },
             ]}
             submitLabel='Request free tutoring'
             onFormSubmit={(formValues) => {
-              return db.collection('pupils').doc().set(formValues);
+              const pupil: User = new User(formValues);
+              return db.collection('users').doc().set(pupil.toFirestore());
             }}
             className={styles.heroForm}
             cardProps={{

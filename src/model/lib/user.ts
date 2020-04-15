@@ -34,6 +34,70 @@ export interface UserInterface {
 }
 
 /**
+ * Class that provides default values for our `UserInterface` data model.
+ * @todo Implement useful helper methods here and replace all instances of
+ * `UserInterface` with `User` throughout the web app.
+ * @see {@link https://stackoverflow.com/a/54857125/10023158}
+ */
+export class User implements UserInterface {
+  public name: string = '';
+  public email: string = '';
+  public phone: string = '';
+  public bio: string = '';
+  public schedule: Availability = new Availability();
+  public availability: Availability = new Availability();
+  public subjects: SubjectsInterface = {
+    explicit: [],
+    implicit: [],
+  };
+  public searches: SubjectsInterface = {
+    explicit: [],
+    implicit: [],
+  };
+  public parent?: string[] = [];
+  public notifications: NotificationsConfigAlias = {
+    email: [],
+    sms: [],
+    webpush: [],
+    newRequest: ['email', 'webpush'],
+    newLesson: ['sms', 'email', 'webpush'],
+  };
+
+  /**
+   * Creates a new `User` object by overriding all of our default values w/ the
+   * values contained in the given `UserInterface` object.
+   */
+  public constructor(user: Partial<UserInterface>) {
+    Object.entries(user).map(([key, val]: [string, any]) => {
+      if (!val) delete (user as any)[key];
+    });
+    Object.assign(this, user);
+  }
+
+  public static fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
+  ): User {
+    return new User(snapshot.data(options));
+  }
+
+  /**
+   * Converts a `User` object into a JSON-like format for adding to a
+   * Firestore document.
+   * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#custom_objects}
+   * @see {@link https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter}
+   */
+  public toFirestore(): DocumentData {
+    const { schedule, availability, ...rest } = this;
+    return {
+      ...rest,
+      schedule: schedule.toFirestore(),
+      availability: availability.toFirestore(),
+    };
+  }
+}
+
+/**
  * Converts a `User` object into a JSON-like format for adding to a
  * Firestore document.
  * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#custom_objects}

@@ -14,13 +14,15 @@ import { SubjectsInterface, Availability } from '@tutorbook/model';
 
 import styles from './covid-form.module.scss';
 
+export type InputElAlias =
+  | 'textfield'
+  | 'textarea'
+  | 'select'
+  | 'subjectselect'
+  | 'scheduleinput';
+
 interface UniqueInputProps {
-  readonly el:
-    | 'textfield'
-    | 'textarea'
-    | 'select'
-    | 'subjectselect'
-    | 'scheduleinput';
+  readonly el: InputElAlias;
   readonly label: string;
   readonly key?: string;
 }
@@ -36,7 +38,7 @@ interface FormProps extends React.HTMLProps<HTMLFormElement> {
   readonly description?: string;
   readonly onFormSubmit: (formValues: {
     readonly [formInputLabel: string]: any;
-  }) => Promise<void>;
+  }) => Promise<any>;
 }
 
 interface FormState {
