@@ -167,7 +167,9 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
     timeslot: Timeslot,
     event: React.SyntheticEvent<HTMLInputElement>
   ): void {
-    const copy = this.state.availability.filter((t) => !t.equalTo(timeslot));
+    const copy: Availability = this.state.availability.filter(
+      (t) => !t.equalTo(timeslot)
+    ) as Availability;
     if (event.currentTarget.checked) copy.push(timeslot);
     this.setState({ availability: copy });
     this.props.onChange(copy);

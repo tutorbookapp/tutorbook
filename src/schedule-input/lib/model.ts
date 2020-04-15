@@ -66,8 +66,7 @@ export class Timeslot implements TimeslotInterface {
  * finding time slots and a better `toString` representation than
  * `[Object object]`.
  */
-export class Availability extends Array<Timeslot>
-  implements AvailabilityInterface {
+export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   toString() {
     return this.length > 0
       ? this.map((timeslot) => timeslot.toString(true)).join(', ')
