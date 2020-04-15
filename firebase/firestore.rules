@@ -1,10 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents/partitions/{partition} {
-    match /pupils/{pupil} {
-      allow create: if true;
-    }
-    match /tutors/{tutor} {
+    match /users/{user} {
       allow create: if true;
     }
   }
