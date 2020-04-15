@@ -1,0 +1,15 @@
+{
+  "name": "firestore",
+  "version": "1.0.0",
+  "description": "A set of utilities for managing and backing up our Firestore database (e.g. deleting indexes, saving data as locally stored JSON).",
+  "main": "anonymize.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "node-firestore-import-export": "^0.14.1"
+  }
+}
