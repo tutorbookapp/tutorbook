@@ -22,6 +22,7 @@ interface UniqueInputProps {
     | 'subjectselect'
     | 'scheduleinput';
   readonly label: string;
+  readonly key?: string;
 }
 
 type InputProps = UniqueInputProps &
@@ -104,7 +105,7 @@ export default class Form extends React.Component<FormProps, {}> {
             <SubjectSelect
               {...(props as SubjectSelectProps)}
               onChange={(subjects: string[]) => {
-                this.values[input.label] = subjects;
+                this.values[input.key ? input.key : input.label] = subjects;
               }}
               key={index}
               outlined
@@ -116,7 +117,7 @@ export default class Form extends React.Component<FormProps, {}> {
             <ScheduleInput
               {...(props as ScheduleInputProps)}
               onChange={(availability: AvailabilityAlias) => {
-                this.values[input.label] = availability;
+                this.values[input.key ? input.key : input.label] = availability;
               }}
               key={index}
               outlined
@@ -131,7 +132,7 @@ export default class Form extends React.Component<FormProps, {}> {
     input: InputProps,
     event: React.SyntheticEvent<HTMLInputElement | HTMLSelectElement>
   ): void {
-    this.values[input.label] = (event.target as
+    this.values[input.key ? input.key : input.label] = (event.target as
       | HTMLInputElement
       | HTMLSelectElement).value;
   }
