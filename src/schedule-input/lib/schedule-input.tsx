@@ -12,8 +12,8 @@ import {
   DataTableBody,
   DataTableCell,
 } from '@rmwc/data-table';
+import { Timeslot, Availability } from '@tutorbook/model';
 
-import { Timeslot, Availability } from './model';
 import styles from './schedule-input.module.scss';
 
 // TODO: Remove this and support multiple languages.
