@@ -31,7 +31,7 @@ const GRADES: string[] = [
  * - (name) Your name
  * - (email?) Your email
  * - (bio) Your grade level
- * - (searches.explicit) What do you want to learn?
+ * - (searches.explicit) What would you like to learn?
  * - (availability) When are you available?
  */
 export default function PupilForm() {
@@ -80,7 +80,7 @@ export default function PupilForm() {
               key: 'bio',
             },
             {
-              label: 'What do you want to learn?',
+              label: 'What would you like to learn?',
               el: 'subjectselect' as InputElAlias,
               required: true,
               key: 'searches',

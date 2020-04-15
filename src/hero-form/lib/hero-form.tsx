@@ -11,7 +11,7 @@ import styles from './hero-form.module.scss';
  * along the way).
  * - (name) Your name
  * - (email) Your email address
- * - (searches.explicit) What do you want to learn?
+ * - (searches.explicit) What would you like to learn?
  * - (availability) When are you available?
  */
 export default function HeroForm() {
@@ -36,7 +36,7 @@ export default function HeroForm() {
                 key: 'email',
               },
               {
-                label: 'What do you want to learn?',
+                label: 'What would you like to learn?',
                 el: 'subjectselect' as InputElAlias,
                 required: true,
                 key: 'searches',
