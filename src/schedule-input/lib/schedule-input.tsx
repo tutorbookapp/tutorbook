@@ -48,7 +48,7 @@ interface UniqueScheduleInputProps {
  * @todo Look at these (and the other) intersection type definitions in detail.
  * @see {@link https://bit.ly/2xaPeBH}
  */
-type ScheduleInputProps = UniqueScheduleInputProps &
+export type ScheduleInputProps = UniqueScheduleInputProps &
   (TextFieldProps | TextFieldHTMLProps);
 
 export default class ScheduleInput extends React.Component<ScheduleInputProps> {
