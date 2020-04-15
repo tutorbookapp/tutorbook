@@ -12,10 +12,12 @@ import styles from './subject-select.module.scss';
 // TODO: Bring this up the React tree using `Context` and `Context.Provider`s.
 const client = algoliasearch('XCRT9EA6O8', 'aa1d293ac39b27e9671ece379c217da0');
 
+type SubjectsAlias = { [subject: string]: boolean };
+
 interface SubjectSelectState {
   suggestionsOpen: boolean;
   suggestions: string[];
-  subjects: { [subject: string]: boolean };
+  subjects: SubjectsAlias;
   inputValueWorkaround: string;
 }
 
@@ -29,19 +31,18 @@ interface SubjectHit extends ObjectWithObjectID {
 }
 
 export default class SubjectSelect extends React.Component<SubjectSelectProps> {
-  state: SubjectSelectState;
-  suggestionsTimeoutID: number | undefined;
+  public state: SubjectSelectState = {
+    suggestionsOpen: false,
+    suggestions: [],
+    subjects: {},
+    inputValueWorkaround: '',
+  };
+  private suggestionsTimeoutID?: number;
 
-  static searchIndex = client.initIndex('subjects');
+  private static searchIndex = client.initIndex('subjects');
 
-  constructor(props: SubjectSelectProps) {
+  public constructor(props: SubjectSelectProps) {
     super(props);
-    this.state = {
-      suggestionsOpen: false,
-      suggestions: [],
-      subjects: {},
-      inputValueWorkaround: '',
-    };
     this.openSuggestions = this.openSuggestions.bind(this);
     this.closeSuggestions = this.closeSuggestions.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
@@ -54,7 +55,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @todo Add React `ErrorBoundries` and otherwise catch possible errors here.
    * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
    */
-  async updateSuggestions(query: string = ''): Promise<void> {
+  private async updateSuggestions(query: string = ''): Promise<void> {
     const res = await SubjectSelect.searchIndex.search(query);
     this.setState({
       suggestions: res.hits.map((subject: SubjectHit) => subject.name),
@@ -67,7 +68,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * subject select menu (and thus called `this.openSuggestions`).
    * @see {@link https://bit.ly/2x9eM27}
    */
-  closeSuggestions(): void {
+  private closeSuggestions(): void {
     this.suggestionsTimeoutID = window.setTimeout(() => {
       if (this.state.suggestionsOpen) this.setState({ suggestionsOpen: false });
     }, 0);
@@ -79,7 +80,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * reappears abruptly.
    * @see {@link https://bit.ly/2x9eM27}
    */
-  openSuggestions(): void {
+  private openSuggestions(): void {
     window.clearTimeout(this.suggestionsTimeoutID);
     if (!this.state.suggestionsOpen) this.setState({ suggestionsOpen: true });
   }
@@ -94,10 +95,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
    * @return {string} The input value (either `' '` or `''`).
    */
-  getInputValue(
-    subjects: { [subject: string]: boolean } = this.state.subjects
-  ): string {
-    const selected = Object.values(subjects).reduce((a, b) => a || b, false);
+  private getInputValue(subjects: SubjectsAlias = this.state.subjects): string {
+    const selected: boolean = Object.values(subjects).reduce(
+      (a, b) => a || b,
+      false
+    );
     return selected ? '\xa0' : '';
   }
 
@@ -110,18 +112,13 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * the `TextField`'s value using `setState`.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
    */
-  updateInputValue(event: React.SyntheticEvent<HTMLInputElement>): void {
-    const value =
-      (event.target as HTMLInputElement).value || this.getInputValue();
+  private updateInputValue(event: React.FormEvent<HTMLInputElement>): void {
+    const value: string = event.currentTarget.value || this.getInputValue();
     this.setState({ inputValueWorkaround: value });
-    this.updateSuggestions((event.target as HTMLInputElement).value);
-    const subjects: string[] = Object.entries(this.state.subjects)
-      .filter(([_, isSelected]) => isSelected)
-      .map(([subject, _]) => subject);
-    this.props.onChange(subjects);
+    this.updateSuggestions(event.currentTarget.value);
   }
 
-  render(): JSX.Element {
+  public render(): JSX.Element {
     const { className, onChange, ...rest } = this.props;
     return (
       <MenuSurfaceAnchor className={className}>
@@ -154,18 +151,24 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
    * 2. Adding it as a chip to the `mdc-text-field` content.
    */
-  updateSubject(subject: string): void {
-    const subjects = {
+  private updateSubject(subject: string): void {
+    const subjects: SubjectsAlias = {
       ...this.state.subjects,
       [subject]: !this.state.subjects[subject],
     };
+    const value: string =
+      this.state.inputValueWorkaround || this.getInputValue(subjects);
     this.setState({
       subjects: subjects,
-      inputValueWorkaround: this.getInputValue(subjects),
+      inputValueWorkaround: value,
     });
+    const selected: string[] = Object.entries(subjects)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([subject, _]) => subject);
+    this.props.onChange(selected);
   }
 
-  renderSubjectMenuItems(): JSX.Element[] {
+  private renderSubjectMenuItems(): JSX.Element[] {
     const subjectMenuItems: JSX.Element[] = [];
     this.state.suggestions.map((subject) =>
       subjectMenuItems.push(
@@ -184,7 +187,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     return subjectMenuItems;
   }
 
-  renderSubjectChipItems(): JSX.Element[] {
+  private renderSubjectChipItems(): JSX.Element[] {
     const subjectChipItems: JSX.Element[] = [];
     Object.entries(this.state.subjects).map(([subject, isSelected]) => {
       if (isSelected)
