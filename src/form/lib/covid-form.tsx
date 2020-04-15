@@ -6,7 +6,6 @@ import { Select, SelectProps } from '@rmwc/select';
 import { Card, CardProps } from '@rmwc/card';
 
 import Button from '@tutorbook/button';
-import Spinner from '@tutorbook/spinner';
 import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select';
 import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input';
 import LoadingOverlay from '@tutorbook/animated-checkmark-overlay';

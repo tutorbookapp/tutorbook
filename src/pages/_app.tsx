@@ -1,7 +1,6 @@
 import { AppProps } from 'next/app';
 
 import DBProvider from '../firebase/db';
-import UserProvider from '../firebase/user';
 
 import '../styles';
 

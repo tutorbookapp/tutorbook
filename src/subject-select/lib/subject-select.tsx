@@ -2,7 +2,7 @@ import React from 'react';
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { TextField, TextFieldProps } from '@rmwc/textfield';
-import { ChipSet, Chip } from '@rmwc/chip';
+import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
