@@ -14,8 +14,7 @@ import { AvailabilityAlias } from '@tutorbook/model';
 
 import styles from './covid-form.module.scss';
 
-// TODO: Make this somehow extend all the above imported props simultaneously.
-interface InputProps {
+interface UniqueInputProps {
   readonly el:
     | 'textfield'
     | 'textarea'
@@ -23,17 +22,18 @@ interface InputProps {
     | 'subjectselect'
     | 'scheduleinput';
   readonly label: string;
-  readonly type?: 'email' | 'tel' | 'text';
-  readonly [propName: string]: any;
 }
 
+type InputProps = UniqueInputProps &
+  (SubjectSelectProps | ScheduleInputProps | TextFieldProps | SelectProps);
+
 interface FormProps extends React.HTMLProps<HTMLFormElement> {
-  inputs: InputProps[];
-  submitLabel: string;
-  cardProps?: CardProps & React.HTMLProps<HTMLDivElement>;
-  title?: string;
-  description?: string;
-  onFormSubmit: (formValues: {
+  readonly inputs: InputProps[];
+  readonly submitLabel: string;
+  readonly cardProps?: CardProps & React.HTMLProps<HTMLDivElement>;
+  readonly title?: string;
+  readonly description?: string;
+  readonly onFormSubmit: (formValues: {
     readonly [formInputLabel: string]: string;
   }) => Promise<void>;
 }
@@ -44,43 +44,42 @@ interface FormState {
 }
 
 export default class Form extends React.Component<FormProps, {}> {
-  readonly state: FormState;
-  readonly inputs: JSX.Element[];
-  readonly values: {
-    [formInputLabel: string]: any;
+  public readonly state: FormState = {
+    submitting: false,
+    submitted: false,
   };
+  private readonly values: {
+    [formInputLabel: string]: any;
+  } = {};
 
-  constructor(props: FormProps) {
+  public constructor(props: FormProps) {
     super(props);
-    this.values = {};
-    this.inputs = [];
-    this.renderInputs();
-    this.state = {
-      submitting: false,
-      submitted: false,
-    };
     this.submit = this.submit.bind(this);
   }
 
-  renderInputs(): void {
-    this.props.inputs.map((input, index) => {
+  /**
+   * Renders the input React components from the given array of `InputProps`.
+   * @todo Perhaps revert back to rendering once (in the constructor) and using
+   * a `this.inputs` field to improve performance.
+   */
+  private renderInputs(): JSX.Element[] {
+    return this.props.inputs.map((input: InputProps, index: number) => {
       const { el, ...props } = input;
       switch (el) {
         case 'textfield':
-          this.inputs.push(
+          return (
             <TextField
-              {...props}
+              {...(props as TextFieldProps)}
               onChange={(event) => this.handleChange(input, event)}
               key={index}
               outlined
               className={styles.formField}
             />
           );
-          break;
         case 'textarea':
-          this.inputs.push(
+          return (
             <TextField
-              {...props}
+              {...(props as TextFieldProps)}
               onChange={(event) => this.handleChange(input, event)}
               key={index}
               outlined
@@ -89,11 +88,10 @@ export default class Form extends React.Component<FormProps, {}> {
               className={styles.formField}
             />
           );
-          break;
         case 'select':
-          this.inputs.push(
+          return (
             <Select
-              {...props}
+              {...(props as SelectProps)}
               onChange={(event) => this.handleChange(input, event)}
               key={index}
               outlined
@@ -101,11 +99,10 @@ export default class Form extends React.Component<FormProps, {}> {
               className={styles.formField}
             />
           );
-          break;
         case 'subjectselect':
-          this.inputs.push(
+          return (
             <SubjectSelect
-              {...props}
+              {...(props as SubjectSelectProps)}
               onChange={(subjects: string[]) => {
                 this.values[input.label] = subjects;
               }}
@@ -114,11 +111,10 @@ export default class Form extends React.Component<FormProps, {}> {
               className={styles.formField}
             />
           );
-          break;
         case 'scheduleinput':
-          this.inputs.push(
+          return (
             <ScheduleInput
-              {...props}
+              {...(props as ScheduleInputProps)}
               onChange={(availability: AvailabilityAlias) => {
                 this.values[input.label] = availability;
               }}
@@ -127,32 +123,31 @@ export default class Form extends React.Component<FormProps, {}> {
               className={styles.formField}
             />
           );
-          break;
       }
     });
   }
 
-  handleChange(
+  private handleChange(
     input: InputProps,
     event: React.SyntheticEvent<HTMLInputElement | HTMLSelectElement>
-  ) {
+  ): void {
     this.values[input.label] = (event.target as
       | HTMLInputElement
       | HTMLSelectElement).value;
   }
 
-  async submit(event: React.SyntheticEvent): Promise<void> {
+  /**
+   * Submits the current form values (stored in `this.values`).
+   * @todo Catch any submission errors using `await-to-js`.
+   */
+  private async submit(event: React.SyntheticEvent): Promise<void> {
     event.preventDefault();
-    this.setState({
-      submitting: true,
-    });
+    this.setState({ submitting: true });
     await this.props.onFormSubmit(this.values);
-    this.setState({
-      submitted: true,
-    });
+    this.setState({ submitted: true });
   }
 
-  render(): JSX.Element {
+  public render(): JSX.Element {
     const {
       title,
       description,
@@ -192,7 +187,7 @@ export default class Form extends React.Component<FormProps, {}> {
             className={styles.form + (className ? ' ' + className : '')}
             onSubmit={this.submit}
           >
-            {this.inputs}
+            {this.renderInputs()}
             <Button
               arrow
               className={styles.formSubmitButton}
