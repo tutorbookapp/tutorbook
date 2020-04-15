@@ -7,7 +7,7 @@ import styles from './schedule.module.scss';
 export default class Schedule extends React.Component {
   render() {
     return (
-      <NotchedOutline>
+      <NotchedOutline className={styles.schedule}>
         <FloatingLabel float={true} shake={false}>
           Schedule
         </FloatingLabel>
