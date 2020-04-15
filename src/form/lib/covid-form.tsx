@@ -10,7 +10,7 @@ import Spinner from '@tutorbook/spinner';
 import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select';
 import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input';
 import LoadingOverlay from '@tutorbook/animated-checkmark-overlay';
-import { AvailabilityAlias } from '@tutorbook/model';
+import { SubjectsInterface, Availability } from '@tutorbook/model';
 
 import styles from './covid-form.module.scss';
 
@@ -35,7 +35,7 @@ interface FormProps extends React.HTMLProps<HTMLFormElement> {
   readonly title?: string;
   readonly description?: string;
   readonly onFormSubmit: (formValues: {
-    readonly [formInputLabel: string]: string;
+    readonly [formInputLabel: string]: any;
   }) => Promise<void>;
 }
 
@@ -71,7 +71,7 @@ export default class Form extends React.Component<FormProps, {}> {
           return (
             <TextField
               {...(props as TextFieldProps)}
-              onChange={(event) => this.handleChange(input, event)}
+              onChange={(event) => this.handleInputChange(input, event)}
               key={index}
               outlined
               className={styles.formField}
@@ -81,7 +81,7 @@ export default class Form extends React.Component<FormProps, {}> {
           return (
             <TextField
               {...(props as TextFieldProps)}
-              onChange={(event) => this.handleChange(input, event)}
+              onChange={(event) => this.handleInputChange(input, event)}
               key={index}
               outlined
               textarea
@@ -93,7 +93,7 @@ export default class Form extends React.Component<FormProps, {}> {
           return (
             <Select
               {...(props as SelectProps)}
-              onChange={(event) => this.handleChange(input, event)}
+              onChange={(event) => this.handleInputChange(input, event)}
               key={index}
               outlined
               enhanced
@@ -105,7 +105,10 @@ export default class Form extends React.Component<FormProps, {}> {
             <SubjectSelect
               {...(props as SubjectSelectProps)}
               onChange={(subjects: string[]) => {
-                this.values[input.key ? input.key : input.label] = subjects;
+                this.values[input.key ? input.key : input.label] = {
+                  explicit: subjects,
+                  implicit: [],
+                } as SubjectsInterface;
               }}
               key={index}
               outlined
@@ -116,7 +119,7 @@ export default class Form extends React.Component<FormProps, {}> {
           return (
             <ScheduleInput
               {...(props as ScheduleInputProps)}
-              onChange={(availability: AvailabilityAlias) => {
+              onChange={(availability: Availability) => {
                 this.values[input.key ? input.key : input.label] = availability;
               }}
               key={index}
@@ -128,8 +131,11 @@ export default class Form extends React.Component<FormProps, {}> {
     });
   }
 
-  private handleChange(
-    input: InputProps,
+  /**
+   * Handles changes for a text field or select input component.
+   */
+  private handleInputChange(
+    input: UniqueInputProps & (TextFieldProps | SelectProps),
     event: React.SyntheticEvent<HTMLInputElement | HTMLSelectElement>
   ): void {
     this.values[input.key ? input.key : input.label] = (event.target as
