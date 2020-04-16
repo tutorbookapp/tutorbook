@@ -1,3 +1,6 @@
+# Firebase configuration variables (e.g. Algolia keys)
+.runtimeconfig.json
+
 ## Compiled JavaScript files
 **/*.js
 **/*.js.map
