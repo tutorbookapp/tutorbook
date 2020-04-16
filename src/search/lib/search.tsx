@@ -1,5 +1,5 @@
 import React from 'react';
-import { Availability, FiltersInterface } from '@tutorbook/model';
+import { TimeUtils, Availability, FiltersInterface } from '@tutorbook/model';
 
 import Filter from './filter';
 import SearchResults from './results';
@@ -16,8 +16,14 @@ export default class Search extends React.Component<SearchProps> {
     filters: {
       subjects: ['Chemistry H'],
       availability: Availability.fromFirestore([
-        { from: new Date(), to: new Date() },
-        { from: new Date(), to: new Date() },
+        {
+          from: TimeUtils.getDate(1, 12), // Mondays at 12pm
+          to: TimeUtils.getDate(1, 17), // Mondays at 5pm
+        },
+        {
+          from: TimeUtils.getDate(2, 7), // Tuesdays at 7am
+          to: TimeUtils.getDate(2, 12), // Tuesdays at 12pm
+        },
       ]),
     },
   };
