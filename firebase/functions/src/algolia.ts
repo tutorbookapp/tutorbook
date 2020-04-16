@@ -14,7 +14,8 @@ export async function userUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
-  const index: SearchIndex = client.initIndex('users');
+  const indexId: string = context.params.partition + '-users';
+  const index: SearchIndex = client.initIndex(indexId);
   if (!change.after.exists || !change.after.data()) {
     await index.deleteObject(context.params.user);
   } else {
