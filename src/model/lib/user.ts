@@ -1,6 +1,5 @@
 import {
   DocumentData,
-  FirestoreDataConverter,
   QueryDocumentSnapshot,
   SnapshotOptions,
 } from '@firebase/firestore-types';
