@@ -5,7 +5,7 @@ import Footer from '../footer';
 import TutorForm from '../tutor-form';
 
 export default class TutorsPage extends React.Component {
-  render() {
+  public render(): JSX.Element {
     return (
       <>
         <Header sticky />

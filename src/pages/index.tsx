@@ -6,7 +6,7 @@ import HeroForm from '../hero-form';
 import HeroAbout from '../hero-about';
 
 export default class IndexPage extends React.Component {
-  render() {
+  public render(): JSX.Element {
     return (
       <>
         <Header white />

@@ -2,14 +2,14 @@ import React from 'react';
 
 import Header from '../header';
 import Footer from '../footer';
-import PupilForm from '../pupil-form';
+import Search from '../search';
 
-export default class PupilsPage extends React.Component {
+export default class SearchPage extends React.Component {
   public render(): JSX.Element {
     return (
       <>
-        <Header sticky />
-        <PupilForm />
+        <Header />
+        <Search />
         <Footer />
       </>
     );
