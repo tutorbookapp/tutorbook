@@ -49,10 +49,12 @@ export class User implements UserInterface {
   public subjects: SubjectsInterface = {
     explicit: [],
     implicit: [],
+    filled: [],
   };
   public searches: SubjectsInterface = {
     explicit: [],
     implicit: [],
+    filled: [],
   };
   public parent?: string[] = [];
   public notifications: NotificationsConfigAlias = {
@@ -96,41 +98,6 @@ export class User implements UserInterface {
     };
   }
 }
-
-/**
- * Converts a `User` object into a JSON-like format for adding to a
- * Firestore document.
- * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#custom_objects}
- * @see {@link https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter}
- */
-export const userConverter: FirestoreDataConverter<UserInterface> = {
-  toFirestore(user: UserInterface): DocumentData {
-    const { schedule, availability, ...rest } = user;
-    return {
-      ...rest,
-      schedule: schedule.toFirestore(),
-      availability: availability.toFirestore(),
-    };
-  },
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions
-  ): UserInterface {
-    const data: DocumentData = snapshot.data(options);
-    return {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      bio: data.bio,
-      schedule: Availability.fromFirestore(data.schedule),
-      availability: Availability.fromFirestore(data.availability),
-      subjects: data.subjects as SubjectsInterface,
-      searches: data.searches as SubjectsInterface,
-      parent: data.parent,
-      notifications: data.notifications as NotificationsConfigAlias,
-    };
-  },
-};
 
 /**
  * A configuration object that denotes where to send notifications and for what
@@ -185,4 +152,5 @@ export type NotificationReasonAlias = 'newRequest' | 'newLesson';
 export interface SubjectsInterface {
   implicit: string[];
   explicit: string[];
+  filled: string[];
 }

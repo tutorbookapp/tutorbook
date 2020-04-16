@@ -109,6 +109,7 @@ export default class Form extends React.Component<FormProps, {}> {
                 this.values[input.key ? input.key : input.label] = {
                   explicit: subjects,
                   implicit: [],
+                  filled: [],
                 } as SubjectsInterface;
               }}
               key={index}
