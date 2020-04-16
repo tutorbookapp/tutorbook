@@ -8,6 +8,7 @@ interface Props {
   readonly active: boolean;
   readonly checked: boolean;
   readonly label: string;
+  readonly showLabel: boolean;
 }
 
 export default function AnimatedCheckmarkOverlay(props: Props): JSX.Element {
@@ -22,9 +23,11 @@ export default function AnimatedCheckmarkOverlay(props: Props): JSX.Element {
           className={styles.overlayCheckmark}
           checked={props.checked}
         />
-        <div className={styles.overlayLabel}>
-          <Typography use='headline6'>{props.label}</Typography>
-        </div>
+        {props.showLabel ? (
+          <div className={styles.overlayLabel}>
+            <Typography use='headline6'>{props.label}</Typography>
+          </div>
+        ) : undefined}
       </div>
     </div>
   );

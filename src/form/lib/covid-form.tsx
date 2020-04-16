@@ -38,6 +38,7 @@ interface FormProps extends React.HTMLProps<HTMLFormElement> {
   readonly onFormSubmit: (formValues: {
     readonly [formInputLabel: string]: any;
   }) => Promise<any>;
+  readonly loadingLabel?: boolean;
 }
 
 interface FormState {
@@ -190,6 +191,7 @@ export default class Form extends React.Component<FormProps, {}> {
             active={this.state.submitting || this.state.submitted}
             checked={this.state.submitted}
             label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
+            showLabel={!!this.props.loadingLabel}
           />
           <form
             {...rest}
