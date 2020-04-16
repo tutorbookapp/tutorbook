@@ -191,6 +191,7 @@ export class TimeUtils {
    * @param [now] - The starting point and the date to get the time values
    * from (i.e. the hours, minutes, seconds, milliseconds, year, month, etc).
    * Default is right now.
+   * @todo Why do we have a counter (originally from `@tutorboook/utils`)?
    */
   public static getNextDateWithDay(
     day: DayAlias,
