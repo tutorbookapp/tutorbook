@@ -14,15 +14,15 @@ interface SearchState {
 export default class Search extends React.Component<SearchProps> {
   public readonly state: SearchState = {
     filters: {
-      subjects: ['Chemistry H'],
+      subjects: ['Trigonometry', 'World History'],
       availability: Availability.fromFirestore([
         {
           from: TimeUtils.getDate(1, 12), // Mondays at 12pm
           to: TimeUtils.getDate(1, 17), // Mondays at 5pm
         },
         {
-          from: TimeUtils.getDate(2, 7), // Tuesdays at 7am
-          to: TimeUtils.getDate(2, 12), // Tuesdays at 12pm
+          from: TimeUtils.getDate(0, 7), // Sundays at 7am
+          to: TimeUtils.getDate(0, 12), // Sundays at 12pm
         },
       ]),
     },

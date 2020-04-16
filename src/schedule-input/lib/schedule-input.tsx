@@ -53,18 +53,9 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * (7am to 12pm), afternoon (12pm to 5pm), or evening (5pm to 10pm).
    */
   private static times: Readonly<Timeslot[]> = [
-    new Timeslot(
-      TimeUtils.getDateWithTime(7, 0, 0, 1),
-      TimeUtils.getDateWithTime(12)
-    ),
-    new Timeslot(
-      TimeUtils.getDateWithTime(12, 0, 0, 1),
-      TimeUtils.getDateWithTime(17)
-    ),
-    new Timeslot(
-      TimeUtils.getDateWithTime(17, 0, 0, 1),
-      TimeUtils.getDateWithTime(7)
-    ),
+    new Timeslot(TimeUtils.getDateWithTime(7), TimeUtils.getDateWithTime(12)),
+    new Timeslot(TimeUtils.getDateWithTime(12), TimeUtils.getDateWithTime(17)),
+    new Timeslot(TimeUtils.getDateWithTime(17), TimeUtils.getDateWithTime(7)),
   ];
 
   /**
@@ -73,8 +64,10 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * checkboxes; 'morning', 'afternoon', and 'evening' on the x-axis and the
    * various days on the y-axis). This returns those timeslots open for
    * selection (e.g. 'Mondays from 7am to 12pm' --> 'Mondays morning').
+   * @todo Perhaps remove this unused getter and document the above information
+   * elsewhere.
    */
-  private static get timeslots(): Availability {
+  public static get timeslots(): Availability {
     const timeslots = new Availability();
     for (let day = 0; day < 7; day++)
       for (const time of ScheduleInput.times)
