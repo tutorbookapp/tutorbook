@@ -39,6 +39,7 @@ interface FormProps extends React.HTMLProps<HTMLFormElement> {
     readonly [formInputLabel: string]: any;
   }) => Promise<any>;
   readonly loadingLabel?: boolean;
+  readonly loadingCheckmark?: boolean;
 }
 
 interface FormState {
@@ -189,7 +190,7 @@ export default class Form extends React.Component<FormProps, {}> {
         >
           <AnimatedCheckmarkOverlay
             active={this.state.submitting || this.state.submitted}
-            checked={this.state.submitted}
+            checked={!!this.props.loadingCheckmark && this.state.submitted}
             label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
             showLabel={!!this.props.loadingLabel}
           />
