@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import Link from 'next/link';
 import { LinkProps } from './interfaces';
 
 import BlackLogo from './svgs/black-logo.svg';
@@ -7,19 +8,19 @@ import WhiteLogo from './svgs/white-logo.svg';
 
 import styles from './mobile.module.scss';
 
-function Item(props: LinkProps) {
+function NavItem(props: LinkProps) {
   return (
     <li className={styles.mobileNavItem}>
-      <Link href={props.href} label={props.label} />
+      <NavLink href={props.href} label={props.label} />
     </li>
   );
 }
 
-function Link(props: LinkProps) {
+function NavLink(props: LinkProps) {
   return (
-    <a className={styles.mobileNavLink} href={props.href}>
-      {props.label}
-    </a>
+    <Link href={props.href}>
+      <a className={styles.mobileNavLink}>{props.label}</a>
+    </Link>
   );
 }
 
@@ -27,12 +28,14 @@ export default function Nav(props: { white?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <div className={styles.contentWrapper}>
-      <a href='/' aria-label='Tutorbook Home'>
-        <img
-          className={styles.logoImg}
-          src={props.white ? WhiteLogo : BlackLogo}
-        />
-      </a>
+      <Link href='/'>
+        <a aria-label='Tutorbook Home'>
+          <img
+            className={styles.logoImg}
+            src={props.white ? WhiteLogo : BlackLogo}
+          />
+        </a>
+      </Link>
       <button
         id='open-menu-btn'
         type='button'
@@ -53,10 +56,10 @@ export default function Nav(props: { white?: boolean }) {
         role='menu'
       >
         <ul className={styles.categoryWrapper}>
-          <Item href='/pupils/' label='For students' />
-          <Item href='/tutors/' label='For volunteers' />
-          <Item href='/docs/' label='For developers' />
-          <Item href='#' label='FAQ' />
+          <NavItem href='/pupils/' label='For students' />
+          <NavItem href='/tutors/' label='For volunteers' />
+          <NavItem href='/docs/' label='For developers' />
+          <NavItem href='#' label='FAQ' />
         </ul>
       </div>
     </div>
