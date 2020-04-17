@@ -71,6 +71,7 @@ export default function TutorForm() {
             const tutor: User = new User(formValues);
             return db.collection('users').doc().set(tutor.toFirestore());
           }}
+          loadingCheckmark
         />
       </div>
     </div>
