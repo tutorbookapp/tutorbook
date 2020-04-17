@@ -1,2 +1,47 @@
+@use '@material/elevation';
+@use '@material/layout-grid';
+
+.searchBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background: url(./jpgs/writing.jpg);
+  background-color: rgba(0, 0, 0, 0.25);
+  background-blend-mode: darken;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100%;
+  height: calc(139px + 20px + 60px + 40px + 5rem);
+}
+
 .searchWrapper {
+  text-align: center;
+}
+
+.searchContent {
+  display: inline-block;
+  padding: 40px;
+  max-width: 1290px;
+  text-align: initial;
+}
+
+.searchHeader {
+  display: block;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.searchGrid {
+  padding: 0 !important;
+}
+
+.searchCard {
+  transition: 200ms box-shadow;
+  @include elevation.elevation(2);
+}
+
+.searchCard:hover {
+  @include elevation.elevation(8);
 }

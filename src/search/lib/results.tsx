@@ -49,6 +49,15 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
 
   public constructor(props: SearchResultsProps) {
     super(props);
+    console.log('[DEBUG] New `SearchResults` instance created.');
+  }
+
+  /**
+   * We can't call `this.search` in the constructor because we're only allowed
+   * to update state once the component is mounted.
+   * @todo Call `this.search` every time `this.props.filters` is updated.
+   */
+  public componentDidMount(): void {
     this.search();
   }
 
@@ -92,6 +101,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
    * timeslot separately and then manually merge the results on the client side.
    */
   private async search(): Promise<void> {
+    console.log('[DEBUG] Updating search results...');
     const results: SearchHitAlias[] = [];
     for (const filterString of this.filterStrings) {
       const options: SearchOptions = { filters: filterString };
@@ -112,11 +122,16 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
         });
       }
     }
-    this.setState({
-      results: results,
-    });
+    this.setState({ results: results });
+    console.log('[DEBUG] Updated search results.');
   }
 
+  /**
+   * Note that we have to call `this.search` from within the `render` method in
+   * order for the search results to be updated every time our `props.filters`
+   * are updated.
+   * @see {@link https://reactjs.org/docs/lifting-state-up.html#lifting-state-up}
+   */
   public render(): JSX.Element {
     return (
       <List twoLine avatarList className={styles.resultsList}>

@@ -1,2 +1,17 @@
 .filterWrapper {
+  padding: 16px;
+}
+
+.filterField {
+  margin: 8px 0;
+  width: 100% !important;
+  display: inline-block;
+}
+
+.filterField:first-child {
+  margin-top: 0;
+}
+
+.filterField:last-child {
+  margin-bottom: 0;
 }

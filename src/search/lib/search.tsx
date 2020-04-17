@@ -1,32 +1,23 @@
 import React from 'react';
-import { TimeUtils, Availability, FiltersInterface } from '@tutorbook/model';
+import { Card } from '@rmwc/card';
+import { Grid, GridCell } from '@rmwc/grid';
+import { Typography } from '@rmwc/typography';
+import { FiltersInterface } from '@tutorbook/model';
 
 import Filter from './filter';
 import SearchResults from './results';
 import styles from './search.module.scss';
 
-interface SearchProps {}
+interface SearchProps {
+  filters: FiltersInterface;
+}
 
 interface SearchState {
   filters: FiltersInterface;
 }
 
 export default class Search extends React.Component<SearchProps> {
-  public readonly state: SearchState = {
-    filters: {
-      subjects: ['Trigonometry', 'World History'],
-      availability: Availability.fromFirestore([
-        {
-          from: TimeUtils.getDate(1, 12), // Mondays at 12pm
-          to: TimeUtils.getDate(1, 17), // Mondays at 5pm
-        },
-        {
-          from: TimeUtils.getDate(0, 7), // Sundays at 7am
-          to: TimeUtils.getDate(0, 12), // Sundays at 12pm
-        },
-      ]),
-    },
-  };
+  public readonly state: SearchState;
 
   /**
    * Creates a new `Search` view.
@@ -35,6 +26,9 @@ export default class Search extends React.Component<SearchProps> {
    */
   public constructor(props: SearchProps) {
     super(props);
+    this.state = {
+      filters: props.filters,
+    };
   }
 
   /**
@@ -47,13 +41,31 @@ export default class Search extends React.Component<SearchProps> {
    */
   public render(): JSX.Element {
     return (
-      <div className={styles.searchWrapper}>
-        <Filter
-          filters={this.state.filters}
-          onChange={(filters) => this.setState({ filters: filters })}
-        />
-        <SearchResults filters={this.state.filters} />
-      </div>
+      <>
+        <div className={styles.searchWrapper}>
+          <div className={styles.searchContent}>
+            <Typography className={styles.searchHeader} use='headline2'>
+              Search
+            </Typography>
+            <Grid className={styles.searchGrid}>
+              <GridCell span={4}>
+                <Card className={styles.searchCard}>
+                  <Filter
+                    filters={this.state.filters}
+                    onChange={(filters) => this.setState({ filters })}
+                  />
+                </Card>
+              </GridCell>
+              <GridCell span={8}>
+                <Card className={styles.searchCard}>
+                  <SearchResults filters={this.state.filters} />
+                </Card>
+              </GridCell>
+            </Grid>
+          </div>
+        </div>
+        <div className={styles.searchBackground} />
+      </>
     );
   }
 }

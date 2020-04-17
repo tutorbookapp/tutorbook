@@ -37,8 +37,11 @@
   "dependencies": {
     "@algolia/client-search": "^4.1.0",
     "@rmwc/avatar": "^6.0.14",
+    "@rmwc/grid": "^6.0.14",
     "@rmwc/list": "^6.0.14",
     "@tutorbook/model": "^0.0.1",
+    "@tutorbook/schedule-input": "^0.0.1",
+    "@tutorbook/subject-select": "^0.0.1",
     "algoliasearch": "^4.1.0",
     "await-to-js": "^2.1.1",
     "react": "^16.13.1",

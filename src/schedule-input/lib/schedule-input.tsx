@@ -31,22 +31,22 @@ interface ScheduleInputState {
   readonly availability: Availability;
 }
 
-interface UniqueScheduleInputProps {
+export interface ScheduleInputProps extends TextFieldProps {
   onChange: (availability: Availability) => any;
   className?: string;
+  val?: Availability;
 }
 
-/**
- * @todo Look at these (and the other) intersection type definitions in detail.
- * @see {@link https://bit.ly/2xaPeBH}
- */
-export type ScheduleInputProps = UniqueScheduleInputProps & TextFieldProps;
-
 export default class ScheduleInput extends React.Component<ScheduleInputProps> {
-  public state: ScheduleInputState = {
-    menuOpen: false,
-    availability: new Availability(),
-  };
+  public readonly state: ScheduleInputState;
+
+  public constructor(props: ScheduleInputProps) {
+    super(props);
+    this.state = {
+      menuOpen: false,
+      availability: props.val || new Availability(),
+    };
+  }
 
   /**
    * Timeslots that users can choose their availability from: either morning

@@ -24,6 +24,7 @@ interface SubjectSelectState {
 export interface SubjectSelectProps extends TextFieldProps {
   onChange: (subjects: string[]) => any;
   className?: string;
+  val?: string[];
 }
 
 interface SubjectHit extends ObjectWithObjectID {
@@ -31,21 +32,33 @@ interface SubjectHit extends ObjectWithObjectID {
 }
 
 export default class SubjectSelect extends React.Component<SubjectSelectProps> {
-  public state: SubjectSelectState = {
-    suggestionsOpen: false,
-    suggestions: [],
-    subjects: {},
-    inputValueWorkaround: '',
-  };
+  public readonly state: SubjectSelectState;
   private suggestionsTimeoutID?: number;
 
   private static searchIndex = client.initIndex('subjects');
 
   public constructor(props: SubjectSelectProps) {
     super(props);
+    this.state = {
+      suggestionsOpen: false,
+      suggestions: [],
+      subjects: {},
+      inputValueWorkaround: '',
+    };
+    if (props.val) {
+      props.val.forEach((s) => (this.state.subjects[s] = true));
+      this.state.inputValueWorkaround = this.getInputValue();
+    }
     this.openSuggestions = this.openSuggestions.bind(this);
     this.closeSuggestions = this.closeSuggestions.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
+  }
+
+  /**
+   * We can't call `updateSuggestions` in the constructor because we're not
+   * allowed to `setState` until **after** the component is mounted.
+   */
+  public componentDidMount(): void {
     this.updateSuggestions();
   }
 
