@@ -39,6 +39,7 @@
     "@rmwc/avatar": "^6.0.14",
     "@rmwc/grid": "^6.0.14",
     "@rmwc/list": "^6.0.14",
+    "@tutorbook/animated-checkmark-overlay": "^0.0.1",
     "@tutorbook/model": "^0.0.1",
     "@tutorbook/schedule-input": "^0.0.1",
     "@tutorbook/subject-select": "^0.0.1",

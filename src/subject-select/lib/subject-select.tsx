@@ -63,6 +63,16 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   }
 
   /**
+   * Ensure that the input value workaround always works (even when this input's
+   * value is being controlled by a parent component).
+   */
+  public componentDidUpdate(): void {
+    const inputValueWorkaround: string = this.getInputValue();
+    if (inputValueWorkaround !== this.state.inputValueWorkaround)
+      this.setState({ inputValueWorkaround });
+  }
+
+  /**
    * Updates the suggestions shown in the select below the subjects input based
    * on the results of the user's current input to an Algolia search query.
    * @todo Add React `ErrorBoundries` and otherwise catch possible errors here.

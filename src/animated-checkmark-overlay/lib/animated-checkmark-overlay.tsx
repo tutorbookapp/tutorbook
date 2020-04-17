@@ -6,9 +6,9 @@ import styles from './animated-checkmark-overlay.module.scss';
 
 interface Props {
   readonly active: boolean;
-  readonly checked: boolean;
-  readonly label: string;
-  readonly showLabel: boolean;
+  readonly checked?: boolean;
+  readonly label?: string;
+  readonly showLabel?: boolean;
 }
 
 export default function AnimatedCheckmarkOverlay(props: Props): JSX.Element {
@@ -21,7 +21,7 @@ export default function AnimatedCheckmarkOverlay(props: Props): JSX.Element {
       <div className={styles.overlayContent}>
         <AnimatedCheckmark
           className={styles.overlayCheckmark}
-          checked={props.checked}
+          checked={!!props.checked}
         />
         {props.showLabel ? (
           <div className={styles.overlayLabel}>

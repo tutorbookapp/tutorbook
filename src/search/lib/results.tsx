@@ -1,4 +1,5 @@
 import React from 'react';
+import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
 import { UserInterface, FiltersInterface } from '@tutorbook/model';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import {
@@ -15,6 +16,7 @@ import {
   ListItemSecondaryText,
 } from '@rmwc/list';
 import { Avatar } from '@rmwc/avatar';
+import { Typography } from '@rmwc/typography';
 
 import to from 'await-to-js';
 import algoliasearch from 'algoliasearch/lite';
@@ -27,6 +29,7 @@ type SearchHitAlias = UserInterface & ObjectWithObjectID;
 
 interface SearchResultsState {
   results: ReadonlyArray<SearchHitAlias>;
+  searching: boolean;
 }
 
 interface SearchResultsProps {
@@ -45,20 +48,26 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
   );
   public state: SearchResultsState = {
     results: [],
+    searching: true,
   };
-
-  public constructor(props: SearchResultsProps) {
-    super(props);
-    console.log('[DEBUG] New `SearchResults` instance created.');
-  }
 
   /**
    * We can't call `this.search` in the constructor because we're only allowed
    * to update state once the component is mounted.
-   * @todo Call `this.search` every time `this.props.filters` is updated.
    */
   public componentDidMount(): void {
     this.search();
+  }
+
+  /**
+   * We must call `this.search` from within this lifecycle method in order for
+   * the search results to be updated every time our `props.filters` are
+   * updated.
+   * @see {@link https://reactjs.org/docs/react-component.html#componentdidupdate}
+   * @see {@link https://reactjs.org/docs/lifting-state-up.html#lifting-state-up}
+   */
+  public componentDidUpdate(prevProps: SearchResultsProps): void {
+    if (this.props.filters !== prevProps.filters) this.search();
   }
 
   /**
@@ -87,8 +96,6 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
           `) AND availability.from <= ${timeslot.from.valueOf()}` +
           ` AND availability.to >= ${timeslot.to.valueOf()}`
       );
-    console.log('[DEBUG] Filters:', this.props.filters);
-    console.log('[DEBUG] Resulted filter strings:', filterStrings);
     return filterStrings;
   }
 
@@ -99,9 +106,15 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
    * > to or after the desired close time.
    * Note that due to Algolia limitations, we must query for each availability
    * timeslot separately and then manually merge the results on the client side.
+   * Also note that we wait half a second (500ms) before showing a loader (as
+   * we don't want to show a flash to the users; most Algolia searches take less
+   * than what we'd need to show a loader for).
    */
   private async search(): Promise<void> {
-    console.log('[DEBUG] Updating search results...');
+    const loaderTimeoutID: number = window.setTimeout(
+      () => this.setState({ searching: true }),
+      500
+    );
     const results: SearchHitAlias[] = [];
     for (const filterString of this.filterStrings) {
       const options: SearchOptions = { filters: filterString };
@@ -122,43 +135,46 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
         });
       }
     }
-    this.setState({ results: results });
-    console.log('[DEBUG] Updated search results.');
+    window.clearTimeout(loaderTimeoutID);
+    this.setState({ searching: false, results: results });
   }
 
-  /**
-   * Note that we have to call `this.search` from within the `render` method in
-   * order for the search results to be updated every time our `props.filters`
-   * are updated.
-   * @see {@link https://reactjs.org/docs/lifting-state-up.html#lifting-state-up}
-   */
   public render(): JSX.Element {
     return (
-      <List twoLine avatarList className={styles.resultsList}>
+      <List twoLine avatarList>
+        <AnimatedCheckmarkOverlay active={this.state.searching} />
         {this.renderResults()}
       </List>
     );
   }
 
-  private renderResults(): JSX.Element[] {
-    return this.state.results.map((result: SearchHitAlias) => {
+  private renderResults(): JSX.Element | JSX.Element[] {
+    if (this.state.results.length) {
+      return this.state.results.map((result: SearchHitAlias) => {
+        return (
+          <ListItem key={result.objectID}>
+            <ListItemGraphic
+              icon={
+                <Avatar
+                  src='https://tutorbook.app/app/img/male.png'
+                  size='small'
+                  name={result.name}
+                />
+              }
+            />
+            <ListItemText>
+              <ListItemPrimaryText>{result.name}</ListItemPrimaryText>
+              <ListItemSecondaryText>{result.email}</ListItemSecondaryText>
+            </ListItemText>
+          </ListItem>
+        );
+      });
+    } else {
       return (
-        <ListItem key={result.objectID}>
-          <ListItemGraphic
-            icon={
-              <Avatar
-                src='https://tutorbook.app/app/img/male.png'
-                size='small'
-                name={result.name}
-              />
-            }
-          />
-          <ListItemText>
-            <ListItemPrimaryText>{result.name}</ListItemPrimaryText>
-            <ListItemSecondaryText>{result.email}</ListItemSecondaryText>
-          </ListItemText>
-        </ListItem>
+        <div className={styles.noResults}>
+          <Typography use='headline5'>No results</Typography>
+        </div>
       );
-    });
+    }
   }
 }

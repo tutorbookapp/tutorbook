@@ -8,7 +8,7 @@ import { Card, CardProps } from '@rmwc/card';
 import Button from '@tutorbook/button';
 import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select';
 import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input';
-import LoadingOverlay from '@tutorbook/animated-checkmark-overlay';
+import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
 import { SubjectsInterface, Availability } from '@tutorbook/model';
 
 import styles from './covid-form.module.scss';
@@ -187,7 +187,7 @@ export default class Form extends React.Component<FormProps, {}> {
             (cardProps && cardProps.className ? ' ' + cardProps.className : '')
           }
         >
-          <LoadingOverlay
+          <AnimatedCheckmarkOverlay
             active={this.state.submitting || this.state.submitted}
             checked={this.state.submitted}
             label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
