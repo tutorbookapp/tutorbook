@@ -4,6 +4,7 @@ import {
   SnapshotOptions,
 } from '@firebase/firestore-types';
 import { Availability } from './times';
+import url from 'url';
 
 /**
  * A user object (that is stored in their Firestore profile document by uID).
@@ -95,6 +96,20 @@ export class User implements UserInterface {
       schedule: schedule.toFirestore(),
       availability: availability.toFirestore(),
     };
+  }
+
+  /**
+   * Gets the search URL where the URL parameters are determined by this user's
+   * `searches.explicit` and `availability` fields.
+   */
+  public get searchURL(): string {
+    return url.format({
+      pathname: '/search',
+      query: {
+        subjects: encodeURIComponent(JSON.stringify(this.searches.explicit)),
+        availability: this.availability.toURLParam(),
+      },
+    });
   }
 }
 

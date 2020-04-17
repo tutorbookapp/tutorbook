@@ -97,6 +97,18 @@ export class Timeslot implements TimeslotInterface {
   public toFirestore(): TimeslotInterface {
     return { from: this.from, to: this.to };
   }
+
+  public toURLParam(): string {
+    return encodeURIComponent(JSON.stringify(this));
+  }
+
+  public static fromURLParam(param: string): Timeslot {
+    const params: URLSearchParams = new URLSearchParams(param);
+    return new Timeslot(
+      new Date(params.get('from') as string),
+      new Date(params.get('to') as string)
+    );
+  }
 }
 
 /**
@@ -107,7 +119,7 @@ export class Timeslot implements TimeslotInterface {
  * `[Object object]`.
  */
 export class Availability extends Array<Timeslot> implements AvailabilityAlias {
-  public toString() {
+  public toString(): string {
     return this.length > 0
       ? this.map((timeslot) => timeslot.toString(true)).join(', ')
       : '';
@@ -119,12 +131,27 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
 
   public static fromFirestore(data: Array<TimeslotInterface>): Availability {
     const availability: Availability = new Availability();
-    data.map((timeslot) => availability.push(Timeslot.fromFirestore(timeslot)));
+    data.forEach((timeslot) => {
+      availability.push(Timeslot.fromFirestore(timeslot));
+    });
     return availability;
   }
 
   public toFirestore(): Array<TimeslotInterface> {
     return this.map((timeslot) => timeslot.toFirestore());
+  }
+
+  public toURLParam(): string {
+    return encodeURIComponent(JSON.stringify(this));
+  }
+
+  public static fromURLParam(param: string): Availability {
+    const availability: Availability = new Availability();
+    const params: string[] = JSON.parse(decodeURIComponent(param));
+    params.forEach((timeslot) => {
+      availability.push(Timeslot.fromURLParam(timeslot));
+    });
+    return availability;
   }
 }
 
