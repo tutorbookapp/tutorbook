@@ -1,3 +1,4 @@
+import Router from 'next/router';
 import { DocumentReference } from '@firebase/firestore-types';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { useDB } from '@tutorbook/next-firebase/db';
@@ -99,7 +100,7 @@ export default function PupilForm() {
             ' for more info.'
           }
           submitLabel='Request your free tutor'
-          onFormSubmit={(formValues) => {
+          onFormSubmit={async (formValues) => {
             const {
               parentName,
               parentEmail,
@@ -117,10 +118,11 @@ export default function PupilForm() {
               parent: [parentRef.id],
             });
             const pupilRef: DocumentReference = db.collection('users').doc();
-            return Promise.all([
+            await Promise.all([
               parentRef.set(parent.toFirestore()),
               pupilRef.set(pupil.toFirestore()),
             ]);
+            Router.push(pupil.searchURL);
           }}
         />
       </div>

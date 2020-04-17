@@ -1,4 +1,5 @@
 import React from 'react';
+import Router from 'next/router';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { useDB } from '@tutorbook/next-firebase/db';
 import { User } from '@tutorbook/model';
@@ -49,9 +50,10 @@ export default function HeroForm() {
               },
             ]}
             submitLabel='Request free tutoring'
-            onFormSubmit={(formValues) => {
+            onFormSubmit={async (formValues) => {
               const pupil: User = new User(formValues);
-              return db.collection('users').doc().set(pupil.toFirestore());
+              await db.collection('users').doc().set(pupil.toFirestore());
+              Router.push(pupil.searchURL);
             }}
             className={styles.heroForm}
             cardProps={{
