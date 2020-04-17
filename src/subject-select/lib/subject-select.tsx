@@ -67,9 +67,9 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * value is being controlled by a parent component).
    */
   public componentDidUpdate(): void {
-    const inputValueWorkaround: string = this.getInputValue();
-    if (inputValueWorkaround !== this.state.inputValueWorkaround)
-      this.setState({ inputValueWorkaround });
+    const val: string = this.getInputValue();
+    if (this.props.val && val !== this.state.inputValueWorkaround)
+      this.setState({ inputValueWorkaround: val });
   }
 
   /**
