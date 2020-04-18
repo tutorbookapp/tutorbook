@@ -1,77 +1,65 @@
-# COVID Tutoring
+# [![Tutorbook Logo](https://raw.githubusercontent.com/tutorbookapp/tutorbook/develop/build/favicon/text-logo.png)](https://tutorbook.org/)
 
 [![NPM Version](https://img.shields.io/npm/v/@tutorbook/covid?color=brightgreen)](https://npmjs.com/package/@tutorbook/covid)
 [![Dependencies](https://img.shields.io/david/tutorbookapp/covid-tutoring)](https://david-dm.org/tutorbookapp/covid-tutoring)
-[![Website Status](https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Fcovidtutoring.org%2F)](https://covidtutoring.org/)
+[![Website Status](https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Ftutorbook.org%2F)](https://tutorbook.org/)
 [![Typescript](https://img.shields.io/badge/uses-typescript-orange?styles=flat)](https://www.typescriptlang.org)
 [![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
-Landing page and booking MVP to connect volunteer tutors and pupils amidst the
-COVID-19 pandemic.
+**[Tutorbook](https://tutorbook.org/) is an online volunteer tutoring platform**
+that connects students in need (who no longer have face-to-face support from
+teachers) with volunteer tutors (who want to make a difference from home).
 
-## Volunteer
-
-We are building a massive academic support network and systems to bolster our
-educational infrastructure in this difficult time.
-
-If you have expertise in marketing, management, teaching, tech, or just want to
-help out we would love to hear from you!
-
-## Our Vision
-
-Included below is a brief outline of our vision for this project.
-
-### The problem
+#### The problem
 
 - Students no longer have the individualized support teachers usually have given
-  (when they met face-2-face)
+  (when they met face-to-face)
 - Teachers can no longer attend to each student individually; some students are
   falling behind
 
-### The solution
+#### The solution
 
 - Support those students by connecting them to university students and
   professionals also confined in their homes
 - Enable teachers to request one-on-one help for students they know are
   struggling
 
-### How you can help
+#### Current work
 
-[**@nicholaschiang**](https://github.com/nicholaschiang) is going to be heading
-up the dev side of things while [**@alephtaw**](https://github.com/alephta)
-works full-time on business (so ask him if you're interested in that). As for
-dev, here's what we're working on:
+Here's what we're working on at a super high-level:
 
-1. Choosing a front-end framework that most of us are familiar with (currently,
-   we're going to go with [React](https://reactjs.org) using
-   [Typescript](https://www.typescriptlang.org/)).
-2. Building out a front-end where students and tutors can sign-up to be
+1. Building out a front-end where students and tutors can sign-up to be
    connected to one another.
-3. Building out a back-end to automatically match students with tutors and send
+2. Building out a back-end to automatically match students with tutors and send
    them three links:
    - Link to video call
    - Link to virtual whiteboard (probably using
      [DrawChat](https://github.com/cojapacze/sketchpad))
    - Link to shared Google Drive folder
 
-### What you can do now
+# Contributing
 
-- Head over to our [new Slack workspace](https://covidtutoring.slack.com).
-- Check the `#development` channel pins for more information on how you can help
-  out.
+Do the following (preferably in order):
 
-## Contributing
+1. Join our [Slack workspace](https://tutorbookapp.slack.com).
+2. Check the `#development` channel pins for more information on how you can
+   help out.
+3. Read through the links included below to become familiar with our current tech
+   stack.
+4. Contribute:
+   - Choose [an
+     issue](https://github.com/orgs/tutorbookapp/projects/2?fullscreen=true) (from
+     the top of the **To Do** column; the most pressing issues are at the top).
+   - [Fork this repository](https://github.com/tutorbookapp/covid-tutoring/fork).
+   - Address the issue.
+   - [Create a PR](https://github.com/tutorbookapp/covid-tutoring/compare).
 
-Check out this project's [documentation](https://covidtutoring.org/docs/)
-(automatically generated using [JSDoc 3](https://jsdoc.app)) or head over to our
-[main repository](https://github.com/tutorbookapp/tutorbook) and [main
-documentation](https://tutorbook.app/docs/) for more detailed information.
-
-Feel free to also check out our recently added `tutorials/` directory for
+Also feel free to check out our recently added `tutorials/` directory for
 additional information detailing different aspects of this project (e.g. tests,
 deployment workflows, CI/CD, etc).
 
-This project uses:
+This project uses (please ensure that you're familiar with our tech stack before
+trying to contribute; it'll save your reputation and a lot of time):
 
 #### Languages
 
@@ -110,7 +98,7 @@ This project uses:
   [Authentication](https://firebase.google.com/products/auth), and other
   useful (relatively drop-in) solutions.
 
-### Development Environment
+## Development Environment
 
 To setup a development environment for and to contribute to the COVID Tutoring
 Initiative website:
@@ -177,7 +165,12 @@ $ git checkout -b $my_branch && cd src/app/packages
 
 10. Follow the instructions included below to start a
     [Next.js](https://nextjs.org) development server (to see your updates affect
-    the app live).
+    the app live):
+
+```
+$ npm run dev
+```
+
 11. From there, `cd` into your desired package (included in `src/`), make your
     changes, commit them to your branch off of `develop`, [fork our
     repository](https://github.com/tutorbookapp/covid-tutoring/fork), and open a
@@ -185,10 +178,14 @@ $ git checkout -b $my_branch && cd src/app/packages
 
 #### Code Format
 
-Tutorbook uses [Prettier](https://prettier.io/) to enforce consistent code formatting throughout the codebase.
-A pre-commit hook is used to format changed files found on commit, however it is still recommended to install the Prettier plugin in your code editor to ensure consistent code style.
+Tutorbook uses [Prettier](https://prettier.io/) to enforce consistent code
+formatting throughout the codebase.
 
-### Available Scripts
+A pre-commit hook is used to format changed files found on commit, however it is
+still recommended to install the Prettier plugin in your code editor to ensure
+consistent code style.
+
+## Available Scripts
 
 All of the below scripts come directly from
 [Next.js](https://nextjs.org/docs/getting-started). In the project directory,
