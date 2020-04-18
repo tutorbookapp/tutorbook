@@ -1,18 +1,17 @@
 {
-  "name": "@tutorbook/hero-about",
+  "name": "@tutorbook/banner",
   "version": "0.0.1",
-  "description": "Package that contains a concise version of our about page for the COVID Tutoring Initiative homepage.",
+  "description": "Full-width banner with large text React component.",
   "keywords": [
     "Tutorbook",
-    "About",
+    "Banner",
     "React",
-    "COVID",
-    "Tutoring"
+    "Typescript"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
-  "homepage": "https://covidtutoring.org/",
+  "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/hero-about.tsx",
+  "main": "lib/banner.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -32,8 +31,5 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  },
-  "dependencies": {
-    "@tutorbook/banner": "^0.0.1"
   }
 }
