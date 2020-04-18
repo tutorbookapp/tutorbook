@@ -43,6 +43,7 @@
     "@tutorbook/model": "^0.0.1",
     "@tutorbook/schedule-input": "^0.0.1",
     "@tutorbook/subject-select": "^0.0.1",
+    "@tutorbook/user-dialog": "^0.0.1",
     "algoliasearch": "^4.1.0",
     "await-to-js": "^2.1.1",
     "react": "^16.13.1",

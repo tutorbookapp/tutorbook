@@ -1,27 +1,57 @@
 import React from 'react';
-import { NextRouter, useRouter } from 'next/router';
+import { GetServerSideProps } from 'next';
 
 import Header from '../header';
 import Footer from '../footer';
 import Search from '../search';
 
-import { FiltersInterface, Availability } from '../model';
+import {
+  User,
+  FiltersInterface,
+  FiltersJSONInterface,
+  Availability,
+} from '../model';
 
-export default function SearchPage(): JSX.Element {
-  const router: NextRouter = useRouter();
-  const params: Record<string, string> = router.query as Record<string, string>;
+interface SearchPageProps {
+  filters: FiltersJSONInterface;
+  results: ReadonlyArray<User>;
+}
+
+/**
+ * We search our Algolia index from the server-side before we even respond to
+ * an HTTP request.
+ * @todo Remove the `JSON.parse(JSON.stringify(ob))` workaround.
+ */
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const subjects: string = context.query.subjects as string;
+  const availability: string = context.query.availability as string;
   const filters: FiltersInterface = {
-    subjects: [],
-    availability: new Availability(),
+    subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
+    availability: availability
+      ? Availability.fromURLParam(availability)
+      : new Availability(),
   };
-  if (params.subjects)
-    filters.subjects = JSON.parse(decodeURIComponent(params.subjects));
-  if (params.availability)
-    filters.availability = Availability.fromURLParam(params.availability);
+  const results: ReadonlyArray<User> = await Search.search(filters);
+  return {
+    props: {
+      filters: JSON.parse(JSON.stringify(filters)),
+      results: JSON.parse(JSON.stringify(results)),
+    },
+  };
+};
+
+export default function SearchPage(props: SearchPageProps): JSX.Element {
+  const filters: FiltersInterface = {
+    subjects: props.filters.subjects,
+    availability: Availability.fromJSON(props.filters.availability),
+  };
+  const results: ReadonlyArray<User> = props.results.map(
+    (res) => new User(res)
+  );
   return (
     <>
       <Header white />
-      <Search filters={filters} />
+      <Search filters={filters} results={results} />
       <Footer />
     </>
   );
