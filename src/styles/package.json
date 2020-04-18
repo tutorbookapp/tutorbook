@@ -9,7 +9,7 @@
     "SCSS"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
-  "homepage": "https://covidtutoring.org/",
+  "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "main": "global.scss",
   "publishConfig": {

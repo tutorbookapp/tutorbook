@@ -11,7 +11,7 @@
     "Spinner"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
-  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "homepage": "https://tutorbook.org/",
   "license": "MIT",
   "main": "index.tsx",
   "publishConfig": {

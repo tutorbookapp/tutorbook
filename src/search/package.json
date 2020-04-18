@@ -11,7 +11,7 @@
     "Search"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
-  "homepage": "https://covidtutoring.org/",
+  "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "main": "lib/search.tsx",
   "directories": {
