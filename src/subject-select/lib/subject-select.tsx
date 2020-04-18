@@ -148,7 +148,6 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   }
 
   public render(): JSX.Element {
-    console.log('[DEBUG] Rendered the `SubjectSelect` component.');
     const { className, onChange, ...rest } = this.props;
     return (
       <MenuSurfaceAnchor className={className}>
