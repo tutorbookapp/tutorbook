@@ -43,6 +43,7 @@ $font-weight-values: (
 @use '@material/chips/mdc-chips';
 @use '@material/data-table/mdc-data-table';
 @use '@material/layout-grid/mdc-layout-grid';
+@use '@material/dialog/mdc-dialog';
 @use '@rmwc/avatar/avatar';
 
 @include typography.core-styles;
