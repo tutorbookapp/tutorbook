@@ -17,13 +17,14 @@ type ButtonProps = UniqueButtonProps & MDCButtonProps & ButtonHTMLProps;
 
 export default function Button(props: ButtonProps) {
   const { arrow, className, children, ...rest } = props;
+  const buttonClass: string =
+    styles.button +
+    (className ? ' ' + className : '') +
+    (arrow ? ' ' + styles.buttonWithArrow : '');
   return (
-    <MDCButton
-      {...rest}
-      className={styles.button + (className ? ' ' + className : '')}
-    >
+    <MDCButton {...rest} className={buttonClass}>
       {children}
-      {arrow ? <Arrow className={styles.buttonArrow} /> : undefined}
+      {arrow && <Arrow className={styles.buttonArrow} />}
     </MDCButton>
   );
 }

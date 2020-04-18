@@ -5,6 +5,10 @@
   padding: 0 20px;
 }
 
+.buttonWithArrow :global(.mdc-button__label) {
+  padding-left: 25px;
+}
+
 .button:hover .buttonArrow {
   transform: translateX(4px);
 }
