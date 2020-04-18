@@ -48,8 +48,10 @@ export default function Nav(props: { white?: boolean }) {
           <ul role='menubar' className={styles.menuOptionsList}>
             <NavItem href='/pupils' label='For students' />
             <NavItem href='/tutors' label='For volunteers' />
-            <NavItem href='/docs' label='For developers' />
-            <NavItem href='#' label='FAQ' />
+            <NavItem
+              href='https://github.com/tutorbookapp/covid-tutoring'
+              label='For developers'
+            />
           </ul>
         </nav>
       </div>
