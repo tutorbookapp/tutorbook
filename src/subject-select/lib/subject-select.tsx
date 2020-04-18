@@ -134,14 +134,21 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * if it were filled. Otherwise, this acts as it normally would by updating
    * the `TextField`'s value using `setState`.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
+   *
+   * Note that this also contains a painful workaround to ensure that the select
+   * menu is positioned correctly **even** if it's anchor (the `TextField`)
+   * changes shape.
+   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   private updateInputValue(event: React.FormEvent<HTMLInputElement>): void {
     const value: string = event.currentTarget.value || this.getInputValue();
     this.setState({ inputValueWorkaround: value });
     this.updateSuggestions(event.currentTarget.value);
+    window.dispatchEvent(new Event('resize'));
   }
 
   public render(): JSX.Element {
+    console.log('[DEBUG] Rendered the `SubjectSelect` component.');
     const { className, onChange, ...rest } = this.props;
     return (
       <MenuSurfaceAnchor className={className}>
@@ -173,6 +180,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * `this.state.subjects` to `true` which:
    * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
    * 2. Adding it as a chip to the `mdc-text-field` content.
+   *
+   * Note that this also contains a painful workaround to ensure that the select
+   * menu is positioned correctly **even** if it's anchor (the `TextField`)
+   * changes shape.
+   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   private updateSubject(subject: string): void {
     const subjects: SubjectsAlias = {
@@ -189,6 +201,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       .filter(([_, isSelected]) => isSelected)
       .map(([subject, _]) => subject);
     this.props.onChange(selected);
+    window.dispatchEvent(new Event('resize'));
   }
 
   private renderSubjectMenuItems(): JSX.Element[] {
