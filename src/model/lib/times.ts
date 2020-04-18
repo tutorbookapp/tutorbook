@@ -1,3 +1,15 @@
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+
+/**
+ * This is a painful workaround as we then import the entire Firebase library
+ * definition while we only want the `Timestamp` object.
+ * @todo Only import the `Timestamp` definition.
+ * @see {@link https://stackoverflow.com/a/57984831/10023158}
+ */
+const Timestamp = firebase.firestore.Timestamp;
+type Timestamp = firebase.firestore.Timestamp;
+
 /**
  * Number representing the day of the week. Follows the ECMAScript Date
  * convention where 0 denotes Sunday, 1 denotes Monday, etc.
@@ -85,17 +97,28 @@ export class Timeslot implements TimeslotInterface {
     );
   }
 
+  public toFirestore(): TimeslotFirestoreInterface {
+    return {
+      from: Timestamp.fromDate(this.from),
+      to: Timestamp.fromDate(this.to),
+    };
+  }
+
   /**
    * Takes in a Firestore timeslot record and returns a new `Timeslot` object.
    * @todo This should convert the Firestore `Timestamp` object into the native
    * `Date` object.
    */
-  public static fromFirestore(data: TimeslotInterface): Timeslot {
-    return new Timeslot(data.from, data.to);
+  public static fromFirestore(data: TimeslotFirestoreInterface): Timeslot {
+    return new Timeslot(data.from.toDate(), data.to.toDate());
   }
 
-  public toFirestore(): TimeslotInterface {
-    return { from: this.from, to: this.to };
+  public toJSON(): TimeslotJSONInterface {
+    return { from: this.from.toISOString(), to: this.to.toISOString() };
+  }
+
+  public static fromJSON(json: TimeslotJSONInterface): Timeslot {
+    return new Timeslot(new Date(json.from), new Date(json.to));
   }
 
   public toURLParam(): string {
@@ -109,6 +132,25 @@ export class Timeslot implements TimeslotInterface {
       new Date(params.get('to') as string)
     );
   }
+}
+
+/**
+ * Interface that represents how `Timeslot`s are stored in our Firestore
+ * database; with `Timestamp`s instead of `Date`s (b/c they're more accurate).
+ */
+export interface TimeslotFirestoreInterface {
+  from: Timestamp;
+  to: Timestamp;
+}
+
+/**
+ * Interface that results from serializing the `Timeslot` object as JSON (i.e.
+ * running `JSON.parse(JSON.stringify(timeslot))`) where the `from` and `to`
+ * fields are both ISO strings.
+ */
+export interface TimeslotJSONInterface {
+  from: string;
+  to: string;
 }
 
 /**
@@ -129,16 +171,31 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return !!this.filter((t) => t.equalTo(timeslot)).length;
   }
 
-  public static fromFirestore(data: Array<TimeslotInterface>): Availability {
+  public toFirestore(): TimeslotFirestoreInterface[] {
+    return this.map((timeslot) => timeslot.toFirestore());
+  }
+
+  /**
+   * Takes in an array of `Timeslot` objects (but w/ Firestore `Timestamp`
+   * objects in the `from` and `to` fields instead of `Date` objects) and
+   * returns an `Availability` object.
+   */
+  public static fromFirestore(
+    data: TimeslotFirestoreInterface[]
+  ): Availability {
     const availability: Availability = new Availability();
-    data.forEach((timeslot) => {
-      availability.push(Timeslot.fromFirestore(timeslot));
-    });
+    data.forEach((t) => availability.push(Timeslot.fromFirestore(t)));
     return availability;
   }
 
-  public toFirestore(): Array<TimeslotInterface> {
-    return this.map((timeslot) => timeslot.toFirestore());
+  public toJSON(): TimeslotJSONInterface[] {
+    return this.map((timeslot) => timeslot.toJSON());
+  }
+
+  public static fromJSON(json: TimeslotJSONInterface[]): Availability {
+    const availability: Availability = new Availability();
+    json.forEach((t) => availability.push(Timeslot.fromJSON(t) as Timeslot));
+    return availability;
   }
 
   public toURLParam(): string {

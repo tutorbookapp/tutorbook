@@ -3,6 +3,7 @@ import {
   QueryDocumentSnapshot,
   SnapshotOptions,
 } from '@firebase/firestore-types';
+import { ObjectWithObjectID } from '@algolia/client-search';
 import { Availability } from './times';
 import url from 'url';
 
@@ -21,6 +22,7 @@ import url from 'url';
  * @property notifications - The user's notification configuration.
  */
 export interface UserInterface {
+  uid?: string;
   name: string;
   email?: string;
   phone?: string;
@@ -34,12 +36,20 @@ export interface UserInterface {
 }
 
 /**
+ * What results from searching our users Algolia index.
+ * @todo Perhaps we don't want to have duplicate fields (i.e. the `objectID`
+ * field is **always** going to be equal to the `uid` field).
+ */
+export type UserSearchHitAlias = UserInterface & ObjectWithObjectID;
+
+/**
  * Class that provides default values for our `UserInterface` data model.
  * @todo Implement useful helper methods here and replace all instances of
  * `UserInterface` with `User` throughout the web app.
  * @see {@link https://stackoverflow.com/a/54857125/10023158}
  */
 export class User implements UserInterface {
+  public uid: string = '';
   public name: string = '';
   public email: string = '';
   public phone: string = '';
@@ -74,6 +84,19 @@ export class User implements UserInterface {
       if (!val) delete (user as any)[key];
     });
     Object.assign(this, user);
+  }
+
+  public get firstName(): string {
+    return this.name.split(' ')[0];
+  }
+
+  public get lastName(): string {
+    const parts: string[] = this.name.split(' ');
+    return parts[parts.length - 1];
+  }
+
+  public static fromSearchHit(hit: UserSearchHitAlias): User {
+    return new User(Object.assign(hit, { uid: hit.objectID }));
   }
 
   public static fromFirestore(
