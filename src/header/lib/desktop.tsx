@@ -17,10 +17,16 @@ function NavItem(props: LinkProps) {
 }
 
 function NavLink(props: LinkProps) {
+  if (props.href.indexOf('http') < 0)
+    return (
+      <Link href={props.href}>
+        <a className={styles.menuItemLink}>{props.label}</a>
+      </Link>
+    );
   return (
-    <Link href={props.href}>
-      <a className={styles.menuItemLink}>{props.label}</a>
-    </Link>
+    <a className={styles.menuItemLink} href={props.href}>
+      {props.label}
+    </a>
   );
 }
 
