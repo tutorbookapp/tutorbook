@@ -32,25 +32,19 @@ export default function HeroAbout() {
             In doing so, we are making universal, free, and online education a
             reality in this time of school crises. Here’s how you can help:
           </Typography>
-          <Typography use='body1'>
-            <ul style={{ listStyle: 'decimal' }}>
-              <li>
-                Inform every parent and high school student that you know!
-              </li>
-              <li>
-                Re-post this message and promote us so we can help more
-                students!
-              </li>
-              <li>
-                Help us recruit more volunteers by following #2 and by signing
-                up{' '}
-                <Link href='/tutors'>
-                  <a>here</a>
-                </Link>
-                .
-              </li>
-            </ul>
-          </Typography>
+          <ul style={{ listStyle: 'decimal' }}>
+            <li>Inform every parent and high school student that you know!</li>
+            <li>
+              Re-post this message and promote us so we can help more students!
+            </li>
+            <li>
+              Help us recruit more volunteers by following #2 and by signing up{' '}
+              <Link href='/tutors'>
+                <a>here</a>
+              </Link>
+              .
+            </li>
+          </ul>
           <Banner>
             <Typography use='headline2'>Our mission</Typography>
             <Typography use='body1'>
