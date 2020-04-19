@@ -4,6 +4,7 @@ import SubjectSelect from '@tutorbook/subject-select';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import { User, Timeslot, LessonRequest } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
+import { TextField } from '@rmwc/textfield';
 import { Typography } from '@rmwc/typography';
 import { Dialog, DialogProps } from '@rmwc/dialog';
 
@@ -29,11 +30,16 @@ export default class UserDialog extends React.Component<UserDialogProps> {
     };
     this.handleSubjectsChange = this.handleSubjectsChange.bind(this);
     this.handleTimeslotChange = this.handleTimeslotChange.bind(this);
+    this.handleMessageChange = this.handleMessageChange.bind(this);
   }
 
   private handleSubjectsChange(subjects: string[]): void {}
 
   private handleTimeslotChange(timeslot: Timeslot): void {}
+
+  private handleMessageChange(
+    event: React.SyntheticEvent<HTMLInputElement>
+  ): void {}
 
   public render(): JSX.Element {
     const { user, className, ...rest } = this.props;
@@ -58,15 +64,23 @@ export default class UserDialog extends React.Component<UserDialogProps> {
             <form className={styles.form}>
               <SubjectSelect
                 outlined
-                label='Requested subjects'
-                className={styles.input}
+                label='Subjects'
+                className={styles.formField}
                 onChange={this.handleSubjectsChange}
               />
               <TimeslotInput
                 outlined
-                label='Requested times'
+                label='Time'
                 className={styles.formField}
                 onChange={this.handleTimeslotChange}
+              />
+              <TextField
+                outlined
+                textarea
+                rows={4}
+                label='Message'
+                className={styles.formField}
+                onChange={this.handleMessageChange}
               />
               <Button className={styles.button} raised arrow>
                 Request {user.firstName}

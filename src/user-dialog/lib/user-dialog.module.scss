@@ -8,11 +8,11 @@
 }
 
 .leftSide {
-  margin-right: 16px;
+  margin-right: 12px;
 }
 
 .rightSide {
-  margin-left: 16px;
+  margin-left: 12px;
 }
 
 .name {
@@ -20,7 +20,7 @@
 }
 
 .button {
-  margin-top: 16px;
+  margin-top: 8px;
   width: 100%;
 }
 
@@ -28,15 +28,15 @@
   margin-top: 32px;
 }
 
-.input {
+.formField {
   margin: 8px 0;
   width: 100%;
 }
 
-.input:first-child {
+.formField:first-child {
   margin-top: 0;
 }
 
-.input:last-child {
+.formField:last-child {
   margin-bottom: 0;
 }
