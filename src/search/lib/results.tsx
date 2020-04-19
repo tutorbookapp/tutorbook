@@ -79,7 +79,12 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
   public render(): JSX.Element {
     return (
       <>
-        {!!this.state.viewing && <UserDialog user={this.state.viewing} />}
+        {!!this.state.viewing && (
+          <UserDialog
+            user={this.state.viewing}
+            onClose={() => this.setState({ viewing: undefined })}
+          />
+        )}
         <List twoLine avatarList>
           <AnimatedCheckmarkOverlay active={this.state.searching} />
           {this.renderResults()}
@@ -98,7 +103,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
           <ListItemGraphic
             icon={
               <Avatar
-                src='https://tutorbook.app/app/img/male.png'
+                src='https://lh3.googleusercontent.com/-2ZeeLPx2zIA/AAAAAAAAAAI/AAAAAAAAAAA/AAKWJJOyaBH4I4ySxbkrdmPwTbRp7T4lOA.CMID/s83-c/photo.jpg'
                 size='small'
                 name={result.name}
               />

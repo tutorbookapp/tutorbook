@@ -1,17 +1,19 @@
 {
-  "name": "@tutorbook/user-dialog",
+  "name": "@tutorbook/timeslot-input",
   "version": "0.0.1",
-  "description": "Dialog that shows tutor info and enables pupils to request tutors.",
+  "description": "Text field input for selecting a window of time.",
   "keywords": [
     "Tutorbook",
-    "Dialogs",
+    "Timeslot",
+    "Time-Select",
+    "Textfield",
     "React",
     "Typescript"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/user-dialog.tsx",
+  "main": "lib/timeslot-input.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -33,10 +35,6 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@rmwc/dialog": "^6.0.14",
-    "@tutorbook/button": "^0.0.1",
-    "@tutorbook/model": "^0.0.1",
-    "@tutorbook/subject-select": "^0.0.1",
-    "@tutorbook/timeslot-input": "^0.0.1"
+    "@tutorbook/model": "^0.0.1"
   }
 }

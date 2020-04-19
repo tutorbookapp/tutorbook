@@ -15,16 +15,16 @@ const client = algoliasearch('XCRT9EA6O8', 'aa1d293ac39b27e9671ece379c217da0');
 type SubjectsAlias = { [subject: string]: boolean };
 
 interface SubjectSelectState {
-  suggestionsOpen: boolean;
-  suggestions: string[];
-  subjects: SubjectsAlias;
+  readonly suggestionsOpen: boolean;
+  readonly suggestions: string[];
+  readonly subjects: SubjectsAlias;
   inputValueWorkaround: string;
 }
 
 export interface SubjectSelectProps extends TextFieldProps {
-  onChange: (subjects: string[]) => any;
-  className?: string;
-  val?: string[];
+  readonly onChange: (subjects: string[]) => any;
+  readonly className?: string;
+  readonly val?: string[];
 }
 
 interface SubjectHit extends ObjectWithObjectID {

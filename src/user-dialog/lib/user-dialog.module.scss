@@ -1,5 +1,42 @@
-.dialog {
+.avatar {
+  font-size: 5rem;
 }
 
-.dialogActions {
+.contentWrapper {
+  display: flex;
+  padding: 32px;
+}
+
+.leftSide {
+  margin-right: 16px;
+}
+
+.rightSide {
+  margin-left: 16px;
+}
+
+.name {
+  margin: 0;
+}
+
+.button {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.form {
+  margin-top: 32px;
+}
+
+.input {
+  margin: 8px 0;
+  width: 100%;
+}
+
+.input:first-child {
+  margin-top: 0;
+}
+
+.input:last-child {
+  margin-bottom: 0;
 }
