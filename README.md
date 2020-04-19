@@ -69,9 +69,9 @@ trying to contribute; it'll save your reputation and a lot of time):
   documentation). Typescript is also [well supported by
   Next.js](https://nextjs.org/docs/basic-features/typescript) and
   [React](https://reactjs.org/docs/static-type-checking.html#typescript).
-- [Sass](https://sass-lang.com) - For styling components. Sass, like Typescript,
-  is also [well supported by Next.js
-  out-of-box](https://nextjs.org/docs/basic-features/built-in-css-support#sass-support)
+- [Sass](https://sass-lang.com) - For styling components (i.e. CSS on steroids).
+  Sass, like Typescript, is also [well supported by Next.js
+  out-of-box.](https://nextjs.org/docs/basic-features/built-in-css-support#sass-support)
 
 #### Frameworks
 
