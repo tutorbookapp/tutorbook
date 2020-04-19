@@ -34,6 +34,7 @@ interface SubjectHit extends ObjectWithObjectID {
 export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   public readonly state: SubjectSelectState;
   private suggestionsTimeoutID?: number;
+  private foundationRef: any;
 
   private static searchIndex = client.initIndex('subjects');
 
@@ -65,11 +66,17 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   /**
    * Ensure that the input value workaround always works (even when this input's
    * value is being controlled by a parent component).
+   *
+   * Note that this also contains a painful workaround to ensure that the select
+   * menu is positioned correctly **even** if it's anchor (the `TextField`)
+   * changes shape.
+   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   public componentDidUpdate(): void {
     const val: string = this.getInputValue();
     if (this.props.val && val !== this.state.inputValueWorkaround)
       this.setState({ inputValueWorkaround: val });
+    this.foundationRef && this.foundationRef.autoPosition_();
   }
 
   /**
@@ -134,17 +141,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * if it were filled. Otherwise, this acts as it normally would by updating
    * the `TextField`'s value using `setState`.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
-   *
-   * Note that this also contains a painful workaround to ensure that the select
-   * menu is positioned correctly **even** if it's anchor (the `TextField`)
-   * changes shape.
-   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   private updateInputValue(event: React.FormEvent<HTMLInputElement>): void {
     const value: string = event.currentTarget.value || this.getInputValue();
     this.setState({ inputValueWorkaround: value });
     this.updateSuggestions(event.currentTarget.value);
-    window.dispatchEvent(new Event('resize'));
   }
 
   public render(): JSX.Element {
@@ -152,6 +153,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
+          foundationRef={(ref: any) => (this.foundationRef = ref)}
           open={this.state.suggestionsOpen}
           onFocus={this.openSuggestions}
           onBlur={this.closeSuggestions}
@@ -200,7 +202,6 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       .filter(([_, isSelected]) => isSelected)
       .map(([subject, _]) => subject);
     this.props.onChange(selected);
-    window.dispatchEvent(new Event('resize'));
   }
 
   private renderSubjectMenuItems(): JSX.Element[] {
