@@ -49,8 +49,14 @@ export default class Search extends React.Component<SearchProps> {
     filters: FiltersInterface
   ): Promise<ReadonlyArray<User>> {
     const results: User[] = [];
-    for (const filterString of Search.getFilterStrings(filters)) {
-      const options: SearchOptions = { filters: filterString };
+    let filterStrings: (string | undefined)[] = Search.getFilterStrings(
+      filters
+    );
+    if (!filterStrings.length) filterStrings = [undefined];
+    for (const filterString of filterStrings) {
+      const options: SearchOptions | undefined = filterString
+        ? { filters: filterString }
+        : undefined;
       const [err, res]: [
         Object | null,
         SearchResponse<UserSearchHitAlias> | undefined
@@ -85,18 +91,22 @@ export default class Search extends React.Component<SearchProps> {
    * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-arrays/?language=javascript}
    */
   public static getFilterStrings(filters: FiltersInterface): string[] {
-    let filterString: string = '(';
+    let filterString: string = '';
     for (let i = 0; i < filters.subjects.length; i++) {
-      if (i !== 0) filterString += ' OR ';
+      filterString += i === 0 ? '(' : ' OR ';
       filterString += `subjects.explicit:"${filters.subjects[i]}"`;
+      if (i === filters.subjects.length - 1) filterString += ')';
     }
+    if (filters.availability.length && filters.subjects.length)
+      filterString += ' AND ';
     const filterStrings: string[] = [];
     for (const timeslot of filters.availability)
       filterStrings.push(
         filterString +
-          `) AND availability.from <= ${timeslot.from.valueOf()}` +
-          ` AND availability.to >= ${timeslot.to.valueOf()}`
+          `(availability.from <= ${timeslot.from.valueOf()}` +
+          ` AND availability.to >= ${timeslot.to.valueOf()})`
       );
+    if (!filters.availability.length) filterStrings.push(filterString);
     return filterStrings;
   }
 
