@@ -18,6 +18,21 @@ type Timestamp = firebase.firestore.Timestamp;
 export type DayAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
+ * Enum that makes it easier to work with the integer representations of the
+ * various days of the week.
+ * @see {@link https://www.typescriptlang.org/docs/handbook/enums.html#numeric-enums}
+ */
+export enum Day {
+  Sunday,
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+}
+
+/**
  * One's schedule contains all your booked timeslots (the inverse of one's
  * availability).
  */
@@ -62,6 +77,19 @@ export class Timeslot implements TimeslotInterface {
    * @see {@link https://bit.ly/2XjNmB5}
    */
   public constructor(public from: Date, public to: Date) {}
+
+  /**
+   * Returns if this timeslot contains another timeslot (i.e. the starting time
+   * of the other timeslot is equal to or after the starting time of this
+   * timeslot **and** the ending time of the other timeslot is equal to or
+   * before the ending time of this timeslot).
+   */
+  public contains(other: Timeslot): boolean {
+    return (
+      other.from.valueOf() >= this.from.valueOf() &&
+      other.to.valueOf() <= this.to.valueOf()
+    );
+  }
 
   /**
    * Puts the time slot into string form.
