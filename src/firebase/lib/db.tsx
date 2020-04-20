@@ -1,17 +1,17 @@
 // TODO: Only initialize on client-side (no server-side authentication).
 
-import { createContext, useContext } from 'react';
+import React from 'react';
 
 import { DocumentReference } from '@firebase/firestore-types';
-import firebase from './index';
+import firebase from './base';
 
-export const DBContext = createContext(
+export const DBContext: React.Context<DocumentReference> = React.createContext(
   firebase.firestore().collection('partitions').doc('default')
 );
 
-export const useDB = () => useContext(DBContext);
+export const useDB = () => React.useContext(DBContext);
 
-export default function DBProvider({
+export function DBProvider({
   children,
 }: {
   children: JSX.Element[] | JSX.Element;

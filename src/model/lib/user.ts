@@ -26,6 +26,7 @@ export interface UserInterface {
   name: string;
   email?: string;
   phone?: string;
+  photo?: string;
   bio?: string;
   schedule: Availability;
   availability: Availability;
@@ -53,6 +54,7 @@ export class User implements UserInterface {
   public name: string = '';
   public email: string = '';
   public phone: string = '';
+  public photo: string = '';
   public bio: string = '';
   public schedule: Availability = new Availability();
   public availability: Availability = new Availability();
