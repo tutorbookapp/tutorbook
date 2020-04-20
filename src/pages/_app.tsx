@@ -1,7 +1,7 @@
 import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 
-import DBProvider from '../firebase/db';
+import { UserProvider, DBProvider } from '../firebase';
 
 import '../styles';
 
@@ -20,9 +20,11 @@ export default function App({ Component, pageProps }: AppProps) {
         body2: 'p',
       }}
     >
-      <DBProvider>
-        <Component {...pageProps} />
-      </DBProvider>
+      <UserProvider>
+        <DBProvider>
+          <Component {...pageProps} />
+        </DBProvider>
+      </UserProvider>
     </RMWCProvider>
   );
 }
