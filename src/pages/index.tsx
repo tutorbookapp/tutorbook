@@ -1,5 +1,6 @@
 import React from 'react';
 
+import CovidHead from '../head';
 import Header from '../header';
 import Footer from '../footer';
 import HeroForm from '../hero-form';
@@ -9,6 +10,7 @@ export default class IndexPage extends React.Component {
   public render(): JSX.Element {
     return (
       <>
+        <CovidHead />
         <Header white />
         <HeroForm />
         <HeroAbout />

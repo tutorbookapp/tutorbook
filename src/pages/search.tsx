@@ -1,6 +1,7 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 
+import CovidHead from '../head';
 import Header from '../header';
 import Footer from '../footer';
 import Search from '../search';
@@ -50,6 +51,7 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
   );
   return (
     <>
+      <CovidHead />
       <Header white />
       <Search filters={filters} results={results} />
       <Footer />
