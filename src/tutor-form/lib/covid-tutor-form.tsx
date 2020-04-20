@@ -1,5 +1,5 @@
 import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { useDB } from '@tutorbook/next-firebase/db';
+import { useDB } from '@tutorbook/next-firebase';
 import { User } from '@tutorbook/model';
 
 import styles from './covid-tutor-form.module.scss';

@@ -1,7 +1,7 @@
 import Router from 'next/router';
 import { DocumentReference } from '@firebase/firestore-types';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { useDB } from '@tutorbook/next-firebase/db';
+import { useDB } from '@tutorbook/next-firebase';
 import { User } from '@tutorbook/model';
 
 import styles from './covid-pupil-form.module.scss';
