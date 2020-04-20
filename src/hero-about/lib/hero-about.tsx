@@ -26,7 +26,9 @@ export default function HeroAbout() {
           <li>
             Help us recruit more volunteers by following #2 and by signing up{' '}
             <Link href='/tutors'>
-              <a>here</a>
+              <a>
+                <b>here</b>
+              </a>
             </Link>
             .
           </li>
