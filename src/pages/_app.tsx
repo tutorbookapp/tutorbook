@@ -3,6 +3,8 @@ import { RMWCProvider } from '@rmwc/provider';
 
 import { UserProvider, DBProvider } from '../firebase';
 
+import CovidHead from '../head';
+
 import '../styles';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -22,6 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
     >
       <UserProvider>
         <DBProvider>
+          <CovidHead />
           <Component {...pageProps} />
         </DBProvider>
       </UserProvider>
