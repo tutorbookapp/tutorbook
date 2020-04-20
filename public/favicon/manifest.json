@@ -1,0 +1,23 @@
+{
+  "name": "Tutorbook",
+  "short_name": "Tutorbook",
+  "scope": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#6200EE",
+  "background_color": "#FFFFFF",
+  "description": "Web app that enables peer tutoring like never before."
+}
