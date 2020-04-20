@@ -164,7 +164,15 @@ $ npm i && lerna bootstrap --hoist
 $ npm run dev
 ```
 
-10. From there, `cd` into your desired package (included in `src/`), make your
+10. Message me (DM **@nicholaschiang** on
+    [Slack](https://tutorbookapp.slack.com)) once (not if) you get the following
+    error (I have to give you some Firebase API keys to put in the `.env` file):
+
+```
+Error [FirebaseError]: projectId must be a string in FirebaseApp.options
+```
+
+11. Finally, `cd` into your desired package (included in `src/`), make your
     changes, commit them to a branch off of `develop`, push it to a [fork of our
     repository](https://github.com/tutorbookapp/covid-tutoring/fork), and open a
     PR on GitHub.
