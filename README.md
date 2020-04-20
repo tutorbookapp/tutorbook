@@ -156,23 +156,16 @@ $ git clone https://github.com/tutorbookapp/covid-tutoring.git && cd covid-tutor
 $ npm i && lerna bootstrap --hoist
 ```
 
-9. Then, you'll most likely want to branch off of `develop` and `cd` into our
-   [app packages](https://npmjs.com/org/tutorbook) by running:
-
-```
-$ git checkout -b $my_branch && cd src/app/packages
-```
-
-10. Follow the instructions included below to start a
-    [Next.js](https://nextjs.org) development server (to see your updates affect
-    the app live):
+9. Follow the instructions included below to start a
+   [Next.js](https://nextjs.org) development server (to see your updates affect
+   the app live):
 
 ```
 $ npm run dev
 ```
 
-11. From there, `cd` into your desired package (included in `src/`), make your
-    changes, commit them to your branch off of `develop`, [fork our
+10. From there, `cd` into your desired package (included in `src/`), make your
+    changes, commit them to a branch off of `develop`, push it to a [fork of our
     repository](https://github.com/tutorbookapp/covid-tutoring/fork), and open a
     PR on GitHub.
 
