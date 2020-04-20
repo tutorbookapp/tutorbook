@@ -1,6 +1,14 @@
 import React from 'react';
 import { TextField, TextFieldProps } from '@rmwc/textfield';
-import { Availability, Timeslot } from '@tutorbook/model';
+import {
+  Day,
+  DayAlias,
+  Availability,
+  TimeUtils,
+  Timeslot,
+} from '@tutorbook/model';
+
+import styles from './timeslot-input.module.scss';
 
 /**
  * The `TimeslotInput` was designed to be as fluid as possible (which is why
@@ -22,6 +30,7 @@ interface TimeslotInputProps extends TextFieldProps {
 
 interface TimeslotInputState {
   readonly val?: Timeslot;
+  readonly err?: string;
   readonly value: string;
 }
 
@@ -39,7 +48,11 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
 
   public constructor(props: TimeslotInputProps) {
     super(props);
-    this.state = { value: '', val: props.val };
+    this.state = {
+      value: props.val ? props.val.toParsableString() : '',
+      val: props.val,
+    };
+    this.handleChange = this.handleChange.bind(this);
   }
 
   /**
@@ -49,30 +62,106 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
    * > Saturdays from 2:35pm to 4:45 PM.
    * > Sundays from 4:45 PM to 3:45 AM.
    * > Sunday from 4:45PM to 8AM.
-   * This getter will first check if the current `this.state.value` is parsable
-   * (i.e. it fits with the above definitions). Then, it'll ensure that the time
-   * is within `this.props.availability`. Once both of those checks pass, it'll
-   * `return true`.
    * @todo Actually support all of the above formats (for our MVP, we only
    * support the first two).
+   *
+   * This method:
+   * 1. Validates the user input; shows an error message if it's invalid.
+   * 2. Updates `this.state.val` and calls the `onChange` listener with the
+   * updated `Timeslot` object.
    */
-  private get valid(): boolean {
-    const split: string[] = this.state.value.split(' ');
-    if (split.length !== 5) return false;
-    const day: string = split[0];
-    const from: string = split[2];
-    const to: string = split[4].replace('.', '');
+  private handleChange(event: React.SyntheticEvent<HTMLInputElement>): void {
+    this.setState({ value: event.currentTarget.value });
+    try {
+      const timeslot: Timeslot = this.timeslot;
+      let fitsWithinAvailability: boolean = !this.props.availability;
+      if (this.props.availability)
+        for (const t of this.props.availability) {
+          if (t.contains(timeslot)) {
+            fitsWithinAvailability = true;
+            break;
+          }
+        }
+      if (fitsWithinAvailability) {
+        this.setState({
+          err: undefined,
+          val: timeslot,
+        });
+        this.props.onChange(timeslot);
+      } else {
+        this.setState({
+          err: 'Please input a time that fits within the availability.',
+        });
+      }
+    } catch (e) {
+      this.setState({ err: 'Please format your input correctly.' });
+    }
   }
 
   /**
-   * Checks if the current `this.state.value` is valid. If it is, we parse it
-   * and update `this.state.val` as needed. Otherwise, we show the `TextField`
-   * as invalid and display a helper message.
+   * Parses an input (see below for examples) into a `Timeslot`:
+   * > Mondays at 3:00 PM to 4:00 PM.
+   * > Monday at 3:00 PM to 3:30 PM.
+   * This getter should only ever be called within a `try{} catch {}` sequence
+   * b/c it will throw an error every time if `this.state.value` isn't parsable.
    */
-  private update(): void {}
+  private get timeslot(): Timeslot {
+    const split: string[] = this.state.value.split(' ');
+    if (split.length !== 7) throw new Error('Invalid time string.');
+
+    const dayStr: string = split[0];
+    const fromStr: string = split[2];
+    const fromAMPM: string = split[3];
+    const toStr: string = split[5];
+    const toAMPM: string = split[6];
+
+    const day: keyof typeof Day = (dayStr.endsWith('s')
+      ? dayStr.slice(0, -1)
+      : dayStr) as keyof typeof Day;
+    const dayNum: DayAlias = Day[day];
+
+    let fromHr: number = new Number(fromStr.split(':')[0]).valueOf();
+    const fromMin: number = new Number(fromStr.split(':')[1]).valueOf();
+    if (fromAMPM === 'PM') {
+      fromHr += 12;
+    } else if (fromAMPM !== 'AM') {
+      throw new Error('Invalid AM/PM format for from time.');
+    }
+
+    let toHr: number = new Number(toStr.split(':')[0]).valueOf();
+    const toMin: number = new Number(toStr.split(':')[1]).valueOf();
+    if (toAMPM === 'PM' || toAMPM === 'PM.') {
+      toHr += 12;
+    } else if (toAMPM !== 'AM' && toAMPM !== 'AM.') {
+      throw new Error('Invalid AM/PM format for to time.');
+    }
+
+    const timeslot: Timeslot = new Timeslot(
+      TimeUtils.getDate(dayNum, fromHr, fromMin),
+      TimeUtils.getDate(dayNum, toHr, toMin)
+    );
+    return timeslot;
+  }
 
   public render(): JSX.Element {
-    const { onChange, ...rest } = this.props;
-    return <TextField {...rest} type='time' />;
+    const { onChange, className, availability, val, ...rest } = this.props;
+    return (
+      <div className={styles.wrapper + (className ? ' ' + className : '')}>
+        <TextField
+          {...rest}
+          placeholder='Ex. Mondays from 3:00 PM to 3:45 PM'
+          className={styles.textField}
+          value={this.state.value}
+          onChange={this.handleChange}
+          invalid={!!this.state.err}
+          helpText={
+            !!this.state.err && {
+              validationMsg: true,
+              children: this.state.err,
+            }
+          }
+        />
+      </div>
+    );
   }
 }

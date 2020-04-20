@@ -118,6 +118,21 @@ export class Timeslot implements TimeslotInterface {
     return str;
   }
 
+  /**
+   * Helper string conversion method that's **only** used by the `TimeslotInput`
+   * to convert it's value into a timestring.
+   * @todo Move the parsing logic from that input to this class.
+   * @todo Merge this with the `toString()` method.
+   * @todo Don't assume that the `from` and `to` times occur on the same day.
+   */
+  public toParsableString(): string {
+    return (
+      `${DAYS[this.from.getDay()]}s from ${this.from.getHours()}:` +
+      `${this.from.getMinutes().toFixed(2)} AM to ` +
+      `${this.to.getHours()}:${this.to.getMinutes().toFixed(2)} AM.`
+    );
+  }
+
   public equalTo(timeslot: TimeslotInterface): boolean {
     return (
       timeslot.from.valueOf() === this.from.valueOf() &&

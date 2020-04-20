@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@tutorbook/button';
 import SubjectSelect from '@tutorbook/subject-select';
 import TimeslotInput from '@tutorbook/timeslot-input';
-import { User, Timeslot, LessonRequest } from '@tutorbook/model';
+import { User, Timeslot, Appt } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
 import { TextField } from '@rmwc/textfield';
 import { Typography } from '@rmwc/typography';
@@ -11,12 +11,12 @@ import { Dialog, DialogProps } from '@rmwc/dialog';
 import styles from './user-dialog.module.scss';
 
 interface UserDialogState {
-  readonly request: LessonRequest;
+  readonly appt: Appt;
 }
 
 interface UserDialogProps extends DialogProps {
   readonly user: User;
-  readonly request?: LessonRequest;
+  readonly appt?: Appt;
   readonly className?: string;
 }
 
@@ -26,21 +26,44 @@ export default class UserDialog extends React.Component<UserDialogProps> {
   public constructor(props: UserDialogProps) {
     super(props);
     this.state = {
-      request: props.request || new LessonRequest(),
+      appt: props.appt || new Appt(),
     };
     this.handleSubjectsChange = this.handleSubjectsChange.bind(this);
     this.handleTimeslotChange = this.handleTimeslotChange.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
   }
 
-  private handleSubjectsChange(subjects: string[]): void {}
+  private handleSubjectsChange(subjects: string[]): void {
+    this.setState({
+      appt: new Appt({
+        ...this.state.appt,
+        subjects,
+      }),
+    });
+  }
 
-  private handleTimeslotChange(timeslot: Timeslot): void {}
+  private handleTimeslotChange(time: Timeslot): void {
+    this.setState({
+      appt: new Appt({
+        ...this.state.appt,
+        time,
+      }),
+    });
+  }
 
-  private handleMessageChange(
-    event: React.SyntheticEvent<HTMLInputElement>
-  ): void {}
+  private handleMessageChange(event: React.FormEvent<HTMLInputElement>): void {
+    this.setState({
+      appt: new Appt({
+        ...this.state.appt,
+        message: event.currentTarget.value,
+      }),
+    });
+  }
 
+  /**
+   * Renders the `UserDialog` that shows profile info and enables booking.
+   * @todo Only show the profile's subjects in the `SubjectSelect`.
+   */
   public render(): JSX.Element {
     const { user, className, ...rest } = this.props;
     return (
@@ -64,15 +87,20 @@ export default class UserDialog extends React.Component<UserDialogProps> {
             <form className={styles.form}>
               <SubjectSelect
                 outlined
+                required
                 label='Subjects'
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
+                val={this.state.appt.subjects}
               />
               <TimeslotInput
                 outlined
+                required
                 label='Time'
                 className={styles.formField}
                 onChange={this.handleTimeslotChange}
+                availability={user.availability}
+                val={this.state.appt.time}
               />
               <TextField
                 outlined
@@ -81,6 +109,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
                 label='Message'
                 className={styles.formField}
                 onChange={this.handleMessageChange}
+                value={this.state.appt.message}
               />
               <Button className={styles.button} raised arrow>
                 Request {user.firstName}
