@@ -55,7 +55,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
   private static times: Readonly<Timeslot[]> = [
     new Timeslot(TimeUtils.getDateWithTime(7), TimeUtils.getDateWithTime(12)),
     new Timeslot(TimeUtils.getDateWithTime(12), TimeUtils.getDateWithTime(17)),
-    new Timeslot(TimeUtils.getDateWithTime(17), TimeUtils.getDateWithTime(7)),
+    new Timeslot(TimeUtils.getDateWithTime(17), TimeUtils.getDateWithTime(22)),
   ];
 
   /**
