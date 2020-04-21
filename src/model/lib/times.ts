@@ -44,6 +44,8 @@ export type ScheduleAlias = TimeslotInterface[];
  */
 export type AvailabilityAlias = TimeslotInterface[];
 
+export type AvailabilityJSONAlias = TimeslotJSONInterface[];
+
 /**
  * Interface that represents an availability time opening or slot. Note that
  * right now, we just assume that these are recurring weekly.
@@ -157,7 +159,7 @@ export class Timeslot implements TimeslotInterface {
   }
 
   public toJSON(): TimeslotJSONInterface {
-    return { from: this.from.toISOString(), to: this.to.toISOString() };
+    return { from: this.from.toJSON(), to: this.to.toJSON() };
   }
 
   public static fromJSON(json: TimeslotJSONInterface): Timeslot {
@@ -228,16 +230,22 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   ): Availability {
     const availability: Availability = new Availability();
     data.forEach((t) => availability.push(Timeslot.fromFirestore(t)));
+    console.log(
+      '[DEBUG] Created new availability from Firestore:',
+      availability
+    );
     return availability;
   }
 
-  public toJSON(): TimeslotJSONInterface[] {
-    return this.map((timeslot) => timeslot.toJSON());
+  public toJSON(): AvailabilityJSONAlias {
+    console.log('[DEBUG] Converting to JSON:', this);
+    return this.map((timeslot: Timeslot) => timeslot.toJSON());
   }
 
-  public static fromJSON(json: TimeslotJSONInterface[]): Availability {
+  public static fromJSON(json: AvailabilityJSONAlias): Availability {
     const availability: Availability = new Availability();
-    json.forEach((t) => availability.push(Timeslot.fromJSON(t) as Timeslot));
+    json.forEach((t) => availability.push(Timeslot.fromJSON(t)));
+    console.log('[DEBUG] Created new availability from JSON:', availability);
     return availability;
   }
 
@@ -248,9 +256,10 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   public static fromURLParam(param: string): Availability {
     const availability: Availability = new Availability();
     const params: string[] = JSON.parse(decodeURIComponent(param));
-    params.forEach((timeslot) => {
-      availability.push(Timeslot.fromURLParam(timeslot));
+    params.forEach((timeslotParam: string) => {
+      availability.push(Timeslot.fromURLParam(timeslotParam));
     });
+    console.log('[DEBUG] Created availability from URL param:', availability);
     return availability;
   }
 }

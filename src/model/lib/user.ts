@@ -4,7 +4,7 @@ import {
   SnapshotOptions,
 } from '@firebase/firestore-types';
 import { ObjectWithObjectID } from '@algolia/client-search';
-import { Availability } from './times';
+import { Availability, AvailabilityJSONAlias } from './times';
 import url from 'url';
 
 /**
@@ -36,12 +36,27 @@ export interface UserInterface {
   notifications: NotificationsConfigAlias;
 }
 
+export interface UserJSONInterface {
+  uid?: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  photo?: string;
+  bio?: string;
+  schedule: AvailabilityJSONAlias;
+  availability: AvailabilityJSONAlias;
+  subjects: SubjectsInterface;
+  searches: SubjectsInterface;
+  parent?: string[];
+  notifications: NotificationsConfigAlias;
+}
+
 /**
  * What results from searching our users Algolia index.
  * @todo Perhaps we don't want to have duplicate fields (i.e. the `objectID`
  * field is **always** going to be equal to the `uid` field).
  */
-export type UserSearchHitAlias = UserInterface & ObjectWithObjectID;
+export type UserSearchHitAlias = UserJSONInterface & ObjectWithObjectID;
 
 /**
  * Class that provides default values for our `UserInterface` data model.
@@ -83,9 +98,8 @@ export class User implements UserInterface {
    */
   public constructor(user: Partial<UserInterface> = {}) {
     Object.entries(user).map(([key, val]: [string, any]) => {
-      if (!val) delete (user as Record<string, any>)[key];
+      if (val && key in this) (this as Record<string, any>)[key] = val;
     });
-    Object.assign(this, user);
   }
 
   public get firstName(): string {
@@ -97,15 +111,39 @@ export class User implements UserInterface {
     return parts[parts.length - 1];
   }
 
+  /**
+   * Saves this user in `window.localStorage`. Only call this method on the
+   * currently authenticated user (or the user that *will* be authenticated) as
+   * it overrides any existing user data in `window.localStorage`.
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage}
+   */
+  public setLocalStorage(): void {
+    Object.entries(this.toFirestore()).forEach(([key, val]: [string, any]) => {
+      window.localStorage.setItem(`user-${key}`, val);
+    });
+  }
+
   public static fromSearchHit(hit: UserSearchHitAlias): User {
-    return new User(Object.assign(hit, { uid: hit.objectID }));
+    const { schedule, availability, objectID, ...rest } = hit;
+    const user: Partial<UserInterface> = {
+      ...rest,
+      schedule: Availability.fromJSON(schedule),
+      availability: Availability.fromJSON(availability),
+      uid: objectID,
+    };
+    return new User(user);
   }
 
   public static fromFirestore(
     snapshot: QueryDocumentSnapshot,
     options?: SnapshotOptions
   ): User {
-    return new User(snapshot.data(options));
+    const { availability, schedule, ...rest } = snapshot.data(options);
+    return new User({
+      ...rest,
+      schedule: Availability.fromFirestore(schedule),
+      availability: Availability.fromFirestore(availability),
+    });
   }
 
   /**
@@ -120,6 +158,24 @@ export class User implements UserInterface {
       ...rest,
       schedule: schedule.toFirestore(),
       availability: availability.toFirestore(),
+    };
+  }
+
+  public static fromJSON(json: UserJSONInterface): User {
+    const { schedule, availability, ...rest } = json;
+    return new User({
+      ...rest,
+      schedule: Availability.fromJSON(schedule),
+      availability: Availability.fromJSON(availability),
+    });
+  }
+
+  public toJSON(): UserJSONInterface {
+    const { schedule, availability, ...rest } = this;
+    return {
+      ...rest,
+      schedule: schedule.toJSON(),
+      availability: availability.toJSON(),
     };
   }
 
