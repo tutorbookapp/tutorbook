@@ -43,8 +43,8 @@ export type ScheduleAlias = TimeslotInterface[];
  * schedule).
  */
 export type AvailabilityAlias = TimeslotInterface[];
-
 export type AvailabilityJSONAlias = TimeslotJSONInterface[];
+export type AvailabilityFirestoreAlias = TimeslotFirestoreInterface[];
 
 /**
  * Interface that represents an availability time opening or slot. Note that
@@ -216,8 +216,8 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return !!this.filter((t) => t.equalTo(timeslot)).length;
   }
 
-  public toFirestore(): TimeslotFirestoreInterface[] {
-    return this.map((timeslot) => timeslot.toFirestore());
+  public toFirestore(): AvailabilityFirestoreAlias {
+    return Array.from(this.map((timeslot: Timeslot) => timeslot.toFirestore()));
   }
 
   /**
@@ -225,27 +225,26 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * objects in the `from` and `to` fields instead of `Date` objects) and
    * returns an `Availability` object.
    */
-  public static fromFirestore(
-    data: TimeslotFirestoreInterface[]
-  ): Availability {
+  public static fromFirestore(data: AvailabilityFirestoreAlias): Availability {
     const availability: Availability = new Availability();
     data.forEach((t) => availability.push(Timeslot.fromFirestore(t)));
-    console.log(
-      '[DEBUG] Created new availability from Firestore:',
-      availability
-    );
     return availability;
   }
 
+  /**
+   * Returns a basic `Array` object containing `TimeslotJSONInterface`s. Note
+   * that we **must** wrap the `this.map` statement with an `Array.from` call
+   * because otherwise, we'd just return an invalid `Availability` object (which
+   * would cause subsequent `toJSON` calls to fail because the new array
+   * wouldn't contain valid `Timeslot` objects).
+   */
   public toJSON(): AvailabilityJSONAlias {
-    console.log('[DEBUG] Converting to JSON:', this);
-    return this.map((timeslot: Timeslot) => timeslot.toJSON());
+    return Array.from(this.map((timeslot: Timeslot) => timeslot.toJSON()));
   }
 
   public static fromJSON(json: AvailabilityJSONAlias): Availability {
     const availability: Availability = new Availability();
     json.forEach((t) => availability.push(Timeslot.fromJSON(t)));
-    console.log('[DEBUG] Created new availability from JSON:', availability);
     return availability;
   }
 
@@ -259,7 +258,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     params.forEach((timeslotParam: string) => {
       availability.push(Timeslot.fromURLParam(timeslotParam));
     });
-    console.log('[DEBUG] Created availability from URL param:', availability);
     return availability;
   }
 }
