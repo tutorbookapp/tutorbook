@@ -24,6 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
     >
       <UserProvider>
         <DBProvider>
+          <div id='portal' />
           <CovidHead />
           <Component {...pageProps} />
         </DBProvider>

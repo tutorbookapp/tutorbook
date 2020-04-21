@@ -25,6 +25,7 @@ export interface SubjectSelectProps extends TextFieldProps {
   readonly onChange: (subjects: string[]) => any;
   readonly className?: string;
   readonly val?: string[];
+  readonly renderToPortal?: boolean;
 }
 
 interface SubjectHit extends ObjectWithObjectID {
@@ -152,7 +153,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   }
 
   public render(): JSX.Element {
-    const { className, onChange, ...rest } = this.props;
+    const { renderToPortal, className, onChange, ...rest } = this.props;
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
@@ -161,6 +162,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           onFocus={this.openSuggestions}
           onBlur={this.closeSuggestions}
           anchorCorner='bottomStart'
+          renderToPortal={renderToPortal ? '#portal' : false}
         >
           <List>{this.renderSubjectMenuItems()}</List>
         </MenuSurface>

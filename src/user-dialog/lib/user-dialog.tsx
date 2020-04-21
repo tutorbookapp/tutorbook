@@ -1,7 +1,9 @@
 import React from 'react';
+import Utils from '@tutorbook/covid-utils';
 import Button from '@tutorbook/button';
 import SubjectSelect from '@tutorbook/subject-select';
 import TimeslotInput from '@tutorbook/timeslot-input';
+import { UserContext } from '@tutorbook/next-firebase';
 import { User, Timeslot, Appt } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
 import { TextField } from '@rmwc/textfield';
@@ -22,11 +24,34 @@ interface UserDialogProps extends DialogProps {
 
 export default class UserDialog extends React.Component<UserDialogProps> {
   public readonly state: UserDialogState;
+  public static readonly contextType: React.Context<User> = UserContext;
 
   public constructor(props: UserDialogProps) {
     super(props);
     this.state = {
-      appt: props.appt || new Appt(),
+      appt:
+        props.appt ||
+        new Appt({
+          attendees: [
+            {
+              uid: props.user.uid,
+              roles: ['tutor'],
+            },
+            {
+              uid: this.context.uid,
+              roles: ['pupil'],
+            },
+          ],
+          subjects: Utils.intersection<string>(
+            props.user.subjects.explicit,
+            this.context.searches.explicit
+          ),
+          time: Utils.intersection<Timeslot>(
+            props.user.availability,
+            this.context.availability,
+            (a, b) => a.equalTo(b)
+          )[0],
+        }),
     };
     this.handleSubjectsChange = this.handleSubjectsChange.bind(this);
     this.handleTimeslotChange = this.handleTimeslotChange.bind(this);
@@ -88,6 +113,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
               <SubjectSelect
                 outlined
                 required
+                renderToPortal
                 label='Subjects'
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
