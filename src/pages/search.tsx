@@ -1,10 +1,12 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
+import { IncomingMessage } from 'http';
 
 import Header from '../header';
 import Footer from '../footer';
 import Search from '../search';
 
+import { UserProvider } from '../firebase';
 import {
   User,
   FiltersInterface,
@@ -23,6 +25,8 @@ interface SearchPageProps {
  * @todo Remove the `JSON.parse(JSON.stringify(ob))` workaround.
  */
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const req: IncomingMessage = context.req;
+  UserProvider.attemptSignIn(`https://${req.headers.host}${req.url}`);
   const subjects: string = context.query.subjects as string;
   const availability: string = context.query.availability as string;
   const filters: FiltersInterface = {
