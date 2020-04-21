@@ -5,6 +5,10 @@ import 'firebase/firestore';
  * This is a painful workaround as we then import the entire Firebase library
  * definition while we only want the `Timestamp` object.
  * @todo Only import the `Timestamp` definition.
+ * @todo Add support for the server-side `Timestamp` definition as well; right
+ * now, we're not even using these type definitions because the Firebase Admin
+ * SDK is telling us that the client-side and server-side type definitions are
+ * incompatible.
  * @see {@link https://stackoverflow.com/a/57984831/10023158}
  */
 const Timestamp = firebase.firestore.Timestamp;
@@ -143,9 +147,15 @@ export class Timeslot implements TimeslotInterface {
   }
 
   public toFirestore(): TimeslotFirestoreInterface {
+    /*
+     *return {
+     *  from: Timestamp.fromDate(this.from),
+     *  to: Timestamp.fromDate(this.to),
+     *};
+     */
     return {
-      from: Timestamp.fromDate(this.from),
-      to: Timestamp.fromDate(this.to),
+      from: (this.from as unknown) as Timestamp,
+      to: (this.to as unknown) as Timestamp,
     };
   }
 

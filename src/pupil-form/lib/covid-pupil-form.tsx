@@ -1,10 +1,7 @@
 import Router from 'next/router';
-import { DocumentReference } from '@firebase/firestore-types';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { User } from '@tutorbook/model';
-
-import axios from 'axios';
-import to from 'await-to-js';
+import { UserProvider } from '@tutorbook/next-firebase';
 
 import styles from './covid-pupil-form.module.scss';
 
@@ -114,18 +111,7 @@ export default function PupilForm() {
               phone: parentPhone,
             });
             const pupil: User = new User(rest);
-            const [err, res] = await to(
-              axios({
-                method: 'post',
-                url: '/api/signup',
-                data: {
-                  parent: parent.toJSON(),
-                  user: pupil.toJSON(),
-                },
-              })
-            );
-            if (err) console.error('[ERROR] While signing up:', err);
-            console.log('[DEBUG] Got sign-up response:', res);
+            await UserProvider.signup(pupil, parent);
             Router.push(pupil.searchURL);
           }}
         />

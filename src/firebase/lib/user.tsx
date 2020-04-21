@@ -1,11 +1,13 @@
 import React from 'react';
 import { User as FirebaseUser, Unsubscribe, auth } from 'firebase';
 import { User, UserInterface } from '@tutorbook/model';
+import { AxiosError, AxiosResponse } from 'axios';
 
+import axios from 'axios';
+import to from 'await-to-js';
 import firebase from './base';
 
 // TODO: Import these directly w/out use of type aliases.
-type ActionCodeSettings = auth.ActionCodeSettings;
 type Auth = auth.Auth;
 
 interface UserProviderProps {
@@ -65,57 +67,35 @@ export class UserProvider extends React.Component<UserProviderProps> {
     );
   }
 
-  /**
-   * Sends an authentication link to the given user's email address to log them
-   * in.
-   *
-   * There are numerous benefits to signing in by email:
-   * - Low friction sign-up and sign-in.
-   * - Lower risk of password reuse across applications, which can undermine
-   *   security of even well-selected passwords.
-   * - The ability to authenticate a user while also verifying that the user is
-   *   the legitimate owner of an email address.
-   * - A user only needs an accessible email account to sign in. No ownership of
-   *   a phone number or social media account is required.
-   * - A user can sign in securely without the need to provide (or remember) a
-   *   password, which can be cumbersome on a mobile device.
-   * - An existing user who previously signed in with an email identifier
-   *   (password or federated) can be upgraded to sign in with just the email.
-   *   For example, a user who has forgotten their password can still sign in
-   *   without needing to reset their password.
-   *
-   * @see {@link https://firebase.google.com/docs/auth/web/email-link-auth}
-   */
-  public static async signUp(user: User): Promise<void> {
-    const settings: ActionCodeSettings = {
-      url:
-        window.location.protocol +
-        '//' +
-        window.location.hostname +
-        ':' +
-        window.location.port +
-        user.searchURL,
-      handleCodeInApp: true,
-    };
-    user.setLocalStorage();
-    return UserProvider.auth.sendSignInLinkToEmail(user.email, settings);
-  }
-
-  public static attemptSignIn(
-    url: string = window.location.href
-  ): Promise<void> | void {
-    console.log('[DEBUG] Attempting to sign-in:', url);
-    if (UserProvider.auth.isSignInWithEmailLink(url))
-      return UserProvider.signIn(url);
-  }
-
-  public static async signIn(
-    url: string = window.location.href
-  ): Promise<void> {
-    let email: string | null = window.localStorage.getItem('user-email');
-    if (!email)
-      email = window.prompt('Please provide your email for confirmation.');
-    await UserProvider.auth.signInWithEmailLink(email as string, url);
-    console.log('[DEBUG] Signed in:', UserProvider.auth.currentUser);
+  public static async signup(user: User, parent?: User): Promise<void> {
+    const [err, res] = await to<
+      AxiosResponse<{ token: string }>,
+      AxiosError<string>
+    >(
+      axios({
+        method: 'post',
+        url: '/api/signup',
+        data: {
+          user: user.toJSON(),
+          parent: parent ? parent.toJSON() : parent,
+        },
+      })
+    );
+    if (err && err.response) {
+      // The request was made and the server responded with a status
+      // code that falls out of the range of 2xx
+      console.error(`[ERROR] ${err.response.data}`);
+    } else if (err && err.request) {
+      // The request was made but no response was received
+      // `err.request` is an instance of XMLHttpRequest in the
+      // browser and an instance of http.ClientRequest in node.js
+      console.error('[ERROR] No response received:', err.request);
+    } else if (err) {
+      // Something happened in setting up the request that triggered
+      // an err
+      console.error('[ERROR] While sending request:', err);
+    } else if (res) {
+      await UserProvider.auth.signInWithCustomToken(res.data.token);
+    }
   }
 }

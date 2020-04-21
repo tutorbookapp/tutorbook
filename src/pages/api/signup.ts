@@ -1,16 +1,27 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { DocumentReference } from '@google-cloud/firestore';
 import { User } from '../../model';
 
+import { v4 as uuid } from 'uuid';
+import to from 'await-to-js';
 import * as admin from 'firebase-admin';
+
+type DocumentReference = admin.firestore.DocumentReference;
+type UserRecord = admin.auth.UserRecord;
+type App = admin.app.App;
+type Auth = admin.auth.Auth;
 
 /**
  * Initializes a new `firebase.admin` instance with limited database/Firestore
  * capabilities (using the `databaseAuthVariableOverride` option).
  * @see {@link https://firebase.google.com/docs/reference/admin/node/admin.AppOptions#optional-databaseauthvariableoverride}
  * @see {@link https://firebase.google.com/docs/database/admin/start#authenticate-with-limited-privileges}
+ *
+ * Also note that we use [UUID]{@link https://github.com/uuidjs/uuid} package to
+ * generate a unique `firebaseAppId` every time this API is called.
+ * @todo Lift this Firebase app definition to a top-leve file that is imported
+ * by all the `/api/` endpoints.
  */
-const firebase: admin.app.App = admin.initializeApp(
+const firebase: App = admin.initializeApp(
   {
     credential: admin.credential.cert({
       type: process.env.FIREBASE_ADMIN_TYPE,
@@ -32,13 +43,22 @@ const firebase: admin.app.App = admin.initializeApp(
       uid: 'server',
     },
   },
-  'server'
+  uuid()
 );
 
+const auth: Auth = firebase.auth();
+const db: DocumentReference =
+  process.env.NODE_ENV === 'development'
+    ? firebase.firestore().collection('partitions').doc('test')
+    : firebase.firestore().collection('partitions').doc('default');
+
 /**
- * Takes the parsed results of a sign-up form (e.g. the `hero-form`) and creates
- * a new Firestore Authentication user, Firestore profile document, and sends an
- * email sign-in link to that user.
+ * Takes the parsed results of a sign-up form (e.g. the `hero-form`) and:
+ * 1. Creates and signs-in a new Firebase Authentication user.
+ * 2. (Optional) Creates a new Firesbase Authentication user for the parent.
+ * 3. (Optional) Creates a new Firestore profile document for the parent.
+ * 4. Creates a new Firestore profile document for the given user.
+ * 5. Sends an email verification link to the new user (and his/her parent).
  * @param {User} user - The user to create (should be in JSON form).
  * @param {User} [parent] - The parent of the given user to create (also JSON).
  */
@@ -51,19 +71,66 @@ export default async function signup(
   } else if (!req.body.user) {
     res.status(400).send('Your request body must contain a user field.');
   } else {
-    const db: DocumentReference =
-      process.env.NODE_ENV === 'development'
-        ? firebase.firestore().collection('partitions').doc('test')
-        : firebase.firestore().collection('partitions').doc('default');
     const user: User = User.fromJSON(req.body.user);
-    const userRef: DocumentReference = db.collection('users').doc();
-    if (req.body.parent) {
-      const parent: User = User.fromJSON(req.body.parent);
-      const parentRef: DocumentReference = db.collection('users').doc();
-      user.parent = parentRef.id;
-      await parentRef.set(parent.toFirestore());
+    const [err, userRecord] = await to<UserRecord>(
+      auth.createUser({
+        disabled: false,
+        displayName: user.name,
+        photoURL: user.photo ? user.photo : undefined,
+        email: user.email,
+        emailVerified: false,
+        phoneNumber: user.phone ? user.phone : undefined,
+      })
+    );
+    if (err) {
+      console.error(`[ERROR] ${err.name} while creating user account:`, err);
+      res
+        .status(500)
+        .send(`${err.name} while creating user account: ${err.message}`);
+    } else {
+      user.uid = userRecord.uid;
+      console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
+      const userRef: DocumentReference = db.collection('users').doc(user.uid);
+      if (req.body.parent) {
+        const parent: User = User.fromJSON(req.body.parent);
+        const [err, parentRecord] = await to<UserRecord>(
+          auth.createUser({
+            disabled: false,
+            displayName: parent.name,
+            photoURL: parent.photo ? parent.photo : undefined,
+            email: parent.email,
+            emailVerified: false,
+            phoneNumber: parent.phone ? parent.phone : undefined,
+          })
+        );
+        if (err) {
+          console.warn(`[WARNING] ${err.name} while creating parent:`, err);
+        } else {
+          user.parent = parent.uid = parentRecord.uid;
+          console.log(
+            `[DEBUG] Created ${parent.name}'s account (${parent.uid}).`
+          );
+          const parentRef: DocumentReference = db
+            .collection('users')
+            .doc(parent.uid);
+          await parentRef.set(parent.toFirestore());
+        }
+      }
+      await userRef.set(user.toFirestore());
+      const [err, token] = await to<string>(auth.createCustomToken(user.uid));
+      if (err) {
+        console.error(
+          `[ERROR] ${err.name} while creating custom login token:`,
+          err
+        );
+        res
+          .status(500)
+          .send(
+            `${err.name} while creating custom login token: ${err.message}`
+          );
+      } else {
+        res.status(200).json({ token });
+      }
     }
-    await userRef.set(user.toFirestore());
-    res.status(200).send(`Successfully created user (${userRef.id}).`);
   }
 }
