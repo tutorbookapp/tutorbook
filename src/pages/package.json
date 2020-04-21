@@ -1,7 +1,7 @@
 {
   "name": "@tutorbook/covid",
   "version": "0.0.1",
-  "description": "Package containing the COVID Tutoring Initiative's Next.js website pages.",
+  "description": "The COVID Tutoring Initiative's website pages and API.",
   "keywords": [
     "Tutorbook",
     "COVID",
@@ -44,8 +44,10 @@
     "@tutorbook/covid-styles": "^0.0.1",
     "@tutorbook/covid-tutor-form": "^0.0.1",
     "@tutorbook/next-firebase": "^0.0.1",
+    "firebase-admin": "^8.10.0",
     "next": "^9.3.4",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "uuid": "^7.0.3"
   }
 }
