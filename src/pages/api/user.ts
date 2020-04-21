@@ -62,7 +62,7 @@ const db: DocumentReference =
  * @param {User} user - The user to create (should be in JSON form).
  * @param {User} [parent] - The parent of the given user to create (also JSON).
  */
-export default async function signup(
+export default async function user(
   req: NextApiRequest,
   res: NextApiResponse<void>
 ): Promise<void> {

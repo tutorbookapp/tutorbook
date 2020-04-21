@@ -74,7 +74,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
     >(
       axios({
         method: 'post',
-        url: '/api/signup',
+        url: '/api/user',
         data: {
           user: user.toJSON(),
           parent: parent ? parent.toJSON() : parent,
