@@ -1,4 +1,5 @@
 import React from 'react';
+import Utils from '@tutorbook/covid-utils';
 import UserDialog from '@tutorbook/user-dialog';
 import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
 import { UserContext } from '@tutorbook/next-firebase';
@@ -91,23 +92,6 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
   private get appt(): Appt {
     if (!this.state.viewing) return new Appt();
 
-    /**
-     * Helper function that returns the intersection of two given arrays (using
-     * the given `compare` function to check if elements overlap).
-     * @see {@link https://stackoverflow.com/a/16227294/10023158}
-     */
-    function intersect(
-      a: Array<any>,
-      b: Array<any>,
-      compare: (a: any, b: any) => boolean
-    ): Array<any> {
-      let t: Array<any>;
-      if (b.length > a.length) (t = b), (b = a), (a = t); // Use smaller array.
-      return a.filter((item: any) => {
-        return b.findIndex((i: any) => compare(i, item)) > -1;
-      });
-    }
-
     const attendees: AttendeeInterface[] = [
       {
         uid: this.state.viewing.uid,
@@ -118,12 +102,11 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
         roles: ['pupil'],
       },
     ];
-    const subjects: string[] = intersect(
+    const subjects: string[] = Utils.intersection<string>(
       this.props.filters.subjects,
-      this.state.viewing.subjects.explicit,
-      (a, b) => a === b
+      this.state.viewing.subjects.explicit
     );
-    const times: Timeslot[] = intersect(
+    const times: Timeslot[] = Utils.intersection<Timeslot>(
       this.props.filters.availability,
       this.state.viewing.availability,
       (a, b) => a.equalTo(b)
