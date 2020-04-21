@@ -1,8 +1,10 @@
 import Router from 'next/router';
 import { DocumentReference } from '@firebase/firestore-types';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { useDB } from '@tutorbook/next-firebase';
 import { User } from '@tutorbook/model';
+
+import axios from 'axios';
+import to from 'await-to-js';
 
 import styles from './covid-pupil-form.module.scss';
 
@@ -36,7 +38,6 @@ const GRADES: string[] = [
  * - (availability) When are you available?
  */
 export default function PupilForm() {
-  const db = useDB();
   return (
     <div className={styles.formWrapper}>
       <div className={styles.formContent}>
@@ -112,16 +113,19 @@ export default function PupilForm() {
               email: parentEmail,
               phone: parentPhone,
             });
-            const parentRef: DocumentReference = db.collection('users').doc();
-            const pupil: User = new User({
-              ...rest,
-              parent: [parentRef.id],
-            });
-            const pupilRef: DocumentReference = db.collection('users').doc();
-            await Promise.all([
-              parentRef.set(parent.toFirestore()),
-              pupilRef.set(pupil.toFirestore()),
-            ]);
+            const pupil: User = new User(rest);
+            const [err, res] = await to(
+              axios({
+                method: 'post',
+                url: '/api/signup',
+                data: {
+                  parent: parent.toJSON(),
+                  user: pupil.toJSON(),
+                },
+              })
+            );
+            if (err) console.error('[ERROR] While signing up:', err);
+            console.log('[DEBUG] Got sign-up response:', res);
             Router.push(pupil.searchURL);
           }}
         />

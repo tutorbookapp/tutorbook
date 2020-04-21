@@ -1,8 +1,11 @@
 import React from 'react';
 import Router from 'next/router';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { useDB } from '@tutorbook/next-firebase';
 import { User } from '@tutorbook/model';
+import { AxiosError, AxiosResponse } from 'axios';
+
+import axios from 'axios';
+import to from 'await-to-js';
 
 import styles from './hero-form.module.scss';
 
@@ -16,7 +19,6 @@ import styles from './hero-form.module.scss';
  * - (availability) When are you available?
  */
 export default function HeroForm() {
-  const db = useDB();
   return (
     <>
       <div className={styles.heroFormWrapper}>
@@ -52,7 +54,33 @@ export default function HeroForm() {
             submitLabel='Request free tutoring'
             onFormSubmit={async (formValues) => {
               const pupil: User = new User(formValues);
-              await db.collection('users').doc().set(pupil.toFirestore());
+              const [err, res] = await to<AxiosResponse, AxiosError>(
+                axios({
+                  method: 'post',
+                  url: '/api/signup',
+                  data: {
+                    user: pupil.toJSON(),
+                  },
+                })
+              );
+              if (err && err.response) {
+                // The request was made and the server responded with a status
+                // code that falls out of the range of 2xx
+                console.log(err.response.data);
+                console.log(err.response.status);
+                console.log(err.response.headers);
+                console.log(err.response);
+              } else if (err && err.request) {
+                // The request was made but no response was received
+                // `err.request` is an instance of XMLHttpRequest in the
+                // browser and an instance of http.ClientRequest in node.js
+                console.log(err.request);
+              } else if (err) {
+                // Something happened in setting up the request that triggered
+                // an err
+                console.log('err', err.message);
+              }
+              console.log('[DEBUG] Got sign-up response:', res);
               Router.push(pupil.searchURL);
             }}
             className={styles.heroForm}
