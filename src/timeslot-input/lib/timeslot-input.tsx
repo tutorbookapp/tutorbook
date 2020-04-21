@@ -70,7 +70,7 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
    * 2. Updates `this.state.val` and calls the `onChange` listener with the
    * updated `Timeslot` object.
    */
-  private handleChange(event: React.SyntheticEvent<HTMLInputElement>): void {
+  private handleChange(event: React.FormEvent<HTMLInputElement>): void {
     this.setState({ value: event.currentTarget.value });
     try {
       const timeslot: Timeslot = this.timeslot;

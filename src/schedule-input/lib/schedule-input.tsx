@@ -100,7 +100,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    */
   private setChecked(
     timeslot: Timeslot,
-    event: React.SyntheticEvent<HTMLInputElement>
+    event: React.FormEvent<HTMLInputElement>
   ): void {
     const copy: Availability = this.state.availability.filter(
       (t) => !t.equalTo(timeslot)

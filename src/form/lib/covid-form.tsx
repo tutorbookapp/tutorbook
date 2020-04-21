@@ -140,7 +140,7 @@ export default class Form extends React.Component<FormProps, {}> {
    */
   private handleInputChange(
     input: UniqueInputProps & (TextFieldProps | SelectProps),
-    event: React.SyntheticEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.FormEvent<HTMLInputElement | HTMLSelectElement>
   ): void {
     this.values[input.key ? input.key : input.label] = (event.target as
       | HTMLInputElement
@@ -151,7 +151,7 @@ export default class Form extends React.Component<FormProps, {}> {
    * Submits the current form values (stored in `this.values`).
    * @todo Catch any submission errors using `await-to-js`.
    */
-  private async submit(event: React.SyntheticEvent): Promise<void> {
+  private async submit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     this.setState({ submitting: true });
     await this.props.onFormSubmit(this.values);
