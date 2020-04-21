@@ -29,11 +29,13 @@ export class Appt implements ApptInterface {
    * the above specified defaults) **and** to gain access to a bunch of useful
    * conversion method, etc (e.g. `toString` actually makes sense now).
    * @todo Actually implement a useful `toString` method here.
+   * @todo Perhaps add an explicit check to ensure that the given `val`'s type
+   * matches the default value at `this[key]`'s type; and then only update the
+   * default value if the types match.
    */
   public constructor(request: Partial<ApptInterface> = {}) {
     Object.entries(request).map(([key, val]: [string, any]) => {
-      if (!val) delete (request as Record<string, any>)[key];
+      if (val && key in this) (this as Record<string, any>)[key] = val;
     });
-    Object.assign(this, request);
   }
 }

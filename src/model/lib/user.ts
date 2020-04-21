@@ -95,6 +95,9 @@ export class User implements UserInterface {
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
    * values contained in the given `UserInterface` object.
+   * @todo Perhaps add an explicit check to ensure that the given `val`'s type
+   * matches the default value at `this[key]`'s type; and then only update the
+   * default value if the types match.
    */
   public constructor(user: Partial<UserInterface> = {}) {
     Object.entries(user).map(([key, val]: [string, any]) => {
