@@ -1,4 +1,4 @@
-import { TimeUtils, Timeslot } from './times';
+import { TimeUtils, Timeslot, TimeslotJSONInterface } from './times';
 
 type RoleAlias = 'tutor' | 'pupil';
 
@@ -11,6 +11,13 @@ export interface ApptInterface {
   subjects: string[];
   attendees: AttendeeInterface[];
   time: Timeslot;
+  message?: string;
+}
+
+export interface ApptJSONInterface {
+  subjects: string[];
+  attendees: AttendeeInterface[];
+  time: TimeslotJSONInterface;
   message?: string;
 }
 
@@ -37,5 +44,15 @@ export class Appt implements ApptInterface {
     Object.entries(request).map(([key, val]: [string, any]) => {
       if (val && key in this) (this as Record<string, any>)[key] = val;
     });
+  }
+
+  public toJSON(): ApptJSONInterface {
+    const { time, ...rest } = this;
+    return { ...rest, time: time.toJSON() };
+  }
+
+  public static fromJSON(json: ApptJSONInterface): Appt {
+    const { time, ...rest } = json;
+    return new Appt({ ...rest, time: Timeslot.fromJSON(time) });
   }
 }
