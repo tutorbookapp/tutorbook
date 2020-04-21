@@ -134,8 +134,8 @@ export class Timeslot implements TimeslotInterface {
   public toParsableString(): string {
     return (
       `${DAYS[this.from.getDay()]}s from ${this.from.getHours()}:` +
-      `${this.from.getMinutes().toFixed(2)} AM to ` +
-      `${this.to.getHours()}:${this.to.getMinutes().toFixed(2)} AM.`
+      `${('0' + this.from.getMinutes()).slice(-2)} AM to ` +
+      `${this.to.getHours()}:${('0' + this.to.getMinutes()).slice(-2)} AM.`
     );
   }
 
