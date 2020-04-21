@@ -1,19 +1,26 @@
 import React from 'react';
 import Utils from '@tutorbook/covid-utils';
 import Button from '@tutorbook/button';
-import SubjectSelect from '@tutorbook/subject-select';
 import TimeslotInput from '@tutorbook/timeslot-input';
+import SubjectSelect from '@tutorbook/subject-select';
+import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
 import { UserContext } from '@tutorbook/next-firebase';
 import { User, Timeslot, Appt } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
 import { TextField } from '@rmwc/textfield';
 import { Typography } from '@rmwc/typography';
 import { Dialog, DialogProps } from '@rmwc/dialog';
+import { AxiosResponse, AxiosError } from 'axios';
+
+import axios from 'axios';
+import to from 'await-to-js';
 
 import styles from './user-dialog.module.scss';
 
 interface UserDialogState {
-  readonly appt: Appt;
+  readonly appt: Readonly<Appt>;
+  readonly submitting: boolean;
+  readonly submitted: boolean;
 }
 
 interface UserDialogProps extends DialogProps {
@@ -52,10 +59,13 @@ export default class UserDialog extends React.Component<UserDialogProps> {
             (a, b) => a.equalTo(b)
           )[0],
         }),
+      submitting: false,
+      submitted: false,
     };
     this.handleSubjectsChange = this.handleSubjectsChange.bind(this);
     this.handleTimeslotChange = this.handleTimeslotChange.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   private handleSubjectsChange(subjects: string[]): void {
@@ -85,6 +95,26 @@ export default class UserDialog extends React.Component<UserDialogProps> {
     });
   }
 
+  private async handleSubmit(event: React.FormEvent): Promise<void> {
+    event.preventDefault();
+    this.setState({ submitted: false, submitting: true });
+    const [err, res] = await to<AxiosResponse, AxiosError>(
+      axios({
+        method: 'post',
+        url: '/api/appt',
+        data: {
+          appt: this.state.appt.toJSON(),
+        },
+      })
+    );
+    if (err) {
+      console.error(`[ERROR] ${err.name} while creating appt:`, err);
+    } else if (res) {
+      console.log('[DEBUG] Created appt:', res.data);
+    }
+    this.setState({ submitted: true, submitting: false });
+  }
+
   /**
    * Renders the `UserDialog` that shows profile info and enables booking.
    * @todo Only show the profile's subjects in the `SubjectSelect`.
@@ -93,6 +123,10 @@ export default class UserDialog extends React.Component<UserDialogProps> {
     const { user, className, ...rest } = this.props;
     return (
       <Dialog {...rest} open>
+        <AnimatedCheckmarkOverlay
+          active={this.state.submitting || this.state.submitted}
+          checked={this.state.submitted}
+        />
         <div className={styles.contentWrapper}>
           <div className={styles.leftSide}>
             <Avatar
@@ -109,7 +143,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
             <Typography className={styles.bio} use='body1'>
               {user.bio}
             </Typography>
-            <form className={styles.form}>
+            <form className={styles.form} onSubmit={this.handleSubmit}>
               <SubjectSelect
                 outlined
                 required

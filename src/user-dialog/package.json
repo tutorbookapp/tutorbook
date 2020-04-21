@@ -34,11 +34,14 @@
   },
   "dependencies": {
     "@rmwc/dialog": "^6.0.14",
+    "@tutorbook/animated-checkmark-overlay": "^0.0.1",
     "@tutorbook/button": "^0.0.1",
     "@tutorbook/covid-utils": "^0.0.1",
     "@tutorbook/model": "^0.0.1",
     "@tutorbook/next-firebase": "^0.0.1",
     "@tutorbook/subject-select": "^0.0.1",
-    "@tutorbook/timeslot-input": "^0.0.1"
+    "@tutorbook/timeslot-input": "^0.0.1",
+    "await-to-js": "^2.1.1",
+    "axios": "^0.19.2"
   }
 }
