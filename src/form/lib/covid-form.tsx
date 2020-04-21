@@ -58,7 +58,7 @@ export default class Form extends React.Component<FormProps, {}> {
 
   public constructor(props: FormProps) {
     super(props);
-    this.submit = this.submit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   /**
@@ -151,7 +151,7 @@ export default class Form extends React.Component<FormProps, {}> {
    * Submits the current form values (stored in `this.values`).
    * @todo Catch any submission errors using `await-to-js`.
    */
-  private async submit(event: React.FormEvent): Promise<void> {
+  private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     this.setState({ submitting: true });
     await this.props.onFormSubmit(this.values);
@@ -197,7 +197,7 @@ export default class Form extends React.Component<FormProps, {}> {
           <form
             {...rest}
             className={styles.form + (className ? ' ' + className : '')}
-            onSubmit={this.submit}
+            onSubmit={this.handleSubmit}
           >
             {this.renderInputs()}
             <Button
