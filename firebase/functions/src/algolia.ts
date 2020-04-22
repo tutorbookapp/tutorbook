@@ -1,6 +1,10 @@
 import { Change, EventContext } from 'firebase-functions';
-import { DocumentSnapshot, Timestamp } from '@google-cloud/firestore';
 import { SearchClient, SearchIndex } from 'algoliasearch';
+import {
+  DocumentData,
+  DocumentSnapshot,
+  Timestamp,
+} from '@google-cloud/firestore';
 
 import * as functions from 'firebase-functions';
 import algoliasearch from 'algoliasearch';
@@ -32,6 +36,28 @@ function availabilityToDates(
   });
 }
 
+/**
+ * For privacy reasons, we only add the user's first name and last initial to
+ * our Algolia search index (and thus we **never** share the user's full name).
+ * @example
+ * assert(onlyFirstNameAndLastInitial('Nicholas Chiang') === 'Nicholas C.');
+ */
+function onlyFirstNameAndLastInitial(name: string): string {
+  const split: string[] = name.split(' ');
+  return `${split[0]} ${split[split.length - 1][0]}.`;
+}
+
+/**
+ * We only add non-sensitive information to our Algolia search index (because it
+ * is publicly available via our `/api/search` REST API endpoint):
+ * - User's first name and last initial
+ * - User's availability (for tutoring)
+ * - User's subjects (what they can tutor)
+ * - User's searches (what they need tutoring for)
+ * - User's Firebase Authentication uID (as the Algolia `objectID`)
+ * @todo Perhaps we should also include a `photoURL` here (to make our search
+ * results look more appealing).
+ */
 export async function userUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
@@ -41,10 +67,14 @@ export async function userUpdate(
   if (!change.after.exists) {
     await index.deleteObject(context.params.user);
   } else {
-    const ob: Record<string, any> = change.after.data() as Record<string, any>;
-    ob.objectID = context.params.user;
-    ob.schedule = availabilityToDates(ob.schedule);
-    ob.availability = availabilityToDates(ob.availability);
+    const user: DocumentData = change.after.data() as DocumentData;
+    const ob: Record<string, any> = {
+      objectID: context.params.user,
+      availability: availabilityToDates(user.availability),
+      subjects: user.subjects,
+      searches: user.searches,
+      name: onlyFirstNameAndLastInitial(user.name),
+    };
     await index.saveObject(ob);
   }
   index.setSettings({
@@ -56,7 +86,6 @@ export async function userUpdate(
       'searches.implicit',
       'searches.filled',
       'availability',
-      'schedule',
     ],
   });
 }
