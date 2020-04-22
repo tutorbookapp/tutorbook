@@ -1,3 +1,9 @@
+import {
+  DocumentData,
+  DocumentReference,
+  QueryDocumentSnapshot,
+  SnapshotOptions,
+} from '@firebase/firestore-types';
 import { TimeUtils, Timeslot, TimeslotJSONInterface } from './times';
 
 type RoleAlias = 'tutor' | 'pupil';
@@ -12,6 +18,8 @@ export interface ApptInterface {
   attendees: AttendeeInterface[];
   time: Timeslot;
   message?: string;
+  ref?: DocumentReference;
+  id?: string;
 }
 
 export interface ApptJSONInterface {
@@ -19,6 +27,7 @@ export interface ApptJSONInterface {
   attendees: AttendeeInterface[];
   time: TimeslotJSONInterface;
   message?: string;
+  id?: string;
 }
 
 export class Appt implements ApptInterface {
@@ -47,12 +56,30 @@ export class Appt implements ApptInterface {
   }
 
   public toJSON(): ApptJSONInterface {
-    const { time, ...rest } = this;
+    const { time, ref, ...rest } = this;
     return { ...rest, time: time.toJSON() };
   }
 
   public static fromJSON(json: ApptJSONInterface): Appt {
     const { time, ...rest } = json;
     return new Appt({ ...rest, time: Timeslot.fromJSON(time) });
+  }
+
+  public toFirestore(): DocumentData {
+    const { time, ref, id, ...rest } = this;
+    return { ...rest, time: time.toFirestore() };
+  }
+
+  public static fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
+  ): Appt {
+    const { time, ...rest } = snapshot.data(options);
+    return new Appt({
+      ...rest,
+      time: Timeslot.fromFirestore(time),
+      ref: snapshot.ref,
+      id: snapshot.id,
+    });
   }
 }
