@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const [err, res] = await to<AxiosResponse, AxiosError>(
     axios({
       method: 'get',
-      url: '/api/search',
+      url: new URL('/api/search', `http://${context.req.headers.host}`).href,
       params: {
         subjects: context.query.subjects,
         availability: context.query.availability,
