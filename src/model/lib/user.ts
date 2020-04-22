@@ -22,6 +22,7 @@ import url from 'url';
  * @property parent - The Firebase uIDs of linked parent accounts.
  * @property notifications - The user's notification configuration.
  * @property ref - The user's Firestore profile `DocumentReference`.
+ * @property token - The user's Firebase Authentication JWT `idToken`.
  */
 export interface UserInterface {
   uid?: string;
@@ -37,6 +38,7 @@ export interface UserInterface {
   parent?: string[];
   notifications: NotificationsConfigAlias;
   ref?: DocumentReference;
+  token?: string;
 }
 
 export interface UserJSONInterface {
@@ -86,7 +88,7 @@ export class User implements UserInterface {
     implicit: [],
     filled: [],
   };
-  public parent?: string[] = [];
+  public parent: string[] = [];
   public notifications: NotificationsConfigAlias = {
     email: [],
     sms: [],
@@ -94,6 +96,8 @@ export class User implements UserInterface {
     newRequest: ['email', 'webpush'],
     newLesson: ['sms', 'email', 'webpush'],
   };
+  public ref?: DocumentReference;
+  public token?: string;
 
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
@@ -149,8 +153,8 @@ export class User implements UserInterface {
       ...rest,
       schedule: Availability.fromFirestore(schedule),
       availability: Availability.fromFirestore(availability),
-      uid: snapshot.id,
       ref: snapshot.ref,
+      uid: snapshot.id,
     });
   }
 
@@ -161,7 +165,7 @@ export class User implements UserInterface {
    * @see {@link https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter}
    */
   public toFirestore(): DocumentData {
-    const { schedule, availability, ...rest } = this;
+    const { schedule, availability, token, ref, ...rest } = this;
     return {
       ...rest,
       schedule: schedule.toFirestore(),
@@ -179,7 +183,7 @@ export class User implements UserInterface {
   }
 
   public toJSON(): UserJSONInterface {
-    const { schedule, availability, ...rest } = this;
+    const { schedule, availability, token, ref, ...rest } = this;
     return {
       ...rest,
       schedule: schedule.toJSON(),
