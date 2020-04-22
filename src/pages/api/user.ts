@@ -7,8 +7,8 @@ import * as admin from 'firebase-admin';
 
 type DocumentReference = admin.firestore.DocumentReference;
 type UserRecord = admin.auth.UserRecord;
-type App = admin.app.App;
 type Auth = admin.auth.Auth;
+type App = admin.app.App;
 
 /**
  * Initializes a new `firebase.admin` instance with limited database/Firestore
@@ -129,7 +129,7 @@ export default async function user(
             `${err.name} while creating custom login token: ${err.message}`
           );
       } else {
-        res.status(200).json({ token });
+        res.status(201).json({ token });
       }
     }
   }
