@@ -38,7 +38,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  private handleChange(user: FirebaseUser | null): void {
+  private async handleChange(user: FirebaseUser | null): Promise<void> {
     if (user) {
       const userRecord: Partial<UserInterface> = {
         name: user.displayName || '',
@@ -46,6 +46,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         phone: user.phoneNumber || '',
         photo: user.photoURL || '',
         uid: user.uid,
+        token: await user.getIdToken(),
       };
       this.setState({ user: new User(userRecord) });
     }
