@@ -98,17 +98,23 @@ export default class UserDialog extends React.Component<UserDialogProps> {
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     this.setState({ submitted: false, submitting: true });
-    const [err, res] = await to<AxiosResponse, AxiosError>(
+    console.log('[DEBUG] Creating appt:', this.state.appt.toJSON());
+    const [err, res] = await to<AxiosResponse, AxiosError<string>>(
       axios({
         method: 'post',
         url: '/api/appt',
         data: {
+          token: this.context.token,
           appt: this.state.appt.toJSON(),
         },
       })
     );
-    if (err) {
-      console.error(`[ERROR] ${err.name} while creating appt:`, err);
+    if (err && err.response) {
+      console.error(`[ERROR] ${err.response.data}`);
+    } else if (err && err.request) {
+      console.error('[ERROR] No response received:', err.request);
+    } else if (err) {
+      console.error('[ERROR] While sending request:', err);
     } else if (res) {
       console.log('[DEBUG] Created appt:', res.data);
     }
@@ -171,9 +177,13 @@ export default class UserDialog extends React.Component<UserDialogProps> {
                 onChange={this.handleMessageChange}
                 value={this.state.appt.message}
               />
-              <Button className={styles.button} raised arrow>
-                Request {user.firstName}
-              </Button>
+              <Button
+                className={styles.button}
+                label={`Request ${user.firstName}`}
+                disabled={this.state.submitting || this.state.submitted}
+                raised
+                arrow
+              />
             </form>
           </div>
         </div>
