@@ -41,6 +41,17 @@ export interface UserInterface {
   token?: string;
 }
 
+/**
+ * Note that the `notifications` property is optional in this JSON
+ * representation of a `User` because it needs to be able to represent a search
+ * result object that only contains:
+ * - User's first name and last initial
+ * - User's bio (e.g. their education and experience)
+ * - User's availability (for tutoring)
+ * - User's subjects (what they can tutor)
+ * - User's searches (what they need tutoring for)
+ * - User's Firebase Authentication uID (as the Algolia `objectID`)
+ */
 export interface UserJSONInterface {
   uid?: string;
   name: string;
@@ -53,7 +64,7 @@ export interface UserJSONInterface {
   subjects: SubjectsInterface;
   searches: SubjectsInterface;
   parent?: string[];
-  notifications: NotificationsConfigAlias;
+  notifications?: NotificationsConfigAlias;
 }
 
 /**

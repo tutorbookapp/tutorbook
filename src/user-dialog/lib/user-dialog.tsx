@@ -126,7 +126,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
    * @todo Only show the profile's subjects in the `SubjectSelect`.
    */
   public render(): JSX.Element {
-    const { user, className, ...rest } = this.props;
+    const { user, className, appt, ...rest } = this.props;
     return (
       <Dialog {...rest} open>
         <AnimatedCheckmarkOverlay
@@ -135,12 +135,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
         />
         <div className={styles.contentWrapper}>
           <div className={styles.leftSide}>
-            <Avatar
-              src='https://lh3.googleusercontent.com/-2ZeeLPx2zIA/AAAAAAAAAAI/AAAAAAAAAAA/AAKWJJOyaBH4I4ySxbkrdmPwTbRp7T4lOA.CMID/s83-c/photo.jpg'
-              size='xlarge'
-              name={user.name}
-              className={styles.avatar}
-            />
+            <Avatar size='xlarge' name={user.name} className={styles.avatar} />
           </div>
           <div className={styles.rightSide}>
             <Typography className={styles.name} use='headline4'>

@@ -1,5 +1,14 @@
 .avatar {
-  font-size: 5rem;
+  background: var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.38));
+  color: var(--mdc-theme-surface, white);
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
 }
 
 .contentWrapper {

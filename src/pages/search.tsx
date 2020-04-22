@@ -11,6 +11,7 @@ import Search from '../search';
 
 import {
   User,
+  UserJSONInterface,
   FiltersInterface,
   FiltersJSONInterface,
   Availability,
@@ -18,7 +19,7 @@ import {
 
 interface SearchPageProps {
   filters: FiltersJSONInterface;
-  results: ReadonlyArray<User>;
+  results: ReadonlyArray<UserJSONInterface>;
 }
 
 /**
@@ -73,7 +74,7 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
     availability: Availability.fromJSON(props.filters.availability),
   };
   const results: ReadonlyArray<User> = props.results.map(
-    (res) => new User(res)
+    (user: UserJSONInterface) => User.fromJSON(user)
   );
   return (
     <>

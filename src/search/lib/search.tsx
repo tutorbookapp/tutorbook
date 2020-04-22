@@ -2,11 +2,7 @@ import React from 'react';
 import { Card } from '@rmwc/card';
 import { Grid, GridCell } from '@rmwc/grid';
 import { Typography } from '@rmwc/typography';
-import { User, UserJSONInterface, FiltersInterface } from '@tutorbook/model';
-import { AxiosResponse, AxiosError } from 'axios';
-
-import axios from 'axios';
-import to from 'await-to-js';
+import { User, FiltersInterface } from '@tutorbook/model';
 
 import Filter from './filter';
 import SearchResults from './results';
@@ -37,36 +33,6 @@ export default class Search extends React.Component<SearchProps> {
   public constructor(props: SearchProps) {
     super(props);
     this.state = { filters: props.filters };
-  }
-
-  public static async search(
-    filters: FiltersInterface
-  ): Promise<ReadonlyArray<User>> {
-    const [err, res] = await to<AxiosResponse, AxiosError>(
-      axios({
-        method: 'get',
-        url: '/api/search',
-        params: {
-          subjects: encodeURIComponent(JSON.stringify(filters.subjects)),
-          availability: filters.availability.toURLParam(),
-        },
-      })
-    );
-    if (err && err.response) {
-      console.error(`[ERROR] ${err.response.data}`);
-      throw new Error(err.response.data);
-    } else if (err && err.request) {
-      console.error('[ERROR] Search REST API did not respond:', err.request);
-      throw new Error('Search REST API did not respond.');
-    } else if (err) {
-      console.error('[ERROR] While sending request:', err);
-      throw new Error(`While sending request: ${err.message}`);
-    } else if (res) {
-      return res.data.map((user: UserJSONInterface) => User.fromJSON(user));
-    } else {
-      console.warn('[WARNING] No error or response from search REST API.');
-      return [];
-    }
   }
 
   /**

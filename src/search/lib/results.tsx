@@ -9,6 +9,7 @@ import {
   Timeslot,
   Appt,
   User,
+  UserJSONInterface,
 } from '@tutorbook/model';
 import {
   List,
@@ -20,8 +21,11 @@ import {
 } from '@rmwc/list';
 import { Avatar } from '@rmwc/avatar';
 import { Typography } from '@rmwc/typography';
+import { AxiosResponse, AxiosError } from 'axios';
 
-import Search from './search';
+import axios from 'axios';
+import to from 'await-to-js';
+
 import styles from './results.module.scss';
 
 interface SearchResultsState {
@@ -74,15 +78,42 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
    * than what we'd need to show a loader for).
    */
   private async search(): Promise<void> {
+    console.log('[DEBUG] Searching...');
     const loaderTimeoutID: number = window.setTimeout(
       () => this.setState({ searching: true }),
       500
     );
-    const results: ReadonlyArray<User> = await Search.search(
-      this.props.filters
+    const params: Record<string, string> = {
+      subjects: encodeURIComponent(JSON.stringify(this.props.filters.subjects)),
+      availability: this.props.filters.availability.toURLParam(),
+    };
+    const [err, res] = await to<AxiosResponse, AxiosError>(
+      axios({
+        method: 'get',
+        url: '/api/search',
+        params: params,
+      })
     );
+    if (err && err.response) {
+      console.error(`[ERROR] ${err.response.data}`);
+      throw new Error(err.response.data);
+    } else if (err && err.request) {
+      console.error('[ERROR] Search REST API did not respond:', err.request);
+      throw new Error('Search REST API did not respond.');
+    } else if (err) {
+      console.error('[ERROR] While sending request:', err);
+      throw new Error(`While sending request: ${err.message}`);
+    } else if (res) {
+      this.setState({
+        searching: false,
+        results: res.data.map((user: UserJSONInterface) => User.fromJSON(user)),
+      });
+    } else {
+      console.warn('[WARNING] No error or response from search REST API.');
+      this.setState({ searching: false, results: [] });
+    }
     window.clearTimeout(loaderTimeoutID);
-    this.setState({ searching: false, results: results });
+    console.log('[DEBUG] Finished searching.');
   }
 
   /**
@@ -105,6 +136,14 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
     const subjects: string[] = Utils.intersection<string>(
       this.props.filters.subjects,
       this.state.viewing.subjects.explicit
+    );
+    console.log(
+      '[DEBUG] Comparing currently filtered availability:',
+      this.props.filters.availability
+    );
+    console.log(
+      "[DEBUG] With the currently viewed user's availability:",
+      this.state.viewing.availability
     );
     const times: Timeslot[] = Utils.intersection<Timeslot>(
       this.props.filters.availability,
@@ -143,7 +182,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
           <ListItemGraphic
             icon={
               <Avatar
-                src='https://lh3.googleusercontent.com/-2ZeeLPx2zIA/AAAAAAAAAAI/AAAAAAAAAAA/AAKWJJOyaBH4I4ySxbkrdmPwTbRp7T4lOA.CMID/s83-c/photo.jpg'
+                className={styles.avatar}
                 size='small'
                 name={result.name}
               />
@@ -151,7 +190,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
           />
           <ListItemText>
             <ListItemPrimaryText>{result.name}</ListItemPrimaryText>
-            <ListItemSecondaryText>{result.email}</ListItemSecondaryText>
+            <ListItemSecondaryText>{result.bio}</ListItemSecondaryText>
           </ListItemText>
         </ListItem>
       ));

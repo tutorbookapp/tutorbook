@@ -41,6 +41,7 @@ function availabilityToDates(
  * our Algolia search index (and thus we **never** share the user's full name).
  * @example
  * assert(onlyFirstNameAndLastInitial('Nicholas Chiang') === 'Nicholas C.');
+ * @todo Avoid code duplication from `/api/search` REST API endpoint.
  */
 function onlyFirstNameAndLastInitial(name: string): string {
   const split: string[] = name.split(' ');
@@ -51,6 +52,7 @@ function onlyFirstNameAndLastInitial(name: string): string {
  * We only add non-sensitive information to our Algolia search index (because it
  * is publicly available via our `/api/search` REST API endpoint):
  * - User's first name and last initial
+ * - User's bio (e.g. their education and experience)
  * - User's availability (for tutoring)
  * - User's subjects (what they can tutor)
  * - User's searches (what they need tutoring for)
@@ -69,11 +71,12 @@ export async function userUpdate(
   } else {
     const user: DocumentData = change.after.data() as DocumentData;
     const ob: Record<string, any> = {
-      objectID: context.params.user,
+      name: onlyFirstNameAndLastInitial(user.name),
+      bio: user.bio,
       availability: availabilityToDates(user.availability),
       subjects: user.subjects,
       searches: user.searches,
-      name: onlyFirstNameAndLastInitial(user.name),
+      objectID: context.params.user,
     };
     await index.saveObject(ob);
   }

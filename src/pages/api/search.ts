@@ -89,11 +89,31 @@ function getFilterStrings(filters: FiltersInterface): string[] {
 }
 
 /**
+ * For privacy reasons, we only add the user's first name and last initial to
+ * our Algolia search index (and thus we **never** share the user's full name).
+ * @example
+ * assert(onlyFirstNameAndLastInitial('Nicholas Chiang') === 'Nicholas C.');
+ * @todo Avoid code duplication from `algoliaUserUpdate` Firebase Function.
+ */
+function onlyFirstNameAndLastInitial(name: string): string {
+  const split: string[] = name.split(' ');
+  return `${split[0]} ${split[split.length - 1][0]}.`;
+}
+
+/**
  * Takes filter parameters (subjects and availability) and sends back an array
  * of `UserJSONInterface`s that match the given filters.
- * @todo Only add non-sensitive information to our Algolia search index to begin
- * with and then **ensure** that only that non-sensitive information is being
- * sent back to the client (i.e. only name, subjects, availability, and uID).
+ *
+ * Note that we only send non-sensitive user information back to the client:
+ * - User's first name and last initial
+ * - User's bio (e.g. their education and experience)
+ * - User's availability (for tutoring)
+ * - User's subjects (what they can tutor)
+ * - User's searches (what they need tutoring for)
+ * - User's Firebase Authentication uID (as the Algolia `objectID`)
+ *
+ * @todo Perhaps we should also include a `photoURL` here (to make our search
+ * results look more appealing).
  * @todo Should the client have to be authenticated to make this request (i.e.
  * should we require a Firebase Authentication JWT to see search results)?
  */
@@ -112,5 +132,14 @@ export default async function search(
   };
   const results: ReadonlyArray<User> = await searchUsers(filters);
   console.log(`[DEBUG] Got ${results.length} results.`);
-  res.status(200).send(results.map((user: User) => user.toJSON()));
+  res.status(200).send(
+    results.map((user: User) => ({
+      name: onlyFirstNameAndLastInitial(user.name),
+      bio: user.bio,
+      availability: user.availability.toJSON(),
+      subjects: user.subjects,
+      searches: user.searches,
+      uid: user.uid,
+    }))
+  );
 }
