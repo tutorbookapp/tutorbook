@@ -216,6 +216,18 @@ export interface TimeslotJSONInterface {
  * `[Object object]`.
  */
 export class Availability extends Array<Timeslot> implements AvailabilityAlias {
+  /**
+   * Note that this method (`Availability.prototype.contains`) is **very**
+   * different from the `Availability.prototype.hasTimeslot` method; this method
+   * checks to see if any `Timeslot` contains the given `Timeslot` whereas the
+   * `hasTimeslot` methods checks to see if this availability contains the exact
+   * given `Timeslot`.
+   */
+  public contains(other: Timeslot): boolean {
+    for (const timeslot of this) if (timeslot.contains(other)) return true;
+    return false;
+  }
+
   public toString(): string {
     return this.length > 0
       ? this.map((timeslot) => timeslot.toString(true)).join(', ')

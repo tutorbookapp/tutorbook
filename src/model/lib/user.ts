@@ -1,5 +1,6 @@
 import {
   DocumentData,
+  DocumentReference,
   QueryDocumentSnapshot,
   SnapshotOptions,
 } from '@firebase/firestore-types';
@@ -20,6 +21,7 @@ import url from 'url';
  * @property searches - The subjects that the user needs tutoring for.
  * @property parent - The Firebase uIDs of linked parent accounts.
  * @property notifications - The user's notification configuration.
+ * @property ref - The user's Firestore profile `DocumentReference`.
  */
 export interface UserInterface {
   uid?: string;
@@ -34,6 +36,7 @@ export interface UserInterface {
   searches: SubjectsInterface;
   parent?: string[];
   notifications: NotificationsConfigAlias;
+  ref?: DocumentReference;
 }
 
 export interface UserJSONInterface {
@@ -146,6 +149,8 @@ export class User implements UserInterface {
       ...rest,
       schedule: Availability.fromFirestore(schedule),
       availability: Availability.fromFirestore(availability),
+      uid: snapshot.id,
+      ref: snapshot.ref,
     });
   }
 
