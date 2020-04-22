@@ -38,6 +38,8 @@ export class Appt implements ApptInterface {
     TimeUtils.getDate(1, 7),
     TimeUtils.getDate(1, 8)
   );
+  public ref?: DocumentReference;
+  public id?: string;
 
   /**
    * Wrap your boring `Record`s with this class to ensure that they have all of
