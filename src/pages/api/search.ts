@@ -27,7 +27,9 @@ const index: SearchIndex = client.initIndex(
  * Note that due to Algolia limitations, we must query for each availability
  * timeslot separately and then manually merge the results on the client side.
  */
-async function search(filters: FiltersInterface): Promise<ReadonlyArray<User>> {
+async function searchUsers(
+  filters: FiltersInterface
+): Promise<ReadonlyArray<User>> {
   const results: User[] = [];
   let filterStrings: (string | undefined)[] = getFilterStrings(filters);
   if (!filterStrings.length) filterStrings = [undefined];
@@ -99,8 +101,9 @@ export default async function search(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  const subjects: string = req.params.subjects as string;
-  const availability: string = req.params.availability as string;
+  console.log('[DEBUG] Getting search results...');
+  const subjects: string = req.query.subjects as string;
+  const availability: string = req.query.availability as string;
   const filters: FiltersInterface = {
     subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
     availability: availability
@@ -108,5 +111,6 @@ export default async function search(
       : new Availability(),
   };
   const results: ReadonlyArray<User> = await searchUsers(filters);
+  console.log(`[DEBUG] Got ${results.length} results.`);
   res.status(200).send(results.map((user: User) => user.toJSON()));
 }
