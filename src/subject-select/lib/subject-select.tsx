@@ -5,12 +5,15 @@ import { TextField, TextFieldProps } from '@rmwc/textfield';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
 import { ObjectWithObjectID } from '@algolia/client-search';
+import { SearchClient, SearchIndex } from 'algoliasearch/lite';
 
 import algoliasearch from 'algoliasearch/lite';
 import styles from './subject-select.module.scss';
 
-// TODO: Bring this up the React tree using `Context` and `Context.Provider`s.
-const client = algoliasearch('XCRT9EA6O8', 'aa1d293ac39b27e9671ece379c217da0');
+const algoliaId: string = process.env.ALGOLIA_SEARCH_ID;
+const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY;
+
+const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 
 type SubjectsAlias = { [subject: string]: boolean };
 
@@ -37,7 +40,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   private suggestionsTimeoutID?: number;
   private foundationRef: any;
 
-  private static searchIndex = client.initIndex('subjects');
+  private static searchIndex: SearchIndex = client.initIndex('subjects');
 
   public constructor(props: SubjectSelectProps) {
     super(props);

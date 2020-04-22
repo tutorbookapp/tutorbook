@@ -17,7 +17,9 @@
       "FIREBASE_ADMIN_AUTH_URI": "@firebase-admin-auth-uri",
       "FIREBASE_ADMIN_TOKEN_URI": "@firebase-admin-token-uri",
       "FIREBASE_ADMIN_PROVIDER_CERT_URL": "@firebase-admin-provider-cert-url",
-      "FIREBASE_ADMIN_CLIENT_CERT_URL": "@firebase-admin-client-cert-url"
+      "FIREBASE_ADMIN_CLIENT_CERT_URL": "@firebase-admin-client-cert-url",
+      "ALGOLIA_SEARCH_ID": "@algolia-search-id",
+      "ALGOLIA_SEARCH_KEY": "@algolia-search-key"
     }
   }
 }
