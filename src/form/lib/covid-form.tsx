@@ -201,12 +201,12 @@ export default class Form extends React.Component<FormProps, {}> {
           >
             {this.renderInputs()}
             <Button
-              arrow
               className={styles.formSubmitButton}
               label={submitLabel}
               disabled={this.state.submitting || this.state.submitted}
               raised
-            ></Button>
+              arrow
+            />
           </form>
         </Card>
       </>
