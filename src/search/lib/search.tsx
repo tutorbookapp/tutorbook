@@ -2,19 +2,15 @@ import React from 'react';
 import { Card } from '@rmwc/card';
 import { Grid, GridCell } from '@rmwc/grid';
 import { Typography } from '@rmwc/typography';
-import { User, UserSearchHitAlias, FiltersInterface } from '@tutorbook/model';
-import { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import { SearchOptions, SearchResponse } from '@algolia/client-search';
+import { User, UserJSONInterface, FiltersInterface } from '@tutorbook/model';
+import { AxiosResponse, AxiosError } from 'axios';
 
+import axios from 'axios';
 import to from 'await-to-js';
-import algoliasearch from 'algoliasearch/lite';
 
 import Filter from './filter';
 import SearchResults from './results';
 import styles from './search.module.scss';
-
-const algoliaId: string = 'XCRT9EA6O8';
-const algoliaKey: string = 'aa1d293ac39b27e9671ece379c217da0';
 
 /**
  * We have a `results` property in this props object so we can use SSR to fetch
@@ -31,84 +27,7 @@ interface SearchState {
 }
 
 export default class Search extends React.Component<SearchProps> {
-  private static client: SearchClient = algoliasearch(algoliaId, algoliaKey);
-  private static index: SearchIndex = Search.client.initIndex(
-    process.env.NODE_ENV === 'development' ? 'test-users' : 'default-users'
-  );
   public readonly state: SearchState;
-
-  /**
-   * Searches users based on the current filters by querying like:
-   * > Show me all users whose availability contains a timeslot whose open time
-   * > is equal to or before the desired open time and whose close time is equal
-   * > to or after the desired close time.
-   * Note that due to Algolia limitations, we must query for each availability
-   * timeslot separately and then manually merge the results on the client side.
-   */
-  public static async search(
-    filters: FiltersInterface
-  ): Promise<ReadonlyArray<User>> {
-    const results: User[] = [];
-    let filterStrings: (string | undefined)[] = Search.getFilterStrings(
-      filters
-    );
-    if (!filterStrings.length) filterStrings = [undefined];
-    for (const filterString of filterStrings) {
-      const options: SearchOptions | undefined = filterString
-        ? { filters: filterString }
-        : undefined;
-      const [err, res]: [
-        Object | null,
-        SearchResponse<UserSearchHitAlias> | undefined
-      ] = await to(
-        Search.index.search('', options) as Promise<
-          SearchResponse<UserSearchHitAlias>
-        >
-      );
-      if (err || !res) {
-        console.error(`[ERROR] While searching ${filterString}:`, err);
-      } else {
-        res.hits.forEach((hit) => {
-          if (results.findIndex((h) => h.uid === hit.objectID) < 0)
-            results.push(User.fromSearchHit(hit));
-        });
-      }
-    }
-    return results;
-  }
-
-  /**
-   * Creates and returns the filter string to search our Algolia index based on
-   * `this.props.filters`. Note that due to Algolia restrictions, we **cannot**
-   * nest ANDs with ORs (e.g. `(A AND B) OR (B AND C)`). Because of this
-   * limitation, we merge results from many queries on the client side (e.g. get
-   * results for `A AND B` and merge them with the results for `B AND C`).
-   * @example
-   * '(subjects.explicit:"Chemistry H" OR subjects.explicit:"Chemistry") AND ' +
-   * '((availability.from <= 1587304800001 AND availability.to >= 1587322800000))'
-   * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-by-date/?language=javascript}
-   * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/in-depth/combining-boolean-operators/#combining-ands-and-ors}
-   * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-arrays/?language=javascript}
-   */
-  public static getFilterStrings(filters: FiltersInterface): string[] {
-    let filterString: string = '';
-    for (let i = 0; i < filters.subjects.length; i++) {
-      filterString += i === 0 ? '(' : ' OR ';
-      filterString += `subjects.explicit:"${filters.subjects[i]}"`;
-      if (i === filters.subjects.length - 1) filterString += ')';
-    }
-    if (filters.availability.length && filters.subjects.length)
-      filterString += ' AND ';
-    const filterStrings: string[] = [];
-    for (const timeslot of filters.availability)
-      filterStrings.push(
-        filterString +
-          `(availability.from <= ${timeslot.from.valueOf()}` +
-          ` AND availability.to >= ${timeslot.to.valueOf()})`
-      );
-    if (!filters.availability.length) filterStrings.push(filterString);
-    return filterStrings;
-  }
 
   /**
    * Creates a new `Search` view.
@@ -118,6 +37,36 @@ export default class Search extends React.Component<SearchProps> {
   public constructor(props: SearchProps) {
     super(props);
     this.state = { filters: props.filters };
+  }
+
+  public static async search(
+    filters: FiltersInterface
+  ): Promise<ReadonlyArray<User>> {
+    const [err, res] = await to<AxiosResponse, AxiosError>(
+      axios({
+        method: 'get',
+        url: '/api/search',
+        params: {
+          subjects: encodeURIComponent(JSON.stringify(filters.subjects)),
+          availability: filters.availability.toURLParam(),
+        },
+      })
+    );
+    if (err && err.response) {
+      console.error(`[ERROR] ${err.response.data}`);
+      throw new Error(err.response.data);
+    } else if (err && err.request) {
+      console.error('[ERROR] Search REST API did not respond:', err.request);
+      throw new Error('Search REST API did not respond.');
+    } else if (err) {
+      console.error('[ERROR] While sending request:', err);
+      throw new Error(`While sending request: ${err.message}`);
+    } else if (res) {
+      return res.data.map((user: UserJSONInterface) => User.fromJSON(user));
+    } else {
+      console.warn('[WARNING] No error or response from search REST API.');
+      return [];
+    }
   }
 
   /**
