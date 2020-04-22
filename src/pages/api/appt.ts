@@ -1,11 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Appt } from '../../model';
+import { User, Appt } from '../../model';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
 import * as admin from 'firebase-admin';
 
 type DocumentReference = admin.firestore.DocumentReference;
+type DecodedIdToken = admin.auth.DecodedIdToken;
+type Auth = admin.auth.Auth;
 type App = admin.app.App;
 
 /**
@@ -44,6 +46,7 @@ const firebase: App = admin.initializeApp(
   uuid()
 );
 
+const auth: Auth = firebase.auth();
 const db: DocumentReference =
   process.env.NODE_ENV === 'development'
     ? firebase.firestore().collection('partitions').doc('test')
@@ -68,6 +71,14 @@ const db: DocumentReference =
  *    - Link to a virtual whiteboard (probably using
  *    [DrawChat](https://github.com/cojapacze/sketchpad)).
  *    - Link to a shared Google Drive folder.
+ *
+ * @param {string} token - A valid Firebase Authentication JWT `idToken` to
+ * authorize the request. You're able to get this token by calling the `user`
+ * REST API endpoint (an endpoint that will create a new user and give you a
+ * `customToken` to sign-in with).
+ * @param {ApptJSONInterface} appt - The appointment to create. The given
+ * `idToken` **must** be from one of the appointment's `attendees` (see the
+ * above description for more requirements).
  */
 export default async function appt(
   req: NextApiRequest,
@@ -76,7 +87,7 @@ export default async function appt(
   // 1. Verify that the request body is valid.
   if (!req.body) {
     res.status(400).send('You must provide a request body.');
-  } else if (!req.body.appt) {
+  } else if (!req.body.appt || typeof req.body.appt !== 'object') {
     res.status(400).send('Your request body must contain a user field.');
   } else if (!req.body.appt.subjects || !req.body.appt.subjects.length) {
     res.status(400).send('Your appointment must contain valid subjects.');
@@ -88,60 +99,87 @@ export default async function appt(
     res.status(400).send('Your appointment must have a valid starting time.');
   } else if (new Date(req.body.appt.time.to).toString() === 'Invalid Date') {
     res.status(400).send('Your appointment must have a valid ending time.');
+  } else if (!req.body.token || typeof req.body.token !== 'string') {
+    res.status(401).send('You must provide a valid Firebase Auth JWT.');
   } else {
-    const appt: Appt = Appt.fromJSON(req.body.appt);
-    const attendees: User[] = [];
-    for (const attendee of appt.attendees) {
-      const ref: DocumentReference = db.collection('users').doc(attendee.uid);
-      const doc: DocumentSnapshot = await ref.get();
-      // 1b. Verify that the attendees exist.
-      if (!doc.exists) {
-        res.status(400).send(`Attendee (${attendee.uid}) did not exist.`);
-        break;
+    const [err, token] = await to<DecodedIdToken>(
+      auth.verifyIdToken(req.body.token, true)
+    );
+    if (err) {
+      res.status(401).send(`Your Firebase Auth JWT is invalid: ${err.message}`);
+    } else {
+      const appt: Appt = Appt.fromJSON(req.body.appt);
+      const attendees: User[] = [];
+      let attendeesIncludeAuthToken: boolean = false;
+      for (const attendee of appt.attendees) {
+        // 1b. Verify that the attendees have uIDs.
+        if (!attendee.uid) {
+          res
+            .status(400)
+            .send(
+              'Attendee with roles ' +
+                `(${attendee.roles.join(', ')}) did not have a valid uID.`
+            );
+          break;
+        }
+        if (attendee.uid === token.uid) attendeesIncludeAuthToken = true;
+        const ref: DocumentReference = db.collection('users').doc(attendee.uid);
+        const doc: DocumentSnapshot = await ref.get();
+        // 1c. Verify that the attendees exist.
+        if (!doc.exists) {
+          res.status(400).send(`Attendee (${attendee.uid}) did not exist.`);
+          break;
+        }
+        const user: User = User.fromFirestore(doc);
+        // 2. Verify that the attendees are available.
+        if (!user.availability.contains(appt.time)) {
+          res
+            .status(400)
+            .send(
+              `${user.name} (${user.uid}) is not available on ` +
+                `${appt.time.toString(true)}.`
+            );
+          break;
+        }
+        // 3. Verify the tutors can teach the requested subjects.
+        if (
+          attendee.roles.indexOf('tutor') >= 0 &&
+          !appt.subjects.every((subject: string) =>
+            user.subjects.explicit.includes(subject)
+          )
+        ) {
+          res
+            .status(400)
+            .send(
+              `${user.name} (${user.uid}) cannot teach all of ` +
+                'the requested subjects.'
+            );
+          break;
+        }
+        attendees.push(user);
       }
-      const user: User = User.fromFirestore(doc);
-      // 2. Verify that the attendees are available.
-      if (!user.availability.contains(appt.time)) {
+      if (!attendeesIncludeAuthToken) {
         res
           .status(400)
-          .send(
-            `${user.name} (${user.uid}) is not available on ` +
-              `${appt.time.toString(true)}.`
-          );
-        break;
+          .send(`Attendees must include the idToken's user (${token.uid}).`);
+      } else if (attendees.length === appt.attendees.length) {
+        const id: string = attendees[0].ref.collection('appts').doc().id;
+        console.log(`[DEBUG] Creating appt (${id})...`);
+        await Promise.all(
+          attendees.map(async (attendee: User) => {
+            // 4. Update the attendees availability.
+            attendee.availability.remove(appt.time);
+            await attendee.ref.update(attendee.toFirestore());
+            // 5. Create the appointment Firestore document.
+            await attendee.ref
+              .collection('appts')
+              .doc(id)
+              .set(appt.toFirestore());
+          })
+        );
+        res.status(201);
+        // 6. TODO: Send out the invitation email to the attendees.
       }
-      // 3. Verify the tutors can teach the requested subjects.
-      if (
-        attendee.roles.indexOf('tutor') >= 0 &&
-        !appt.subjects.every((subject: string) =>
-          user.subjects.explicit.includes(subject)
-        )
-      ) {
-        res
-          .status(400)
-          .send(
-            `${user.name} (${user.uid}) cannot teach all of ` +
-              'the requested subjects.'
-          );
-        break;
-      }
-      attendees.push(user);
-    }
-    if (attendees.length === appt.attendees.length) {
-      const id: string = attendees[0].ref.collection('appts').doc().id;
-      await Promise.all(
-        attendees.map((attendee: User) => {
-          // 4. Update the attendees availability.
-          attendee.availability.remove(appt.time);
-          await attendee.ref.update(attendee.toFirestore());
-          // 5. Create the appointment Firestore document.
-          await attendee.ref
-            .collection('appts')
-            .doc(id)
-            .set(appt.toFirestore());
-        })
-      );
-      // 6. TODO: Send out the invitation email to the attendees.
     }
   }
 }
