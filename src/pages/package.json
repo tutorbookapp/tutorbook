@@ -37,6 +37,7 @@
     "@material/select": "^5.1.0",
     "@material/textfield": "^5.1.0",
     "@material/typography": "^5.1.0",
+    "@sendgrid/mail": "^7.0.1",
     "@tutorbook/covid-about": "^0.0.1",
     "@tutorbook/covid-footer": "^0.0.1",
     "@tutorbook/covid-header": "^0.0.1",
@@ -45,7 +46,7 @@
     "@tutorbook/covid-tutor-form": "^0.0.1",
     "@tutorbook/next-firebase": "^0.0.1",
     "firebase-admin": "^8.10.0",
-    "next": "^9.3.4",
+    "next": "^9.3.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "uuid": "^7.0.3"

@@ -1,10 +1,44 @@
+import { ResponseError, ClientResponse } from '@sendgrid/mail';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { User, Appt } from '../../model';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
+import mail from '@sendgrid/mail';
 import * as admin from 'firebase-admin';
 
+mail.setApiKey(process.env.SENDGRID_API_KEY);
+
+/**
+ * Sends out invite emails to all of the new appointment's attendees with:
+ * - A link to a shared Google Drive.
+ * - A link to a private Slack Channel.
+ * - A link to an anonymous shared virtual whiteboard.
+ */
+async function sendApptEmails(
+  appt: Appt,
+  recipients: ReadonlyArray<User>
+): Promise<void> {
+  await Promise.all(
+    recipients.map((recipient: User) => {
+      const msg: MailDataRequired = {
+        to: 'nicholas.h.chiang@gmail.com',
+        from: 'tutorbook@example.com',
+        subject: 'You created an appointment on Tutorbook.',
+        text: 'You created an appointment on Tutorbook.',
+        html: '<strong>You created an appointment on Tutorbook.</strong>',
+      };
+      await to<ClientResponse, Error | ResponseError>(mail.send(msg));
+    })
+  );
+}
+
+/**
+ * Type aliases so that we don't have to type out the whole type. We could try
+ * importing these directly from the `@firebase/firestore-types` or the
+ * `@google-cloud/firestore` packages, but that's not recommended.
+ * @todo Perhaps figure out a way to **only** import the type defs we need.
+ */
 type DocumentReference = admin.firestore.DocumentReference;
 type DecodedIdToken = admin.auth.DecodedIdToken;
 type Auth = admin.auth.Auth;
@@ -39,9 +73,7 @@ const firebase: App = admin.initializeApp(
     serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     databaseURL: process.env.FIREBASE_DATABASE_URL,
-    databaseAuthVariableOverride: {
-      uid: 'server',
-    },
+    databaseAuthVariableOverride: { uid: 'server' },
   },
   uuid()
 );
@@ -114,12 +146,7 @@ export default async function appt(
       for (const attendee of appt.attendees) {
         // 1b. Verify that the attendees have uIDs.
         if (!attendee.uid) {
-          res
-            .status(400)
-            .send(
-              'Attendee with roles ' +
-                `(${attendee.roles.join(', ')}) did not have a valid uID.`
-            );
+          res.status(400).send('All attendees must have valid uIDs.');
           break;
         }
         if (attendee.uid === token.uid) attendeesIncludeAuthToken = true;
@@ -133,38 +160,33 @@ export default async function appt(
         const user: User = User.fromFirestore(doc);
         // 2. Verify that the attendees are available.
         if (!user.availability.contains(appt.time)) {
-          res
-            .status(400)
-            .send(
-              `${user.name} (${user.uid}) is not available on ` +
-                `${appt.time.toString(true)}.`
-            );
+          const msg: string =
+            `${user.name} (${user.uid}) is not available on ` +
+            `${appt.time.toString(true)}.`;
+          res.status(400).send(msg);
+          debugger;
           break;
         }
         // 3. Verify the tutors can teach the requested subjects.
-        if (
-          attendee.roles.indexOf('tutor') >= 0 &&
-          !appt.subjects.every((subject: string) =>
-            user.subjects.explicit.includes(subject)
-          )
-        ) {
-          res
-            .status(400)
-            .send(
-              `${user.name} (${user.uid}) cannot teach all of ` +
-                'the requested subjects.'
-            );
+        const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
+        const canTeachSubject: (string) => boolean = (subject: string) =>
+          user.subjects.explicit.includes(subject);
+        if (isTutor && !appt.subjects.every(canTeachSubject)) {
+          const msg: string = `${user.name} (${user.uid}) cannot teach the requested subjects.`;
+          res.status(400).send(msg);
+          debugger;
           break;
         }
         attendees.push(user);
       }
-      if (!attendeesIncludeAuthToken) {
-        res
-          .status(400)
-          .send(`Attendees must include the idToken's user (${token.uid}).`);
-      } else if (attendees.length === appt.attendees.length) {
-        const id: string = attendees[0].ref.collection('appts').doc().id;
-        console.log(`[DEBUG] Creating appt (${id})...`);
+      if (attendees.length !== appt.attendees.length) {
+        // Don't do anything b/c we already sent error code to client.
+      } else if (!attendeesIncludeAuthToken) {
+        const msg: string = `Appointment creator (${token.uid}) must attend the appointment.`;
+        res.status(400).send(msg);
+      } else {
+        appt.id = attendees[0].ref.collection('appts').doc().id;
+        console.log(`[DEBUG] Creating appt (${appt.id})...`);
         await Promise.all(
           attendees.map(async (attendee: User) => {
             // 4. Update the attendees availability.
@@ -173,12 +195,13 @@ export default async function appt(
             // 5. Create the appointment Firestore document.
             await attendee.ref
               .collection('appts')
-              .doc(id)
+              .doc(appt.id)
               .set(appt.toFirestore());
           })
         );
-        res.status(201);
-        // 6. TODO: Send out the invitation email to the attendees.
+        // 6. Send out the invitation email to the attendees.
+        await sendApptEmails(appt, attendees);
+        res.status(201).send({ appt: appt.toJSON() });
       }
     }
   }

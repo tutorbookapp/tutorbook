@@ -39,9 +39,7 @@ const firebase: App = admin.initializeApp(
     serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     databaseURL: process.env.FIREBASE_DATABASE_URL,
-    databaseAuthVariableOverride: {
-      uid: 'server',
-    },
+    databaseAuthVariableOverride: { uid: 'server' },
   },
   uuid()
 );

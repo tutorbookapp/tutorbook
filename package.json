@@ -5,7 +5,7 @@
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "dev": "next",
+    "dev": "node --inspect ./node_modules/.bin/next dev",
     "build": "next build",
     "start": "next start",
     "test": "jest"
@@ -28,7 +28,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "next": "^9.3.4",
+    "next": "^9.3.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
