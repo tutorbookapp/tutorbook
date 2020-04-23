@@ -228,6 +228,66 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return false;
   }
 
+  /**
+   * Helper function to remove a given `Timeslot` from this `Availability`. Note
+   * that this **does not** just remove that exact `Timeslot` but rather ensures
+   * that there are no `Timeslot`s remaining that overlap with the given
+   * `Timeslot` by (where A is the given `Timeslot` and B is a `Timeslot` in
+   * `this`):
+   * 1. If (they overlap; B's close time is contained w/in A):
+   *   - B's open time is before A's open time AND;
+   *   - B's close time is before A's close time AND;
+   *   - B's close time is after A's open time.
+   * Then we'll adjust B such that it's close time is equal to A's open time.
+   * 2. If (B's open time is contained w/in A; opposite of scenario #1):
+   *   - B's close time is after A's close time AND;
+   *   - B's open time is before A's close time AND;
+   *   - B's open time is after A's open time.
+   * Then we'll adjust B's open time to be equal to A's close time.
+   * 3. If (A contains B):
+   *   - B's open time is after A's open time AND;
+   *   - B's close time is before A's close time.
+   * Then we'll remove B altogether.
+   * 4. If (B contains A; opposite of scenario #2):
+   *   - B's open time is before A's open time AND;
+   *   - B's close time is after A's close time.
+   * Then we'll split B into two timeslots (i.e. essentically cutting out A):
+   *   - One timeslot will be `{ from: B.from, to: A.from }`
+   *   - The other timeslot will be `{ from: A.to, to: B.to }`
+   * 5. If B and A are equal, we just remove B altogether.
+   * 6. Otherwise, we keep B and continue to the next check.
+   */
+  public remove(a: Timeslot): void {
+    const temp: Availability = new Availability();
+    const aFrom = a.from.valueOf();
+    const aTo = a.to.valueOf();
+    for (const b of this) {
+      const bFrom = b.from.valueOf();
+      const bTo = b.to.valueOf();
+      if (bFrom < aFrom && bTo < aTo && bTo > aFrom) {
+        // Adjust `b` such that it's close time is equal to `a`'s open time.
+        b.to = new Date(aFrom);
+        temp.push(b);
+      } else if (bTo > aTo && bFrom < aTo && bFrom > aFrom) {
+        // Adjust `b` such that it's open time is equal to `a`'s close time.
+        b.from = new Date(aTo);
+        temp.push(b);
+      } else if (a.contains(b)) {
+        // Remove `b` altogether (i.e. don't add to `temp`).
+      } else if (b.contains(a)) {
+        // Split `b` into two timeslots (i.e. essentially cutting out `a`).
+        temp.push(new Timeslot(new Date(bFrom), new Date(aFrom)));
+        temp.push(new Timeslot(new Date(aTo), new Date(bTo)));
+      } else if (a.equalTo(b)) {
+        // Remove `b` altogether (i.e. don't add to `temp`).
+      } else {
+        temp.push(b);
+      }
+    }
+    this.length = 0;
+    temp.forEach((timeslot: Timeslot) => this.push(timeslot));
+  }
+
   public toString(): string {
     return this.length > 0
       ? this.map((timeslot) => timeslot.toString(true)).join(', ')
