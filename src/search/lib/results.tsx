@@ -78,7 +78,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
    * than what we'd need to show a loader for).
    */
   private async search(): Promise<void> {
-    console.log('[DEBUG] Searching...');
+    console.log('[DEBUG] Searching (on client side)...');
     const loaderTimeoutID: number = window.setTimeout(
       () => this.setState({ searching: true }),
       500
@@ -113,7 +113,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
       this.setState({ searching: false, results: [] });
     }
     window.clearTimeout(loaderTimeoutID);
-    console.log('[DEBUG] Finished searching.');
+    console.log('[DEBUG] Finished searching (on client side).');
   }
 
   /**
@@ -136,14 +136,6 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
     const subjects: string[] = Utils.intersection<string>(
       this.props.filters.subjects,
       this.state.viewing.subjects.explicit
-    );
-    console.log(
-      '[DEBUG] Comparing currently filtered availability:',
-      this.props.filters.availability
-    );
-    console.log(
-      "[DEBUG] With the currently viewed user's availability:",
-      this.state.viewing.availability
     );
     const times: Timeslot[] = Utils.intersection<Timeslot>(
       this.props.filters.availability,
