@@ -6,6 +6,7 @@ import {
 } from '@firebase/firestore-types';
 import { ObjectWithObjectID } from '@algolia/client-search';
 import { Availability, AvailabilityJSONAlias } from './times';
+import phone from 'phone';
 import url from 'url';
 
 /**
@@ -19,7 +20,7 @@ import url from 'url';
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property subjects - The subjects that the user can tutor in.
  * @property searches - The subjects that the user needs tutoring for.
- * @property parent - The Firebase uIDs of linked parent accounts.
+ * @property parents - The Firebase uIDs of linked parent accounts.
  * @property notifications - The user's notification configuration.
  * @property ref - The user's Firestore profile `DocumentReference`.
  * @property token - The user's Firebase Authentication JWT `idToken`.
@@ -35,7 +36,7 @@ export interface UserInterface {
   availability: Availability;
   subjects: SubjectsInterface;
   searches: SubjectsInterface;
-  parent?: string[];
+  parents?: string[];
   notifications: NotificationsConfigAlias;
   ref?: DocumentReference;
   token?: string;
@@ -63,7 +64,7 @@ export interface UserJSONInterface {
   availability: AvailabilityJSONAlias;
   subjects: SubjectsInterface;
   searches: SubjectsInterface;
-  parent?: string[];
+  parents?: string[];
   notifications?: NotificationsConfigAlias;
 }
 
@@ -99,7 +100,7 @@ export class User implements UserInterface {
     implicit: [],
     filled: [],
   };
-  public parent: string[] = [];
+  public parents: string[] = [];
   public notifications: NotificationsConfigAlias = {
     email: [],
     sms: [],
@@ -113,6 +114,10 @@ export class User implements UserInterface {
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
    * values contained in the given `UserInterface` object.
+   *
+   * Note that this constructor will also normalize any given `phone` values to
+   * the standard [E.164 format]{@link https://en.wikipedia.org/wiki/E.164}.
+   *
    * @todo Perhaps add an explicit check to ensure that the given `val`'s type
    * matches the default value at `this[key]`'s type; and then only update the
    * default value if the types match.
@@ -121,6 +126,7 @@ export class User implements UserInterface {
     Object.entries(user).map(([key, val]: [string, any]) => {
       if (val && key in this) (this as Record<string, any>)[key] = val;
     });
+    if (this.phone) this.phone = phone(this.phone)[0] || '';
   }
 
   public get firstName(): string {
@@ -205,6 +211,9 @@ export class User implements UserInterface {
   /**
    * Gets the search URL where the URL parameters are determined by this user's
    * `searches.explicit` and `availability` fields.
+   *
+   * @todo Ensure this works on the server-side (i.e. when it doesn't know what
+   * hostname or protocol to use).
    */
   public get searchURL(): string {
     return url.format({

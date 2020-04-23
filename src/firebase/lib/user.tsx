@@ -94,7 +94,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
     );
   }
 
-  public static async signup(user: User, parent?: User): Promise<void> {
+  public static async signup(user: User, parents?: User[]): Promise<void> {
     const [err, res] = await to<
       AxiosResponse<{ token: string }>,
       AxiosError<string>
@@ -104,7 +104,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         url: '/api/user',
         data: {
           user: user.toJSON(),
-          parent: parent ? parent.toJSON() : parent,
+          parent: parents ? parents.map((parent: User) => parent.toJSON()) : [],
         },
       })
     );

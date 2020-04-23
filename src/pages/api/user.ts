@@ -53,12 +53,13 @@ const db: DocumentReference =
 /**
  * Takes the parsed results of a sign-up form (e.g. the `hero-form`) and:
  * 1. Creates and signs-in a new Firebase Authentication user.
- * 2. (Optional) Creates a new Firesbase Authentication user for the parent.
- * 3. (Optional) Creates a new Firestore profile document for the parent.
+ * 2. (Optional) Creates a new Firesbase Authentication user for the parents.
+ * 3. (Optional) Creates a new Firestore profile document for the parents.
  * 4. Creates a new Firestore profile document for the given user.
- * 5. Sends an email verification link to the new user (and his/her parent).
+ * 5. Sends an email verification link to the new user (and his/her parents).
  * @param {User} user - The user to create (should be in JSON form).
- * @param {User} [parent] - The parent of the given user to create (also JSON).
+ * @param {User[]} [parents] - The parents of the given user to create (also in
+ * JSON form).
  */
 export default async function user(
   req: NextApiRequest,
@@ -82,50 +83,44 @@ export default async function user(
     );
     if (err) {
       console.error(`[ERROR] ${err.name} while creating user account:`, err);
-      res
-        .status(500)
-        .send(`${err.name} while creating user account: ${err.message}`);
+      const msg: string = `${err.name} while creating user account: ${err.message}`;
+      res.status(500).send(msg);
     } else {
       user.uid = userRecord.uid;
       console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
       const userRef: DocumentReference = db.collection('users').doc(user.uid);
-      if (req.body.parent) {
-        const parent: User = User.fromJSON(req.body.parent);
-        const [err, parentRecord] = await to<UserRecord>(
-          auth.createUser({
-            disabled: false,
-            displayName: parent.name,
-            photoURL: parent.photo ? parent.photo : undefined,
-            email: parent.email,
-            emailVerified: false,
-            phoneNumber: parent.phone ? parent.phone : undefined,
-          })
-        );
-        if (err) {
-          console.warn(`[WARNING] ${err.name} while creating parent:`, err);
-        } else {
-          user.parent = parent.uid = parentRecord.uid;
-          console.log(
-            `[DEBUG] Created ${parent.name}'s account (${parent.uid}).`
+      if (req.body.parents && req.body.parents instanceof Array) {
+        for (const parentData of req.body.parents) {
+          const parent: User = User.fromJSON(parentData);
+          const [err, parentRecord] = await to<UserRecord>(
+            auth.createUser({
+              disabled: false,
+              displayName: parent.name,
+              photoURL: parent.photo ? parent.photo : undefined,
+              email: parent.email,
+              emailVerified: false,
+              phoneNumber: parent.phone ? parent.phone : undefined,
+            })
           );
-          const parentRef: DocumentReference = db
-            .collection('users')
-            .doc(parent.uid);
-          await parentRef.set(parent.toFirestore());
+          if (err) {
+            console.warn(`[WARNING] ${err.name} while creating parent:`, err);
+          } else {
+            console.log(`[DEBUG] Created ${parent.name} (${parent.uid}).`);
+            parent.uid = parentRecord.uid;
+            user.parents.push(parent.uid);
+            const parentRef: DocumentReference = db
+              .collection('users')
+              .doc(parent.uid);
+            await parentRef.set(parent.toFirestore());
+          }
         }
       }
       await userRef.set(user.toFirestore());
       const [err, token] = await to<string>(auth.createCustomToken(user.uid));
       if (err) {
-        console.error(
-          `[ERROR] ${err.name} while creating custom login token:`,
-          err
-        );
-        res
-          .status(500)
-          .send(
-            `${err.name} while creating custom login token: ${err.message}`
-          );
+        console.error(`[ERROR] ${err.name} while creating login token:`, err);
+        const msg: string = `${err.name} while creating login token: ${err.message}`;
+        res.status(500).send(msg);
       } else {
         res.status(201).json({ token });
       }

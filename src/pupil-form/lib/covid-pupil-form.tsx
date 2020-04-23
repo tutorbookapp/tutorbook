@@ -130,7 +130,7 @@ export default function PupilForm() {
               phone: parentPhone,
             });
             const pupil: User = new User(rest);
-            await UserProvider.signup(pupil, parent);
+            await UserProvider.signup(pupil, [parent]);
             Router.push(pupil.searchURL);
           }}
         />
