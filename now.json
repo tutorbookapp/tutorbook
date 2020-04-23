@@ -19,7 +19,8 @@
       "FIREBASE_ADMIN_PROVIDER_CERT_URL": "@firebase-admin-provider-cert-url",
       "FIREBASE_ADMIN_CLIENT_CERT_URL": "@firebase-admin-client-cert-url",
       "ALGOLIA_SEARCH_ID": "@algolia-search-id",
-      "ALGOLIA_SEARCH_KEY": "@algolia-search-key"
+      "ALGOLIA_SEARCH_KEY": "@algolia-search-key",
+      "SENDGRID_API_KEY": "@sendgrid-api-key"
     }
   }
 }
