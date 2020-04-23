@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents/partitions/{partition} {
     match /users/{user} {
-      allow create: if true;
+      allow read: if request.auth.uid == user;
     }
   }
 }
