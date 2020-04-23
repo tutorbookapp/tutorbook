@@ -1,5 +1,5 @@
 import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { useDB } from '@tutorbook/next-firebase';
+import { UserProvider } from '@tutorbook/next-firebase';
 import { User } from '@tutorbook/model';
 
 import styles from './covid-tutor-form.module.scss';
@@ -15,7 +15,6 @@ import styles from './covid-tutor-form.module.scss';
  * - (bio) Education (e.g. "in college", "college", "masters") and experience
  */
 export default function TutorForm() {
-  const db = useDB();
   return (
     <div className={styles.formWrapper}>
       <div className={styles.formContent}>
@@ -69,7 +68,7 @@ export default function TutorForm() {
           submitLabel='Volunteer to tutor'
           onFormSubmit={(formValues) => {
             const tutor: User = new User(formValues);
-            return db.collection('users').doc().set(tutor.toFirestore());
+            return UserProvider.signup(tutor);
           }}
           loadingCheckmark
         />
