@@ -1,7 +1,13 @@
 import React from 'react';
+import {
+  DocumentReference,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+} from '@firebase/firestore-types';
 import { User as FirebaseUser, Unsubscribe, auth } from 'firebase';
 import { User, UserInterface } from '@tutorbook/model';
 import { AxiosError, AxiosResponse } from 'axios';
+import { DBContext } from './db';
 
 import axios from 'axios';
 import to from 'await-to-js';
@@ -27,6 +33,9 @@ export const useUser = () => React.useContext(UserContext);
  * so all child components can access the current user's data.
  */
 export class UserProvider extends React.Component<UserProviderProps> {
+  public static readonly contextType: React.Context<
+    DocumentReference
+  > = DBContext;
   private static auth: Auth = firebase.auth();
   public readonly state: UserProviderState = {
     user: new User(),
@@ -46,9 +55,26 @@ export class UserProvider extends React.Component<UserProviderProps> {
         phone: user.phoneNumber || '',
         photo: user.photoURL || '',
         uid: user.uid,
-        token: await user.getIdToken(),
       };
       this.setState({ user: new User(userRecord) });
+      const withToken: Partial<UserInterface> = {
+        ...userRecord,
+        token: await user.getIdToken(),
+      };
+      this.setState({ user: new User(withToken) });
+      const doc: DocumentSnapshot = await this.context
+        .collection('users')
+        .doc(user.uid)
+        .get();
+      if (!doc.exists) {
+        console.warn(`[WARNING] No document for current user (${user.uid}).`);
+      } else {
+        const withData: User = User.fromFirestore(doc as QueryDocumentSnapshot);
+        Object.entries(withToken).forEach(([key, val]: [string, any]) => {
+          (withData as Record<string, any>)[key] = val;
+        });
+        this.setState({ user: withData });
+      }
     }
   }
 
