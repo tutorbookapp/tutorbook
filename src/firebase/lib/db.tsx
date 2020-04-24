@@ -1,9 +1,14 @@
-// TODO: Only initialize on client-side (no server-side authentication).
-
 import React from 'react';
 
-import { DocumentReference } from '@firebase/firestore-types';
 import firebase from './base';
+
+/**
+ * Type aliases so that we don't have to type out the whole type. We could try
+ * importing these directly from the `@firebase/firestore-types` or the
+ * `@google-cloud/firestore` packages, but that's not recommended.
+ * @todo Perhaps figure out a way to **only** import the type defs we need.
+ */
+type DocumentReference = firebase.firestore.DocumentReference;
 
 export const DBContext: React.Context<DocumentReference> = React.createContext(
   firebase.firestore().collection('partitions').doc('default')

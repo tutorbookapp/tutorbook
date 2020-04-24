@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User } from '../../model';
+import { User, UserJSONInterface, ApiError } from '../../model';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
 import * as admin from 'firebase-admin';
 
+type FirebaseError = admin.FirebaseError & Error;
 type DocumentReference = admin.firestore.DocumentReference;
 type UserRecord = admin.auth.UserRecord;
 type Auth = admin.auth.Auth;
@@ -24,16 +25,9 @@ type App = admin.app.App;
 const firebase: App = admin.initializeApp(
   {
     credential: admin.credential.cert({
-      type: process.env.FIREBASE_ADMIN_TYPE,
-      project_id: process.env.FIREBASE_PROJECT_ID,
-      private_key_id: process.env.FIREBASE_ADMIN_KEY_ID,
-      private_key: process.env.FIREBASE_ADMIN_KEY,
-      client_email: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      client_id: process.env.FIREBASE_ADMIN_CLIENT_ID,
-      auth_uri: process.env.FIREBASE_ADMIN_AUTH_URI,
-      token_uri: process.env.FIREBASE_ADMIN_TOKEN_URI,
-      auth_provider_x509_cert_url: process.env.FIREBASE_ADMIN_PROVIDER_CERT_URL,
-      client_x509_cert_url: process.env.FIREBASE_ADMIN_CLIENT_CERT_URL,
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      privateKey: process.env.FIREBASE_ADMIN_KEY,
+      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     }),
     projectId: process.env.FIREBASE_PROJECT_ID,
     serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
@@ -70,9 +64,9 @@ const db: DocumentReference =
 async function updateUser(user: User): Promise<void> {
   const userRecord: UserRecord = await auth.getUserByEmail(user.email);
   const userNeedsToBeUpdated: boolean =
-    (user.name && userRecord.displayName !== user.name) ||
-    (user.photo && userRecord.photoURL !== user.photo) ||
-    (user.phone && userRecord.phoneNumber !== user.phone);
+    (!!user.name && userRecord.displayName !== user.name) ||
+    (!!user.photo && userRecord.photoURL !== user.photo) ||
+    (!!user.phone && userRecord.phoneNumber !== user.phone);
   user.uid = userRecord.uid;
   if (userNeedsToBeUpdated) {
     const updatedRecord: UserRecord = await auth.updateUser(userRecord.uid, {
@@ -110,15 +104,18 @@ async function updateUser(user: User): Promise<void> {
  */
 export default async function user(
   req: NextApiRequest,
-  res: NextApiResponse<void>
+  res: NextApiResponse<ApiError | { user: UserJSONInterface }>
 ): Promise<void> {
+  function error(msg: string, code: number = 400, err?: Error): void {
+    res.status(code).send(Object.assign({ msg }, err || {}));
+  }
   if (!req.body) {
-    res.status(400).send('You must provide a request body.');
+    error('You must provide a request body.');
   } else if (!req.body.user) {
-    res.status(400).send('Your request body must contain a user field.');
+    error('Your request body must contain a user field.');
   } else {
     const user: User = User.fromJSON(req.body.user);
-    const [err, userRecord] = await to<UserRecord>(
+    const [err, userRecord] = await to<UserRecord, FirebaseError>(
       auth.createUser({
         disabled: false,
         displayName: user.name,
@@ -132,18 +129,16 @@ export default async function user(
     // the `else` statement once we deal with a `auth/email-already-exists` err.
     let errorOverride: boolean = false;
     if (err && err.code === 'auth/email-already-exists') {
-      const [err] = await to(updateUser(user));
+      const [err] = await to<void, FirebaseError>(updateUser(user));
       if (err) {
-        const msg: string = `${err.name} while updating user (${user.email}): ${err.message}`;
-        res.status(500).send(msg);
+        error(`${err.name} updating (${user.email}): ${err.message}`, 500, err);
       } else {
         errorOverride = true;
         console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
       }
     } else if (err) {
       console.error(`[ERROR] ${err.name} while creating user:`, err);
-      const msg: string = `${err.name} while creating user: ${err.message}`;
-      res.status(500).send(msg);
+      error(`${err.name} creating (${user.email}): ${err.message}`, 500, err);
     } else {
       user.uid = (userRecord as UserRecord).uid;
       console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
@@ -153,7 +148,7 @@ export default async function user(
       if (req.body.parents && req.body.parents instanceof Array) {
         for (const parentData of req.body.parents) {
           const parent: User = User.fromJSON(parentData);
-          const [err, parentRecord] = await to<UserRecord>(
+          const [err, parentRecord] = await to<UserRecord, FirebaseError>(
             auth.createUser({
               disabled: false,
               displayName: parent.name,
@@ -167,7 +162,7 @@ export default async function user(
             console.warn(`[WARNING] ${err.name} while creating parent:`, err);
           } else {
             console.log(`[DEBUG] Created ${parent.name} (${parent.uid}).`);
-            parent.uid = parentRecord.uid;
+            parent.uid = (parentRecord as UserRecord).uid;
             user.parents.push(parent.uid);
             const parentRef: DocumentReference = db
               .collection('users')
@@ -177,13 +172,15 @@ export default async function user(
         }
       }
       await userRef.set(user.toFirestore());
-      const [err, token] = await to<string>(auth.createCustomToken(user.uid));
+      const [err, token] = await to<string, FirebaseError>(
+        auth.createCustomToken(user.uid)
+      );
       if (err) {
         console.error(`[ERROR] ${err.name} while creating login token:`, err);
-        const msg: string = `${err.name} while creating login token: ${err.message}`;
-        res.status(500).send(msg);
+        error(`${err.name} creating login token: ${err.message}`, 500, err);
       } else {
-        res.status(201).json({ token });
+        user.token = token;
+        res.status(201).json({ user: user.toJSON() });
       }
     }
   }

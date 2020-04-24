@@ -1,13 +1,23 @@
-import {
-  DocumentData,
-  DocumentReference,
-  QueryDocumentSnapshot,
-  SnapshotOptions,
-} from '@firebase/firestore-types';
 import { ObjectWithObjectID } from '@algolia/client-search';
 import { Availability, AvailabilityJSONAlias } from './times';
+import * as admin from 'firebase-admin';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
 import phone from 'phone';
 import url from 'url';
+
+/**
+ * Type aliases so that we don't have to type out the whole type. We could try
+ * importing these directly from the `@firebase/firestore-types` or the
+ * `@google-cloud/firestore` packages, but that's not recommended.
+ * @todo Perhaps figure out a way to **only** import the type defs we need.
+ */
+type DocumentData = firebase.firestore.DocumentData;
+type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
+type DocumentReference = firebase.firestore.DocumentReference;
+type SnapshotOptions = firebase.firestore.SnapshotOptions;
+type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
+type AdminDocumentReference = admin.firestore.DocumentReference;
 
 /**
  * A user object (that is stored in their Firestore profile document by uID).
@@ -38,7 +48,7 @@ export interface UserInterface {
   searches: SubjectsInterface;
   parents?: string[];
   notifications: NotificationsConfigAlias;
-  ref?: DocumentReference;
+  ref?: DocumentReference | AdminDocumentReference;
   token?: string;
 }
 
@@ -66,6 +76,7 @@ export interface UserJSONInterface {
   searches: SubjectsInterface;
   parents?: string[];
   notifications?: NotificationsConfigAlias;
+  token?: string;
 }
 
 /**
@@ -108,7 +119,7 @@ export class User implements UserInterface {
     newRequest: ['email', 'webpush'],
     newLesson: ['sms', 'email', 'webpush'],
   };
-  public ref?: DocumentReference;
+  public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;
 
   /**
@@ -162,17 +173,26 @@ export class User implements UserInterface {
   }
 
   public static fromFirestore(
-    snapshot: QueryDocumentSnapshot,
+    snapshot: DocumentSnapshot | AdminDocumentSnapshot,
     options?: SnapshotOptions
   ): User {
-    const { availability, schedule, ...rest } = snapshot.data(options);
-    return new User({
-      ...rest,
-      schedule: Availability.fromFirestore(schedule),
-      availability: Availability.fromFirestore(availability),
-      ref: snapshot.ref,
-      uid: snapshot.id,
-    });
+    const userData: DocumentData | undefined = snapshot.data(options);
+    if (userData) {
+      const { availability, schedule, ...rest } = userData;
+      return new User({
+        ...rest,
+        schedule: Availability.fromFirestore(schedule),
+        availability: Availability.fromFirestore(availability),
+        ref: snapshot.ref,
+        uid: snapshot.id,
+      });
+    } else {
+      console.warn(
+        `[WARNING] Tried to create user (${snapshot.ref.id}) from ` +
+          'non-existent Firestore document.'
+      );
+      return new User();
+    }
   }
 
   /**
@@ -199,8 +219,15 @@ export class User implements UserInterface {
     });
   }
 
+  /**
+   * Note that right now, we're sending the `token` property along with a user
+   * JSON object in the `/api/user` REST API endpoint. But that's the **only
+   * case** where we'd ever want to serialize and send a Firebase Auth JWT.
+   * @todo Perhaps remove the `token` from the JSON object and add it manually
+   * in the `/api/user` REST API endpoint.
+   */
   public toJSON(): UserJSONInterface {
-    const { schedule, availability, token, ref, ...rest } = this;
+    const { schedule, availability, ref, ...rest } = this;
     return {
       ...rest,
       schedule: schedule.toJSON(),

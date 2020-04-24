@@ -1,1 +1,3 @@
-export type ApiError = Partial<Error> & { msg: string };
+import { FirebaseError } from 'firebase-admin';
+
+export type ApiError = Partial<Error & FirebaseError> & { msg: string };

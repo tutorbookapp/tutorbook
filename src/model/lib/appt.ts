@@ -1,10 +1,20 @@
-import {
-  DocumentData,
-  DocumentReference,
-  QueryDocumentSnapshot,
-  SnapshotOptions,
-} from '@firebase/firestore-types';
 import { TimeUtils, Timeslot, TimeslotJSONInterface } from './times';
+import * as admin from 'firebase-admin';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+
+/**
+ * Type aliases so that we don't have to type out the whole type. We could try
+ * importing these directly from the `@firebase/firestore-types` or the
+ * `@google-cloud/firestore` packages, but that's not recommended.
+ * @todo Perhaps figure out a way to **only** import the type defs we need.
+ */
+type DocumentData = firebase.firestore.DocumentData;
+type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
+type DocumentReference = firebase.firestore.DocumentReference;
+type SnapshotOptions = firebase.firestore.SnapshotOptions;
+type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
+type AdminDocumentReference = admin.firestore.DocumentReference;
 
 export type RoleAlias = 'tutor' | 'pupil';
 
@@ -18,7 +28,7 @@ export interface ApptInterface {
   attendees: AttendeeInterface[];
   time: Timeslot;
   message?: string;
-  ref?: DocumentReference;
+  ref?: DocumentReference | AdminDocumentReference;
   id?: string;
 }
 
@@ -38,7 +48,7 @@ export class Appt implements ApptInterface {
     TimeUtils.getDate(1, 7),
     TimeUtils.getDate(1, 8)
   );
-  public ref?: DocumentReference;
+  public ref?: DocumentReference | AdminDocumentReference;
   public id?: string;
 
   /**
@@ -62,6 +72,10 @@ export class Appt implements ApptInterface {
     return { ...rest, time: time.toJSON() };
   }
 
+  /**
+   * Creates a new `Appt` object given the JSON representation of it.
+   * @todo Convert Firestore document `path`s to `DocumentReference`s.
+   */
   public static fromJSON(json: ApptJSONInterface): Appt {
     const { time, ...rest } = json;
     return new Appt({ ...rest, time: Timeslot.fromJSON(time) });
@@ -73,15 +87,24 @@ export class Appt implements ApptInterface {
   }
 
   public static fromFirestore(
-    snapshot: QueryDocumentSnapshot,
+    snapshot: DocumentSnapshot | AdminDocumentSnapshot,
     options?: SnapshotOptions
   ): Appt {
-    const { time, ...rest } = snapshot.data(options);
-    return new Appt({
-      ...rest,
-      time: Timeslot.fromFirestore(time),
-      ref: snapshot.ref,
-      id: snapshot.id,
-    });
+    const apptData: DocumentData | undefined = snapshot.data(options);
+    if (apptData) {
+      const { time, ...rest } = apptData;
+      return new Appt({
+        ...rest,
+        time: Timeslot.fromFirestore(time),
+        ref: snapshot.ref,
+        id: snapshot.id,
+      });
+    } else {
+      console.warn(
+        `[WARNING] Tried to create appt (${snapshot.ref.id}) from ` +
+          'non-existent Firestore document.'
+      );
+      return new Appt();
+    }
   }
 }

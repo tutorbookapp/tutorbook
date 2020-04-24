@@ -1,10 +1,4 @@
 import React from 'react';
-import {
-  DocumentReference,
-  DocumentSnapshot,
-  QueryDocumentSnapshot,
-} from '@firebase/firestore-types';
-import { User as FirebaseUser, Unsubscribe, auth } from 'firebase';
 import { User, UserInterface } from '@tutorbook/model';
 import { AxiosError, AxiosResponse } from 'axios';
 import { DBContext } from './db';
@@ -13,8 +7,17 @@ import axios from 'axios';
 import to from 'await-to-js';
 import firebase from './base';
 
-// TODO: Import these directly w/out use of type aliases.
-type Auth = auth.Auth;
+/**
+ * Type aliases so that we don't have to type out the whole type. We could try
+ * importing these directly from the `@firebase/firestore-types` or the
+ * `@google-cloud/firestore` packages, but that's not recommended.
+ * @todo Perhaps figure out a way to **only** import the type defs we need.
+ */
+type Auth = firebase.auth.Auth;
+type FirebaseUser = firebase.User;
+type Unsubscribe = firebase.Unsubscribe;
+type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
+type DocumentReference = firebase.firestore.DocumentReference;
 
 interface UserProviderProps {
   children: JSX.Element[] | JSX.Element;
@@ -62,14 +65,14 @@ export class UserProvider extends React.Component<UserProviderProps> {
         token: await user.getIdToken(),
       };
       this.setState({ user: new User(withToken) });
-      const doc: DocumentSnapshot = await this.context
+      const userDoc: DocumentSnapshot = await this.context
         .collection('users')
         .doc(user.uid)
         .get();
-      if (!doc.exists) {
+      if (!userDoc.exists) {
         console.warn(`[WARNING] No document for current user (${user.uid}).`);
       } else {
-        const withData: User = User.fromFirestore(doc as QueryDocumentSnapshot);
+        const withData: User = User.fromFirestore(userDoc);
         Object.entries(withToken).forEach(([key, val]: [string, any]) => {
           (withData as Record<string, any>)[key] = val;
         });

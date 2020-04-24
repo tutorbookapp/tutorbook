@@ -1,14 +1,15 @@
-import { ResponseError, ClientResponse } from '@sendgrid/mail';
+import { ClientResponse } from '@sendgrid/client/src/response';
+import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, Appt } from '../../model';
-import { ApptEmail } from '../../emails';
+import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
+import { Email, ApptEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
 import * as admin from 'firebase-admin';
 
-mail.setApiKey(process.env.SENDGRID_API_KEY);
+mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 /**
  * Sends out invite emails to all of the new appointment's attendees with:
@@ -23,7 +24,7 @@ async function sendApptEmails(
   await Promise.all(
     recipients.map(async (recipient: User) => {
       const email: Email = new ApptEmail(recipient, appt, recipients);
-      await to<ClientResponse, Error | ResponseError>(mail.send(email));
+      await to<[ClientResponse, {}], Error | ResponseError>(mail.send(email));
     })
   );
 }
@@ -35,6 +36,7 @@ async function sendApptEmails(
  * @todo Perhaps figure out a way to **only** import the type defs we need.
  */
 type DocumentReference = admin.firestore.DocumentReference;
+type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DecodedIdToken = admin.auth.DecodedIdToken;
 type Auth = admin.auth.Auth;
 type App = admin.app.App;
@@ -53,16 +55,9 @@ type App = admin.app.App;
 const firebase: App = admin.initializeApp(
   {
     credential: admin.credential.cert({
-      type: process.env.FIREBASE_ADMIN_TYPE,
-      project_id: process.env.FIREBASE_PROJECT_ID,
-      private_key_id: process.env.FIREBASE_ADMIN_KEY_ID,
-      private_key: process.env.FIREBASE_ADMIN_KEY,
-      client_email: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      client_id: process.env.FIREBASE_ADMIN_CLIENT_ID,
-      auth_uri: process.env.FIREBASE_ADMIN_AUTH_URI,
-      token_uri: process.env.FIREBASE_ADMIN_TOKEN_URI,
-      auth_provider_x509_cert_url: process.env.FIREBASE_ADMIN_PROVIDER_CERT_URL,
-      client_x509_cert_url: process.env.FIREBASE_ADMIN_CLIENT_CERT_URL,
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      privateKey: process.env.FIREBASE_ADMIN_KEY,
+      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     }),
     projectId: process.env.FIREBASE_PROJECT_ID,
     serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
@@ -109,10 +104,12 @@ const db: DocumentReference =
  */
 export default async function appt(
   req: NextApiRequest,
-  res: NextApiResponse<void>
+  res: NextApiResponse<ApiError | { appt: ApptJSONInterface }>
 ): Promise<void> {
   // 1. Verify that the request body is valid.
-  const error = (msg, code = 400) => res.status(code).json({ msg });
+  function error(msg: string, code: number = 400, err?: Error): void {
+    res.status(code).json(Object.assign({ msg }, err || {}));
+  }
   if (!req.body) {
     error('You must provide a request body.');
   } else if (!req.body.appt || typeof req.body.appt !== 'object') {
@@ -134,14 +131,7 @@ export default async function appt(
       auth.verifyIdToken(req.body.token, true)
     );
     if (err) {
-      res.status(401).json(
-        Object.assign(
-          {
-            msg: `Your Firebase Auth JWT is invalid: ${err.message}`,
-          },
-          err
-        )
-      );
+      error(`Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
       const appt: Appt = Appt.fromJSON(req.body.appt);
       const attendees: User[] = [];
@@ -152,7 +142,8 @@ export default async function appt(
           error('All attendees must have valid uIDs.');
           break;
         }
-        if (attendee.uid === token.uid) attendeesIncludeAuthToken = true;
+        if (attendee.uid === (token as DecodedIdToken).uid)
+          attendeesIncludeAuthToken = true;
         const ref: DocumentReference = db.collection('users').doc(attendee.uid);
         const doc: DocumentSnapshot = await ref.get();
         // 1c. Verify that the attendees exist.
@@ -168,30 +159,38 @@ export default async function appt(
         }
         // 3. Verify the tutors can teach the requested subjects.
         const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
-        const canTeachSubject: (string) => boolean = (subject: string) =>
-          user.subjects.explicit.includes(subject);
+        const canTeachSubject: (s: string) => boolean = (subject: string) => {
+          return user.subjects.explicit.includes(subject);
+        };
         if (isTutor && !appt.subjects.every(canTeachSubject)) {
           error(`${user.name} (${user.uid}) cannot teach requested subjects.`);
           break;
         }
         attendees.push(user);
       }
-      if (attendees.length !== appt.attendees.length) {
+      if (!attendees.length || attendees.length !== appt.attendees.length) {
         // Don't do anything b/c we already sent error code to client.
       } else if (!attendeesIncludeAuthToken) {
-        error(`Appointment creator (${token.uid}) must attend the lesson.`);
+        error(
+          `Appointment creator (${(token as DecodedIdToken).uid}) must attend` +
+            ' the tutoring appointment.'
+        );
       } else {
-        appt.id = attendees[0].ref.collection('appts').doc().id;
+        appt.id = (attendees[0].ref as DocumentReference)
+          .collection('appts')
+          .doc().id;
         console.log(`[DEBUG] Creating appt (${appt.id})...`);
         await Promise.all(
           attendees.map(async (attendee: User) => {
             // 4. Update the attendees availability.
             attendee.availability.remove(appt.time);
-            await attendee.ref.update(attendee.toFirestore());
+            await (attendee.ref as DocumentReference).update(
+              attendee.toFirestore()
+            );
             // 5. Create the appointment Firestore document.
-            await attendee.ref
+            await (attendee.ref as DocumentReference)
               .collection('appts')
-              .doc(appt.id)
+              .doc(appt.id as string)
               .set(appt.toFirestore());
           })
         );

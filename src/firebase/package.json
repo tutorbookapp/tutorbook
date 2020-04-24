@@ -34,8 +34,6 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@firebase/auth-types": "^0.10.0",
-    "@firebase/firestore-types": "^1.10.1",
     "@tutorbook/model": "^0.1.0",
     "firebase": "^7.13.2"
   },
