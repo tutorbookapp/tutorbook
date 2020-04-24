@@ -14,7 +14,11 @@ module.exports = {
         // See https://bit.ly/39HerRo for more info.
         test: /\.\w+(?<!(s?c|sa)ss)$/i,
       },
-      use: ['svg-url-loader'],
+      use: 'svg-url-loader',
+    });
+    config.module.rules.push({
+      test: /\.hbs$/,
+      use: 'raw-loader',
     });
     return config;
   },

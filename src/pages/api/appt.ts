@@ -1,6 +1,7 @@
 import { ResponseError, ClientResponse } from '@sendgrid/mail';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { User, Appt } from '../../model';
+import { ApptEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
@@ -20,15 +21,9 @@ async function sendApptEmails(
   recipients: ReadonlyArray<User>
 ): Promise<void> {
   await Promise.all(
-    recipients.map((recipient: User) => {
-      const msg: MailDataRequired = {
-        to: 'nicholas.h.chiang@gmail.com',
-        from: 'tutorbook@example.com',
-        subject: 'You created an appointment on Tutorbook.',
-        text: 'You created an appointment on Tutorbook.',
-        html: '<strong>You created an appointment on Tutorbook.</strong>',
-      };
-      await to<ClientResponse, Error | ResponseError>(mail.send(msg));
+    recipients.map(async (recipient: User) => {
+      const email: Email = new ApptEmail(recipient, appt, recipients);
+      await to<ClientResponse, Error | ResponseError>(mail.send(email));
     })
   );
 }
@@ -117,28 +112,36 @@ export default async function appt(
   res: NextApiResponse<void>
 ): Promise<void> {
   // 1. Verify that the request body is valid.
+  const error = (msg, code = 400) => res.status(code).json({ msg });
   if (!req.body) {
-    res.status(400).send('You must provide a request body.');
+    error('You must provide a request body.');
   } else if (!req.body.appt || typeof req.body.appt !== 'object') {
-    res.status(400).send('Your request body must contain a user field.');
+    error('Your request body must contain a user field.');
   } else if (!req.body.appt.subjects || !req.body.appt.subjects.length) {
-    res.status(400).send('Your appointment must contain valid subjects.');
+    error('Your appointment must contain valid subjects.');
   } else if (!req.body.appt.attendees || req.body.appt.attendees.length < 2) {
-    res.status(400).send('Your appointment must have at least 2 attendees.');
+    error('Your appointment must have >= 2 attendees.');
   } else if (!req.body.appt.time || typeof req.body.appt.time !== 'object') {
-    res.status(400).send('Your appointment must have a valid time.');
+    error('Your appointment must have a valid time.');
   } else if (new Date(req.body.appt.time.from).toString() === 'Invalid Date') {
-    res.status(400).send('Your appointment must have a valid starting time.');
+    error('Your appointment must have a valid start time.');
   } else if (new Date(req.body.appt.time.to).toString() === 'Invalid Date') {
-    res.status(400).send('Your appointment must have a valid ending time.');
+    error('Your appointment must have a valid end time.');
   } else if (!req.body.token || typeof req.body.token !== 'string') {
-    res.status(401).send('You must provide a valid Firebase Auth JWT.');
+    error('You must provide a valid Firebase Auth JWT.', 401);
   } else {
     const [err, token] = await to<DecodedIdToken>(
       auth.verifyIdToken(req.body.token, true)
     );
     if (err) {
-      res.status(401).send(`Your Firebase Auth JWT is invalid: ${err.message}`);
+      res.status(401).json(
+        Object.assign(
+          {
+            msg: `Your Firebase Auth JWT is invalid: ${err.message}`,
+          },
+          err
+        )
+      );
     } else {
       const appt: Appt = Appt.fromJSON(req.body.appt);
       const attendees: User[] = [];
@@ -146,7 +149,7 @@ export default async function appt(
       for (const attendee of appt.attendees) {
         // 1b. Verify that the attendees have uIDs.
         if (!attendee.uid) {
-          res.status(400).send('All attendees must have valid uIDs.');
+          error('All attendees must have valid uIDs.');
           break;
         }
         if (attendee.uid === token.uid) attendeesIncludeAuthToken = true;
@@ -154,27 +157,23 @@ export default async function appt(
         const doc: DocumentSnapshot = await ref.get();
         // 1c. Verify that the attendees exist.
         if (!doc.exists) {
-          res.status(400).send(`Attendee (${attendee.uid}) did not exist.`);
+          error(`Attendee (${attendee.uid}) does not exist.`);
           break;
         }
         const user: User = User.fromFirestore(doc);
         // 2. Verify that the attendees are available.
-        if (!user.availability.contains(appt.time)) {
-          const msg: string =
-            `${user.name} (${user.uid}) is not available on ` +
-            `${appt.time.toString(true)}.`;
-          res.status(400).send(msg);
-          debugger;
-          break;
-        }
+        /*
+         *if (!user.availability.contains(appt.time)) {
+         *  error(`${user.name} (${user.uid}) is not available on ${appt.time}.`);
+         *  break;
+         *}
+         */
         // 3. Verify the tutors can teach the requested subjects.
         const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
         const canTeachSubject: (string) => boolean = (subject: string) =>
           user.subjects.explicit.includes(subject);
         if (isTutor && !appt.subjects.every(canTeachSubject)) {
-          const msg: string = `${user.name} (${user.uid}) cannot teach the requested subjects.`;
-          res.status(400).send(msg);
-          debugger;
+          error(`${user.name} (${user.uid}) cannot teach requested subjects.`);
           break;
         }
         attendees.push(user);
@@ -182,8 +181,7 @@ export default async function appt(
       if (attendees.length !== appt.attendees.length) {
         // Don't do anything b/c we already sent error code to client.
       } else if (!attendeesIncludeAuthToken) {
-        const msg: string = `Appointment creator (${token.uid}) must attend the appointment.`;
-        res.status(400).send(msg);
+        error(`Appointment creator (${token.uid}) must attend the lesson.`);
       } else {
         appt.id = attendees[0].ref.collection('appts').doc().id;
         console.log(`[DEBUG] Creating appt (${appt.id})...`);
@@ -201,7 +199,7 @@ export default async function appt(
         );
         // 6. Send out the invitation email to the attendees.
         await sendApptEmails(appt, attendees);
-        res.status(201).send({ appt: appt.toJSON() });
+        res.status(201).json({ appt: appt.toJSON() });
       }
     }
   }

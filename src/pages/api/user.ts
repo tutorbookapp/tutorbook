@@ -51,15 +51,62 @@ const db: DocumentReference =
     : firebase.firestore().collection('partitions').doc('default');
 
 /**
+ * Helper function that's called when a user with the given email already
+ * exists. This function will address the issue cleanly by:
+ * 1. Fetching that user's existing Firebase `UserRecord`.
+ * 2. (Optional) If that existing `UserRecord` doesn't match the given `user`,
+ * we'll update it (**without** losing any user data).
+ * 3. Finally, we'll update the given `User`'s properties to be in sync with
+ * that stored in the latest Firebase `UserRecord`.
+ *
+ * Note that this function **will not** erase any data; if a piece of data (e.g.
+ * the user's `phoneNumber`) is found in the Firebase `UserRecord` but not on
+ * the given `User` object, we'll just add the value found in Firebase to the
+ * given `User` object.
+ *
+ * @todo Enable users to remove their phone numbers and other sensitive PII as
+ * they please (see above note for more info on why that's not working now).
+ */
+async function updateUser(user: User): Promise<void> {
+  const userRecord: UserRecord = await auth.getUserByEmail(user.email);
+  const userNeedsToBeUpdated: boolean =
+    (user.name && userRecord.displayName !== user.name) ||
+    (user.photo && userRecord.photoURL !== user.photo) ||
+    (user.phone && userRecord.phoneNumber !== user.phone);
+  user.uid = userRecord.uid;
+  if (userNeedsToBeUpdated) {
+    const updatedRecord: UserRecord = await auth.updateUser(userRecord.uid, {
+      displayName: user.name,
+      photoURL: user.photo ? user.photo : undefined,
+      phoneNumber: user.phone ? user.phone : undefined,
+    });
+    // Don't let the user delete past known info (e.g. if the old `userRecord`
+    // has data that this new `User` doesn't; we don't just get rid of data).
+    user.name = updatedRecord.displayName || userRecord.displayName || '';
+    user.photo = updatedRecord.photoURL || userRecord.photoURL || '';
+    user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
+  }
+}
+
+/**
  * Takes the parsed results of a sign-up form (e.g. the `hero-form`) and:
  * 1. Creates and signs-in a new Firebase Authentication user.
  * 2. (Optional) Creates a new Firesbase Authentication user for the parents.
  * 3. (Optional) Creates a new Firestore profile document for the parents.
  * 4. Creates a new Firestore profile document for the given user.
  * 5. Sends an email verification link to the new user (and his/her parents).
+ *
+ * Note that this endpoint **will still function** if a user with the given
+ * email already exists. If that is the case, we'll just update that user's info
+ * to match the newly given info and respond with a login token as normal.
+ *
  * @param {User} user - The user to create (should be in JSON form).
  * @param {User[]} [parents] - The parents of the given user to create (also in
  * JSON form).
+ *
+ * @return {{ token: string }} A custom Firebase Authentication login token
+ * (that can be used to log the user into Firebase client-side; a requirement to
+ * retrieve the user's JWT for subsequent API requests).
  */
 export default async function user(
   req: NextApiRequest,
@@ -81,13 +128,27 @@ export default async function user(
         phoneNumber: user.phone ? user.phone : undefined,
       })
     );
-    if (err) {
-      console.error(`[ERROR] ${err.name} while creating user account:`, err);
-      const msg: string = `${err.name} while creating user account: ${err.message}`;
+    // This `errorOverride` variable is our current workaround to continue to
+    // the `else` statement once we deal with a `auth/email-already-exists` err.
+    let errorOverride: boolean = false;
+    if (err && err.code === 'auth/email-already-exists') {
+      const [err] = await to(updateUser(user));
+      if (err) {
+        const msg: string = `${err.name} while updating user (${user.email}): ${err.message}`;
+        res.status(500).send(msg);
+      } else {
+        errorOverride = true;
+        console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
+      }
+    } else if (err) {
+      console.error(`[ERROR] ${err.name} while creating user:`, err);
+      const msg: string = `${err.name} while creating user: ${err.message}`;
       res.status(500).send(msg);
     } else {
-      user.uid = userRecord.uid;
+      user.uid = (userRecord as UserRecord).uid;
       console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
+    }
+    if (!err || errorOverride) {
       const userRef: DocumentReference = db.collection('users').doc(user.uid);
       if (req.body.parents && req.body.parents instanceof Array) {
         for (const parentData of req.body.parents) {

@@ -21,6 +21,7 @@
     "lerna": "^3.16.4",
     "prettier": "2.0.4",
     "pretty-quick": "^2.0.1",
+    "raw-loader": "^4.0.1",
     "react-test-renderer": "^16.13.1",
     "sass": "^1.26.3",
     "svg-url-loader": "^5.0.0",
