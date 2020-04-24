@@ -137,7 +137,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
                 {ScheduleInput.times.map(
                   (timeslot: Timeslot, index: number) => (
                     <DataTableRow key={index}>
-                      <DataTableCell>{timeslot.toString()}</DataTableCell>
+                      <DataTableCell>{timeslot.toString(false)}</DataTableCell>
                       {DAYS.map((day: string, index: number) => {
                         const timeslotCheckboxRepresents = new Timeslot(
                           TimeUtils.getNextDateWithDay(

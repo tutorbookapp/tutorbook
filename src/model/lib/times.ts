@@ -104,10 +104,10 @@ export class Timeslot implements TimeslotInterface {
    * const timeslot = new Timeslot(dateAtTwoPM, dateAtThreePM);
    * assert(timeslot.toString() === 'Mondays from 2pm to 3pm');
    */
-  public toString(includeDay: boolean = false): string {
+  public toString(showDay: boolean = true): string {
     let str =
       this.from.toLocaleTimeString() + ' - ' + this.to.toLocaleTimeString();
-    if (includeDay) {
+    if (showDay) {
       if (this.from.getDay() === this.to.getDay()) {
         str = DAYS[this.from.getDay()] + ' ' + str;
       } else {
@@ -288,9 +288,9 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     temp.forEach((timeslot: Timeslot) => this.push(timeslot));
   }
 
-  public toString(): string {
+  public toString(showDay: boolean = true): string {
     return this.length > 0
-      ? this.map((timeslot) => timeslot.toString(true)).join(', ')
+      ? this.map((timeslot: Timeslot) => timeslot.toString(showDay)).join(', ')
       : '';
   }
 
