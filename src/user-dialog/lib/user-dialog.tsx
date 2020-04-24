@@ -5,7 +5,7 @@ import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
 import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
 import { UserContext } from '@tutorbook/next-firebase';
-import { User, Timeslot, Appt } from '@tutorbook/model';
+import { ApiError, User, Timeslot, Appt } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
 import { TextField } from '@rmwc/textfield';
 import { Typography } from '@rmwc/typography';
@@ -99,7 +99,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
     event.preventDefault();
     this.setState({ submitted: false, submitting: true });
     console.log('[DEBUG] Creating appt:', this.state.appt.toJSON());
-    const [err, res] = await to<AxiosResponse, AxiosError<string>>(
+    const [err, res] = await to<AxiosResponse, AxiosError<ApiError>>(
       axios({
         method: 'post',
         url: '/api/appt',
@@ -110,7 +110,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
       })
     );
     if (err && err.response) {
-      console.error(`[ERROR] ${err.response.data}`);
+      console.error(`[ERROR] ${err.response.data.msg}`);
     } else if (err && err.request) {
       console.error('[ERROR] No response received:', err.request);
     } else if (err) {
