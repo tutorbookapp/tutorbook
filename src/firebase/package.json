@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/next-firebase",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Package that contains utilities for using Firebase with Next.js, Typescript, and React.",
   "keywords": [
     "Tutorbook",
@@ -36,7 +36,7 @@
   "dependencies": {
     "@firebase/auth-types": "^0.10.0",
     "@firebase/firestore-types": "^1.10.1",
-    "@tutorbook/model": "^0.0.1",
+    "@tutorbook/model": "^0.1.0",
     "firebase": "^7.13.2"
   },
   "devDependencies": {

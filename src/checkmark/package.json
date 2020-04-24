@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/animated-checkmark",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Package that contains a React component made up of a spinner that becomes a checkmark.",
   "keywords": [
     "Tutorbook",

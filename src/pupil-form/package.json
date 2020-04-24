@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-pupil-form",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Package that contains the pupil sign-up form for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -36,9 +36,9 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/covid-form": "^0.0.1",
-    "@tutorbook/model": "^0.0.1",
-    "@tutorbook/next-firebase": "^0.0.1",
+    "@tutorbook/covid-form": "^0.1.0",
+    "@tutorbook/model": "^0.1.0",
+    "@tutorbook/next-firebase": "^0.1.0",
     "axios": "^0.19.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

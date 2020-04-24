@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/timeslot-input",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Text field input for selecting a window of time.",
   "keywords": [
     "Tutorbook",
@@ -35,6 +35,6 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/model": "^0.0.1"
+    "@tutorbook/model": "^0.1.0"
   }
 }
