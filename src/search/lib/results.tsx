@@ -78,7 +78,6 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
    * than what we'd need to show a loader for).
    */
   private async search(): Promise<void> {
-    console.log('[DEBUG] Searching (on client side)...');
     const loaderTimeoutID: number = window.setTimeout(
       () => this.setState({ searching: true }),
       500
@@ -113,7 +112,6 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
       this.setState({ searching: false, results: [] });
     }
     window.clearTimeout(loaderTimeoutID);
-    console.log('[DEBUG] Finished searching (on client side).');
   }
 
   /**

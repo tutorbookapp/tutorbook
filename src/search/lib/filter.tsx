@@ -25,7 +25,6 @@ export default class Filter extends React.Component<FilterProps> {
   }
 
   private updateSubjects(subjects: string[]): void {
-    console.log('[DEBUG] Subjects were updated:', subjects);
     this.props.onChange({
       ...this.props.filters,
       subjects: subjects,
@@ -33,7 +32,6 @@ export default class Filter extends React.Component<FilterProps> {
   }
 
   private updateAvailability(availability: Availability): void {
-    console.log('[DEBUG] Availability was updated:', availability);
     this.props.onChange({
       ...this.props.filters,
       availability: availability,

@@ -98,8 +98,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     this.setState({ submitted: false, submitting: true });
-    console.log('[DEBUG] Creating appt:', this.state.appt.toJSON());
-    const [err, res] = await to<AxiosResponse, AxiosError<ApiError>>(
+    const [err] = await to<AxiosResponse, AxiosError<ApiError>>(
       axios({
         method: 'post',
         url: '/api/appt',
@@ -115,8 +114,6 @@ export default class UserDialog extends React.Component<UserDialogProps> {
       console.error('[ERROR] No response received:', err.request);
     } else if (err) {
       console.error('[ERROR] While sending request:', err);
-    } else if (res) {
-      console.log('[DEBUG] Created appt:', res.data);
     }
     this.setState({ submitted: true, submitting: false });
   }

@@ -31,7 +31,6 @@ Handlebars.registerHelper('roles', function (
   roles: RoleAlias[],
   numOfAttendees: number = 2
 ): RoleAlias {
-  console.log("[DEBUG] Checking recipient's roles:", roles);
   if (roles.indexOf('tutor') >= 0 && roles.indexOf('pupil') >= 0) {
     return numOfAttendees > 2 ? 'people' : 'person';
   } else if (roles.indexOf('tutor') >= 0) {
@@ -53,7 +52,6 @@ Handlebars.registerHelper('ifCond', function <T = any>(
   v2: T,
   options: HelperOptions
 ): boolean {
-  console.log(`[DEBUG] Checking if ${v1} ${operator} ${v2}...`);
   switch (operator) {
     case '==':
       return v1 == v2 ? options.fn(this) : options.inverse(this);
