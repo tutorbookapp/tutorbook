@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
 import Utils from '@tutorbook/covid-utils';
 
-import { RoleAlias, Timeslot } from '@tutorbook/model';
+import { RoleAlias } from '@tutorbook/model';
 import { MailDataRequired } from '@sendgrid/helpers/classes/mail';
 import { HelperOptions } from 'handlebars';
 
