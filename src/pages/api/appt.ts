@@ -162,12 +162,10 @@ export default async function appt(
         }
         const user: User = User.fromFirestore(doc);
         // 2. Verify that the attendees are available.
-        /*
-         *if (!user.availability.contains(appt.time)) {
-         *  error(`${user.name} (${user.uid}) is not available on ${appt.time}.`);
-         *  break;
-         *}
-         */
+        if (!user.availability.contains(appt.time)) {
+          error(`${user.name} (${user.uid}) is not available on ${appt.time}.`);
+          break;
+        }
         // 3. Verify the tutors can teach the requested subjects.
         const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
         const canTeachSubject: (string) => boolean = (subject: string) =>
