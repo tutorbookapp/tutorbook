@@ -6,7 +6,7 @@ import {
 } from '@firebase/firestore-types';
 import { TimeUtils, Timeslot, TimeslotJSONInterface } from './times';
 
-type RoleAlias = 'tutor' | 'pupil';
+export type RoleAlias = 'tutor' | 'pupil';
 
 export interface AttendeeInterface {
   uid: string;
