@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/user-dialog",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Dialog that shows tutor info and enables pupils to request tutors.",
   "keywords": [
     "Tutorbook",

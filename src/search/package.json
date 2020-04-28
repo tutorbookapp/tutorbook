@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-search",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Provides React search context using Algolia for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -45,7 +45,7 @@
     "@tutorbook/next-firebase": "^0.1.1",
     "@tutorbook/schedule-input": "^0.1.1",
     "@tutorbook/subject-select": "^0.1.1",
-    "@tutorbook/user-dialog": "^0.1.1",
+    "@tutorbook/user-dialog": "^0.1.2",
     "algoliasearch": "^4.1.0",
     "await-to-js": "^2.1.1",
     "react": "^16.13.1",
