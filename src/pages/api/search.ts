@@ -37,10 +37,7 @@ async function searchUsers(
     const options: SearchOptions | undefined = filterString
       ? { filters: filterString }
       : undefined;
-    const [err, res]: [
-      Object | null,
-      SearchResponse<UserSearchHitAlias> | undefined
-    ] = await to(
+    const [err, res] = await to<SearchResponse<UserSearchHitAlias>>(
       index.search('', options) as Promise<SearchResponse<UserSearchHitAlias>>
     );
     if (err || !res) {
