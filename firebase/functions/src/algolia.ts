@@ -89,6 +89,6 @@ export async function userUpdate(
       'searches.implicit',
       'searches.filled',
       'availability',
-    ],
+    ].map((attr: string) => `filterOnly(${attr})`),
   });
 }
