@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Utils from '@tutorbook/covid-utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
@@ -182,7 +183,11 @@ export default class UserDialog extends React.Component<UserDialogProps> {
               />
               {!this.context.uid && (
                 <TextFieldHelperText persistent className={styles.helperText}>
-                  You must login before sending lesson requests.
+                  You must login (via
+                  <Link href='/pupils'>
+                    <a>this form</a>
+                  </Link>
+                  ) before sending lesson requests.
                 </TextFieldHelperText>
               )}
             </form>
