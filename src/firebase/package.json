@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@tutorbook/model": "^0.1.0",
-    "firebase": "^7.13.2"
+    "firebase": "^7.14.2"
   },
   "devDependencies": {
     "typescript": "^3.8.3"
