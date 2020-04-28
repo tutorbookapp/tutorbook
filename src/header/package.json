@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-header",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Package containing the header component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",

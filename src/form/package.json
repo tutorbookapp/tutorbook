@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-form",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Package that contains the sign-up form component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -54,10 +54,10 @@
     "@tutorbook/animated-checkmark-overlay": "^0.1.0",
     "@tutorbook/button": "^0.1.0",
     "@tutorbook/covid-styles": "^0.1.0",
-    "@tutorbook/model": "^0.1.0",
-    "@tutorbook/schedule-input": "^0.1.0",
+    "@tutorbook/model": "^0.1.1",
+    "@tutorbook/schedule-input": "^0.1.1",
     "@tutorbook/spinner": "^0.1.0",
-    "@tutorbook/subject-select": "^0.1.0",
+    "@tutorbook/subject-select": "^0.1.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

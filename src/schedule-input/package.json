@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/schedule-input",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Package that contains the schedule input React component used across the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -39,7 +39,7 @@
     "@rmwc/menu": "^6.0.14",
     "@rmwc/textfield": "^6.0.14",
     "@tutorbook/button": "^0.1.0",
-    "@tutorbook/model": "^0.1.0",
+    "@tutorbook/model": "^0.1.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
