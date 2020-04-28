@@ -66,6 +66,10 @@ p + h6 {
   margin-bottom: 0.5em;
 }
 
+.mdc-floating-label{
+  line-height: normal;
+}
+
 ul {
   @include typography.typography('body1');
 }
