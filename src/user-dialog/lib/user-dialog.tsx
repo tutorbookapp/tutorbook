@@ -183,11 +183,11 @@ export default class UserDialog extends React.Component<UserDialogProps> {
               />
               {!this.context.uid && (
                 <TextFieldHelperText persistent className={styles.helperText}>
-                  You must login (via
+                  {'You must login (via '}
                   <Link href='/pupils'>
                     <a>this form</a>
                   </Link>
-                  ) before sending lesson requests.
+                  {') before sending lesson requests.'}
                 </TextFieldHelperText>
               )}
             </form>
