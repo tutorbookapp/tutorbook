@@ -48,7 +48,7 @@ export default function HeroForm() {
                 key: 'availability',
               },
             ]}
-            submitLabel='Request free tutoring'
+            submitLabel='Search free tutors'
             onFormSubmit={async (formValues) => {
               const pupil: User = new User(formValues);
               await UserProvider.signup(pupil);
