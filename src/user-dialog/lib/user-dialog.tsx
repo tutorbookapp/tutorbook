@@ -7,7 +7,7 @@ import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
 import { UserContext } from '@tutorbook/next-firebase';
 import { ApiError, User, Timeslot, Appt } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
-import { TextField } from '@rmwc/textfield';
+import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { Typography } from '@rmwc/typography';
 import { Dialog, DialogProps } from '@rmwc/dialog';
 import { AxiosResponse, AxiosError } from 'axios';
@@ -172,10 +172,19 @@ export default class UserDialog extends React.Component<UserDialogProps> {
               <Button
                 className={styles.button}
                 label={`Request ${user.firstName}`}
-                disabled={this.state.submitting || this.state.submitted}
+                disabled={
+                  !this.context.uid ||
+                  this.state.submitting ||
+                  this.state.submitted
+                }
                 raised
                 arrow
               />
+              {!this.context.uid && (
+                <TextFieldHelperText persistent className={styles.helperText}>
+                  You must login before sending lesson requests.
+                </TextFieldHelperText>
+              )}
             </form>
           </div>
         </div>
