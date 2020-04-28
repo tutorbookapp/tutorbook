@@ -120,7 +120,6 @@ export default class UserDialog extends React.Component<UserDialogProps> {
 
   /**
    * Renders the `UserDialog` that shows profile info and enables booking.
-   * @todo Only show the profile's subjects in the `SubjectSelect`.
    */
   public render(): JSX.Element {
     const { user, className, appt, ...rest } = this.props;
@@ -150,6 +149,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
                 val={this.state.appt.subjects}
+                options={this.props.user.subjects.explicit}
               />
               <TimeslotInput
                 outlined

@@ -1,5 +1,9 @@
 @use '@material/chips/_index.scss' as chips;
 
+.noResults {
+  margin: 32px 64px;
+}
+
 .textField {
   width: 100% !important;
   flex-wrap: wrap;

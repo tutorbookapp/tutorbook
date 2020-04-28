@@ -1,12 +1,14 @@
 import React from 'react';
+import { Typography } from '@rmwc/typography';
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { TextField, TextFieldProps } from '@rmwc/textfield';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
-import { ObjectWithObjectID } from '@algolia/client-search';
+import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
 
+import to from 'await-to-js';
 import algoliasearch from 'algoliasearch/lite';
 import styles from './subject-select.module.scss';
 
@@ -21,6 +23,7 @@ interface SubjectSelectState {
   readonly suggestionsOpen: boolean;
   readonly suggestions: string[];
   readonly subjects: SubjectsAlias;
+  readonly errored: boolean;
   inputValueWorkaround: string;
 }
 
@@ -29,6 +32,7 @@ export interface SubjectSelectProps extends TextFieldProps {
   readonly className?: string;
   readonly val?: string[];
   readonly renderToPortal?: boolean;
+  readonly options?: string[];
 }
 
 interface SubjectHit extends ObjectWithObjectID {
@@ -48,6 +52,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       suggestionsOpen: false,
       suggestions: [],
       subjects: {},
+      errored: false,
       inputValueWorkaround: '',
     };
     if (props.val) {
@@ -89,14 +94,32 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   /**
    * Updates the suggestions shown in the select below the subjects input based
    * on the results of the user's current input to an Algolia search query.
-   * @todo Add React `ErrorBoundries` and otherwise catch possible errors here.
    * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
    */
   private async updateSuggestions(query: string = ''): Promise<void> {
-    const res = await SubjectSelect.searchIndex.search(query);
-    this.setState({
-      suggestions: res.hits.map((subject: SubjectHit) => subject.name),
-    });
+    if (this.props.options && !this.props.options.length) {
+      this.setState({ suggestions: [], errored: false });
+    } else {
+      const filters: string = (this.props.options || [])
+        .map((subject: string) => `name:"${subject}"`)
+        .join(' OR ');
+      const [err, res] = await to<SearchResponse<SubjectHit>>(
+        SubjectSelect.searchIndex.search(
+          query,
+          filters ? { filters } : undefined
+        ) as Promise<SearchResponse<SubjectHit>>
+      );
+      if (err) {
+        this.setState({ suggestions: [], errored: true });
+      } else {
+        this.setState({
+          suggestions: (res as SearchResponse<SubjectHit>).hits.map(
+            (subject: SubjectHit) => subject.name
+          ),
+          errored: false,
+        });
+      }
+    }
   }
 
   /**
@@ -212,7 +235,12 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     this.props.onChange(selected);
   }
 
-  private renderSubjectMenuItems(): JSX.Element[] {
+  private renderSubjectMenuItems(): JSX.Element[] | JSX.Element {
+    const noResults: JSX.Element = (
+      <Typography use='body1' className={styles.noResults}>
+        {this.state.errored ? 'Errored, try again' : 'No results'}
+      </Typography>
+    );
     const subjectMenuItems: JSX.Element[] = [];
     this.state.suggestions.map((subject) =>
       subjectMenuItems.push(
@@ -228,7 +256,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
         </ListItem>
       )
     );
-    return subjectMenuItems;
+    return subjectMenuItems.length ? subjectMenuItems : noResults;
   }
 
   private renderSubjectChipItems(): JSX.Element[] {
