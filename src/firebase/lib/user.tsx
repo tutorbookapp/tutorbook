@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, UserInterface } from '@tutorbook/model';
+import { ApiError, User, UserInterface } from '@tutorbook/model';
 import { AxiosError, AxiosResponse } from 'axios';
 import { DBContext } from './db';
 
@@ -100,7 +100,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
   public static async signup(user: User, parents?: User[]): Promise<void> {
     const [err, res] = await to<
       AxiosResponse<{ token: string }>,
-      AxiosError<string>
+      AxiosError<ApiError>
     >(
       axios({
         method: 'post',
@@ -114,7 +114,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
     if (err && err.response) {
       // The request was made and the server responded with a status
       // code that falls out of the range of 2xx
-      console.error(`[ERROR] ${err.response.data}`);
+      console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
     } else if (err && err.request) {
       // The request was made but no response was received
       // `err.request` is an instance of XMLHttpRequest in the
