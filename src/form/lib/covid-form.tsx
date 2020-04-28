@@ -167,6 +167,7 @@ export default class Form extends React.Component<FormProps, {}> {
       inputs,
       className,
       cardProps,
+      loadingCheckmark,
       ...rest
     } = this.props;
     return (
