@@ -16,7 +16,11 @@ export default function CovidHead() {
       <meta name='viewport' content='width=device-width,initial-scale=1.0' />
       <meta
         name='description'
-        content='Web app that connects students with volunteer tutors.'
+        content={
+          'Web app that connects students in need (who no longer have face-to' +
+          '-face support from teachers due to COVID-19) with volunteer tutors' +
+          ' (who want to make a difference from home).'
+        }
       />
       // Site favicons (see the `public/favicon` directory in this repository).
       <link
