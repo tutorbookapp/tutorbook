@@ -65,7 +65,7 @@ export default function Nav(props: { white?: boolean }) {
           <NavItem href='/pupils/' label='For students' />
           <NavItem href='/tutors/' label='For volunteers' />
           <NavItem
-            href='https://github.com/tutorbookapp/covid-tutoring'
+            href='https://github.com/tutorbookapp/covid-tutoring#readme'
             label='For developers'
           />
         </ul>
