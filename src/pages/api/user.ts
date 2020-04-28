@@ -75,7 +75,7 @@ async function updateUser(user: User): Promise<void> {
     (!!user.phone && userRecord.phoneNumber !== user.phone);
   user.uid = userRecord.uid;
   if (userNeedsToBeUpdated) {
-    let [err, updatedRecord] = await to<UserRecord, FirebaseError>(
+    const [err, updatedRecord] = await to<UserRecord, FirebaseError>(
       auth.updateUser(userRecord.uid, {
         displayName: user.name,
         photoURL: user.photo ? user.photo : undefined,
@@ -88,18 +88,24 @@ async function updateUser(user: User): Promise<void> {
       // not accidentally creating duplicate accounts). I'm guessing that this
       // happens primarily b/c someone is registering themself as both the
       // parent and the pupil at the pupil signup form.
-      updatedRecord = await auth.updateUser(userRecord.uid, {
+      const updatedRecord = await auth.updateUser(userRecord.uid, {
         displayName: user.name,
         photoURL: user.photo ? user.photo : undefined,
       });
+      // Don't let the user delete past known info (e.g. if the old `userRecord`
+      // has data that this new `User` doesn't; we don't just get rid of data).
+      user.name = updatedRecord.displayName || userRecord.displayName || '';
+      user.photo = updatedRecord.photoURL || userRecord.photoURL || '';
+      user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
     } else if (err) {
-      throw err;
+      throw err; // Errors are caught outside of this helper function.
+    } else if (updatedRecord) {
+      // Don't let the user delete past known info (e.g. if the old `userRecord`
+      // has data that this new `User` doesn't; we don't just get rid of data).
+      user.name = updatedRecord.displayName || userRecord.displayName || '';
+      user.photo = updatedRecord.photoURL || userRecord.photoURL || '';
+      user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
     }
-    // Don't let the user delete past known info (e.g. if the old `userRecord`
-    // has data that this new `User` doesn't; we don't just get rid of data).
-    user.name = updatedRecord.displayName || userRecord.displayName || '';
-    user.photo = updatedRecord.photoURL || userRecord.photoURL || '';
-    user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
   }
 }
 
