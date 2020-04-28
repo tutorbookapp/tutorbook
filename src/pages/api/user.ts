@@ -60,6 +60,12 @@ const db: DocumentReference =
  *
  * @todo Enable users to remove their phone numbers and other sensitive PII as
  * they please (see above note for more info on why that's not working now).
+ *
+ * @todo Send the `auth/phone-number-already-exists` error code back to the
+ * client and show the user a warning message (in the form of a confirmation
+ * dialog to ensure they're not accidentally creating duplicate accounts). I'm
+ * guessing that this happens primarily b/c someone is registering themself as
+ * both the parent and the pupil at the pupil signup form.
  */
 async function updateUser(user: User): Promise<void> {
   const userRecord: UserRecord = await auth.getUserByEmail(user.email);
@@ -69,11 +75,26 @@ async function updateUser(user: User): Promise<void> {
     (!!user.phone && userRecord.phoneNumber !== user.phone);
   user.uid = userRecord.uid;
   if (userNeedsToBeUpdated) {
-    const updatedRecord: UserRecord = await auth.updateUser(userRecord.uid, {
-      displayName: user.name,
-      photoURL: user.photo ? user.photo : undefined,
-      phoneNumber: user.phone ? user.phone : undefined,
-    });
+    let [err, updatedRecord] = await to<UserRecord, FirebaseError>(
+      auth.updateUser(userRecord.uid, {
+        displayName: user.name,
+        photoURL: user.photo ? user.photo : undefined,
+        phoneNumber: user.phone ? user.phone : undefined,
+      })
+    );
+    if (err && err.code === 'auth/phone-number-already-exists') {
+      // TODO: Send this error code back to the client and show the user a
+      // warning message (in the form of a confirmation dialog to ensure they're
+      // not accidentally creating duplicate accounts). I'm guessing that this
+      // happens primarily b/c someone is registering themself as both the
+      // parent and the pupil at the pupil signup form.
+      updatedRecord = await auth.updateUser(userRecord.uid, {
+        displayName: user.name,
+        photoURL: user.photo ? user.photo : undefined,
+      });
+    } else if (err) {
+      throw err;
+    }
     // Don't let the user delete past known info (e.g. if the old `userRecord`
     // has data that this new `User` doesn't; we don't just get rid of data).
     user.name = updatedRecord.displayName || userRecord.displayName || '';
@@ -125,16 +146,39 @@ export default async function user(
         phoneNumber: user.phone ? user.phone : undefined,
       })
     );
-    // This `errorOverride` variable is our current workaround to continue to
-    // the `else` statement once we deal with a `auth/email-already-exists` err.
-    let errorOverride: boolean = false;
+    /**
+     * This `errHandled` variable is our current workaround to continue to
+     * the `else` statement once we deal with known Firebase Admin Auth errors.
+     * @see {@link https://firebase.google.com/docs/auth/admin/errors}
+     */
+    let errHandled: boolean = false;
     if (err && err.code === 'auth/email-already-exists') {
+      console.log('[DEBUG] Handling email address already exists error...');
       const [err] = await to<void, FirebaseError>(updateUser(user));
       if (err) {
         error(`${err.name} updating (${user.email}): ${err.message}`, 500, err);
       } else {
-        errorOverride = true;
+        errHandled = true;
+        // Note that the `user.uid` property was already set in `updateUser()`.
         console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
+      }
+    } else if (err && err.code === 'auth/phone-number-already-exists') {
+      console.log('[DEBUG] Handling phone number already exists error...');
+      const [err, userRecord] = await to<UserRecord, FirebaseError>(
+        auth.createUser({
+          disabled: false,
+          displayName: user.name,
+          photoURL: user.photo ? user.photo : undefined,
+          email: user.email,
+          emailVerified: false,
+        })
+      );
+      if (err) {
+        error(`${err.name} creating (${user.email}): ${err.message}`, 500, err);
+      } else {
+        errHandled = true;
+        user.uid = (userRecord as UserRecord).uid;
+        console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
       }
     } else if (err) {
       console.error(`[ERROR] ${err.name} while creating user:`, err);
@@ -143,7 +187,7 @@ export default async function user(
       user.uid = (userRecord as UserRecord).uid;
       console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
     }
-    if (!err || errorOverride) {
+    if (!err || errHandled) {
       const userRef: DocumentReference = db.collection('users').doc(user.uid);
       if (req.body.parents && req.body.parents instanceof Array) {
         for (const parentData of req.body.parents) {
@@ -172,6 +216,7 @@ export default async function user(
         }
       }
       await userRef.set(user.toFirestore());
+      console.log(`[DEBUG] Set ${user.name}'s profile doc (${user.uid}).`);
       const [err, token] = await to<string, FirebaseError>(
         auth.createCustomToken(user.uid)
       );

@@ -1,5 +1,10 @@
 import React from 'react';
-import { ApiError, User, UserInterface } from '@tutorbook/model';
+import {
+  ApiError,
+  User,
+  UserJSONInterface,
+  UserInterface,
+} from '@tutorbook/model';
 import { AxiosError, AxiosResponse } from 'axios';
 import { DBContext } from './db';
 
@@ -39,10 +44,8 @@ export class UserProvider extends React.Component<UserProviderProps> {
   public static readonly contextType: React.Context<
     DocumentReference
   > = DBContext;
-  private static auth: Auth = firebase.auth();
-  public readonly state: UserProviderState = {
-    user: new User(),
-  };
+  private static readonly auth: Auth = firebase.auth();
+  public readonly state: UserProviderState = { user: new User() };
   private unsubscriber?: Unsubscribe;
 
   public constructor(props: UserProviderProps) {
@@ -99,7 +102,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
 
   public static async signup(user: User, parents?: User[]): Promise<void> {
     const [err, res] = await to<
-      AxiosResponse<{ token: string }>,
+      AxiosResponse<{ user: UserJSONInterface }>,
       AxiosError<ApiError>
     >(
       axios({
@@ -125,7 +128,11 @@ export class UserProvider extends React.Component<UserProviderProps> {
       // an err
       console.error('[ERROR] While sending request:', err);
     } else if (res) {
-      await UserProvider.auth.signInWithCustomToken(res.data.token);
+      // TODO: Find a way to `this.setState()` with `res.data.user` ASAP
+      // (instead of waiting on Firebase Auth to call our auth state listener).
+      await UserProvider.auth.signInWithCustomToken(
+        res.data.user.token as string
+      );
     }
   }
 }
