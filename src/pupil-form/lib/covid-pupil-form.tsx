@@ -112,11 +112,11 @@ export default function PupilForm() {
           ]}
           title='Request Free Tutoring'
           description={
-            'Complete the form below. Within 72 hours we will reach out to ' +
-            'confirm and connect you with the latest resources! Read the FAQs' +
-            ' for more info.'
+            'Complete the form below to create your Tutorbook account and ' +
+            "search our volunteer tutors; we'll make sure to connect you " +
+            'with the support you deserve!'
           }
-          submitLabel='Request your free tutor'
+          submitLabel='Search volunteer tutors'
           onFormSubmit={async (formValues) => {
             const {
               parentName,
