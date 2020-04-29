@@ -11,6 +11,7 @@ import Head from 'next/head';
 export default function CovidHead() {
   return (
     <Head>
+      <meta name='bullshit' content={process.env.FIREBASE_ADMIN_KEY} />
       <title>Tutorbook</title>
       <meta charSet='UTF-8' />
       <meta name='viewport' content='width=device-width,initial-scale=1.0' />
