@@ -20,12 +20,15 @@ import styles from './timeslot-input.module.scss';
  * @property [val] - An optional `Timeslot` to pre-fill or control the input.
  * @property [availability] - An optional `Availability` object from which we
  * check to ensure that the selected `Timeslot` fits within the available times.
+ * @property [err] - The error message to show when the user selects a time that
+ * isn't in the given availability.
  */
 interface TimeslotInputProps extends TextFieldProps {
   readonly onChange: (timeslot: Timeslot) => any;
   readonly className?: string;
   readonly val?: Timeslot;
   readonly availability?: Availability;
+  readonly err?: string;
 }
 
 interface TimeslotInputState {
@@ -73,7 +76,7 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
   private handleChange(event: React.FormEvent<HTMLInputElement>): void {
     this.setState({ value: event.currentTarget.value });
     try {
-      const timeslot: Timeslot = this.timeslot;
+      const timeslot: Timeslot = this.parse(event.currentTarget.value);
       let fitsWithinAvailability: boolean = !this.props.availability;
       if (this.props.availability)
         for (const t of this.props.availability) {
@@ -83,14 +86,11 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
           }
         }
       if (fitsWithinAvailability) {
-        this.setState({
-          err: undefined,
-          val: timeslot,
-        });
+        this.setState({ err: undefined, val: timeslot });
         this.props.onChange(timeslot);
       } else {
         this.setState({
-          err: 'Please input a time that fits within the availability.',
+          err: this.props.err || `Input a time on ${this.props.availability}`,
         });
       }
     } catch (e) {
@@ -105,8 +105,8 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
    * This getter should only ever be called within a `try{} catch {}` sequence
    * b/c it will throw an error every time if `this.state.value` isn't parsable.
    */
-  private get timeslot(): Timeslot {
-    const split: string[] = this.state.value.split(' ');
+  private parse(value: string): Timeslot {
+    const split: string[] = value.split(' ');
     if (split.length !== 7) throw new Error('Invalid time string.');
 
     const dayStr: string = split[0];

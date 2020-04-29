@@ -160,6 +160,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
                 onChange={this.handleTimeslotChange}
                 availability={user.availability}
                 val={this.state.appt.time}
+                err={`${user.firstName} is only available ${user.availability}.`}
               />
               <TextField
                 outlined
