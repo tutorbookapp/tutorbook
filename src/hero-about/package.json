@@ -34,6 +34,7 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/banner": "^0.1.0"
+    "@tutorbook/banner": "^0.1.0",
+    "next": "^9.3.6"
   }
 }

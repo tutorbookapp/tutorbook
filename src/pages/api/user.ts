@@ -11,6 +11,13 @@ type UserRecord = admin.auth.UserRecord;
 type Auth = admin.auth.Auth;
 type App = admin.app.App;
 
+console.log('[DEBUG] Firebase admin key:', process.env.FIREBASE_ADMIN_KEY);
+console.log(
+  '[DEBUG] Firebase client email:',
+  process.env.FIREBASE_ADMIN_CLIENT_EMAIL
+);
+console.log('[DEBUG] Firebase project ID:', process.env.FIREBASE_PROJECT_ID);
+
 /**
  * Initializes a new `firebase.admin` instance with limited database/Firestore
  * capabilities (using the `databaseAuthVariableOverride` option).
@@ -133,12 +140,6 @@ export default async function user(
   req: NextApiRequest,
   res: NextApiResponse<ApiError | { user: UserJSONInterface }>
 ): Promise<void> {
-  console.log('[DEBUG] Firebase admin key:', process.env.FIREBASE_ADMIN_KEY);
-  console.log(
-    '[DEBUG] Firebase client email:',
-    process.env.FIREBASE_ADMIN_CLIENT_EMAIL
-  );
-  console.log('[DEBUG] Firebase project ID:', process.env.FIREBASE_PROJECT_ID);
   function error(msg: string, code: number = 400, err?: Error): void {
     res.status(code).send(Object.assign({ msg }, err || {}));
   }

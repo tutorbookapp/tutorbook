@@ -27,8 +27,8 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "devDependencies": {
-    "@types/node": "^13.11.0",
-    "@types/react": "^16.9.32",
+    "@types/node": "^13.13.4",
+    "@types/react": "^16.9.34",
     "@types/uuid": "^7.0.3",
     "typescript": "^3.8.3"
   },
@@ -46,8 +46,8 @@
     "@tutorbook/covid-styles": "^0.1.0",
     "@tutorbook/covid-tutor-form": "^0.1.1",
     "@tutorbook/next-firebase": "^0.1.1",
-    "firebase-admin": "^8.10.0",
-    "next": "^9.3.5",
+    "firebase-admin": "^8.11.0",
+    "next": "^9.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "uuid": "^7.0.3"

@@ -38,6 +38,7 @@
   "dependencies": {
     "@tutorbook/covid-utils": "^0.1.0",
     "@tutorbook/model": "^0.1.1",
-    "handlebars": "^4.7.6"
+    "handlebars": "^4.7.6",
+    "next": "^9.3.6"
   }
 }

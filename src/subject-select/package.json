@@ -34,23 +34,24 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@rmwc/checkbox": "^6.0.11",
+    "@rmwc/checkbox": "^6.0.14",
     "@rmwc/chip": "^6.0.9",
-    "@rmwc/list": "^6.0.11",
-    "@rmwc/menu": "^6.0.11",
-    "@rmwc/textfield": "^6.0.9",
+    "@rmwc/list": "^6.0.14",
+    "@rmwc/menu": "^6.0.14",
+    "@rmwc/textfield": "^6.1.0",
     "algoliasearch": "^4.1.0",
+    "next": "^9.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
-    "@types/node": "^13.11.0",
-    "@types/react": "^16.9.32",
+    "@types/node": "^13.13.4",
+    "@types/react": "^16.9.34",
     "csv-parse": "^4.8.8",
-    "jest": "^25.2.7",
-    "sass": "^1.26.3",
-    "ts-jest": "^25.3.1",
+    "jest": "^25.5.0",
+    "sass": "^1.26.5",
+    "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   }
 }
