@@ -150,6 +150,23 @@ export class User implements UserInterface {
   }
 
   /**
+   * Converts this `User` object into a `Record<string, any>` that Intercom can
+   * understand.
+   * @see {@link https://developers.intercom.com/installing-intercom/docs/javascript-api-attributes-objects#section-data-attributes}
+   */
+  public toIntercom(): Record<string, any> {
+    const { uid, photo, ...rest } = this;
+    return {
+      user_id: uid,
+      avatar: {
+        type: 'avatar',
+        image_url: photo,
+      },
+      ...rest,
+    };
+  }
+
+  /**
    * Saves this user in `window.localStorage`. Only call this method on the
    * currently authenticated user (or the user that *will* be authenticated) as
    * it overrides any existing user data in `window.localStorage`.

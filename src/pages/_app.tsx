@@ -1,10 +1,11 @@
+import React from 'react';
+import Intercom from 'react-intercom';
 import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 
-import { UserProvider, DBProvider } from '../firebase';
-
+import { UserProvider, UserContext, DBProvider } from '../firebase';
+import { User } from '../model';
 import CovidHead from '../head';
-
 import '../styles';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -27,6 +28,11 @@ export default function App({ Component, pageProps }: AppProps) {
           <div id='portal' />
           <CovidHead />
           <Component {...pageProps} />
+          <UserContext.Consumer>
+            {(user: User) => (
+              <Intercom appID='faz7lcyb' {...user.toIntercom()} />
+            )}
+          </UserContext.Consumer>
         </DBProvider>
       </UserProvider>
     </RMWCProvider>
