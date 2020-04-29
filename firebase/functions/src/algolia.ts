@@ -67,9 +67,11 @@ export async function userUpdate(
   const indexId: string = context.params.partition + '-users';
   const index: SearchIndex = client.initIndex(indexId);
   if (!change.after.exists) {
+    console.log(`[DEBUG] Deleting user (${context.params.user})...`);
     await index.deleteObject(context.params.user);
   } else {
     const user: DocumentData = change.after.data() as DocumentData;
+    console.log(`[DEBUG] Updating ${user.name} (${context.params.user})...`);
     const ob: Record<string, any> = {
       name: onlyFirstNameAndLastInitial(user.name),
       bio: user.bio,
