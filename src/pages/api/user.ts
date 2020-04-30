@@ -167,13 +167,14 @@ export default async function user(
      * @see {@link https://firebase.google.com/docs/auth/admin/errors}
      */
     let errHandled: boolean = false;
+    let updateUserInsteadOfSet: boolean = false;
     if (err && err.code === 'auth/email-already-exists') {
       console.log('[DEBUG] Handling email address already exists error...');
       const [err] = await to<void, FirebaseError>(updateUser(user));
       if (err) {
         error(`${err.name} updating (${user.email}): ${err.message}`, 500, err);
       } else {
-        errHandled = true;
+        errHandled = updateUserInsteadOfSet = true;
         // Note that the `user.uid` property was already set in `updateUser()`.
         console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
       }
@@ -230,8 +231,13 @@ export default async function user(
           }
         }
       }
-      await userRef.set(user.toFirestore());
-      console.log(`[DEBUG] Set ${user.name}'s profile doc (${user.uid}).`);
+      if (updateUserInsteadOfSet) {
+        await userRef.update(user.toFirestore());
+        console.log(`[DEBUG] Updated ${user.name}'s profile (${user.uid}).`);
+      } else {
+        await userRef.set(user.toFirestore());
+        console.log(`[DEBUG] Set ${user.name}'s profile (${user.uid}).`);
+      }
       const [err, token] = await to<string, FirebaseError>(
         auth.createCustomToken(user.uid)
       );
