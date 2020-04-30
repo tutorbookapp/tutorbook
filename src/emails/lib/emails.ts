@@ -126,8 +126,9 @@ export class ApptEmail implements Email {
     private readonly attendees: ReadonlyArray<User>
   ) {
     this.to = `${recipient.name} <${recipient.email}>`;
-    //this.subject = `You now have ${Utils.join(appt.subjects)} lessons on Tutorbook!`;
-    this.subject = 'This is my third test from the REST API.';
+    this.subject = `You now have ${Utils.join(
+      appt.subjects
+    )} lessons on Tutorbook!`;
     this.text = this.subject;
     const data: ApptEmailData = {
       recipient: this.recipientWithRoles,
@@ -135,6 +136,5 @@ export class ApptEmail implements Email {
       appt: this.appt,
     };
     this.html = ApptEmail.render(data);
-    debugger;
   }
 }
