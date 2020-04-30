@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/button",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Package that contains a MDC arrow button React component.",
   "keywords": [
     "Tutorbook",
