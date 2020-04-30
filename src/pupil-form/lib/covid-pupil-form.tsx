@@ -19,12 +19,14 @@ const GRADES: FormattedOption[] = [
   {
     label: null,
     options: ['Senior', 'Junior', 'Sophomore', 'Freshman'].map((label) => ({
+      value: label,
       label,
     })),
   },
   {
     label: null,
     options: ['8th Grade', '7th Grade', '6th Grade'].map((label) => ({
+      value: label,
       label,
     })),
   },
