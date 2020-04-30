@@ -33,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
-  "dependencies": {
-    "next": "^9.3.6"
+  "devDependencies": {
+    "typescript": "^3.8.3"
   }
 }

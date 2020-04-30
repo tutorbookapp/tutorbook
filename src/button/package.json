@@ -32,8 +32,7 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@rmwc/button": "^6.0.5",
-    "@tutorbook/covid-styles": "^0.1.0",
+    "@rmwc/button": "^6.0.14",
     "next": "^9.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

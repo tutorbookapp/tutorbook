@@ -51,9 +51,17 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
 
   public constructor(props: TimeslotInputProps) {
     super(props);
+    let valFitsWithinAvailability: boolean = !props.val || !props.availability;
+    if (props.val && props.availability) {
+      for (const t of props.availability)
+        if (t.contains(props.val)) {
+          valFitsWithinAvailability = true;
+          break;
+        }
+    }
     this.state = {
       value: props.val ? props.val.toParsableString() : '',
-      val: props.val,
+      val: valFitsWithinAvailability ? props.val : undefined,
     };
     this.handleChange = this.handleChange.bind(this);
   }

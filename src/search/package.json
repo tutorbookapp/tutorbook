@@ -35,10 +35,12 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@algolia/client-search": "^4.1.0",
+    "@algolia/client-search": "^4.2.0",
     "@rmwc/avatar": "^6.0.14",
+    "@rmwc/card": "^6.0.14",
     "@rmwc/grid": "^6.0.14",
     "@rmwc/list": "^6.0.14",
+    "@rmwc/typography": "^6.0.14",
     "@tutorbook/animated-checkmark-overlay": "^0.1.0",
     "@tutorbook/covid-utils": "^0.1.0",
     "@tutorbook/model": "^0.1.1",
@@ -46,10 +48,14 @@
     "@tutorbook/schedule-input": "^0.1.1",
     "@tutorbook/subject-select": "^0.1.1",
     "@tutorbook/user-dialog": "^0.1.2",
-    "algoliasearch": "^4.1.0",
+    "algoliasearch": "^4.2.0",
     "await-to-js": "^2.1.1",
+    "axios": "^0.19.2",
     "next": "^9.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
   }
 }

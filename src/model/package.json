@@ -33,14 +33,13 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@google-cloud/firestore": "^3.7.4",
     "firebase": "^7.14.2",
     "firebase-admin": "^8.11.0",
-    "next": "^9.3.6",
     "phone": "^2.4.9",
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "@types/phone": "^2.4.0"
+    "@types/phone": "^2.4.0",
+    "typescript": "^3.8.3"
   }
 }

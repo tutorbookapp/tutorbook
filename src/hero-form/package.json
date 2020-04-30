@@ -38,7 +38,11 @@
     "@tutorbook/covid-form": "^0.1.1",
     "@tutorbook/model": "^0.1.1",
     "@tutorbook/next-firebase": "^0.1.1",
-    "axios": "^0.19.2",
-    "next": "^9.3.6"
+    "next": "^9.3.6",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
   }
 }
