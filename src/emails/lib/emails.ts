@@ -125,7 +125,7 @@ export class ApptEmail implements Email {
     private readonly appt: Appt,
     private readonly attendees: ReadonlyArray<User>
   ) {
-    this.to = `${recipient.name} <${recipient.email}>`;
+    this.to = recipient.email;
     this.subject = `You now have ${Utils.join(
       appt.subjects
     )} lessons on Tutorbook!`;
