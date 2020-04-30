@@ -24,7 +24,20 @@ async function sendApptEmails(
   await Promise.all(
     recipients.map(async (recipient: User) => {
       const email: Email = new ApptEmail(recipient, appt, recipients);
-      await to<[ClientResponse, {}], Error | ResponseError>(mail.send(email));
+      const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
+        mail.send(email)
+      );
+      if (err) {
+        console.error(
+          `[ERROR] ${err.name} while sending ${recipient.name} ` +
+            `<${recipient.email}> the appt (${appt.id}) email:`,
+          err
+        );
+      } else {
+        console.log(
+          `[DEBUG] Sent ${recipient.name} <${recipient.email}> the appt email.`
+        );
+      }
     })
   );
 }
