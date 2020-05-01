@@ -40,6 +40,10 @@
   display: inline-flex;
 }
 
+.formField textarea {
+  resize: vertical;
+}
+
 .form .formField:first-child {
   margin-top: 0;
 }

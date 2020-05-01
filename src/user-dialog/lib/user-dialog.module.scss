@@ -46,6 +46,10 @@
   width: 100%;
 }
 
+.formField textarea {
+  resize: vertical;
+}
+
 .formField:first-child {
   margin-top: 0;
 }
