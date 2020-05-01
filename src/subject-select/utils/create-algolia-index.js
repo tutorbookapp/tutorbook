@@ -6,12 +6,17 @@ const parse = require('csv-parse/lib/sync');
 const fs = require('fs');
 
 const main = async () => {
+  const index = client.initIndex('subjects');
+  index.setSettings({ attributesForFaceting: ['grades'] });
   const subjects = parse(fs.readFileSync('./subjects.csv'), {
     columns: true,
     skip_empty_lines: true,
+  }).map((subject) => {
+    subject.grades = subject.grades.split(', ');
+    return subject;
   });
   const [err, res] = await to(
-    client.initIndex('subjects').saveObjects(subjects, {
+    index.saveObjects(subjects, {
       autoGenerateObjectIDIfNotExist: true,
     })
   );

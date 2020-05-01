@@ -1,67 +1,105 @@
-name,synonyms
-AP U.S. Government,
-ACT,
-Algebra 1,
-Algebra 2,
-AP Art History,
-AP Biology,
-AP Calculus AB,
-AP Calculus BC,
-AP Chemistry,
-AP Computer Science A,
-AP Computer Science Principles,
-AP English Language and Composition,
-AP English Literature and Composition,
-AP Environmental Science,
-AP European History,
-AP French Language,
-AP Latin,
-AP Macroeconomics,
-AP Microeconomics,
-AP Physics 1,
-AP Physics 2,
-AP Physics C,
-AP Psychology,
-AP Spanish Language,
-AP Spanish Literature,
-AP Statistics,
-AP U.S. Government &amp; Politics,
-AP US History,
-AP World History,
-Biology,
-Calculus,
-Chemistry,
-Computer Science,
-Economics,
-Engineering,
-English,
-Environmental Science,
-European History,
-French,
-Geometry,
-German,
-Government,
-Multivariable Calculus,
-Physics,
-Pre-Calculus,
-PSAT,
-Psychology,
-SAT: Biology,
-SAT: Chemistry,
-SAT: Literature,
-SAT: Math1,
-SAT: Math2,
-SAT: Physics,
-SAT: Spanish,
-SAT: US History,
-SAT: World History,
-Spanish 1,
-Spanish 2,
-Spanish 3,
-Spanish 4,
-Spanish,
-Statistics,
-Study Skills,
-Trigonometry,
-US History,
-World History,
+name,synonyms,grades
+AP U.S. Government,,"11, 12"
+ACT,,"11, 12"
+Pre-Algebra,,"7, 8, 9"
+Algebra 1,,"8, 9"
+Algebra 2,,10
+AP Art History,,"11, 12"
+AP Biology,,"11, 12"
+AP Calculus AB,,12
+AP Calculus BC,,12
+AP Chemistry,,"11, 12"
+AP Computer Science A,,"10, 11, 12"
+AP Computer Science Principles,,"9, 10, 11, 12"
+AP English Language and Composition,,"11, 12"
+AP English Literature and Composition,,"11, 12"
+AP Environmental Science,,"11, 12"
+AP European History,,"11, 12"
+AP French Language,,"11, 12"
+AP Latin,,"11, 12"
+AP Macroeconomics,,12
+AP Microeconomics,,12
+AP Physics 1,,"11, 12"
+AP Physics 2,,12
+AP Physics C,,12
+AP Psychology,,12
+AP Spanish Language,,"11, 12"
+AP Spanish Literature,,"11, 12"
+AP Statistics,,11
+AP U.S. Government and Politics,,"11, 12"
+AP US History,,11
+AP World History,,12
+Biology,,"10, 11"
+Calculus,,12
+Chemistry,,"10, 11"
+Computer Science,,"7, 8, 9, 10, 11, 12"
+Economics,,"11, 12"
+Engineering,,"7, 8, 9, 10, 11, 12"
+English,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+Environmental Science,,"11, 12"
+European History,,"9, 10, 11, 12"
+French,,"7, 8, 9, 10, 11, 12"
+Geometry,,"9, 10"
+Geometry H,,"9, 10"
+German,,"7, 8, 9, 10, 11, 12"
+Government,,10
+Multivariable Calculus,,12
+Physics,,"10, 11, 12"
+Pre-Calculus,,"11, 12"
+PSAT,,"11, 12"
+Psychology,,"11, 12"
+SAT: Biology,,"9, 10, 11, 12"
+SAT: Chemistry,,"9, 10, 11, 12"
+SAT: Literature,,"9, 10, 11, 12"
+SAT: Math 1,,"9, 10, 11, 12"
+SAT: Math 2,,"9, 10, 11, 12"
+SAT: Physics,,"9, 10, 11, 12"
+SAT: Spanish,,"9, 10, 11, 12"
+SAT: US History,,"9, 10, 11, 12"
+SAT: World History,,"9, 10, 11, 12"
+Spanish 1,,"7, 8, 9"
+Spanish 2,,10
+Spanish 3,,11
+Spanish 4,,12
+Spanish,,"7, 8, 9, 10, 11, 12"
+Statistics,,11
+Study Skills,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+Trigonometry,,10
+US History,,11
+World History,,9
+Kindergarten Math,,0
+Kindergarten Science,,0
+Kindergarten English,,0
+Kindergarten History,,0
+1st Grade Math,,1
+1st Grade Science,,1
+1st Grade English,,1
+1st Grade History,,1
+2nd Grade Math,,2
+2nd Grade Science,,2
+2nd Grade English,,2
+2nd Grade History,,2
+3rd Grade Math,,3
+3rd Grade Science,,3
+3rd Grade English,,3
+3rd Grade History,,3
+4th Grade Math,,4
+4th Grade Science,,4
+4th Grade English,,4
+4th Grade History,,4
+5th Grade Math,,5
+5th Grade Science,,5
+5th Grade English,,5
+5th Grade History,,5
+6th Grade Math,,6
+6th Grade Science,,6
+6th Grade English,,6
+6th Grade History,,6
+7th Grade Math,,7
+7th Grade Science,,7
+7th Grade English,,7
+7th Grade History,,7
+8th Grade Math,,8
+8th Grade Science,,8
+8th Grade English,,8
+8th Grade History,,8
