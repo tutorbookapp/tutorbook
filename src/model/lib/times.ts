@@ -1,6 +1,8 @@
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
+import { DAYS } from './constants';
+
 /**
  * This is a painful workaround as we then import the entire Firebase library
  * definition while we only want the `Timestamp` object.
@@ -59,17 +61,6 @@ export interface TimeslotInterface {
   to: Date;
   recurrance?: 'monthly' | 'weekly' | 'daily';
 }
-
-// TODO: Remove this and support multiple languages.
-const DAYS: Readonly<string[]> = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
 
 /**
  * Class that represents a time opening or slot where tutoring can take place
