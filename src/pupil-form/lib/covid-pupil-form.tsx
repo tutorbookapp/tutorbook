@@ -57,7 +57,6 @@ export default function PupilForm() {
             {
               label: 'Your grade level',
               el: 'select' as InputElAlias,
-              required: true,
               options: GRADES,
               key: 'bio',
             },
