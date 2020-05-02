@@ -44,6 +44,7 @@ $font-weight-values: (
 @use '@material/data-table/mdc-data-table';
 @use '@material/layout-grid/mdc-layout-grid';
 @use '@material/dialog/mdc-dialog';
+@use '@material/form-field/mdc-form-field';
 @use '@rmwc/avatar/avatar';
 
 @include typography.core-styles;

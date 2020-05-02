@@ -1,5 +1,6 @@
 import React from 'react';
 import { Checkbox } from '@rmwc/checkbox';
+import { FormField } from '@rmwc/formfield';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldProps } from '@rmwc/textfield';
 import {
@@ -12,6 +13,8 @@ import {
   DataTableCell,
 } from '@rmwc/data-table';
 import { TimeUtils, DayAlias, Timeslot, Availability } from '@tutorbook/model';
+
+import { v4 as uuid } from 'uuid';
 
 import styles from './schedule-input.module.scss';
 
@@ -46,6 +49,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
       menuOpen: false,
       availability: props.val || new Availability(),
     };
+    this.setAllChecked = this.setAllChecked.bind(this);
   }
 
   /**
@@ -111,11 +115,30 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
   }
 
   /**
+   * Either selects all possible timeslots or unselects all timeslots.
+   * @todo Perhaps just reset the availability to it's state before the select
+   * all checkbox was selected.
+   */
+  private setAllChecked(event: React.FormEvent<HTMLInputElement>): void {
+    if (event.currentTarget.checked) {
+      this.setState({ availability: ScheduleInput.timeslots });
+    } else {
+      this.setState({ availability: new Availability() });
+    }
+    this.props.onChange(ScheduleInput.timeslots);
+  }
+
+  private get allTimeslotsChecked(): boolean {
+    return this.state.availability.equalTo(ScheduleInput.timeslots);
+  }
+
+  /**
    * All props (except `onChange` and `className`) are delegated to the
    * `TextField` element.
    */
   public render(): JSX.Element {
     const { onChange, className, ...rest } = this.props;
+    const checkboxId = uuid();
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
@@ -127,7 +150,16 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
             <DataTableContent>
               <DataTableHead>
                 <DataTableRow>
-                  <DataTableHeadCell></DataTableHeadCell>
+                  <DataTableCell>
+                    <FormField>
+                      <Checkbox
+                        checked={this.allTimeslotsChecked}
+                        onChange={this.setAllChecked}
+                        id={checkboxId}
+                      />
+                      <label htmlFor={checkboxId}>Anytime, I'm flexible.</label>
+                    </FormField>
+                  </DataTableCell>
                   {DAYS.map((day: string) => (
                     <DataTableHeadCell key={day}>{day}</DataTableHeadCell>
                   ))}

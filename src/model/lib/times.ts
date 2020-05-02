@@ -333,6 +333,22 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     });
     return availability;
   }
+
+  /**
+   * Checks if two availabilities contain all the same timeslots by ensuring
+   * that:
+   * 1. This availability contains all the timeslots of the other availability.
+   * 2. The other availability contains all the timeslots of this availability.
+   */
+  public equalTo(other: Availability): boolean {
+    for (const timeslot of other) {
+      if (!this.hasTimeslot(timeslot)) return false;
+    }
+    for (const timeslot of this) {
+      if (!other.hasTimeslot(timeslot)) return false;
+    }
+    return true;
+  }
 }
 
 /**
