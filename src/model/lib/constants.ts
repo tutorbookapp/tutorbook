@@ -12,28 +12,70 @@ import { FormattedOption } from '@rmwc/select';
 export const GRADES: FormattedOption[] = [
   {
     label: null,
-    options: ['Senior', 'Junior', 'Sophomore', 'Freshman'].map((label) => ({
-      value: label,
-      label,
-    })),
-  },
-  {
-    label: null,
-    options: ['8th Grade', '7th Grade', '6th Grade'].map((label) => ({
-      value: label,
-      label,
-    })),
+    options: [
+      {
+        label: 'Senior',
+        value: '12',
+      },
+      {
+        label: 'Junior',
+        value: '11',
+      },
+      {
+        label: 'Sophomore',
+        value: '10',
+      },
+      {
+        label: 'Freshman',
+        value: '9',
+      },
+    ],
   },
   {
     label: null,
     options: [
-      '5th Grade',
-      '4th Grade',
-      '3rd Grade',
-      '2nd Grade',
-      '1st Grade',
-      'Kindergarten',
-    ].map((label) => ({ label })),
+      {
+        label: '8th Grade',
+        value: '8',
+      },
+      {
+        label: '7th Grade',
+        value: '7',
+      },
+      {
+        label: '6th Grade',
+        value: '6',
+      },
+    ],
+  },
+  {
+    label: null,
+    options: [
+      {
+        label: '5th Grade',
+        value: '5',
+      },
+      {
+        label: '4th Grade',
+        value: '4',
+      },
+      {
+        label: '3rd Grade',
+        value: '3',
+      },
+      {
+        label: '2nd Grade',
+        value: '2',
+      },
+      {
+        label: '1st Grade',
+        value: '1',
+      },
+      {
+        label: 'Kindergarten',
+        value: '0',
+      },
+    ],
   },
 ];
 

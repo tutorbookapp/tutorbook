@@ -20,6 +20,14 @@ type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
 type AdminDocumentReference = admin.firestore.DocumentReference;
 
 /**
+ * Right now, we only support traditional K-12 grade levels (e.g. 'Freshman'
+ * maps to the number 9).
+ * @todo Perhaps support other grade levels and other educational systems (e.g.
+ * research how other countries do grade levels).
+ */
+export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+
+/**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
  * @property name - The user's name (e.g. their Google `displayName`).
@@ -41,6 +49,7 @@ export interface UserInterface {
   email?: string;
   phone?: string;
   photo?: string;
+  grade?: GradeAlias;
   bio?: string;
   schedule: Availability;
   availability: Availability;
@@ -69,6 +78,7 @@ export interface UserJSONInterface {
   email?: string;
   phone?: string;
   photo?: string;
+  grade?: GradeAlias;
   bio?: string;
   schedule: AvailabilityJSONAlias;
   availability: AvailabilityJSONAlias;
@@ -121,6 +131,7 @@ export class User implements UserInterface {
   };
   public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;
+  public grade?: GradeAlias;
 
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
@@ -164,18 +175,6 @@ export class User implements UserInterface {
       },
       ...rest,
     };
-  }
-
-  /**
-   * Saves this user in `window.localStorage`. Only call this method on the
-   * currently authenticated user (or the user that *will* be authenticated) as
-   * it overrides any existing user data in `window.localStorage`.
-   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage}
-   */
-  public setLocalStorage(): void {
-    Object.entries(this.toFirestore()).forEach(([key, val]: [string, any]) => {
-      window.localStorage.setItem(`user-${key}`, val);
-    });
   }
 
   public static fromSearchHit(hit: UserSearchHitAlias): User {

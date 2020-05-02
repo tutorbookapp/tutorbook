@@ -1,6 +1,7 @@
+import React from 'react';
 import Router from 'next/router';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { GRADES, User } from '@tutorbook/model';
+import { GRADES, GradeAlias, User } from '@tutorbook/model';
 import { UserProvider } from '@tutorbook/next-firebase';
 
 import styles from './covid-pupil-form.module.scss';
@@ -18,6 +19,7 @@ import styles from './covid-pupil-form.module.scss';
  * - (availability) When are you available?
  */
 export default function PupilForm() {
+  const [grade, setGrade] = React.useState<GradeAlias | undefined>();
   return (
     <div className={styles.formWrapper}>
       <div className={styles.formContent}>
@@ -58,13 +60,17 @@ export default function PupilForm() {
               label: 'Your grade level',
               el: 'select' as InputElAlias,
               options: GRADES,
-              key: 'bio',
+              onChange: (event: React.FormEvent<HTMLSelectElement>) => {
+                const gradeString: string = event.currentTarget.value;
+                setGrade(new Number(gradeString).valueOf() as GradeAlias);
+              },
             },
             {
               label: 'What would you like to learn?',
               el: 'subjectselect' as InputElAlias,
               required: true,
               key: 'searches',
+              grade,
             },
             {
               label: 'When are you available?',
@@ -92,7 +98,7 @@ export default function PupilForm() {
               email: parentEmail,
               phone: parentPhone,
             });
-            const pupil: User = new User(rest);
+            const pupil: User = new User({ ...rest, grade });
             await UserProvider.signup(pupil, [parent]);
             Router.push(pupil.searchURL);
           }}

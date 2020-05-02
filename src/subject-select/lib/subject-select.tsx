@@ -5,8 +5,13 @@ import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { TextField, TextFieldProps } from '@rmwc/textfield';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
-import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import { GradeAlias } from '@tutorbook/model';
+import {
+  SearchOptions,
+  SearchResponse,
+  ObjectWithObjectID,
+} from '@algolia/client-search';
 
 import to from 'await-to-js';
 import algoliasearch from 'algoliasearch/lite';
@@ -33,6 +38,7 @@ export interface SubjectSelectProps extends TextFieldProps {
   readonly val?: string[];
   readonly renderToPortal?: boolean;
   readonly options?: string[];
+  readonly grade?: GradeAlias;
 }
 
 interface SubjectHit extends ObjectWithObjectID {
@@ -81,13 +87,14 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * changes shape.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
-  public componentDidUpdate(): void {
+  public componentDidUpdate(prevProps: SubjectSelectProps): void {
     const inputValueWorkaround: string = this.getInputValue();
     if (
       this.state.inputValueWorkaround === '' &&
       inputValueWorkaround !== this.state.inputValueWorkaround
     )
       this.setState({ inputValueWorkaround });
+    if (prevProps.grade !== this.props.grade) this.updateSuggestions();
     this.foundationRef && this.foundationRef.autoPosition_();
   }
 
@@ -100,14 +107,21 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     if (this.props.options && !this.props.options.length) {
       this.setState({ suggestions: [], errored: false });
     } else {
-      const filters: string = (this.props.options || [])
-        .map((subject: string) => `name:"${subject}"`)
-        .join(' OR ');
+      const filters: string | undefined =
+        this.props.options !== undefined
+          ? this.props.options
+              .map((subject: string) => `name:"${subject}"`)
+              .join(' OR ')
+          : undefined;
+      const optionalFilters: string[] | undefined =
+        this.props.grade !== undefined
+          ? [`grades:${this.props.grade}`]
+          : undefined;
+      const options: SearchOptions = { filters, optionalFilters };
       const [err, res] = await to<SearchResponse<SubjectHit>>(
-        SubjectSelect.searchIndex.search(
-          query,
-          filters ? { filters } : undefined
-        ) as Promise<SearchResponse<SubjectHit>>
+        SubjectSelect.searchIndex.search(query, options) as Promise<
+          SearchResponse<SubjectHit>
+        >
       );
       if (err) {
         this.setState({ suggestions: [], errored: true });

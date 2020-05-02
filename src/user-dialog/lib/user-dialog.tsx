@@ -151,6 +151,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
                 onChange={this.handleSubjectsChange}
                 val={this.state.appt.subjects}
                 options={this.props.user.subjects.explicit}
+                grade={this.context.grade}
               />
               <TimeslotInput
                 outlined

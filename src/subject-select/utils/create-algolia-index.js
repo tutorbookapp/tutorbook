@@ -7,7 +7,9 @@ const fs = require('fs');
 
 const main = async () => {
   const index = client.initIndex('subjects');
-  index.setSettings({ attributesForFaceting: ['filterOnly(grades)'] });
+  index.setSettings({
+    attributesForFaceting: ['filterOnly(grades)', 'filterOnly(name)'],
+  });
   const subjects = parse(fs.readFileSync('./subjects.csv'), {
     columns: true,
     skip_empty_lines: true,
