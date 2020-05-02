@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { Typography } from '@rmwc/typography';
-import { TextField, TextFieldProps } from '@rmwc/textfield';
-import { Select, SelectProps } from '@rmwc/select';
+import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
+import { Select, SelectProps, SelectHTMLProps } from '@rmwc/select';
 import { Card, CardProps } from '@rmwc/card';
 
 import Button from '@tutorbook/button';
@@ -27,7 +27,12 @@ interface UniqueInputProps {
 }
 
 type InputProps = UniqueInputProps &
-  (SubjectSelectProps | ScheduleInputProps | TextFieldProps | SelectProps);
+  (
+    | SubjectSelectProps
+    | ScheduleInputProps
+    | (TextFieldProps & TextFieldHTMLProps)
+    | (SelectProps & SelectHTMLProps)
+  );
 
 interface FormProps extends React.HTMLProps<HTMLFormElement> {
   readonly inputs: InputProps[];
@@ -140,11 +145,9 @@ export default class Form extends React.Component<FormProps, {}> {
    */
   private handleInputChange(
     input: UniqueInputProps & (TextFieldProps | SelectProps),
-    event: React.FormEvent<HTMLInputElement | HTMLSelectElement>
+    evt: React.FormEvent<HTMLInputElement | HTMLSelectElement>
   ): void {
-    this.values[input.key ? input.key : input.label] = (event.target as
-      | HTMLInputElement
-      | HTMLSelectElement).value;
+    this.values[input.key ? input.key : input.label] = evt.currentTarget.value;
   }
 
   /**
