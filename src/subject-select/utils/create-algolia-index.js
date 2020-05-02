@@ -1,5 +1,5 @@
-const id = 'TODO: ADD-ALGOLIA-APP-ID-HERE';
-const key = 'TODO: ADD-ALGOLIA-KEY-HERE';
+const id = '';
+const key = '';
 const client = require('algoliasearch')(id, key);
 const to = require('await-to-js').default;
 const parse = require('csv-parse/lib/sync');
@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const main = async () => {
   const index = client.initIndex('subjects');
-  index.setSettings({ attributesForFaceting: ['grades'] });
+  index.setSettings({ attributesForFaceting: ['filterOnly(grades)'] });
   const subjects = parse(fs.readFileSync('./subjects.csv'), {
     columns: true,
     skip_empty_lines: true,

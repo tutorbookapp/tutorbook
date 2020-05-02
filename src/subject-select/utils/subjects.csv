@@ -1,6 +1,7 @@
 name,synonyms,grades
 AP U.S. Government,,"11, 12"
 ACT,,"11, 12"
+SAT,,"11, 12"
 Pre-Algebra,,"7, 8, 9"
 Algebra 1,,"8, 9"
 Algebra 2,,10
@@ -48,15 +49,15 @@ Physics,,"10, 11, 12"
 Pre-Calculus,,"11, 12"
 PSAT,,"11, 12"
 Psychology,,"11, 12"
-SAT: Biology,,"9, 10, 11, 12"
-SAT: Chemistry,,"9, 10, 11, 12"
-SAT: Literature,,"9, 10, 11, 12"
-SAT: Math 1,,"9, 10, 11, 12"
-SAT: Math 2,,"9, 10, 11, 12"
-SAT: Physics,,"9, 10, 11, 12"
-SAT: Spanish,,"9, 10, 11, 12"
-SAT: US History,,"9, 10, 11, 12"
-SAT: World History,,"9, 10, 11, 12"
+SAT: Biology,,
+SAT: Chemistry,,
+SAT: Literature,,
+SAT: Math 1,,
+SAT: Math 2,,
+SAT: Physics,,
+SAT: Spanish,,
+SAT: US History,,
+SAT: World History,,
 Spanish 1,,"7, 8, 9"
 Spanish 2,,10
 Spanish 3,,11
