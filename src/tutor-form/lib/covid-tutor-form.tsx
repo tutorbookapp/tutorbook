@@ -1,3 +1,4 @@
+import React from 'react';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { UserProvider } from '@tutorbook/next-firebase';
 import { User } from '@tutorbook/model';
