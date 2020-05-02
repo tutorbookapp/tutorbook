@@ -151,6 +151,7 @@ export default async function user(
     error('Your request body must contain a user field.');
   } else {
     const user: User = User.fromJSON(req.body.user);
+    console.log('[DEBUG] Creating user...');
     const [err, userRecord] = await to<UserRecord, FirebaseError>(
       auth.createUser({
         disabled: false,
@@ -232,9 +233,11 @@ export default async function user(
         }
       }
       if (updateUserInsteadOfSet) {
+        console.log('[DEBUG] Updating profile...');
         await userRef.update(user.toFirestore());
         console.log(`[DEBUG] Updated ${user.name}'s profile (${user.uid}).`);
       } else {
+        console.log('[DEBUG] Setting profile...');
         await userRef.set(user.toFirestore());
         console.log(`[DEBUG] Set ${user.name}'s profile (${user.uid}).`);
       }
