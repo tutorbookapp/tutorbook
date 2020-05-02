@@ -73,40 +73,39 @@ export default class Form extends React.Component<FormProps, {}> {
         case 'textfield':
           return (
             <TextField
-              {...(props as TextFieldProps)}
               onChange={(event) => this.handleInputChange(input, event)}
               key={index}
               outlined
               className={styles.formField}
+              {...(props as TextFieldProps)}
             />
           );
         case 'textarea':
           return (
             <TextField
-              {...(props as TextFieldProps)}
               onChange={(event) => this.handleInputChange(input, event)}
               key={index}
               outlined
               textarea
               rows={4}
               className={styles.formField}
+              {...(props as TextFieldProps)}
             />
           );
         case 'select':
           return (
             <Select
-              {...(props as SelectProps)}
               onChange={(event) => this.handleInputChange(input, event)}
               key={index}
               outlined
               enhanced
               className={styles.formField}
+              {...(props as SelectProps)}
             />
           );
         case 'subjectselect':
           return (
             <SubjectSelect
-              {...(props as SubjectSelectProps)}
               onChange={(subjects: string[]) => {
                 this.values[input.key ? input.key : input.label] = {
                   explicit: subjects,
@@ -117,18 +116,19 @@ export default class Form extends React.Component<FormProps, {}> {
               key={index}
               outlined
               className={styles.formField}
+              {...(props as SubjectSelectProps)}
             />
           );
         case 'scheduleinput':
           return (
             <ScheduleInput
-              {...(props as ScheduleInputProps)}
               onChange={(availability: Availability) => {
                 this.values[input.key ? input.key : input.label] = availability;
               }}
               key={index}
               outlined
               className={styles.formField}
+              {...(props as ScheduleInputProps)}
             />
           );
       }
