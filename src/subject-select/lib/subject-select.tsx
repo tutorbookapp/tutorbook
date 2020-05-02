@@ -89,11 +89,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    */
   public componentDidUpdate(prevProps: SubjectSelectProps): void {
     const inputValueWorkaround: string = this.getInputValue();
-    if (
-      this.state.inputValueWorkaround === '' &&
-      inputValueWorkaround !== this.state.inputValueWorkaround
-    )
-      this.setState({ inputValueWorkaround });
+    const shouldChangeValue: boolean =
+      (this.state.inputValueWorkaround === '' ||
+        this.state.inputValueWorkaround === '\xa0') &&
+      inputValueWorkaround !== this.state.inputValueWorkaround;
+    if (shouldChangeValue) this.setState({ inputValueWorkaround });
     if (prevProps.grade !== this.props.grade) this.updateSuggestions();
     this.foundationRef && this.foundationRef.autoPosition_();
   }
