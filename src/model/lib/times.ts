@@ -94,6 +94,10 @@ export class Timeslot implements TimeslotInterface {
    * // Where `dateAtTwoPM` and `dateAtThreePM` are on Mondays.
    * const timeslot = new Timeslot(dateAtTwoPM, dateAtThreePM);
    * assert(timeslot.toString() === 'Mondays from 2pm to 3pm');
+   * @deprecated We're going to put these into strings within the React tree so
+   * that we can use `react-intl` for better i18n support (e.g. we'll set the
+   * localization in the `pages/_app.tsx` top-level component and all children
+   * components will render their `Date`s properly for that locale).
    */
   public toString(showDay: boolean = true): string {
     let str =
@@ -121,6 +125,10 @@ export class Timeslot implements TimeslotInterface {
    * @todo Move the parsing logic from that input to this class.
    * @todo Merge this with the `toString()` method.
    * @todo Don't assume that the `from` and `to` times occur on the same day.
+   * @deprecated We're going to put these into strings within the React tree so
+   * that we can use `react-intl` for better i18n support (e.g. we'll set the
+   * localization in the `pages/_app.tsx` top-level component and all children
+   * components will render their `Date`s properly for that locale).
    */
   public toParsableString(): string {
     return (
@@ -137,13 +145,17 @@ export class Timeslot implements TimeslotInterface {
     );
   }
 
+  /**
+   * Converts this object into a `TimeslotFirestoreInterface` (i.e. instead of
+   * `Date`s we use `Timestamp`s).
+   * @todo Right now, this isn't really doing anything besides some sketchy
+   * type assertions b/c the Firebase Admin Node.js SDK `Timestamp` type doesn't
+   * match the client-side `firebase/app` library `Timestamp` type. We want to
+   * somehow return a `Timestamp` type that can be used by both (but I can't
+   * figure out how to do this, so I'm just returning `Date`s which are
+   * converted into the *correct* `Timestamp` type by the Firebase SDK itself).
+   */
   public toFirestore(): TimeslotFirestoreInterface {
-    /*
-     *return {
-     *  from: Timestamp.fromDate(this.from),
-     *  to: Timestamp.fromDate(this.to),
-     *};
-     */
     return {
       from: (this.from as unknown) as Timestamp,
       to: (this.to as unknown) as Timestamp,
@@ -152,8 +164,6 @@ export class Timeslot implements TimeslotInterface {
 
   /**
    * Takes in a Firestore timeslot record and returns a new `Timeslot` object.
-   * @todo This should convert the Firestore `Timestamp` object into the native
-   * `Date` object.
    */
   public static fromFirestore(data: TimeslotFirestoreInterface): Timeslot {
     return new Timeslot(data.from.toDate(), data.to.toDate());
@@ -279,6 +289,14 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     temp.forEach((timeslot: Timeslot) => this.push(timeslot));
   }
 
+  /**
+   * Converts this `Availability` into a comma-separated string of all of it's
+   * constituent timeslots.
+   * @deprecated We're going to put these into strings within the React tree so
+   * that we can use `react-intl` for better i18n support (e.g. we'll set the
+   * localization in the `pages/_app.tsx` top-level component and all children
+   * components will render their `Date`s properly for that locale).
+   */
   public toString(showDay: boolean = true): string {
     return this.length > 0
       ? this.map((timeslot: Timeslot) => timeslot.toString(showDay)).join(', ')
@@ -353,6 +371,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
 
 /**
  * Class that contains some useful `Date` manipulation and creation utilities.
+ * @todo Move this class to the `@tutorbook/covid-utils` package.
  */
 export class TimeUtils {
   /**
