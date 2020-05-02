@@ -39,10 +39,12 @@
     "@rmwc/formfield": "^6.0.14",
     "@rmwc/menu": "^6.0.14",
     "@rmwc/textfield": "^6.1.0",
+    "@tutorbook/covid-utils": "^0.1.3",
     "@tutorbook/model": "^0.1.3",
     "next": "^9.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-intl": "^4.5.1",
     "uuid": "^8.0.0"
   },
   "devDependencies": {

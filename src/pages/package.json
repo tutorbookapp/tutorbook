@@ -45,6 +45,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-intercom": "^1.0.15",
-    "uuid": "^7.0.3"
+    "react-intl": "^4.5.1",
+    "uuid": "^8.0.0"
   }
 }

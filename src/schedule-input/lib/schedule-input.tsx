@@ -1,4 +1,5 @@
 import React from 'react';
+import Utils from '@tutorbook/covid-utils';
 import { Checkbox } from '@rmwc/checkbox';
 import { FormField } from '@rmwc/formfield';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
@@ -12,22 +13,17 @@ import {
   DataTableBody,
   DataTableCell,
 } from '@rmwc/data-table';
+import {
+  injectIntl,
+  IntlShape,
+  FormattedMessage,
+  FormattedTime,
+} from 'react-intl';
 import { TimeUtils, DayAlias, Timeslot, Availability } from '@tutorbook/model';
 
 import { v4 as uuid } from 'uuid';
 
 import styles from './schedule-input.module.scss';
-
-// TODO: Remove this and support multiple languages.
-const DAYS: Readonly<string[]> = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
 
 interface ScheduleInputState {
   readonly menuOpen: boolean;
@@ -35,14 +31,20 @@ interface ScheduleInputState {
 }
 
 export interface ScheduleInputProps extends TextFieldProps {
+  intl: IntlShape;
   onChange: (availability: Availability) => any;
   className?: string;
   val?: Availability;
 }
 
-export default class ScheduleInput extends React.Component<ScheduleInputProps> {
+class ScheduleInput extends React.Component<ScheduleInputProps> {
   public readonly state: ScheduleInputState;
+  private readonly DAYS: Readonly<string[]>;
 
+  /**
+   * Creates a new `ScheduleInput` and initializes the `this.DAYS` constant
+   * to contain the localized weekday strings (using `react-intl` for i18n).
+   */
   public constructor(props: ScheduleInputProps) {
     super(props);
     this.state = {
@@ -50,17 +52,37 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
       availability: props.val || new Availability(),
     };
     this.setAllChecked = this.setAllChecked.bind(this);
+    const mutableDayStrings: string[] = [];
+    for (let dayNum = 0; dayNum < 7; dayNum++)
+      mutableDayStrings.push(
+        Utils.caps(
+          props.intl.formatDate(
+            TimeUtils.getNextDateWithDay(dayNum as DayAlias),
+            { weekday: 'long' }
+          )
+        )
+      );
+    this.DAYS = mutableDayStrings as Readonly<string[]>;
   }
 
   /**
    * Timeslots that users can choose their availability from: either morning
    * (7am to 12pm), afternoon (12pm to 5pm), or evening (5pm to 10pm).
    */
-  private static times: Readonly<Timeslot[]> = [
-    new Timeslot(TimeUtils.getDateWithTime(7), TimeUtils.getDateWithTime(12)),
-    new Timeslot(TimeUtils.getDateWithTime(12), TimeUtils.getDateWithTime(17)),
-    new Timeslot(TimeUtils.getDateWithTime(17), TimeUtils.getDateWithTime(22)),
-  ];
+  private static times: Readonly<{ [label: string]: Timeslot }> = {
+    morning: new Timeslot(
+      TimeUtils.getDateWithTime(7),
+      TimeUtils.getDateWithTime(12)
+    ),
+    afternoon: new Timeslot(
+      TimeUtils.getDateWithTime(12),
+      TimeUtils.getDateWithTime(17)
+    ),
+    evening: new Timeslot(
+      TimeUtils.getDateWithTime(17),
+      TimeUtils.getDateWithTime(22)
+    ),
+  };
 
   /**
    * Gets all of the timeslots that are available for selection. Right now, our
@@ -68,13 +90,11 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * checkboxes; 'morning', 'afternoon', and 'evening' on the x-axis and the
    * various days on the y-axis). This returns those timeslots open for
    * selection (e.g. 'Mondays from 7am to 12pm' --> 'Mondays morning').
-   * @todo Perhaps remove this unused getter and document the above information
-   * elsewhere.
    */
   public static get timeslots(): Availability {
     const timeslots = new Availability();
     for (let day = 0; day < 7; day++)
-      for (const time of ScheduleInput.times)
+      for (const time of Object.values(ScheduleInput.times))
         timeslots.push(
           new Timeslot(
             TimeUtils.getNextDateWithDay(day as DayAlias, time.from),
@@ -88,7 +108,6 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * Returns whether or not a checkbox should be checked by seeing if the given
    * timeslot exists in `this.state.availability`. If it does, this function
    * returns `true`. If not, `false`.
-   * @todo Make the `isMatch` function a method in the `Timeslot` class.
    */
   private isChecked(time: Timeslot): boolean {
     return this.state.availability.hasTimeslot(time);
@@ -100,7 +119,6 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * `this.state.availability`.
    * 2. If it was checked, this function adds the timeslot to
    * `this.state.availability`.
-   * @todo Make the `isMatch` function a method in the `Timeslot` class.
    */
   private setChecked(
     timeslot: Timeslot,
@@ -138,7 +156,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    */
   public render(): JSX.Element {
     const { onChange, className, ...rest } = this.props;
-    const checkboxId = uuid();
+    const checkboxId: string = uuid();
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
@@ -150,39 +168,56 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
             <DataTableContent>
               <DataTableHead>
                 <DataTableRow>
-                  <DataTableCell>
+                  <DataTableCell className={styles.selectAllCell}>
                     <FormField>
                       <Checkbox
                         checked={this.allTimeslotsChecked}
                         onChange={this.setAllChecked}
                         id={checkboxId}
                       />
-                      <label htmlFor={checkboxId}>Anytime, I'm flexible.</label>
+                      <label htmlFor={checkboxId}>
+                        <FormattedMessage
+                          id='schedule-input.select-all-label'
+                          description={
+                            'The label for the checkbox that selects all the ' +
+                            'times in a schedule input.'
+                          }
+                          defaultMessage='Select all'
+                        />
+                      </label>
                     </FormField>
                   </DataTableCell>
-                  {DAYS.map((day: string) => (
+                  {this.DAYS.map((day: string) => (
                     <DataTableHeadCell key={day}>{day}</DataTableHeadCell>
                   ))}
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
-                {ScheduleInput.times.map(
-                  (timeslot: Timeslot, index: number) => (
-                    <DataTableRow key={index}>
-                      <DataTableCell>{timeslot.toString(false)}</DataTableCell>
-                      {DAYS.map((day: string, index: number) => {
+                {Object.entries(ScheduleInput.times).map(
+                  ([label, timeslot]: [string, Timeslot]) => (
+                    <DataTableRow key={label}>
+                      <DataTableCell className={styles.rowHeaderCell}>
+                        <FormattedTime value={timeslot.from} />
+                        {' - '}
+                        <FormattedTime value={timeslot.to} />
+                      </DataTableCell>
+                      {this.DAYS.map((day: string, dayNum: number) => {
                         const timeslotCheckboxRepresents = new Timeslot(
                           TimeUtils.getNextDateWithDay(
-                            index as DayAlias,
+                            dayNum as DayAlias,
                             timeslot.from
                           ),
                           TimeUtils.getNextDateWithDay(
-                            index as DayAlias,
+                            dayNum as DayAlias,
                             timeslot.to
                           )
                         );
                         return (
-                          <DataTableCell key={day} hasFormControl>
+                          <DataTableCell
+                            key={day}
+                            hasFormControl
+                            className={styles.checkboxCell}
+                          >
                             <Checkbox
                               checked={this.isChecked(
                                 timeslotCheckboxRepresents
@@ -215,3 +250,5 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
     );
   }
 }
+
+export default injectIntl(ScheduleInput);

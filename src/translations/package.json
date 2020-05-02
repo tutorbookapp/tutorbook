@@ -1,0 +1,36 @@
+{
+  "name": "@tutorbook/translations",
+  "version": "0.1.3",
+  "description": "Translations for the i18n of Tutorbook's web app.",
+  "keywords": [
+    "i18n",
+    "intl",
+    "Internationalization",
+    "Locale",
+    "Localization",
+    "Globalization",
+    "React",
+    "ReactJS",
+    "Format",
+    "Formatting",
+    "Translate",
+    "Translation",
+    "Tutorbook"
+  ],
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "homepage": "https://tutorbook.org/",
+  "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  }
+}

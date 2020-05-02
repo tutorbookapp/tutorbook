@@ -1,5 +1,12 @@
 export default class Utils {
   /**
+   * Capitalizes the first letter of the given string.
+   */
+  public static caps(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  /**
    * Helper function that returns the intersection of two given arrays (using
    * the given `compare` function to check if elements overlap).
    * @see {@link https://stackoverflow.com/a/16227294/10023158}

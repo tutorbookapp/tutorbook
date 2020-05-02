@@ -6,3 +6,13 @@
 .textField {
   width: 100%;
 }
+
+.selectAllCell,
+.rowHeaderCell {
+  text-align: left;
+}
+
+.checkboxCell {
+  text-align: center;
+  padding: 0 16px;
+}
