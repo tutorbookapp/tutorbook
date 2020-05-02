@@ -1,8 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
-import { UserProvider } from '@tutorbook/next-firebase';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { User } from '@tutorbook/model';
+import { GRADES, User } from '@tutorbook/model';
 
 import styles from './hero-form.module.scss';
 
@@ -23,17 +22,10 @@ export default function HeroForm() {
           <Form
             inputs={[
               {
-                label: 'Your name',
-                el: 'textfield' as InputElAlias,
-                required: true,
-                key: 'name',
-              },
-              {
-                label: 'Your email address',
-                el: 'textfield' as InputElAlias,
-                type: 'email',
-                required: true,
-                key: 'email',
+                label: 'Your grade level',
+                el: 'select' as InputElAlias,
+                options: GRADES,
+                key: 'bio',
               },
               {
                 label: 'What would you like to learn?',
@@ -51,7 +43,6 @@ export default function HeroForm() {
             submitLabel='Search volunteer tutors'
             onFormSubmit={async (formValues) => {
               const pupil: User = new User(formValues);
-              await UserProvider.signup(pupil);
               Router.push(pupil.searchURL);
             }}
             className={styles.heroForm}
