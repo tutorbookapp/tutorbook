@@ -46,6 +46,8 @@ $font-weight-values: (
 @use '@material/dialog/mdc-dialog';
 @use '@material/form-field/mdc-form-field';
 @use '@rmwc/avatar/avatar';
+@use '@rmwc/tooltip/tooltip';
+@use '@rmwc/icon/icon';
 
 @include typography.core-styles;
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900');

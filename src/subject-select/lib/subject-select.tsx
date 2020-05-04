@@ -12,6 +12,7 @@ import {
   SearchResponse,
   ObjectWithObjectID,
 } from '@algolia/client-search';
+import { SelectHint } from './select-hint';
 
 import to from 'await-to-js';
 import algoliasearch from 'algoliasearch/lite';
@@ -211,17 +212,19 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
         >
           <List>{this.renderSubjectMenuItems()}</List>
         </MenuSurface>
-        <TextField
-          {...rest}
-          textarea
-          value={this.state.inputValueWorkaround}
-          onFocus={this.openSuggestions}
-          onBlur={this.closeSuggestions}
-          onChange={this.updateInputValue}
-          className={styles.textField}
-        >
-          {this.renderSubjectChipItems()}
-        </TextField>
+        <SelectHint>
+          <TextField
+            {...rest}
+            textarea
+            value={this.state.inputValueWorkaround}
+            onFocus={this.openSuggestions}
+            onBlur={this.closeSuggestions}
+            onChange={this.updateInputValue}
+            className={styles.textField}
+          >
+            {this.renderSubjectChipItems()}
+          </TextField>
+        </SelectHint>
       </MenuSurfaceAnchor>
     );
   }
@@ -248,8 +251,8 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       this.lastSelectedRef.current &&
       event?.shiftKey
     ) {
-      /* select/un-select multiple subjects
-        with shift key pressed */
+      /* select/unselect multiple subjects
+        with shift + click */
       const { suggestions } = this.state;
       const idx = suggestions.indexOf(subject);
       const idxOfLast = suggestions.indexOf(this.lastSelectedRef.current);
