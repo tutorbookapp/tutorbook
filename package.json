@@ -5,9 +5,9 @@
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "dev": "node --icu-data-dir=./node_modules/full-icu --inspect ./node_modules/.bin/next dev",
-    "build": "node --icu-data-dir=./node_modules/full-icu ./node_modules/.bin/next build",
-    "start": "node --icu-data-dir=./node_modules/full-icu ./node_modules/.bin/next start",
+    "dev": "node --icu-data-dir=node_modules/full-icu --inspect node_modules/.bin/next dev",
+    "build": "node --icu-data-dir=node_modules/full-icu node_modules/.bin/next build",
+    "start": "node --icu-data-dir=node_modules/full-icu node_modules/.bin/next start",
     "test": "jest"
   },
   "devDependencies": {

@@ -1,9 +1,44 @@
 const path = require('path');
+const { locales } = require('./src/intl/config.json');
 
 module.exports = {
   experimental: {
     sassOptions: {
       includePaths: [path.resolve(__dirname, 'node_modules')],
+    },
+    redirects() {
+      // Not exactly sure why this is happening, but going to `/[locale]/` with
+      // a trailing slash seems to break Next.js's routing. Here, we just always
+      // redirect to the page without the trailing slash.
+      // @see {@link https://github.com/zeit/next.js/issues/9081#issuecomment-623786364}
+      //
+      // Also note that these aren't permanent in development mode (so that our
+      // browser doesn't cache them while we're working).
+      return [
+        {
+          source: '/:locale/',
+          destination: '/:locale',
+          permanent: process.env.NODE_ENV !== 'development',
+        },
+      ];
+    },
+    rewrites() {
+      return [
+        {
+          // We redirect the user to their appropriate locale directory based on
+          // their browser request cookies (via the `/api/redirect` endpoint).
+          // @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/35}
+          source: '/',
+          destination: '/api/redirect',
+        },
+        {
+          // Don't redirect if there's a locale already in the requested URL.
+          // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
+          // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
+          source: `/:locale((?!${locales.join('|')})[^/]+)(.*)`,
+          destination: '/api/redirect',
+        },
+      ];
     },
   },
   webpack(config) {

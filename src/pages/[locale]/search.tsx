@@ -5,17 +5,18 @@ import { AxiosResponse, AxiosError } from 'axios';
 import to from 'await-to-js';
 import axios from 'axios';
 
-import Header from '../header';
-import Footer from '../footer';
-import Search from '../search';
+import Header from '../../header';
+import Footer from '../../footer';
+import Search from '../../search';
 
+import { getIntlProps, withIntl } from '../../intl';
 import {
   User,
   UserJSONInterface,
   FiltersInterface,
   FiltersJSONInterface,
   Availability,
-} from '../model';
+} from '../../model';
 
 interface SearchPageProps {
   filters: FiltersJSONInterface;
@@ -60,15 +61,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: {
         filters: JSON.parse(JSON.stringify(filters)),
         results: JSON.parse(JSON.stringify(res.data)),
+        ...(await getIntlProps(context)),
       },
     };
   } else {
     console.warn('[WARNING] No error or response from search REST API.');
-    return { props: { filters: JSON.parse(JSON.stringify(filters)) } };
+    return {
+      props: {
+        filters: JSON.parse(JSON.stringify(filters)),
+        ...(await getIntlProps(context)),
+      },
+    };
   }
 };
 
-export default function SearchPage(props: SearchPageProps): JSX.Element {
+function SearchPage(props: SearchPageProps): JSX.Element {
   const filters: FiltersInterface = {
     subjects: props.filters.subjects,
     availability: Availability.fromJSON(props.filters.availability),
@@ -84,3 +91,5 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
     </>
   );
 }
+
+export default withIntl<SearchPageProps>(SearchPage);
