@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from '@rmwc/card';
 import { Grid, GridCell } from '@rmwc/grid';
 import { Typography } from '@rmwc/typography';
+import { FormattedMessage } from 'react-intl';
 import { User, FiltersInterface } from '@tutorbook/model';
 
 import Filter from './filter';
@@ -49,7 +50,11 @@ export default class Search extends React.Component<SearchProps> {
         <div className={styles.searchWrapper}>
           <div className={styles.searchContent}>
             <Typography className={styles.searchHeader} use='headline2'>
-              Search
+              <FormattedMessage
+                id='search.title'
+                description='Title for the search page/view.'
+                defaultMessage='Search'
+              />
             </Typography>
             <Grid className={styles.searchGrid}>
               <GridCell span={4}>

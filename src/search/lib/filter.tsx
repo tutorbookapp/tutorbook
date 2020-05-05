@@ -1,4 +1,10 @@
 import React from 'react';
+import {
+  IntlShape,
+  injectIntl,
+  defineMessages,
+  MessageDescriptor,
+} from 'react-intl';
 import SubjectSelect from '@tutorbook/subject-select';
 import ScheduleInput from '@tutorbook/schedule-input';
 import { Availability, FiltersInterface } from '@tutorbook/model';
@@ -6,6 +12,7 @@ import { Availability, FiltersInterface } from '@tutorbook/model';
 import styles from './filter.module.scss';
 
 interface FilterProps {
+  intl: IntlShape;
   filters: FiltersInterface;
   onChange: (filters: FiltersInterface) => any;
 }
@@ -17,7 +24,7 @@ interface FilterProps {
  * - (SubjectSelect) The subjects to search for.
  * - (ScheduleInput) The availability to search for.
  */
-export default class Filter extends React.Component<FilterProps> {
+class Filter extends React.Component<FilterProps> {
   public constructor(props: FilterProps) {
     super(props);
     this.updateSubjects = this.updateSubjects.bind(this);
@@ -39,17 +46,29 @@ export default class Filter extends React.Component<FilterProps> {
   }
 
   public render(): JSX.Element {
+    const labels: Record<string, MessageDescriptor> = defineMessages({
+      subjects: {
+        id: 'search.filters.subjects',
+        defaultMessage: 'Filter by subjects',
+        description: 'Label for the subjects filter field.',
+      },
+      availability: {
+        id: 'search.filters.availability',
+        defaultMessage: 'Filter by availability',
+        description: 'Label for the availability filter field.',
+      },
+    });
     return (
       <div className={styles.filterWrapper}>
         <SubjectSelect
-          label='Filter by subjects'
+          label={this.props.intl.formatMessage(labels.subjects)}
           val={this.props.filters.subjects}
           onChange={this.updateSubjects}
           className={styles.filterField}
           outlined
         />
         <ScheduleInput
-          label='Filter by availability'
+          label={this.props.intl.formatMessage(labels.availability)}
           val={this.props.filters.availability}
           onChange={this.updateAvailability}
           className={styles.filterField}
@@ -59,3 +78,5 @@ export default class Filter extends React.Component<FilterProps> {
     );
   }
 }
+
+export default injectIntl(Filter);

@@ -21,6 +21,7 @@ import {
 } from '@rmwc/list';
 import { Avatar } from '@rmwc/avatar';
 import { Typography } from '@rmwc/typography';
+import { FormattedMessage } from 'react-intl';
 import { AxiosResponse, AxiosError } from 'axios';
 
 import axios from 'axios';
@@ -187,7 +188,13 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
     } else {
       return (
         <div className={styles.noResults}>
-          <Typography use='headline5'>No results</Typography>
+          <Typography use='headline5'>
+            <FormattedMessage
+              id='search.results.no-results'
+              description='No results text.'
+              defaultMessage='No results'
+            />
+          </Typography>
         </div>
       );
     }

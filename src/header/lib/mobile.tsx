@@ -1,37 +1,15 @@
-import { useState } from 'react';
-
+import React from 'react';
 import Link from 'next/link';
-import { LinkProps } from './interfaces';
+
+import { NavItem, NavProps, LinkProps } from './covid-header';
 
 import BlackLogo from './svgs/black-logo.svg';
 import WhiteLogo from './svgs/white-logo.svg';
 
 import styles from './mobile.module.scss';
 
-function NavItem(props: LinkProps) {
-  return (
-    <li className={styles.mobileNavItem}>
-      <NavLink href={props.href} label={props.label} />
-    </li>
-  );
-}
-
-function NavLink(props: LinkProps) {
-  if (props.href.indexOf('http') < 0)
-    return (
-      <Link href={props.href}>
-        <a className={styles.mobileNavLink}>{props.label}</a>
-      </Link>
-    );
-  return (
-    <a className={styles.mobileNavLink} href={props.href}>
-      {props.label}
-    </a>
-  );
-}
-
-export default function Nav(props: { white?: boolean }) {
-  const [open, setOpen] = useState(false);
+export default function Nav(props: NavProps): JSX.Element {
+  const [open, setOpen] = React.useState(false);
   return (
     <div className={styles.contentWrapper}>
       <Link href='/'>
@@ -62,12 +40,14 @@ export default function Nav(props: { white?: boolean }) {
         role='menu'
       >
         <ul className={styles.categoryWrapper}>
-          <NavItem href='/pupils/' label='For students' />
-          <NavItem href='/tutors/' label='For volunteers' />
-          <NavItem
-            href='https://github.com/tutorbookapp/covid-tutoring#readme'
-            label='For developers'
-          />
+          {props.links.map((link: LinkProps, index: number) => (
+            <NavItem
+              {...link}
+              key={index}
+              menuItemClassName={styles.menuItem}
+              menuItemLinkClassName={styles.menuItemLink}
+            />
+          ))}
         </ul>
       </div>
     </div>

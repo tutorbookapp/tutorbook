@@ -1,5 +1,6 @@
 import React from 'react';
 import Router from 'next/router';
+import { useIntl, IntlShape } from 'react-intl';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { GRADES, GradeAlias, User } from '@tutorbook/model';
 
@@ -15,6 +16,7 @@ import styles from './hero-form.module.scss';
  * - (availability) When are you available?
  */
 export default function HeroForm() {
+  const intl: IntlShape = useIntl();
   const [grade, setGrade] = React.useState<GradeAlias | undefined>();
   return (
     <>
@@ -23,7 +25,7 @@ export default function HeroForm() {
           <Form
             inputs={[
               {
-                label: 'Your grade level',
+                label: intl.formatMessage({ id: 'form.grade' }),
                 el: 'select' as InputElAlias,
                 options: GRADES,
                 onChange: (event: React.FormEvent<HTMLSelectElement>) => {
@@ -32,20 +34,20 @@ export default function HeroForm() {
                 },
               },
               {
-                label: 'What would you like to learn?',
+                label: intl.formatMessage({ id: 'form.searches' }),
                 el: 'subjectselect' as InputElAlias,
                 required: true,
                 key: 'searches',
                 grade,
               },
               {
-                label: 'When are you available?',
+                label: intl.formatMessage({ id: 'form.availability' }),
                 el: 'scheduleinput' as InputElAlias,
                 required: true,
                 key: 'availability',
               },
             ]}
-            submitLabel='Search volunteer tutors'
+            submitLabel={intl.formatMessage({ id: 'pupil-form.submit' })}
             onFormSubmit={async (formValues) => {
               const pupil: User = new User({ ...formValues, grade });
               Router.push(pupil.searchURL);
