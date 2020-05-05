@@ -242,7 +242,7 @@ export default async function appt(
             url: brambleURL,
             description:
               `Join your tutoring lesson via <a href="${brambleURL}">this ` +
-              'Bramble room.</a> Your room will be reused weekly until your ' +
+              'Bramble room</a>. Your room will be reused weekly until your ' +
               'tutoring lesson is cancelled. To learn more about Bramble, ' +
               'head over to <a href="https://about.bramble.io/help/help-home' +
               '.html">their help center</a>.',
