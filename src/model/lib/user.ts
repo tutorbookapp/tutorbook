@@ -219,8 +219,11 @@ export class User implements UserInterface {
    */
   public toFirestore(): DocumentData {
     const { schedule, availability, token, ref, ...rest } = this;
+    const allDefinedValues = Object.fromEntries(
+      Object.entries(rest).filter(([key, val]) => val !== undefined)
+    );
     return {
-      ...rest,
+      ...allDefinedValues,
       schedule: schedule.toFirestore(),
       availability: availability.toFirestore(),
     };

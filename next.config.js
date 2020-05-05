@@ -71,5 +71,6 @@ module.exports = {
     ALGOLIA_SEARCH_ID: process.env.ALGOLIA_SEARCH_ID,
     ALGOLIA_SEARCH_KEY: process.env.ALGOLIA_SEARCH_KEY,
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+    BRAMBLE_API_KEY: process.env.BRAMBLE_API_KEY,
   },
 };

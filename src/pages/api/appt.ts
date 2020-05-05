@@ -1,15 +1,39 @@
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { AxiosResponse } from 'axios';
 import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
 import { Email, ApptEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
+import axios from 'axios';
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
 import * as admin from 'firebase-admin';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
+
+interface BrambleRes {
+  APImethod: string;
+  status: string;
+  result: string;
+}
+
+/**
+ * Creates a new Bramble room using their REST API.
+ * @see {@link https://about.bramble.io/api.html}
+ */
+function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
+  return axios({
+    method: 'post',
+    url: 'https://api.bramble.io/createRoom',
+    headers: {
+      room: appt.id,
+      agency: 'tutorbook',
+      auth_token: process.env.BRAMBLE_API_KEY as string,
+    },
+  });
+}
 
 /**
  * Sends out invite emails to all of the new appointment's attendees with:
@@ -105,12 +129,13 @@ const db: DocumentReference =
  * 3. Verifies that the requested `subjects` are included in each of the tutors'
  * Firestore profile documents (where a tutor is defined as an `attendee` whose
  * `roles` include `tutor`).
- * 4. Updates each `attendee`'s availability (in their Firestore profile
- * document) to reflect this appointment (i.e. removes the appointment's `time`
- * from their availability).
+ * 4. Creates the Bramble tutoring lesson room.
  * 5. Creates a new `appt` document containing the request body in each of the
  * `attendee`'s Firestore `appts` subcollection.
- * 6. Sends each of the `appt`'s `attendee`'s an email containing:
+ * 6. Updates each `attendee`'s availability (in their Firestore profile
+ * document) to reflect this appointment (i.e. removes the appointment's `time`
+ * from their availability).
+ * 7. Sends each of the `appt`'s `attendee`'s an email containing:
  *    - Link to a scheduled, recurring (weekly) Zoom meeting.
  *    - Link to a virtual whiteboard (probably using
  *    [DrawChat](https://github.com/cojapacze/sketchpad)).
@@ -198,27 +223,49 @@ export default async function appt(
             ' the tutoring appointment.'
         );
       } else {
+        // 4. Create a new Bramble room for the tutoring appointment.
         appt.id = (attendees[0].ref as DocumentReference)
           .collection('appts')
           .doc().id;
-        console.log(`[DEBUG] Creating appt (${appt.id})...`);
-        await Promise.all(
-          attendees.map(async (attendee: User) => {
-            // 4. Update the attendees availability.
-            attendee.availability.remove(appt.time);
-            await (attendee.ref as DocumentReference).update(
-              attendee.toFirestore()
-            );
-            // 5. Create the appointment Firestore document.
-            await (attendee.ref as DocumentReference)
-              .collection('appts')
-              .doc(appt.id as string)
-              .set(appt.toFirestore());
-          })
+        console.log(`[DEBUG] Creating Bramble room (${appt.id})...`);
+        const [err, brambleRes] = await to<AxiosResponse<BrambleRes>>(
+          createBrambleRoom(appt)
         );
-        // 6. Send out the invitation email to the attendees.
-        await sendApptEmails(appt, attendees);
-        res.status(201).json({ appt: appt.toJSON() });
+        if (err) {
+          console.error(`[ERROR] ${err.name} creating Bramble room:`, err);
+          error(`${err.name} creating Bramble room: ${err.message}`, 500, err);
+        } else {
+          const brambleURL: string = (brambleRes as AxiosResponse<BrambleRes>)
+            .data.result;
+          appt.venues.push({
+            type: 'bramble',
+            url: brambleURL,
+            description:
+              `Join your tutoring lesson via <a href="${brambleURL}">this ` +
+              'Bramble room.</a> Your room will be reused weekly until your ' +
+              'tutoring lesson is cancelled. To learn more about Bramble, ' +
+              'head over to <a href="https://about.bramble.io/help/help-home' +
+              '.html">their help center</a>.',
+          });
+          console.log(`[DEBUG] Creating appt (${appt.id})...`);
+          await Promise.all(
+            attendees.map(async (attendee: User) => {
+              // 5. Create the appointment Firestore document.
+              await (attendee.ref as DocumentReference)
+                .collection('appts')
+                .doc(appt.id as string)
+                .set(appt.toFirestore());
+              // 6. Update the attendees availability.
+              attendee.availability.remove(appt.time);
+              await (attendee.ref as DocumentReference).update(
+                attendee.toFirestore()
+              );
+            })
+          );
+          // 7. Send out the invitation email to the attendees.
+          await sendApptEmails(appt, attendees);
+          res.status(201).json({ appt: appt.toJSON() });
+        }
       }
     }
   }

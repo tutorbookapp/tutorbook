@@ -102,7 +102,9 @@
                         {{/each}}
                       </ul>
 
-                      <p>Simply reply to this email to connect with your {{roles recipient.roles attendees.length}}.</p>
+                      {{#each appt.venues}}
+                        <p>{{{this.description}}}</p>
+                      {{/each}}
 
                       <p>Thank you.</p>
 

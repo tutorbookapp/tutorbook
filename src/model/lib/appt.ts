@@ -16,6 +16,7 @@ type SnapshotOptions = firebase.firestore.SnapshotOptions;
 type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
 type AdminDocumentReference = admin.firestore.DocumentReference;
 
+export type ApptVenueTypeAlias = 'bramble';
 export type RoleAlias = 'tutor' | 'pupil';
 
 export interface AttendeeInterface {
@@ -23,10 +24,21 @@ export interface AttendeeInterface {
   roles: RoleAlias[];
 }
 
+/**
+ * Right now, we only support one `ApptVenueType` via our
+ * [Bramble]{@link https://about.bramble.io/api.html} integration.
+ * @todo Add more supported venues like Zoom, Google Hangouts, or BigBlueButton.
+ */
+export interface ApptVenueInterface extends Record<string, any> {
+  type: ApptVenueTypeAlias;
+  url: string;
+}
+
 export interface ApptInterface {
   subjects: string[];
   attendees: AttendeeInterface[];
   time: Timeslot;
+  venues: ApptVenueInterface[];
   message?: string;
   ref?: DocumentReference | AdminDocumentReference;
   id?: string;
@@ -43,11 +55,12 @@ export interface ApptJSONInterface {
 export class Appt implements ApptInterface {
   public message: string = '';
   public subjects: string[] = [];
-  public attendees: AttendeeInterface[] = []; // TODO: Why is default time is 7-8am on Mondays?
+  public attendees: AttendeeInterface[] = [];
   public time: Timeslot = new Timeslot(
-    TimeUtils.getDate(1, 7),
+    TimeUtils.getDate(1, 7), // TODO: Why is the default time 7-8am on Mondays?
     TimeUtils.getDate(1, 8)
   );
+  public venues: ApptVenueInterface[] = [];
   public ref?: DocumentReference | AdminDocumentReference;
   public id?: string;
 
