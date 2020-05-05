@@ -35,6 +35,8 @@ interface TimeslotInputState {
   readonly val?: Timeslot;
   readonly err?: string;
   readonly value: string;
+  readonly helpTextHeight: number;
+  readonly helpTextVisible: boolean;
 }
 
 /**
@@ -48,6 +50,9 @@ interface TimeslotInputState {
  */
 export default class TimeslotInput extends React.Component<TimeslotInputProps> {
   public readonly state: TimeslotInputState;
+  private helpTextRef: React.RefObject<
+    HTMLParagraphElement
+  > = React.createRef();
 
   public constructor(props: TimeslotInputProps) {
     super(props);
@@ -62,8 +67,20 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
     this.state = {
       value: props.val ? props.val.toParsableString() : '',
       val: valFitsWithinAvailability ? props.val : undefined,
+      helpTextHeight: 0,
+      helpTextVisible: false,
     };
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  public componentDidMount(): void {
+    setTimeout(() => {
+      if (this.helpTextRef.current) {
+        const helpTextHeight: number = this.helpTextRef.current.clientHeight;
+        if (helpTextHeight !== this.state.helpTextHeight)
+          this.setState({ helpTextHeight });
+      }
+    }, 0);
   }
 
   /**
@@ -151,22 +168,74 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
     return timeslot;
   }
 
+  /**
+   * Gets the placeholder text for our `TextField` input. We ensure that the
+   * placeholder text is **always** a valid input (i.e. it fits within
+   * `this.props.availability` if given).
+   * @todo Show an error message if there are no open timeslots in the given
+   * `this.props.availability`. Right now, we just show the default placeholder.
+   */
+  private get placeholderText(): string {
+    if (this.props.availability && this.props.availability.length) {
+      return `Ex. ${this.props.availability[0].toParsableString()}`;
+    } else {
+      return 'Ex. Mondays from 3:00 PM to 3:45 PM';
+    }
+  }
+
+  /**
+   * Gets the text for the `mdc-text-field-helper-line` that tells the user what
+   * timeslots are open for selection (i.e. it shows `this.props.availability`).
+   */
+  private get helperText(): string | null {
+    if (this.props.availability && this.props.availability.length) {
+      return `Input a time on ${this.props.availability.toString()}`;
+    } else {
+      return null;
+    }
+  }
+
   public render(): JSX.Element {
     const { onChange, className, availability, val, ...rest } = this.props;
     return (
       <div className={styles.wrapper + (className ? ' ' + className : '')}>
         <TextField
           {...rest}
-          placeholder='Ex. Mondays from 3:00 PM to 3:45 PM'
+          onFocus={() => this.setState({ helpTextVisible: true })}
+          onBlur={() => this.setState({ helpTextVisible: false })}
+          placeholder={this.placeholderText}
           className={styles.textField}
           value={this.state.value}
           onChange={this.handleChange}
           invalid={!!this.state.err}
           helpText={
-            !!this.state.err && {
-              validationMsg: true,
-              children: this.state.err,
-            }
+            this.state.err
+              ? {
+                  validationMsg: true,
+                  children: this.state.err,
+                  ref: this.helpTextRef,
+                  className: styles.helpText,
+                  style: this.state.helpTextHeight
+                    ? {
+                        maxHeight: `${this.state.helpTextHeight}px`,
+                      }
+                    : {},
+                }
+              : {
+                  children: this.helperText,
+                  ref: this.helpTextRef,
+                  className: styles.helpText,
+                  style:
+                    this.state.helpTextVisible && this.state.helpTextHeight
+                      ? {
+                          maxHeight: `${this.state.helpTextHeight}px`,
+                        }
+                      : this.state.helpTextHeight
+                      ? {
+                          maxHeight: '0px',
+                        }
+                      : {},
+                }
           }
         />
       </div>
