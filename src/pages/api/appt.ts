@@ -1,7 +1,7 @@
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosPromise } from 'axios';
 import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
 import { Email, ApptEmail } from '../../emails';
 
