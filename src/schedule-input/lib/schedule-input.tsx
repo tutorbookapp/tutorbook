@@ -1,5 +1,4 @@
 import React from 'react';
-import Utils from '@tutorbook/covid-utils';
 import { Checkbox } from '@rmwc/checkbox';
 import { FormField } from '@rmwc/formfield';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
@@ -13,12 +12,7 @@ import {
   DataTableBody,
   DataTableCell,
 } from '@rmwc/data-table';
-import {
-  injectIntl,
-  IntlShape,
-  FormattedMessage,
-  FormattedTime,
-} from 'react-intl';
+import { FormattedMessage, FormattedDate, FormattedTime } from 'react-intl';
 import { TimeUtils, DayAlias, Timeslot, Availability } from '@tutorbook/model';
 
 import { v4 as uuid } from 'uuid';
@@ -31,20 +25,14 @@ interface ScheduleInputState {
 }
 
 export interface ScheduleInputProps extends TextFieldProps {
-  intl: IntlShape;
   onChange: (availability: Availability) => any;
   className?: string;
   val?: Availability;
 }
 
-class ScheduleInput extends React.Component<ScheduleInputProps> {
+export default class ScheduleInput extends React.Component<ScheduleInputProps> {
   public readonly state: ScheduleInputState;
-  private readonly DAYS: Readonly<string[]>;
 
-  /**
-   * Creates a new `ScheduleInput` and initializes the `this.DAYS` constant
-   * to contain the localized weekday strings (using `react-intl` for i18n).
-   */
   public constructor(props: ScheduleInputProps) {
     super(props);
     this.state = {
@@ -52,17 +40,6 @@ class ScheduleInput extends React.Component<ScheduleInputProps> {
       availability: props.val || new Availability(),
     };
     this.setAllChecked = this.setAllChecked.bind(this);
-    const mutableDayStrings: string[] = [];
-    for (let dayNum = 0; dayNum < 7; dayNum++)
-      mutableDayStrings.push(
-        Utils.caps(
-          props.intl.formatDate(
-            TimeUtils.getNextDateWithDay(dayNum as DayAlias),
-            { weekday: 'long' }
-          )
-        )
-      );
-    this.DAYS = mutableDayStrings as Readonly<string[]>;
   }
 
   /**
@@ -153,6 +130,8 @@ class ScheduleInput extends React.Component<ScheduleInputProps> {
   /**
    * All props (except `onChange` and `className`) are delegated to the
    * `TextField` element.
+   * @todo Perhaps use the `injectIntl` function to use the `intl` API to ensure
+   * that the `DataTableHeaderCell`s always contain capitalized day strings.
    */
   public render(): JSX.Element {
     const { onChange, className, ...rest } = this.props;
@@ -187,9 +166,18 @@ class ScheduleInput extends React.Component<ScheduleInputProps> {
                       </label>
                     </FormField>
                   </DataTableCell>
-                  {this.DAYS.map((day: string) => (
-                    <DataTableHeadCell key={day}>{day}</DataTableHeadCell>
-                  ))}
+                  {Array(7)
+                    .fill(null)
+                    .map((_: null, dayNum: number) => (
+                      <DataTableHeadCell key={dayNum}>
+                        <FormattedDate
+                          value={TimeUtils.getNextDateWithDay(
+                            dayNum as DayAlias
+                          )}
+                          weekday='long'
+                        />
+                      </DataTableHeadCell>
+                    ))}
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
@@ -201,37 +189,39 @@ class ScheduleInput extends React.Component<ScheduleInputProps> {
                         {' - '}
                         <FormattedTime value={timeslot.to} />
                       </DataTableCell>
-                      {this.DAYS.map((day: string, dayNum: number) => {
-                        const timeslotCheckboxRepresents = new Timeslot(
-                          TimeUtils.getNextDateWithDay(
-                            dayNum as DayAlias,
-                            timeslot.from
-                          ),
-                          TimeUtils.getNextDateWithDay(
-                            dayNum as DayAlias,
-                            timeslot.to
-                          )
-                        );
-                        return (
-                          <DataTableCell
-                            key={day}
-                            hasFormControl
-                            className={styles.checkboxCell}
-                          >
-                            <Checkbox
-                              checked={this.isChecked(
-                                timeslotCheckboxRepresents
-                              )}
-                              onChange={(evt) => {
-                                this.setChecked(
-                                  timeslotCheckboxRepresents,
-                                  evt
-                                );
-                              }}
-                            />
-                          </DataTableCell>
-                        );
-                      })}
+                      {Array(7)
+                        .fill(null)
+                        .map((_, dayNum: number) => {
+                          const timeslotCheckboxRepresents = new Timeslot(
+                            TimeUtils.getNextDateWithDay(
+                              dayNum as DayAlias,
+                              timeslot.from
+                            ),
+                            TimeUtils.getNextDateWithDay(
+                              dayNum as DayAlias,
+                              timeslot.to
+                            )
+                          );
+                          return (
+                            <DataTableCell
+                              key={dayNum}
+                              hasFormControl
+                              className={styles.checkboxCell}
+                            >
+                              <Checkbox
+                                checked={this.isChecked(
+                                  timeslotCheckboxRepresents
+                                )}
+                                onChange={(evt) => {
+                                  this.setChecked(
+                                    timeslotCheckboxRepresents,
+                                    evt
+                                  );
+                                }}
+                              />
+                            </DataTableCell>
+                          );
+                        })}
                     </DataTableRow>
                   )
                 )}
@@ -250,5 +240,3 @@ class ScheduleInput extends React.Component<ScheduleInputProps> {
     );
   }
 }
-
-export default injectIntl(ScheduleInput);
