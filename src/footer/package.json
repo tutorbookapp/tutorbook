@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-footer",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Package containing the footer component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",

@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/emails",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Handlebar email templates for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -36,8 +36,8 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/covid-utils": "^0.1.3",
-    "@tutorbook/model": "^0.1.3",
+    "@tutorbook/covid-utils": "^0.2.0",
+    "@tutorbook/model": "^0.2.0",
     "handlebars": "^4.7.6",
     "next": "^9.3.6"
   },
