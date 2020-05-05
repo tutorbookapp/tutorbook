@@ -127,6 +127,7 @@ export default function PupilForm() {
               label: intl.formatMessage(labels.email),
               type: 'email',
               el: 'textfield' as InputElAlias,
+              required: true,
               key: 'email',
             },
             {
