@@ -1,5 +1,5 @@
 {
-  "name": "@tutorbook/translations",
+  "name": "@tutorbook/intl",
   "version": "0.1.3",
   "description": "Translations for the i18n of Tutorbook's web app.",
   "keywords": [
@@ -20,6 +20,14 @@
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
+  "main": "lib/intl.tsx",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
   "publishConfig": {
     "access": "public"
   },
