@@ -1,10 +1,10 @@
 import React from 'react';
-import Link from 'next/link';
 import Utils from '@tutorbook/covid-utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
 import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
+import { Link } from '@tutorbook/intl';
 import { UserContext } from '@tutorbook/next-firebase';
 import { ApiError, User, Timeslot, Appt } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';

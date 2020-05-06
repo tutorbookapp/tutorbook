@@ -170,7 +170,7 @@ export default function PupilForm() {
             });
             const pupil: User = new User({ ...rest, grade });
             await UserProvider.signup(pupil, [parent]);
-            Router.push(pupil.searchURL);
+            Router.push(`/${intl.locale}${pupil.searchURL}`);
           }}
         />
       </div>
