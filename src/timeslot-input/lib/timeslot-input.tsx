@@ -7,6 +7,12 @@ import {
   TimeUtils,
   Timeslot,
 } from '@tutorbook/model';
+import {
+  IntlShape,
+  injectIntl,
+  defineMessages,
+  MessageDescriptor,
+} from 'react-intl';
 
 import styles from './timeslot-input.module.scss';
 
@@ -24,6 +30,7 @@ import styles from './timeslot-input.module.scss';
  * isn't in the given availability.
  */
 interface TimeslotInputProps extends TextFieldProps {
+  readonly intl: IntlShape;
   readonly onChange: (timeslot: Timeslot) => any;
   readonly className?: string;
   readonly val?: Timeslot;
@@ -48,7 +55,7 @@ interface TimeslotInputState {
  * This should just be a pretty basic wrapper around a `TextField` component
  * that provides validation and parses the user input into a `Timeslot` object.
  */
-export default class TimeslotInput extends React.Component<TimeslotInputProps> {
+class TimeslotInput extends React.Component<TimeslotInputProps> {
   public readonly state: TimeslotInputState;
   private helpTextRef: React.RefObject<
     HTMLParagraphElement
@@ -99,6 +106,21 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
    * updated `Timeslot` object.
    */
   private handleChange(event: React.FormEvent<HTMLInputElement>): void {
+    const msgs: Record<string, MessageDescriptor> = defineMessages({
+      inputTimeWithinAvailability: {
+        id: 'timeslot-input.input-time-within-availability',
+        description:
+          'Helper text prompting the user to input a time that fits within a ' +
+          'certain availability.',
+        defaultMessage: 'Input a time on {availability}.',
+      },
+      formatInputCorrectly: {
+        id: 'timeslot-input.format-input-correctly',
+        description:
+          'Helper text prompting the user to format their input correctly.',
+        defaultMessage: 'Please format your input correctly.',
+      },
+    });
     this.setState({ value: event.currentTarget.value });
     try {
       const timeslot: Timeslot = this.parse(event.currentTarget.value);
@@ -115,11 +137,17 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
         this.props.onChange(timeslot);
       } else {
         this.setState({
-          err: this.props.err || `Input a time on ${this.props.availability}`,
+          err:
+            this.props.err ||
+            this.props.intl.formatMessage(msgs.inputTimeWithinAvailability, {
+              availability: `${this.props.availability}`,
+            }),
         });
       }
     } catch (e) {
-      this.setState({ err: 'Please format your input correctly.' });
+      this.setState({
+        err: this.props.intl.formatMessage(msgs.formatInputCorrectly),
+      });
     }
   }
 
@@ -176,10 +204,24 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
    * `this.props.availability`. Right now, we just show the default placeholder.
    */
   private get placeholderText(): string {
+    const msgs: Record<string, MessageDescriptor> = defineMessages({
+      defaultPlaceholder: {
+        id: 'timeslot-input.default-placeholder',
+        description: 'The default placeholder for the timeslot input.',
+        defaultMessage: 'Ex. Mondays from 3:00 PM to 3:45 PM',
+      },
+      placeholder: {
+        id: 'timeslot-input.placeholder',
+        description: 'The placeholder for the timeslot input.',
+        defaultMessage: 'Ex. {timeslot}',
+      },
+    });
     if (this.props.availability && this.props.availability.length) {
-      return `Ex. ${this.props.availability[0].toParsableString()}`;
+      return this.props.intl.formatMessage(msgs.placeholder, {
+        timeslot: this.props.availability[0].toParsableString(),
+      });
     } else {
-      return 'Ex. Mondays from 3:00 PM to 3:45 PM';
+      return this.props.intl.formatMessage(msgs.defaultPlaceholder);
     }
   }
 
@@ -189,7 +231,14 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
    */
   private get helperText(): string | null {
     if (this.props.availability && this.props.availability.length) {
-      return `Input a time on ${this.props.availability.toString()}`;
+      return this.props.intl.formatMessage(
+        {
+          id: 'timeslot-input.input-time-within-availability',
+        },
+        {
+          availability: this.props.availability.toString(),
+        }
+      );
     } else {
       return null;
     }
@@ -242,3 +291,5 @@ export default class TimeslotInput extends React.Component<TimeslotInputProps> {
     );
   }
 }
+
+export default injectIntl(TimeslotInput);

@@ -12,6 +12,13 @@ import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { Typography } from '@rmwc/typography';
 import { Dialog, DialogProps } from '@rmwc/dialog';
 import { AxiosResponse, AxiosError } from 'axios';
+import {
+  injectIntl,
+  defineMessages,
+  IntlShape,
+  FormattedMessage,
+  MessageDescriptor,
+} from 'react-intl';
 
 import axios from 'axios';
 import to from 'await-to-js';
@@ -25,12 +32,13 @@ interface UserDialogState {
 }
 
 interface UserDialogProps extends DialogProps {
+  readonly intl: IntlShape;
   readonly user: User;
   readonly appt?: Appt;
   readonly className?: string;
 }
 
-export default class UserDialog extends React.Component<UserDialogProps> {
+class UserDialog extends React.Component<UserDialogProps> {
   public readonly state: UserDialogState;
   public static readonly contextType: React.Context<User> = UserContext;
 
@@ -124,6 +132,36 @@ export default class UserDialog extends React.Component<UserDialogProps> {
    */
   public render(): JSX.Element {
     const { user, className, appt, ...rest } = this.props;
+    const labels: Record<string, MessageDescriptor> = defineMessages({
+      subjects: {
+        id: 'user-dialog.subjects',
+        description: 'Label for the tutoring lesson subjects field.',
+        defaultMessage: 'Subjects',
+      },
+      time: {
+        id: 'user-dialog.time',
+        description: 'Label for the tutoring lesson time field.',
+        defaultMessage: 'Time',
+      },
+      timeErr: {
+        id: 'user-dialog.time-err',
+        description:
+          "Error message telling the user that the person they're requesting" +
+          " isn't available during the selected times.",
+        defaultMessage: '{name} is only available {availability}.',
+      },
+      message: {
+        id: 'user-dialog.message',
+        description: 'Label for the tutoring lesson message field.',
+        defaultMessage: 'Message',
+      },
+      submit: {
+        id: 'user-dialog.submit',
+        description:
+          'Label for the submit button that creates the appointment.',
+        defaultMessage: 'Request {name}',
+      },
+    });
     return (
       <Dialog {...rest} open>
         <AnimatedCheckmarkOverlay
@@ -146,7 +184,7 @@ export default class UserDialog extends React.Component<UserDialogProps> {
                 outlined
                 required
                 renderToPortal
-                label='Subjects'
+                label={this.props.intl.formatMessage(labels.subjects)}
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
                 val={this.state.appt.subjects}
@@ -156,25 +194,30 @@ export default class UserDialog extends React.Component<UserDialogProps> {
               <TimeslotInput
                 outlined
                 required
-                label='Time'
+                label={this.props.intl.formatMessage(labels.time)}
                 className={styles.formField}
                 onChange={this.handleTimeslotChange}
                 availability={user.availability}
                 val={this.state.appt.time}
-                err={`${user.firstName} is only available ${user.availability}.`}
+                err={this.props.intl.formatMessage(labels.timeErr, {
+                  name: user.firstName,
+                  availability: user.availability.toString(),
+                })}
               />
               <TextField
                 outlined
                 textarea
                 rows={4}
-                label='Message'
+                label={this.props.intl.formatMessage(labels.message)}
                 className={styles.formField}
                 onChange={this.handleMessageChange}
                 value={this.state.appt.message}
               />
               <Button
                 className={styles.button}
-                label={`Request ${user.firstName}`}
+                label={this.props.intl.formatMessage(labels.submit, {
+                  name: user.firstName,
+                })}
                 disabled={
                   !this.context.uid ||
                   this.state.submitting ||
@@ -185,11 +228,24 @@ export default class UserDialog extends React.Component<UserDialogProps> {
               />
               {!this.context.uid && (
                 <TextFieldHelperText persistent className={styles.helperText}>
-                  {'You must login (via '}
-                  <Link href='/pupils'>
-                    <a>this form</a>
-                  </Link>
-                  {') before sending lesson requests.'}
+                  <FormattedMessage
+                    id='user-dialog.disabled'
+                    description={
+                      'Helper text prompting the user to login before they ' +
+                      'create tutoring lessons.'
+                    }
+                    defaultMessage={
+                      'You must login (via <a>this form</a>) before sending ' +
+                      'lesson requests.'
+                    }
+                    values={{
+                      a: (...chunks: React.ReactElement[]) => (
+                        <Link href='/pupils'>
+                          <a>{chunks}</a>
+                        </Link>
+                      ),
+                    }}
+                  />
                 </TextFieldHelperText>
               )}
             </form>
@@ -199,3 +255,5 @@ export default class UserDialog extends React.Component<UserDialogProps> {
     );
   }
 }
+
+export default injectIntl(UserDialog);
