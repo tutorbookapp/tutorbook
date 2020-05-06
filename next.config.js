@@ -32,10 +32,11 @@ module.exports = {
           destination: '/api/redirect',
         },
         {
-          // Don't redirect if there's a locale already in the requested URL.
+          // Don't redirect if there's a locale already in the requested URL. We
+          // also don't redirect if the browser's just trying to fetch favicons.
           // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
           // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
-          source: `/:locale((?!${locales.join('|')})[^/]+)(.*)`,
+          source: `/:locale((?!${locales.join('|')}|favicon)[^/]+)(.*)`,
           destination: '/api/redirect',
         },
       ];
