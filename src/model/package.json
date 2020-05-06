@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/model",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Data models for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
