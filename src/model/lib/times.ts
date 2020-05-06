@@ -134,7 +134,7 @@ export class Timeslot implements TimeslotInterface {
     return (
       `${DAYS[this.from.getDay()]}s from ${this.from.getHours()}:` +
       `${('0' + this.from.getMinutes()).slice(-2)} AM to ` +
-      `${this.to.getHours()}:${('0' + this.to.getMinutes()).slice(-2)} AM.`
+      `${this.to.getHours()}:${('0' + this.to.getMinutes()).slice(-2)} AM`
     );
   }
 
