@@ -183,5 +183,70 @@
     "id": "tutor-form.submit",
     "description": "Submit button label for the tutor sign-up form.",
     "defaultMessage": "Est-ce que vous voulez etre un tuteur volontaire?"
+  },
+  {
+    "id": "footer.terms",
+    "description": "Label for the \"Terms & Policies\" footer link.",
+    "defaultMessage": "Termes"
+  },
+  {
+    "id": "footer.privacy",
+    "description": "Label for the \"Privacy Policy\" footer link.",
+    "defaultMessage": "Intimité"
+  },
+  {
+    "id": "footer.security",
+    "description": "Label for the \"Security Policy\" footer link.",
+    "defaultMessage": "Sécurité"
+  },
+  {
+    "id": "timeslot-input.input-time-within-availability",
+    "description": "Helper text prompting the user to input a time that fits within a certain availability.",
+    "defaultMessage": "Entrez un temps sur la {availability}."
+  },
+  {
+    "id": "timeslot-input.format-input-correctly",
+    "description": "Helper text prompting the user to format their input correctly.",
+    "defaultMessage": "S'il vous plaît, formatez votre entreé correctement."
+  },
+  {
+    "id": "timeslot-input.default-placeholder",
+    "description": "The default placeholder for the timeslot input.",
+    "defaultMessage": "Ex. Les Lundis entre 3:00 PM et 3:45 PM"
+  },
+  {
+    "id": "timeslot-input.placeholder",
+    "description": "The placeholder for the timeslot input.",
+    "defaultMessage": "Ex. {timeslot}"
+  },
+  {
+    "id": "user-dialog.subjects",
+    "description": "Label for the tutoring lesson subjects field.",
+    "defaultMessage": "Sujets"
+  },
+  {
+    "id": "user-dialog.time",
+    "description": "Label for the tutoring lesson time field.",
+    "defaultMessage": "Fois"
+  },
+  {
+    "id": "user-dialog.time-err",
+    "description": "Error message telling the user that the person they're requesting isn't available during the selected times.",
+    "defaultMessage": "{name} est uniquement disponible {availability}."
+  },
+  {
+    "id": "user-dialog.message",
+    "description": "Label for the tutoring lesson message field.",
+    "defaultMessage": "Message"
+  },
+  {
+    "id": "user-dialog.submit",
+    "description": "Label for the submit button that creates the appointment.",
+    "defaultMessage": "Demande {name}"
+  },
+  {
+    "id": "user-dialog.disabled",
+    "description": "Helper text prompting the user to login before they create tutoring lessons.",
+    "defaultMessage": "Vous vous devez s'indetifier (via <a>ce formulaire</a>) avant d'envié les demandes du leçon."
   }
 ]

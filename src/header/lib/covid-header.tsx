@@ -1,10 +1,10 @@
-import Link from 'next/link';
 import {
   useIntl,
   IntlShape,
   defineMessages,
   MessageDescriptor,
 } from 'react-intl';
+import { Link } from '@tutorbook/intl';
 
 import MobileNav from './mobile';
 import DesktopNav from './desktop';

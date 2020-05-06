@@ -20,7 +20,7 @@
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/intl.tsx",
+  "main": "lib/intl.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"

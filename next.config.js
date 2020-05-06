@@ -20,6 +20,11 @@ module.exports = {
           destination: '/:locale',
           permanent: process.env.NODE_ENV !== 'development',
         },
+        {
+          source: '/:locale/:path/',
+          destination: '/:locale/:path',
+          permanent: process.env.NODE_ENV !== 'development',
+        },
       ];
     },
     rewrites() {

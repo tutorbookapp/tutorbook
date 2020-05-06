@@ -1,6 +1,6 @@
 import React from 'react';
-import Link from 'next/link';
 import Banner from '@tutorbook/banner';
+import { Link } from '@tutorbook/intl';
 import { Typography } from '@rmwc/typography';
 import { FormattedMessage } from 'react-intl';
 

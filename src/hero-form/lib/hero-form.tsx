@@ -50,7 +50,7 @@ export default function HeroForm() {
             submitLabel={intl.formatMessage({ id: 'pupil-form.submit' })}
             onFormSubmit={async (formValues) => {
               const pupil: User = new User({ ...formValues, grade });
-              Router.push(pupil.searchURL);
+              Router.push(`/${intl.locale}${pupil.searchURL}`);
             }}
             className={styles.heroForm}
             cardProps={{
