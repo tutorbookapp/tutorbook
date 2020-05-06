@@ -79,15 +79,6 @@ type Auth = admin.auth.Auth;
 type App = admin.app.App;
 
 /**
- * This is a desperate workaround for an error we're encountering regarding
- * Vercel Now environment variables. For some reason, it's formatting this
- * Firebase Admin Node.js SDK API key wrong and causing an error.
- * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/29}
- */
-const FIREBASE_ADMIN_KEY: string =
-  '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCusqyx2PhdhOV4\niYWgfwRkYznGfw/QODZ7WqKTY4D+OZrAuUqA2TrijRgc3XXhAklvz3pRScYoT899\nT9dnqKFkjEZHfujhCPRVM5KNntiMd+sQ+H8HcuKUTjHRK2y7PP+zbizYfeQN0Uuy\njoRBfDwzJmhzuKuJOLHWvAvyghEmwcjaNg0E4KrUbtB2MK9GjZQfmkWtNK5ioj6g\nTGeN/R0S2Ny9t0RQJbYNleSwG8VmRWqbFDkvlU7S9nHqgqCZKWJLrEZSRGaxphvN\neXqgRmtCskwGyiKZhmZXOp7wzTpqmyUgMhwm9X3tBaswWeNMuDU7+d//ivvgOQxV\nDd7kQ16xAgMBAAECggEADW7NMx6nGE/J8j8G0Jy7qnlrvZzTCzRrUghZ1GH0DvhA\ncz28IhSx/64QMtX/hKXvniKSufHlg/+BCZZsTnrrsAbON5ylTPpqiSueQvf6GDD3\nWPZ2lAzMKdGqaHZBldMeqT4ZQitJ8BsOCkSFnGBwY5F6Oh2yyOocWJHcjFDefz+K\nSwhW/cE70VUshFYi3Fuz/e0OgP0zyVRm6Us3gqtcxoPeN+w7jqmV/O8QO6OJWJqy\nq+ePN/ovZVentif+hXUm8WitSLqYS4ayMrmm/lv0BypO3SPu+yID1CU6s4//TDYs\n7b8SGG+tZFLFAtqQhWw4bknaURMRwN0do/GGPlajjQKBgQDWNsNA6Pa1VDhb7Ib3\nnoHo4jOMYwYYS9QdAGcrdUqsdL885LJgSY3LJqvTklXQFuIwM6otWT2yiTRuj7KV\nNmM/h76MfxbDSW+RjPzG+jP9UT+CGs+39xGdOteSp2PFun8o5gXn7MK09l2PUt2C\nnk9Qjv4qux7/w8MVNSwkpHc8HQKBgQDQxpia2jqtrWAbbpDAVL21mMPIT9k5695c\n388/bgLsrivgJbS9eRRSdZL/cJ3JtywYReYsOJ8/JIfbDbYdODGZHco0vkRboatv\nWA3EJVTr2RJ32uTVIs4/m/igksjA103GqUzj0kVJDwh2NXg+ZCBHxpXYp20st/hO\n7nGcyp4gpQKBgQCfCJMXCp22a2tYG5bsGTqbOexJSm8I9KrqSRVPN0oUFKyxuZwQ\nTis96lzguyCIV6TfYkvyVPGwLZrGhlpv2qv+S3oU9nlgzJFO/tvfoXudkodSwTL7\ngisKjtfiofE5p8amB3fVAnpfPRSixkN7qKp7xV0/PiK6gYzAnvRB0/RNpQKBgGYP\nj+6znFfnF8KRTIYZZxxtb9hu4HymR/ATIVeayic2BhDvnem6VSrye0gQn7JKr222\nTg10KLVPgHKfw1WJcQWvQHiEQxqgcBRgcWpf7aHWXmblRVTETRtffi3RU/6hwk3J\n2eLNmj1a8gIHpZ6qh/VOqVZeksp3rRW5DyVdD+xZAoGBAJCjUdlgCBee6uVUiCmh\nz01uN7tOMbxg1x71mdGUaoyJL4tj8lIQWKvDgDf3T6f27dB7Y+CY7Wr/LxTCAW3w\n/uVrz/BS4XC3VD7jvKADXq7RAYg1sJAto/wKCS5uvvv24nGKiy72/5mkn6Rp4dsn\n7LiDVx9tOLtqCwLNzUwFnKa5\n-----END PRIVATE KEY-----\n';
-
-/**
  * Initializes a new `firebase.admin` instance with limited database/Firestore
  * capabilities (using the `databaseAuthVariableOverride` option).
  * @see {@link https://firebase.google.com/docs/reference/admin/node/admin.AppOptions#optional-databaseauthvariableoverride}
@@ -102,7 +93,10 @@ const firebase: App = admin.initializeApp(
   {
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: FIREBASE_ADMIN_KEY,
+      privateKey: (process.env.FIREBASE_ADMIN_KEY as string).replace(
+        /\\n/g,
+        '\n'
+      ),
       clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     }),
     projectId: process.env.FIREBASE_PROJECT_ID,

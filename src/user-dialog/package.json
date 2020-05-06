@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/user-dialog",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Dialog that shows tutor info and enables pupils to request tutors.",
   "keywords": [
     "Tutorbook",
@@ -40,10 +40,10 @@
     "@tutorbook/animated-checkmark-overlay": "^0.2.0",
     "@tutorbook/button": "^0.2.0",
     "@tutorbook/covid-utils": "^0.2.0",
-    "@tutorbook/model": "^0.2.0",
-    "@tutorbook/next-firebase": "^0.2.0",
-    "@tutorbook/subject-select": "^0.2.0",
-    "@tutorbook/timeslot-input": "^0.2.0",
+    "@tutorbook/model": "^0.2.2",
+    "@tutorbook/next-firebase": "^0.2.2",
+    "@tutorbook/subject-select": "^0.2.2",
+    "@tutorbook/timeslot-input": "^0.2.2",
     "await-to-js": "^2.1.1",
     "axios": "^0.19.2",
     "next": "^9.3.6",
