@@ -12,6 +12,7 @@ import {
   SearchResponse,
   ObjectWithObjectID,
 } from '@algolia/client-search';
+import { SelectHint } from './select-hint';
 
 import to from 'await-to-js';
 import algoliasearch from 'algoliasearch/lite';
@@ -49,6 +50,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   public readonly state: SubjectSelectState;
   private suggestionsTimeoutID?: number;
   private foundationRef: any;
+  private lastSelectedRef: React.MutableRefObject<string | null>;
 
   private static searchIndex: SearchIndex = client.initIndex('subjects');
 
@@ -65,6 +67,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       props.val.forEach((s) => (this.state.subjects[s] = true));
       this.state.inputValueWorkaround = this.getInputValue();
     }
+    this.lastSelectedRef = React.createRef();
     this.openSuggestions = this.openSuggestions.bind(this);
     this.closeSuggestions = this.closeSuggestions.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
@@ -155,7 +158,10 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    */
   private closeSuggestions(): void {
     this.suggestionsTimeoutID = window.setTimeout(() => {
-      if (this.state.suggestionsOpen) this.setState({ suggestionsOpen: false });
+      if (this.state.suggestionsOpen) {
+        this.setState({ suggestionsOpen: false });
+        this.lastSelectedRef.current = null;
+      }
     }, 0);
   }
 
@@ -212,17 +218,19 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
         >
           <List>{this.renderSubjectMenuItems()}</List>
         </MenuSurface>
-        <TextField
-          {...rest}
-          textarea
-          value={this.state.inputValueWorkaround}
-          onFocus={this.openSuggestions}
-          onBlur={this.closeSuggestions}
-          onChange={this.updateInputValue}
-          className={styles.textField}
-        >
-          {this.renderSubjectChipItems()}
-        </TextField>
+        <SelectHint>
+          <TextField
+            {...rest}
+            textarea
+            value={this.state.inputValueWorkaround}
+            onFocus={this.openSuggestions}
+            onBlur={this.closeSuggestions}
+            onChange={this.updateInputValue}
+            className={styles.textField}
+          >
+            {this.renderSubjectChipItems()}
+          </TextField>
+        </SelectHint>
       </MenuSurfaceAnchor>
     );
   }
@@ -238,11 +246,33 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * changes shape.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
-  private updateSubject(subject: string): void {
+  private updateSubject(subject: string, event?: React.MouseEvent): void {
     const subjects: SubjectsAlias = {
       ...this.state.subjects,
       [subject]: !this.state.subjects[subject],
     };
+
+    if (
+      this.state.suggestions.length &&
+      this.lastSelectedRef.current &&
+      event?.shiftKey
+    ) {
+      /* select/unselect multiple subjects
+        with shift + click */
+      const { suggestions } = this.state;
+      const idx: number = suggestions.indexOf(subject);
+      const idxOfLast: number = suggestions.indexOf(
+        this.lastSelectedRef.current
+      );
+      suggestions
+        .slice(Math.min(idx, idxOfLast), Math.max(idx, idxOfLast) + 1)
+        .forEach((name) => {
+          subjects[name] = !this.state.subjects[subject];
+        });
+    }
+
+    this.lastSelectedRef.current = subject;
+
     const value: string =
       this.state.inputValueWorkaround || this.getInputValue(subjects);
     this.setState({
@@ -266,7 +296,9 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       subjectMenuItems.push(
         <ListItem
           key={subject}
-          onClick={() => this.updateSubject(subject)}
+          onClick={(event: React.MouseEvent) =>
+            this.updateSubject(subject, event)
+          }
           className={styles.menuItem}
         >
           <ListItemGraphic
