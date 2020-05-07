@@ -1,9 +1,55 @@
-.formWrapper {
+.wrapper {
   text-align: center;
 }
 
-.formContent {
+.formWrapper {
+  position: relative;
+}
+
+.content {
   display: inline-block;
   width: calc(100% - 32px);
   max-width: 720px;
+}
+
+.background {
+  height: 40%;
+  width: 100vw;
+  background: #6200ee;
+  position: absolute;
+  z-index: -1;
+  bottom: 30%;
+}
+
+.background::before {
+  top: -17px;
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+  content: '';
+  position: absolute;
+  background-color: inherit;
+  height: 18px;
+  left: -3vw;
+  -webkit-mask-image: url(./svgs/border.svg);
+  mask-image: url(./svgs/border.svg);
+  -webkit-mask-repeat: repeat no-repeat;
+  mask-repeat: repeat no-repeat;
+  width: 106vw;
+  z-index: -1;
+}
+
+.background::after {
+  bottom: -17px;
+  content: '';
+  position: absolute;
+  background-color: inherit;
+  height: 18px;
+  left: -3vw;
+  -webkit-mask-image: url(./svgs/border.svg);
+  mask-image: url(./svgs/border.svg);
+  -webkit-mask-repeat: repeat no-repeat;
+  mask-repeat: repeat no-repeat;
+  width: 106vw;
+  z-index: -1;
 }
