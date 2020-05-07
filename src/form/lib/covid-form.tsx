@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { Typography } from '@rmwc/typography';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { Select, SelectProps, SelectHTMLProps } from '@rmwc/select';
 import { Card, CardProps } from '@rmwc/card';
@@ -34,12 +33,16 @@ type InputProps = UniqueInputProps &
     | (SelectProps & SelectHTMLProps)
   );
 
+interface CustomInputProps {
+  readonly el: JSX.Element;
+}
+
+type Input = InputProps | CustomInputProps;
+
 interface FormProps extends React.HTMLProps<HTMLFormElement> {
-  readonly inputs: InputProps[];
+  readonly inputs: ReadonlyArray<Input>;
   readonly submitLabel: string;
   readonly cardProps?: CardProps & React.HTMLProps<HTMLDivElement>;
-  readonly title?: string;
-  readonly description?: string;
   readonly onFormSubmit: (formValues: {
     readonly [formInputLabel: string]: any;
   }) => Promise<any>;
@@ -72,13 +75,15 @@ export default class Form extends React.Component<FormProps, {}> {
    * a `this.inputs` field to improve performance.
    */
   private renderInputs(): JSX.Element[] {
-    return this.props.inputs.map((input: InputProps, index: number) => {
+    return this.props.inputs.map((input: Input, index: number) => {
       const { el, ...props } = input;
       switch (el) {
         case 'textfield':
           return (
             <TextField
-              onChange={(event) => this.handleInputChange(input, event)}
+              onChange={(event) =>
+                this.handleInputChange(input as InputProps, event)
+              }
               key={index}
               outlined
               className={styles.formField}
@@ -88,7 +93,9 @@ export default class Form extends React.Component<FormProps, {}> {
         case 'textarea':
           return (
             <TextField
-              onChange={(event) => this.handleInputChange(input, event)}
+              onChange={(event) =>
+                this.handleInputChange(input as InputProps, event)
+              }
               key={index}
               outlined
               textarea
@@ -100,7 +107,9 @@ export default class Form extends React.Component<FormProps, {}> {
         case 'select':
           return (
             <Select
-              onChange={(event) => this.handleInputChange(input, event)}
+              onChange={(event) =>
+                this.handleInputChange(input as InputProps, event)
+              }
               key={index}
               outlined
               enhanced
@@ -112,7 +121,8 @@ export default class Form extends React.Component<FormProps, {}> {
           return (
             <SubjectSelect
               onChange={(subjects: string[]) => {
-                this.values[input.key ? input.key : input.label] = {
+                let props: InputProps = input as InputProps;
+                this.values[props.key ? props.key : props.label] = {
                   explicit: subjects,
                   implicit: [],
                   filled: [],
@@ -128,7 +138,8 @@ export default class Form extends React.Component<FormProps, {}> {
           return (
             <ScheduleInput
               onChange={(availability: Availability) => {
-                this.values[input.key ? input.key : input.label] = availability;
+                let props: InputProps = input as InputProps;
+                this.values[props.key ? props.key : props.label] = availability;
               }}
               key={index}
               outlined
@@ -136,6 +147,8 @@ export default class Form extends React.Component<FormProps, {}> {
               {...(props as ScheduleInputProps)}
             />
           );
+        default:
+          return el;
       }
     });
   }
@@ -163,8 +176,6 @@ export default class Form extends React.Component<FormProps, {}> {
 
   public render(): JSX.Element {
     const {
-      title,
-      description,
       submitLabel,
       onFormSubmit,
       inputs,
@@ -174,46 +185,35 @@ export default class Form extends React.Component<FormProps, {}> {
       ...rest
     } = this.props;
     return (
-      <>
-        {title ? (
-          <div className={styles.formTitle}>
-            <Typography use='headline2'>{title}</Typography>
-          </div>
-        ) : undefined}
-        {description ? (
-          <div className={styles.formDescription}>
-            <Typography use='body1'>{description}</Typography>
-          </div>
-        ) : undefined}
-        <Card
-          {...cardProps}
-          className={
-            styles.formCard +
-            (cardProps && cardProps.className ? ' ' + cardProps.className : '')
-          }
+      <Card
+        {...cardProps}
+        className={
+          styles.formCard +
+          (cardProps && cardProps.className ? ' ' + cardProps.className : '')
+        }
+      >
+        <AnimatedCheckmarkOverlay
+          active={this.state.submitting || this.state.submitted}
+          checked={!!this.props.loadingCheckmark && this.state.submitted}
+          label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
+          showLabel={!!this.props.loadingLabel}
+        />
+        <form
+          {...rest}
+          className={styles.form + (className ? ' ' + className : '')}
+          onSubmit={this.handleSubmit}
         >
-          <AnimatedCheckmarkOverlay
-            active={this.state.submitting || this.state.submitted}
-            checked={!!this.props.loadingCheckmark && this.state.submitted}
-            label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
-            showLabel={!!this.props.loadingLabel}
+          {this.renderInputs()}
+          {this.props.children}
+          <Button
+            className={styles.formSubmitButton}
+            label={submitLabel}
+            disabled={this.state.submitting || this.state.submitted}
+            raised
+            arrow
           />
-          <form
-            {...rest}
-            className={styles.form + (className ? ' ' + className : '')}
-            onSubmit={this.handleSubmit}
-          >
-            {this.renderInputs()}
-            <Button
-              className={styles.formSubmitButton}
-              label={submitLabel}
-              disabled={this.state.submitting || this.state.submitted}
-              raised
-              arrow
-            />
-          </form>
-        </Card>
-      </>
+        </form>
+      </Card>
     );
   }
 }
