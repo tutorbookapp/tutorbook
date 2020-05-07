@@ -32,6 +32,7 @@ export interface ScheduleInputProps extends TextFieldProps {
 
 export default class ScheduleInput extends React.Component<ScheduleInputProps> {
   public readonly state: ScheduleInputState;
+  private menuTimeoutID?: number;
 
   public constructor(props: ScheduleInputProps) {
     super(props);
@@ -40,6 +41,31 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
       availability: props.val || new Availability(),
     };
     this.setAllChecked = this.setAllChecked.bind(this);
+    this.openMenu = this.openMenu.bind(this);
+    this.closeMenu = this.closeMenu.bind(this);
+  }
+
+  /**
+   * We clear the timeout set by `this.closeMenu` to ensure that they user
+   * doesn't get a blip where the schedule input menu disappears and reappears
+   * abruptly.
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  private openMenu(): void {
+    window.clearTimeout(this.menuTimeoutID);
+    if (!this.state.menuOpen) this.setState({ menuOpen: true });
+  }
+
+  /**
+   * We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
+   * before toggling. Waiting ensures that the user hasn't clicked on the
+   * schedule input menu (and thus called `this.openMenu`).
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  private closeMenu(): void {
+    this.menuTimeoutID = window.setTimeout(() => {
+      if (this.state.menuOpen) this.setState({ menuOpen: false });
+    });
   }
 
   /**
@@ -132,6 +158,10 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * `TextField` element.
    * @todo Perhaps use the `injectIntl` function to use the `intl` API to ensure
    * that the `DataTableHeaderCell`s always contain capitalized day strings.
+   * @todo Allow the user to interact with the static content of the menu (i.e.
+   * the text that doesn't cause an `onFocus` event when clicked). Right now,
+   * interacting with such static content within the menu causes the menu to
+   * lose focus which makes us close it.
    */
   public render(): JSX.Element {
     const { onChange, className, ...rest } = this.props;
@@ -140,7 +170,8 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
           open={this.state.menuOpen}
-          onClose={(evt) => this.setState({ menuOpen: false })}
+          onFocus={this.openMenu}
+          onBlur={this.closeMenu}
           anchorCorner='topStart'
         >
           <DataTable>
@@ -234,7 +265,8 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
           readOnly
           value={this.state.availability.toString()}
           className={styles.textField}
-          onClick={() => this.setState({ menuOpen: true })}
+          onFocus={this.openMenu}
+          onBlur={this.closeMenu}
         />
       </MenuSurfaceAnchor>
     );
