@@ -254,8 +254,10 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       /* select/unselect multiple subjects
         with shift + click */
       const { suggestions } = this.state;
-      const idx = suggestions.indexOf(subject);
-      const idxOfLast = suggestions.indexOf(this.lastSelectedRef.current);
+      const idx: number = suggestions.indexOf(subject);
+      const idxOfLast: number = suggestions.indexOf(
+        this.lastSelectedRef.current
+      );
       suggestions
         .slice(Math.min(idx, idxOfLast), Math.max(idx, idxOfLast) + 1)
         .forEach((name) => {
@@ -288,7 +290,9 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       subjectMenuItems.push(
         <ListItem
           key={subject}
-          onClick={(event) => this.updateSubject(subject, event)}
+          onClick={(event: React.MouseEvent) =>
+            this.updateSubject(subject, event)
+          }
           className={styles.menuItem}
         >
           <ListItemGraphic

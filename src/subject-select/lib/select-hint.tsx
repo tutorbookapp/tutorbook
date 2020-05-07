@@ -1,27 +1,23 @@
-import React, { FC } from 'react';
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Typography } from '@rmwc/typography';
 import { Tooltip } from '@rmwc/tooltip';
-import { Icon } from '@rmwc/icon';
-
-import styles from './select-hint.module.scss';
 
 interface SelectHintProps {
   readonly children: JSX.Element;
 }
 
-export const SelectHint: FC<SelectHintProps> = ({ children }) => (
+export const SelectHint: React.FunctionComponent<SelectHintProps> = ({
+  children,
+}) => (
   <Tooltip
     content={
-      <div className={styles.messageBox}>
-        <Typography use='caption' className={styles.messageText}>
-          Use 'SHIFT + click' for multiple select
-        </Typography>
-        <Icon icon={{ icon: 'info', size: 'xsmall' }} />
-      </div>
+      <Typography use='caption'>
+        <FormattedMessage id='subject-select.select-hint' />
+      </Typography>
     }
     align='topRight'
     activateOn='click'
-    showArrow
   >
     {children}
   </Tooltip>
