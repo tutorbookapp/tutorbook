@@ -248,5 +248,10 @@
     "id": "user-dialog.disabled",
     "description": "Helper text prompting the user to login before they create tutoring lessons.",
     "defaultMessage": "You must login (via <a>this form</a>) before sending lesson requests."
+  },
+  {
+    "id": "subject-select.select-hint",
+    "description": "The text on the tooltip prompting the user to shift-select subjects.",
+    "defaultMessage": "Use 'SHIFT + click' for multiple select"
   }
 ]
