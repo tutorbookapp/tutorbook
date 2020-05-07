@@ -137,6 +137,17 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   }
 
   /**
+   * We clear the timeout set by `this.closeSuggestions` to ensure that they
+   * user doesn't get a blip where the subject select menu disappears and
+   * reappears abruptly.
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  private openSuggestions(): void {
+    window.clearTimeout(this.suggestionsTimeoutID);
+    if (!this.state.suggestionsOpen) this.setState({ suggestionsOpen: true });
+  }
+
+  /**
    * We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
    * before toggling. Waiting ensures that the user hasn't clicked on the
    * subject select menu (and thus called `this.openSuggestions`).
@@ -146,17 +157,6 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     this.suggestionsTimeoutID = window.setTimeout(() => {
       if (this.state.suggestionsOpen) this.setState({ suggestionsOpen: false });
     }, 0);
-  }
-
-  /**
-   * We clear the timeout set by `this.closeSuggestions` to ensure that they
-   * user doesn't get a blip where the subject select menu disappears and
-   * reappears abruptly.
-   * @see {@link https://bit.ly/2x9eM27}
-   */
-  private openSuggestions(): void {
-    window.clearTimeout(this.suggestionsTimeoutID);
-    if (!this.state.suggestionsOpen) this.setState({ suggestionsOpen: true });
   }
 
   /**
@@ -192,6 +192,12 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     this.updateSuggestions(event.currentTarget.value);
   }
 
+  /**
+   * @todo Allow the user to interact with the static content of the menu (i.e.
+   * the text that doesn't cause an `onFocus` event when clicked). Right now,
+   * interacting with such static content within the menu causes the menu to
+   * lose focus which makes us close it.
+   */
   public render(): JSX.Element {
     const { renderToPortal, className, onChange, ...rest } = this.props;
     return (
