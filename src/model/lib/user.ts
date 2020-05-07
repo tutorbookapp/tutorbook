@@ -28,6 +28,32 @@ type AdminDocumentReference = admin.firestore.DocumentReference;
 export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 /**
+ * Represents a user verification to provide social proof. Supported types are:
+ * - A background check or UK DBS on file
+ * - A verified academic email address (e.g. `ac.uk` or `stanford.edu`)
+ * - A verified social media account (i.e. LinkedIn, GitHub, FB, Insta)
+ * - A personal website (mostly just an easy way to link to a resume site)
+ *
+ * These "verifications" are then shown directly beneath the user's name in the
+ * `UserDialog` making it easy for students (and/or their parents) to view and
+ * feel assured about a potential tutor's qualifications.
+ */
+export type VerificationTypeAlias =
+  | 'background-check'
+  | 'dbs'
+  | 'academic-email'
+  | 'linkedin'
+  | 'github'
+  | 'facebook'
+  | 'instagram'
+  | 'website';
+
+interface VerificationInterface {
+  type: VerificationTypeAlias;
+  url?: string;
+}
+
+/**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
  * @property name - The user's name (e.g. their Google `displayName`).
@@ -42,6 +68,8 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  * @property notifications - The user's notification configuration.
  * @property ref - The user's Firestore profile `DocumentReference`.
  * @property token - The user's Firebase Authentication JWT `idToken`.
+ * @property verifications - An array of the user's verifications (e.g. Do they
+ * have a background check on file? Do they have an academic email address?).
  */
 export interface UserInterface {
   uid?: string;
@@ -59,6 +87,7 @@ export interface UserInterface {
   notifications: NotificationsConfigAlias;
   ref?: DocumentReference | AdminDocumentReference;
   token?: string;
+  verifications: VerificationInterface[];
 }
 
 /**
@@ -71,6 +100,7 @@ export interface UserInterface {
  * - User's subjects (what they can tutor)
  * - User's searches (what they need tutoring for)
  * - User's Firebase Authentication uID (as the Algolia `objectID`)
+ * @todo Update the above doc comment.
  */
 export interface UserJSONInterface {
   uid?: string;
@@ -87,6 +117,7 @@ export interface UserJSONInterface {
   parents?: string[];
   notifications?: NotificationsConfigAlias;
   token?: string;
+  verifications: VerificationInterface[];
 }
 
 /**
@@ -132,6 +163,7 @@ export class User implements UserInterface {
   public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;
   public grade?: GradeAlias;
+  public verifications: VerificationInterface[] = [];
 
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
