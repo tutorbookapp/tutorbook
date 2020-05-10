@@ -32,6 +32,7 @@ interface SubjectSelectState {
   readonly errored: boolean;
   readonly inputValue: string;
   readonly inputFocused: boolean;
+  readonly lineBreak: boolean;
 }
 
 export interface SubjectSelectProps extends TextFieldProps {
@@ -58,8 +59,12 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
 
   private inputRef: React.RefObject<HTMLInputElement>;
 
+  private ghostElementRef: React.RefObject<HTMLSpanElement>;
+  
   private lastSelectedRef: React.MutableRefObject<string | null>;
-
+  
+  private textareaBreakWidth: React.MutableRefObject<number | null>;
+  
   private hasOpenedSuggestions: boolean = false;
 
   public constructor(props: SubjectSelectProps) {
@@ -71,9 +76,13 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       errored: false,
       inputValue: '',
       inputFocused: false,
+      lineBreak: false,
     };
     this.inputRef = React.createRef();
     this.lastSelectedRef = React.createRef();
+    this.ghostElementRef = React.createRef();
+    this.textareaBreakWidth = React.createRef();
+    this.changeTextareaLine = this.changeTextareaLine.bind(this);
     this.maybeOpenSuggestions = this.maybeOpenSuggestions.bind(this);
     this.openSuggestions = this.openSuggestions.bind(this);
     this.closeSuggestions = this.closeSuggestions.bind(this);
@@ -207,6 +216,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    */
   private updateInputValue(event: React.FormEvent<HTMLInputElement>): void {
     const inputValue: string = event.currentTarget.value || this.inputValue;
+    this.changeTextareaLine(event);
     this.setState({ inputValue });
     this.updateSuggestions(event.currentTarget.value);
     this.openSuggestions();
@@ -222,6 +232,36 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   private maybeOpenSuggestions(): void {
     if (this.hasOpenedSuggestions) this.openSuggestions();
   }
+
+  /**
+   * The function pushes <textarea> to the next line
+   * when its width is less than the width of its text content.
+   * To measure the width of the content the width of invisible <span> is used,
+   * to which the value of <textarea> is assigned.
+   */
+  private changeTextareaLine(event: React.FormEvent<HTMLInputElement>): void {
+    if (this.ghostElementRef.current) {
+      this.ghostElementRef.current.innerText = event.currentTarget.value;
+
+      if (
+        this.ghostElementRef.current.clientWidth >
+        event.currentTarget.clientWidth
+      ) {
+        this.textareaBreakWidth.current = event.currentTarget.clientWidth;
+        this.setState({ lineBreak: true });
+        return;
+      }
+
+      if (
+        this.textareaBreakWidth.current &&
+        this.ghostElementRef.current.clientWidth <=
+          this.textareaBreakWidth.current
+      ) {
+        this.textareaBreakWidth.current = null;
+        this.setState({ lineBreak: false });
+      }
+    }
+  };
 
   /**
    * @todo Allow the user to interact with the static content of the menu (i.e.
@@ -264,6 +304,8 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
             className={styles.textField}
           >
             {this.renderSubjectChipItems()}
+            {this.state.lineBreak && <div className={styles.lineBreak}></div>}
+            <span ref={this.ghostElementRef} className={styles.ghost}></span>
           </TextField>
         </SelectHint>
       </MenuSurfaceAnchor>
@@ -275,11 +317,6 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * `this.state.subjects` to `true` which:
    * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
    * 2. Adding it as a chip to the `mdc-text-field` content.
-   *
-   * Note that this also contains a painful workaround to ensure that the select
-   * menu is positioned correctly **even** if it's anchor (the `TextField`)
-   * changes shape.
-   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   private updateSubject(subject: string, event?: React.MouseEvent): void {
     const subjects: SubjectsAlias = {
@@ -308,7 +345,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     this.lastSelectedRef.current = subject;
 
     const inputValue: string = subjects[subject] ? '' : this.state.inputValue;
-    this.setState({ subjects, inputValue });
+    this.setState({ subjects, inputValue, lineBreak: false });
     const selectedSubjects: string[] = Object.entries(subjects)
       .filter(([_, isSelected]) => isSelected)
       .map(([subject, _]) => subject);
