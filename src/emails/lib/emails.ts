@@ -161,7 +161,7 @@ export class ParentApptEmail implements Email {
     const data: ParentApptEmailData = {
       brambleDescription:
         `They will be conducting their tutoring lessons via <a href='` +
-        `${this.appt.venues[0].url}'>this Bramble room</a>. The room will be` +
+        `${this.appt.venues[0].url}'>this Bramble room</a>. The room will be ` +
         `reused weekly until the tutoring lesson is canceled. Learn more ` +
         `about Bramble <a href='https://about.bramble.io/help/help-home.html'` +
         `>here</a>.`,
