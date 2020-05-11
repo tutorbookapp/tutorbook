@@ -188,6 +188,10 @@ export class User implements UserInterface {
     return parts[parts.length - 1];
   }
 
+  public toString(): string {
+    return `${this.name} (${this.uid})`;
+  }
+
   /**
    * Converts this `User` object into a `Record<string, any>` that Intercom can
    * understand.
