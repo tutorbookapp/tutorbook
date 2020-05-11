@@ -136,6 +136,7 @@ export default async function search(
       availability: user.availability.toJSON(),
       subjects: user.subjects,
       searches: user.searches,
+      socials: user.socials,
       uid: user.uid,
     }))
   );

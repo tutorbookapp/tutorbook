@@ -45,7 +45,7 @@ export type SocialTypeAlias =
   | 'instagram'
   | 'website';
 
-interface SocialInterface {
+export interface SocialInterface {
   type: SocialTypeAlias;
   url: string;
 }

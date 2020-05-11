@@ -78,6 +78,7 @@ export async function userUpdate(
       availability: availabilityToDates(user.availability),
       subjects: user.subjects,
       searches: user.searches,
+      socials: user.socials,
       objectID: context.params.user,
     };
     await index.saveObject(ob);
