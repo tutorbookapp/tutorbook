@@ -110,7 +110,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         url: '/api/user',
         data: {
           user: user.toJSON(),
-          parent: parents ? parents.map((parent: User) => parent.toJSON()) : [],
+          parents: (parents || []).map((parent: User) => parent.toJSON()),
         },
       })
     );
