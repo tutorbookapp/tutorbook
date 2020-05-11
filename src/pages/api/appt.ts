@@ -3,7 +3,7 @@ import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AxiosResponse, AxiosPromise } from 'axios';
 import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
-import { Email, ApptEmail } from '../../emails';
+import { Email, ApptEmail, ParentApptEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
@@ -36,10 +36,11 @@ function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
 }
 
 /**
- * Sends out invite emails to all of the new appointment's attendees with:
- * - A link to a shared Google Drive.
- * - A link to a private Slack Channel.
- * - A link to an anonymous shared virtual whiteboard.
+ * Sends out invite emails to all of the new appointment's attendees (CC-ing
+ * their parents) with a link to their Bramble room. Also sends out emails to
+ * all of the parents of the students in the appointment with details about the
+ * tutor (e.g. their profile, socials, and an option to request (and pay for) a
+ * professional background check).
  */
 async function sendApptEmails(
   appt: Appt,
@@ -47,19 +48,52 @@ async function sendApptEmails(
 ): Promise<void> {
   await Promise.all(
     recipients.map(async (recipient: User) => {
+      for (const parentUID of recipient.parents) {
+        const parentDoc: DocumentSnapshot = await db
+          .collection('users')
+          .doc(parentUID)
+          .get();
+        if (parentDoc.exists) {
+          const parent: User = User.fromFirestore(parentDoc);
+          const email: Email = new ParentApptEmail(
+            parent,
+            recipient,
+            appt,
+            recipients
+          );
+          const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
+            mail.send(email)
+          );
+          if (err) {
+            console.error(
+              `[ERROR] ${err.name} sending ${parent.name} <${parent.email}> ` +
+                `the parent appt (${appt.id}) email:`,
+              err
+            );
+          } else {
+            console.log(
+              `[DEBUG] Sent ${parent.name} <${parent.email}> the parent appt ` +
+                `(${appt.id}) email.`
+            );
+          }
+        } else {
+          console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
+        }
+      }
       const email: Email = new ApptEmail(recipient, appt, recipients);
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
         mail.send(email)
       );
       if (err) {
         console.error(
-          `[ERROR] ${err.name} while sending ${recipient.name} ` +
-            `<${recipient.email}> the appt (${appt.id}) email:`,
+          `[ERROR] ${err.name} sending ${recipient.name} <${recipient.email}>` +
+            ` the appt (${appt.id}) email:`,
           err
         );
       } else {
         console.log(
-          `[DEBUG] Sent ${recipient.name} <${recipient.email}> the appt email.`
+          `[DEBUG] Sent ${recipient.name} <${recipient.email}> the appt ` +
+            `(${appt.id}) email.`
         );
       }
     })

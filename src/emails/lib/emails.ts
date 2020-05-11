@@ -3,9 +3,16 @@ import Utils from '@tutorbook/covid-utils';
 
 import { MailData } from '@sendgrid/helpers/classes/mail';
 import { TemplateDelegate, HelperOptions } from 'handlebars';
-import { Appt, AttendeeInterface, User, RoleAlias } from '@tutorbook/model';
+import {
+  Appt,
+  SocialInterface,
+  AttendeeInterface,
+  User,
+  RoleAlias,
+} from '@tutorbook/model';
 
 import ApptEmailTemplate from './hbs/appt.hbs';
+import ParentApptEmailTemplate from './hbs/parent-appt.hbs';
 
 /**
  * Custom handlebars helper that joins a list together using 'and'.
@@ -80,12 +87,92 @@ Handlebars.registerHelper('ifCond', function <T = any>(
   }
 });
 
+/**
+ * Helper that creates a comma separated string of socials links.
+ * @todo Use `Intl` messages for i18n support.
+ */
+Handlebars.registerHelper('socials', function (
+  socials: SocialInterface[]
+): string {
+  const labels: Record<string, string> = {
+    website: 'Portfolio',
+    linkedin: 'LinkedIn',
+    facebook: 'Facebook',
+    instagram: 'Instagram',
+    github: 'GitHub',
+  };
+  return socials
+    .map(
+      (social: SocialInterface) =>
+        `<a href='${social.url}' target='_blank'>${labels[social.type]}</a>`
+    )
+    .join(', ');
+});
+
 export interface Email extends MailData {
   readonly recipient: User;
   readonly html: string;
 }
 
 type UserWithRoles = User & { roles: RoleAlias[] };
+
+interface ParentApptEmailData {
+  brambleDescription: string;
+  pupil: User;
+  parent: User;
+  attendees: UserWithRoles[];
+  appt: Appt;
+}
+
+export class ParentApptEmail implements Email {
+  private static readonly render: TemplateDelegate<
+    ParentApptEmailData
+  > = Handlebars.compile(ParentApptEmailTemplate);
+  public readonly from: string = 'Tutorbook <team@tutorbook.org>';
+  public readonly to: string;
+  public readonly subject: string;
+  public readonly html: string;
+  public readonly text: string;
+
+  private addRoles(user: User): UserWithRoles {
+    const attendee: AttendeeInterface | undefined = this.appt.attendees.find(
+      (attendee: AttendeeInterface) => attendee.uid === user.uid
+    );
+    return Object.assign(Object.assign({}, user), {
+      roles: attendee ? attendee.roles : [],
+    });
+  }
+
+  private get attendeesWithRoles(): UserWithRoles[] {
+    return this.attendees.map((attendee: User) => this.addRoles(attendee));
+  }
+
+  public constructor(
+    private readonly parent: User,
+    private readonly pupil: User,
+    private readonly appt: Appt,
+    private readonly attendees: ReadonlyArray<User>
+  ) {
+    this.to = parent.email;
+    this.subject = `${pupil.firstName} scheduled ${Utils.join(
+      appt.subjects
+    )} lessons on Tutorbook!`;
+    this.text = this.subject;
+    const data: ParentApptEmailData = {
+      brambleDescription:
+        `They will be conducting their tutoring lessons via <a href='` +
+        `${this.appt.venues[0].url}'>this Bramble room</a>. The room will be` +
+        `reused weekly until the tutoring lesson is canceled. Learn more ` +
+        `about Bramble <a href='https://about.bramble.io/help/help-home.html'` +
+        `>here</a>.`,
+      pupil: pupil,
+      parent: parent,
+      attendees: this.attendeesWithRoles,
+      appt: this.appt,
+    };
+    this.html = ParentApptEmail.render(data);
+  }
+}
 
 interface ApptEmailData {
   attendees: UserWithRoles[];
@@ -121,7 +208,7 @@ export class ApptEmail implements Email {
   }
 
   public constructor(
-    public readonly recipient: User,
+    private readonly recipient: User,
     private readonly appt: Appt,
     private readonly attendees: ReadonlyArray<User>
   ) {

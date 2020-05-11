@@ -94,21 +94,28 @@
                       </tbody>
                     </table>
                     <div class="wrapper">
-                      <p>Hi {{recipient.name}},</p>
+                      <p>Hi {{parent.name}},</p>
 
-                      <p>You now have tutoring lessons for {{join appt.subjects}} on {{appt.time}} with:</p>
+                      <p>{{pupil.name}} now has tutoring lessons for {{join appt.subjects}} on {{appt.time}} with:</p>
                       
                       <ul>
                         {{#each attendees}}
-                          {{#ifCond @root.recipient.uid '!==' this.uid}}
-                            <li>{{this.name}} ({{join this.roles}})</li>
+                          {{#ifCond @root.pupil.uid '!==' this.uid}}
+                            <li>{{this.name}} ({{join this.roles}})
+                              <ul>
+                                {{#if this.bio}}<li>About: {{this.bio}}</li>{{/if}}
+                                {{#ifCond this.socials '&&' this.socials.length}}
+                                  <li>Links: {{{socials this.socials}}}</li>
+                                {{/ifCond}}
+                              </ul>
+                            </li>
                           {{/ifCond}}
                         {{/each}}
                       </ul>
 
-                      {{#each appt.venues}}
-                        <p>{{{this.description}}}</p>
-                      {{/each}}
+                      <p>{{{brambleDescription}}}</p>
+
+                      <p>We take your child's safety very seriously and <b>encourage you to join the first lesson.</b> If you are unsatisfied, simply reply to this email.</p>
 
                       <p>Thank you.</p>
 
