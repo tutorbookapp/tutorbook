@@ -11,7 +11,7 @@ import { ListDivider } from '@rmwc/list';
 import { Typography } from '@rmwc/typography';
 import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { UserProvider } from '@tutorbook/next-firebase';
-import { VerificationTypeAlias, User } from '@tutorbook/model';
+import { SocialTypeAlias, User } from '@tutorbook/model';
 
 import styles from './covid-tutor-form.module.scss';
 
@@ -56,30 +56,6 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
     defaultMessage: 'Your Instagram profile',
     description: 'Label for the Instagram profile URL field.',
   },
-  /**
-   * @todo Add integrations with the above collected social media apps to
-   * ensure that the user actually owns the given profile URL.
-   *linkedin: {
-   *  id: 'tutor-form.linkedin',
-   *  defaultMessage: 'Connect LinkedIn',
-   *  description: 'Label for the "Connect LinkedIn" button.',
-   *},
-   *github: {
-   *  id: 'tutor-form.github',
-   *  defaultMessage: 'Connect GitHub',
-   *  description: 'Label for the "Connect GitHub" button.',
-   *},
-   *facebook: {
-   *  id: 'tutor-form.facebook',
-   *  defaultMessage: 'Connect Facebook',
-   *  description: 'Label for the "Connect Facebook" button.',
-   *},
-   *instagram: {
-   *  id: 'tutor-form.instagram',
-   *  defaultMessage: 'Connect Instagram',
-   *  description: 'Label for the "Connect Instagram" button.',
-   *},
-   */
   submit: {
     id: 'tutor-form.submit',
     defaultMessage: 'Volunteer to tutor',
@@ -87,13 +63,7 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   },
 });
 
-interface TutorFormState {
-  readonly name: string;
-  readonly linkedin: string;
-  readonly github: string;
-  readonly facebook: string;
-  readonly instagram: string;
-}
+type TutorFormState = { name: string } & { [type in SocialTypeAlias]: string };
 
 /**
  * React component that collects the following information from tutors and
@@ -115,6 +85,7 @@ class TutorForm extends React.Component<{ intl: IntlShape }> {
     github: '',
     facebook: '',
     instagram: '',
+    website: '',
   };
 
   public render(): JSX.Element {
@@ -233,53 +204,17 @@ class TutorForm extends React.Component<{ intl: IntlShape }> {
                   ),
                 },
                 {
-                  /**
-                   * @todo Add integrations with the above collected social media apps to
-                   * ensure that the user actually owns the given profile URL.
-                   *}, {
-                   *  el:
-                   *    <Button
-                   *      className={`${styles.btn} ${styles.leftBtn}`}
-                   *      label={this.props.intl.formatMessage(labels.linkedin)}
-                   *      raised
-                   *    />,
-                   *}, {
-                   *  el:
-                   *    <Button
-                   *      className={`${styles.btn} ${styles.rightBtn}`}
-                   *      label={this.props.intl.formatMessage(labels.github)}
-                   *      raised
-                   *    />,
-                   *}, {
-                   *  el:
-                   *    <Button
-                   *      className={`${styles.btn} ${styles.leftBtn}`}
-                   *      label={this.props.intl.formatMessage(labels.facebook)}
-                   *      raised
-                   *    />,
-                   *}, {
-                   *  el:
-                   *    <Button
-                   *      className={`${styles.btn} ${styles.rightBtn}`}
-                   *      label={this.props.intl.formatMessage(labels.instagram)}
-                   *      raised
-                   *    />,
-                   *}, {
-                   */
                   el: <ListDivider className={styles.divider} />,
                 },
               ]}
               submitLabel={this.props.intl.formatMessage(labels.submit)}
               onFormSubmit={(formValues) => {
-                const { name, ...socials } = this.state;
-                const tutor: User = new User({
-                  ...formValues,
-                  name,
-                  verifications: Object.entries(socials).map(([key, val]) => ({
-                    type: key as VerificationTypeAlias,
-                    url: val,
-                  })),
-                });
+                const { name, ...rest } = this.state;
+                const socials = Object.entries(rest).map(([type, url]) => ({
+                  type: type as SocialTypeAlias,
+                  url: url,
+                }));
+                const tutor: User = new User({ ...formValues, name, socials });
                 return UserProvider.signup(tutor);
               }}
               loadingCheckmark

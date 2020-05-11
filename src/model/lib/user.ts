@@ -34,23 +34,20 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  * - A verified social media account (i.e. LinkedIn, GitHub, FB, Insta)
  * - A personal website (mostly just an easy way to link to a resume site)
  *
- * These "verifications" are then shown directly beneath the user's name in the
+ * These "socials" are then shown directly beneath the user's name in the
  * `UserDialog` making it easy for students (and/or their parents) to view and
  * feel assured about a potential tutor's qualifications.
  */
-export type VerificationTypeAlias =
-  | 'background-check'
-  | 'dbs'
-  | 'academic-email'
+export type SocialTypeAlias =
   | 'linkedin'
   | 'github'
   | 'facebook'
   | 'instagram'
   | 'website';
 
-interface VerificationInterface {
-  type: VerificationTypeAlias;
-  url?: string;
+interface SocialInterface {
+  type: SocialTypeAlias;
+  url: string;
 }
 
 /**
@@ -68,8 +65,7 @@ interface VerificationInterface {
  * @property notifications - The user's notification configuration.
  * @property ref - The user's Firestore profile `DocumentReference`.
  * @property token - The user's Firebase Authentication JWT `idToken`.
- * @property verifications - An array of the user's verifications (e.g. Do they
- * have a background check on file? Do they have an academic email address?).
+ * @property socials - An array of the user's socials (e.g. LinkedIn, Facebook).
  */
 export interface UserInterface {
   uid?: string;
@@ -87,7 +83,7 @@ export interface UserInterface {
   notifications: NotificationsConfigAlias;
   ref?: DocumentReference | AdminDocumentReference;
   token?: string;
-  verifications: VerificationInterface[];
+  socials: SocialInterface[];
 }
 
 /**
@@ -117,7 +113,7 @@ export interface UserJSONInterface {
   parents?: string[];
   notifications?: NotificationsConfigAlias;
   token?: string;
-  verifications: VerificationInterface[];
+  socials: SocialInterface[];
 }
 
 /**
@@ -163,7 +159,7 @@ export class User implements UserInterface {
   public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;
   public grade?: GradeAlias;
-  public verifications: VerificationInterface[] = [];
+  public socials: SocialInterface[] = [];
 
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
