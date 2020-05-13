@@ -14,19 +14,19 @@ export const GRADES: FormattedOption[] = [
     label: null,
     options: [
       {
-        label: 'Senior',
+        label: '12th Grade',
         value: '12',
       },
       {
-        label: 'Junior',
+        label: '11th Grade',
         value: '11',
       },
       {
-        label: 'Sophomore',
+        label: '10th Grade',
         value: '10',
       },
       {
-        label: 'Freshman',
+        label: '9th Grade',
         value: '9',
       },
     ],
