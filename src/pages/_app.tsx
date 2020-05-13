@@ -1,5 +1,5 @@
 import React from 'react';
-import Intercom from 'react-intercom';
+import Intercom from '@tutorbook/react-intercom';
 import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 

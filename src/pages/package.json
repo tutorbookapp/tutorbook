@@ -41,6 +41,7 @@
     "@tutorbook/covid-pupil-form": "^0.2.2",
     "@tutorbook/covid-tutor-form": "^0.2.2",
     "@tutorbook/next-firebase": "^0.2.2",
+    "@tutorbook/react-intercom": "^2.0.0",
     "accept-language-parser": "^1.5.0",
     "firebase-admin": "^8.11.0",
     "next": "^9.3.6",
