@@ -1,0 +1,32 @@
+* {
+  color: #000;
+  font-family: 'Poppins', 'Google Sans', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+}
+b {
+  font-weight: 600;
+}
+td {
+  padding: 0;
+}
+a {
+  color: #067df7;
+  font-size: inherit;
+}
+.profile-table {
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+  padding: 40px;
+}
+.checkmark {
+  background: #007aff;
+}
+.cross {
+  background: #ff001f;
+}
+.checkmark-table {
+  border-collapse: collapse;
+  font-weight: 600;
+  margin-top: 8px;
+}
