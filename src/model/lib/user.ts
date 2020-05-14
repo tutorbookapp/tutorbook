@@ -20,6 +20,13 @@ type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
 type AdminDocumentReference = admin.firestore.DocumentReference;
 
 /**
+ * Duplicate definition from the `@tutorbook/react-intercom` package. These are
+ * all the valid datatypes for custom Intercom user attributes.
+ * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
+ */
+type IntercomCustomAttributeType = string | boolean | number | Date;
+
+/**
  * Right now, we only support traditional K-12 grade levels (e.g. 'Freshman'
  * maps to the number 9).
  * @todo Perhaps support other grade levels and other educational systems (e.g.
@@ -195,17 +202,34 @@ export class User implements UserInterface {
   /**
    * Converts this `User` object into a `Record<string, any>` that Intercom can
    * understand.
+   * @todo Create some sort of getter that only returns the values that should
+   * ever be stored (i.e. we don't ever really want to send the `ref` or
+   * `token` fields).
    * @see {@link https://developers.intercom.com/installing-intercom/docs/javascript-api-attributes-objects#section-data-attributes}
    */
   public toIntercom(): Record<string, any> {
-    const { uid, photo, ...rest } = this;
+    const { uid, photo, token, ref, ...rest } = this;
     return {
       user_id: uid,
       avatar: {
         type: 'avatar',
         image_url: photo,
       },
-      ...rest,
+      ...Object.fromEntries(
+        Object.entries(rest).map(([key, val]) => {
+          const stringified: IntercomCustomAttributeType =
+            typeof val === 'string'
+              ? val
+              : typeof val === 'boolean'
+              ? val
+              : typeof val === 'number'
+              ? val
+              : val instanceof Date
+              ? val
+              : JSON.stringify(val);
+          return [key, stringified];
+        })
+      ),
     };
   }
 
