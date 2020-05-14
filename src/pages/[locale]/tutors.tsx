@@ -2,6 +2,7 @@ import React from 'react';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
 
+import Intercom from '../../intercom';
 import Header from '../../header';
 import Footer from '../../footer';
 import TutorForm from '../../tutor-form';
@@ -15,6 +16,7 @@ class TutorsPage extends React.Component {
         <Header />
         <TutorForm />
         <Footer />
+        <Intercom />
       </>
     );
   }

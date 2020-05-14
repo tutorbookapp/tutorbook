@@ -2,6 +2,7 @@ import React from 'react';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
 
+import Intercom from '../../intercom';
 import Header from '../../header';
 import Footer from '../../footer';
 import HeroForm from '../../hero-form';
@@ -17,6 +18,7 @@ class IndexPage extends React.Component {
         <HeroForm />
         <HeroAbout />
         <Footer />
+        <Intercom />
       </>
     );
   }

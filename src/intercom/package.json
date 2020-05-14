@@ -1,0 +1,38 @@
+{
+  "name": "@tutorbook/react-intercom",
+  "version": "2.0.2",
+  "description": "A component to initialize Intercom in your application.",
+  "scripts": {
+    "build": "tsc"
+  },
+  "main": "lib/intercom.tsx",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@tutorbook/model": "^0.2.2",
+    "@tutorbook/next-firebase": "^0.2.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
+  },
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  },
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "devDependencies": {
+    "@types/react": "^16.9.34",
+    "typescript": "^3.8.3"
+  }
+}

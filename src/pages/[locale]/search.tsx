@@ -5,6 +5,7 @@ import { AxiosResponse, AxiosError } from 'axios';
 import to from 'await-to-js';
 import axios from 'axios';
 
+import Intercom from '../../intercom';
 import Header from '../../header';
 import Footer from '../../footer';
 import Search from '../../search';
@@ -88,6 +89,7 @@ function SearchPage(props: SearchPageProps): JSX.Element {
       <Header white />
       <Search filters={filters} results={results} />
       <Footer />
+      <Intercom />
     </>
   );
 }
