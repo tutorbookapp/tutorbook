@@ -293,6 +293,7 @@ export default async function appt(
           // 7. Send out the invitation email to the attendees.
           await sendApptEmails(appt, attendees);
           res.status(201).json({ appt: appt.toJSON() });
+          console.log(`[DEBUG] Created appt (${appt.id}) and sent emails.`);
         }
       }
     }
