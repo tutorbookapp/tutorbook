@@ -2,9 +2,9 @@ import React from 'react';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
 
-import Intercom from '../../intercom';
-import Header from '../../header';
-import Footer from '../../footer';
+import Intercom from '../../react-intercom';
+import Header from '../../covid-header';
+import Footer from '../../covid-footer';
 import PupilForm from '../../pupil-form';
 
 import { getIntlProps, getIntlPaths, withIntl } from '../../intl';

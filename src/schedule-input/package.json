@@ -41,7 +41,7 @@
     "@rmwc/textfield": "^6.1.0",
     "@tutorbook/covid-utils": "^0.2.0",
     "@tutorbook/model": "^0.2.2",
-    "next": "^9.3.6",
+    "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-intl": "^4.5.1",

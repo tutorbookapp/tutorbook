@@ -1,7 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
 import { useIntl, IntlShape } from 'react-intl';
-import Form, { InputElAlias } from '@tutorbook/covid-form';
+import Form, { InputElAlias } from '@tutorbook/form';
 import { GRADES, GradeAlias, User } from '@tutorbook/model';
 
 import styles from './hero-form.module.scss';

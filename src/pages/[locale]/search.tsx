@@ -5,10 +5,10 @@ import { AxiosResponse, AxiosError } from 'axios';
 import to from 'await-to-js';
 import axios from 'axios';
 
-import Intercom from '../../intercom';
-import Header from '../../header';
-import Footer from '../../footer';
-import Search from '../../search';
+import Intercom from '../../react-intercom';
+import Header from '../../covid-header';
+import Footer from '../../covid-footer';
+import Search from '../../covid-search';
 
 import { getIntlProps, withIntl } from '../../intl';
 import {

@@ -9,9 +9,9 @@ import {
 } from 'react-intl';
 
 import { Typography } from '@rmwc/typography';
-import Form, { InputElAlias } from '@tutorbook/covid-form';
+import Form, { InputElAlias } from '@tutorbook/form';
 import { GRADES, GradeAlias, User } from '@tutorbook/model';
-import { UserProvider } from '@tutorbook/next-firebase';
+import { UserProvider } from '@tutorbook/firebase';
 
 import styles from './pupil-form.module.scss';
 

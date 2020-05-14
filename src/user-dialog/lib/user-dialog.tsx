@@ -3,9 +3,9 @@ import Utils from '@tutorbook/covid-utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
-import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
+import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
 import { Link } from '@tutorbook/intl';
-import { UserContext } from '@tutorbook/next-firebase';
+import { UserContext } from '@tutorbook/firebase';
 import { ApiError, User, Timeslot, Appt } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
@@ -189,7 +189,7 @@ class UserDialog extends React.Component<UserDialogProps> {
     });
     return (
       <Dialog {...rest} open>
-        <AnimatedCheckmarkOverlay
+        <CheckmarkOverlay
           active={this.state.submitting || this.state.submitted}
           checked={this.state.submitted}
         />

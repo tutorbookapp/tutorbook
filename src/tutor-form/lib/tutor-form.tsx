@@ -9,8 +9,8 @@ import {
 import { ListDivider } from '@rmwc/list';
 
 import { Typography } from '@rmwc/typography';
-import Form, { InputElAlias } from '@tutorbook/covid-form';
-import { UserProvider } from '@tutorbook/next-firebase';
+import Form, { InputElAlias } from '@tutorbook/form';
+import { UserProvider } from '@tutorbook/firebase';
 import { SocialTypeAlias, User } from '@tutorbook/model';
 
 import styles from './tutor-form.module.scss';

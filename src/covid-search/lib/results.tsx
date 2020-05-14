@@ -1,8 +1,8 @@
 import React from 'react';
 import Utils from '@tutorbook/covid-utils';
 import UserDialog from '@tutorbook/user-dialog';
-import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
-import { UserContext } from '@tutorbook/next-firebase';
+import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
+import { UserContext } from '@tutorbook/firebase';
 import {
   AttendeeInterface,
   FiltersInterface,
@@ -156,7 +156,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
           />
         )}
         <List twoLine avatarList>
-          <AnimatedCheckmarkOverlay active={this.state.searching} />
+          <CheckmarkOverlay active={this.state.searching} />
           {this.renderResults()}
         </List>
       </>

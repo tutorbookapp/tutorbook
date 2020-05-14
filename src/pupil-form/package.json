@@ -37,10 +37,10 @@
   },
   "dependencies": {
     "@rmwc/select": "^6.1.0",
-    "@tutorbook/covid-form": "^0.2.2",
+    "@tutorbook/form": "^0.2.2",
     "@tutorbook/model": "^0.2.2",
-    "@tutorbook/next-firebase": "^0.2.2",
-    "next": "^9.3.6",
+    "@tutorbook/firebase": "^0.2.2",
+    "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

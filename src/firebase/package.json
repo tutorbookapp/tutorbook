@@ -38,7 +38,7 @@
     "await-to-js": "^2.1.1",
     "axios": "^0.19.2",
     "firebase": "^7.14.2",
-    "next": "^9.3.6"
+    "next": "^9.4.0"
   },
   "devDependencies": {
     "typescript": "^3.8.3"

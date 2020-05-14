@@ -7,10 +7,10 @@ import { Card, CardProps } from '@rmwc/card';
 import Button from '@tutorbook/button';
 import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select';
 import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input';
-import AnimatedCheckmarkOverlay from '@tutorbook/animated-checkmark-overlay';
+import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
 import { SubjectsInterface, Availability } from '@tutorbook/model';
 
-import styles from './covid-form.module.scss';
+import styles from './form.module.scss';
 
 export type InputElAlias =
   | 'textfield'
@@ -192,7 +192,7 @@ export default class Form extends React.Component<FormProps, {}> {
           (cardProps && cardProps.className ? ' ' + cardProps.className : '')
         }
       >
-        <AnimatedCheckmarkOverlay
+        <CheckmarkOverlay
           active={this.state.submitting || this.state.submitted}
           checked={!!this.props.loadingCheckmark && this.state.submitted}
           label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
