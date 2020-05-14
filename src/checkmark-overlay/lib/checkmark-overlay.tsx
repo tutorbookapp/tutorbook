@@ -2,7 +2,7 @@ import { Typography } from '@rmwc/typography';
 
 import AnimatedCheckmark from '@tutorbook/animated-checkmark';
 
-import styles from './animated-checkmark-overlay.module.scss';
+import styles from './checkmark-overlay.module.scss';
 
 interface Props {
   readonly active: boolean;

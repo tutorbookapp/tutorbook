@@ -1,5 +1,5 @@
 {
-  "name": "@tutorbook/covid-pupil-form",
+  "name": "@tutorbook/pupil-form",
   "version": "0.2.2",
   "description": "Package that contains the pupil sign-up form for the COVID Tutoring Initiative website.",
   "keywords": [
@@ -14,7 +14,7 @@
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/covid-pupil-form.tsx",
+  "main": "lib/pupil-form.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"

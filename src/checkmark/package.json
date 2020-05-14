@@ -1,5 +1,5 @@
 {
-  "name": "@tutorbook/animated-checkmark",
+  "name": "@tutorbook/checkmark",
   "version": "0.2.0",
   "description": "Package that contains a React component made up of a spinner that becomes a checkmark.",
   "keywords": [
@@ -12,7 +12,14 @@
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "MIT",
-  "main": "index.tsx",
+  "main": "lib/checkmark.tsx",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
   "publishConfig": {
     "access": "public"
   },

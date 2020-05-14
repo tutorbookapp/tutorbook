@@ -13,7 +13,7 @@ import Form, { InputElAlias } from '@tutorbook/covid-form';
 import { UserProvider } from '@tutorbook/next-firebase';
 import { SocialTypeAlias, User } from '@tutorbook/model';
 
-import styles from './covid-tutor-form.module.scss';
+import styles from './tutor-form.module.scss';
 
 const labels: Record<string, MessageDescriptor> = defineMessages({
   subjects: {

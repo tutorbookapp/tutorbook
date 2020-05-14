@@ -1,4 +1,4 @@
-import styles from './index.module.scss';
+import styles from './checkmark.module.scss';
 
 interface Props {
   readonly checked: boolean;
