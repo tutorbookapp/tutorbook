@@ -1,0 +1,25 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 160px);
+}
+
+.content {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  width: auto;
+}
+
+.text {
+  text-align: center;
+  max-width: 50rem;
+  padding: 24px;
+}
+
+@media only screen and (max-width: 768px) {
+  .headline {
+    font-size: 3rem;
+  }
+}
