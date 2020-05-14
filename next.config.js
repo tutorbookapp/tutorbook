@@ -2,10 +2,10 @@ const path = require('path');
 const { locales } = require('./src/intl/config.json');
 
 module.exports = {
+  sassOptions: {
+    includePaths: [path.resolve(__dirname, 'node_modules')],
+  },
   experimental: {
-    sassOptions: {
-      includePaths: [path.resolve(__dirname, 'node_modules')],
-    },
     redirects() {
       // Not exactly sure why this is happening, but going to `/[locale]/` with
       // a trailing slash seems to break Next.js's routing. Here, we just always
