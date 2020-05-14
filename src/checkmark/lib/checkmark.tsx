@@ -1,24 +1,33 @@
 import styles from './checkmark.module.scss';
 
 interface Props {
+  readonly black?: boolean;
   readonly checked: boolean;
   readonly [propName: string]: any;
 }
 
-export default function AnimatedCheckmark(props: Props) {
+export default function Checkmark(props: Props) {
   return (
     <svg
       {...props}
       className={
         styles.checkmark +
         (props.className ? ' ' + props.className : '') +
-        (props.checked ? ' ' + styles.checkmarkChecked : '')
+        (props.checked && props.black
+          ? ' ' + styles.checkmarkCheckedBlack
+          : props.checked
+          ? ' ' + styles.checkmarkChecked
+          : '') +
+        (props.black ? ' ' + styles.checkmarkBlack : '')
       }
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 52 52'
     >
       <circle
-        className={styles.checkmarkCircle}
+        className={
+          styles.checkmarkCircle +
+          (props.black ? ' ' + styles.checkmarkCircleBlack : '')
+        }
         cx='26'
         cy='26'
         r='25'
