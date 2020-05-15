@@ -156,7 +156,7 @@ $ git clone https://github.com/tutorbookapp/covid-tutoring.git && cd covid-tutor
 $ npm i && lerna bootstrap --hoist
 ```
 
-9. Follow the instructions included below to start a
+9. Follow the instructions included below (see "Available Scripts") to start a
    [Next.js](https://nextjs.org) development server (to see your updates affect
    the app live):
 
@@ -194,11 +194,13 @@ you can run:
 
 #### `npm run dev`
 
-Runs `next` which starts Next.js in development mode.
+Runs `next dev` using `full-icu` and with the Node.js `--inspect` flag on
+(useful for `debugger;` statements) which starts Next.js in development mode.
 
-Open [http://localhost:3000](http://localhost:3000) to view the app in the
-browser. The page will reload if you make edits. You will also see any lint
-errors in the console.
+Open [http://0.0.0.0:3000](http://0.0.0.0:3000) to view the app in the browser
+(note that we use `0.0.0.0` instead of the default `localhost` for [Intercom
+support](https://bit.ly/3cAWfLv). The page will hot-reload if you make edits.
+You will also see any lint errors in the console.
 
 #### `npm run build`
 
