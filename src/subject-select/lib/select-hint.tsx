@@ -13,7 +13,13 @@ export const SelectHint: React.FunctionComponent<SelectHintProps> = ({
   <Tooltip
     content={
       <Typography use='caption'>
-        <FormattedMessage id='subject-select.select-hint' />
+        <FormattedMessage
+          id='subject-select.select-hint'
+          description={
+            'The tooltip text prompting the user to shift-select subjects.'
+          }
+          defaultMessage="Use 'SHIFT + click' for multiple select"
+        />
       </Typography>
     }
     align='topRight'

@@ -30,6 +30,26 @@
     "defaultMessage": "For developers"
   },
   {
+    "id": "search.filters.subjects",
+    "description": "Label for the subjects filter field.",
+    "defaultMessage": "Filter by subjects"
+  },
+  {
+    "id": "search.filters.availability",
+    "description": "Label for the availability filter field.",
+    "defaultMessage": "Filter by availability"
+  },
+  {
+    "id": "search.results.no-results",
+    "description": "No results text.",
+    "defaultMessage": "No results"
+  },
+  {
+    "id": "search.title",
+    "description": "Title for the search page/view.",
+    "defaultMessage": "Search"
+  },
+  {
     "id": "hero-about.about-us.title",
     "description": "The title of the \"About us\" home page section.",
     "defaultMessage": "About us"
@@ -130,9 +150,9 @@
     "defaultMessage": "When are you available?"
   },
   {
-    "id": "pupil-form.description",
-    "description": "Description for the pupil sign-up form.",
-    "defaultMessage": "Complete the form below to create your Tutorbook account and search our volunteer tutors; we'll make sure to connect you with the support you deserve!"
+    "id": "pupil-form.submit",
+    "description": "Submit button label for the pupil sign-up form.",
+    "defaultMessage": "Search volunteer tutors"
   },
   {
     "id": "pupil-form.title",
@@ -140,9 +160,9 @@
     "defaultMessage": "Request Free Tutoring"
   },
   {
-    "id": "pupil-form.submit",
-    "description": "Submit button label for the pupil sign-up form.",
-    "defaultMessage": "Search volunteer tutors"
+    "id": "pupil-form.description",
+    "description": "Description for the pupil sign-up form.",
+    "defaultMessage": "Complete the form below to create your Tutorbook account and search our volunteer tutors; we'll make sure to connect you with the support you deserve!"
   },
   {
     "id": "schedule-input.select-all-label",
@@ -150,24 +170,9 @@
     "defaultMessage": "Select all"
   },
   {
-    "id": "search.filters.subjects",
-    "description": "Label for the subjects filter field.",
-    "defaultMessage": "Filter by subjects"
-  },
-  {
-    "id": "search.filters.availability",
-    "description": "Label for the availability filter field.",
-    "defaultMessage": "Filter by availability"
-  },
-  {
-    "id": "search.results.no-results",
-    "description": "No results text.",
-    "defaultMessage": "No results"
-  },
-  {
-    "id": "search.title",
-    "description": "Title for the search page/view.",
-    "defaultMessage": "Search"
+    "id": "subject-select.select-hint",
+    "description": "The tooltip text prompting the user to shift-select subjects.",
+    "defaultMessage": "Use 'SHIFT + click' for multiple select"
   },
   {
     "id": "timeslot-input.input-time-within-availability",
@@ -205,19 +210,44 @@
     "defaultMessage": "Education and experience"
   },
   {
-    "id": "tutor-form.description",
-    "description": "Description for the tutor sign-up form.",
-    "defaultMessage": "We are building a massive academic support network and systems to bolster our educational infrastructure in this difficult time. If you have expertise in marketing, management, teaching, tech, or just want to help out we would love to have you!"
+    "id": "tutor-form.website",
+    "description": "Label for the portfolio website URL field.",
+    "defaultMessage": "Your portfolio website"
   },
   {
-    "id": "tutor-form.title",
-    "description": "Title for the tutor sign-up form.",
-    "defaultMessage": "Become a Tutor"
+    "id": "tutor-form.linkedin",
+    "description": "Label for the LinkedIn profile URL field.",
+    "defaultMessage": "Your LinkedIn profile"
+  },
+  {
+    "id": "tutor-form.github",
+    "description": "Label for the GitHub profile URL field.",
+    "defaultMessage": "Your GitHub profile"
+  },
+  {
+    "id": "tutor-form.facebook",
+    "description": "Label for the Facebook profile URL field.",
+    "defaultMessage": "Your Facebook profile"
+  },
+  {
+    "id": "tutor-form.instagram",
+    "description": "Label for the Instagram profile URL field.",
+    "defaultMessage": "Your Instagram profile"
   },
   {
     "id": "tutor-form.submit",
     "description": "Submit button label for the tutor sign-up form.",
     "defaultMessage": "Volunteer to tutor"
+  },
+  {
+    "id": "tutor-form.title",
+    "description": "Title for the tutor/volunteer sign-up form.",
+    "defaultMessage": "Become a Tutor"
+  },
+  {
+    "id": "tutor-form.description",
+    "description": "Description for the tutor/volunteer sign-up form.",
+    "defaultMessage": "We are building a massive academic support network and systems to bolster our educational infrastructure in this difficult time. If you have expertise in marketing, management, teaching, tech, or just want to help out we would love to have you!"
   },
   {
     "id": "user-dialog.subjects",
@@ -245,13 +275,33 @@
     "defaultMessage": "Request {name}"
   },
   {
+    "id": "user-dialog.website",
+    "description": "Link to the user's portfolio website.",
+    "defaultMessage": "Portfolio"
+  },
+  {
+    "id": "user-dialog.linkedin",
+    "description": "Link to the user's LinkedIn profile.",
+    "defaultMessage": "LinkedIn"
+  },
+  {
+    "id": "user-dialog.github",
+    "description": "Link to the user's GitHub profile.",
+    "defaultMessage": "GitHub"
+  },
+  {
+    "id": "user-dialog.facebook",
+    "description": "Link to the user's Facebook profile.",
+    "defaultMessage": "Facebook"
+  },
+  {
+    "id": "user-dialog.instagram",
+    "description": "Link to the user's Instagram profile.",
+    "defaultMessage": "Instagram"
+  },
+  {
     "id": "user-dialog.disabled",
     "description": "Helper text prompting the user to login before they create tutoring lessons.",
     "defaultMessage": "You must login (via <a>this form</a>) before sending lesson requests."
-  },
-  {
-    "id": "subject-select.select-hint",
-    "description": "The text on the tooltip prompting the user to shift-select subjects.",
-    "defaultMessage": "Use 'SHIFT + click' for multiple select"
   }
 ]
