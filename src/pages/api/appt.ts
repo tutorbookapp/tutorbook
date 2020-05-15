@@ -2,7 +2,13 @@ import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AxiosResponse, AxiosPromise } from 'axios';
-import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
+import {
+  ApiError,
+  User,
+  UserWithRoles,
+  Appt,
+  ApptJSONInterface,
+} from '../../model';
 import { Email, ApptEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
@@ -88,7 +94,7 @@ const firebase: App = admin.initializeApp(
 );
 
 const auth: Auth = firebase.auth();
-const db: Firestore = firebase.firestore();
+const firestore: Firestore = firebase.firestore();
 
 /**
  * Takes an `ApptJSONInterface` object, an authentication token, and:
@@ -141,8 +147,11 @@ export default async function appt(
   } else {
     // 2. Fetch the lesson request data.
     let ref: DocumentReference;
+    let db: DocumentReference;
     try {
-      ref = db.doc(request.body.request);
+      ref = firestore.doc(req.body.request);
+      // Partition is 4th parent (e.g. `/test/users/PUPIL-DOC/requests/DOC`).
+      db = ref.parent.parent.parent.parent;
     } catch (err) {
       error('You must provide a valid request document path.', 400, err);
     }
@@ -151,7 +160,10 @@ export default async function appt(
     } else {
       const doc: DocumentSnapshot = await ref.get();
       if (!doc.exists) {
-        error('Request document did not exist');
+        error(
+          'This pending lesson request no longer exists (it was probably ' +
+            'already approved).'
+        );
       } else {
         // 3. Perform verifications.
         const appt: Appt = Appt.fromFirestore(doc);
@@ -161,7 +173,7 @@ export default async function appt(
         const pupilUID: string = doc.ref.parent.parent.id;
         let attendeesIncludePupil: boolean = false;
         let pupilIsParentsChild: boolean = false;
-        const attendees: User[] = [];
+        const attendees: UserWithRoles[] = [];
         for (const attendee of appt.attendees) {
           // 3. Verify that the attendees have uIDs.
           if (!attendee.uid) {
@@ -182,8 +194,10 @@ export default async function appt(
             // 3. Verify that the pupil is among the appointment's attendees.
             attendeesIncludePupil = true;
             // 3. Verify that the pupil is the parent's child.
-            if (user.parents.indexOf(request.body.uid) < 0) {
-              error(`${user} is not (${request.body.uid})'s child.`);
+            if (user.parents.indexOf(req.body.uid) < 0) {
+              error(`${user} is not (${req.body.uid})'s child.`);
+            } else {
+              pupilIsParentsChild = true;
             }
           }
           // 3. Verify that the attendees are available.
@@ -202,6 +216,7 @@ export default async function appt(
             );
             break;
           }
+          user.roles = attendee.roles;
           attendees.push(user);
         }
         if (!attendees.length || attendees.length !== appt.attendees.length) {

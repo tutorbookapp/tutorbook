@@ -26,11 +26,11 @@ export default function ActionText(props: ActionTextProps): JSX.Element {
     <div className={styles.screen}>
       <div className={styles.content}>
         <main className={styles.text}>
-          {props.loading && <Checkmark black />}
           <Typography className={styles.headline} use='headline1'>
             {props.headline}
           </Typography>
           {props.body && <Typography use='body1'>{props.body}</Typography>}
+          {props.loading && <Checkmark black />}
         </main>
       </div>
     </div>
