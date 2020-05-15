@@ -2,6 +2,14 @@ import Handlebars from 'handlebars';
 import Utils from '@tutorbook/covid-utils';
 import { SocialInterface, RoleAlias } from '@tutorbook/model';
 
+import Check from './shared/check.hbs';
+import Cross from './shared/cross.hbs';
+import Profile from './shared/profile.hbs';
+
+Handlebars.registerPartial('check', Check);
+Handlebars.registerPartial('cross', Cross);
+Handlebars.registerPartial('profile', Profile);
+
 /**
  * Custom handlebars helper that joins a list together using 'and'.
  * @example
@@ -10,6 +18,10 @@ import { SocialInterface, RoleAlias } from '@tutorbook/model';
  */
 Handlebars.registerHelper('join', function (array: any[]): string {
   return Utils.join(array);
+});
+
+Handlebars.registerHelper('joinCaps', function (array: string[]): string {
+  return Utils.join(array.map((item: string) => Utils.caps(item)));
 });
 
 /**

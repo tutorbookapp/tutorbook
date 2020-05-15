@@ -15,17 +15,6 @@ import {
 import * as admin from 'firebase-admin';
 
 import Template from './template.hbs';
-import Check from './partials/check.hbs';
-import Cross from './partials/cross.hbs';
-import Profile from './partials/profile.hbs';
-
-Handlebars.registerPartial('check', Check);
-Handlebars.registerPartial('cross', Cross);
-Handlebars.registerPartial('profile', Profile);
-
-Handlebars.registerHelper('joinCaps', function (array: string[]): string {
-  return Utils.join(array.map((item: string) => Utils.caps(item)));
-});
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try

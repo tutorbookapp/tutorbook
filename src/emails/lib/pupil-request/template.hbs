@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html data-editor-version="2" xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1" /><!--[if !mso]><!-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" /><!--[if !mso]><!-->
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" /><!--<![endif]-->
     <!--[if (gte mso 9)|(IE)]>
     <xml>
@@ -34,21 +34,19 @@
                     </table>
                     <div style="margin:40px;width:465px;text-align:left">
                       
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Hi {{recipient.name}},</p>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Hi {{pupil.name}},</p>
 
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">You now have tutoring lessons for {{join appt.subjects}} on {{appt.time}} with:</p>
-                      
-                      <ul>
-                        {{#each attendees}}
-                          {{#ifCond @root.recipient.uid '!==' this.uid}}
-                            <li style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">{{this.name}} ({{join this.roles}})</li>
-                          {{/ifCond}}
-                        {{/each}}
-                      </ul>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">We have received your request for {{join appt.subjects}} tutoring lessons on {{appt.time}} with:</p>
 
-                      {{#each appt.venues}}
-                        <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">{{{this.description}}}</p>
+                      <br>
+
+                      {{#each attendees}}
+                        {{#ifCond @root.pupil.uid '!==' this.uid}}
+                          {{> profile tihs}}<br>
+                        {{/ifCond}}
                       {{/each}}
+
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">We are awaiting your parent's approval. Once they approve of this pending lesson request, you will receive a link to a Bramble room and instructions on how to make the most of your virtual tutoring lessons.</p>
 
                       <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Thank you.</p>
 

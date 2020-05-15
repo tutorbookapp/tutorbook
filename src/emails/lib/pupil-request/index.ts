@@ -7,10 +7,25 @@ import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
 import Template from './template.hbs';
 
 interface Data {
-  attendees: UserWithRoles[];
-  recipient: UserWithRoles;
+  pupil: User;
+  attendees: UserWithRolesAndVerifications[];
   appt: Appt;
 }
+
+/**
+ * These are types copied over from './src/emails/lib/parent-request/index.ts`.
+ * @todo Refactor the `@tutorbook/emails` package such that these type
+ * definitions aren't duplicated.
+ */
+type VerficationTypeAlias = SocialTypeAlias | 'school';
+
+interface VerificationInterface extends SocialInterface {
+  label: string;
+}
+
+type UserWithRolesAndVerifications = UserWithRoles & {
+  verifications: { [type in VerificationTypeAlias]: VerificationInterface };
+};
 
 /**
  * Email sent out to the pupil `attendees` of a new pending lesson request to
@@ -21,7 +36,7 @@ interface Data {
  * results and now you can't do anything because those parental emails aren't
  * going where they should be).
  */
-export class RequestEmail implements Email {
+export class PupilRequestEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
     Data
   > = Handlebars.compile(Template);
@@ -31,8 +46,19 @@ export class RequestEmail implements Email {
   public readonly html: string;
   public readonly text: string;
 
+  private addVerifications(user: UserWithRoles): UserWithRolesAndVerifications {
+    return Object.assign(Object.assign({}, user), {
+      verifications: Object.fromEntries(
+        user.socials.map((social: SocialInterface) => {
+          const { type, ...rest } = social;
+          return [type, { label: Utils.caps(type), ...rest }];
+        })
+      ),
+    });
+  }
+
   public constructor(
-    recipient: UserWithRoles,
+    pupil: UserWithRoles,
     appt: Appt,
     attendees: ReadonlyArray<UserWithRoles>
   ) {
@@ -41,6 +67,10 @@ export class RequestEmail implements Email {
       appt.subjects
     )} lessons on Tutorbook.`;
     this.text = this.subject;
-    this.html = RequestEmail.render({ recipient, attendees, appt });
+    this.html = RequestEmail.render({
+      appt,
+      pupil,
+      attendees: attendees.map((a: UserWithRoles) => this.addVerifications(a)),
+    });
   }
 }
