@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/react-intercom",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A component to initialize Intercom in your application.",
   "scripts": {
     "build": "tsc"

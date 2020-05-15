@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/tutor-form",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Package that contains the tutor sign-up form for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@tutorbook/firebase": "^0.3.0",
-    "@tutorbook/form": "^0.3.0",
+    "@tutorbook/form": "^0.3.1",
     "@tutorbook/model": "^0.3.0",
     "next": "^9.4.0",
     "react": "^16.13.1",

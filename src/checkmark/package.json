@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/checkmark",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Package that contains a React component made up of a spinner that becomes a checkmark.",
   "keywords": [
     "Tutorbook",

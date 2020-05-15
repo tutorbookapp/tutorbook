@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-header",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Package containing the header component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -40,7 +40,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@tutorbook/intl": "^0.3.0",
+    "@tutorbook/intl": "^0.3.1",
     "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

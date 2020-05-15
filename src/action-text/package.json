@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/action-text",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "React text component displaying actions triggered via email links.",
   "keywords": [
     "React",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@rmwc/typography": "^6.0.14",
-    "@tutorbook/checkmark": "^0.3.0",
+    "@tutorbook/checkmark": "^0.3.1",
     "next": "^9.4.0"
   }
 }
