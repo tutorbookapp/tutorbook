@@ -10,7 +10,7 @@ export default function HeroAbout() {
   return (
     <div className={styles.aboutWrapper}>
       <div className={styles.aboutContent}>
-        <Typography use='headline1'>
+        <Typography use='headline2'>
           <FormattedMessage
             id='hero-about.about-us.title'
             description='The title of the "About us" home page section.'
