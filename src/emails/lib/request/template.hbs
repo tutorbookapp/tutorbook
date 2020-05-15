@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html data-editor-version="2" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" /><!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" /><!--<![endif]-->
+    <!--[if (gte mso 9)|(IE)]>
+    <xml>
+    <o:OfficeDocumentSettings>
+    <o:AllowPNG/>
+    <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+    <!--[if (gte mso 9)|(IE)]>
+    <style type="text/css">
+      body {width: 600px;margin: 0 auto;}
+      table {border-collapse: collapse;}
+      table, td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
+      img {-ms-interpolation-mode: bicubic;}
+    </style>
+    <![endif]-->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" type="text/css">
+    <style type="text/css">
+      .background {
+        height: 280px;
+        width: 100% !important;
+        background: url(https://assets.tutorbook.org/jpgs/tutor.jpg);
+        background-size: cover;
+        background-position: center;
+        border-radius: 5px 5px 0 0;
+        background-color: rgba(0, 0, 0, 0.25);
+        background-blend-mode: darken;
+      }
+      .table {
+        border: 1px solid #eaeaea;
+        border-radius: 5px;
+        margin: 40px 0;
+      }
+      .wrapper {
+        text-align: left;
+        margin: 40px;
+        width: 465px;
+      }
+      .footer {
+        color: #666666;
+        font-size: 12px;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid #eaeaea;
+        margin: 26px 0;
+        width: 100%;
+      }
+      * {
+        color: #000;
+        font-family: 'Poppins', 'Google Sans', Arial, sans-serif;
+        font-size: 14px;
+        line-height: 24px;
+      }
+      a {
+        color: #067df7 !important;
+        text-decoration: none;
+        font-size: inherit;
+      }
+      td {
+        padding: 0;
+      }
+      ul {
+        list-style-position: outside;
+        padding-inline-start: 8px;
+      }
+    </style>
+    <title></title>
+  </head>
+  <body>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%!important">
+      <tbody>
+        <tr>
+          <td align="center">
+            <table class="table" width="600" border="0" cellspacing="0" cellpadding="40">
+              <tbody>
+                <tr>
+                  <td align="center">
+                    <table width="100%" class="background" border="0" cellspacing="0" cellpadding="0">
+                      <tbody>
+                        <tr>
+                          <td align="center">
+                            <div>
+                              <img width="275" height="48" alt="Tutorbook" src="https://assets.tutorbook.org/pngs/white-wordmark.png">
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class="wrapper">
+                      <p>Hi {{recipient.name}},</p>
+
+                      <p>You now have tutoring lessons for {{join appt.subjects}} on {{appt.time}} with:</p>
+                      
+                      <ul>
+                        {{#each attendees}}
+                          {{#ifCond @root.recipient.uid '!==' this.uid}}
+                            <li>{{this.name}} ({{join this.roles}})</li>
+                          {{/ifCond}}
+                        {{/each}}
+                      </ul>
+
+                      {{#each appt.venues}}
+                        <p>{{{this.description}}}</p>
+                      {{/each}}
+
+                      <p>Thank you.</p>
+
+                      <hr class="divider">
+                      
+                      <p class="footer">Tutorbook - <a href="https://tutorbook.org">tutorbook.org</a></p>
+                      
+                      <p class="footer">If you'd like to talk to a support team member, simply reply to this email.</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

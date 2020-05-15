@@ -44,7 +44,13 @@ interface Data {
   appt: Appt;
 }
 
-export class ParentApptEmail implements Email {
+/**
+ * Email sent out to the `parents` of the pupil `attendees` when a new pending
+ * lesson request is created. The lesson request stays "pending" until the
+ * parents approve of the pupil-tutor match by opening this email and clicking
+ * on the "APPROVE" CTA.
+ */
+export class ParentRequestEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
     Data
   > = Handlebars.compile(Template);
@@ -100,7 +106,6 @@ export class ParentApptEmail implements Email {
       pupil,
       parent,
     };
-    this.html = ParentApptEmail.render(data);
-    debugger;
+    this.html = ParentRequestEmail.render(data);
   }
 }
