@@ -143,6 +143,7 @@ export default async function user(
   res: NextApiResponse<ApiError | { user: UserJSONInterface }>
 ): Promise<void> {
   function error(msg: string, code: number = 400, err?: Error): void {
+    console.error(`[ERROR] Sending client ${code} with msg (${msg})...`, err);
     res.status(code).send(Object.assign({ msg }, err || {}));
   }
   if (!req.body) {
