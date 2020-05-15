@@ -19,7 +19,7 @@ type App = admin.app.App;
  *
  * Also note that we use [UUID]{@link https://github.com/uuidjs/uuid} package to
  * generate a unique `firebaseAppId` every time this API is called.
- * @todo Lift this Firebase app definition to a top-leve file that is imported
+ * @todo Lift this Firebase app definition to a top-level file that is imported
  * by all the `/api/` endpoints.
  *
  * We have a workaround for the `FIREBASE_ADMIN_KEY` error we were encountering
