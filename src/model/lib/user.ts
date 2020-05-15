@@ -1,4 +1,5 @@
 import { ObjectWithObjectID } from '@algolia/client-search';
+import { RoleAlias } from './appt';
 import { Availability, AvailabilityJSONAlias } from './times';
 import * as admin from 'firebase-admin';
 import * as firebase from 'firebase/app';
@@ -92,6 +93,8 @@ export interface UserInterface {
   token?: string;
   socials: SocialInterface[];
 }
+
+export type UserWithRoles = User & { roles: RoleAlias[] };
 
 /**
  * Note that the `notifications` property is optional in this JSON
