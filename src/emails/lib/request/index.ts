@@ -2,11 +2,9 @@ import Email from '../email';
 import Handlebars from '../handlebars';
 
 import Utils from '@tutorbook/covid-utils';
-import { Appt, AttendeeInterface, User, RoleAlias } from '@tutorbook/model';
+import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
 
 import Template from './template.hbs';
-
-type UserWithRoles = User & { roles: RoleAlias[] };
 
 interface Data {
   attendees: UserWithRoles[];
@@ -33,38 +31,16 @@ export class RequestEmail implements Email {
   public readonly html: string;
   public readonly text: string;
 
-  private addRoles(user: User): UserWithRoles {
-    const attendee: AttendeeInterface | undefined = this.appt.attendees.find(
-      (attendee: AttendeeInterface) => attendee.uid === user.uid
-    );
-    return Object.assign(Object.assign({}, user), {
-      roles: attendee ? attendee.roles : [],
-    });
-  }
-
-  private get attendeesWithRoles(): UserWithRoles[] {
-    return this.attendees.map((attendee: User) => this.addRoles(attendee));
-  }
-
-  private get recipientWithRoles(): UserWithRoles {
-    return this.addRoles(this.recipient);
-  }
-
   public constructor(
-    private readonly recipient: User,
-    private readonly appt: Appt,
-    private readonly attendees: ReadonlyArray<User>
+    recipient: UserWithRoles,
+    appt: Appt,
+    attendees: ReadonlyArray<UserWithRoles>
   ) {
     this.to = recipient.email;
     this.subject = `Request confirmation for ${Utils.join(
       appt.subjects
     )} lessons on Tutorbook.`;
     this.text = this.subject;
-    const data: Data = {
-      recipient: this.recipientWithRoles,
-      attendees: this.attendeesWithRoles,
-      appt: this.appt,
-    };
-    this.html = RequestEmail.render(data);
+    this.html = RequestEmail.render({ recipient, attendees, appt });
   }
 }

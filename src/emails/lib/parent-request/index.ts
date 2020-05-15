@@ -8,8 +8,11 @@ import {
   SocialInterface,
   AttendeeInterface,
   User,
+  UserWithRoles,
   RoleAlias,
 } from '@tutorbook/model';
+
+import * as admin from 'firebase-admin';
 
 import Template from './template.hbs';
 import Check from './partials/check.hbs';
@@ -24,14 +27,21 @@ Handlebars.registerHelper('joinCaps', function (array: string[]): string {
   return Utils.join(array.map((item: string) => Utils.caps(item)));
 });
 
+/**
+ * Type aliases so that we don't have to type out the whole type. We could try
+ * importing these directly from the `@firebase/firestore-types` or the
+ * `@google-cloud/firestore` packages, but that's not recommended.
+ * @todo Perhaps figure out a way to **only** import the type defs we need.
+ */
+type DocumentReference = admin.firestore.DocumentReference;
+
 type VerficationTypeAlias = SocialTypeAlias | 'school';
 
 interface VerificationInterface extends SocialInterface {
   label: string;
 }
 
-type UserWithRolesAndVerifications = User & {
-  roles: RoleAlias[];
+type UserWithRolesAndVerifications = UserWithRoles & {
   verifications: { [type in VerificationTypeAlias]: VerificationInterface };
 };
 
@@ -60,12 +70,8 @@ export class ParentRequestEmail implements Email {
   public readonly html: string;
   public readonly text: string;
 
-  private addRolesAndVerifications(user: User): UserWithRolesAndVerifications {
-    const attendee: AttendeeInterface | undefined = this.appt.attendees.find(
-      (attendee: AttendeeInterface) => attendee.uid === user.uid
-    );
+  private addVerifications(user: UserWithRoles): UserWithRolesAndVerifications {
     return Object.assign(Object.assign({}, user), {
-      roles: attendee ? attendee.roles : [],
       verifications: Object.fromEntries(
         user.socials.map((social: SocialInterface) => {
           const { type, ...rest } = social;
@@ -75,17 +81,11 @@ export class ParentRequestEmail implements Email {
     });
   }
 
-  private get attendeesWithRolesAndVerifications(): UserWithRolesAndVerifications[] {
-    return this.attendees.map((attendee: User) =>
-      this.addRolesAndVerifications(attendee)
-    );
-  }
-
   public constructor(
-    private readonly parent: User,
-    private readonly pupil: User,
-    private readonly appt: Appt,
-    private readonly attendees: ReadonlyArray<User>
+    parent: User,
+    pupil: UserWithRoles,
+    appt: Appt,
+    attendees: ReadonlyArray<UserWithRoles>
   ) {
     this.to = parent.email;
     this.subject = `${pupil.firstName} scheduled ${Utils.join(
@@ -94,14 +94,17 @@ export class ParentRequestEmail implements Email {
     this.text = this.subject;
     const linkStyling: string = `color:#067df7!important;font-size:inherit;text-decoration:none`;
     const data: Data = {
-      approveURL: `https://tutorbook.org/approve?appt=${appt.id}&uid=${parent.uid}`,
+      approveURL:
+        `https://tutorbook.org/approve` +
+        `?request=${encodeURIComponent((appt.ref as DocumentReference).path)}` +
+        `&uid=${encodeURIComponent(parent.uid)}`,
       brambleDescription:
         `They will be conducting their tutoring lessons via <a href="` +
         `${appt.venues[0].url}" style="${linkStyling}">this Bramble room</a>.` +
         ` The room will be reused weekly until the tutoring lesson is ` +
         `canceled. Learn more about Bramble <a href="https://about.bramble.` +
         `io/help/help-home.html" style="${linkStyling}">here</a>.`,
-      attendees: this.attendeesWithRolesAndVerifications,
+      attendees: attendees.map((a: UserWithRoles) => this.addVerifications(a)),
       appt,
       pupil,
       parent,

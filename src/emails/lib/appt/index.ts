@@ -2,11 +2,9 @@ import Email from '../email';
 import Handlebars from '../handlebars';
 
 import Utils from '@tutorbook/covid-utils';
-import { Appt, AttendeeInterface, User, RoleAlias } from '@tutorbook/model';
+import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
 
 import Template from './template.hbs';
-
-type UserWithRoles = User & { roles: RoleAlias[] };
 
 interface Data {
   attendees: UserWithRoles[];
@@ -14,6 +12,12 @@ interface Data {
   appt: Appt;
 }
 
+/**
+ * The email that is sent to all the appointment attendees once we receive
+ * parental approval for a pending lesson request. This emails contains the link
+ * to the Bramble room and instructions for how to make the most out of the
+ * virtual tutoring session.
+ */
 export class ApptEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
     Data
