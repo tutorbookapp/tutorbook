@@ -2,7 +2,13 @@ import Email from '../email';
 import Handlebars from '../handlebars';
 
 import Utils from '@tutorbook/covid-utils';
-import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
+import {
+  Appt,
+  SocialTypeAlias,
+  SocialInterface,
+  User,
+  UserWithRoles,
+} from '@tutorbook/model';
 
 import Template from './template.hbs';
 
@@ -17,14 +23,13 @@ interface Data {
  * @todo Refactor the `@tutorbook/emails` package such that these type
  * definitions aren't duplicated.
  */
-type VerficationTypeAlias = SocialTypeAlias | 'school';
-
 interface VerificationInterface extends SocialInterface {
   label: string;
 }
-
 type UserWithRolesAndVerifications = UserWithRoles & {
-  verifications: { [type in VerificationTypeAlias]: VerificationInterface };
+  verifications: {
+    [type in SocialTypeAlias | 'school']: VerificationInterface;
+  };
 };
 
 /**
@@ -51,10 +56,13 @@ export class PupilRequestEmail implements Email {
       verifications: Object.fromEntries(
         user.socials.map((social: SocialInterface) => {
           const { type, ...rest } = social;
-          return [type, { label: Utils.caps(type), ...rest }];
+          return [
+            type as SocialTypeAlias,
+            { label: Utils.caps(type), ...rest },
+          ];
         })
       ),
-    });
+    }) as UserWithRolesAndVerifications;
   }
 
   public constructor(

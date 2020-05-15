@@ -9,7 +9,7 @@ import {
   Appt,
   ApptJSONInterface,
 } from '../../model';
-import { Email, PupilRequestEmail, ParentRequestEmail } from '../../emails';
+import { PupilRequestEmail, ParentRequestEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
@@ -67,10 +67,8 @@ async function sendRequestEmails(
           .get();
         if (parentDoc.exists) {
           const parent: User = User.fromFirestore(parentDoc);
-          const params = [parent, pupil, request, attendees];
-          const email: Email = new ParentRequestEmail(...params);
           const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
-            mail.send(email)
+            mail.send(new ParentRequestEmail(parent, pupil, request, attendees))
           );
           if (err) {
             console.error(
@@ -88,9 +86,8 @@ async function sendRequestEmails(
           console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
         }
       }
-      const email: Email = new PupilRequestEmail(pupil, request, attendees);
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
-        mail.send(email)
+        mail.send(new PupilRequestEmail(pupil, request, attendees))
       );
       if (err) {
         console.error(
@@ -261,8 +258,8 @@ export default async function request(
           error(`${user.name} (${user.uid}) cannot teach requested subjects.`);
           break;
         }
-        user.roles = attendee.roles;
-        attendees.push(user);
+        (user as UserWithRoles).roles = attendee.roles;
+        attendees.push(user as UserWithRoles);
       }
       if (!attendees.length || attendees.length !== request.attendees.length) {
         // Don't do anything b/c we already sent an error code to the client.

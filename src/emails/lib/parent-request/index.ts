@@ -6,10 +6,8 @@ import {
   Appt,
   SocialTypeAlias,
   SocialInterface,
-  AttendeeInterface,
   User,
   UserWithRoles,
-  RoleAlias,
 } from '@tutorbook/model';
 
 import * as admin from 'firebase-admin';
@@ -24,14 +22,14 @@ import Template from './template.hbs';
  */
 type DocumentReference = admin.firestore.DocumentReference;
 
-type VerficationTypeAlias = SocialTypeAlias | 'school';
-
 interface VerificationInterface extends SocialInterface {
   label: string;
 }
 
 type UserWithRolesAndVerifications = UserWithRoles & {
-  verifications: { [type in VerificationTypeAlias]: VerificationInterface };
+  verifications: {
+    [type in SocialTypeAlias | 'school']: VerificationInterface;
+  };
 };
 
 interface Data {
@@ -64,10 +62,13 @@ export class ParentRequestEmail implements Email {
       verifications: Object.fromEntries(
         user.socials.map((social: SocialInterface) => {
           const { type, ...rest } = social;
-          return [type, { label: Utils.caps(type), ...rest }];
+          return [
+            type as SocialTypeAlias,
+            { label: Utils.caps(type), ...rest },
+          ];
         })
       ),
-    });
+    }) as UserWithRolesAndVerifications;
   }
 
   public constructor(

@@ -1,7 +1,6 @@
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AxiosResponse, AxiosPromise } from 'axios';
 import {
   ApiError,
   User,
@@ -9,10 +8,9 @@ import {
   Appt,
   ApptJSONInterface,
 } from '../../model';
-import { Email, ApptEmail } from '../../emails';
+import { ApptEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
-import axios from 'axios';
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
 import * as admin from 'firebase-admin';
@@ -30,9 +28,8 @@ async function sendApptEmails(
 ): Promise<void> {
   await Promise.all(
     attendees.map(async (attendee: User) => {
-      const email: Email = new ApptEmail(attendee, appt, attendees);
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
-        mail.send(email)
+        mail.send(new ApptEmail(attendee, appt, attendees))
       );
       if (err) {
         console.error(
@@ -56,11 +53,10 @@ async function sendApptEmails(
  * `@google-cloud/firestore` packages, but that's not recommended.
  * @todo Perhaps figure out a way to **only** import the type defs we need.
  */
+type CollectionReference = admin.firestore.CollectionReference;
 type DocumentReference = admin.firestore.DocumentReference;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DecodedIdToken = admin.auth.DecodedIdToken;
 type Firestore = admin.firestore.Firestore;
-type Auth = admin.auth.Auth;
 type App = admin.app.App;
 
 /**
@@ -93,7 +89,6 @@ const firebase: App = admin.initializeApp(
   uuid()
 );
 
-const auth: Auth = firebase.auth();
 const firestore: Firestore = firebase.firestore();
 
 /**
@@ -146,16 +141,20 @@ export default async function appt(
     error('Your request body must contain a uid field.');
   } else {
     // 2. Fetch the lesson request data.
-    let ref: DocumentReference;
-    let db: DocumentReference;
+    let ref: DocumentReference | null = null;
+    let db: DocumentReference | null = null;
     try {
       ref = firestore.doc(req.body.request);
       // Partition is 4th parent (e.g. `/test/users/PUPIL-DOC/requests/DOC`).
-      db = ref.parent.parent.parent.parent;
+      db = (((ref
+         .parent as CollectionReference)
+         .parent as DocumentReference)
+         .parent as CollectionReference)
+         .parent;
     } catch (err) {
       error('You must provide a valid request document path.', 400, err);
     }
-    if (!ref) {
+    if (!ref || !db) {
       // Don't do anything b/c we already sent an error code to the client.
     } else {
       const doc: DocumentSnapshot = await ref.get();
@@ -170,7 +169,10 @@ export default async function appt(
         // The Firestore path in `req.body.request` is the path of the parent's
         // child's document (i.e. the request document nested under that child's
         // profile document).
-        const pupilUID: string = doc.ref.parent.parent.id;
+        const pupilUID: string = ((doc.ref
+          .parent as CollectionReference)
+          .parent as DocumentReference)
+          .id;
         let attendeesIncludePupil: boolean = false;
         let pupilIsParentsChild: boolean = false;
         const attendees: UserWithRoles[] = [];
@@ -216,8 +218,8 @@ export default async function appt(
             );
             break;
           }
-          user.roles = attendee.roles;
-          attendees.push(user);
+          (user as UserWithRoles).roles = attendee.roles;
+          attendees.push(user as UserWithRoles);
         }
         if (!attendees.length || attendees.length !== appt.attendees.length) {
           // Don't do anything b/c we already sent an error code to the client.
@@ -228,7 +230,7 @@ export default async function appt(
         } else {
           console.log(`[DEBUG] Creating appt (${appt.id})...`);
           await Promise.all(
-            attendees.map(async (attendee: User) => {
+            attendees.map(async (attendee: UserWithRoles) => {
               if (attendee.roles.indexOf('pupil') >= 0) {
                 // 4. Delete the old request documents.
                 await (attendee.ref as DocumentReference)

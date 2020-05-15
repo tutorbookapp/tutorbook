@@ -1,6 +1,5 @@
 import Handlebars from 'handlebars';
 import Utils from '@tutorbook/covid-utils';
-import { SocialInterface, RoleAlias } from '@tutorbook/model';
 
 import Check from './shared/check.hbs';
 import Cross from './shared/cross.hbs';

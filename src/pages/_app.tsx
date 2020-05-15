@@ -3,7 +3,6 @@ import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 
 import { UserProvider, DBProvider } from '../firebase';
-import { User } from '../model';
 import CovidHead from '../covid-head';
 import '../covid-styles';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import Router, { WithRouterProps, withRouter } from 'next/router';
+import { Router, withRouter } from 'next/router';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -13,7 +13,7 @@ import ActionText from '../../action-text';
 import Header from '../../covid-header';
 import Footer from '../../covid-footer';
 
-import { ApiError, Appt } from '../../model';
+import { ApiError, Appt, ApptJSONInterface } from '../../model';
 import { getIntlProps, getIntlPaths, withIntl } from '../../intl';
 
 interface ApprovePageState {
@@ -21,9 +21,13 @@ interface ApprovePageState {
   err?: string;
 }
 
-interface ApprovePageProps {
-  router: Router;
-}
+/**
+ * Duplicate declaration from `./node_modules/next/dist/client/with-router.d.ts`
+ * @todo Find some way to import it directly from Next.js (perhaps open a PR to
+ * `export` those types from `next/router`).
+ */
+type WithRouterProps = { router: Router }
+type ExcludeRouterProps<P> = Pick<P, Exclude<keyof P, keyof WithRouterProps>>;
 
 /**
  * Page that parents go to when approving (i.e. when giving parental consent
@@ -38,7 +42,7 @@ interface ApprovePageProps {
  * only allow pupils to add the contact information of one parent. And we don't
  * really care **which** parent approves the lesson request anyways.
  */
-class ApprovePage extends React.Component<ApprovePageProps> {
+class ApprovePage extends React.Component<WithRouterProps> {
   public readonly state: ApprovePageState = { appt: undefined, err: undefined };
 
   public render(): JSX.Element {
@@ -56,7 +60,7 @@ class ApprovePage extends React.Component<ApprovePageProps> {
           }
           body={
             this.state.appt
-              ? this.sucessMsg
+              ? this.successMsg
               : this.state.err
               ? this.state.err
               : undefined
@@ -70,11 +74,12 @@ class ApprovePage extends React.Component<ApprovePageProps> {
 
   private get successMsg(): string {
     const appt: Appt = this.state.appt as Appt;
-    return;
-    `Created tutoring appointments for ${Utils.join(appt.subjects)} on ` +
-      `${appt.time}. The appointment attendees will each receive an email ` +
+    return (
+      `Created tutoring appointments for ${Utils.join(appt.subjects)} ` +
+      `on ${appt.time}. The appointment attendees will each receive an email ` +
       `with a link to a Bramble room and instructions for how to make the ` +
-      `most out of their virtual tutoring lessons.`;
+      `most out of their virtual tutoring lessons.`
+    );
   }
 
   public async componentDidMount(): Promise<void> {
@@ -116,15 +121,15 @@ export const getStaticPaths: GetStaticPaths = async () => ({
  * Ensures Next.js parses client-side query post-hydration.
  * @see {@link https://github.com/zeit/next.js/issues/9066}
  */
-function withPageRouter<P extends Object>(
+function withPageRouter<P extends WithRouterProps>(
   Component: React.ComponentType<P>
-): React.FunctionComponent<P & WithRouterProps> {
-  return withRouter<P & WithRouterProps>(({ router, ...props }) => {
+): React.ComponentType<ExcludeRouterProps<P>> {
+  return withRouter<P>(({ router, ...props }) => {
     router.query = [
       ...new URLSearchParams((router.asPath || '').split(/\?/)[1]).entries(),
     ].reduce((q, [k, v]) => Object.assign(q, { [k]: v }), {});
 
-    return <Component {...(props as P)} router={router} />;
+    return <Component {...(props as any)} router={router} />;
   });
 }
 

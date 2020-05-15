@@ -120,6 +120,7 @@ export default class Form extends React.Component<FormProps, {}> {
         case 'subjectselect':
           return (
             <SubjectSelect
+              {...(props as SubjectSelectProps)}
               onChange={(subjects: string[]) => {
                 let props: InputProps = input as InputProps;
                 this.values[props.key ? props.key : props.label] = {
@@ -131,12 +132,12 @@ export default class Form extends React.Component<FormProps, {}> {
               key={index}
               outlined
               className={styles.formField}
-              {...(props as SubjectSelectProps)}
             />
           );
         case 'scheduleinput':
           return (
             <ScheduleInput
+              {...(props as ScheduleInputProps)}
               onChange={(availability: Availability) => {
                 let props: InputProps = input as InputProps;
                 this.values[props.key ? props.key : props.label] = availability;
@@ -144,7 +145,6 @@ export default class Form extends React.Component<FormProps, {}> {
               key={index}
               outlined
               className={styles.formField}
-              {...(props as ScheduleInputProps)}
             />
           );
         default:

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc"
   },
-  "main": "lib/intercom.tsx",
+  "main": "lib/react-intercom.tsx",
   "directories": {
     "lib": "lib"
   },
