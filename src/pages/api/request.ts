@@ -9,7 +9,7 @@ import {
   Appt,
   ApptJSONInterface,
 } from '../../model';
-import { Email, RequestEmail, ParentRequestEmail } from '../../emails';
+import { Email, PupilRequestEmail, ParentRequestEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
@@ -55,24 +55,20 @@ function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
  */
 async function sendRequestEmails(
   request: Appt,
-  recipients: ReadonlyArray<UserWithRoles>
+  attendees: ReadonlyArray<UserWithRoles>
 ): Promise<void> {
   await Promise.all(
-    recipients.map(async (recipient: UserWithRoles) => {
-      if (recipient.roles.indexOf('pupil') < 0) return;
-      for (const parentUID of recipient.parents) {
+    attendees.map(async (pupil: UserWithRoles) => {
+      if (pupil.roles.indexOf('pupil') < 0) return;
+      for (const parentUID of pupil.parents) {
         const parentDoc: DocumentSnapshot = await db
           .collection('users')
           .doc(parentUID)
           .get();
         if (parentDoc.exists) {
           const parent: User = User.fromFirestore(parentDoc);
-          const email: Email = new ParentRequestEmail(
-            parent,
-            recipient,
-            request,
-            recipients
-          );
+          const params = [parent, pupil, request, attendees];
+          const email: Email = new ParentRequestEmail(...params);
           const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
             mail.send(email)
           );
@@ -92,19 +88,19 @@ async function sendRequestEmails(
           console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
         }
       }
-      const email: Email = new RequestEmail(recipient, request, recipients);
+      const email: Email = new PupilRequestEmail(pupil, request, attendees);
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
         mail.send(email)
       );
       if (err) {
         console.error(
-          `[ERROR] ${err.name} sending ${recipient.name} <${recipient.email}>` +
+          `[ERROR] ${err.name} sending ${pupil.name} <${pupil.email}>` +
             ` the pending lesson request (${request.id}) email:`,
           err
         );
       } else {
         console.log(
-          `[DEBUG] Sent ${recipient.name} <${recipient.email}> the pending ` +
+          `[DEBUG] Sent ${pupil.name} <${pupil.email}> the pending ` +
             `lesson request (${request.id}) email.`
         );
       }

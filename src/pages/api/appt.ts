@@ -3,7 +3,7 @@ import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AxiosResponse, AxiosPromise } from 'axios';
 import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
-import { Email, ApptEmail, ParentApptEmail } from '../../emails';
+import { Email, ApptEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
@@ -20,23 +20,23 @@ mail.setApiKey(process.env.SENDGRID_API_KEY as string);
  */
 async function sendApptEmails(
   appt: Appt,
-  recipients: ReadonlyArray<User>
+  attendees: ReadonlyArray<User>
 ): Promise<void> {
   await Promise.all(
-    recipients.map(async (recipient: User) => {
-      const email: Email = new ApptEmail(recipient, appt, recipients);
+    attendees.map(async (attendee: User) => {
+      const email: Email = new ApptEmail(attendee, appt, attendees);
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
         mail.send(email)
       );
       if (err) {
         console.error(
-          `[ERROR] ${err.name} sending ${recipient.name} <${recipient.email}>` +
+          `[ERROR] ${err.name} sending ${attendee.name} <${attendee.email}>` +
             ` the appt (${appt.id}) email:`,
           err
         );
       } else {
         console.log(
-          `[DEBUG] Sent ${recipient.name} <${recipient.email}> the appt ` +
+          `[DEBUG] Sent ${attendee.name} <${attendee.email}> the appt ` +
             `(${appt.id}) email.`
         );
       }
