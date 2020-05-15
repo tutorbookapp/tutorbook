@@ -110,10 +110,10 @@ class UserDialog extends React.Component<UserDialogProps> {
     const [err] = await to<AxiosResponse, AxiosError<ApiError>>(
       axios({
         method: 'post',
-        url: '/api/appt',
+        url: '/api/request',
         data: {
           token: this.context.token,
-          appt: this.state.appt.toJSON(),
+          request: this.state.appt.toJSON(),
         },
       })
     );
