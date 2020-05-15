@@ -2,7 +2,7 @@ import styles from './checkmark.module.scss';
 
 interface Props {
   readonly black?: boolean;
-  readonly checked: boolean;
+  readonly checked?: boolean;
   readonly [propName: string]: any;
 }
 
