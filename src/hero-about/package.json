@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/hero-about",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Package that contains a concise version of our about page for the COVID Tutoring Initiative homepage.",
   "keywords": [
     "Tutorbook",
