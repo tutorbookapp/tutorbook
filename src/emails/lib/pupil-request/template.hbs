@@ -42,7 +42,7 @@
 
                       {{#each attendees}}
                         {{#ifCond @root.pupil.uid '!==' this.uid}}
-                          {{> profile tihs}}<br>
+                          {{> profile this}}<br>
                         {{/ifCond}}
                       {{/each}}
 

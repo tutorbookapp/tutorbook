@@ -62,12 +62,12 @@ export class PupilRequestEmail implements Email {
     appt: Appt,
     attendees: ReadonlyArray<UserWithRoles>
   ) {
-    this.to = recipient.email;
+    this.to = pupil.email;
     this.subject = `Request confirmation for ${Utils.join(
       appt.subjects
     )} lessons on Tutorbook.`;
     this.text = this.subject;
-    this.html = RequestEmail.render({
+    this.html = PupilRequestEmail.render({
       appt,
       pupil,
       attendees: attendees.map((a: UserWithRoles) => this.addVerifications(a)),
