@@ -3,7 +3,7 @@ import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AxiosResponse, AxiosPromise } from 'axios';
 import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
-import { Email, ApptEmail, ParentApptEmail } from '../../emails';
+import { Email, RequestEmail, ParentRequestEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
@@ -13,17 +13,47 @@ import * as admin from 'firebase-admin';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
+interface BrambleRes {
+  APImethod: string;
+  status: string;
+  result: string;
+}
+
 /**
- * Sends out invite emails to all of the new appointment's attendees with a link
- * to their Bramble room and instructions on how to make the best out of their
- * virtual tutoring session.
+ * Creates a new Bramble room using their REST API.
+ * @see {@link https://about.bramble.io/api.html}
  */
-async function sendApptEmails(
+function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
+  return axios({
+    method: 'post',
+    url: 'https://api.bramble.io/createRoom',
+    headers: {
+      room: appt.id,
+      agency: 'tutorbook',
+      auth_token: process.env.BRAMBLE_API_KEY as string,
+    },
+  });
+}
+
+/**
+ * Sends out two types of emails:
+ * 1. Email to the pupil attendees's parents asking for parental approval of the
+ * tutoring match (the attendees are not sent the link to the Bramble room until
+ * **after** we receive parental consent).
+ * 2. Email to the pupil attendees letting them know that we've received their
+ * request and are awaiting parental approval.
+ * @todo Give the pupils an option to change their parent's contact info in
+ * that second email (i.e. you might have entered fake stuff just to see search
+ * results and now you can't do anything because those parental emails aren't
+ * going where they should be).
+ */
+async function sendRequestEmails(
   appt: Appt,
   recipients: ReadonlyArray<User>
 ): Promise<void> {
   await Promise.all(
     recipients.map(async (recipient: User) => {
+      if (recipient.roles.indexOf('pupil') < 0) return;
       for (const parentUID of recipient.parents) {
         const parentDoc: DocumentSnapshot = await db
           .collection('users')
@@ -31,7 +61,7 @@ async function sendApptEmails(
           .get();
         if (parentDoc.exists) {
           const parent: User = User.fromFirestore(parentDoc);
-          const email: Email = new ParentApptEmail(
+          const email: Email = new ParentRequestEmail(
             parent,
             recipient,
             appt,
@@ -56,7 +86,7 @@ async function sendApptEmails(
           console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
         }
       }
-      const email: Email = new ApptEmail(recipient, appt, recipients);
+      const email: Email = new RequestEmail(recipient, appt, recipients);
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
         mail.send(email)
       );
@@ -126,36 +156,38 @@ const db: DocumentReference =
 
 /**
  * Takes an `ApptJSONInterface` object, an authentication token, and:
- * 1. Verifies the correct request body was sent (e.g. all parameters are there
- * and are all of the correct types).
- * 2. Verifies that the requested `Timeslot` is within all of the `attendee`'s
- * availability (by reading each `attendee`'s Firestore profile document).
- * 3. Verifies that the requested `subjects` are included in each of the tutors'
- * Firestore profile documents (where a tutor is defined as an `attendee` whose
- * `roles` include `tutor`).
- * 4. Creates the Bramble tutoring lesson room.
- * 5. Creates a new `appt` document containing the request body in each of the
- * `attendee`'s Firestore `appts` subcollection.
- * 6. Updates each `attendee`'s availability (in their Firestore profile
- * document) to reflect this appointment (i.e. removes the appointment's `time`
- * from their availability).
- * 7. Sends each of the `appt`'s `attendee`'s an email containing:
- *    - Link to a scheduled, recurring (weekly) Zoom meeting.
- *    - Link to a virtual whiteboard (probably using
- *    [DrawChat](https://github.com/cojapacze/sketchpad)).
- *    - Link to a shared Google Drive folder.
+ * 1. Performs the following verifications (sends a `400` error code and an
+ *    accompanying human-readable error message if any of them fail):
+ *    - Verifies the correct request body was sent (e.g. all parameters are there
+ *      and are all of the correct types).
+ *    - Verifies that the requested `Timeslot` is within all of the `attendee`'s
+ *      availability (by reading each `attendee`'s Firestore profile document).
+ *    - Verifies that the requested `subjects` are included in each of the
+ *      tutors' Firestore profile documents (where a tutor is defined as an
+ *      `attendee` whose `roles` include `tutor`).
+ *    - Verifies that the given `token` belongs to one of the `appt`'s
+ *      `attendees`.
+ * 2. Creates [the Bramble tutoring lesson room]{@link https://about.bramble.io/api.html}
+ *    (so that the parent can preview the venue that their child will be using
+ *    to connect with their tutor).
+ * 3. Creates a new `request` document containing the given `appt`'s data in the
+ *    pupil's (the owner of the given JWT `token`) Firestore sub-collections.
+ * 4. Sends an email to the pupil's parent(s) asking for parental approval of
+ *    the tutoring match.
+ * 5. Sends an email to the pupil (the sender of the lesson request) telling
+ *    them that we're awaiting parental approval.
  *
  * @param {string} token - A valid Firebase Authentication JWT `idToken` to
  * authorize the request. You're able to get this token by calling the `user`
  * REST API endpoint (an endpoint that will create a new user and give you a
  * `customToken` to sign-in with).
- * @param {ApptJSONInterface} appt - The appointment to create. The given
- * `idToken` **must** be from one of the appointment's `attendees` (see the
- * above description for more requirements).
+ * @param {ApptJSONInterface} appt - The appointment to create a pending request
+ * for. The given `idToken` **must** be from one of the appointment's
+ * `attendees` (see the above description for more requirements).
  */
-export default async function appt(
+export default async function request(
   req: NextApiRequest,
-  res: NextApiResponse<ApiError | { appt: ApptJSONInterface }>
+  res: NextApiResponse<ApiError | { request: ApptJSONInterface }>
 ): Promise<void> {
   // 1. Verify that the request body is valid.
   function error(msg: string, code: number = 400, err?: Error): void {
@@ -188,7 +220,7 @@ export default async function appt(
       const attendees: User[] = [];
       let attendeesIncludeAuthToken: boolean = false;
       for (const attendee of appt.attendees) {
-        // 1b. Verify that the attendees have uIDs.
+        // 1. Verify that the attendees have uIDs.
         if (!attendee.uid) {
           error('All attendees must have valid uIDs.');
           break;
@@ -197,18 +229,18 @@ export default async function appt(
           attendeesIncludeAuthToken = true;
         const ref: DocumentReference = db.collection('users').doc(attendee.uid);
         const doc: DocumentSnapshot = await ref.get();
-        // 1c. Verify that the attendees exist.
+        // 1. Verify that the attendees exist.
         if (!doc.exists) {
           error(`Attendee (${attendee.uid}) does not exist.`);
           break;
         }
         const user: User = User.fromFirestore(doc);
-        // 2. Verify that the attendees are available.
+        // 1. Verify that the attendees are available.
         if (!user.availability.contains(appt.time)) {
           error(`${user.name} (${user.uid}) is not available on ${appt.time}.`);
           break;
         }
-        // 3. Verify the tutors can teach the requested subjects.
+        // 1. Verify the tutors can teach the requested subjects.
         const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
         const canTeachSubject: (s: string) => boolean = (subject: string) => {
           return user.subjects.explicit.includes(subject);
@@ -227,9 +259,9 @@ export default async function appt(
             ' the tutoring appointment.'
         );
       } else {
-        // 4. Create a new Bramble room for the tutoring appointment.
+        // 2. Create a new Bramble room for the tutoring appointment.
         appt.id = (attendees[0].ref as DocumentReference)
-          .collection('appts')
+          .collection('requests')
           .doc().id;
         console.log(`[DEBUG] Creating Bramble room (${appt.id})...`);
         const [err, brambleRes] = await to<AxiosResponse<BrambleRes>>(
@@ -251,25 +283,21 @@ export default async function appt(
               'head over to <a href="https://about.bramble.io/help/help-home' +
               '.html">their help center</a>.',
           });
-          console.log(`[DEBUG] Creating appt (${appt.id})...`);
+          console.log(`[DEBUG] Creating pending request (${appt.id})...`);
           await Promise.all(
             attendees.map(async (attendee: User) => {
-              // 5. Create the appointment Firestore document.
+              if (attendee.roles.indexOf('pupil') < 0) return;
+              // 3. Create the appointment Firestore document.
               await (attendee.ref as DocumentReference)
-                .collection('appts')
+                .collection('requests')
                 .doc(appt.id as string)
                 .set(appt.toFirestore());
-              // 6. Update the attendees availability.
-              attendee.availability.remove(appt.time);
-              await (attendee.ref as DocumentReference).update(
-                attendee.toFirestore()
-              );
             })
           );
-          // 7. Send out the invitation email to the attendees.
-          await sendApptEmails(appt, attendees);
-          res.status(201).json({ appt: appt.toJSON() });
-          console.log(`[DEBUG] Created appt (${appt.id}) and sent emails.`);
+          // 4-5. Send out the pending request emails.
+          await sendRequestEmails(appt, attendees);
+          res.status(201).json({ request: appt.toJSON() });
+          console.log(`[DEBUG] Created request (${appt.id}) and sent emails.`);
         }
       }
     }
