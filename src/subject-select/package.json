@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/subject-select",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Subject select React component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -39,10 +39,10 @@
     "@rmwc/chip": "^6.0.14",
     "@rmwc/list": "^6.0.14",
     "@rmwc/menu": "^6.0.14",
-    "@rmwc/tooltip": "^6.0.14",
     "@rmwc/textfield": "^6.1.0",
+    "@rmwc/tooltip": "^6.0.14",
     "@rmwc/typography": "^6.0.14",
-    "@tutorbook/model": "^0.2.2",
+    "@tutorbook/model": "^0.3.0",
     "algoliasearch": "^4.2.0",
     "await-to-js": "^2.1.1",
     "next": "^9.4.0",

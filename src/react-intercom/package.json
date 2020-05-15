@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/react-intercom",
-  "version": "2.0.2",
+  "version": "0.3.0",
   "description": "A component to initialize Intercom in your application.",
   "scripts": {
     "build": "tsc"
@@ -16,8 +16,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@tutorbook/model": "^0.2.2",
-    "@tutorbook/firebase": "^0.2.2",
+    "@tutorbook/firebase": "^0.3.0",
+    "@tutorbook/model": "^0.3.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

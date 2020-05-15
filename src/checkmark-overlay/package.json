@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/checkmark-overlay",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Package that contains a React loading overlay that shows a spinner which becomes a checkmark.",
   "keywords": [
     "Tutorbook",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@rmwc/typography": "^6.0.14",
-    "@tutorbook/checkmark": "^0.2.0",
+    "@tutorbook/checkmark": "^0.3.0",
     "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
