@@ -124,6 +124,9 @@ Upon request, the `/api/request` serverless API function:
    accompanying human-readable error message if any of them fail):
    - Verifies the correct request body was sent (e.g. all parameters are there
      and are all of the correct types).
+   - Verifies that the `attendees` all have user IDs and profile documents.
+   - Verifies that the appointment creator (the owner of the given `token` JWT)
+     is an `attendee`.
    - Verifies that the requested `Timeslot` is within all of the `attendee`'s
      availability (by reading each `attendee`'s Firestore profile document).
    - Verifies that the requested `subjects` are included in each of the tutors'
@@ -160,27 +163,32 @@ The following parameters should be sent in the HTTP request body.
 
 #### Actions
 
-Upon request, the `/api/appt` serverless API function will:
+Upon request, the `/api/appt` serverless API function:
 
-1. Verify the correct request body was sent (e.g. all parameters are there and
+1. Verifies the correct request body was sent (e.g. all parameters are there and
    are all of the correct types).
-2. Fetch the given pending request's data from our Firestore database.
+2. Fetches the given pending request's data from our Firestore database.
 3. Performs the following verifications (some of which are also included in the
    original `/api/request` endpoint):
+   - Verifies that the `attendees` all have user IDs and profile documents.
+   - Verifies that the pupil (the user whose profile document was referenced in
+     the given `request` Firestore document path) is within the `attendees`.
+   - Verifies that the parent (the owner of the given `uid`) is actually the
+     pupil's parent (i.e. the `attendee` whose profile document was referenced
+     in the given `request` Firestore document path has the given `uid` in their
+     profile's `parents` field).
    - Verifies that the requested `Timeslot` is within all of the `attendee`'s
      availability (by reading each `attendee`'s Firestore profile document).
    - Verifies that the requested `subjects` are included in each of the tutors'
      Firestore profile documents (where a tutor is defined as an `attendee` whose
      `roles` include `tutor`).
-   - Verifies that the parent (the owner of the given `uid`) is actually the
-     pupil's parent (i.e. the `attendee`s who have the `pupil` role all include
-     the given `uid` in their profile's `parents` field).
-4. Creates a new `appt` document containing the request body in each of the
+4. Deletes the old `request` documents.
+5. Creates a new `appt` document containing the request body in each of the
    `attendee`'s Firestore `appts` subcollection.
-5. Updates each `attendee`'s availability (in their Firestore profile document)
+6. Updates each `attendee`'s availability (in their Firestore profile document)
    to reflect this appointment (i.e. remove the appointment's `time` from their
    availability).
-6. Sends each of the `appt`'s `attendee`'s an email containing instructions for
+7. Sends each of the `appt`'s `attendee`'s an email containing instructions for
    how to access their Bramble virtual-tutoring room.
 
 #### Response

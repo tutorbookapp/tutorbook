@@ -2,7 +2,13 @@ import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AxiosResponse, AxiosPromise } from 'axios';
-import { ApiError, User, Appt, ApptJSONInterface } from '../../model';
+import {
+  ApiError,
+  User,
+  UserWithRoles,
+  Appt,
+  ApptJSONInterface,
+} from '../../model';
 import { Email, RequestEmail, ParentRequestEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
@@ -48,11 +54,11 @@ function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
  * going where they should be).
  */
 async function sendRequestEmails(
-  appt: Appt,
-  recipients: ReadonlyArray<User>
+  request: Appt,
+  recipients: ReadonlyArray<UserWithRoles>
 ): Promise<void> {
   await Promise.all(
-    recipients.map(async (recipient: User) => {
+    recipients.map(async (recipient: UserWithRoles) => {
       if (recipient.roles.indexOf('pupil') < 0) return;
       for (const parentUID of recipient.parents) {
         const parentDoc: DocumentSnapshot = await db
@@ -64,7 +70,7 @@ async function sendRequestEmails(
           const email: Email = new ParentRequestEmail(
             parent,
             recipient,
-            appt,
+            request,
             recipients
           );
           const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
@@ -73,33 +79,33 @@ async function sendRequestEmails(
           if (err) {
             console.error(
               `[ERROR] ${err.name} sending ${parent.name} <${parent.email}> ` +
-                `the parent appt (${appt.id}) email:`,
+                `the parent pending lesson request (${request.id}) email:`,
               err
             );
           } else {
             console.log(
-              `[DEBUG] Sent ${parent.name} <${parent.email}> the parent appt ` +
-                `(${appt.id}) email.`
+              `[DEBUG] Sent ${parent.name} <${parent.email}> the parent ` +
+                `pending lesson request (${request.id}) email.`
             );
           }
         } else {
           console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
         }
       }
-      const email: Email = new RequestEmail(recipient, appt, recipients);
+      const email: Email = new RequestEmail(recipient, request, recipients);
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
         mail.send(email)
       );
       if (err) {
         console.error(
           `[ERROR] ${err.name} sending ${recipient.name} <${recipient.email}>` +
-            ` the appt (${appt.id}) email:`,
+            ` the pending lesson request (${request.id}) email:`,
           err
         );
       } else {
         console.log(
-          `[DEBUG] Sent ${recipient.name} <${recipient.email}> the appt ` +
-            `(${appt.id}) email.`
+          `[DEBUG] Sent ${recipient.name} <${recipient.email}> the pending ` +
+            `lesson request (${request.id}) email.`
         );
       }
     })
@@ -181,8 +187,8 @@ const db: DocumentReference =
  * authorize the request. You're able to get this token by calling the `user`
  * REST API endpoint (an endpoint that will create a new user and give you a
  * `customToken` to sign-in with).
- * @param {ApptJSONInterface} appt - The appointment to create a pending request
- * for. The given `idToken` **must** be from one of the appointment's
+ * @param {ApptJSONInterface} request - The appointment to create a pending
+ * request for. The given `idToken` **must** be from one of the appointment's
  * `attendees` (see the above description for more requirements).
  */
 export default async function request(
@@ -191,21 +197,30 @@ export default async function request(
 ): Promise<void> {
   // 1. Verify that the request body is valid.
   function error(msg: string, code: number = 400, err?: Error): void {
+    console.error(`[ERROR] Sending client ${code} with msg (${msg})...`, err);
     res.status(code).json(Object.assign({ msg }, err || {}));
   }
   if (!req.body) {
     error('You must provide a request body.');
-  } else if (!req.body.appt || typeof req.body.appt !== 'object') {
+  } else if (!req.body.request || typeof req.body.request !== 'object') {
     error('Your request body must contain a user field.');
-  } else if (!req.body.appt.subjects || !req.body.appt.subjects.length) {
+  } else if (!req.body.request.subjects || !req.body.request.subjects.length) {
     error('Your appointment must contain valid subjects.');
-  } else if (!req.body.appt.attendees || req.body.appt.attendees.length < 2) {
+  } else if (
+    !req.body.request.attendees ||
+    req.body.request.attendees.length < 2
+  ) {
     error('Your appointment must have >= 2 attendees.');
-  } else if (!req.body.appt.time || typeof req.body.appt.time !== 'object') {
+  } else if (
+    !req.body.request.time ||
+    typeof req.body.request.time !== 'object'
+  ) {
     error('Your appointment must have a valid time.');
-  } else if (new Date(req.body.appt.time.from).toString() === 'Invalid Date') {
+  } else if (
+    new Date(req.body.request.time.from).toString() === 'Invalid Date'
+  ) {
     error('Your appointment must have a valid start time.');
-  } else if (new Date(req.body.appt.time.to).toString() === 'Invalid Date') {
+  } else if (new Date(req.body.request.time.to).toString() === 'Invalid Date') {
     error('Your appointment must have a valid end time.');
   } else if (!req.body.token || typeof req.body.token !== 'string') {
     error('You must provide a valid Firebase Auth JWT.', 401);
@@ -216,17 +231,18 @@ export default async function request(
     if (err) {
       error(`Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
-      const appt: Appt = Appt.fromJSON(req.body.appt);
-      const attendees: User[] = [];
+      const request: Appt = Appt.fromJSON(req.body.request);
+      const attendees: UserWithRoles[] = [];
       let attendeesIncludeAuthToken: boolean = false;
-      for (const attendee of appt.attendees) {
+      for (const attendee of request.attendees) {
         // 1. Verify that the attendees have uIDs.
         if (!attendee.uid) {
           error('All attendees must have valid uIDs.');
           break;
-        }
-        if (attendee.uid === (token as DecodedIdToken).uid)
+        } else if (attendee.uid === (token as DecodedIdToken).uid) {
+          // 1. Verify that the appointment creator is an attendee.
           attendeesIncludeAuthToken = true;
+        }
         const ref: DocumentReference = db.collection('users').doc(attendee.uid);
         const doc: DocumentSnapshot = await ref.get();
         // 1. Verify that the attendees exist.
@@ -236,8 +252,8 @@ export default async function request(
         }
         const user: User = User.fromFirestore(doc);
         // 1. Verify that the attendees are available.
-        if (!user.availability.contains(appt.time)) {
-          error(`${user.name} (${user.uid}) is not available on ${appt.time}.`);
+        if (!user.availability.contains(request.time)) {
+          error(`${user} is not available on ${request.time}.`);
           break;
         }
         // 1. Verify the tutors can teach the requested subjects.
@@ -245,14 +261,15 @@ export default async function request(
         const canTeachSubject: (s: string) => boolean = (subject: string) => {
           return user.subjects.explicit.includes(subject);
         };
-        if (isTutor && !appt.subjects.every(canTeachSubject)) {
+        if (isTutor && !request.subjects.every(canTeachSubject)) {
           error(`${user.name} (${user.uid}) cannot teach requested subjects.`);
           break;
         }
+        user.roles = attendee.roles;
         attendees.push(user);
       }
-      if (!attendees.length || attendees.length !== appt.attendees.length) {
-        // Don't do anything b/c we already sent error code to client.
+      if (!attendees.length || attendees.length !== request.attendees.length) {
+        // Don't do anything b/c we already sent an error code to the client.
       } else if (!attendeesIncludeAuthToken) {
         error(
           `Appointment creator (${(token as DecodedIdToken).uid}) must attend` +
@@ -260,12 +277,12 @@ export default async function request(
         );
       } else {
         // 2. Create a new Bramble room for the tutoring appointment.
-        appt.id = (attendees[0].ref as DocumentReference)
+        request.id = (attendees[0].ref as DocumentReference)
           .collection('requests')
           .doc().id;
-        console.log(`[DEBUG] Creating Bramble room (${appt.id})...`);
+        console.log(`[DEBUG] Creating Bramble room (${request.id})...`);
         const [err, brambleRes] = await to<AxiosResponse<BrambleRes>>(
-          createBrambleRoom(appt)
+          createBrambleRoom(request)
         );
         if (err) {
           console.error(`[ERROR] ${err.name} creating Bramble room:`, err);
@@ -273,7 +290,7 @@ export default async function request(
         } else {
           const brambleURL: string = (brambleRes as AxiosResponse<BrambleRes>)
             .data.result;
-          appt.venues.push({
+          request.venues.push({
             type: 'bramble',
             url: brambleURL,
             description:
@@ -283,21 +300,29 @@ export default async function request(
               'head over to <a href="https://about.bramble.io/help/help-home' +
               '.html">their help center</a>.',
           });
-          console.log(`[DEBUG] Creating pending request (${appt.id})...`);
+          console.log(`[DEBUG] Creating pending request (${request.id})...`);
           await Promise.all(
-            attendees.map(async (attendee: User) => {
+            attendees.map(async (attendee: UserWithRoles) => {
               if (attendee.roles.indexOf('pupil') < 0) return;
               // 3. Create the appointment Firestore document.
-              await (attendee.ref as DocumentReference)
+              // TODO: Ensure that the `ref` property on this request points to
+              // the correct document when creating the parent request emails.
+              // It should point towards the document in the parent's child's
+              // subcollections. Because we only support one-on-one tutoring
+              // right now, that isn't a problem. But if there is more than one
+              // pupil attendee, this will use the last one for the `ref`.
+              request.ref = (attendee.ref as DocumentReference)
                 .collection('requests')
-                .doc(appt.id as string)
-                .set(appt.toFirestore());
+                .doc(request.id as string);
+              await request.ref.set(request.toFirestore());
             })
           );
           // 4-5. Send out the pending request emails.
-          await sendRequestEmails(appt, attendees);
-          res.status(201).json({ request: appt.toJSON() });
-          console.log(`[DEBUG] Created request (${appt.id}) and sent emails.`);
+          await sendRequestEmails(request, attendees);
+          res.status(201).json({ request: request.toJSON() });
+          console.log(
+            `[DEBUG] Created pending request (${request.id}) and sent emails.`
+          );
         }
       }
     }
