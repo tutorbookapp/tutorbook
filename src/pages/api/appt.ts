@@ -118,6 +118,10 @@ const db: Firestore = firebase.firestore();
  * document to approve (e.g. `partitions/default/users/MKroB319GCfMdVZ2QQFBle8GtCZ2/requests/CEt4uGqTtRg17rZamCLC`).
  * @param {string} uid - The user ID of the parent approving the lesson request
  * (e.g. `MKroB319GCfMdVZ2QQFBle8GtCZ2`).
+ *
+ * @todo Is it really required that we have the parent's user ID? Right now, we
+ * only allow pupils to add the contact information of one parent. And we don't
+ * really care **which** parent approves the lesson request anyways.
  */
 export default async function appt(
   req: NextApiRequest,
