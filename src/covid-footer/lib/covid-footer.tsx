@@ -55,6 +55,10 @@ const socials: Record<string, MessageDescriptor> = defineMessages({
     id: 'socials.github',
     defaultMessage: 'GitHub',
   },
+  website: {
+    id: 'socials.website',
+    defaultMessage: 'Website',
+  },
 });
 
 const labels: Record<string, MessageDescriptor> = defineMessages({

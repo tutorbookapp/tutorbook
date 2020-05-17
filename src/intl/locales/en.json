@@ -123,9 +123,14 @@
     "defaultMessage": "French"
   },
   {
-    "id": "footer.lang.swedish",
+    "id": "footer.lang.spanish",
     "description": "Label for the \"Spanish\" language option.",
     "defaultMessage": "Spanish"
+  },
+  {
+    "id": "footer.lang.turkish",
+    "description": "Label for the \"Turkish\" language option.",
+    "defaultMessage": "Turkish"
   },
   {
     "id": "socials.facebook",
@@ -146,6 +151,10 @@
   {
     "id": "socials.github",
     "defaultMessage": "GitHub"
+  },
+  {
+    "id": "socials.website",
+    "defaultMessage": "Website"
   },
   {
     "id": "footer.lang.choose",
@@ -408,9 +417,9 @@
     "defaultMessage": "Your LinkedIn profile"
   },
   {
-    "id": "tutor-form.github",
-    "description": "Label for the GitHub profile URL field.",
-    "defaultMessage": "Your GitHub profile"
+    "id": "tutor-form.twitter",
+    "description": "Label for the Twitter profile URL field.",
+    "defaultMessage": "Your Twitter profile"
   },
   {
     "id": "tutor-form.facebook",
@@ -461,31 +470,6 @@
     "id": "user-dialog.submit",
     "description": "Label for the submit button that creates the appointment.",
     "defaultMessage": "Request {name}"
-  },
-  {
-    "id": "user-dialog.website",
-    "description": "Link to the user's portfolio website.",
-    "defaultMessage": "Portfolio"
-  },
-  {
-    "id": "user-dialog.linkedin",
-    "description": "Link to the user's LinkedIn profile.",
-    "defaultMessage": "LinkedIn"
-  },
-  {
-    "id": "user-dialog.github",
-    "description": "Link to the user's GitHub profile.",
-    "defaultMessage": "GitHub"
-  },
-  {
-    "id": "user-dialog.facebook",
-    "description": "Link to the user's Facebook profile.",
-    "defaultMessage": "Facebook"
-  },
-  {
-    "id": "user-dialog.instagram",
-    "description": "Link to the user's Instagram profile.",
-    "defaultMessage": "Instagram"
   },
   {
     "id": "user-dialog.disabled",

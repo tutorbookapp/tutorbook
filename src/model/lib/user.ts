@@ -39,7 +39,7 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  * Represents a user verification to provide social proof. Supported types are:
  * - A background check or UK DBS on file
  * - A verified academic email address (e.g. `ac.uk` or `stanford.edu`)
- * - A verified social media account (i.e. LinkedIn, GitHub, FB, Insta)
+ * - A verified social media account (i.e. LinkedIn, Twitter, FB, Insta)
  * - A personal website (mostly just an easy way to link to a resume site)
  *
  * These "socials" are then shown directly beneath the user's name in the
@@ -48,7 +48,7 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  */
 export type SocialTypeAlias =
   | 'linkedin'
-  | 'github'
+  | 'twitter'
   | 'facebook'
   | 'instagram'
   | 'website';

@@ -161,31 +161,6 @@ class UserDialog extends React.Component<UserDialogProps> {
           'Label for the submit button that creates the appointment.',
         defaultMessage: 'Request {name}',
       },
-      website: {
-        id: 'user-dialog.website',
-        description: "Link to the user's portfolio website.",
-        defaultMessage: 'Portfolio',
-      },
-      linkedin: {
-        id: 'user-dialog.linkedin',
-        description: "Link to the user's LinkedIn profile.",
-        defaultMessage: 'LinkedIn',
-      },
-      github: {
-        id: 'user-dialog.github',
-        description: "Link to the user's GitHub profile.",
-        defaultMessage: 'GitHub',
-      },
-      facebook: {
-        id: 'user-dialog.facebook',
-        description: "Link to the user's Facebook profile.",
-        defaultMessage: 'Facebook',
-      },
-      instagram: {
-        id: 'user-dialog.instagram',
-        description: "Link to the user's Instagram profile.",
-        defaultMessage: 'Instagram',
-      },
     });
     return (
       <Dialog {...rest} open>
@@ -206,7 +181,9 @@ class UserDialog extends React.Component<UserDialogProps> {
                 {user.socials
                   .map<React.ReactNode>((social, index) => (
                     <a key={index} target='_blank' href={social.url}>
-                      {this.props.intl.formatMessage(labels[social.type])}
+                      {this.props.intl.formatMessage({
+                        id: `socials.${social.type}`,
+                      })}
                     </a>
                   ))
                   .reduce((prev, curr) => [prev, ' \u2022 ', curr])}

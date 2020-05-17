@@ -41,10 +41,10 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
     defaultMessage: 'Your LinkedIn profile',
     description: 'Label for the LinkedIn profile URL field.',
   },
-  github: {
-    id: 'tutor-form.github',
-    defaultMessage: 'Your GitHub profile',
-    description: 'Label for the GitHub profile URL field.',
+  twitter: {
+    id: 'tutor-form.twitter',
+    defaultMessage: 'Your Twitter profile',
+    description: 'Label for the Twitter profile URL field.',
   },
   facebook: {
     id: 'tutor-form.facebook',
@@ -82,7 +82,7 @@ class TutorForm extends React.Component<{ intl: IntlShape }> {
   public readonly state: TutorFormState = {
     name: '',
     linkedin: '',
-    github: '',
+    twitter: '',
     facebook: '',
     instagram: '',
     website: '',
@@ -189,7 +189,7 @@ class TutorForm extends React.Component<{ intl: IntlShape }> {
                   ),
                 },
                 {
-                  ...socialsField('github', (v) => `https://github.com/${v}`),
+                  ...socialsField('twitter', (v) => `https://twitter.com/${v}`),
                 },
                 {
                   ...socialsField(
