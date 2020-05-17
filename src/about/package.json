@@ -1,19 +1,18 @@
 {
-  "name": "@tutorbook/hero-form",
-  "version": "0.3.1",
-  "description": "Package that contains the first hero form on the COVID Tutoring Initiative website.",
+  "name": "@tutorbook/about",
+  "version": "0.3.2",
+  "description": "Package that contains a concise version of our about page for the COVID Tutoring Initiative homepage.",
   "keywords": [
     "Tutorbook",
-    "COVID",
-    "Tutoring",
-    "Form",
+    "About",
     "React",
-    "Typescript"
+    "COVID",
+    "Tutoring"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/hero-form.tsx",
+  "main": "lib/about.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -35,8 +34,11 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/checkmarks": "^0.3.2",
-    "@tutorbook/cta-form": "^0.3.2",
+    "@rmwc/typography": "^6.0.14",
+    "@tutorbook/banner": "^0.3.0",
+    "@tutorbook/cta-block": "^0.3.2",
+    "@tutorbook/intl": "^0.3.1",
+    "@tutorbook/spotlight-msg": "^0.3.2",
     "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

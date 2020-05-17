@@ -1,5 +1,70 @@
 [
   {
+    "id": "about.about-us.title",
+    "description": "The title of the \"About us\" home page section.",
+    "defaultMessage": "About us"
+  },
+  {
+    "id": "about.about-us.first-paragraph",
+    "description": "The first paragraph of our \"About us\" description.",
+    "defaultMessage": "<b>Tutorbook is a free, online tutoring platform</b> that connects students affected by school closures with volunteer tutors."
+  },
+  {
+    "id": "about.about-us.second-paragraph",
+    "description": "The second paragraph of our \"About us\" description.",
+    "defaultMessage": "Our mission is to connect students with expertise through one-on-one mentoring and tutoring. Here’s how you can help:"
+  },
+  {
+    "id": "about.about-us.first-cta",
+    "description": "The first CTA in the \"About us\" bulleted list.",
+    "defaultMessage": "Inform every parent and high school student that you know!"
+  },
+  {
+    "id": "about.about-us.second-cta",
+    "description": "The second CTA in the \"About us\" bulleted list.",
+    "defaultMessage": "Re-post this message and promote us so we can help more students!"
+  },
+  {
+    "id": "about.about-us.third-cta",
+    "description": "The third CTA in the \"About us\" bulleted list.",
+    "defaultMessage": "Help us recruit more volunteers by following #2 and by signing up <a>here</a>."
+  },
+  {
+    "id": "about.our-mission.title",
+    "description": "The title of the \"Our mission\" home page section.",
+    "defaultMessage": "Our mission & vision"
+  },
+  {
+    "id": "about.our-mission.first-paragraph",
+    "description": "The first paragraph of the \"Our mission\" section.",
+    "defaultMessage": "Students across the globe no longer have individualized support from teachers nor in-person collaboration due to COVID-19."
+  },
+  {
+    "id": "about.our-mission.second-paragraph",
+    "description": "The second paragraph of the \"Our mission\" section.",
+    "defaultMessage": "Our vision is for every student to have an expert mentor and (as needed) tutor(s)."
+  },
+  {
+    "id": "about.our-mission.third-paragraph",
+    "description": "The third paragraph of the \"Our mission\" section.",
+    "defaultMessage": "To do this, we have reached out to university students and educators from around the world—people who want to make a difference in this time of need."
+  },
+  {
+    "id": "about.our-mission.fourth-paragraph",
+    "description": "The fourth paragraph of the \"Our mission\" section.",
+    "defaultMessage": "As a result of the kindness and generosity of these talented individuals, students now have access to free one-on-one academic mentorship through our platform (and highly talented individuals have a means to make a difference from home 😉)."
+  },
+  {
+    "id": "about.our-mission.cta",
+    "description": "The \"volunteer here\" CTA link.",
+    "defaultMessage": "Want to help out? Volunteer <a>here</a>."
+  },
+  {
+    "id": "about.how-it-works.title",
+    "description": "The title of the \"How it works\" section.",
+    "defaultMessage": "How it works"
+  },
+  {
     "id": "footer.terms",
     "description": "Label for the \"Terms & Policies\" footer link.",
     "defaultMessage": "Terms"
@@ -48,61 +113,6 @@
     "id": "search.title",
     "description": "Title for the search page/view.",
     "defaultMessage": "Search"
-  },
-  {
-    "id": "hero-about.about-us.title",
-    "description": "The title of the \"About us\" home page section.",
-    "defaultMessage": "About us"
-  },
-  {
-    "id": "hero-about.about-us.first-paragraph",
-    "description": "The first paragraph of our \"About us\" description.",
-    "defaultMessage": "<b>Tutorbook is a free, online tutoring platform</b> that connects students affected by school closures with volunteer tutors."
-  },
-  {
-    "id": "hero-about.about-us.second-paragraph",
-    "description": "The second paragraph of our \"About us\" description.",
-    "defaultMessage": "In doing so, we are making universal, free, and online education a reality in this time of school crises. Here’s how you can help:"
-  },
-  {
-    "id": "hero-about.about-us.first-cta",
-    "description": "The first CTA in the \"About us\" bulleted list.",
-    "defaultMessage": "Inform every parent and high school student that you know!"
-  },
-  {
-    "id": "hero-about.about-us.second-cta",
-    "description": "The second CTA in the \"About us\" bulleted list.",
-    "defaultMessage": "Re-post this message and promote us so we can help more students!"
-  },
-  {
-    "id": "hero-about.about-us.third-cta",
-    "description": "The third CTA in the \"About us\" bulleted list.",
-    "defaultMessage": "Help us recruit more volunteers by following #2 and by signing up <a>here</a>."
-  },
-  {
-    "id": "hero-about.our-mission.title",
-    "description": "The title of the \"Our mission\" home page section.",
-    "defaultMessage": "Our mission"
-  },
-  {
-    "id": "hero-about.our-mission.first-paragraph",
-    "description": "The first paragraph of the \"Our mission\" section.",
-    "defaultMessage": "Students across the globe no longer have face-to-face support from teachers or in-person collaboration due to COVID-19."
-  },
-  {
-    "id": "hero-about.our-mission.second-paragraph",
-    "description": "The second paragraph of the \"Our mission\" section.",
-    "defaultMessage": "In response, we have reached out to university students and educators from around the world—people who want to make a difference but don’t know how."
-  },
-  {
-    "id": "hero-about.our-mission.third-paragraph",
-    "description": "The third paragraph of the \"Our mission\" section.",
-    "defaultMessage": "As a result of the kindness and generosity of these talented individuals, students now have access to free one-on-one academic mentorship through our platform (and highly talented individuals have a means to make a difference from home 😉)."
-  },
-  {
-    "id": "hero-about.our-mission.cta",
-    "description": "The \"volunteer here\" CTA link.",
-    "defaultMessage": "Want to help out? Volunteer <a>here</a>."
   },
   {
     "id": "pupil-form.parentName",

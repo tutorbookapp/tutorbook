@@ -1,0 +1,55 @@
+.checkmarks {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.checkmarkItem {
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.checkmarkItem:last-child {
+  margin-right: 0;
+}
+
+.checkmarkItemIcon {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  margin-right: 4px;
+}
+
+.checkmarkItemWhite .checkmarkItemIcon path {
+  fill: #fff;
+}
+
+.checkmarkItemText {
+  font-size: 14px;
+  font-weight: 600;
+  -webkit-letter-spacing: 0.02em;
+  -moz-letter-spacing: 0.02em;
+  -ms-letter-spacing: 0.02em;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.checkmarkItemWhite .checkmarkItemText {
+  color: #fff;
+}
+
+@media (min-width: 768px) {
+  .checkmarkItem {
+    margin-right: 25px;
+    margin-bottom: 6px;
+  }
+}

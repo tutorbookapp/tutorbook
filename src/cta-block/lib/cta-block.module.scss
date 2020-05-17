@@ -1,0 +1,103 @@
+.ctaBlock {
+  margin-bottom: 60px;
+  margin-top: 80px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ctaBlockContent {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  background-color: unset;
+  background-image: unset;
+  background-size: unset;
+  background-position: center center;
+}
+
+.ctaBlockBackground {
+  display: grid;
+  background-color: #6200ee;
+  background-image: unset;
+  background-size: cover;
+  background-position: center center;
+  border-radius: 8px;
+  grid-template-columns: repeat(12, 1fr);
+  grid-column: 2 / span 12;
+  padding: 60px 0;
+}
+
+.ctaBlockTextContainer {
+  padding-bottom: 20px;
+  grid-column: 2 / span 10;
+  text-align: center;
+  width: 100%;
+}
+
+.ctaBlockHeading {
+  margin-bottom: 16px;
+  word-break: break-word;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.ctaBlockSubheading {
+  font-size: 16px;
+  font-weight: 400;
+  -webkit-letter-spacing: 0.02em;
+  -moz-letter-spacing: 0.02em;
+  -ms-letter-spacing: 0.02em;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.ctaBlockForm {
+  grid-column: 2 / span 10;
+  text-align: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .ctaBlock {
+    margin-top: 100px;
+  }
+
+  .ctaBlockBackground {
+    padding: 60px 0;
+    max-width: 1290px;
+    margin: 0 auto;
+  }
+
+  .ctaBlockHeading {
+    font-size: 36px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ctaBlockBackground {
+    grid-column: content;
+    padding: 100px 0;
+    grid-template-columns: [gutter-left] 1fr [email-text] 4fr [gap] 1fr [form] 5fr [gutter-right] 1fr;
+  }
+
+  .ctaBlockContent {
+    grid-template-columns: [left-gutter] 1fr [content] 12fr [right-gutter] 1fr;
+  }
+
+  .ctaBlockTextContainer {
+    grid-column: email-text;
+    text-align: left;
+    -webkit-align-self: center;
+    -ms-flex-item-align: center;
+    align-self: center;
+    padding-bottom: 0;
+  }
+
+  .ctaBlockForm {
+    grid-column: form;
+    -webkit-align-self: center;
+    -ms-flex-item-align: center;
+    align-self: center;
+  }
+}

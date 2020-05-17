@@ -1,14 +1,18 @@
 $form-width: 450px;
+$hero-height: 600px;
+
+.heroFormCard {
+  max-width: $form-width;
+}
 
 .heroFormWrapper {
   text-align: center;
-  min-height: 606px;
+  height: $hero-height;
 }
 
 .heroFormInnerWrapper {
   display: inline-block;
   width: calc(100% - 80px);
-  padding-top: 20px;
   max-width: 1290px;
 }
 
@@ -24,20 +28,11 @@ $form-width: 450px;
   background-repeat: no-repeat;
   background-position: center top;
   width: 100%;
-  height: calc(139px + 20px + 606px);
+  height: 160px + $hero-height;
 }
 
-.heroFormCard {
-  max-width: $form-width;
-  margin: 0;
-}
-
-.heroForm {
-  padding-top: 22px;
-}
-
-@media (max-width: $form-width + 64px) {
-  .heroFormInnerWrapper {
-    width: calc(100% - 32px);
+@media (max-width: 768px) {
+  .heroBackground {
+    height: 124px + $hero-height;
   }
 }

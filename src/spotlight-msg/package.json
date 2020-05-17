@@ -1,19 +1,17 @@
 {
-  "name": "@tutorbook/hero-form",
-  "version": "0.3.1",
-  "description": "Package that contains the first hero form on the COVID Tutoring Initiative website.",
+  "name": "@tutorbook/spotlight-msg",
+  "version": "0.3.2",
+  "description": "Feature spotlight message with accompanying media React component.",
   "keywords": [
     "Tutorbook",
-    "COVID",
-    "Tutoring",
-    "Form",
     "React",
-    "Typescript"
+    "Typescript",
+    "Spotlight"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/hero-form.tsx",
+  "main": "lib/spotlight-msg.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -33,15 +31,5 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  },
-  "dependencies": {
-    "@tutorbook/checkmarks": "^0.3.2",
-    "@tutorbook/cta-form": "^0.3.2",
-    "next": "^9.4.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
-  },
-  "devDependencies": {
-    "typescript": "^3.8.3"
   }
 }

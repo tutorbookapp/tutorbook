@@ -15,57 +15,57 @@
     "defaultMessage": "Yazılım geliştiriciler"
   },
   {
-    "id": "hero-about.about-us.title",
+    "id": "about.about-us.title",
     "description": "The title of the \"About us\" home page section.",
     "defaultMessage": "Hakkımızda"
   },
   {
-    "id": "hero-about.about-us.first-paragraph",
+    "id": "about.about-us.first-paragraph",
     "description": "The first paragraph of our \"About us\" description.",
     "defaultMessage": "<b>Tutorbook okulların kapanmasından etkilenen öğrencileri</b> gönüllü eğitmenlerle eşleştiren ücretsiz online bir eğitim platformudur."
   },
   {
-    "id": "hero-about.about-us.second-paragraph",
+    "id": "about.about-us.second-paragraph",
     "description": "The second paragraph of our \"About us\" description.",
     "defaultMessage": "Böylece bizler evrensel, ücretsiz ve online eğitimi tam da okul krizi zamanında gerçeğe dönüştürüyoruz. Bize yardımcı olmak için:"
   },
   {
-    "id": "hero-about.about-us.first-cta",
+    "id": "about.about-us.first-cta",
     "description": "The first CTA in the \"About us\" bulleted list.",
     "defaultMessage": "Tanıdığınız her anne babaya ve lise öğrencisine bizden bahsedin."
   },
   {
-    "id": "hero-about.about-us.second-cta",
+    "id": "about.about-us.second-cta",
     "description": "The second CTA in the \"About us\" bulleted list.",
     "defaultMessage": "Daha fazla öğrenciye yardımcı olabilmemiz için bu mesajı paylaşın ve bizi tanıtın."
   },
   {
-    "id": "hero-about.about-us.third-cta",
+    "id": "about.about-us.third-cta",
     "description": "The third CTA in the \"About us\" bulleted list.",
     "defaultMessage": "Bizi takip ederek #2 ve Tutorbook'a üye olarak <a>here</a> daha fazla gönüllü kazanmamıza yardımcı olun."
   },
   {
-    "id": "hero-about.our-mission.title",
+    "id": "about.our-mission.title",
     "description": "The title of the \"Our mission\" home page section.",
     "defaultMessage": "Misyonumuz"
   },
   {
-    "id": "hero-about.our-mission.first-paragraph",
+    "id": "about.our-mission.first-paragraph",
     "description": "The first paragraph of the \"Our mission\" section.",
     "defaultMessage": "COVID-19 nedeniyle dünyadaki hiçbir öğrenci artık öğretmenleriyle yüz yüze görüşüp birebir destek alamıyor."
   },
   {
-    "id": "hero-about.our-mission.second-paragraph",
+    "id": "about.our-mission.second-paragraph",
     "description": "The second paragraph of the \"Our mission\" section.",
     "defaultMessage": "Biz de bunun uzerine dünyanın dört bir yanından fark yaratmak isteyen eğitimcilere ve üniversite öğrencilerine ulaştık."
   },
   {
-    "id": "hero-about.our-mission.third-paragraph",
+    "id": "about.our-mission.third-paragraph",
     "description": "The third paragraph of the \"Our mission\" section.",
     "defaultMessage": "Bu yetenekli bireylerin nezaket ve cömertliğinin bir sonucu olarak, öğrenciler artık platformumuz aracılığıyla birebir akademik mentorluğa erişebiliyor (ve tabi son derece yetenekli bireyler de artık evden fark yaratabiliyorlar😉)."
   },
   {
-    "id": "hero-about.our-mission.cta",
+    "id": "about.our-mission.cta",
     "description": "The \"volunteer here\" CTA link.",
     "defaultMessage": "Yardım etmek ister misiniz? Gönüllü olun <a>here</a>."
   },

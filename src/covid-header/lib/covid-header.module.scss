@@ -1,7 +1,7 @@
 .header {
   top: 0;
   width: calc(100% - 80px);
-  padding: 30px 40px;
+  padding: 40px;
   z-index: 100;
   margin: 0 auto;
 }
@@ -20,11 +20,4 @@
 
 .whiteHeader a {
   color: #ffffff !important;
-}
-
-@media (min-width: 768px) {
-  .header {
-    grid-template-rows: 51px;
-    margin-top: 20px;
-  }
 }
