@@ -10,56 +10,30 @@ $font-weight-values: (
   black: 900,
 );
 
+@use '@material/theme' with (
+  $on-surface: config.$black,
+);
 @use '@material/typography' with (
   $font-family: unquote('Poppins, sans-serif'),
   $styles-headline1: (
     font-weight: map.get($font-weight-values, bold),
-    color: config.$black,
   ),
   $styles-headline2: (
     font-size: 3.5rem,
     font-weight: map.get($font-weight-values, bold),
     letter-spacing: -0.125rem,
-    color: config.$black,
   ),
   $styles-headline3: (
     font-weight: map.get($font-weight-values, bold),
-    color: config.$black,
   ),
   $styles-headline4: (
     font-weight: map.get($font-weight-values, bold),
-    color: config.$black,
-  ),
-  $styles-headline5: (
-    color: config.$black,
-  ),
-  $styles-headline6: (
-    color: config.$black,
-  ),
-  $styles-subtitle1: (
-    color: config.$black,
-  ),
-  $styles-subtitle2: (
-    color: config.$black,
-  ),
-  $styles-body1: (
-    color: config.$black,
-  ),
-  $styles-body2: (
-    color: config.$black,
-  ),
-  $styles-caption: (
-    color: config.$black,
   ),
   $styles-button: (
     font-size: 1.05rem,
     font-weight: map.get($font-weight-values, bold),
     letter-spacing: 0.0125rem,
     text-transform: none,
-    color: config.$black,
-  ),
-  $styles-overline: (
-    color: config.$black,
   ),
 );
 @use '@material/textfield/mdc-text-field';
