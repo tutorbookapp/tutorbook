@@ -1,9 +1,9 @@
 import styles from './checkmark.module.scss';
 
 interface Props {
+  readonly [propName: string]: any;
   readonly black?: boolean;
   readonly checked?: boolean;
-  readonly [propName: string]: any;
 }
 
 export default function Checkmark(props: Props) {
