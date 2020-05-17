@@ -48,6 +48,7 @@
   "dependencies": {
     "next": "^9.4.0",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-intl": "^4.5.4"
   }
 }

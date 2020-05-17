@@ -19,7 +19,8 @@
     "@tutorbook/firebase": "^0.3.0",
     "@tutorbook/model": "^0.3.0",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-intl": "^4.5.4"
   },
   "repository": {
     "type": "git",

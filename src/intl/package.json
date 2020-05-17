@@ -40,5 +40,8 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  },
+  "dependencies": {
+    "react-intl": "^4.5.4"
   }
 }
