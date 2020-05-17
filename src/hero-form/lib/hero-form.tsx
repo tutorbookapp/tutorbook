@@ -1,5 +1,6 @@
 import React from 'react';
-import { useIntl, IntlShape } from 'react-intl';
+import { useIntl, IntlShape, FormattedMessage } from 'react-intl';
+import { Typography } from '@rmwc/typography';
 
 import CTAForm from '@tutorbook/cta-form';
 import Checkmarks from '@tutorbook/checkmarks';
@@ -21,6 +22,17 @@ export default function HeroForm(): JSX.Element {
       <div className={styles.heroFormWrapper}>
         <div className={styles.heroFormInnerWrapper}>
           <div className={styles.heroFormCard}>
+            <Typography className={styles.heroFormTitle} use='headline4'>
+              <FormattedMessage
+                id='hero-form.title'
+                defaultMessage='Connect with expert mentors and tutors'
+                description={
+                  'The first thing that the user sees; the title to the hero ' +
+                  'form on our landing page calling them to "Connect with ' +
+                  'expert mentors and tutors".'
+                }
+              />
+            </Typography>
             <CTAForm />
             <Checkmarks
               labels={[

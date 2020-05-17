@@ -63,7 +63,7 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   },
   submit: {
     id: 'pupil-form.submit',
-    defaultMessage: 'Search volunteer tutors',
+    defaultMessage: 'Search volunteers',
     description: 'Submit button label for the pupil sign-up form.',
   },
 });

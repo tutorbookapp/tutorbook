@@ -239,17 +239,17 @@
   {
     "id": "header.pupils",
     "description": "Label for the pupil sign-up page header link.",
-    "defaultMessage": "Students"
+    "defaultMessage": "For students"
   },
   {
     "id": "header.tutors",
     "description": "Label for the tutor sign-up page header link.",
-    "defaultMessage": "Volunteers"
+    "defaultMessage": "For volunteers"
   },
   {
     "id": "header.developers",
     "description": "Label for the developers page header link.",
-    "defaultMessage": "Developers"
+    "defaultMessage": "For developers"
   },
   {
     "id": "search.filters.subjects",
@@ -286,6 +286,11 @@
   {
     "id": "cta-block.body",
     "defaultMessage": "Ready to supercharge your academics? Complete this form to search our free, volunteer tutors."
+  },
+  {
+    "id": "hero-form.title",
+    "description": "The first thing that the user sees; the title to the hero form on our landing page calling them to \"Connect with expert mentors and tutors\".",
+    "defaultMessage": "Connect with expert mentors and tutors"
   },
   {
     "id": "pupil-form.parentName",
@@ -335,7 +340,7 @@
   {
     "id": "pupil-form.submit",
     "description": "Submit button label for the pupil sign-up form.",
-    "defaultMessage": "Search volunteer tutors"
+    "defaultMessage": "Search volunteers"
   },
   {
     "id": "pupil-form.title",

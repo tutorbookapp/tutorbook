@@ -64,17 +64,17 @@ export default function Header(props: HeaderProps): JSX.Element {
   const labels: Record<string, MessageDescriptor> = defineMessages({
     pupils: {
       id: 'header.pupils',
-      defaultMessage: 'Students',
+      defaultMessage: 'For students',
       description: 'Label for the pupil sign-up page header link.',
     },
     tutors: {
       id: 'header.tutors',
-      defaultMessage: 'Volunteers',
+      defaultMessage: 'For volunteers',
       description: 'Label for the tutor sign-up page header link.',
     },
     developers: {
       id: 'header.developers',
-      defaultMessage: 'Developers',
+      defaultMessage: 'For developers',
       description: 'Label for the developers page header link.',
     },
   });

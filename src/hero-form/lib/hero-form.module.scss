@@ -1,6 +1,12 @@
 $form-width: 450px;
 $hero-height: 600px;
 
+.heroFormTitle {
+  color: #fff;
+  margin: 0 0 24px;
+  text-align: left;
+}
+
 .heroFormCard {
   max-width: $form-width;
 }
