@@ -58,7 +58,7 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   },
   submit: {
     id: 'tutor-form.submit',
-    defaultMessage: 'Volunteer to tutor',
+    defaultMessage: 'Signup to volunteer',
     description: 'Submit button label for the tutor sign-up form.',
   },
 });
@@ -113,7 +113,7 @@ class TutorForm extends React.Component<{ intl: IntlShape }> {
               <FormattedMessage
                 id='tutor-form.title'
                 description='Title for the tutor/volunteer sign-up form.'
-                defaultMessage='Become a Tutor'
+                defaultMessage='Become a volunteer'
               />
             </Typography>
           </div>

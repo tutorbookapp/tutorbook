@@ -91,7 +91,7 @@ export default function PupilForm() {
             <FormattedMessage
               id='pupil-form.title'
               description='Title for the pupil sign-up form.'
-              defaultMessage='Request Free Tutoring'
+              defaultMessage='Connect with experts'
             />
           </Typography>
         </div>
@@ -101,9 +101,9 @@ export default function PupilForm() {
               id='pupil-form.description'
               description='Description for the pupil sign-up form.'
               defaultMessage={
-                'Complete the form below to create your Tutorbook account ' +
-                "and search our volunteer tutors; we'll make sure to connect " +
-                'you with the support you deserve!'
+                'Complete the form below to create your Tutorbook account, ' +
+                'search our volunteers, and connect with expert tutors and ' +
+                'mentors who are excited to help you learn!'
               }
             />
           </Typography>

@@ -345,12 +345,12 @@
   {
     "id": "pupil-form.title",
     "description": "Title for the pupil sign-up form.",
-    "defaultMessage": "Request Free Tutoring"
+    "defaultMessage": "Connect with experts"
   },
   {
     "id": "pupil-form.description",
     "description": "Description for the pupil sign-up form.",
-    "defaultMessage": "Complete the form below to create your Tutorbook account and search our volunteer tutors; we'll make sure to connect you with the support you deserve!"
+    "defaultMessage": "Complete the form below to create your Tutorbook account, search our volunteers, and connect with expert tutors and mentors who are excited to help you learn!"
   },
   {
     "id": "schedule-input.select-all-label",
@@ -425,12 +425,12 @@
   {
     "id": "tutor-form.submit",
     "description": "Submit button label for the tutor sign-up form.",
-    "defaultMessage": "Volunteer to tutor"
+    "defaultMessage": "Signup to volunteer"
   },
   {
     "id": "tutor-form.title",
     "description": "Title for the tutor/volunteer sign-up form.",
-    "defaultMessage": "Become a Tutor"
+    "defaultMessage": "Become a volunteer"
   },
   {
     "id": "tutor-form.description",
