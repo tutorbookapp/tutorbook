@@ -1,13 +1,38 @@
 import React from 'react';
+import NextLink from 'next/link';
 import {
   useIntl,
   IntlShape,
   defineMessages,
   MessageDescriptor,
 } from 'react-intl';
+import config from '@tutorbook/intl/config.json';
 import { Link } from '@tutorbook/intl';
 
 import styles from './covid-footer.module.scss';
+
+const locales: Record<string, MessageDescriptor> = defineMessages({
+  en: {
+    id: 'footer.lang.english',
+    defaultMessage: 'English',
+    description: 'Label for the "English" language option.',
+  },
+  fr: {
+    id: 'footer.lang.french',
+    defaultMessage: 'French',
+    description: 'Label for the "French" language option.',
+  },
+  se: {
+    id: 'footer.lang.spanish',
+    defaultMessage: 'Spanish',
+    description: 'Label for the "Spanish" language option.',
+  },
+  tr: {
+    id: 'footer.lang.turkish',
+    defaultMessage: 'Turkish',
+    description: 'Label for the "Turkish" language option.',
+  },
+});
 
 const socials: Record<string, MessageDescriptor> = defineMessages({
   facebook: {
@@ -37,21 +62,6 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
     id: 'footer.lang.choose',
     defaultMessage: 'Choose your language',
     description: 'Header prompting the user to choose their language`',
-  },
-  english: {
-    id: 'footer.lang.english',
-    defaultMessage: 'English',
-    description: 'Label for the "English" language option.',
-  },
-  french: {
-    id: 'footer.lang.french',
-    defaultMessage: 'French',
-    description: 'Label for the "French" language option.',
-  },
-  swedish: {
-    id: 'footer.lang.swedish',
-    defaultMessage: 'Swedish',
-    description: 'Label for the "Swedish" language option.',
   },
   team: {
     id: 'footer.team.title',
@@ -177,7 +187,9 @@ function PrimaryLink(props: LinkProps): JSX.Element {
 function LangLink(props: LinkProps): JSX.Element {
   return (
     <li className={styles.langLinkItem}>
-      <NavLink {...props} className={styles.langLink} />
+      <NextLink href={props.href}>
+        <a className={styles.langLink}>{props.label}</a>
+      </NextLink>
     </li>
   );
 }
@@ -321,9 +333,12 @@ export default function Footer(): JSX.Element {
               {intl.formatMessage(labels.lang)}
             </h3>
             <ul className={styles.langLinksList}>
-              <LangLink href='/en' label={intl.formatMessage(labels.english)} />
-              <LangLink href='/fr' label={intl.formatMessage(labels.french)} />
-              <LangLink href='/se' label={intl.formatMessage(labels.swedish)} />
+              {config.locales.map((locale: string) => (
+                <LangLink
+                  href={`/${locale}`}
+                  label={intl.formatMessage(locales[locale])}
+                />
+              ))}
             </ul>
           </nav>
         </ul>

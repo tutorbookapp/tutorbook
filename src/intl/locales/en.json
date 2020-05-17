@@ -113,6 +113,21 @@
     "defaultMessage": "How it works"
   },
   {
+    "id": "footer.lang.english",
+    "description": "Label for the \"English\" language option.",
+    "defaultMessage": "English"
+  },
+  {
+    "id": "footer.lang.french",
+    "description": "Label for the \"French\" language option.",
+    "defaultMessage": "French"
+  },
+  {
+    "id": "footer.lang.swedish",
+    "description": "Label for the \"Spanish\" language option.",
+    "defaultMessage": "Spanish"
+  },
+  {
     "id": "socials.facebook",
     "defaultMessage": "Facebook"
   },
@@ -136,21 +151,6 @@
     "id": "footer.lang.choose",
     "description": "Header prompting the user to choose their language`",
     "defaultMessage": "Choose your language"
-  },
-  {
-    "id": "footer.lang.english",
-    "description": "Label for the \"English\" language option.",
-    "defaultMessage": "English"
-  },
-  {
-    "id": "footer.lang.french",
-    "description": "Label for the \"French\" language option.",
-    "defaultMessage": "French"
-  },
-  {
-    "id": "footer.lang.swedish",
-    "description": "Label for the \"Swedish\" language option.",
-    "defaultMessage": "Swedish"
   },
   {
     "id": "footer.team.title",
