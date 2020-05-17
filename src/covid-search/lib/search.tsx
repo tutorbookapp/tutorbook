@@ -57,7 +57,7 @@ export default class Search extends React.Component<SearchProps> {
               />
             </Typography>
             <Grid className={styles.searchGrid}>
-              <GridCell span={4}>
+              <GridCell desktop={4} tablet={8} phone={4}>
                 <Card className={styles.searchCard}>
                   <Filter
                     filters={this.state.filters}
@@ -65,7 +65,7 @@ export default class Search extends React.Component<SearchProps> {
                   />
                 </Card>
               </GridCell>
-              <GridCell span={8}>
+              <GridCell desktop={8} tablet={8} phone={4}>
                 <Card className={styles.searchCard}>
                   <SearchResults
                     results={this.props.results}
