@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-utils",
-  "version": "0.3.0",
+  "version": "0.3.3",
   "description": "Contains utility functions used across the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",

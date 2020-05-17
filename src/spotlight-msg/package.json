@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/spotlight-msg",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Feature spotlight message with accompanying media React component.",
   "keywords": [
     "Tutorbook",

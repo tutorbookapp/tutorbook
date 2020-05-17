@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/cta-block",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Call to action block React component (for appending to the end of \"About\" pages).",
   "keywords": [
     "Tutorbook",
@@ -35,7 +35,7 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/checkmarks": "^0.3.2",
-    "@tutorbook/cta-form": "^0.3.2"
+    "@tutorbook/checkmarks": "^0.3.3",
+    "@tutorbook/cta-form": "^0.3.3"
   }
 }
