@@ -37,7 +37,10 @@ export default function Nav(props: NavProps): JSX.Element {
                 {...link}
                 key={index}
                 menuItemClassName={styles.menuItem}
-                menuItemLinkClassName={styles.menuItemLink}
+                menuItemLinkClassName={
+                  styles.menuItemLink +
+                  (props.white ? ' ' + styles.menuItemLinkWhite : '')
+                }
               />
             ))}
           </ul>

@@ -4,11 +4,73 @@ import CTABlock from '@tutorbook/cta-block';
 import SpotlightMsg from '@tutorbook/spotlight-msg';
 import { Link } from '@tutorbook/intl';
 import { Typography } from '@rmwc/typography';
-import { FormattedMessage } from 'react-intl';
+import {
+  useIntl,
+  IntlShape,
+  defineMessages,
+  MessageDescriptor,
+  FormattedMessage,
+} from 'react-intl';
 
 import styles from './about.module.scss';
 
+const msgs: Record<string, MessageDescriptor> = defineMessages({
+  stepZero: {
+    id: 'about.how-it-works.step-zero',
+    defaultMessage: 'Step #0',
+  },
+  tutorTitle: {
+    id: 'about.how-it-works.tutor.title',
+    defaultMessage: 'Tutor registers',
+  },
+  tutorBody: {
+    id: 'about.how-it-works.tutor.body',
+    defaultMessage: 'The volunteer tutor signs up and creates their profile.',
+  },
+  stepOne: {
+    id: 'about.how-it-works.step-one',
+    defaultMessage: 'Step #1',
+  },
+  pupilTitle: {
+    id: 'about.how-it-works.pupil.title',
+    defaultMessage: 'Pupil requests a tutor',
+  },
+  pupilBody: {
+    id: 'about.how-it-works.pupil.body',
+    defaultMessage: 'The student signs up, searches, and requests a tutor.',
+  },
+  stepTwo: {
+    id: 'about.how-it-works.step-two',
+    defaultMessage: 'Step #2',
+  },
+  parentTitle: {
+    id: 'about.how-it-works.parent.title',
+    defaultMessage: 'Parent approves of the requested tutor',
+  },
+  parentBody: {
+    id: 'about.how-it-works.parent.body',
+    defaultMessage:
+      'Each lesson request must receive parental approval before tutoring can' +
+      ' take place.',
+  },
+  stepThree: {
+    id: 'about.how-it-works.step-three',
+    defaultMessage: 'Step #3',
+  },
+  brambleTitle: {
+    id: 'about.how-it-works.bramble.title',
+    defaultMessage: 'Virtual tutoring lesson via Bramble',
+  },
+  brambleBody: {
+    id: 'about.how-it-works.bramble.body',
+    defaultMessage:
+      'After parental approval, the tutor and the student both receive an ' +
+      'email with a link to their secure, private Bramble room.',
+  },
+});
+
 export default function About(): JSX.Element {
+  const intl: IntlShape = useIntl();
   return (
     <div className={styles.aboutWrapper}>
       <div className={styles.aboutContent}>
@@ -158,31 +220,31 @@ export default function About(): JSX.Element {
         </Typography>
       </div>
       <SpotlightMsg
-        label='Step #0'
-        headline='Tutor registers'
-        body='The volunteer tutor signs up and creates their profile.'
+        label={intl.formatMessage(msgs.stepZero)}
+        headline={intl.formatMessage(msgs.tutorTitle)}
+        body={intl.formatMessage(msgs.tutorBody)}
         img='https://assets.tutorbook.org/gifs/tutor-signs-up.gif'
         flipped
         tan
       />
       <SpotlightMsg
-        label='Step #1'
-        headline='Pupil requests a tutor'
-        body='The student signs up, searches, and requests a tutor.'
+        label={intl.formatMessage(msgs.stepOne)}
+        headline={intl.formatMessage(msgs.pupilTitle)}
+        body={intl.formatMessage(msgs.pupilBody)}
         img='https://assets.tutorbook.org/gifs/pupil-signs-up.gif'
       />
       <SpotlightMsg
-        label='Step #2'
-        headline='Parent approves of the requested tutor'
-        body='Each lesson request must receive parental approval before tutoring can take place.'
+        label={intl.formatMessage(msgs.stepTwo)}
+        headline={intl.formatMessage(msgs.parentTitle)}
+        body={intl.formatMessage(msgs.parentBody)}
         img='https://assets.tutorbook.org/gifs/parent-approves.gif'
         flipped
         tan
       />
       <SpotlightMsg
-        label='Step #3'
-        headline='Virtual tutoring lesson via Bramble'
-        body='After parental approval, the tutor and the student both receive an email with a link to their secure, private Bramble room.'
+        label={intl.formatMessage(msgs.stepThree)}
+        headline={intl.formatMessage(msgs.brambleTitle)}
+        body={intl.formatMessage(msgs.brambleBody)}
         img='https://assets.tutorbook.org/gifs/tutor-joins-bramble.gif'
       />
       <CTABlock />

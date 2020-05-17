@@ -1,3 +1,5 @@
+@use '@tutorbook/covid-styles/config';
+
 .logoImg {
   width: 40px;
 }
@@ -12,18 +14,36 @@
 }
 
 .menu {
-  display: grid;
-  grid-template-columns: [left-gutter] 1fr [content] 12fr [right-gutter] 1fr;
-  width: 100%;
-  height: calc(100% - 70px);
+  width: calc(100% - 80px);
+  height: 100%;
   position: fixed;
-  top: 70px;
+  top: 0;
   left: 0;
   background-color: #ffffff;
   transition: all 0.5s;
   overflow-y: auto;
   opacity: 0;
   visibility: hidden;
+  z-index: 1;
+  padding: 40px;
+}
+
+.menuItem {
+  padding: 22px 0;
+  display: inline-block;
+  width: 100%;
+  border-bottom: 1px dotted config.$black;
+  position: relative;
+}
+
+.menuItemLink {
+  color: config.$black;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .menuActive {
@@ -51,7 +71,7 @@
 }
 
 .menuButtonWrapper:focus {
-  outline: 1px dotted #000;
+  outline: 1px dotted config.$black;
   outline-offset: 3px;
 }
 
@@ -73,7 +93,11 @@
   top: 10px;
   transform-origin: center center;
   transition: transform 0.3s, background 0.3s;
-  background-image: url(./svgs/menu-line.svg);
+  background-image: url(./svgs/black-menu-line.svg);
+}
+
+.menuLineWhite {
+  background-image: url(./svgs/white-menu-line.svg);
 }
 
 .menuLineTop {
@@ -85,23 +109,24 @@
 }
 
 .categoryWrapper {
-  grid-column: content;
   padding: 20px 0 0;
   display: inline-block;
   list-style: none;
+  width: 100%;
+  margin: 0;
 }
 
 .mobileNavItem {
   padding: 22px 0;
   display: inline-block;
   width: 100%;
-  border-bottom: 1px dotted #000;
+  border-bottom: 1px dotted config.$black;
   position: relative;
   list-style: none;
 }
 
 .mobileNavLink {
-  color: #181818;
+  color: config.$black;
   text-decoration: none;
   display: inline-block;
   cursor: pointer;

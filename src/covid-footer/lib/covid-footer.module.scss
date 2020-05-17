@@ -1,6 +1,16 @@
+@use '@tutorbook/covid-styles/config';
+
 .footer {
   display: grid;
   grid-template-columns: 1fr [content] 12fr 1fr;
+}
+
+.footer ul,
+.footer li {
+  list-style: none;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
 }
 
 .sitemapTitle {
@@ -39,22 +49,139 @@
   }
 }
 
-.secondaryLinks {
-  grid-row-start: 4;
-  display: flex;
-  padding: 20px 0;
-  margin-left: -15px;
-  display: inline-block;
+.primaryLinks {
+  -moz-column-count: 2;
+  column-count: 2;
+  -moz-column-gap: 10px;
+  column-gap: 10px;
 }
 
-.secondaryLinkItem {
-  display: inline-block;
+@media (min-width: 990px) {
+  .primaryLinks {
+    -moz-column-count: 3;
+    column-count: 3;
+  }
+}
+
+@media (min-width: 1200px) {
+  .primaryLinks {
+    -moz-column-count: 4;
+    column-count: 4;
+    -moz-column-gap: 20px;
+    column-gap: 20px;
+  }
+}
+
+.linkGroup {
+  padding-bottom: 36px !important;
+  width: 100%;
+  -moz-column-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.linkGroupHeader {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.primaryLinkItem {
+  width: 100%;
+  margin: 0;
+}
+
+.primaryLink {
+  display: block;
+  padding: 6px 0;
+  color: config.$black;
+  text-decoration: none;
+  position: relative;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.primaryLink[data-focus-visible-added] {
+  position: relative;
+}
+
+.primaryLink[data-focus-visible-added]:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  bottom: -6px;
+  left: -6px;
+  border: 3px solid black;
+  border-radius: 10px;
+}
+
+.primaryLinkBlog {
+  margin-top: 10px;
+}
+
+.primaryLinkBlog > a[data-focus-visible-added] {
+  position: relative;
+}
+
+.primaryLinkBlog > a[data-focus-visible-added]:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  bottom: -6px;
+  left: -6px;
+  border: 3px solid black;
+  border-radius: 10px;
+}
+
+.langLinks {
+  grid-row-start: 2;
+  grid-column: span 2;
+}
+
+.langTitle {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.langTitleIcon {
+  margin-right: 2px;
+}
+
+.langLinksList {
+  margin-left: -10px !important;
+}
+
+.langLink {
+  color: config.$black;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  display: block;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  padding: 10px;
+}
+
+.secondaryLinks {
+  grid-row-start: 4;
+  display: flex !important;
+  padding: 20px 0 !important;
+  margin-left: -15px !important;
 }
 
 .secondaryLink {
-  color: #181818;
+  color: config.$black;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
+  font-size: 15px;
   text-decoration: none;
   padding: 15px;
 }
@@ -75,6 +202,10 @@
   border-radius: 10px;
 }
 
+.primaryLink:hover,
+.primaryLink:focus,
+.langLink:hover,
+.langLink:focus,
 .secondaryLink:hover,
 .secondaryLink:focus {
   outline: none;

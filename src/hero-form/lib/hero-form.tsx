@@ -1,4 +1,6 @@
 import React from 'react';
+import { useIntl, IntlShape } from 'react-intl';
+
 import CTAForm from '@tutorbook/cta-form';
 import Checkmarks from '@tutorbook/checkmarks';
 
@@ -13,6 +15,7 @@ import styles from './hero-form.module.scss';
  * - (availability) When are you available?
  */
 export default function HeroForm(): JSX.Element {
+  const intl: IntlShape = useIntl();
   return (
     <>
       <div className={styles.heroFormWrapper}>
@@ -20,7 +23,10 @@ export default function HeroForm(): JSX.Element {
           <div className={styles.heroFormCard}>
             <CTAForm />
             <Checkmarks
-              labels={['Safeguarding', 'Lesson recordings and more']}
+              labels={[
+                intl.formatMessage({ id: 'cta-block.safeguarding' }),
+                intl.formatMessage({ id: 'cta-block.lesson-recordings' }),
+              ]}
               white
             />
           </div>

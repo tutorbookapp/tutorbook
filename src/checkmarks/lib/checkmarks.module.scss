@@ -1,3 +1,5 @@
+@use '@tutorbook/covid-styles/config';
+
 .checkmarks {
   display: -webkit-box;
   display: -webkit-flex;
@@ -27,6 +29,10 @@
   height: 12px;
   width: 12px;
   margin-right: 4px;
+}
+
+.checkmarkItemIcon path {
+  fill: config.$black;
 }
 
 .checkmarkItemWhite .checkmarkItemIcon path {

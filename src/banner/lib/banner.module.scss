@@ -4,7 +4,6 @@
 }
 
 .banner {
-  color: #fff;
   padding: 64px 0;
 }
 
@@ -16,8 +15,11 @@
   margin-bottom: 0;
 }
 
+.banner * {
+  color: #fff !important;
+}
+
 .banner a {
-  color: #fff;
   font-weight: bold;
 }
 

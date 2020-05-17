@@ -1,3 +1,5 @@
+@use '@tutorbook/covid-styles/config';
+
 .contentWrapper {
   display: none;
   max-width: 1290px;
@@ -73,12 +75,16 @@
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 15px;
-  color: #181818;
+  color: config.$black;
   padding: 12px;
   position: relative;
   cursor: pointer;
   text-decoration: none;
   /* Add a triangle-shaped hit zone above each menu */
+}
+
+.menuItemLinkWhite {
+  color: #fff;
 }
 
 .menuItemLink[data-focus-visible-added] {

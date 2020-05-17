@@ -1,5 +1,53 @@
 [
   {
+    "id": "about.how-it-works.step-zero",
+    "defaultMessage": "Step #0"
+  },
+  {
+    "id": "about.how-it-works.tutor.title",
+    "defaultMessage": "Tutor registers"
+  },
+  {
+    "id": "about.how-it-works.tutor.body",
+    "defaultMessage": "The volunteer tutor signs up and creates their profile."
+  },
+  {
+    "id": "about.how-it-works.step-one",
+    "defaultMessage": "Step #1"
+  },
+  {
+    "id": "about.how-it-works.pupil.title",
+    "defaultMessage": "Pupil requests a tutor"
+  },
+  {
+    "id": "about.how-it-works.pupil.body",
+    "defaultMessage": "The student signs up, searches, and requests a tutor."
+  },
+  {
+    "id": "about.how-it-works.step-two",
+    "defaultMessage": "Step #2"
+  },
+  {
+    "id": "about.how-it-works.parent.title",
+    "defaultMessage": "Parent approves of the requested tutor"
+  },
+  {
+    "id": "about.how-it-works.parent.body",
+    "defaultMessage": "Each lesson request must receive parental approval before tutoring can take place."
+  },
+  {
+    "id": "about.how-it-works.step-three",
+    "defaultMessage": "Step #3"
+  },
+  {
+    "id": "about.how-it-works.bramble.title",
+    "defaultMessage": "Virtual tutoring lesson via Bramble"
+  },
+  {
+    "id": "about.how-it-works.bramble.body",
+    "defaultMessage": "After parental approval, the tutor and the student both receive an email with a link to their secure, private Bramble room."
+  },
+  {
     "id": "about.about-us.title",
     "description": "The title of the \"About us\" home page section.",
     "defaultMessage": "About us"
@@ -65,34 +113,143 @@
     "defaultMessage": "How it works"
   },
   {
-    "id": "footer.terms",
-    "description": "Label for the \"Terms & Policies\" footer link.",
-    "defaultMessage": "Terms"
+    "id": "socials.facebook",
+    "defaultMessage": "Facebook"
   },
   {
-    "id": "footer.privacy",
-    "description": "Label for the \"Privacy Policy\" footer link.",
-    "defaultMessage": "Privacy"
+    "id": "socials.instagram",
+    "defaultMessage": "Instagram"
   },
   {
-    "id": "footer.security",
-    "description": "Label for the \"Security Policy\" footer link.",
-    "defaultMessage": "Security"
+    "id": "socials.twitter",
+    "defaultMessage": "Twitter"
+  },
+  {
+    "id": "socials.linkedin",
+    "defaultMessage": "LinkedIn"
+  },
+  {
+    "id": "socials.github",
+    "defaultMessage": "GitHub"
+  },
+  {
+    "id": "footer.lang.choose",
+    "description": "Header prompting the user to choose their language`",
+    "defaultMessage": "Choose your language"
+  },
+  {
+    "id": "footer.lang.english",
+    "description": "Label for the \"English\" language option.",
+    "defaultMessage": "English"
+  },
+  {
+    "id": "footer.lang.french",
+    "description": "Label for the \"French\" language option.",
+    "defaultMessage": "French"
+  },
+  {
+    "id": "footer.lang.swedish",
+    "description": "Label for the \"Swedish\" language option.",
+    "defaultMessage": "Swedish"
+  },
+  {
+    "id": "footer.team.title",
+    "defaultMessage": "Team"
+  },
+  {
+    "id": "footer.team.home",
+    "description": "Label for the team homepage link.",
+    "defaultMessage": "Home"
+  },
+  {
+    "id": "footer.team.directory",
+    "description": "Label for the team directory link.",
+    "defaultMessage": "Directory"
+  },
+  {
+    "id": "footer.team.slack",
+    "description": "Label for the team Slack workspace link.",
+    "defaultMessage": "Slack"
+  },
+  {
+    "id": "footer.team.join",
+    "description": "Label for the \"Join Our Team\" link.",
+    "defaultMessage": "Join Our Team"
+  },
+  {
+    "id": "footer.team.contact",
+    "defaultMessage": "Contact Us"
+  },
+  {
+    "id": "footer.socials.title",
+    "defaultMessage": "Socials"
+  },
+  {
+    "id": "footer.socials.help-with-covid",
+    "defaultMessage": "HelpWithCOVID"
+  },
+  {
+    "id": "footer.socials.indie-hackers",
+    "defaultMessage": "Indie Hackers"
+  },
+  {
+    "id": "footer.resources.title",
+    "defaultMessage": "Resources"
+  },
+  {
+    "id": "footer.resources.help-center",
+    "defaultMessage": "Help Center"
+  },
+  {
+    "id": "footer.resources.how-it-works",
+    "defaultMessage": "How It Works"
+  },
+  {
+    "id": "footer.resources.open-source",
+    "defaultMessage": "Open Source"
+  },
+  {
+    "id": "footer.resources.developer-docs",
+    "defaultMessage": "Developer Docs"
+  },
+  {
+    "id": "footer.useful-links.title",
+    "defaultMessage": "Useful Links"
+  },
+  {
+    "id": "footer.useful-links.pupils",
+    "description": "Label for the link to the student sign-up page.",
+    "defaultMessage": "Student Signup"
+  },
+  {
+    "id": "footer.useful-links.tutors",
+    "description": "Label for the link to the tutor sign-up page.",
+    "defaultMessage": "Tutor Signup"
+  },
+  {
+    "id": "footer.useful-links.search",
+    "description": "Label for the link to the search view.",
+    "defaultMessage": "Search Our Tutors"
+  },
+  {
+    "id": "footer.useful-links.report-issue",
+    "description": "Label for the link to create a new GitHub issue.",
+    "defaultMessage": "Report an Issue"
   },
   {
     "id": "header.pupils",
     "description": "Label for the pupil sign-up page header link.",
-    "defaultMessage": "For students"
+    "defaultMessage": "Students"
   },
   {
     "id": "header.tutors",
     "description": "Label for the tutor sign-up page header link.",
-    "defaultMessage": "For volunteers"
+    "defaultMessage": "Volunteers"
   },
   {
     "id": "header.developers",
     "description": "Label for the developers page header link.",
-    "defaultMessage": "For developers"
+    "defaultMessage": "Developers"
   },
   {
     "id": "search.filters.subjects",
@@ -113,6 +270,22 @@
     "id": "search.title",
     "description": "Title for the search page/view.",
     "defaultMessage": "Search"
+  },
+  {
+    "id": "cta-block.safeguarding",
+    "defaultMessage": "Safeguarding"
+  },
+  {
+    "id": "cta-block.lesson-recordings",
+    "defaultMessage": "Lesson recordings and more"
+  },
+  {
+    "id": "cta-block.title",
+    "defaultMessage": "Find your tutor"
+  },
+  {
+    "id": "cta-block.body",
+    "defaultMessage": "Ready to supercharge your academics? Complete this form to search our free, volunteer tutors."
   },
   {
     "id": "pupil-form.parentName",
