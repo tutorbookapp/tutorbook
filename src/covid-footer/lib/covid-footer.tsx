@@ -337,8 +337,9 @@ export default function Footer(): JSX.Element {
               {intl.formatMessage(labels.lang)}
             </h3>
             <ul className={styles.langLinksList}>
-              {config.locales.map((locale: string) => (
+              {config.locales.map((locale: string, index: number) => (
                 <LangLink
+                  key={index}
                   href={`/${locale}`}
                   label={intl.formatMessage(locales[locale])}
                 />

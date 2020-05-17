@@ -1,7 +1,8 @@
 const path = require('path');
+const withImages = require('next-images');
 const { locales } = require('./src/intl/config.json');
 
-module.exports = {
+module.exports = withImages({
   sassOptions: {
     includePaths: [
       path.resolve(__dirname, 'node_modules'),
@@ -52,15 +53,6 @@ module.exports = {
   },
   webpack(config) {
     config.module.rules.push({
-      test: /\.svg$/,
-      issuer: {
-        // Next.js already handles url() in css/sass/scss files.
-        // See https://bit.ly/39HerRo for more info.
-        test: /\.\w+(?<!(s?c|sa)ss)$/i,
-      },
-      use: 'svg-url-loader',
-    });
-    config.module.rules.push({
       test: /\.hbs$/,
       use: 'raw-loader',
     });
@@ -82,4 +74,4 @@ module.exports = {
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     BRAMBLE_API_KEY: process.env.BRAMBLE_API_KEY,
   },
-};
+});

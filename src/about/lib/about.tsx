@@ -12,6 +12,11 @@ import {
   FormattedMessage,
 } from 'react-intl';
 
+import ParentApproves from './gifs/parent-approves.gif';
+import PupilSignsUp from './gifs/pupil-signs-up.gif';
+import TutorSignsUp from './gifs/tutor-signs-up.gif';
+import TutorJoinsBramble from './gifs/tutor-joins-bramble.gif';
+
 import styles from './about.module.scss';
 
 const msgs: Record<string, MessageDescriptor> = defineMessages({
@@ -223,7 +228,7 @@ export default function About(): JSX.Element {
         label={intl.formatMessage(msgs.stepZero)}
         headline={intl.formatMessage(msgs.tutorTitle)}
         body={intl.formatMessage(msgs.tutorBody)}
-        img='https://assets.tutorbook.org/gifs/tutor-signs-up.gif'
+        img={TutorSignsUp}
         flipped
         tan
       />
@@ -231,13 +236,13 @@ export default function About(): JSX.Element {
         label={intl.formatMessage(msgs.stepOne)}
         headline={intl.formatMessage(msgs.pupilTitle)}
         body={intl.formatMessage(msgs.pupilBody)}
-        img='https://assets.tutorbook.org/gifs/pupil-signs-up.gif'
+        img={PupilSignsUp}
       />
       <SpotlightMsg
         label={intl.formatMessage(msgs.stepTwo)}
         headline={intl.formatMessage(msgs.parentTitle)}
         body={intl.formatMessage(msgs.parentBody)}
-        img='https://assets.tutorbook.org/gifs/parent-approves.gif'
+        img={ParentApproves}
         flipped
         tan
       />
@@ -245,7 +250,7 @@ export default function About(): JSX.Element {
         label={intl.formatMessage(msgs.stepThree)}
         headline={intl.formatMessage(msgs.brambleTitle)}
         body={intl.formatMessage(msgs.brambleBody)}
-        img='https://assets.tutorbook.org/gifs/tutor-joins-bramble.gif'
+        img={TutorJoinsBramble}
       />
       <CTABlock />
     </div>
