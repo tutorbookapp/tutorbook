@@ -1,34 +1,34 @@
+import React from 'react';
+
+import CTALink, { CTALinkProps } from './cta-link';
+
 import styles from './spotlight-msg.module.scss';
 
-interface SpotlightMsgProps {
-  readonly coral?: boolean;
-  readonly tan?: boolean;
-  readonly teal?: boolean;
-  readonly yellow?: boolean;
-  readonly flipped?: boolean;
-  readonly headline: string;
-  readonly body: string;
-  readonly label: string;
-  readonly img: string;
-}
+type ColorsAlias = 'coral' | 'tan' | 'teal' | 'yellow';
+
+type SpotlightMsgProps = {
+  flipped?: boolean;
+  headline: string;
+  body: string;
+  label: string;
+  img: string;
+  cta: CTALinkProps;
+  [color in ColorsAlias]?: boolean;
+};
 
 export default function SpotlightMsg(props: SpotlightMsgProps): JSX.Element {
+  const colorClass: string = props.coral
+    ? styles.featureSpotlightCoral
+    : props.tan
+    ? styles.featureSpotlightTan
+    : props.teal
+    ? styles.featureSpotlightTeal
+    : props.yellow
+    ? styles.featureSpotlightYellow
+    : '';
   return (
     <div className={styles.spotlight}>
-      <div
-        className={
-          styles.featureSpotlight +
-          (props.coral
-            ? ' ' + styles.featureSpotlightCoral
-            : props.tan
-            ? ' ' + styles.featureSpotlightTan
-            : props.teal
-            ? ' ' + styles.featureSpotlightTeal
-            : props.yellow
-            ? ' ' + styles.featureSpotlightYellow
-            : '')
-        }
-      >
+      <div className={styles.featureSpotlight + ' ' + colorClass}>
         <div className={styles.featureSpotlightBackground}>
           <div
             className={
@@ -56,7 +56,11 @@ export default function SpotlightMsg(props: SpotlightMsgProps): JSX.Element {
                 ? ' ' + styles.featureSpotlightChildrenFlipped
                 : '')
             }
-          ></div>
+          >
+            <div className={styles.featureSpotlightCTA}>
+              <CTALink black {...props.cta} />
+            </div>
+          </div>
           <div
             style={{ backgroundImage: `url(${props.img}` }}
             className={

@@ -26,11 +26,17 @@ const msgs: Record<string, MessageDescriptor> = defineMessages({
   },
   tutorTitle: {
     id: 'about.how-it-works.tutor.title',
-    defaultMessage: 'Tutor registers',
+    defaultMessage: 'Volunteer registers',
   },
   tutorBody: {
     id: 'about.how-it-works.tutor.body',
-    defaultMessage: 'The volunteer tutor signs up and creates their profile.',
+    defaultMessage:
+      'The volunteer tutor (or mentor) signs up and creates their profile.',
+  },
+  tutorCTA: {
+    id: 'about.how-it-works.tutor.cta',
+    defaultMessage: 'Get started as a volunteer',
+    description: 'Label for the CTA link to the tutor sign-up page.',
   },
   stepOne: {
     id: 'about.how-it-works.step-one',
@@ -38,11 +44,17 @@ const msgs: Record<string, MessageDescriptor> = defineMessages({
   },
   pupilTitle: {
     id: 'about.how-it-works.pupil.title',
-    defaultMessage: 'Pupil requests a tutor',
+    defaultMessage: 'Student requests a volunteer',
   },
   pupilBody: {
     id: 'about.how-it-works.pupil.body',
-    defaultMessage: 'The student signs up, searches, and requests a tutor.',
+    defaultMessage:
+      'The student signs up, searches, and requests a tutor (or mentor).',
+  },
+  pupilCTA: {
+    id: 'about.how-it-works.pupil.cta',
+    defaultMessage: 'Get started as a student',
+    description: 'Label for the CTA link to the student sign-up page.',
   },
   stepTwo: {
     id: 'about.how-it-works.step-two',
@@ -64,13 +76,18 @@ const msgs: Record<string, MessageDescriptor> = defineMessages({
   },
   brambleTitle: {
     id: 'about.how-it-works.bramble.title',
-    defaultMessage: 'Virtual tutoring lesson via Bramble',
+    defaultMessage: 'Virtual tutoring lessons via Bramble',
   },
   brambleBody: {
     id: 'about.how-it-works.bramble.body',
     defaultMessage:
       'After parental approval, the tutor and the student both receive an ' +
       'email with a link to their secure, private Bramble room.',
+  },
+  learnMore: {
+    id: 'about.how-it-works.learn-more',
+    defaultMessage: 'Learn more',
+    description: 'Label for the "Learn more" CTA links.',
   },
 });
 
@@ -229,6 +246,10 @@ export default function About(): JSX.Element {
         headline={intl.formatMessage(msgs.tutorTitle)}
         body={intl.formatMessage(msgs.tutorBody)}
         img={TutorSignsUp}
+        cta={{
+          label: intl.formatMessage(msgs.tutorCTA),
+          href: '/tutors',
+        }}
         flipped
         tan
       />
@@ -237,12 +258,20 @@ export default function About(): JSX.Element {
         headline={intl.formatMessage(msgs.pupilTitle)}
         body={intl.formatMessage(msgs.pupilBody)}
         img={PupilSignsUp}
+        cta={{
+          label: intl.formatMessage(msgs.pupilCTA),
+          href: '/pupils',
+        }}
       />
       <SpotlightMsg
         label={intl.formatMessage(msgs.stepTwo)}
         headline={intl.formatMessage(msgs.parentTitle)}
         body={intl.formatMessage(msgs.parentBody)}
         img={ParentApproves}
+        cta={{
+          label: intl.formatMessage(msgs.learnMore),
+          href: 'https://intercom.help/tutorbook/',
+        }}
         flipped
         tan
       />
@@ -251,6 +280,10 @@ export default function About(): JSX.Element {
         headline={intl.formatMessage(msgs.brambleTitle)}
         body={intl.formatMessage(msgs.brambleBody)}
         img={TutorJoinsBramble}
+        cta={{
+          label: intl.formatMessage(msgs.learnMore),
+          href: 'https://about.bramble.io/',
+        }}
       />
       <CTABlock />
     </div>

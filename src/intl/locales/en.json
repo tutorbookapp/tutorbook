@@ -5,11 +5,16 @@
   },
   {
     "id": "about.how-it-works.tutor.title",
-    "defaultMessage": "Tutor registers"
+    "defaultMessage": "Volunteer registers"
   },
   {
     "id": "about.how-it-works.tutor.body",
-    "defaultMessage": "The volunteer tutor signs up and creates their profile."
+    "defaultMessage": "The volunteer tutor (or mentor) signs up and creates their profile."
+  },
+  {
+    "id": "about.how-it-works.tutor.cta",
+    "description": "Label for the CTA link to the tutor sign-up page.",
+    "defaultMessage": "Get started as a volunteer"
   },
   {
     "id": "about.how-it-works.step-one",
@@ -17,11 +22,16 @@
   },
   {
     "id": "about.how-it-works.pupil.title",
-    "defaultMessage": "Pupil requests a tutor"
+    "defaultMessage": "Student requests a volunteer"
   },
   {
     "id": "about.how-it-works.pupil.body",
-    "defaultMessage": "The student signs up, searches, and requests a tutor."
+    "defaultMessage": "The student signs up, searches, and requests a tutor (or mentor)."
+  },
+  {
+    "id": "about.how-it-works.pupil.cta",
+    "description": "Label for the CTA link to the student sign-up page.",
+    "defaultMessage": "Get started as a student"
   },
   {
     "id": "about.how-it-works.step-two",
@@ -41,11 +51,16 @@
   },
   {
     "id": "about.how-it-works.bramble.title",
-    "defaultMessage": "Virtual tutoring lesson via Bramble"
+    "defaultMessage": "Virtual tutoring lessons via Bramble"
   },
   {
     "id": "about.how-it-works.bramble.body",
     "defaultMessage": "After parental approval, the tutor and the student both receive an email with a link to their secure, private Bramble room."
+  },
+  {
+    "id": "about.how-it-works.learn-more",
+    "description": "Label for the \"Learn more\" CTA links.",
+    "defaultMessage": "Learn more"
   },
   {
     "id": "about.about-us.title",
@@ -238,7 +253,7 @@
   {
     "id": "footer.useful-links.search",
     "description": "Label for the link to the search view.",
-    "defaultMessage": "Search Our Tutors"
+    "defaultMessage": "Search Volunteers"
   },
   {
     "id": "footer.useful-links.report-issue",

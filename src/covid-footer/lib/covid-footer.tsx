@@ -143,7 +143,7 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   },
   search: {
     id: 'footer.useful-links.search',
-    defaultMessage: 'Search Our Tutors',
+    defaultMessage: 'Search Volunteers',
     description: 'Label for the link to the search view.',
   },
   issue: {
