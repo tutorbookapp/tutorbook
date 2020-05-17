@@ -1,5 +1,11 @@
 import React from 'react';
 import { Router, withRouter } from 'next/router';
+import {
+  IntlShape,
+  injectIntl,
+  defineMessages,
+  MessageDescriptor,
+} from 'react-intl';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -16,6 +22,40 @@ import Footer from '../../covid-footer';
 import { ApiError, Appt, ApptJSONInterface } from '../../model';
 import { getIntlProps, getIntlPaths, withIntl } from '../../intl';
 
+const msgs: Record<string, MessageDescriptor> = defineMessages({
+  approved: {
+    id: 'approve-page.approved',
+    defaultMessage: 'Approved',
+    description:
+      'Header for the parental approval page telling the parent that they ' +
+      'have successfully approved of the pending lesson request.',
+  },
+  failed: {
+    id: 'approve-page.failed',
+    defaultMessage: 'Approval Failed',
+    description:
+      'Header for the parental approval page telling the parent that we ' +
+      'encountered an error while approving the pending lesson request (and ' +
+      'thus the lesson request was not approved).',
+  },
+  approving: {
+    id: 'approve-page.approving',
+    defaultMessage: 'Approving . . .',
+    description: 'Loading message for the parental approval page.',
+  },
+  success: {
+    id: 'approve-page.success',
+    defaultMessage:
+      'Created tutoring appointments for {subjects} on {time}. The ' +
+      'appointment attendees will each receive an email with a link to a ' +
+      'Bramble room and instructions for how to make the most out of their ' +
+      'virtual tutoring lessons.',
+    description:
+      'Body message telling the parent that they have successfully approved ' +
+      'and created a tutoring appointment.',
+  },
+});
+
 interface ApprovePageState {
   appt?: Appt;
   err?: string;
@@ -26,8 +66,10 @@ interface ApprovePageState {
  * @todo Find some way to import it directly from Next.js (perhaps open a PR to
  * `export` those types from `next/router`).
  */
-type WithRouterProps = { router: Router }
+type WithRouterProps = { router: Router };
 type ExcludeRouterProps<P> = Pick<P, Exclude<keyof P, keyof WithRouterProps>>;
+
+type ApprovePageProps = WithRouterProps & { intl: IntlShape };
 
 /**
  * Page that parents go to when approving (i.e. when giving parental consent
@@ -42,7 +84,7 @@ type ExcludeRouterProps<P> = Pick<P, Exclude<keyof P, keyof WithRouterProps>>;
  * only allow pupils to add the contact information of one parent. And we don't
  * really care **which** parent approves the lesson request anyways.
  */
-class ApprovePage extends React.Component<WithRouterProps> {
+class ApprovePage extends React.Component<ApprovePageProps> {
   public readonly state: ApprovePageState = { appt: undefined, err: undefined };
 
   public render(): JSX.Element {
@@ -53,10 +95,10 @@ class ApprovePage extends React.Component<WithRouterProps> {
           loading={!this.state.appt && !this.state.err}
           headline={
             this.state.appt
-              ? 'Approved'
+              ? this.props.intl.formatMessage(msgs.approved)
               : this.state.err
-              ? 'Approval Failed'
-              : 'Approving...'
+              ? this.props.intl.formatMessage(msgs.failed)
+              : this.props.intl.formatMessage(msgs.approving)
           }
           body={
             this.state.appt
@@ -73,13 +115,10 @@ class ApprovePage extends React.Component<WithRouterProps> {
   }
 
   private get successMsg(): string {
-    const appt: Appt = this.state.appt as Appt;
-    return (
-      `Created tutoring appointments for ${Utils.join(appt.subjects)} ` +
-      `on ${appt.time}. The appointment attendees will each receive an email ` +
-      `with a link to a Bramble room and instructions for how to make the ` +
-      `most out of their virtual tutoring lessons.`
-    );
+    return this.props.intl.formatMessage(msgs.success, {
+      time: (this.state.appt as Appt).time.toString(),
+      subjects: Utils.join((this.state.appt as Appt).subjects),
+    });
   }
 
   public async componentDidMount(): Promise<void> {
@@ -133,4 +172,4 @@ function withPageRouter<P extends WithRouterProps>(
   });
 }
 
-export default withIntl(withPageRouter(ApprovePage));
+export default withIntl(withPageRouter(injectIntl(ApprovePage)));
