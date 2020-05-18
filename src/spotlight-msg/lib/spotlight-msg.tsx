@@ -59,7 +59,7 @@ export default function SpotlightMsg(props: SpotlightMsgProps): JSX.Element {
             }
           >
             <div className={styles.featureSpotlightCTA}>
-              <CTALink black {...props.cta} />
+              <CTALink {...props.cta} />
             </div>
           </div>
           <div
