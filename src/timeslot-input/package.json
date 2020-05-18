@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/timeslot-input",
-  "version": "0.3.4",
+  "version": "0.3.9",
   "description": "Text field input for selecting a window of time.",
   "keywords": [
     "Tutorbook",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@rmwc/textfield": "^6.1.0",
-    "@tutorbook/model": "^0.3.4",
+    "@tutorbook/model": "^0.3.9",
     "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
