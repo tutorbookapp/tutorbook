@@ -3,15 +3,16 @@ import { Link } from '@tutorbook/intl';
 
 import styles from './cta-link.module.scss';
 
-type ColorsAlias = 'coral' | 'teal' | 'black' | 'white' | 'transparent';
-
-export type CTALinkProps = {
+export interface CTALinkProps {
   label: string;
   href: string;
   small?: boolean;
   wide?: boolean;
-  [color in ColorsAlias]?: boolean;
-};
+  coral?: boolean;
+  teal?: boolean;
+  white?: boolean;
+  transparent?: boolean;
+}
 
 function Arrow(): JSX.Element {
   return (
