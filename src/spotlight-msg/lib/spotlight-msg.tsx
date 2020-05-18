@@ -4,17 +4,18 @@ import CTALink, { CTALinkProps } from './cta-link';
 
 import styles from './spotlight-msg.module.scss';
 
-type ColorsAlias = 'coral' | 'tan' | 'teal' | 'yellow';
-
-type SpotlightMsgProps = {
+interface SpotlightMsgProps {
+  coral?: boolean;
+  tan?: boolean;
+  teal?: boolean;
+  yellow?: boolean;
   flipped?: boolean;
   headline: string;
   body: string;
   label: string;
   img: string;
   cta: CTALinkProps;
-  [color in ColorsAlias]?: boolean;
-};
+}
 
 export default function SpotlightMsg(props: SpotlightMsgProps): JSX.Element {
   const colorClass: string = props.coral
