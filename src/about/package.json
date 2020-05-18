@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/about",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Package that contains a concise version of our about page for the COVID Tutoring Initiative homepage.",
   "keywords": [
     "Tutorbook",
@@ -37,8 +37,8 @@
     "@rmwc/typography": "^6.0.14",
     "@tutorbook/banner": "^0.3.3",
     "@tutorbook/cta-block": "^0.3.6",
-    "@tutorbook/intl": "^0.3.6",
-    "@tutorbook/spotlight-msg": "^0.3.6",
+    "@tutorbook/intl": "^0.3.7",
+    "@tutorbook/spotlight-msg": "^0.3.7",
     "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
