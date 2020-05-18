@@ -46,6 +46,7 @@ export class PupilRequestEmail implements Email {
     Data
   > = Handlebars.compile(Template);
   public readonly from: string = 'Tutorbook <team@tutorbook.org>';
+  public readonly bcc: string = 'team@tutorbook.org';
   public readonly to: string;
   public readonly subject: string;
   public readonly html: string;
