@@ -357,6 +357,10 @@ export default function Footer(): JSX.Element {
             label={intl.formatMessage({ id: 'header.tutors' })}
           />
           <SecondaryLink
+            href='/parents'
+            label={intl.formatMessage({ id: 'header.parents' })}
+          />
+          <SecondaryLink
             href='https://github.com/tutorbookapp/covid-tutoring#readme'
             label={intl.formatMessage({ id: 'header.developers' })}
           />

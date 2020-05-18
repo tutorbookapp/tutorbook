@@ -72,6 +72,11 @@ export default function Header(props: HeaderProps): JSX.Element {
       defaultMessage: 'For volunteers',
       description: 'Label for the tutor sign-up page header link.',
     },
+    parents: {
+      id: 'header.parents',
+      defaultMessage: 'For parents',
+      description: 'Label for the parent "How it works" header link.',
+    },
     developers: {
       id: 'header.developers',
       defaultMessage: 'For developers',
@@ -80,12 +85,16 @@ export default function Header(props: HeaderProps): JSX.Element {
   });
   const links: LinkProps[] = [
     {
-      href: '/pupils/',
+      href: '/pupils',
       label: intl.formatMessage(labels.pupils),
     },
     {
-      href: '/tutors/',
+      href: '/tutors',
       label: intl.formatMessage(labels.tutors),
+    },
+    {
+      href: '/parents',
+      label: intl.formatMessage(labels.parents),
     },
     {
       href: 'https://github.com/tutorbookapp/covid-tutoring#readme',

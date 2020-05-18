@@ -271,6 +271,11 @@
     "defaultMessage": "For volunteers"
   },
   {
+    "id": "header.parents",
+    "description": "Label for the parent \"How it works\" header link.",
+    "defaultMessage": "For parents"
+  },
+  {
     "id": "header.developers",
     "description": "Label for the developers page header link.",
     "defaultMessage": "For developers"
