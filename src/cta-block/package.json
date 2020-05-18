@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/cta-block",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Call to action block React component (for appending to the end of \"About\" pages).",
   "keywords": [
     "Tutorbook",
@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "@tutorbook/checkmarks": "^0.3.3",
-    "@tutorbook/cta-form": "^0.3.3"
+    "@tutorbook/cta-form": "^0.3.4"
   }
 }

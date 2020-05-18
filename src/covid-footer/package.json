@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-footer",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Package containing the footer component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@tutorbook/covid-styles": "^0.3.3",
-    "@tutorbook/intl": "^0.3.3",
+    "@tutorbook/intl": "^0.3.4",
     "next": "^9.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

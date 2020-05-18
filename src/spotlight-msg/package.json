@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/spotlight-msg",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Feature spotlight message with accompanying media React component.",
   "keywords": [
     "Tutorbook",
@@ -33,6 +33,6 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/intl": "^0.3.3"
+    "@tutorbook/intl": "^0.3.4"
   }
 }

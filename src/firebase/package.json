@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/firebase",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Package that contains utilities for using Firebase with Next.js, Typescript, and React.",
   "keywords": [
     "Tutorbook",
@@ -34,7 +34,7 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/model": "^0.3.0",
+    "@tutorbook/model": "^0.3.4",
     "await-to-js": "^2.1.1",
     "axios": "^0.19.2",
     "firebase": "^7.14.2",
