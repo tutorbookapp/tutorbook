@@ -82,7 +82,8 @@ const msgs: Record<string, MessageDescriptor> = defineMessages({
     id: 'about.how-it-works.bramble.body',
     defaultMessage:
       'After parental approval, the tutor and the student both receive a link' +
-      ' to their secure, private Bramble room.',
+      ' to their secure, private Bramble room. No direct contact information ' +
+      'is ever shared.',
   },
   learnMore: {
     id: 'about.how-it-works.learn-more',
