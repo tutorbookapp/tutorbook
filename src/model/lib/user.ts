@@ -227,7 +227,6 @@ export class User implements UserInterface {
     const allFilledValues = Object.fromEntries(
       Object.entries(intercomValues).filter(([key, val]) => isFilled(val))
     );
-    console.log('[DEBUG] All filled values:', allFilledValues);
     return Object.fromEntries(
       Object.entries(allFilledValues).map(([key, val]) => {
         const stringified: IntercomCustomAttributeType =
