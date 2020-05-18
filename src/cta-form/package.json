@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/cta-form",
-  "version": "0.3.4",
+  "version": "0.3.6",
   "description": "Primary call-to-action form that searches our volunteers.",
   "keywords": [
     "Tutorbook",
@@ -32,7 +32,7 @@
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
   "dependencies": {
-    "@tutorbook/firebase": "^0.3.4",
+    "@tutorbook/firebase": "^0.3.6",
     "@tutorbook/form": "^0.3.4",
     "@tutorbook/model": "^0.3.4",
     "next": "^9.4.0",

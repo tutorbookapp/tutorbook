@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/pupil-form",
-  "version": "0.3.4",
+  "version": "0.3.6",
   "description": "Package that contains the pupil sign-up form for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@rmwc/select": "^6.1.0",
-    "@tutorbook/firebase": "^0.3.4",
+    "@tutorbook/firebase": "^0.3.6",
     "@tutorbook/form": "^0.3.4",
     "@tutorbook/model": "^0.3.4",
     "next": "^9.4.0",
