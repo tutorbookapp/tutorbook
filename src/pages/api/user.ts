@@ -107,7 +107,7 @@ async function updateUser(user: User): Promise<void> {
       user.photo = updatedRecord.photoURL || userRecord.photoURL || '';
       user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
     } else if (err) {
-      throw err; // Errors are caught outside of this helper function.
+      throw new Error(`${err.name} updating ${user}: ${err.message}`);
     } else if (updatedRecord) {
       // Don't let the user delete past known info (e.g. if the old `userRecord`
       // has data that this new `User` doesn't; we don't just get rid of data).
@@ -115,6 +115,76 @@ async function updateUser(user: User): Promise<void> {
       user.photo = updatedRecord.photoURL || userRecord.photoURL || '';
       user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
     }
+  }
+}
+
+/**
+ * Creates a new user and handles various errors:
+ * - The `auth/email-already-exists` error by updating the existing error (see
+ *   the above helper function for how that's implemented).
+ * - The `auth/phone-number-already-exists` error by creating the user w/out the
+ *   given phone number (this is a bit hacky and we might want to re-think it
+ *   later on).
+ *
+ * While this function doesn't actually return anything, it does perform side
+ * effects on the given `user` object (i.e. adding the uID).
+ */
+async function createUser(user: User, parents?: User[]): Promise<void> {
+  console.log(`[DEBUG] Creating user ${user}...`);
+  const [err, userRecord] = await to<UserRecord, FirebaseError>(
+    auth.createUser({
+      disabled: false,
+      displayName: user.name,
+      photoURL: user.photo ? user.photo : undefined,
+      email: user.email,
+      emailVerified: false,
+      phoneNumber: user.phone ? user.phone : undefined,
+    })
+  );
+  let updateUserInsteadOfSet: boolean = false;
+  if (err && err.code === 'auth/email-already-exists') {
+    console.log('[DEBUG] Handling email address already exists error...');
+    await updateUser(user); // Errors are already thrown in the helper function.
+    updateUserInsteadOfSet = true;
+    // Note that the `user.uid` property was already set in `updateUser()`.
+    console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
+  } else if (err && err.code === 'auth/phone-number-already-exists') {
+    console.log('[DEBUG] Handling phone number already exists error...');
+    const [err, userRecord] = await to<UserRecord, FirebaseError>(
+      auth.createUser({
+        disabled: false,
+        displayName: user.name,
+        photoURL: user.photo ? user.photo : undefined,
+        email: user.email,
+        emailVerified: false,
+      })
+    );
+    if (err) throw new Error(`${err.name} creating ${user}: ${err.message}`);
+    user.uid = (userRecord as UserRecord).uid;
+    console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
+  } else if (err) {
+    throw new Error(`${err.name} creating ${user}: ${err.message}`);
+  } else {
+    user.uid = (userRecord as UserRecord).uid;
+    console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
+  }
+  const userRef: DocumentReference = db.collection('users').doc(user.uid);
+  if (parents) {
+    for (const parent of parents) {
+      console.log(`[DEBUG] Creating parent ${parent}...`);
+      await createUser(parent);
+      user.parents.push(parent.uid);
+      console.log(`[DEBUG] Created parent ${parent}.`);
+    }
+  }
+  if (updateUserInsteadOfSet) {
+    console.log('[DEBUG] Updating profile...');
+    await userRef.update(user.toFirestore());
+    console.log(`[DEBUG] Updated ${user.name}'s profile (${user.uid}).`);
+  } else {
+    console.log('[DEBUG] Setting profile...');
+    await userRef.set(user.toFirestore());
+    console.log(`[DEBUG] Set ${user.name}'s profile (${user.uid}).`);
   }
 }
 
@@ -152,101 +222,17 @@ export default async function user(
     error('Your request body must contain a user field.');
   } else {
     const user: User = User.fromJSON(req.body.user);
-    console.log('[DEBUG] Creating user...');
-    const [err, userRecord] = await to<UserRecord, FirebaseError>(
-      auth.createUser({
-        disabled: false,
-        displayName: user.name,
-        photoURL: user.photo ? user.photo : undefined,
-        email: user.email,
-        emailVerified: false,
-        phoneNumber: user.phone ? user.phone : undefined,
-      })
+    const parents: User[] = (req.body.parents || []).map((u) =>
+      User.fromJSON(u)
     );
-    /**
-     * This `errHandled` variable is our current workaround to continue to
-     * the `else` statement once we deal with known Firebase Admin Auth errors.
-     * @see {@link https://firebase.google.com/docs/auth/admin/errors}
-     */
-    let errHandled: boolean = false;
-    let updateUserInsteadOfSet: boolean = false;
-    if (err && err.code === 'auth/email-already-exists') {
-      console.log('[DEBUG] Handling email address already exists error...');
-      const [err] = await to<void, FirebaseError>(updateUser(user));
-      if (err) {
-        error(`${err.name} updating (${user.email}): ${err.message}`, 500, err);
-      } else {
-        errHandled = updateUserInsteadOfSet = true;
-        // Note that the `user.uid` property was already set in `updateUser()`.
-        console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
-      }
-    } else if (err && err.code === 'auth/phone-number-already-exists') {
-      console.log('[DEBUG] Handling phone number already exists error...');
-      const [err, userRecord] = await to<UserRecord, FirebaseError>(
-        auth.createUser({
-          disabled: false,
-          displayName: user.name,
-          photoURL: user.photo ? user.photo : undefined,
-          email: user.email,
-          emailVerified: false,
-        })
-      );
-      if (err) {
-        error(`${err.name} creating (${user.email}): ${err.message}`, 500, err);
-      } else {
-        errHandled = true;
-        user.uid = (userRecord as UserRecord).uid;
-        console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
-      }
-    } else if (err) {
-      console.error(`[ERROR] ${err.name} while creating user:`, err);
-      error(`${err.name} creating (${user.email}): ${err.message}`, 500, err);
+    const [err] = await to(createUser(user, parents));
+    if (err) {
+      error(err.message, 500, err);
     } else {
-      user.uid = (userRecord as UserRecord).uid;
-      console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
-    }
-    if (!err || errHandled) {
-      const userRef: DocumentReference = db.collection('users').doc(user.uid);
-      if (req.body.parents && req.body.parents instanceof Array) {
-        for (const parentData of req.body.parents) {
-          const parent: User = User.fromJSON(parentData);
-          const [err, parentRecord] = await to<UserRecord, FirebaseError>(
-            auth.createUser({
-              disabled: false,
-              displayName: parent.name,
-              photoURL: parent.photo ? parent.photo : undefined,
-              email: parent.email,
-              emailVerified: false,
-              phoneNumber: parent.phone ? parent.phone : undefined,
-            })
-          );
-          if (err) {
-            console.warn(`[WARNING] ${err.name} while creating parent:`, err);
-          } else {
-            console.log(`[DEBUG] Created ${parent.name} (${parent.uid}).`);
-            parent.uid = (parentRecord as UserRecord).uid;
-            user.parents.push(parent.uid);
-            const parentRef: DocumentReference = db
-              .collection('users')
-              .doc(parent.uid);
-            await parentRef.set(parent.toFirestore());
-          }
-        }
-      }
-      if (updateUserInsteadOfSet) {
-        console.log('[DEBUG] Updating profile...');
-        await userRef.update(user.toFirestore());
-        console.log(`[DEBUG] Updated ${user.name}'s profile (${user.uid}).`);
-      } else {
-        console.log('[DEBUG] Setting profile...');
-        await userRef.set(user.toFirestore());
-        console.log(`[DEBUG] Set ${user.name}'s profile (${user.uid}).`);
-      }
       const [err, token] = await to<string, FirebaseError>(
         auth.createCustomToken(user.uid)
       );
       if (err) {
-        console.error(`[ERROR] ${err.name} while creating login token:`, err);
         error(`${err.name} creating login token: ${err.message}`, 500, err);
       } else {
         user.token = token;
