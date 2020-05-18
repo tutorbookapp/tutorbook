@@ -62,13 +62,13 @@ const msgs: Record<string, MessageDescriptor> = defineMessages({
   },
   parentTitle: {
     id: 'about.how-it-works.parent.title',
-    defaultMessage: 'Parent approves of the requested tutor',
+    defaultMessage: 'Parent approves of the volunteer',
   },
   parentBody: {
     id: 'about.how-it-works.parent.body',
     defaultMessage:
-      'Each lesson request must receive parental approval before tutoring can' +
-      ' take place.',
+      'Each request must receive parental approval before the student can ' +
+      'meet with their tutor (or mentor).',
   },
   stepThree: {
     id: 'about.how-it-works.step-three',
@@ -81,8 +81,8 @@ const msgs: Record<string, MessageDescriptor> = defineMessages({
   brambleBody: {
     id: 'about.how-it-works.bramble.body',
     defaultMessage:
-      'After parental approval, the tutor and the student both receive an ' +
-      'email with a link to their secure, private Bramble room.',
+      'After parental approval, the tutor and the student both receive a link' +
+      ' to their secure, private Bramble room.',
   },
   learnMore: {
     id: 'about.how-it-works.learn-more',
