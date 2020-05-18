@@ -4,6 +4,8 @@ import { useIntl, IntlShape } from 'react-intl';
 import Form, { InputElAlias } from '@tutorbook/form';
 import { GRADES, GradeAlias, User } from '@tutorbook/model';
 
+import firebase from '@tutorbook/firebase';
+
 import styles from './cta-form.module.scss';
 
 /**
@@ -44,6 +46,9 @@ export default function CTAForm(): JSX.Element {
       ]}
       submitLabel={intl.formatMessage({ id: 'pupil-form.submit' })}
       onFormSubmit={async (formValues) => {
+        firebase.analytics().logEvent('search', {
+          search_term: formValues.searches.explicit.join(', '),
+        });
         const pupil: User = new User({ ...formValues, grade });
         Router.push(`/${intl.locale}${pupil.searchURL}`);
       }}

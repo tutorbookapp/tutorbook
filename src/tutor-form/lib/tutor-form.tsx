@@ -13,6 +13,8 @@ import Form, { InputElAlias } from '@tutorbook/form';
 import { UserProvider } from '@tutorbook/firebase';
 import { SocialTypeAlias, User } from '@tutorbook/model';
 
+import firebase from '@tutorbook/firebase';
+
 import styles from './tutor-form.module.scss';
 
 const labels: Record<string, MessageDescriptor> = defineMessages({
@@ -209,6 +211,9 @@ class TutorForm extends React.Component<{ intl: IntlShape }> {
               ]}
               submitLabel={this.props.intl.formatMessage(labels.submit)}
               onFormSubmit={(formValues) => {
+                firebase.analytics().logEvent('sign_up', {
+                  method: 'tutor_form',
+                });
                 const { name, ...rest } = this.state;
                 const socials = Object.entries(rest).map(([type, url]) => ({
                   type: type as SocialTypeAlias,

@@ -13,6 +13,8 @@ import Form, { InputElAlias } from '@tutorbook/form';
 import { GRADES, GradeAlias, User } from '@tutorbook/model';
 import { UserProvider } from '@tutorbook/firebase';
 
+import firebase from '@tutorbook/firebase';
+
 import styles from './pupil-form.module.scss';
 
 const labels: Record<string, MessageDescriptor> = defineMessages({
@@ -170,6 +172,9 @@ export default function PupilForm() {
             ]}
             submitLabel={intl.formatMessage(labels.submit)}
             onFormSubmit={async (formValues) => {
+              firebase.analytics().logEvent('sign_up', {
+                method: 'pupil_form',
+              });
               const {
                 parentName,
                 parentEmail,

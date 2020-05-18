@@ -26,6 +26,7 @@ import { AxiosResponse, AxiosError } from 'axios';
 
 import axios from 'axios';
 import to from 'await-to-js';
+import firebase from '@tutorbook/firebase';
 
 import styles from './results.module.scss';
 
@@ -62,6 +63,12 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
     };
   }
 
+  public componentDidMount(): void {
+    firebase.analytics().logEvent('view_search_results', {
+      search_term: this.props.filters.subjects.join(', '),
+    });
+  }
+
   /**
    * We must call `this.search` from within this lifecycle method in order for
    * the search results to be updated every time our `props.filters` are
@@ -96,20 +103,40 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
     );
     if (err && err.response) {
       console.error(`[ERROR] ${err.response.data}`);
-      throw new Error(err.response.data);
-    } else if (err && err.request) {
-      console.error('[ERROR] Search REST API did not respond:', err.request);
-      throw new Error('Search REST API did not respond.');
-    } else if (err) {
-      console.error('[ERROR] While sending request:', err);
-      throw new Error(`While sending request: ${err.message}`);
-    } else if (res) {
-      this.setState({
-        searching: false,
-        results: res.data.map((user: UserJSONInterface) => User.fromJSON(user)),
+      firebase.analytics().logEvent('exception', {
+        description: `Search API responded with error: ${err.response.data}`,
+        fatal: true,
       });
+    } else if (err && err.request) {
+      console.error('[ERROR] Search API did not respond:', err.request);
+      firebase.analytics().logEvent('exception', {
+        description: `Search API did not respond: ${err.request}`,
+        fatal: true,
+      });
+    } else if (err) {
+      console.error('[ERROR] Calling search API:', err);
+      firebase.analytics().logEvent('exception', {
+        description: `Error calling search API: ${err}`,
+        fatal: true,
+      });
+    } else if (res) {
+      const results: User[] = res.data.map((user: UserJSONInterface) =>
+        User.fromJSON(user)
+      );
+      firebase.analytics().logEvent('view_item_list', {
+        items: results.map((user: User) => ({
+          item_id: user.uid,
+          item_name: user.name,
+        })),
+      });
+      this.setState({ searching: false, results });
     } else {
-      console.warn('[WARNING] No error or response from search REST API.');
+      // This should never actually happen, but we include it here just in case.
+      console.warn('[WARNING] No error or response from search API.');
+      firebase.analytics().logEvent('exception', {
+        description: 'No error or response from search API.',
+        fatal: true,
+      });
       this.setState({ searching: false, results: [] });
     }
     window.clearTimeout(loaderTimeoutID);
@@ -163,13 +190,23 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
     );
   }
 
+  private handleUserClick(user: User): void {
+    firebase.analytics().logEvent('select_content', {
+      content_type: 'user',
+      items: [
+        {
+          item_id: user.uid,
+          item_name: user.name,
+        },
+      ],
+    });
+    this.setState({ viewing: user });
+  }
+
   private renderResults(): JSX.Element | JSX.Element[] {
     if (this.state.results.length) {
       return this.state.results.map((result: User) => (
-        <ListItem
-          key={result.uid}
-          onClick={() => this.setState({ viewing: result })}
-        >
+        <ListItem key={result.uid} onClick={() => this.handleUserClick(result)}>
           <ListItemGraphic
             icon={
               <Avatar

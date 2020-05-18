@@ -6,7 +6,13 @@ import SubjectSelect from '@tutorbook/subject-select';
 import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
 import { Link } from '@tutorbook/intl';
 import { UserContext } from '@tutorbook/firebase';
-import { ApiError, User, Timeslot, Appt } from '@tutorbook/model';
+import {
+  ApiError,
+  User,
+  Timeslot,
+  Appt,
+  ApptJSONInterface,
+} from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { Typography } from '@rmwc/typography';
@@ -22,6 +28,7 @@ import {
 
 import axios from 'axios';
 import to from 'await-to-js';
+import firebase from '@tutorbook/firebase';
 
 import styles from './user-dialog.module.scss';
 
@@ -38,6 +45,15 @@ interface UserDialogProps extends DialogProps {
   readonly className?: string;
 }
 
+/**
+ * Google Analytics checkout steps are defined as:
+ * 0. Opening the user dialog (logged in `src/search/lib/results.tsx`).
+ * 1. (Optional) Selecting a subject (optional b/c subjects are pre-selected).
+ * 2. (Optional) Selecting a timeslot (optional b/c timeslot is pre-selected).
+ * 3. (Optional) Adding a request message.
+ * 4. Sending the request (we only log a `purchase` event once the request has
+ * been successfully sent by our API).
+ */
 class UserDialog extends React.Component<UserDialogProps> {
   public readonly state: UserDialogState;
   public static readonly contextType: React.Context<User> = UserContext;
@@ -77,37 +93,68 @@ class UserDialog extends React.Component<UserDialogProps> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  private handleSubjectsChange(subjects: string[]): void {
-    this.setState({
-      appt: new Appt({
-        ...this.state.appt,
-        subjects,
-      }),
+  private get items(): firebase.analytics.Item[] {
+    return [
+      {
+        item_id: this.props.user.uid,
+        item_name: this.props.user.name,
+      },
+    ];
+  }
+
+  public componentDidMount(): void {
+    firebase.analytics().logEvent('view_item', {
+      items: this.items,
     });
+    firebase.analytics().logEvent('begin_checkout', {
+      request: this.state.appt.toJSON(),
+      items: this.items,
+    });
+  }
+
+  private handleSubjectsChange(subjects: string[]): void {
+    const appt: Appt = new Appt({ ...this.state.appt, subjects });
+    firebase.analytics().logEvent('checkout_progress', {
+      checkout_step: 1,
+      request: appt.toJSON(),
+      items: this.items,
+    });
+    this.setState({ appt });
   }
 
   private handleTimeslotChange(time: Timeslot): void {
-    this.setState({
-      appt: new Appt({
-        ...this.state.appt,
-        time,
-      }),
+    const appt: Appt = new Appt({ ...this.state.appt, time });
+    firebase.analytics().logEvent('checkout_progress', {
+      checkout_step: 2,
+      request: appt.toJSON(),
+      items: this.items,
     });
+    this.setState({ appt });
   }
 
   private handleMessageChange(event: React.FormEvent<HTMLInputElement>): void {
-    this.setState({
-      appt: new Appt({
-        ...this.state.appt,
-        message: event.currentTarget.value,
-      }),
+    const message: string = event.currentTarget.value;
+    const appt: Appt = new Appt({ ...this.state.appt, message });
+    firebase.analytics().logEvent('checkout_progress', {
+      checkout_step: 3,
+      request: appt.toJSON(),
+      items: this.items,
     });
+    this.setState({ appt });
   }
 
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
+    firebase.analytics().logEvent('checkout_progress', {
+      checkout_step: 4,
+      request: this.state.appt.toJSON(),
+      items: this.items,
+    });
     this.setState({ submitted: false, submitting: true });
-    const [err] = await to<AxiosResponse, AxiosError<ApiError>>(
+    const [err, res] = await to<
+      AxiosResponse<{ request: ApptJSONInterface }>,
+      AxiosError<ApiError>
+    >(
       axios({
         method: 'post',
         url: '/api/request',
@@ -118,11 +165,40 @@ class UserDialog extends React.Component<UserDialogProps> {
       })
     );
     if (err && err.response) {
-      console.error(`[ERROR] ${err.response.data.msg}`);
+      console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
+      firebase.analytics().logEvent('exception', {
+        description: `Request API responded with error: ${err.response.data.msg}`,
+        request: this.state.appt.toJSON(),
+        fatal: false,
+      });
     } else if (err && err.request) {
-      console.error('[ERROR] No response received:', err.request);
+      console.error('[ERROR] Request API did not respond:', err.request);
+      firebase.analytics().logEvent('exception', {
+        description: `Request API did not respond: ${err.request}`,
+        request: this.state.appt.toJSON(),
+        fatal: false,
+      });
     } else if (err) {
-      console.error('[ERROR] While sending request:', err);
+      console.error('[ERROR] Calling request API:', err);
+      firebase.analytics().logEvent('exception', {
+        description: `Error calling request API: ${err}`,
+        request: this.state.appt.toJSON(),
+        fatal: false,
+      });
+    } else if (res) {
+      firebase.analytics().logEvent('purchase', {
+        transaction_id: res.request.id,
+        request: res.request,
+        items: this.items,
+      });
+    } else {
+      // This should never actually happen, but we include it here just in case.
+      console.warn('[WARNING] No error or response from request API.');
+      firebase.analytics().logEvent('exception', {
+        description: 'No error or response from request API.',
+        request: this.state.appt.toJSON(),
+        fatal: false,
+      });
     }
     this.setState({ submitted: true, submitting: false });
   }

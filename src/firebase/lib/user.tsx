@@ -118,21 +118,47 @@ export class UserProvider extends React.Component<UserProviderProps> {
       // The request was made and the server responded with a status
       // code that falls out of the range of 2xx
       console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
+      firebase.analytics().logEvent('exception', {
+        description: `User API responded with error: ${err.response.data}`,
+        user: user.toJSON(),
+        fatal: true,
+      });
     } else if (err && err.request) {
       // The request was made but no response was received
       // `err.request` is an instance of XMLHttpRequest in the
       // browser and an instance of http.ClientRequest in node.js
-      console.error('[ERROR] No response received:', err.request);
+      console.error('[ERROR] User API did not respond:', err.request);
+      firebase.analytics().logEvent('exception', {
+        description: `User API did not respond: ${err.request}`,
+        user: user.toJSON(),
+        fatal: true,
+      });
     } else if (err) {
       // Something happened in setting up the request that triggered
       // an err
-      console.error('[ERROR] While sending request:', err);
+      console.error('[ERROR] Calling user API:', err);
+      firebase.analytics().logEvent('exception', {
+        description: `Error calling user API: ${err}`,
+        user: user.toJSON(),
+        fatal: true,
+      });
     } else if (res) {
       // TODO: Find a way to `this.setState()` with `res.data.user` ASAP
       // (instead of waiting on Firebase Auth to call our auth state listener).
       await UserProvider.auth.signInWithCustomToken(
         res.data.user.token as string
       );
+      firebase.analytics().logEvent('login', {
+        method: 'custom_token',
+      });
+    } else {
+      // This should never actually happen, but we include it here just in case.
+      console.warn('[WARNING] No error or response from user API.');
+      firebase.analytics().logEvent('exception', {
+        description: 'No error or response from user API.',
+        user: user.toJSON(),
+        fatal: true,
+      });
     }
   }
 }

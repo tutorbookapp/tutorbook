@@ -9,6 +9,8 @@ import SubjectSelect from '@tutorbook/subject-select';
 import ScheduleInput from '@tutorbook/schedule-input';
 import { Availability, FiltersInterface } from '@tutorbook/model';
 
+import firebase from '@tutorbook/firebase';
+
 import styles from './filter.module.scss';
 
 interface FilterProps {
@@ -32,6 +34,7 @@ class Filter extends React.Component<FilterProps> {
   }
 
   private updateSubjects(subjects: string[]): void {
+    firebase.analytics().logEvent('filter_subjects');
     this.props.onChange({
       ...this.props.filters,
       subjects: subjects,
@@ -39,6 +42,7 @@ class Filter extends React.Component<FilterProps> {
   }
 
   private updateAvailability(availability: Availability): void {
+    firebase.analytics().logEvent('filter_availability');
     this.props.onChange({
       ...this.props.filters,
       availability: availability,
