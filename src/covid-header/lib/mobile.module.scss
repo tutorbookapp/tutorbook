@@ -13,6 +13,11 @@
   align-self: center;
 }
 
+.menuWrapper {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .menu {
   width: calc(100% - 80px);
   height: 100%;
