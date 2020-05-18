@@ -70,7 +70,6 @@ export interface SocialInterface {
  * @property subjects - The subjects that the user can tutor in.
  * @property searches - The subjects that the user needs tutoring for.
  * @property parents - The Firebase uIDs of linked parent accounts.
- * @property notifications - The user's notification configuration.
  * @property ref - The user's Firestore profile `DocumentReference`.
  * @property token - The user's Firebase Authentication JWT `idToken`.
  * @property socials - An array of the user's socials (e.g. LinkedIn, Facebook).
@@ -88,7 +87,6 @@ export interface UserInterface {
   subjects: SubjectsInterface;
   searches: SubjectsInterface;
   parents?: string[];
-  notifications: NotificationsConfigAlias;
   ref?: DocumentReference | AdminDocumentReference;
   token?: string;
   socials: SocialInterface[];
@@ -121,7 +119,6 @@ export interface UserJSONInterface {
   subjects: SubjectsInterface;
   searches: SubjectsInterface;
   parents?: string[];
-  notifications?: NotificationsConfigAlias;
   token?: string;
   socials: SocialInterface[];
 }
@@ -159,13 +156,6 @@ export class User implements UserInterface {
     filled: [],
   };
   public parents: string[] = [];
-  public notifications: NotificationsConfigAlias = {
-    email: [],
-    sms: [],
-    webpush: [],
-    newRequest: ['email', 'webpush'],
-    newLesson: ['sms', 'email', 'webpush'],
-  };
   public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;
   public grade?: GradeAlias;
@@ -212,28 +202,47 @@ export class User implements UserInterface {
    */
   public toIntercom(): Record<string, any> {
     const { uid, photo, token, ref, ...rest } = this;
-    return {
-      user_id: uid,
-      avatar: {
-        type: 'avatar',
-        image_url: photo,
-      },
-      ...Object.fromEntries(
-        Object.entries(rest).map(([key, val]) => {
-          const stringified: IntercomCustomAttributeType =
-            typeof val === 'string'
-              ? val
-              : typeof val === 'boolean'
-              ? val
-              : typeof val === 'number'
-              ? val
-              : val instanceof Date
-              ? val
-              : JSON.stringify(val);
-          return [key, stringified];
-        })
-      ),
+    const isFilled: (val: any) => boolean = (val: any) => {
+      switch (typeof val) {
+        case 'string':
+          return val !== '';
+        case 'boolean':
+          return true;
+        case 'undefined':
+          return false;
+        case 'number':
+          return true;
+        case 'object':
+          return Object.values(val).filter(isFilled).length > 0;
+        default:
+          return !!val;
+      }
     };
+    const intercomValues = {
+      user_id: uid ? uid : undefined,
+      ref: ref ? ref.path : undefined,
+      avatar: photo ? { type: 'avatar', image_url: photo } : undefined,
+      ...rest,
+    };
+    const allFilledValues = Object.fromEntries(
+      Object.entries(intercomValues).filter(([key, val]) => isFilled(val))
+    );
+    console.log('[DEBUG] All filled values:', allFilledValues);
+    return Object.fromEntries(
+      Object.entries(allFilledValues).map(([key, val]) => {
+        const stringified: IntercomCustomAttributeType =
+          typeof val === 'string'
+            ? val
+            : typeof val === 'boolean'
+            ? val
+            : typeof val === 'number'
+            ? val
+            : val instanceof Date
+            ? val
+            : JSON.stringify(val);
+        return [key, stringified];
+      })
+    );
   }
 
   public static fromSearchHit(hit: UserSearchHitAlias): User {
