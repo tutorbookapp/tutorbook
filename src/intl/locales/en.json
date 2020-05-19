@@ -193,12 +193,12 @@
   {
     "id": "footer.team.slack",
     "description": "Label for the team Slack workspace link.",
-    "defaultMessage": "Slack"
+    "defaultMessage": "Join the Slack"
   },
   {
     "id": "footer.team.join",
     "description": "Label for the \"Join Our Team\" link.",
-    "defaultMessage": "Join Our Team"
+    "defaultMessage": "Join the Team"
   },
   {
     "id": "footer.team.contact",

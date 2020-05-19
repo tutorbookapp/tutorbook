@@ -83,12 +83,12 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   },
   slack: {
     id: 'footer.team.slack',
-    defaultMessage: 'Slack',
+    defaultMessage: 'Join the Slack',
     description: 'Label for the team Slack workspace link.',
   },
   join: {
     id: 'footer.team.join',
-    defaultMessage: 'Join Our Team',
+    defaultMessage: 'Join the Team',
     description: 'Label for the "Join Our Team" link.',
   },
   contact: {
@@ -159,7 +159,7 @@ interface LinkProps {
 }
 
 function NavLink(props: LinkProps & { className: string }): JSX.Element {
-  if (props.href.indexOf('http') < 0)
+  if (props.href.indexOf('http') < 0 && props.href.indexOf('mailto') < 0)
     return (
       <Link href={props.href}>
         <a className={props.className}>{props.label}</a>
@@ -310,7 +310,8 @@ export default function Footer(): JSX.Element {
                 label: intl.formatMessage(labels.directory),
               },
               {
-                href: 'https://tutorbookapp.slack.com/',
+                href:
+                  'https://join.slack.com/t/tutorbookapp/shared_invite/zt-ekmpvd9t-uzH_HuS6KbwVg480TAMa5g',
                 label: intl.formatMessage(labels.slack),
               },
               {

@@ -39,7 +39,7 @@ export function NavItem(props: NavItemProps): JSX.Element {
 }
 
 function NavLink(props: NavLinkProps): JSX.Element {
-  if (props.href.indexOf('http') < 0)
+  if (props.href.indexOf('http') < 0 && props.href.indexOf('mailto') < 0)
     return (
       <Link href={props.href}>
         <a className={props.menuItemLinkClassName}>{props.label}</a>
