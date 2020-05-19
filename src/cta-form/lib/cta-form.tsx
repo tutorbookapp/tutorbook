@@ -52,7 +52,6 @@ export default function CTAForm(): JSX.Element {
         const pupil: User = new User({ ...formValues, grade });
         Router.push(`/${intl.locale}${pupil.searchURL}`);
       }}
-      className={styles.form}
       cardProps={{
         className: styles.formCard,
       }}
