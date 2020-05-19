@@ -1,9 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { User, UserJSONInterface, ApiError } from '../../model';
+import { SignUpEmail } from '../../emails';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
+import mail from '@sendgrid/mail';
 import * as admin from 'firebase-admin';
+
+mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 type FirebaseError = admin.FirebaseError & Error;
 type DocumentReference = admin.firestore.DocumentReference;
@@ -237,6 +241,7 @@ export default async function user(
       } else {
         user.token = token;
         res.status(201).json({ user: user.toJSON() });
+        await mail.send(new SignUpEmail(user));
       }
     }
   }
