@@ -51,6 +51,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   private suggestionsTimeoutID?: number;
   private foundationRef: any;
   private lastSelectedRef: React.MutableRefObject<string | null>;
+  private hasOpenedSuggestions: boolean = false;
 
   private static searchIndex: SearchIndex = client.initIndex('subjects');
 
@@ -68,6 +69,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       this.state.inputValueWorkaround = this.getInputValue();
     }
     this.lastSelectedRef = React.createRef();
+    this.maybeOpenSuggestions = this.maybeOpenSuggestions.bind(this);
     this.openSuggestions = this.openSuggestions.bind(this);
     this.closeSuggestions = this.closeSuggestions.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
@@ -147,7 +149,10 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    */
   private openSuggestions(): void {
     window.clearTimeout(this.suggestionsTimeoutID);
-    if (!this.state.suggestionsOpen) this.setState({ suggestionsOpen: true });
+    if (!this.state.suggestionsOpen) {
+      this.hasOpenedSuggestions = true;
+      this.setState({ suggestionsOpen: true });
+    }
   }
 
   /**
@@ -196,6 +201,18 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     const value: string = event.currentTarget.value || this.getInputValue();
     this.setState({ inputValueWorkaround: value });
     this.updateSuggestions(event.currentTarget.value);
+    this.openSuggestions();
+  }
+
+  /**
+   * We don't show the suggestion menu until after the user has started typing.
+   * That way, the user learns that they can type to filter/search the subjects.
+   * After they learn that (i.e. after the menu has been opened at least once),
+   * we revert back to the original behavior (i.e. opening the menu whenever the
+   * `TextField` input is focused).
+   */
+  private maybeOpenSuggestions(): void {
+    if (this.hasOpenedSuggestions) this.openSuggestions();
   }
 
   /**
@@ -218,12 +235,12 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
         >
           <List>{this.renderSubjectMenuItems()}</List>
         </MenuSurface>
-        <SelectHint>
+        <SelectHint open={this.state.suggestionsOpen}>
           <TextField
             {...rest}
             textarea
             value={this.state.inputValueWorkaround}
-            onFocus={this.openSuggestions}
+            onFocus={this.maybeOpenSuggestions}
             onBlur={this.closeSuggestions}
             onChange={this.updateInputValue}
             className={styles.textField}
