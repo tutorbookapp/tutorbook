@@ -1,17 +1,14 @@
-import Email from '../email';
-import Handlebars from '../handlebars';
-
 import Utils from '@tutorbook/covid-utils';
-import {
-  Appt,
-  SocialTypeAlias,
-  SocialInterface,
-  User,
-  UserWithRoles,
-} from '@tutorbook/model';
+import { Appt, User, UserWithRoles } from '@tutorbook/model';
 
 import * as admin from 'firebase-admin';
 
+import {
+  Email,
+  UserWithRolesAndVerifications,
+  addVerifications,
+} from '../common';
+import Handlebars from '../handlebars';
 import Template from './template.hbs';
 
 /**
@@ -21,16 +18,6 @@ import Template from './template.hbs';
  * @todo Perhaps figure out a way to **only** import the type defs we need.
  */
 type DocumentReference = admin.firestore.DocumentReference;
-
-interface VerificationInterface extends SocialInterface {
-  label: string;
-}
-
-type UserWithRolesAndVerifications = UserWithRoles & {
-  verifications: {
-    [type in SocialTypeAlias | 'school']: VerificationInterface;
-  };
-};
 
 interface Data {
   brambleDescription: string;
@@ -58,20 +45,6 @@ export class ParentRequestEmail implements Email {
   public readonly html: string;
   public readonly text: string;
 
-  private addVerifications(user: UserWithRoles): UserWithRolesAndVerifications {
-    return Object.assign(Object.assign({}, user), {
-      verifications: Object.fromEntries(
-        user.socials.map((social: SocialInterface) => {
-          const { type, ...rest } = social;
-          return [
-            type as SocialTypeAlias,
-            { label: Utils.caps(type), ...rest },
-          ];
-        })
-      ),
-    }) as UserWithRolesAndVerifications;
-  }
-
   public constructor(
     parent: User,
     pupil: UserWithRoles,
@@ -95,7 +68,7 @@ export class ParentRequestEmail implements Email {
         ` The room will be reused weekly until the tutoring lesson is ` +
         `canceled. Learn more about Bramble <a href="https://about.bramble.` +
         `io/help/help-home.html" style="${linkStyling}">here</a>.`,
-      attendees: attendees.map((a: UserWithRoles) => this.addVerifications(a)),
+      attendees: attendees.map((a: UserWithRoles) => addVerifications(a)),
       appt,
       pupil,
       parent,

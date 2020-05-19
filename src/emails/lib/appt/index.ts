@@ -1,9 +1,8 @@
-import Email from '../email';
-import Handlebars from '../handlebars';
-
 import Utils from '@tutorbook/covid-utils';
 import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
 
+import Email from '../email';
+import Handlebars from '../handlebars';
 import Template from './template.hbs';
 
 interface Data {

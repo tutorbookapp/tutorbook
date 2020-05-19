@@ -1,36 +1,19 @@
-import Email from '../email';
-import Handlebars from '../handlebars';
-
 import Utils from '@tutorbook/covid-utils';
-import {
-  Appt,
-  SocialTypeAlias,
-  SocialInterface,
-  User,
-  UserWithRoles,
-} from '@tutorbook/model';
+import { Appt, UserWithRoles } from '@tutorbook/model';
 
+import {
+  Email,
+  UserWithRolesAndVerifications,
+  addVerifications,
+} from '../common';
+import Handlebars from '../handlebars';
 import Template from './template.hbs';
 
 interface Data {
-  pupil: User;
-  attendees: UserWithRolesAndVerifications[];
   appt: Appt;
+  pupil: UserWithRoles;
+  attendees: UserWithRolesAndVerifications[];
 }
-
-/**
- * These are types copied over from './src/emails/lib/parent-request/index.ts`.
- * @todo Refactor the `@tutorbook/emails` package such that these type
- * definitions aren't duplicated.
- */
-interface VerificationInterface extends SocialInterface {
-  label: string;
-}
-type UserWithRolesAndVerifications = UserWithRoles & {
-  verifications: {
-    [type in SocialTypeAlias | 'school']: VerificationInterface;
-  };
-};
 
 /**
  * Email sent out to the pupil `attendees` of a new pending lesson request to
@@ -52,20 +35,6 @@ export class PupilRequestEmail implements Email {
   public readonly html: string;
   public readonly text: string;
 
-  private addVerifications(user: UserWithRoles): UserWithRolesAndVerifications {
-    return Object.assign(Object.assign({}, user), {
-      verifications: Object.fromEntries(
-        user.socials.map((social: SocialInterface) => {
-          const { type, ...rest } = social;
-          return [
-            type as SocialTypeAlias,
-            { label: Utils.caps(type), ...rest },
-          ];
-        })
-      ),
-    }) as UserWithRolesAndVerifications;
-  }
-
   public constructor(
     pupil: UserWithRoles,
     appt: Appt,
@@ -79,7 +48,7 @@ export class PupilRequestEmail implements Email {
     this.html = PupilRequestEmail.render({
       appt,
       pupil,
-      attendees: attendees.map((a: UserWithRoles) => this.addVerifications(a)),
+      attendees: attendees.map((a: UserWithRoles) => addVerifications(a)),
     });
   }
 }
