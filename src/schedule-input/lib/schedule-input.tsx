@@ -172,7 +172,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
           open={this.state.menuOpen}
           onFocus={this.openMenu}
           onBlur={this.closeMenu}
-          anchorCorner='topStart'
+          anchorCorner='bottomStart'
         >
           <DataTable>
             <DataTableContent>
