@@ -2,7 +2,7 @@ import React from 'react';
 import Router from 'next/router';
 import { useIntl, IntlShape } from 'react-intl';
 import Form, { InputElAlias } from '@tutorbook/form';
-import { GRADES, GradeAlias, User } from '@tutorbook/model';
+import { User } from '@tutorbook/model';
 
 import firebase from '@tutorbook/firebase';
 
@@ -17,25 +17,14 @@ import styles from './cta-form.module.scss';
  */
 export default function CTAForm(): JSX.Element {
   const intl: IntlShape = useIntl();
-  const [grade, setGrade] = React.useState<GradeAlias | undefined>();
   return (
     <Form
       inputs={[
-        {
-          label: intl.formatMessage({ id: 'form.grade' }),
-          el: 'select' as InputElAlias,
-          options: GRADES,
-          onChange: (event: React.FormEvent<HTMLSelectElement>) => {
-            const gradeString: string = event.currentTarget.value;
-            setGrade(new Number(gradeString).valueOf() as GradeAlias);
-          },
-        },
         {
           label: intl.formatMessage({ id: 'form.searches' }),
           el: 'subjectselect' as InputElAlias,
           required: true,
           key: 'searches',
-          grade,
         },
         {
           label: intl.formatMessage({ id: 'form.availability' }),
@@ -49,12 +38,10 @@ export default function CTAForm(): JSX.Element {
         firebase.analytics().logEvent('search', {
           search_term: formValues.searches.explicit.join(', '),
         });
-        const pupil: User = new User({ ...formValues, grade });
+        const pupil: User = new User(formValues);
         Router.push(`/${intl.locale}${pupil.searchURL}`);
       }}
-      cardProps={{
-        className: styles.formCard,
-      }}
+      cardProps={{ className: styles.formCard }}
     />
   );
 }
