@@ -16,12 +16,12 @@ const canUseDOM: boolean = !!(
  * valid datatypes for custom Intercom user attributes.
  * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
  */
-type IntercomCustomAttributeType = string | boolean | number | Date;
+type IntercomCustomAttribute = string | boolean | number | Date;
 
 interface IntercomSettings {
   app_id: string;
   language_override: string;
-  [key: string]: IntercomCustomAttributeType;
+  [key: string]: IntercomCustomAttribute;
 }
 
 interface IntercomProps {

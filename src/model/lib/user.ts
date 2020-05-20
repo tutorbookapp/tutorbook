@@ -25,7 +25,7 @@ type AdminDocumentReference = admin.firestore.DocumentReference;
  * all the valid datatypes for custom Intercom user attributes.
  * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
  */
-type IntercomCustomAttributeType = string | boolean | number | Date;
+type IntercomCustomAttribute = string | boolean | number | Date;
 
 /**
  * Right now, we only support traditional K-12 grade levels (e.g. 'Freshman'
@@ -200,7 +200,7 @@ export class User implements UserInterface {
    * `token` fields).
    * @see {@link https://developers.intercom.com/installing-intercom/docs/javascript-api-attributes-objects#section-data-attributes}
    */
-  public toIntercom(): Record<string, any> {
+  public toIntercom(): Record<string, IntercomCustomAttribute> {
     const { uid, photo, token, ref, ...rest } = this;
     const isFilled: (val: any) => boolean = (val: any) => {
       switch (typeof val) {
@@ -208,39 +208,33 @@ export class User implements UserInterface {
           return val !== '';
         case 'boolean':
           return true;
-        case 'undefined':
-          return false;
         case 'number':
           return true;
+        case 'undefined':
+          return false;
         case 'object':
           return Object.values(val).filter(isFilled).length > 0;
         default:
           return !!val;
       }
     };
-    const intercomValues = {
+    const isValid: (val: any) => boolean = (val: any) => {
+      if (typeof val === 'string') return true;
+      if (typeof val === 'boolean') return true;
+      if (typeof val === 'number') return true;
+      if (val instanceof Date) return true;
+      return false;
+    };
+    const intercomValues: Record<string, any> = {
       user_id: uid ? uid : undefined,
       ref: ref ? ref.path : undefined,
       avatar: photo ? { type: 'avatar', image_url: photo } : undefined,
       ...rest,
     };
-    const allFilledValues = Object.fromEntries(
-      Object.entries(intercomValues).filter(([key, val]) => isFilled(val))
-    );
     return Object.fromEntries(
-      Object.entries(allFilledValues).map(([key, val]) => {
-        const stringified: IntercomCustomAttributeType =
-          typeof val === 'string'
-            ? val
-            : typeof val === 'boolean'
-            ? val
-            : typeof val === 'number'
-            ? val
-            : val instanceof Date
-            ? val
-            : JSON.stringify(val);
-        return [key, stringified];
-      })
+      Object.entries(intercomValues)
+        .filter(([key, val]) => isFilled(val))
+        .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
   }
 
