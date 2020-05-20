@@ -12,9 +12,9 @@ AP Calculus BC,,12
 AP Chemistry,,"11, 12"
 AP Computer Science A,,"10, 11, 12"
 AP Computer Science Principles,,"9, 10, 11, 12"
-AP English Language and Composition,,"11, 12"
 AP English Literature and Composition,,"11, 12"
 AP Environmental Science,,"11, 12"
+AP English Language and Composition,,"11, 12"
 AP European History,,"11, 12"
 AP French Language,,"11, 12"
 AP Latin,,"11, 12"
@@ -31,18 +31,20 @@ AP U.S. Government and Politics,,"11, 12"
 AP US History,,11
 AP World History,,12
 Biology,,"10, 11"
-Calculus,,12
+Biology Honors,,"10, 11"
 Chemistry,,"10, 11"
-Computer Science,,"7, 8, 9, 10, 11, 12"
+Chemistry Honors,,"10, 11"
+Calculus,,12
+Computer Science,,"1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Economics,,"11, 12"
 Engineering,,"7, 8, 9, 10, 11, 12"
 English,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Environmental Science,,"11, 12"
 European History,,"9, 10, 11, 12"
-French,,"7, 8, 9, 10, 11, 12"
+,,
+,,
 Geometry,,"9, 10"
-Geometry H,,"9, 10"
-German,,"7, 8, 9, 10, 11, 12"
+Geometry Honors,,"9, 10"
 Government,,10
 Multivariable Calculus,,12
 Physics,,"10, 11, 12"
@@ -58,14 +60,10 @@ SAT: Physics,,
 SAT: Spanish,,
 SAT: US History,,
 SAT: World History,,
-Spanish 1,,"7, 8, 9"
-Spanish 2,,10
-Spanish 3,,11
-Spanish 4,,12
-Spanish,,"7, 8, 9, 10, 11, 12"
 Statistics,,11
 Study Skills,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Trigonometry,,10
+Trigonometry Honors,,10
 US History,,11
 World History,,9
 Kindergarten Math,,0
@@ -104,3 +102,43 @@ Kindergarten History,,0
 8th Grade Science,,8
 8th Grade English,,8
 8th Grade History,,8
+,,
+8th Grade Chemistry,,8
+9th Grade Chemistry,,9
+10th Grade Chemistry,,10
+11th Grade Chemistry,,11
+12th Grade Chemistry,,12
+,,
+8th Grade Biology,,8
+9th Grade Biology,,9
+10th Grade Biology,,10
+11th Grade Biology,,11
+12th Grade Biology,,12
+,,
+8th Grade Physics,,8
+9th Grade Physics,,9
+10th Grade Physics,,10
+11th Grade Physics,,11
+12th Grade Physics,,12
+,,
+Design and Technology,,"8, 9, 10"
+Design and Communication,,"8, 9, 10"
+Design,,"11, 12"
+Islamic Studies,,"6, 7, 8, 9, 10, 11, 12"
+Additional Mathematics,,"8, 9, 10"
+General Paper,,"11, 12"
+,,
+Chinese Language,,"6, 7, 8, 9, 10, 11, 12"
+Urdu Language,,"6, 7, 8, 9, 10, 11, 12"
+Hindi Language,,"6, 7, 8, 9, 10, 11, 12"
+Japanese Language,,"6, 7, 8, 9, 10, 11, 12"
+French Language,,"6, 7, 8, 9, 10, 11, 12"
+German Language,,"6, 7, 8, 9, 10, 11, 12"
+Spanish Language,,"6, 7, 8, 9, 10, 11, 12"
+,,
+Travel and Tourism,,"8, 9, 10, 11, 12"
+Accounting,,"8, 9, 10, 11, 12"
+Business Studies,,"8, 9, 10, 11, 12"
+Economics,,"8, 9, 10, 11, 12"
+,,
+AP Economics,,"11, 12"

@@ -13,10 +13,12 @@ const main = async () => {
   const subjects = parse(fs.readFileSync('./subjects.csv'), {
     columns: true,
     skip_empty_lines: true,
-  }).map((subject) => {
-    subject.grades = subject.grades.split(', ');
-    return subject;
-  });
+  })
+    .map((subject) => {
+      subject.grades = subject.grades.split(', ');
+      return subject;
+    })
+    .filter((subject) => !!subject.name);
   const [err, res] = await to(
     index.saveObjects(subjects, {
       autoGenerateObjectIDIfNotExist: true,
