@@ -261,6 +261,22 @@
     "defaultMessage": "Report an Issue"
   },
   {
+    "id": "footer.partners.title",
+    "defaultMessage": "Partners"
+  },
+  {
+    "id": "footer.partners.school-closures",
+    "defaultMessage": "School Closures"
+  },
+  {
+    "id": "footer.partners.project-access",
+    "defaultMessage": "Project Access"
+  },
+  {
+    "id": "footer.partners.learnpanion",
+    "defaultMessage": "Learnpanion"
+  },
+  {
     "id": "header.pupils",
     "description": "Label for the pupil sign-up page header link.",
     "defaultMessage": "For students"

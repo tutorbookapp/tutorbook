@@ -151,6 +151,22 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
     defaultMessage: 'Report an Issue',
     description: 'Label for the link to create a new GitHub issue.',
   },
+  partners: {
+    id: 'footer.partners.title',
+    defaultMessage: 'Partners',
+  },
+  schoolClosures: {
+    id: 'footer.partners.school-closures',
+    defaultMessage: 'School Closures',
+  },
+  projectAccess: {
+    id: 'footer.partners.project-access',
+    defaultMessage: 'Project Access',
+  },
+  learnpanion: {
+    id: 'footer.partners.learnpanion',
+    defaultMessage: 'Learnpanion',
+  },
 });
 
 interface LinkProps {
@@ -266,6 +282,23 @@ export default function Footer(): JSX.Element {
               {
                 href: 'https://github.com/tutorbookapp/covid-tutoring#readme',
                 label: intl.formatMessage(labels.docs),
+              },
+            ]}
+          />
+          <LinkGroup
+            header={intl.formatMessage(labels.partners)}
+            links={[
+              {
+                href: 'https://projectaccess.org/',
+                label: intl.formatMessage(labels.projectAccess),
+              },
+              {
+                href: 'https://schoolclosures.org/',
+                label: intl.formatMessage(labels.schoolClosures),
+              },
+              {
+                href: 'https://learnpanion.com/',
+                label: intl.formatMessage(labels.learnpanion),
               },
             ]}
           />
