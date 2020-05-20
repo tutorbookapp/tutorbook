@@ -1,7 +1,7 @@
 import Utils from '@tutorbook/covid-utils';
 import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
 
-import Email from '../email';
+import { Email } from '../common';
 import Handlebars from '../handlebars';
 import Template from './template.hbs';
 

@@ -39,8 +39,6 @@ export class SignUpEmail implements Email {
     if (user.searches.explicit.length > 0) roles.push('pupil');
     if (user.subjects.explicit.length > 0) roles.push('tutor');
     (user as UserWithRoles).roles = roles;
-    debugger;
     this.html = SignUpEmail.render(addVerifications(user as UserWithRoles));
-    debugger;
   }
 }

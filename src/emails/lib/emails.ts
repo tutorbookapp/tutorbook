@@ -1,4 +1,4 @@
-export type { default as Email } from './email';
+export type { Email } from './common';
 
 export * from './appt';
 export * from './sign-up';
