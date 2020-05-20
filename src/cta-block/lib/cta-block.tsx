@@ -47,13 +47,15 @@ export default function CTABlock(): JSX.Element {
           </div>
           <div className={styles.ctaBlockForm}>
             <CTAForm />
-            <Checkmarks
-              labels={[
-                intl.formatMessage(labels.safeguarding),
-                intl.formatMessage(labels.lessonRecordingsAndMore),
-              ]}
-              white
-            />
+            <div className={styles.ctaBlockCheckmarks}>
+              <Checkmarks
+                labels={[
+                  intl.formatMessage(labels.safeguarding),
+                  intl.formatMessage(labels.lessonRecordingsAndMore),
+                ]}
+                white
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -33,7 +33,7 @@
 }
 
 .ctaBlockHeading {
-  margin-bottom: 16px;
+  margin: 0 0 16px;
   word-break: break-word;
   font-size: 26px;
   font-weight: 700;
@@ -53,8 +53,14 @@
 }
 
 .ctaBlockForm {
+  position: relative;
   grid-column: 2 / span 10;
   text-align: center;
+  width: 100%;
+}
+
+.ctaBlockCheckmarks {
+  position: absolute;
   width: 100%;
 }
 
