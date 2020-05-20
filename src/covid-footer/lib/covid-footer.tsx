@@ -138,7 +138,7 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   },
   tutors: {
     id: 'footer.useful-links.tutors',
-    defaultMessage: 'Tutor Signup',
+    defaultMessage: 'Volunteer Signup',
     description: 'Label for the link to the tutor sign-up page.',
   },
   search: {
