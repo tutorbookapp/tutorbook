@@ -30,7 +30,8 @@ interface SubjectSelectState {
   readonly suggestions: string[];
   readonly subjects: SubjectsAlias;
   readonly errored: boolean;
-  inputValueWorkaround: string;
+  readonly inputValue: string;
+  readonly inputFocused: boolean;
 }
 
 export interface SubjectSelectProps extends TextFieldProps {
@@ -62,12 +63,9 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       suggestions: [],
       subjects: {},
       errored: false,
-      inputValueWorkaround: '',
+      inputValue: '',
+      inputFocused: false,
     };
-    if (props.val) {
-      props.val.forEach((s) => (this.state.subjects[s] = true));
-      this.state.inputValueWorkaround = this.getInputValue();
-    }
     this.lastSelectedRef = React.createRef();
     this.maybeOpenSuggestions = this.maybeOpenSuggestions.bind(this);
     this.openSuggestions = this.openSuggestions.bind(this);
@@ -84,8 +82,9 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   }
 
   /**
-   * Ensure that the input value workaround always works (even when this input's
-   * value is being controlled by a parent component).
+   * Make sure to update the "above-the-fold" subjects based on the given grade
+   * level.
+   * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/20#issuecomment-630958982}
    *
    * Note that this also contains a painful workaround to ensure that the select
    * menu is positioned correctly **even** if it's anchor (the `TextField`)
@@ -93,12 +92,6 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   public componentDidUpdate(prevProps: SubjectSelectProps): void {
-    const inputValueWorkaround: string = this.getInputValue();
-    const shouldChangeValue: boolean =
-      (this.state.inputValueWorkaround === '' ||
-        this.state.inputValueWorkaround === '\xa0') &&
-      inputValueWorkaround !== this.state.inputValueWorkaround;
-    if (shouldChangeValue) this.setState({ inputValueWorkaround });
     if (prevProps.grade !== this.props.grade) this.updateSuggestions();
     this.foundationRef && this.foundationRef.autoPosition_();
   }
@@ -171,21 +164,26 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   }
 
   /**
-   * Workaround for styling the input as if it has content. If there are
-   * subjects selected (in the given `subjects` object), this will return a
-   * string containing a space (`' '`) so that the `TextField` styles itself as
-   * if it were filled.
-   * @todo Ideally, remove this workaround. But instead, make the `&nsbp;`
-   * actually show up as a non-breaking space (i.e. nothing).
-   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
-   * @return {string} The input value (either `' '` or `''`).
+   * The `TextField`'s label should float if any of the following is true:
+   * - The `TextField`'s value isn't empty.
+   * - The `TextField` is focused.
+   * - There are subjects selected (this is the only thing that's custom).
    */
-  private getInputValue(subjects: SubjectsAlias = this.state.subjects): string {
-    const selected: boolean = Object.values(subjects).reduce(
-      (a, b) => a || b,
-      false
+  private get labelShouldFloat(): boolean {
+    return (
+      this.state.inputValue !== '' ||
+      this.state.inputFocused ||
+      this.subjectsAreSelected
     );
-    return selected ? '\xa0' : '';
+  }
+
+  /**
+   * Make sure to float the `TextField`'s label if there are subjects selected.
+   * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
+   * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/8}
+   */
+  private get subjectsAreSelected(): boolean {
+    return Object.values(this.state.subjects).reduce((a, b) => a || b, false);
   }
 
   /**
@@ -198,8 +196,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
    */
   private updateInputValue(event: React.FormEvent<HTMLInputElement>): void {
-    const value: string = event.currentTarget.value || this.getInputValue();
-    this.setState({ inputValueWorkaround: value });
+    this.setState({ inputValue: event.currentTarget.value });
     this.updateSuggestions(event.currentTarget.value);
     this.openSuggestions();
   }
@@ -239,9 +236,16 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           <TextField
             {...rest}
             textarea
-            value={this.state.inputValueWorkaround}
-            onFocus={this.maybeOpenSuggestions}
-            onBlur={this.closeSuggestions}
+            floatLabel={this.labelShouldFloat}
+            value={this.state.inputValue}
+            onFocus={() => {
+              this.setState({ inputFocused: true });
+              this.maybeOpenSuggestions();
+            }}
+            onBlur={() => {
+              this.setState({ inputFocused: false });
+              this.closeSuggestions();
+            }}
             onChange={this.updateInputValue}
             className={styles.textField}
           >
@@ -274,8 +278,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       this.lastSelectedRef.current &&
       event?.shiftKey
     ) {
-      /* select/unselect multiple subjects
-        with shift + click */
+      // Select/unselect multiple subjects with 'SHIFT + click'
       const { suggestions } = this.state;
       const idx: number = suggestions.indexOf(subject);
       const idxOfLast: number = suggestions.indexOf(
@@ -290,16 +293,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
 
     this.lastSelectedRef.current = subject;
 
-    const value: string =
-      this.state.inputValueWorkaround || this.getInputValue(subjects);
-    this.setState({
-      subjects: subjects,
-      inputValueWorkaround: value,
-    });
-    const selected: string[] = Object.entries(subjects)
+    this.setState({ subjects });
+    const selectedSubjects: string[] = Object.entries(subjects)
       .filter(([_, isSelected]) => isSelected)
       .map(([subject, _]) => subject);
-    this.props.onChange(selected);
+    this.props.onChange(selectedSubjects);
   }
 
   private renderSubjectMenuItems(): JSX.Element[] | JSX.Element {
