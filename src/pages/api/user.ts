@@ -226,9 +226,9 @@ export default async function user(
     error('Your request body must contain a user field.');
   } else {
     const user: User = User.fromJSON(req.body.user);
-    const parents: User[] = (req.body.parents || []).map((u) =>
-      User.fromJSON(u)
-    );
+    const parents: User[] = (
+      req.body.parents || []
+    ).map((parentJSON: UserJSONInterface) => User.fromJSON(parentJSON));
     const [err] = await to(createUser(user, parents));
     if (err) {
       error(err.message, 500, err);
