@@ -18,20 +18,6 @@ export class SignUpEmail implements Email {
   public readonly html: string;
   public readonly text: string;
 
-  private addVerifications(user: UserWithRoles): UserWithRolesAndVerifications {
-    return Object.assign(Object.assign({}, user), {
-      verifications: Object.fromEntries(
-        user.socials.map((social: SocialInterface) => {
-          const { type, ...rest } = social;
-          return [
-            type as SocialTypeAlias,
-            { label: Utils.caps(type), ...rest },
-          ];
-        })
-      ),
-    }) as UserWithRolesAndVerifications;
-  }
-
   public constructor(user: User) {
     this.subject = `${user} just signed up on Tutorbook!`;
     this.text = this.subject;
