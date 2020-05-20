@@ -293,7 +293,8 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
 
     this.lastSelectedRef.current = subject;
 
-    this.setState({ subjects });
+    const inputValue: string = subjects[subject] ? '' : this.state.inputValue;
+    this.setState({ subjects, inputValue });
     const selectedSubjects: string[] = Object.entries(subjects)
       .filter(([_, isSelected]) => isSelected)
       .map(([subject, _]) => subject);
