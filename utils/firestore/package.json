@@ -11,5 +11,9 @@
   "license": "ISC",
   "devDependencies": {
     "node-firestore-import-export": "^0.14.1"
+  },
+  "dependencies": {
+    "csv-stringify": "^5.5.0",
+    "dotenv": "^8.2.0"
   }
 }
