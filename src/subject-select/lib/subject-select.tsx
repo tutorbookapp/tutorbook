@@ -99,6 +99,10 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   public componentDidUpdate(prevProps: SubjectSelectProps): void {
+    const shouldChangeInputValue: boolean =
+      (this.state.inputValue === '' || this.state.inputValue === '\xa0') &&
+      this.inputValue !== this.state.inputValue;
+    if (shouldChangeInputValue) this.setState({ inputValue: this.inputValue });
     if (prevProps.grade !== this.props.grade) this.updateSuggestions();
     if (this.foundationRef) this.foundationRef.autoPosition_();
   }
@@ -170,13 +174,18 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * - The `TextField` is focused.
    * - There are subjects selected (this is the only thing that's custom).
    */
-  private get labelShouldFloat(): boolean {
-    return (
-      this.state.inputValue !== '' ||
-      this.state.inputFocused ||
-      this.subjectsAreSelected
-    );
+  private get inputValue(): string {
+    return this.subjectsAreSelected ? '\xa0' : '';
   }
+  /*
+   *private get labelShouldFloat(): boolean {
+   *  return (
+   *    this.state.inputValue !== '' ||
+   *    this.state.inputFocused ||
+   *    this.subjectsAreSelected
+   *  );
+   *}
+   */
 
   /**
    * Make sure to float the `TextField`'s label if there are subjects selected.
@@ -197,7 +206,8 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
    */
   private updateInputValue(event: React.FormEvent<HTMLInputElement>): void {
-    this.setState({ inputValue: event.currentTarget.value });
+    const inputValue: string = event.currentTarget.value || this.inputValue;
+    this.setState({ inputValue });
     this.updateSuggestions(event.currentTarget.value);
     this.openSuggestions();
   }
@@ -241,7 +251,6 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
             {...rest}
             textarea
             ref={this.inputRef}
-            floatLabel={this.labelShouldFloat}
             value={this.state.inputValue}
             onFocus={() => {
               this.setState({ inputFocused: true });
