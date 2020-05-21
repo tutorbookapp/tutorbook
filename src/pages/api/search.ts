@@ -43,7 +43,7 @@ async function searchUsers(
     if (err || !res) {
       console.error(`[ERROR] While searching ${filterString}:`, err);
     } else {
-      res.hits.forEach((hit) => {
+      res.hits.forEach((hit: UserSearchHitAlias) => {
         if (results.findIndex((h) => h.uid === hit.objectID) < 0)
           results.push(User.fromSearchHit(hit));
       });
