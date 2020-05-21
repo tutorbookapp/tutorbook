@@ -1,4 +1,4 @@
-# [![Tutorbook Logo](https://raw.githubusercontent.com/tutorbookapp/tutorbook/develop/build/favicon/text-logo.png)](https://tutorbook.org/)
+# [![Tutorbook Logo](https://raw.githubusercontent.com/tutorbookapp/old-tutorbook/develop/build/favicon/text-logo.png)](https://tutorbook.org/)
 
 [![NPM Version](https://img.shields.io/npm/v/@tutorbook/covid?color=brightgreen)](https://npmjs.com/package/@tutorbook/covid)
 [![Dependencies](https://img.shields.io/david/tutorbookapp/covid-tutoring)](https://david-dm.org/tutorbookapp/covid-tutoring)
