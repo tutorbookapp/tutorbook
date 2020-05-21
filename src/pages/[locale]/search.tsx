@@ -5,19 +5,19 @@ import { AxiosResponse, AxiosError } from 'axios';
 import to from 'await-to-js';
 import axios from 'axios';
 
-import Intercom from '../../react-intercom';
-import Header from '../../covid-header';
-import Footer from '../../covid-footer';
-import Search from '../../covid-search';
+import Intercom from '@tutorbook/react-intercom';
+import Header from '@tutorbook/covid-header';
+import Footer from '@tutorbook/covid-footer';
+import Search from '@tutorbook/covid-search';
 
-import { getIntlProps, withIntl } from '../../intl';
+import { getIntlProps, withIntl } from '@tutorbook/intl';
 import {
   User,
   UserJSONInterface,
   FiltersInterface,
   FiltersJSONInterface,
   Availability,
-} from '../../model';
+} from '@tutorbook/model';
 
 interface SearchPageProps {
   filters: FiltersJSONInterface;

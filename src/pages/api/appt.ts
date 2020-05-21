@@ -7,8 +7,8 @@ import {
   UserWithRoles,
   Appt,
   ApptJSONInterface,
-} from '../../model';
-import { ApptEmail } from '../../emails';
+} from '@tutorbook/model';
+import { ApptEmail } from '@tutorbook/emails';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
@@ -146,11 +146,8 @@ export default async function appt(
     try {
       ref = firestore.doc(req.body.request);
       // Partition is 4th parent (e.g. `/test/users/PUPIL-DOC/requests/DOC`).
-      db = (((ref
-         .parent as CollectionReference)
-         .parent as DocumentReference)
-         .parent as CollectionReference)
-         .parent;
+      db = (((ref.parent as CollectionReference).parent as DocumentReference)
+        .parent as CollectionReference).parent;
     } catch (err) {
       error('You must provide a valid request document path.', 400, err);
     }
@@ -169,10 +166,8 @@ export default async function appt(
         // The Firestore path in `req.body.request` is the path of the parent's
         // child's document (i.e. the request document nested under that child's
         // profile document).
-        const pupilUID: string = ((doc.ref
-          .parent as CollectionReference)
-          .parent as DocumentReference)
-          .id;
+        const pupilUID: string = ((doc.ref.parent as CollectionReference)
+          .parent as DocumentReference).id;
         let attendeesIncludePupil: boolean = false;
         let pupilIsParentsChild: boolean = false;
         const attendees: UserWithRoles[] = [];

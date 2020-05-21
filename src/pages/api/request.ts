@@ -8,8 +8,8 @@ import {
   UserWithRoles,
   Appt,
   ApptJSONInterface,
-} from '../../model';
-import { PupilRequestEmail, ParentRequestEmail } from '../../emails';
+} from '@tutorbook/model';
+import { PupilRequestEmail, ParentRequestEmail } from '@tutorbook/emails';
 
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, UserJSONInterface, ApiError } from '../../model';
-import { SignUpEmail } from '../../emails';
+import { User, UserJSONInterface, ApiError } from '@tutorbook/model';
+import { SignUpEmail } from '@tutorbook/emails';
 
 import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';

@@ -2,9 +2,9 @@ import React from 'react';
 import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 
-import { UserProvider, DBProvider } from '../firebase';
-import CovidHead from '../covid-head';
-import '../covid-styles';
+import { UserProvider, DBProvider } from '@tutorbook/firebase';
+import CovidHead from '@tutorbook/covid-head';
+import '@tutorbook/covid-styles';
 
 export default function App({ Component, pageProps, router }: AppProps) {
   return (

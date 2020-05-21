@@ -13,14 +13,14 @@ import { AxiosError, AxiosResponse } from 'axios';
 import axios from 'axios';
 import to from 'await-to-js';
 
-import Utils from '../../covid-utils';
-import Intercom from '../../react-intercom';
-import ActionText from '../../action-text';
-import Header from '../../covid-header';
-import Footer from '../../covid-footer';
+import Utils from '@tutorbook/covid-utils';
+import Intercom from '@tutorbook/react-intercom';
+import ActionText from '@tutorbook/action-text';
+import Header from '@tutorbook/covid-header';
+import Footer from '@tutorbook/covid-footer';
 
-import { ApiError, Appt, ApptJSONInterface } from '../../model';
-import { getIntlProps, getIntlPaths, withIntl } from '../../intl';
+import { ApiError, Appt, ApptJSONInterface } from '@tutorbook/model';
+import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 
 const msgs: Record<string, MessageDescriptor> = defineMessages({
   approved: {

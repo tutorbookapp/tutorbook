@@ -2,12 +2,12 @@ import React from 'react';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
 
-import Intercom from '../../react-intercom';
-import Header from '../../covid-header';
-import Footer from '../../covid-footer';
-import TutorForm from '../../tutor-form';
+import Intercom from '@tutorbook/react-intercom';
+import Header from '@tutorbook/covid-header';
+import Footer from '@tutorbook/covid-footer';
+import TutorForm from '@tutorbook/tutor-form';
 
-import { getIntlProps, getIntlPaths, withIntl } from '../../intl';
+import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 
 class TutorsPage extends React.Component {
   public render(): JSX.Element {

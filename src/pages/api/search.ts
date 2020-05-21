@@ -6,7 +6,7 @@ import {
   UserSearchHitAlias,
   FiltersInterface,
   Availability,
-} from '../../model';
+} from '@tutorbook/model';
 
 import to from 'await-to-js';
 import algoliasearch from 'algoliasearch/lite';

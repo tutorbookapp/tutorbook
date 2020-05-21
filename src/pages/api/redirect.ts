@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import parser from 'accept-language-parser';
 
-import { locales, defaultLocale } from '../../intl';
+import { locales, defaultLocale } from '@tutorbook/intl';
 
 /**
  * Redirects to a locale based on the HTTP request `Accept-Language` header.
