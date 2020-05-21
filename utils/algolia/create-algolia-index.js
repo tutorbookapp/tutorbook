@@ -1,6 +1,11 @@
-const id = '';
-const key = '';
-const client = require('algoliasearch')(id, key);
+const path = require('path');
+
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env.prod') });
+
+const client = require('algoliasearch')(
+  process.env.ALGOLIA_SEARCH_ID,
+  process.env.ALGOLIA_SEARCH_KEY
+);
 const to = require('await-to-js').default;
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs');
