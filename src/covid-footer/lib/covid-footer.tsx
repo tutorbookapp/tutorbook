@@ -224,8 +224,8 @@ function LinkGroup(props: LinkGroupProps): JSX.Element {
     <li className={styles.linkGroup}>
       <h2 className={styles.linkGroupHeader}>{props.header}</h2>
       <ul className={styles.linkGroupList}>
-        {props.links.map((link: LinkProps) => (
-          <PrimaryLink {...link} />
+        {props.links.map((link: LinkProps, index: number) => (
+          <PrimaryLink key={index} {...link} />
         ))}
       </ul>
     </li>
