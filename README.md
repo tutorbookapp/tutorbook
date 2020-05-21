@@ -138,25 +138,19 @@ $ npm -v
 6.13.4
 ```
 
-6. Make sure that you have [Lerna](https://lerna.js.org) installed by running:
-
-```
-$ npm i -g lerna
-```
-
-7. Clone and `cd` into this repository locally by running:
+6. Clone and `cd` into this repository locally by running:
 
 ```
 $ git clone https://github.com/tutorbookapp/covid-tutoring.git && cd covid-tutoring/
 ```
 
-8. Then, install of our project's dependencies with the following command:
+7. Then, install of our project's dependencies with the following command:
 
 ```
-$ npm i && lerna bootstrap --hoist
+$ npm i
 ```
 
-9. Follow the instructions included below (see "Available Scripts") to start a
+8. Follow the instructions included below (see "Available Scripts") to start a
    [Next.js](https://nextjs.org) development server (to see your updates affect
    the app live):
 
@@ -164,15 +158,15 @@ $ npm i && lerna bootstrap --hoist
 $ npm run dev
 ```
 
-10. Message me (DM **@nicholaschiang** on
-    [Slack](https://tutorbookapp.slack.com)) once (not if) you get the following
-    error (I have to give you some Firebase API keys to put in the `.env` file):
+9. Message me (DM **@nicholaschiang** on
+   [Slack](https://tutorbookapp.slack.com)) once (not if) you get the following
+   error (I have to give you some Firebase API keys to put in the `.env` file):
 
 ```
 Error [FirebaseError]: projectId must be a string in FirebaseApp.options
 ```
 
-11. Finally, `cd` into your desired package (included in `src/`), make your
+10. Finally, `cd` into your desired package (included in `src/`), make your
     changes, commit them to a branch off of `develop`, push it to a [fork of our
     repository](https://github.com/tutorbookapp/covid-tutoring/fork), and open a
     PR on GitHub.
