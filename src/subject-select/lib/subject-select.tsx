@@ -48,13 +48,19 @@ interface SubjectHit extends ObjectWithObjectID {
 }
 
 export default class SubjectSelect extends React.Component<SubjectSelectProps> {
-  public readonly state: SubjectSelectState;
-  private suggestionsTimeoutID?: number;
-  private foundationRef: any;
-  private lastSelectedRef: React.MutableRefObject<string | null>;
-  private hasOpenedSuggestions: boolean = false;
-
   private static searchIndex: SearchIndex = client.initIndex('subjects');
+
+  public readonly state: SubjectSelectState;
+
+  private suggestionsTimeoutID?: number;
+
+  private foundationRef: any;
+
+  private inputRef: React.RefObject<HTMLInputElement>;
+
+  private lastSelectedRef: React.MutableRefObject<string | null>;
+
+  private hasOpenedSuggestions: boolean = false;
 
   public constructor(props: SubjectSelectProps) {
     super(props);
@@ -66,6 +72,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       inputValue: '',
       inputFocused: false,
     };
+    this.inputRef = React.createRef();
     this.lastSelectedRef = React.createRef();
     this.maybeOpenSuggestions = this.maybeOpenSuggestions.bind(this);
     this.openSuggestions = this.openSuggestions.bind(this);
@@ -93,7 +100,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    */
   public componentDidUpdate(prevProps: SubjectSelectProps): void {
     if (prevProps.grade !== this.props.grade) this.updateSuggestions();
-    this.foundationRef && this.foundationRef.autoPosition_();
+    if (this.foundationRef) this.foundationRef.autoPosition_();
   }
 
   /**
@@ -141,21 +148,15 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://bit.ly/2x9eM27}
    */
   private openSuggestions(): void {
-    window.clearTimeout(this.suggestionsTimeoutID);
+    clearTimeout(this.suggestionsTimeoutID);
     if (!this.state.suggestionsOpen) {
       this.hasOpenedSuggestions = true;
       this.setState({ suggestionsOpen: true });
     }
   }
 
-  /**
-   * We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
-   * before toggling. Waiting ensures that the user hasn't clicked on the
-   * subject select menu (and thus called `this.openSuggestions`).
-   * @see {@link https://bit.ly/2x9eM27}
-   */
   private closeSuggestions(): void {
-    this.suggestionsTimeoutID = window.setTimeout(() => {
+    this.suggestionsTimeoutID = setTimeout(() => {
       if (this.state.suggestionsOpen) {
         this.setState({ suggestionsOpen: false });
         this.lastSelectedRef.current = null;
@@ -225,8 +226,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
         <MenuSurface
           foundationRef={(ref: any) => (this.foundationRef = ref)}
           open={this.state.suggestionsOpen}
-          onFocus={this.openSuggestions}
-          onBlur={this.closeSuggestions}
+          onFocus={(event: React.SyntheticEvent<HTMLDivElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (this.inputRef.current) this.inputRef.current.focus();
+          }}
           anchorCorner='bottomStart'
           renderToPortal={renderToPortal ? '#portal' : false}
         >
@@ -236,6 +240,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           <TextField
             {...rest}
             textarea
+            ref={this.inputRef}
             floatLabel={this.labelShouldFloat}
             value={this.state.inputValue}
             onFocus={() => {
