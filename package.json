@@ -63,7 +63,6 @@
     "phone": "^2.4.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-intercom": "^1.0.15",
     "react-intl": "^4.5.4",
     "url": "^0.11.0",
     "uuid": "^8.0.0"
