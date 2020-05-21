@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/react-intercom",
-  "version": "0.3.9",
+  "version": "0.4.0",
   "description": "A component to initialize Intercom in your application.",
   "scripts": {
     "build": "tsc"
@@ -16,8 +16,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@tutorbook/firebase": "^0.3.9",
-    "@tutorbook/model": "^0.3.9"
+    "@tutorbook/firebase": "^0.4.0",
+    "@tutorbook/model": "^0.4.0"
   },
   "repository": {
     "type": "git",
@@ -28,5 +28,6 @@
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
-  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme"
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
+  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
 }

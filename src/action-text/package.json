@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/action-text",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "React text component displaying actions triggered via email links.",
   "keywords": [
     "React",
@@ -31,5 +31,6 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  }
+  },
+  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
 }

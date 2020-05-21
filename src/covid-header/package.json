@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-header",
-  "version": "0.3.8",
+  "version": "0.4.0",
   "description": "Package containing the header component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -33,5 +33,6 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  }
+  },
+  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
 }

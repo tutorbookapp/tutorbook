@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/covid-styles",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Package that contains the global styling variables for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
@@ -24,5 +24,6 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  }
+  },
+  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
 }

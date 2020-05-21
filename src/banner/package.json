@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/banner",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Full-width banner with large text React component.",
   "keywords": [
     "Tutorbook",
@@ -31,5 +31,6 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  }
+  },
+  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
 }

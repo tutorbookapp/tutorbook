@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/checkmarks",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Checkmark lists to place under CTA buttons (affirm user of their choice).",
   "keywords": [
     "Tutorbook",
@@ -32,5 +32,6 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  }
+  },
+  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
 }

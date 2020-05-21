@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/about",
-  "version": "0.3.9",
+  "version": "0.4.0",
   "description": "Package that contains a concise version of our about page for the COVID Tutoring Initiative homepage.",
   "keywords": [
     "Tutorbook",
@@ -32,5 +32,6 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  }
+  },
+  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
 }
