@@ -31,16 +31,5 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  },
-  "dependencies": {
-    "@rmwc/select": "^6.1.0",
-    "firebase": "^7.14.2",
-    "firebase-admin": "^8.11.0",
-    "phone": "^2.4.9",
-    "url": "^0.11.0"
-  },
-  "devDependencies": {
-    "@types/phone": "^2.4.0",
-    "typescript": "^3.8.3"
   }
 }

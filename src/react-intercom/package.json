@@ -17,10 +17,7 @@
   },
   "dependencies": {
     "@tutorbook/firebase": "^0.3.9",
-    "@tutorbook/model": "^0.3.9",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-intl": "^4.5.4"
+    "@tutorbook/model": "^0.3.9"
   },
   "repository": {
     "type": "git",
@@ -31,9 +28,5 @@
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
-  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme",
-  "devDependencies": {
-    "@types/react": "^16.9.34",
-    "typescript": "^3.8.3"
-  }
+  "homepage": "https://github.com/tutorbookapp/covid-tutoring#readme"
 }

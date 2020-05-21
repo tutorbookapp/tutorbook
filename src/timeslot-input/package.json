@@ -33,15 +33,5 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  },
-  "dependencies": {
-    "@rmwc/textfield": "^6.1.0",
-    "@tutorbook/model": "^0.3.9",
-    "next": "^9.4.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
-  },
-  "devDependencies": {
-    "typescript": "^3.8.3"
   }
 }

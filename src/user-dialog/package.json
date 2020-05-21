@@ -31,27 +31,5 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  },
-  "dependencies": {
-    "@rmwc/avatar": "^6.0.14",
-    "@rmwc/dialog": "^6.1.0",
-    "@rmwc/textfield": "^6.1.0",
-    "@rmwc/typography": "^6.0.14",
-    "@tutorbook/button": "^0.3.3",
-    "@tutorbook/checkmark-overlay": "^0.3.3",
-    "@tutorbook/covid-utils": "^0.3.3",
-    "@tutorbook/firebase": "^0.3.9",
-    "@tutorbook/intl": "^0.3.7",
-    "@tutorbook/model": "^0.3.9",
-    "@tutorbook/subject-select": "^0.3.9",
-    "@tutorbook/timeslot-input": "^0.3.9",
-    "await-to-js": "^2.1.1",
-    "axios": "^0.19.2",
-    "next": "^9.4.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
-  },
-  "devDependencies": {
-    "typescript": "^3.8.3"
   }
 }

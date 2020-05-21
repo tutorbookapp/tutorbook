@@ -31,11 +31,5 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
-  },
-  "dependencies": {
-    "next": "^9.4.0"
-  },
-  "devDependencies": {
-    "typescript": "^3.8.3"
   }
 }
