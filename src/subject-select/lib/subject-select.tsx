@@ -52,7 +52,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
 
   public readonly state: SubjectSelectState;
 
-  private suggestionsTimeoutID?: number;
+  private suggestionsTimeoutID?: ReturnType<typeof setTimeout>;
 
   private foundationRef: any;
 
@@ -148,7 +148,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://bit.ly/2x9eM27}
    */
   private openSuggestions(): void {
-    clearTimeout(this.suggestionsTimeoutID);
+    if (this.suggestionsTimeoutID) clearTimeout(this.suggestionsTimeoutID);
     if (!this.state.suggestionsOpen) {
       this.hasOpenedSuggestions = true;
       this.setState({ suggestionsOpen: true });
