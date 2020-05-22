@@ -14,6 +14,9 @@ import { Link } from '@tutorbook/intl';
 
 import Banner from '@tutorbook/banner';
 
+import AtHomeImage from './jpgs/in-home-tutoring.jpg';
+import WritingImage from './jpgs/writing.jpg';
+
 import styles from './hero-about.module.scss';
 
 const msgs: Record<string, MessageDescriptor> = defineMessages({
@@ -41,6 +44,7 @@ interface FeatureCardProps {
   readonly header: string;
   readonly body: string;
   readonly href: string;
+  readonly img: string;
 }
 
 function FeatureCard(props: FeatureCardProps): JSX.Element {
@@ -48,7 +52,10 @@ function FeatureCard(props: FeatureCardProps): JSX.Element {
     <Card className={styles.card}>
       <Link href={props.href}>
         <CardPrimaryAction>
-          <CardMedia sixteenByNine className={styles.cardMedia} />
+          <CardMedia
+            sixteenByNine
+            style={{ backgroundImage: `url(${props.img})` }}
+          />
           <div className={styles.cardContent}>
             <Typography use='headline6'>{props.header}</Typography>
             <Typography use='body1'>{props.body}</Typography>
@@ -83,8 +90,9 @@ export default function HeroAbout(): JSX.Element {
             id='hero-about.second-paragraph'
             defaultMessage={
               "We're connecting 9-12 students with expert mentors to " +
-              "collaborate on meaningful projects that they're both " +
-              'passionate about (e.g. writing a paper together).'
+              "collaborate on meaningful (summer) projects that they're both " +
+              'passionate about (e.g. writing a research paper together or ' +
+              'releasing a music album together).'
             }
           />
         </Typography>
@@ -111,6 +119,7 @@ export default function HeroAbout(): JSX.Element {
                 href='/volunteers'
                 header={intl.formatMessage(msgs.mentorHeader)}
                 body={intl.formatMessage(msgs.mentorBody)}
+                img={AtHomeImage}
               />
             </GridCell>
             <GridCell desktop={6} tablet={4} phone={4}>
@@ -118,6 +127,7 @@ export default function HeroAbout(): JSX.Element {
                 href='/parents'
                 header={intl.formatMessage(msgs.tutorHeader)}
                 body={intl.formatMessage(msgs.tutorBody)}
+                img={WritingImage}
               />
             </GridCell>
           </Grid>
