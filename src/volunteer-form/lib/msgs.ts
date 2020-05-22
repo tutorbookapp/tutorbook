@@ -29,9 +29,9 @@ export default defineMessages({
     id: 'mentor-form.desc',
     defaultMessage:
       "Help us redefine mentorship. We're connecting high performing " +
-      '9-12 students with experts (like you) to collaborate on meaningful projects' +
-      " that you're both passionate about. IT'S TIME TO BUILD! It's time " +
-      'to match every student with an expert like you.',
+      '9-12 students with experts (like you) to collaborate on ' +
+      "meaningful projects that you're both passionate about. Complete the " +
+      'form below to create your profile and sign-up as a mentor.',
   },
   tutorDesc: {
     id: 'tutor-form.desc',
