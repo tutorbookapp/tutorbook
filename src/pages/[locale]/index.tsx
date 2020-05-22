@@ -6,7 +6,7 @@ import Intercom from '@tutorbook/react-intercom';
 import Header from '@tutorbook/covid-header';
 import Footer from '@tutorbook/covid-footer';
 import HeroForm from '@tutorbook/hero-form';
-import About from '@tutorbook/about';
+import HeroAbout from '@tutorbook/hero-about';
 
 import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 
@@ -16,7 +16,7 @@ class IndexPage extends React.Component {
       <>
         <Header white />
         <HeroForm />
-        <About />
+        <HeroAbout />
         <Footer />
         <Intercom />
       </>

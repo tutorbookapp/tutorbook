@@ -1,0 +1,41 @@
+@use '@material/elevation';
+
+.grid {
+  padding: 0;
+}
+
+.card {
+  border-radius: 0.75rem;
+  transition: 200ms box-shadow;
+  // TODO: Add transition ease to `box-shadow`.
+  @include elevation.elevation(6);
+}
+
+.card:hover {
+  @include elevation.elevation(24);
+}
+
+.cardMedia {
+  background-image: url(./jpgs/tutor.jpg);
+}
+
+.cardContent {
+  padding: 1rem;
+}
+
+.cardContent h6,
+.cardContent p {
+  margin: 0;
+  color: #181818 !important;
+}
+
+.wrapper {
+  text-align: center;
+}
+
+.content {
+  text-align: left;
+  display: inline-block;
+  width: calc(100% - 80px);
+  max-width: 720px;
+}

@@ -333,6 +333,42 @@
     "defaultMessage": "Ready to supercharge your academics? Complete this form to search our free, volunteer tutors."
   },
   {
+    "id": "hero-about.mentor.header",
+    "defaultMessage": "Project oriented mentorship"
+  },
+  {
+    "id": "hero-about.mentor.body",
+    "defaultMessage": "Become an expert mentor and collaborate on meaningful work."
+  },
+  {
+    "id": "hero-about.tutor.header",
+    "defaultMessage": "COVID-19 free tutoring"
+  },
+  {
+    "id": "hero-about.tutor.body",
+    "defaultMessage": "Find or become a free, one-on-one, volunteer tutor."
+  },
+  {
+    "id": "hero-about.header",
+    "defaultMessage": "About us"
+  },
+  {
+    "id": "hero-about.first-paragraph",
+    "defaultMessage": "Tutorbook is a free, online platform that connects students with expert mentors and volunteer tutors."
+  },
+  {
+    "id": "hero-about.second-paragraph",
+    "defaultMessage": "We're connecting 9-12 students with expert mentors to collaborate on meaningful projects that they're both passionate about (e.g. writing a paper together)."
+  },
+  {
+    "id": "hero-about.third-paragraph",
+    "defaultMessage": "We're also making sure that no one loses out on education amidst COVID-19 by connecting K-12 students with free, volunteer tutors."
+  },
+  {
+    "id": "hero-about.banner-header",
+    "defaultMessage": "Learn more"
+  },
+  {
     "id": "hero-form.title",
     "description": "The first thing that the user sees; the title to the hero form on our landing page calling them to \"Connect with expert mentors and tutors\".",
     "defaultMessage": "Connect with expert mentors and tutors"
