@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/checkmarks",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Checkmark lists to place under CTA buttons (affirm user of their choice).",
   "keywords": [
     "Tutorbook",

@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/intl",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Translations for the i18n of Tutorbook's web app.",
   "keywords": [
     "i18n",

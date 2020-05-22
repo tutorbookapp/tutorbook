@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/timeslot-input",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Text field input for selecting a window of time.",
   "keywords": [
     "Tutorbook",

@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/schedule-input",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Package that contains the schedule input React component used across the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
