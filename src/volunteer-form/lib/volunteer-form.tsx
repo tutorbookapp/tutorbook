@@ -193,12 +193,13 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       required: true,
     };
     const shared = (key: keyof VolunteerFormState) => ({
+      ...sharedProps,
       onChange: (event: React.FormEvent<HTMLInputElement>) => {
         this.setState({ [key]: event.currentTarget.value });
       },
-      ...sharedProps,
     });
     const s = (id: string, placeholder: (v: string) => string) => ({
+      ...sharedProps,
       value: (this.state as Record<string, any>)[id],
       label: msg((msgs as Record<string, MessageDescriptor>)[id]),
       type: 'url',
@@ -212,13 +213,17 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       onChange: (event: React.FormEvent<HTMLInputElement>) => {
         this.setState({ [id]: event.currentTarget.value });
       },
-      ...sharedProps,
+      required: false,
     });
     return (
       <>
         <TextField {...shared('name')} label={msg({ id: 'form.name' })} />
         <TextField {...shared('email')} label={msg({ id: 'form.email' })} />
-        <TextField {...shared('phone')} label={msg({ id: 'form.phone' })} />
+        <TextField
+          {...shared('phone')}
+          required={false}
+          label={msg({ id: 'form.phone' })}
+        />
         <ListDivider className={styles.divider} />
         {this.state.activeForm === 0 && (
           <>
