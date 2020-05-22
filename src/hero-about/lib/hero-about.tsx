@@ -91,8 +91,8 @@ export default function HeroAbout(): JSX.Element {
             defaultMessage={
               "We're connecting 9-12 students with expert mentors to " +
               "collaborate on meaningful (summer) projects that they're both " +
-              'passionate about (e.g. writing a research paper together or ' +
-              'releasing a music album together).'
+              'passionate about (e.g. writing a research paper or releasing ' +
+              'a music album together).'
             }
           />
         </Typography>
