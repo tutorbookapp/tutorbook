@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/checkmark",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Package that contains a React component made up of a spinner that becomes a checkmark.",
   "keywords": [
     "Tutorbook",
@@ -33,5 +33,5 @@
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
   },
-  "gitHead": "1c76a3672d594b5bc354668d7dd277380bec5730"
+  "gitHead": "da7649673f6d1de638e014f5459bfe57d30f54fc"
 }

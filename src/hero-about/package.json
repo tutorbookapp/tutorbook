@@ -1,6 +1,6 @@
 {
   "name": "@tutorbook/hero-about",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "The about content on the home page that includes links to the 2-3 aspects of TB.",
   "keywords": [
     "Tutorbook",
@@ -33,5 +33,6 @@
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/tutorbook/issues"
-  }
+  },
+  "gitHead": "da7649673f6d1de638e014f5459bfe57d30f54fc"
 }
