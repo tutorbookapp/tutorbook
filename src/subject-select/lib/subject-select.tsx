@@ -82,6 +82,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       inputFocused: false,
       lineBreak: false,
     };
+    if (props.val) props.val.forEach((s) => (this.state.subjects[s] = true));
     this.searchIndex = client.initIndex(props.searchIndex || 'subjects');
     this.inputRef = React.createRef();
     this.lastSelectedRef = React.createRef();
