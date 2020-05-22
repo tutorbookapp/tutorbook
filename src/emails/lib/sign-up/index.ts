@@ -24,6 +24,7 @@ export class SignUpEmail implements Email {
     const roles: RoleAlias[] = [];
     if (user.searches.length > 0) roles.push('pupil');
     if (user.subjects.length > 0) roles.push('tutor');
+    if (user.expertise.length > 0) roles.push('mentor');
     (user as UserWithRoles).roles = roles;
     this.html = SignUpEmail.render(addVerifications(user as UserWithRoles));
   }

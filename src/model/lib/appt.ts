@@ -17,7 +17,7 @@ type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
 type AdminDocumentReference = admin.firestore.DocumentReference;
 
 export type ApptVenueTypeAlias = 'bramble';
-export type RoleAlias = 'tutor' | 'pupil';
+export type RoleAlias = 'tutor' | 'pupil' | 'mentor';
 
 export interface AttendeeInterface {
   uid: string;
