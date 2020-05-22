@@ -253,7 +253,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
             <SubjectSelect
               {...shared('subjects')}
               label={msg(msgs.subjects)}
-              placeholder={msg(msgs.subjectsPlaceholder)}
+              placeholder={msg({ id: 'form.subjects-placeholder' })}
               onChange={(subjects: string[]) => this.setState({ subjects })}
             />
             <ScheduleInput

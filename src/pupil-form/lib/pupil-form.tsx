@@ -10,7 +10,7 @@ import {
 
 import { Typography } from '@rmwc/typography';
 import Form, { InputElAlias } from '@tutorbook/form';
-import { GRADES, GradeAlias, User } from '@tutorbook/model';
+import { User } from '@tutorbook/model';
 import { UserProvider } from '@tutorbook/firebase';
 
 import firebase from '@tutorbook/firebase';
@@ -48,15 +48,14 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
     defaultMessage: 'Your phone number',
     description: 'Label for the phone number field.',
   },
-  grade: {
-    id: 'form.grade',
-    defaultMessage: 'Your grade level',
-    description: 'Label for the grade level field.',
-  },
   searches: {
     id: 'form.searches',
     defaultMessage: 'What would you like to learn?',
     description: 'Label for the subjects-to-search field.',
+  },
+  subjectsPlaceholder: {
+    id: 'form.subjects-placeholder',
+    defaultMessage: 'Ex. Algebra or Biology',
   },
   availability: {
     id: 'form.availability',
@@ -78,13 +77,11 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
  * - (parent.phone?) Parent phone
  * - (name) Your name
  * - (email?) Your email
- * - (bio) Your grade level
  * - (searches) What would you like to learn?
  * - (availability) When are you available?
  */
 export default function PupilForm() {
   const intl: IntlShape = useIntl();
-  const [grade, setGrade] = React.useState<GradeAlias | undefined>();
   return (
     <div className={styles.wrapper}>
       <div className={styles.content}>
@@ -148,20 +145,11 @@ export default function PupilForm() {
                 key: 'email',
               },
               {
-                label: intl.formatMessage(labels.grade),
-                el: 'select' as InputElAlias,
-                options: GRADES,
-                onChange: (event: React.FormEvent<HTMLSelectElement>) => {
-                  const gradeString: string = event.currentTarget.value;
-                  setGrade(new Number(gradeString).valueOf() as GradeAlias);
-                },
-              },
-              {
                 label: intl.formatMessage(labels.searches),
+                placeholder: intl.formatMessage(labels.subjectsPlaceholder),
                 el: 'subjectselect' as InputElAlias,
                 required: true,
                 key: 'searches',
-                grade,
               },
               {
                 label: intl.formatMessage(labels.availability),
@@ -186,7 +174,7 @@ export default function PupilForm() {
                 email: parentEmail,
                 phone: parentPhone,
               });
-              const pupil: User = new User({ ...rest, grade });
+              const pupil: User = new User(rest);
               await UserProvider.signup(pupil, [parent]);
               Router.push(`/${intl.locale}${pupil.searchURL}`);
             }}

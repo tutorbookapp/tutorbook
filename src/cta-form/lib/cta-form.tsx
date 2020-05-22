@@ -22,6 +22,7 @@ export default function CTAForm(): JSX.Element {
       inputs={[
         {
           label: intl.formatMessage({ id: 'form.searches' }),
+          placeholder: intl.formatMessage({ id: 'form.subjects-placeholder' }),
           el: 'subjectselect' as InputElAlias,
           required: true,
           key: 'searches',

@@ -70,10 +70,6 @@ export default defineMessages({
     defaultMessage: 'What can you tutor?',
     description: 'Label for the subjects-you-can-tutor field.',
   },
-  subjectsPlaceholder: {
-    id: 'tutor-form.subjects-placeholder',
-    defaultMessage: 'Ex. Algebra or Biology',
-  },
   availability: {
     id: 'tutor-form.availability',
     defaultMessage: 'When can you tutor?',
