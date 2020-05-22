@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography } from '@rmwc/typography';
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
-import { TextField, TextFieldProps } from '@rmwc/textfield';
+import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
@@ -35,21 +35,25 @@ interface SubjectSelectState {
   readonly lineBreak: boolean;
 }
 
-export interface SubjectSelectProps extends TextFieldProps {
+interface UniqueSubjectSelectProps extends TextFieldProps {
   readonly onChange: (subjects: string[]) => any;
   readonly className?: string;
   readonly val?: string[];
   readonly renderToPortal?: boolean;
   readonly options?: string[];
   readonly grade?: GradeAlias;
+  readonly searchIndex?: string;
 }
+
+export type SubjectSelectProps = UniqueSubjectSelectProps &
+  Omit<TextFieldHTMLProps, 'onChange'>;
 
 interface SubjectHit extends ObjectWithObjectID {
   readonly name?: string;
 }
 
 export default class SubjectSelect extends React.Component<SubjectSelectProps> {
-  private static searchIndex: SearchIndex = client.initIndex('subjects');
+  private searchIndex: SearchIndex;
 
   public readonly state: SubjectSelectState;
 
@@ -60,11 +64,11 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   private inputRef: React.RefObject<HTMLInputElement>;
 
   private ghostElementRef: React.RefObject<HTMLSpanElement>;
-  
+
   private lastSelectedRef: React.MutableRefObject<string | null>;
-  
+
   private textareaBreakWidth: React.MutableRefObject<number | null>;
-  
+
   private hasOpenedSuggestions: boolean = false;
 
   public constructor(props: SubjectSelectProps) {
@@ -78,6 +82,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       inputFocused: false,
       lineBreak: false,
     };
+    this.searchIndex = client.initIndex(props.searchIndex || 'subjects');
     this.inputRef = React.createRef();
     this.lastSelectedRef = React.createRef();
     this.ghostElementRef = React.createRef();
@@ -111,8 +116,12 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     const shouldChangeInputValue: boolean =
       (this.state.inputValue === '' || this.state.inputValue === '\xa0') &&
       this.inputValue !== this.state.inputValue;
+    const gradeChanged = prevProps.grade !== this.props.grade;
+    const indexChanged = prevProps.searchIndex !== this.props.searchIndex;
+    if (indexChanged)
+      this.searchIndex = client.initIndex(this.props.searchIndex || 'subjects');
     if (shouldChangeInputValue) this.setState({ inputValue: this.inputValue });
-    if (prevProps.grade !== this.props.grade) this.updateSuggestions();
+    if (indexChanged || gradeChanged) this.updateSuggestions();
     if (this.foundationRef) this.foundationRef.autoPosition_();
   }
 
@@ -137,7 +146,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           : undefined;
       const options: SearchOptions = { filters, optionalFilters };
       const [err, res] = await to<SearchResponse<SubjectHit>>(
-        SubjectSelect.searchIndex.search(query, options) as Promise<
+        this.searchIndex.search(query, options) as Promise<
           SearchResponse<SubjectHit>
         >
       );

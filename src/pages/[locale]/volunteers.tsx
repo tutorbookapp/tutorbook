@@ -5,7 +5,7 @@ import { GetStaticProps, GetStaticPaths } from 'next';
 import Intercom from '@tutorbook/react-intercom';
 import Header from '@tutorbook/covid-header';
 import Footer from '@tutorbook/covid-footer';
-import TutorForm from '@tutorbook/tutor-form';
+import VolunteerForm from '@tutorbook/volunteer-form';
 
 import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 
@@ -14,7 +14,7 @@ class TutorsPage extends React.Component {
     return (
       <>
         <Header />
-        <TutorForm />
+        <VolunteerForm />
         <Footer />
         <Intercom />
       </>

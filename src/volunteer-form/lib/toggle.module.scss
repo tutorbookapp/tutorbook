@@ -1,0 +1,101 @@
+$width: 30rem;
+
+.wrapper {
+  display: inline-block;
+  position: relative;
+  margin: 0 auto;
+  width: $width;
+}
+
+.toggle {
+  transform: translateY(0);
+  transition: opacity 1s cubic-bezier(0.12, 0.845, 0.305, 1) 0.6s,
+    transform 1s cubic-bezier(0.12, 0.845, 0.305, 1) 0.6s,
+    width 0.95s cubic-bezier(0.77, 0, 0.175, 1) 0.65s;
+  background-color: #6200ee;
+  border-radius: 2.4rem;
+  height: 4.8rem;
+  overflow: hidden;
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: $width;
+}
+
+.options {
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.optionsText {
+  transition-delay: 1.4s;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 1s, transform 1s;
+  transition-timing-function: ease, ease;
+  transition-delay: 0s, 0s;
+  transition-delay: 0.8s;
+  transition-timing-function: cubic-bezier(0.12, 0.845, 0.305, 1);
+  line-height: 4.8rem;
+  text-align: center;
+  width: 50%;
+  display: inline-block;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.selected {
+  transform: translateX(100%);
+  background-color: #fff;
+  border-radius: 4.2rem;
+  height: 4.2rem;
+  left: 0.3rem;
+  overflow: hidden;
+  position: absolute;
+  top: 0.3rem;
+  transform: translateX(0) translateY(0);
+  transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+  width: 14.7rem;
+}
+
+.selectedText {
+  left: 0;
+  position: absolute;
+  top: 0;
+  display: block;
+  line-height: 4.2rem;
+  text-align: center;
+  transition: opacity 0.2s cubic-bezier(0.77, 0, 0.175, 1) 0.125s;
+  width: 100%;
+  will-change: opacity;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  opacity: 0;
+}
+
+.moved {
+  transform: translateX(100%);
+}
+
+.activeText {
+  opacity: 1;
+}
+
+.checkmark {
+  height: 0.8rem;
+  margin-left: 0.6rem;
+  margin-top: -0.4rem;
+  position: absolute;
+  stroke: #000;
+  top: 50%;
+  width: 1rem;
+}

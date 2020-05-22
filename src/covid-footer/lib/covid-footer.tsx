@@ -387,8 +387,8 @@ export default function Footer(): JSX.Element {
             label={intl.formatMessage({ id: 'header.pupils' })}
           />
           <SecondaryLink
-            href='/tutors'
-            label={intl.formatMessage({ id: 'header.tutors' })}
+            href='/volunteers'
+            label={intl.formatMessage({ id: 'header.volunteers' })}
           />
           <SecondaryLink
             href='/parents'

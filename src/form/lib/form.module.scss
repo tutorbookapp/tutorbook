@@ -1,29 +1,13 @@
 @use '@material/elevation';
 
-.formTitle {
-  padding: 8px 16px;
-}
-
-.formTitle h2 {
-  margin: 0;
-}
-
-.formDescription {
-  padding: 16px;
-}
-
-.formDescription p {
-  margin: 0;
-}
-
 .form {
   padding: 16px;
 }
 
-// TODO: Add transition ease to `box-shadow`.
 .formCard {
   margin: 16px 0;
   transition: 200ms box-shadow;
+  // TODO: Add transition ease to `box-shadow`.
   @include elevation.elevation(2);
 }
 
@@ -31,14 +15,14 @@
   @include elevation.elevation(8);
 }
 
-.formField :global(.mdc-select__anchor) {
-  width: 100%;
-}
-
 .formField {
   margin: 8px 0;
   width: 100% !important;
   display: inline-flex;
+}
+
+.formField :global(.mdc-select__anchor) {
+  width: 100%;
 }
 
 .formField textarea {

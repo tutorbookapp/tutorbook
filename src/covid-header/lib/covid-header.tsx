@@ -67,10 +67,10 @@ export default function Header(props: HeaderProps): JSX.Element {
       defaultMessage: 'For students',
       description: 'Label for the pupil sign-up page header link.',
     },
-    tutors: {
-      id: 'header.tutors',
+    volunteers: {
+      id: 'header.volunteers',
       defaultMessage: 'For volunteers',
-      description: 'Label for the tutor sign-up page header link.',
+      description: 'Label for the volunteer sign-up page header link.',
     },
     parents: {
       id: 'header.parents',
@@ -89,8 +89,8 @@ export default function Header(props: HeaderProps): JSX.Element {
       label: intl.formatMessage(labels.pupils),
     },
     {
-      href: '/tutors',
-      label: intl.formatMessage(labels.tutors),
+      href: '/volunteers',
+      label: intl.formatMessage(labels.volunteers),
     },
     {
       href: '/parents',
