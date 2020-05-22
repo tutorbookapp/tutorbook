@@ -46,7 +46,7 @@ interface UniqueSubjectSelectProps extends TextFieldProps {
 }
 
 export type SubjectSelectProps = UniqueSubjectSelectProps &
-  Omit<TextFieldHTMLProps, 'onChange'>;
+  Omit<TextFieldHTMLProps, 'onChange' | 'ref'>;
 
 interface SubjectHit extends ObjectWithObjectID {
   readonly name?: string;
