@@ -85,12 +85,9 @@ export async function userUpdate(
   }
   index.setSettings({
     attributesForFaceting: [
-      'subjects.explicit',
-      'subjects.implicit',
-      'subjects.filled',
-      'searches.explicit',
-      'searches.implicit',
-      'searches.filled',
+      'expertise',
+      'subjects',
+      'searches',
       'availability',
     ].map((attr: string) => `filterOnly(${attr})`),
   });
