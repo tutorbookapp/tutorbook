@@ -41,6 +41,14 @@ export default defineMessages({
       'one loses out on education in these difficult times by connecting ' +
       'students with free, volunteer tutors like you.',
   },
+  source: {
+    id: 'mentor-form.source',
+    defaultMessage: 'How did you hear about Tutorbook?',
+  },
+  sourcePlaceholder: {
+    id: 'mentor-form.source-placeholder',
+    defaultMessage: 'Ex. A blog post or social media',
+  },
   expertise: {
     id: 'mentor-form.expertise',
     defaultMessage: 'What are your fields of expertise?',
@@ -72,9 +80,13 @@ export default defineMessages({
     description: 'Label for the when-you-can-tutor field.',
   },
   experience: {
-    id: 'form.experience',
+    id: 'tutor-form.experience',
     defaultMessage: 'Education and experience',
     description: 'Label for the education and experience field.',
+  },
+  experiencePlaceholder: {
+    id: 'tutor-form.experience-placeholder',
+    defaultMessage: 'Ex. Your college degree or work experience',
   },
   website: {
     id: 'form.website',

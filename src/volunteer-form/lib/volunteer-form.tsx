@@ -30,8 +30,10 @@ interface VolunteerFormProps {
 type VolunteerFormState = {
   readonly headerHeight: number;
   readonly descHeight: number;
-  readonly submitting: boolean;
-  readonly submitted: boolean;
+  readonly submittingMentor: boolean;
+  readonly submittingTutor: boolean;
+  readonly submittedMentor: boolean;
+  readonly submittedTutor: boolean;
   readonly activeForm: 0 | 1;
   readonly expertise: string[];
 } & Partial<UserInterface> &
@@ -49,13 +51,16 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
   public readonly state: VolunteerFormState = {
     headerHeight: 0,
     descHeight: 0,
-    submitting: false,
-    submitted: false,
+    submittingMentor: false,
+    submittingTutor: false,
+    submittedMentor: false,
+    submittedTutor: false,
     activeForm: 0,
     name: '',
     email: '',
     phone: '',
     bio: '',
+    source: '',
     expertise: [],
     subjects: [],
     website: '',
@@ -109,8 +114,8 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
           <div className={styles.content}>
             <Card className={styles.formCard}>
               <CheckmarkOverlay
-                active={this.state.submitting || this.state.submitted}
-                checked={this.state.submitted}
+                active={this.loading || this.checked}
+                checked={this.checked}
               />
               <form className={styles.form} onSubmit={this.handleSubmit}>
                 {this.renderInputs()}
@@ -121,7 +126,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
                       ? msgs.mentorSubmit
                       : msgs.tutorSubmit
                   )}
-                  disabled={this.state.submitting || this.state.submitted}
+                  disabled={this.loading || this.checked}
                   raised
                   arrow
                 />
@@ -132,6 +137,22 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         </div>
       </div>
     );
+  }
+
+  private get loading(): boolean {
+    const loadingMentor: boolean =
+      this.state.submittingMentor || this.state.submittedMentor;
+    const loadingTutor: boolean =
+      this.state.submittingTutor || this.state.submittedTutor;
+    return this.state.activeForm === 0 ? loadingMentor : loadingTutor;
+  }
+
+  private get checked(): boolean {
+    const checkedMentor: boolean =
+      this.state.submittedMentor || this.state.submittedMentor;
+    const checkedTutor: boolean =
+      this.state.submittedTutor || this.state.submittedTutor;
+    return this.state.activeForm === 0 ? checkedMentor : checkedTutor;
   }
 
   public componentDidMount(): void {
@@ -159,7 +180,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     if (this.state.activeForm === form) return {};
     const height: string = this.state.descHeight
       ? `${this.state.descHeight}px`
-      : '3.75rem';
+      : '4.5rem';
     const updated: string = form === 1 ? `-${height}` : height;
     return { transform: `translateY(${updated})` };
   }
@@ -201,6 +222,11 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         <ListDivider className={styles.divider} />
         {this.state.activeForm === 0 && (
           <>
+            <TextField
+              {...shared('source')}
+              label={msg(msgs.source)}
+              placeholder={msg(msgs.sourcePlaceholder)}
+            />
             <SubjectSelect
               {...shared('expertise')}
               label={msg(msgs.expertise)}
@@ -235,6 +261,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
             <TextField
               {...shared('bio')}
               label={msg(msgs.experience)}
+              placeholder={msg(msgs.experiencePlaceholder)}
               rows={4}
               textarea
             />
@@ -266,9 +293,18 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       url: (this.state as Record<string, any>)[type] as string,
     }));
     const tutor: User = new User({ ...this.state, socials });
-    this.setState({ submitting: true, submitted: false });
+    this.setState({
+      submittingMentor:
+        this.state.activeForm === 0 || this.state.submittingMentor,
+      submittingTutor:
+        this.state.activeForm === 1 || this.state.submittingTutor,
+    });
     await UserProvider.signup(tutor);
-    this.setState({ submitting: false, submitted: true });
+    this.setState({
+      submittedMentor:
+        this.state.activeForm === 0 || this.state.submittedMentor,
+      submittedTutor: this.state.activeForm === 1 || this.state.submittedTutor,
+    });
   }
 }
 

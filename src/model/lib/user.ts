@@ -65,6 +65,7 @@ export interface SocialInterface {
  * @property bio - A short bio describing the user's education, experience,
  * interests, hobbies, etc (i.e. the concatenation of any miscellaneous form
  * questions like 'Do you have experience tutoring professionally?').
+ * @property source - How the user came to know about Tutorbook.
  * @property schedule - An array of `Timeslot`'s when the user is booked.
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property expertise - The fields of expertise of a mentor.
@@ -83,6 +84,7 @@ export interface UserInterface {
   photo?: string;
   grade?: GradeAlias;
   bio?: string;
+  source?: string;
   schedule: Availability;
   availability: Availability;
   expertise: string[];
@@ -116,6 +118,7 @@ export interface UserJSONInterface {
   photo?: string;
   grade?: GradeAlias;
   bio?: string;
+  source?: string;
   schedule: AvailabilityJSONAlias;
   availability: AvailabilityJSONAlias;
   expertise: string[];
@@ -146,6 +149,7 @@ export class User implements UserInterface {
   public phone: string = '';
   public photo: string = '';
   public bio: string = '';
+  public source: string = '';
   public schedule: Availability = new Availability();
   public availability: Availability = new Availability();
   public expertise: string[] = [];

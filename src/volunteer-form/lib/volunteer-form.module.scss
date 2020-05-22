@@ -20,26 +20,6 @@
   position: relative;
 }
 
-.active {
-  transform: translateY(0);
-}
-
-.header .hidden {
-  transform: translateY(-3.75rem);
-}
-
-.header .hidden:last-child {
-  transform: translateY(3.75rem);
-}
-
-.description .hidden {
-  transform: translateY(-4.5rem);
-}
-
-.description .hidden:last-child {
-  transform: translateY(4.5rem);
-}
-
 .form {
   padding: 16px;
 }
