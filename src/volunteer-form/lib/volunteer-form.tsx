@@ -28,6 +28,8 @@ interface VolunteerFormProps {
 }
 
 type VolunteerFormState = {
+  readonly headerHeight: number;
+  readonly descHeight: number;
   readonly submitting: boolean;
   readonly submitted: boolean;
   readonly activeForm: 0 | 1;
@@ -45,6 +47,8 @@ type VolunteerFormState = {
  */
 class VolunteerForm extends React.Component<VolunteerFormProps> {
   public readonly state: VolunteerFormState = {
+    headerHeight: 0,
+    descHeight: 0,
     submitting: false,
     submitted: false,
     activeForm: 0,
@@ -52,8 +56,8 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     email: '',
     phone: '',
     bio: '',
-    expertise: [] as string[],
-    subjects: { explicit: [], implicit: [], filled: [] },
+    expertise: [],
+    subjects: [],
     website: '',
     linkedin: '',
     twitter: '',
@@ -61,12 +65,19 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     instagram: '',
   };
 
+  private readonly headerRef: React.RefObject<HTMLHeadingElement>;
+
+  private readonly descRef: React.RefObject<HTMLParagraphElement>;
+
   public constructor(props: VolunteerFormProps) {
     super(props);
+    this.headerRef = React.createRef();
+    this.descRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   public render(): JSX.Element {
+    const msg = (msg: MessageDescriptor) => this.props.intl.formatMessage(msg);
     return (
       <div className={styles.wrapper}>
         <div className={styles.content}>
@@ -77,11 +88,21 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
             ]}
             onChange={(activeForm: 0 | 1) => this.setState({ activeForm })}
           />
-          <Typography use='headline2'>
-            {this.props.intl.formatMessage(this.header)}
+          <Typography
+            ref={this.headerRef}
+            className={styles.header}
+            use='headline2'
+          >
+            <span style={this.getHeaderStyle(0)}>{msg(msgs.mentorHeader)}</span>
+            <span style={this.getHeaderStyle(1)}>{msg(msgs.tutorHeader)}</span>
           </Typography>
-          <Typography use='body1'>
-            {this.props.intl.formatMessage(this.description)}
+          <Typography
+            ref={this.descRef}
+            className={styles.description}
+            use='body1'
+          >
+            <span style={this.getDescStyle(0)}>{msg(msgs.mentorDesc)}</span>
+            <span style={this.getDescStyle(1)}>{msg(msgs.tutorDesc)}</span>
           </Typography>
         </div>
         <div className={styles.formWrapper}>
@@ -95,7 +116,11 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
                 {this.renderInputs()}
                 <Button
                   className={styles.formSubmitButton}
-                  label={this.props.intl.formatMessage(this.buttonLabel)}
+                  label={msg(
+                    this.state.activeForm === 0
+                      ? msgs.mentorSubmit
+                      : msgs.tutorSubmit
+                  )}
                   disabled={this.state.submitting || this.state.submitted}
                   raised
                   arrow
@@ -107,6 +132,36 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         </div>
       </div>
     );
+  }
+
+  public componentDidMount(): void {
+    if (this.headerRef.current) {
+      const headerHeight: number = this.headerRef.current.clientHeight;
+      if (headerHeight !== this.state.headerHeight)
+        this.setState({ headerHeight });
+    }
+    if (this.descRef.current) {
+      const descHeight: number = this.descRef.current.clientHeight;
+      if (descHeight !== this.state.descHeight) this.setState({ descHeight });
+    }
+  }
+
+  private getHeaderStyle(form: 0 | 1): Record<string, string> {
+    if (this.state.activeForm === form) return {};
+    const height: string = this.state.headerHeight
+      ? `${this.state.headerHeight}px`
+      : '3.75rem';
+    const updated: string = form === 1 ? `-${height}` : height;
+    return { transform: `translateY(${updated})` };
+  }
+
+  private getDescStyle(form: 0 | 1): Record<string, string> {
+    if (this.state.activeForm === form) return {};
+    const height: string = this.state.descHeight
+      ? `${this.state.descHeight}px`
+      : '3.75rem';
+    const updated: string = form === 1 ? `-${height}` : height;
+    return { transform: `translateY(${updated})` };
   }
 
   private renderInputs(): JSX.Element {
@@ -193,18 +248,6 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
       </>
     );
-  }
-
-  private get buttonLabel(): MessageDescriptor {
-    return this.state.activeForm === 0 ? msgs.mentorSubmit : msgs.tutorSubmit;
-  }
-
-  private get header(): MessageDescriptor {
-    return this.state.activeForm === 0 ? msgs.mentorHeader : msgs.tutorHeader;
-  }
-
-  private get description(): MessageDescriptor {
-    return this.state.activeForm === 0 ? msgs.mentorDesc : msgs.tutorDesc;
   }
 
   private async handleSubmit(event: React.FormEvent): Promise<void> {

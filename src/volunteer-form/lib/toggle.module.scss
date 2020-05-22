@@ -9,9 +9,9 @@ $width: 30rem;
 
 .toggle {
   transform: translateY(0);
-  transition: opacity 1s cubic-bezier(0.12, 0.845, 0.305, 1) 0.6s,
-    transform 1s cubic-bezier(0.12, 0.845, 0.305, 1) 0.6s,
-    width 0.95s cubic-bezier(0.77, 0, 0.175, 1) 0.65s;
+  transition: opacity 1s cubic-bezier(0.12, 0.845, 0.305, 1),
+    transform 1s cubic-bezier(0.12, 0.845, 0.305, 1),
+    width 0.95s cubic-bezier(0.77, 0, 0.175, 1);
   background-color: #6200ee;
   border-radius: 2.4rem;
   height: 4.8rem;
@@ -34,13 +34,10 @@ $width: 30rem;
 }
 
 .optionsText {
-  transition-delay: 1.4s;
   opacity: 1;
   transform: translateX(0);
   transition: opacity 1s, transform 1s;
   transition-timing-function: ease, ease;
-  transition-delay: 0s, 0s;
-  transition-delay: 0.8s;
   transition-timing-function: cubic-bezier(0.12, 0.845, 0.305, 1);
   line-height: 4.8rem;
   text-align: center;
@@ -63,7 +60,7 @@ $width: 30rem;
   top: 0.3rem;
   transform: translateX(0) translateY(0);
   transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
-  width: 14.7rem;
+  width: $width / 2 - 0.3rem;
 }
 
 .selectedText {
@@ -98,4 +95,19 @@ $width: 30rem;
   stroke: #000;
   top: 50%;
   width: 1rem;
+}
+
+@media (max-width: 768px) {
+  .toggle,
+  .wrapper {
+    width: 18rem;
+  }
+
+  .selected {
+    width: 18rem / 2 - 0.3rem;
+  }
+
+  .selected svg {
+    display: none;
+  }
 }

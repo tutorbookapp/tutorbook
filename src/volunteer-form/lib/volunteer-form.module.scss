@@ -1,5 +1,45 @@
 @use '@material/elevation';
 
+.header span,
+.description span {
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.header span:last-child,
+.description span:last-child {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+}
+
+.header,
+.description {
+  overflow: hidden;
+  position: relative;
+}
+
+.active {
+  transform: translateY(0);
+}
+
+.header .hidden {
+  transform: translateY(-3.75rem);
+}
+
+.header .hidden:last-child {
+  transform: translateY(3.75rem);
+}
+
+.description .hidden {
+  transform: translateY(-4.5rem);
+}
+
+.description .hidden:last-child {
+  transform: translateY(4.5rem);
+}
+
 .form {
   padding: 16px;
 }
