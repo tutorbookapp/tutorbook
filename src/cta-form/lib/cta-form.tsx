@@ -36,7 +36,7 @@ export default function CTAForm(): JSX.Element {
       submitLabel={intl.formatMessage({ id: 'pupil-form.submit' })}
       onFormSubmit={async (formValues) => {
         firebase.analytics().logEvent('search', {
-          search_term: formValues.searches.explicit.join(', '),
+          search_term: formValues.searches.join(', '),
         });
         const pupil: User = new User(formValues);
         Router.push(`/${intl.locale}${pupil.searchURL}`);
