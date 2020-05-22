@@ -12,7 +12,7 @@ import styles from './hero-form.module.scss';
  * following information from pupils (and creates their Firestore user document
  * along the way).
  * - Optional: (grade) Your grade level
- * - (searches.explicit) What would you like to learn?
+ * - (searches) What would you like to learn?
  * - (availability) When are you available?
  */
 export default function HeroForm(): JSX.Element {

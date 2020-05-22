@@ -8,7 +8,7 @@ import Button from '@tutorbook/button';
 import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select';
 import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input';
 import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
-import { SubjectsInterface, Availability } from '@tutorbook/model';
+import { Availability } from '@tutorbook/model';
 
 import styles from './form.module.scss';
 
@@ -123,11 +123,7 @@ export default class Form extends React.Component<FormProps, {}> {
               {...(props as SubjectSelectProps)}
               onChange={(subjects: string[]) => {
                 let props: InputProps = input as InputProps;
-                this.values[props.key ? props.key : props.label] = {
-                  explicit: subjects,
-                  implicit: [],
-                  filled: [],
-                } as SubjectsInterface;
+                this.values[props.key ? props.key : props.label] = subjects;
               }}
               key={index}
               outlined

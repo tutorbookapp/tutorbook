@@ -205,7 +205,7 @@ export default async function appt(
           // 3. Verify the tutors can teach the requested subjects.
           const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
           const canTeachSubject: (s: string) => boolean = (subject: string) => {
-            return user.subjects.explicit.includes(subject);
+            return user.subjects.includes(subject);
           };
           if (isTutor && !appt.subjects.every(canTeachSubject)) {
             error(

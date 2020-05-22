@@ -161,7 +161,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
     ];
     const subjects: string[] = Utils.intersection<string>(
       this.props.filters.subjects,
-      this.state.viewing.subjects.explicit
+      this.state.viewing.subjects
     );
     const times: Timeslot[] = Utils.intersection<Timeslot>(
       this.props.filters.availability,

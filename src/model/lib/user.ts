@@ -67,6 +67,7 @@ export interface SocialInterface {
  * questions like 'Do you have experience tutoring professionally?').
  * @property schedule - An array of `Timeslot`'s when the user is booked.
  * @property availability - An array of `Timeslot`'s when the user is free.
+ * @property expertise - The fields of expertise of a mentor.
  * @property subjects - The subjects that the user can tutor in.
  * @property searches - The subjects that the user needs tutoring for.
  * @property parents - The Firebase uIDs of linked parent accounts.
@@ -84,8 +85,9 @@ export interface UserInterface {
   bio?: string;
   schedule: Availability;
   availability: Availability;
-  subjects: SubjectsInterface;
-  searches: SubjectsInterface;
+  expertise: string[];
+  subjects: string[];
+  searches: string[];
   parents?: string[];
   ref?: DocumentReference | AdminDocumentReference;
   token?: string;
@@ -116,8 +118,9 @@ export interface UserJSONInterface {
   bio?: string;
   schedule: AvailabilityJSONAlias;
   availability: AvailabilityJSONAlias;
-  subjects: SubjectsInterface;
-  searches: SubjectsInterface;
+  expertise: string[];
+  subjects: string[];
+  searches: string[];
   parents?: string[];
   token?: string;
   socials: SocialInterface[];
@@ -145,16 +148,9 @@ export class User implements UserInterface {
   public bio: string = '';
   public schedule: Availability = new Availability();
   public availability: Availability = new Availability();
-  public subjects: SubjectsInterface = {
-    explicit: [],
-    implicit: [],
-    filled: [],
-  };
-  public searches: SubjectsInterface = {
-    explicit: [],
-    implicit: [],
-    filled: [],
-  };
+  public expertise: string[] = [];
+  public subjects: string[] = [];
+  public searches: string[] = [];
   public parents: string[] = [];
   public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;
@@ -317,7 +313,7 @@ export class User implements UserInterface {
 
   /**
    * Gets the search URL where the URL parameters are determined by this user's
-   * `searches.explicit` and `availability` fields.
+   * `searches` and `availability` fields.
    *
    * @todo Ensure this works on the server-side (i.e. when it doesn't know what
    * hostname or protocol to use).
@@ -326,7 +322,7 @@ export class User implements UserInterface {
     return url.format({
       pathname: '/search',
       query: {
-        subjects: encodeURIComponent(JSON.stringify(this.searches.explicit)),
+        subjects: encodeURIComponent(JSON.stringify(this.searches)),
         availability: this.availability.toURLParam(),
       },
     });
@@ -374,17 +370,3 @@ export type NotificationTargetAlias = 'email' | 'sms' | 'webpush';
  * for whenever anyone sends you a new lesson request).
  */
 export type NotificationReasonAlias = 'newRequest' | 'newLesson';
-
-/**
- * A user's subjects (i.e. subjects they can tutor for or need tutoring in).
- * @typedef {Object} SubjectsInterface
- * @property {string[]} implicit - The implied subjects (e.g. subjects that had
- * been searched for in the past).
- * @property {string[]} explicit - The user-denoted subjects (e.g. the subjects
- * that the pupil enters when they first sign-up).
- */
-export interface SubjectsInterface {
-  implicit: string[];
-  explicit: string[];
-  filled: string[];
-}

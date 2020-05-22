@@ -79,7 +79,7 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
  * - (name) Your name
  * - (email?) Your email
  * - (bio) Your grade level
- * - (searches.explicit) What would you like to learn?
+ * - (searches) What would you like to learn?
  * - (availability) When are you available?
  */
 export default function PupilForm() {

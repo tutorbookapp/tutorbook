@@ -252,7 +252,7 @@ export default async function request(
         // 1. Verify the tutors can teach the requested subjects.
         const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
         const canTeachSubject: (s: string) => boolean = (subject: string) => {
-          return user.subjects.explicit.includes(subject);
+          return user.subjects.includes(subject);
         };
         if (isTutor && !request.subjects.every(canTeachSubject)) {
           error(`${user.name} (${user.uid}) cannot teach requested subjects.`);

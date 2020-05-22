@@ -75,8 +75,8 @@ class UserDialog extends React.Component<UserDialogProps> {
             },
           ],
           subjects: Utils.intersection<string>(
-            props.user.subjects.explicit,
-            this.context.searches.explicit
+            props.user.subjects,
+            this.context.searches
           ),
           time: Utils.intersection<Timeslot>(
             props.user.availability,
@@ -277,7 +277,7 @@ class UserDialog extends React.Component<UserDialogProps> {
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
                 val={this.state.appt.subjects}
-                options={this.props.user.subjects.explicit}
+                options={this.props.user.subjects}
                 grade={this.context.grade}
               />
               <TimeslotInput

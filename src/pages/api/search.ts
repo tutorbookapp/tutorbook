@@ -59,7 +59,7 @@ async function searchUsers(
  * limitation, we merge results from many queries on the client side (e.g. get
  * results for `A AND B` and merge them with the results for `B AND C`).
  * @example
- * '(subjects.explicit:"Chemistry H" OR subjects.explicit:"Chemistry") AND ' +
+ * '(subjects:"Chemistry H" OR subjects:"Chemistry") AND ' +
  * '((availability.from <= 1587304800001 AND availability.to >= 1587322800000))'
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-by-date/?language=javascript}
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/in-depth/combining-boolean-operators/#combining-ands-and-ors}
@@ -69,7 +69,7 @@ function getFilterStrings(filters: FiltersInterface): string[] {
   let filterString: string = '';
   for (let i = 0; i < filters.subjects.length; i++) {
     filterString += i === 0 ? '(' : ' OR ';
-    filterString += `subjects.explicit:"${filters.subjects[i]}"`;
+    filterString += `subjects:"${filters.subjects[i]}"`;
     if (i === filters.subjects.length - 1) filterString += ')';
   }
   if (filters.availability.length && filters.subjects.length)
