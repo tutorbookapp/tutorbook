@@ -297,7 +297,7 @@ export default function Footer(): JSX.Element {
                 label: intl.formatMessage(labels.schoolClosures),
               },
               {
-                href: 'https://learnpanion.com/',
+                href: 'http://learnpanion.com/',
                 label: intl.formatMessage(labels.learnpanion),
               },
             ]}
