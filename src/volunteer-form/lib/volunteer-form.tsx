@@ -231,6 +231,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
               {...shared('source')}
               label={msg(msgs.source)}
               placeholder={msg(msgs.sourcePlaceholder)}
+              required={false}
             />
             <SubjectSelect
               {...shared('expertise')}
