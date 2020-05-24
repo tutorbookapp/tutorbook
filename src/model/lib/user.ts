@@ -68,9 +68,8 @@ export interface SocialInterface {
  * @property source - How the user came to know about Tutorbook.
  * @property schedule - An array of `Timeslot`'s when the user is booked.
  * @property availability - An array of `Timeslot`'s when the user is free.
- * @property expertise - The fields of expertise of a mentor.
- * @property subjects - The subjects that the user can tutor in.
- * @property searches - The subjects that the user needs tutoring for.
+ * @property mentoring - The subjects that the user wants a and can mentor for.
+ * @property tutoring - The subjects that the user wants a and can tutor for.
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property ref - The user's Firestore profile `DocumentReference`.
  * @property token - The user's Firebase Authentication JWT `idToken`.
@@ -87,9 +86,8 @@ export interface UserInterface {
   source?: string;
   schedule: Availability;
   availability: Availability;
-  expertise: string[];
-  subjects: string[];
-  searches: string[];
+  tutoring: { subjects: string[]; searches: string[] };
+  mentoring: { subjects: string[]; searches: string[] };
   parents?: string[];
   ref?: DocumentReference | AdminDocumentReference;
   token?: string;
@@ -121,9 +119,8 @@ export interface UserJSONInterface {
   source?: string;
   schedule: AvailabilityJSONAlias;
   availability: AvailabilityJSONAlias;
-  expertise: string[];
-  subjects: string[];
-  searches: string[];
+  tutoring: { subjects: string[]; searches: string[] };
+  mentoring: { subjects: string[]; searches: string[] };
   parents?: string[];
   token?: string;
   socials: SocialInterface[];
@@ -152,9 +149,14 @@ export class User implements UserInterface {
   public source: string = '';
   public schedule: Availability = new Availability();
   public availability: Availability = new Availability();
-  public expertise: string[] = [];
-  public subjects: string[] = [];
-  public searches: string[] = [];
+  public mentoring: { subjects: string[]; searches: string[] } = {
+    subjects: [],
+    searches: [],
+  };
+  public tutoring: { subjects: string[]; searches: string[] } = {
+    subjects: [],
+    searches: [],
+  };
   public parents: string[] = [];
   public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;
@@ -326,7 +328,7 @@ export class User implements UserInterface {
     return url.format({
       pathname: '/search',
       query: {
-        subjects: encodeURIComponent(JSON.stringify(this.searches)),
+        subjects: encodeURIComponent(JSON.stringify(this.tutoring.searches)),
         availability: this.availability.toURLParam(),
       },
     });

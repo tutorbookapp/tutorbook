@@ -167,6 +167,7 @@ export default function PupilForm() {
                 parentName,
                 parentEmail,
                 parentPhone,
+                searches,
                 ...rest
               } = formValues;
               const parent: User = new User({
@@ -174,7 +175,7 @@ export default function PupilForm() {
                 email: parentEmail,
                 phone: parentPhone,
               });
-              const pupil: User = new User(rest);
+              const pupil: User = new User({ ...rest, tutoring: { searches } });
               await UserProvider.signup(pupil, [parent]);
               Router.push(`/${intl.locale}${pupil.searchURL}`);
             }}

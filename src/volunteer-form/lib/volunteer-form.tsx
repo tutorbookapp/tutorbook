@@ -36,6 +36,7 @@ type VolunteerFormState = {
   readonly submittedTutor: boolean;
   readonly activeForm: 0 | 1;
   readonly expertise: string[];
+  readonly subjects: string[];
 } & Partial<UserInterface> &
   { [type in SocialTypeAlias]: string };
 
@@ -190,7 +191,6 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     const sharedProps = {
       className: styles.formField,
       outlined: true,
-      required: true,
     };
     const shared = (key: keyof VolunteerFormState) => ({
       ...sharedProps,
@@ -213,17 +213,20 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       onChange: (event: React.FormEvent<HTMLInputElement>) => {
         this.setState({ [id]: event.currentTarget.value });
       },
-      required: false,
     });
     return (
       <>
-        <TextField {...shared('name')} label={msg({ id: 'form.name' })} />
-        <TextField {...shared('email')} label={msg({ id: 'form.email' })} />
         <TextField
-          {...shared('phone')}
-          required={false}
-          label={msg({ id: 'form.phone' })}
+          {...shared('name')}
+          label={msg({ id: 'form.name' })}
+          required
         />
+        <TextField
+          {...shared('email')}
+          label={msg({ id: 'form.email' })}
+          required
+        />
+        <TextField {...shared('phone')} label={msg({ id: 'form.phone' })} />
         <ListDivider className={styles.divider} />
         {this.state.activeForm === 0 && (
           <>
@@ -239,11 +242,13 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
               placeholder={msg(msgs.expertisePlaceholder)}
               onChange={(expertise: string[]) => this.setState({ expertise })}
               searchIndex='expertise'
+              required
             />
             <TextField
               {...shared('bio')}
               label={msg(msgs.project)}
               placeholder={msg(msgs.projectPlaceholder)}
+              required
               rows={4}
               textarea
             />
@@ -256,6 +261,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
               label={msg(msgs.subjects)}
               placeholder={msg({ id: 'form.subjects-placeholder' })}
               onChange={(subjects: string[]) => this.setState({ subjects })}
+              required
             />
             <ScheduleInput
               {...shared('availability')}
@@ -263,11 +269,13 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
               onChange={(availability: Availability) =>
                 this.setState({ availability })
               }
+              required
             />
             <TextField
               {...shared('bio')}
               label={msg(msgs.experience)}
               placeholder={msg(msgs.experiencePlaceholder)}
+              required
               rows={4}
               textarea
             />
@@ -288,17 +296,42 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     firebase.analytics().logEvent('sign_up', {
       method: this.state.activeForm === 0 ? 'mentor_form' : 'tutor_form',
     });
-    const socials = ([
-      'website',
-      'linkedin',
-      'facebook',
-      'twitter',
-      'instagram',
-    ] as SocialTypeAlias[]).map((type: SocialTypeAlias) => ({
-      type,
-      url: (this.state as Record<string, any>)[type] as string,
-    }));
-    const tutor: User = new User({ ...this.state, socials });
+    const {
+      expertise,
+      subjects,
+      website,
+      linkedin,
+      facebook,
+      twitter,
+      instagram,
+    } = this.state;
+    const tutor: User = new User({
+      ...this.state,
+      socials: [
+        {
+          type: 'website',
+          url: website,
+        },
+        {
+          type: 'linkedin',
+          url: linkedin,
+        },
+        {
+          type: 'facebook',
+          url: facebook,
+        },
+        {
+          type: 'twitter',
+          url: twitter,
+        },
+        {
+          type: 'instagram',
+          url: instagram,
+        },
+      ],
+      tutoring: { subjects: subjects, searches: [] },
+      mentoring: { subjects: expertise, searches: [] },
+    });
     this.setState({
       submittingMentor:
         this.state.activeForm === 0 || this.state.submittingMentor,

@@ -156,12 +156,12 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
       },
       {
         uid: this.context.uid,
-        roles: ['pupil'],
+        roles: ['tutee'],
       },
     ];
     const subjects: string[] = Utils.intersection<string>(
       this.props.filters.subjects,
-      this.state.viewing.subjects
+      this.state.viewing.tutoring.subjects
     );
     const times: Timeslot[] = Utils.intersection<Timeslot>(
       this.props.filters.availability,

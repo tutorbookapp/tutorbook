@@ -71,11 +71,11 @@ class UserDialog extends React.Component<UserDialogProps> {
             },
             {
               uid: this.context.uid,
-              roles: ['pupil'],
+              roles: ['tutee'],
             },
           ],
           subjects: Utils.intersection<string>(
-            props.user.subjects,
+            props.user.tutoring.subjects,
             this.context.searches
           ),
           time: Utils.intersection<Timeslot>(
@@ -277,7 +277,7 @@ class UserDialog extends React.Component<UserDialogProps> {
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
                 val={this.state.appt.subjects}
-                options={this.props.user.subjects}
+                options={this.props.user.tutoring.subjects}
                 grade={this.context.grade}
               />
               <TimeslotInput

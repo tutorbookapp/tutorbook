@@ -22,9 +22,10 @@ export class SignUpEmail implements Email {
     this.subject = `${user} just signed up on Tutorbook!`;
     this.text = this.subject;
     const roles: RoleAlias[] = [];
-    if (user.searches.length > 0) roles.push('pupil');
-    if (user.subjects.length > 0) roles.push('tutor');
-    if (user.expertise.length > 0) roles.push('mentor');
+    if (user.tutoring.searches.length > 0) roles.push('tutee');
+    if (user.tutoring.subjects.length > 0) roles.push('tutor');
+    if (user.mentoring.searches.length > 0) roles.push('mentee');
+    if (user.mentoring.subjects.length > 0) roles.push('mentor');
     (user as UserWithRoles).roles = roles;
     this.html = SignUpEmail.render(addVerifications(user as UserWithRoles));
   }
