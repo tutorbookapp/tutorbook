@@ -1,68 +1,5 @@
 [
   {
-    "id": "about.how-it-works.step-zero",
-    "defaultMessage": "Step #0"
-  },
-  {
-    "id": "about.how-it-works.tutor.title",
-    "defaultMessage": "Volunteer registers"
-  },
-  {
-    "id": "about.how-it-works.tutor.body",
-    "defaultMessage": "The volunteer tutor (or mentor) signs up and creates their profile."
-  },
-  {
-    "id": "about.how-it-works.tutor.cta",
-    "description": "Label for the CTA link to the tutor sign-up page.",
-    "defaultMessage": "Get started as a volunteer"
-  },
-  {
-    "id": "about.how-it-works.step-one",
-    "defaultMessage": "Step #1"
-  },
-  {
-    "id": "about.how-it-works.pupil.title",
-    "defaultMessage": "Student requests a volunteer"
-  },
-  {
-    "id": "about.how-it-works.pupil.body",
-    "defaultMessage": "The student signs up, searches, and requests a tutor (or mentor)."
-  },
-  {
-    "id": "about.how-it-works.pupil.cta",
-    "description": "Label for the CTA link to the student sign-up page.",
-    "defaultMessage": "Get started as a student"
-  },
-  {
-    "id": "about.how-it-works.step-two",
-    "defaultMessage": "Step #2"
-  },
-  {
-    "id": "about.how-it-works.parent.title",
-    "defaultMessage": "Parent approves of the volunteer"
-  },
-  {
-    "id": "about.how-it-works.parent.body",
-    "defaultMessage": "Each request must receive parental approval before the student can meet with their tutor (or mentor)."
-  },
-  {
-    "id": "about.how-it-works.step-three",
-    "defaultMessage": "Step #3"
-  },
-  {
-    "id": "about.how-it-works.bramble.title",
-    "defaultMessage": "Virtual tutoring lessons via Bramble"
-  },
-  {
-    "id": "about.how-it-works.bramble.body",
-    "defaultMessage": "After parental approval, the tutor and the student both receive a link to their secure, private Bramble room. No direct contact information is ever shared."
-  },
-  {
-    "id": "learn-more",
-    "description": "Label for the \"Learn more\" CTA links.",
-    "defaultMessage": "Learn more"
-  },
-  {
     "id": "about.about-us.title",
     "description": "The title of the \"About us\" home page section.",
     "defaultMessage": "About us"
@@ -126,6 +63,69 @@
     "id": "about.how-it-works.title",
     "description": "The title of the \"How it works\" section.",
     "defaultMessage": "How it works"
+  },
+  {
+    "id": "about.how-it-works.step-zero",
+    "defaultMessage": "Step #0"
+  },
+  {
+    "id": "about.how-it-works.tutor.title",
+    "defaultMessage": "Volunteer registers"
+  },
+  {
+    "id": "about.how-it-works.tutor.body",
+    "defaultMessage": "The volunteer tutor (or mentor) signs up and creates their profile."
+  },
+  {
+    "id": "about.how-it-works.tutor.cta",
+    "description": "Label for the CTA link to the tutor sign-up page.",
+    "defaultMessage": "Get started as a volunteer"
+  },
+  {
+    "id": "about.how-it-works.step-one",
+    "defaultMessage": "Step #1"
+  },
+  {
+    "id": "about.how-it-works.pupil.title",
+    "defaultMessage": "Student requests a volunteer"
+  },
+  {
+    "id": "about.how-it-works.pupil.body",
+    "defaultMessage": "The student signs up, searches, and requests a tutor (or mentor)."
+  },
+  {
+    "id": "about.how-it-works.pupil.cta",
+    "description": "Label for the CTA link to the student sign-up page.",
+    "defaultMessage": "Get started as a student"
+  },
+  {
+    "id": "about.how-it-works.step-two",
+    "defaultMessage": "Step #2"
+  },
+  {
+    "id": "about.how-it-works.parent.title",
+    "defaultMessage": "Parent approves of the volunteer"
+  },
+  {
+    "id": "about.how-it-works.parent.body",
+    "defaultMessage": "Each request must receive parental approval before the student can meet with their tutor (or mentor)."
+  },
+  {
+    "id": "about.how-it-works.step-three",
+    "defaultMessage": "Step #3"
+  },
+  {
+    "id": "about.how-it-works.bramble.title",
+    "defaultMessage": "Virtual tutoring lessons via Bramble"
+  },
+  {
+    "id": "about.how-it-works.bramble.body",
+    "defaultMessage": "After parental approval, the tutor and the student both receive a link to their secure, private Bramble room. No direct contact information is ever shared."
+  },
+  {
+    "id": "learn-more",
+    "description": "Label for the \"Learn more\" CTA links.",
+    "defaultMessage": "Learn more"
   },
   {
     "id": "footer.lang.english",
@@ -359,6 +359,11 @@
     "defaultMessage": "We're also making sure that no one loses out on education amidst COVID-19 by connecting K-12 students with free, volunteer tutors."
   },
   {
+    "id": "about.how-it-works.title",
+    "description": "The title of the \"How it works\" section.",
+    "defaultMessage": "How it works"
+  },
+  {
     "id": "hero.mentor.header",
     "defaultMessage": "Project oriented mentorship"
   },
@@ -377,12 +382,12 @@
   {
     "id": "hero-form.tabs.mentors",
     "description": "Title for the mentors tab of the hero form.",
-    "defaultMessage": "Expert mentoring"
+    "defaultMessage": "Expert mentors"
   },
   {
     "id": "hero-form.tabs.tutors",
     "description": "Title for the tutors tab of the hero form.",
-    "defaultMessage": "Free tutoring"
+    "defaultMessage": "Free tutors"
   },
   {
     "id": "hero-form.title",

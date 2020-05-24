@@ -2,6 +2,10 @@
 
 $form-width: 1290px;
 
+.tab {
+  font-weight: 500;
+}
+
 .tabs {
   @include tab-bar.width(365px);
   @include tab-bar.density(-4);

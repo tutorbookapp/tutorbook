@@ -60,17 +60,17 @@ export default function HeroForm(): JSX.Element {
             activeTabIndex={activeForm}
             onActivate={(evt) => setActiveForm(evt.detail.index as 0 | 1)}
           >
-            <Tab>
+            <Tab className={styles.tab}>
               <FormattedMessage
                 id='hero-form.tabs.mentors'
-                defaultMessage='Expert mentoring'
+                defaultMessage='Expert mentors'
                 description='Title for the mentors tab of the hero form.'
               />
             </Tab>
-            <Tab>
+            <Tab className={styles.tab}>
               <FormattedMessage
                 id='hero-form.tabs.tutors'
-                defaultMessage='Free tutoring'
+                defaultMessage='Free tutors'
                 description='Title for the tutors tab of the hero form.'
               />
             </Tab>
