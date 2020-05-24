@@ -1,39 +1,79 @@
 @use 'sass:map';
 @use 'config';
 
-$font-weight-values: (
-  thin: 100,
-  light: 300,
-  regular: 400,
-  medium: 500,
-  bold: 700,
-  black: 900,
-);
-
 @use '@material/theme' with (
-  $on-surface: config.$black,
+  $primary: rgb(0, 112, 243),
+  $secondary: rgb(0, 112, 243),
+  $background: rgb(250, 250, 250),
 );
 @use '@material/typography' with (
-  $font-family: unquote('Poppins, sans-serif'),
+  $font-family: config.$font-family,
   $styles-headline1: (
-    font-weight: map.get($font-weight-values, bold),
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-weight: bold,
+    font-size: 93px,
   ),
   $styles-headline2: (
-    font-size: 3.5rem,
-    font-weight: map.get($font-weight-values, bold),
-    letter-spacing: -0.125rem,
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-weight: bold,
+    font-size: 58px,
   ),
   $styles-headline3: (
-    font-weight: map.get($font-weight-values, bold),
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-weight: bold,
+    font-size: 47px,
   ),
   $styles-headline4: (
-    font-weight: map.get($font-weight-values, bold),
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-size: 33px,
+  ),
+  $styles-headline5: (
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-size: 23px,
+  ),
+  $styles-headline6: (
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-size: 19px,
+  ),
+  $styles-body1: (
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-size: 16px,
+  ),
+  $styles-body2: (
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-size: 14px,
+  ),
+  $styles-subtitle1: (
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-size: 16px,
+  ),
+  $styles-subtitle2: (
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
+    font-size: 14px,
   ),
   $styles-button: (
-    font-size: 1.05rem,
-    font-weight: map.get($font-weight-values, bold),
-    letter-spacing: 0.0125rem,
+    font-family: unquote("Inter"),
+    letter-spacing: normal,
     text-transform: none,
+    font-size: 16px,
+  ),
+  $styles-overline: (
+    font-family: unquote("Inter"),
+    font-size: 10px,
+  ),
+  $styles-caption: (
+    font-family: unquote("Inter"),
+    font-size: 12px,
   ),
 );
 @use '@material/textfield/mdc-text-field';
@@ -57,7 +97,7 @@ $font-weight-values: (
 @use '@rmwc/tooltip/tooltip';
 
 @include typography.core-styles;
-@import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Inter:100,200,300,400,500,600,700,800,900');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 body {

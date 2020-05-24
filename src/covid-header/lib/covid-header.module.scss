@@ -1,15 +1,127 @@
-.header {
+@use '@tutorbook/covid-styles/config';
+
+.arrowWrapper {
+  display: inline-block;
+}
+
+.arrow {
+  margin-left: 5px;
+  margin-bottom: 2px;
+}
+
+.logo {
+  cursor: pointer;
+  display: inline-flex;
+  position: relative;
+}
+
+.logo span {
+  color: #0070f3;
+  font-weight: 700;
+  font-size: 25px;
+  font-family: 'Inter', sans-serif;
+}
+
+.wrapper {
+  position: sticky;
   top: 0;
-  width: calc(100% - 80px);
-  padding: 40px;
-  z-index: 100;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 101;
+  min-height: 64px;
+  transition: box-shadow 0.1s ease 0s;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px -1px 0px 0px inset;
 }
 
-.blackHeader {
-  background: #ffffff;
+.header {
+  width: 100%;
+  max-width: 1290px;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 24px;
 }
 
-.whiteHeader {
-  background: transparent;
+.upper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lower {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 0 10px;
+  width: 100%;
+  background-color: transparent;
+}
+
+.desktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  visibility: visible;
+}
+
+.left,
+.right {
+  display: flex;
+  flex-direction: row;
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.2s ease-out;
+}
+
+.left {
+  align-items: center;
+  left: 50px;
+  will-change: opacity;
+}
+
+.left .link {
+  padding: 20px 10px;
+}
+
+.right {
+  margin-left: auto;
+}
+
+.right .link {
+  padding: 0 8px;
+}
+
+.link {
+  font-size: 14px;
+  line-height: 24px;
+  font-family: 'Inter', sans-serif;
+  color: rgb(102, 102, 102);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  position: relative;
+  cursor: pointer;
+}
+
+.link:hover {
+  color: #000;
+}
+
+.link.active {
+  color: #000;
+}
+
+.link.active::before {
+  content: '';
+  display: block;
+  position: absolute;
+  height: 0px;
+  left: 9px;
+  right: 9px;
+  bottom: 0px;
+  border-bottom: 2px solid;
 }

@@ -1,4 +1,6 @@
+@use '@material/textfield/_index.scss' as textfield;
 @use '@material/tab-bar/_index.scss' as tab-bar;
+@use '@material/card/_index.scss' as card;
 
 $form-width: 1290px;
 
@@ -28,9 +30,23 @@ $form-width: 1290px;
 
 .titleBackground {
   background: rgba(0, 0, 0, 0)
-    linear-gradient(to right, #000063 9.38%, #842eff 88.54%) repeat scroll 0% 0%
+    linear-gradient(to right, #1d3dc1 9.38%, #1ba4ff 88.54%) repeat scroll 0% 0%
     padding-box text;
   max-width: 600px;
+}
+
+.formWrapper {
+  margin: 32px 0;
+}
+
+.formWrapper :global(.mdc-card) {
+  @include card.shape-radius(18px);
+}
+
+.formWrapper :global(.mdc-text-field) {
+  @include textfield.shape-radius(10px);
+  @include textfield.outline-shape-radius(10px);
+  @include textfield.textarea-shape-radius(10px);
 }
 
 .heroFormCard {

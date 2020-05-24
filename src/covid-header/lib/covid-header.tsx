@@ -1,120 +1,46 @@
-import {
-  useIntl,
-  IntlShape,
-  defineMessages,
-  MessageDescriptor,
-} from 'react-intl';
-import { Link } from '@tutorbook/intl';
-
-import MobileNav from './mobile';
-import DesktopNav from './desktop';
+import React from 'react';
 
 import styles from './covid-header.module.scss';
 
-export interface NavProps {
-  white?: boolean;
-  links: LinkProps[];
-}
-
-export interface LinkProps {
-  href: string;
-  label: string;
-}
-
-interface NavLinkProps extends LinkProps {
-  menuItemLinkClassName: string;
-}
-
-interface NavItemProps extends NavLinkProps {
-  menuItemClassName: string;
-}
-
-export function NavItem(props: NavItemProps): JSX.Element {
-  const { menuItemClassName, ...rest } = props;
+export default function Header(): JSX.Element {
+  const [active, setActive] = React.useState<0 | 1>(0);
   return (
-    <li className={menuItemClassName}>
-      <NavLink {...rest} />
-    </li>
-  );
-}
-
-function NavLink(props: NavLinkProps): JSX.Element {
-  if (props.href.indexOf('http') < 0 && props.href.indexOf('mailto') < 0)
-    return (
-      <Link href={props.href}>
-        <a className={props.menuItemLinkClassName}>{props.label}</a>
-      </Link>
-    );
-  return (
-    <a className={props.menuItemLinkClassName} href={props.href}>
-      {props.label}
-    </a>
-  );
-}
-
-interface HeaderProps {
-  white?: boolean;
-  sticky?: boolean;
-  className?: string;
-}
-
-export default function Header(props: HeaderProps): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const { white, sticky, className } = props;
-  const labels: Record<string, MessageDescriptor> = defineMessages({
-    pupils: {
-      id: 'header.pupils',
-      defaultMessage: 'For students',
-      description: 'Label for the pupil sign-up page header link.',
-    },
-    volunteers: {
-      id: 'header.volunteers',
-      defaultMessage: 'For volunteers',
-      description: 'Label for the volunteer sign-up page header link.',
-    },
-    parents: {
-      id: 'header.parents',
-      defaultMessage: 'For parents',
-      description: 'Label for the parent "How it works" header link.',
-    },
-    developers: {
-      id: 'header.developers',
-      defaultMessage: 'For developers',
-      description: 'Label for the developers page header link.',
-    },
-  });
-  const links: LinkProps[] = [
-    {
-      href: '/pupils',
-      label: intl.formatMessage(labels.pupils),
-    },
-    {
-      href: '/volunteers',
-      label: intl.formatMessage(labels.volunteers),
-    },
-    {
-      href: '/parents',
-      label: intl.formatMessage(labels.parents),
-    },
-    {
-      href: 'https://github.com/tutorbookapp/covid-tutoring#readme',
-      label: intl.formatMessage(labels.developers),
-    },
-  ];
-  return (
-    <header
-      style={{
-        position: sticky ? 'sticky' : 'initial',
-      }}
-      className={
-        styles.header +
-        ' ' +
-        (white ? styles.whiteHeader : styles.blackHeader) +
-        (className ? ' ' + className : '')
-      }
-    >
-      <MobileNav white={!!white} links={links} />
-      <DesktopNav white={!!white} links={links} />
-    </header>
+    <div className={styles.wrapper}>
+      <header className={styles.header}>
+        <aside className={styles.upper}>
+          <div className={styles.logo}>
+            <span>TB</span>
+          </div>
+          <div className={styles.mobile}></div>
+        </aside>
+        <aside className={styles.lower}>
+          <div className={styles.desktop}>
+            <div className={styles.left}>
+              <a
+                className={
+                  styles.link + (active === 0 ? ' ' + styles.active : '')
+                }
+                onClick={() => setActive(0)}
+              >
+                Mentoring
+              </a>
+              <a
+                className={
+                  styles.link + (active === 1 ? ' ' + styles.active : '')
+                }
+                onClick={() => setActive(1)}
+              >
+                Tutoring
+              </a>
+            </div>
+            <div className={styles.right}>
+              <a className={styles.link}>Blog</a>
+              <a className={styles.link}>Support</a>
+              <a className={styles.link}>Docs</a>
+            </div>
+          </div>
+        </aside>
+      </header>
+    </div>
   );
 }
