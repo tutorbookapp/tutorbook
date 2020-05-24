@@ -58,7 +58,7 @@
     "defaultMessage": "After parental approval, the tutor and the student both receive a link to their secure, private Bramble room. No direct contact information is ever shared."
   },
   {
-    "id": "about.how-it-works.learn-more",
+    "id": "learn-more",
     "description": "Label for the \"Learn more\" CTA links.",
     "defaultMessage": "Learn more"
   },
@@ -333,20 +333,14 @@
     "defaultMessage": "Ready to supercharge your academics? Complete this form to search our free, volunteer tutors."
   },
   {
-    "id": "hero-about.mentor.header",
-    "defaultMessage": "Project oriented mentorship"
+    "id": "cta-forms.mentoring.submit",
+    "description": "Label for the mentoring CTA form submit button.",
+    "defaultMessage": "Search mentors"
   },
   {
-    "id": "hero-about.mentor.body",
-    "defaultMessage": "Become an expert mentor and collaborate on meaningful work."
-  },
-  {
-    "id": "hero-about.tutor.header",
-    "defaultMessage": "COVID-19 free tutoring"
-  },
-  {
-    "id": "hero-about.tutor.body",
-    "defaultMessage": "Find or become a free, one-on-one, volunteer tutor."
+    "id": "cta-forms.tutoring.submit",
+    "description": "Label for the tutoring CTA form submit button.",
+    "defaultMessage": "Search tutors"
   },
   {
     "id": "hero-about.header",
@@ -365,8 +359,30 @@
     "defaultMessage": "We're also making sure that no one loses out on education amidst COVID-19 by connecting K-12 students with free, volunteer tutors."
   },
   {
-    "id": "hero-about.banner-header",
-    "defaultMessage": "Learn more"
+    "id": "hero.mentor.header",
+    "defaultMessage": "Project oriented mentorship"
+  },
+  {
+    "id": "hero.mentor.body",
+    "defaultMessage": "Become an expert mentor and collaborate on meaningful work."
+  },
+  {
+    "id": "hero.tutor.header",
+    "defaultMessage": "COVID-19 free tutoring"
+  },
+  {
+    "id": "hero.tutor.body",
+    "defaultMessage": "Find or become a free, one-on-one, volunteer tutor."
+  },
+  {
+    "id": "hero-form.tabs.mentors",
+    "description": "Title for the mentors tab of the hero form.",
+    "defaultMessage": "Expert mentoring"
+  },
+  {
+    "id": "hero-form.tabs.tutors",
+    "description": "Title for the tutors tab of the hero form.",
+    "defaultMessage": "Free tutoring"
   },
   {
     "id": "hero-form.title",
@@ -537,7 +553,7 @@
     "defaultMessage": "What are your fields of expertise?"
   },
   {
-    "id": "mentor-form.expertise-placeholder",
+    "id": "form.expertise-placeholder",
     "defaultMessage": "Ex. Computer Science or Music"
   },
   {

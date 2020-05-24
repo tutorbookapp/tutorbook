@@ -6,13 +6,13 @@
 
 .formCard {
   margin: 16px 0;
-  transition: 200ms box-shadow;
+  transition: 200ms box-shadow ease-in 10ms;
   // TODO: Add transition ease to `box-shadow`.
   @include elevation.elevation(2);
 }
 
 .formCard:hover {
-  @include elevation.elevation(8);
+  @include elevation.elevation(4);
 }
 
 .formField {
@@ -34,6 +34,34 @@
 }
 
 .formSubmitButton {
-  margin-top: 8px;
+  margin: 8px 0 0 0;
+  height: 56px !important;
   width: 100%;
+}
+
+.formHorz {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.formHorz .formField {
+  margin: 0 8px;
+  flex-grow: 1.2;
+  flex-basis: 0px;
+}
+
+.formHorz .formField textarea {
+  resize: horizontal;
+}
+
+.formHorz .formField:first-child {
+  margin-left: 0;
+}
+
+.formHorz .formSubmitButton {
+  margin: 0 0 0 8px;
+  flex-grow: 1;
+  flex-basis: 0px;
+  max-width: 300px;
 }

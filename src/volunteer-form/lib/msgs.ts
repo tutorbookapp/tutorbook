@@ -54,7 +54,7 @@ export default defineMessages({
     defaultMessage: 'What are your fields of expertise?',
   },
   expertisePlaceholder: {
-    id: 'mentor-form.expertise-placeholder',
+    id: 'form.expertise-placeholder',
     defaultMessage: 'Ex. Computer Science or Music',
   },
   project: {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@tutorbook/intl';
 
-import styles from './cta-link.module.scss';
+import styles from './covid-cta-link.module.scss';
 
 export interface CTALinkProps {
   label: string;

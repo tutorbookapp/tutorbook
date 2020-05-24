@@ -1,4 +1,4 @@
-import CTAForm from '@tutorbook/cta-form';
+import { TutoringForm } from '@tutorbook/cta-forms';
 import Checkmarks from '@tutorbook/checkmarks';
 
 import {
@@ -46,7 +46,7 @@ export default function CTABlock(): JSX.Element {
             </div>
           </div>
           <div className={styles.ctaBlockForm}>
-            <CTAForm />
+            <TutoringForm />
             <div className={styles.ctaBlockCheckmarks}>
               <Checkmarks
                 labels={[

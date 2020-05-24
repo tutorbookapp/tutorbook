@@ -14,7 +14,7 @@ class IndexPage extends React.Component {
   public render(): JSX.Element {
     return (
       <>
-        <Header white />
+        <Header />
         <HeroForm />
         <HeroAbout />
         <Footer />

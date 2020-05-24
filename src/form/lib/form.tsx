@@ -48,6 +48,7 @@ interface FormProps extends React.HTMLProps<HTMLFormElement> {
   }) => Promise<any>;
   readonly loadingLabel?: boolean;
   readonly loadingCheckmark?: boolean;
+  readonly horizontal?: boolean;
 }
 
 interface FormState {
@@ -196,7 +197,11 @@ export default class Form extends React.Component<FormProps, {}> {
         />
         <form
           {...rest}
-          className={styles.form + (className ? ' ' + className : '')}
+          className={
+            styles.form +
+            (className ? ' ' + className : '') +
+            (this.props.horizontal ? ' ' + styles.formHorz : '')
+          }
           onSubmit={this.handleSubmit}
         >
           {this.renderInputs()}

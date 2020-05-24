@@ -44,6 +44,7 @@
     "@rmwc/list": "^6.0.14",
     "@rmwc/menu": "^6.0.14",
     "@rmwc/select": "^6.1.0",
+    "@rmwc/tabs": "^6.0.14",
     "@rmwc/textfield": "^6.1.0",
     "@rmwc/tooltip": "^6.0.14",
     "@rmwc/typography": "^6.0.14",

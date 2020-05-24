@@ -29,8 +29,10 @@
 }
 
 .overlayCheckmark {
-  width: 80px !important;
-  height: 80px !important;
+  width: 75% !important;
+  height: 75% !important;
+  max-width: 80px;
+  max-height: 80px;
   box-sizing: border-box;
   display: inline-block;
 }
