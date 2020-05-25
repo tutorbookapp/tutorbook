@@ -1,4 +1,4 @@
-import Utils from '@tutorbook/covid-utils';
+import Utils from '@tutorbook/utils';
 import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
 
 import { Email } from '../common';

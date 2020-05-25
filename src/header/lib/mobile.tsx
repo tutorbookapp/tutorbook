@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Link } from '@tutorbook/intl';
-import { NavItem, NavProps, LinkProps } from './covid-header';
+import { NavItem, NavProps, LinkProps } from './header';
 
 import BlackLogo from './svgs/black-logo.svg';
 import WhiteLogo from './svgs/white-logo.svg';

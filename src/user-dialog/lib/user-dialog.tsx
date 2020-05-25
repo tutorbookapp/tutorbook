@@ -1,5 +1,5 @@
 import React from 'react';
-import Utils from '@tutorbook/covid-utils';
+import Utils from '@tutorbook/utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';

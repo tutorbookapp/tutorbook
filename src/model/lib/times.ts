@@ -371,7 +371,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
 
 /**
  * Class that contains some useful `Date` manipulation and creation utilities.
- * @todo Move this class to the `@tutorbook/covid-utils` package.
+ * @todo Move this class to the `@tutorbook/utils` package.
  */
 export class TimeUtils {
   /**

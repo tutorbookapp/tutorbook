@@ -4,7 +4,7 @@ import { useIntl, IntlShape, FormattedMessage } from 'react-intl';
 import { Typography } from '@rmwc/typography';
 
 import Banner from '@tutorbook/banner';
-import CTALink from '@tutorbook/covid-cta-link';
+import CTALink from '@tutorbook/cta-link';
 import CTABlock from '@tutorbook/cta-block';
 import SpotlightMsg from '@tutorbook/spotlight-msg';
 

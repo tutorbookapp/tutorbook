@@ -1,5 +1,5 @@
 import { MailData } from '@sendgrid/helpers/classes/mail';
-import Utils from '@tutorbook/covid-utils';
+import Utils from '@tutorbook/utils';
 import {
   SocialTypeAlias,
   SocialInterface,

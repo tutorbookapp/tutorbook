@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CTALink, { CTALinkProps } from '@tutorbook/covid-cta-link';
+import CTALink, { CTALinkProps } from '@tutorbook/cta-link';
 
 import styles from './spotlight-msg.module.scss';
 

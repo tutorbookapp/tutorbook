@@ -3,8 +3,8 @@ import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 
 import { UserProvider, DBProvider } from '@tutorbook/firebase';
-import CovidHead from '@tutorbook/covid-head';
-import '@tutorbook/covid-styles';
+import CovidHead from '@tutorbook/doc-head';
+import '@tutorbook/styles';
 
 export default function App({ Component, pageProps, router }: AppProps) {
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from './covid-header.module.scss';
+import styles from './styles.module.scss';
 
 export default function Header(): JSX.Element {
   const [active, setActive] = React.useState<0 | 1>(0);

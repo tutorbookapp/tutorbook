@@ -1,5 +1,5 @@
 import React from 'react';
-import Utils from '@tutorbook/covid-utils';
+import Utils from '@tutorbook/utils';
 import UserDialog from '@tutorbook/user-dialog';
 import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
 import { UserContext } from '@tutorbook/firebase';

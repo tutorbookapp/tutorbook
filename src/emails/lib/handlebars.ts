@@ -1,5 +1,5 @@
 import Handlebars from 'handlebars';
-import Utils from '@tutorbook/covid-utils';
+import Utils from '@tutorbook/utils';
 
 import Check from './shared/check.hbs';
 import Cross from './shared/cross.hbs';

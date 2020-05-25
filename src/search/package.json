@@ -1,17 +1,19 @@
 {
-  "name": "@tutorbook/covid-cta-link",
-  "version": "0.5.3",
-  "description": "Low profile CTA link (e.g. \"Learn more\").",
+  "name": "@tutorbook/search",
+  "version": "0.5.1",
+  "description": "Provides React search context using Algolia for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
-    "CTA",
-    "Link",
-    "React"
+    "COVID",
+    "Tutoring",
+    "Algolia",
+    "React",
+    "Search"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/covid-cta-link.tsx",
+  "main": "lib/search.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -24,12 +26,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tutorbookapp/tutorbook.git"
+    "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
-    "url": "https://github.com/tutorbookapp/tutorbook/issues"
-  }
+    "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
+  },
+  "gitHead": "da7649673f6d1de638e014f5459bfe57d30f54fc"
 }

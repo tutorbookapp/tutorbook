@@ -1,4 +1,4 @@
-import Utils from '@tutorbook/covid-utils';
+import Utils from '@tutorbook/utils';
 import { Appt, UserWithRoles } from '@tutorbook/model';
 
 import {

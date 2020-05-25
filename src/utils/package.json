@@ -1,21 +1,21 @@
 {
-  "name": "@tutorbook/covid-head",
+  "name": "@tutorbook/utils",
   "version": "0.5.1",
-  "description": "Package containing the head component for the COVID Tutoring Initiative website.",
+  "description": "Contains utility functions used across the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
     "COVID",
     "Tutoring",
-    "Next.js",
-    "React",
-    "Typescript"
+    "Typescript",
+    "Utilities"
   ],
-  "author": "Zia Truong <21zitru01@mdusd.net>",
+  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/covid-head.tsx",
+  "main": "lib/utils.ts",
   "directories": {
-    "lib": "lib"
+    "lib": "lib",
+    "test": "__tests__"
   },
   "files": [
     "lib"
@@ -28,7 +28,7 @@
     "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
   },
   "scripts": {
-    "test": "jest"
+    "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"

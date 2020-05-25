@@ -6,9 +6,9 @@ import to from 'await-to-js';
 import axios from 'axios';
 
 import Intercom from '@tutorbook/react-intercom';
-import Header from '@tutorbook/covid-header';
-import Footer from '@tutorbook/covid-footer';
-import Search from '@tutorbook/covid-search';
+import Header from '@tutorbook/header';
+import Footer from '@tutorbook/footer';
+import Search from '@tutorbook/search';
 
 import { getIntlProps, withIntl } from '@tutorbook/intl';
 import {

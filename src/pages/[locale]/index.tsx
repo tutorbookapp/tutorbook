@@ -3,8 +3,8 @@ import React from 'react';
 import { GetStaticProps, GetStaticPaths } from 'next';
 
 import Intercom from '@tutorbook/react-intercom';
-import Header from '@tutorbook/covid-header';
-import Footer from '@tutorbook/covid-footer';
+import Header from '@tutorbook/header';
+import Footer from '@tutorbook/footer';
 import HeroForm from '@tutorbook/hero-form';
 import HeroAbout from '@tutorbook/hero-about';
 

@@ -1,19 +1,19 @@
 {
-  "name": "@tutorbook/covid-search",
+  "name": "@tutorbook/header",
   "version": "0.5.1",
-  "description": "Provides React search context using Algolia for the COVID Tutoring Initiative website.",
+  "description": "Package containing the header component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
     "COVID",
     "Tutoring",
-    "Algolia",
+    "Next.js",
     "React",
-    "Search"
+    "Typescript"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/search.tsx",
+  "main": "lib/header.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"

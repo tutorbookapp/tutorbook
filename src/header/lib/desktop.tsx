@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Link } from '@tutorbook/intl';
-import { NavItem, NavProps, LinkProps } from './covid-header';
+import { NavItem, NavProps, LinkProps } from './header';
 
 import BlackWordmark from './svgs/black-wordmark.svg';
 import WhiteWordmark from './svgs/white-wordmark.svg';

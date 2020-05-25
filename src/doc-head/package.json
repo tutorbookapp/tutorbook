@@ -1,7 +1,7 @@
 {
-  "name": "@tutorbook/covid-header",
+  "name": "@tutorbook/doc-head",
   "version": "0.5.1",
-  "description": "Package containing the header component for the COVID Tutoring Initiative website.",
+  "description": "Package containing the head component for the COVID Tutoring Initiative website.",
   "keywords": [
     "Tutorbook",
     "COVID",
@@ -10,13 +10,12 @@
     "React",
     "Typescript"
   ],
-  "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
+  "author": "Zia Truong <21zitru01@mdusd.net>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "lib/covid-header.tsx",
+  "main": "lib/doc-head.tsx",
   "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+    "lib": "lib"
   },
   "files": [
     "lib"
@@ -29,7 +28,7 @@
     "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"
