@@ -1,18 +1,19 @@
 {
-  "name": "@tutorbook/checkmark",
+  "name": "@tutorbook/loader",
   "version": "0.5.1",
-  "description": "Package that contains a React component made up of a spinner that becomes a checkmark.",
+  "description": "Package that contains a React loading overlay that shows a spinner which becomes a checkmark.",
   "keywords": [
     "Tutorbook",
-    "Checkmark",
+    "React",
     "Spinner",
-    "Animation",
-    "React"
+    "Loader",
+    "Overlay",
+    "Checkmark"
   ],
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "MIT",
-  "main": "lib/checkmark.tsx",
+  "main": "lib/loader.tsx",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -28,7 +29,7 @@
     "url": "git+https://github.com/tutorbookapp/covid-tutoring.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/tutorbookapp/covid-tutoring/issues"

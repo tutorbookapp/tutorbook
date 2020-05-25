@@ -15,7 +15,7 @@ import {
   SocialTypeAlias,
   User,
 } from '@tutorbook/model';
-import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
+import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
 
 import Toggle from './toggle';
@@ -114,7 +114,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         <div className={styles.formWrapper}>
           <div className={styles.content}>
             <Card className={styles.formCard}>
-              <CheckmarkOverlay
+              <Loader
                 active={this.loading || this.checked}
                 checked={this.checked}
               />

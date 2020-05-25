@@ -3,7 +3,7 @@ import Utils from '@tutorbook/utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
-import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
+import Loader from '@tutorbook/loader';
 import { Link } from '@tutorbook/intl';
 import { UserContext } from '@tutorbook/firebase';
 import {
@@ -240,7 +240,7 @@ class UserDialog extends React.Component<UserDialogProps> {
     });
     return (
       <Dialog {...rest} open>
-        <CheckmarkOverlay
+        <Loader
           active={this.state.submitting || this.state.submitted}
           checked={this.state.submitted}
         />

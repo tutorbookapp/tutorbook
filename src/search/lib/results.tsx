@@ -1,7 +1,7 @@
 import React from 'react';
 import Utils from '@tutorbook/utils';
 import UserDialog from '@tutorbook/user-dialog';
-import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
+import Loader from '@tutorbook/loader';
 import { UserContext } from '@tutorbook/firebase';
 import {
   AttendeeInterface,
@@ -183,7 +183,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
           />
         )}
         <List twoLine avatarList>
-          <CheckmarkOverlay active={this.state.searching} />
+          <Loader active={this.state.searching} />
           {this.renderResults()}
         </List>
       </>

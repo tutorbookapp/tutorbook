@@ -1,8 +1,8 @@
 import { Typography } from '@rmwc/typography';
 
-import Checkmark from '@tutorbook/checkmark';
+import Checkmark from './checkmark';
 
-import styles from './checkmark-overlay.module.scss';
+import styles from './styles.module.scss';
 
 interface Props {
   readonly active: boolean;
@@ -11,7 +11,7 @@ interface Props {
   readonly showLabel?: boolean;
 }
 
-export default function CheckmarkOverlay(props: Props): JSX.Element {
+export default function Loader(props: Props): JSX.Element {
   return (
     <div
       className={

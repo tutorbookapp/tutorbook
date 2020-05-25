@@ -7,7 +7,7 @@ import { Card, CardProps } from '@rmwc/card';
 import Button from '@tutorbook/button';
 import SubjectSelect, { SubjectSelectProps } from '@tutorbook/subject-select';
 import ScheduleInput, { ScheduleInputProps } from '@tutorbook/schedule-input';
-import CheckmarkOverlay from '@tutorbook/checkmark-overlay';
+import Loader from '@tutorbook/loader';
 import { Availability } from '@tutorbook/model';
 
 import styles from './form.module.scss';
@@ -189,7 +189,7 @@ export default class Form extends React.Component<FormProps, {}> {
           (cardProps && cardProps.className ? ' ' + cardProps.className : '')
         }
       >
-        <CheckmarkOverlay
+        <Loader
           active={this.state.submitting || this.state.submitted}
           checked={!!this.props.loadingCheckmark && this.state.submitted}
           label={this.state.submitted ? 'Submitted!' : 'Submitting form...'}
