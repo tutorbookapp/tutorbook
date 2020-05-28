@@ -4,7 +4,8 @@ import { SearchOptions, SearchResponse } from '@algolia/client-search';
 import {
   User,
   UserSearchHitAlias,
-  FiltersInterface,
+  Query,
+  Aspect,
   Availability,
 } from '@tutorbook/model';
 
@@ -27,11 +28,9 @@ const index: SearchIndex = client.initIndex(
  * Note that due to Algolia limitations, we must query for each availability
  * timeslot separately and then manually merge the results on the client side.
  */
-async function searchUsers(
-  filters: FiltersInterface
-): Promise<ReadonlyArray<User>> {
+async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
   const results: User[] = [];
-  let filterStrings: (string | undefined)[] = getFilterStrings(filters);
+  let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
   for (const filterString of filterStrings) {
     const options: SearchOptions | undefined = filterString
@@ -65,23 +64,23 @@ async function searchUsers(
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/in-depth/combining-boolean-operators/#combining-ands-and-ors}
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-arrays/?language=javascript}
  */
-function getFilterStrings(filters: FiltersInterface): string[] {
+function getFilterStrings(query: Query): string[] {
   let filterString: string = '';
-  for (let i = 0; i < filters.subjects.length; i++) {
+  for (let i = 0; i < query.subjects.length; i++) {
     filterString += i === 0 ? '(' : ' OR ';
-    filterString += `subjects:"${filters.subjects[i]}"`;
-    if (i === filters.subjects.length - 1) filterString += ')';
+    filterString += `${query.aspect}.subjects:"${query.subjects[i]}"`;
+    if (i === query.subjects.length - 1) filterString += ')';
   }
-  if (filters.availability.length && filters.subjects.length)
+  if (query.availability.length && query.subjects.length)
     filterString += ' AND ';
   const filterStrings: string[] = [];
-  for (const timeslot of filters.availability)
+  for (const timeslot of query.availability)
     filterStrings.push(
       filterString +
         `(availability.from <= ${timeslot.from.valueOf()}` +
         ` AND availability.to >= ${timeslot.to.valueOf()})`
     );
-  if (!filters.availability.length) filterStrings.push(filterString);
+  if (!query.availability.length) filterStrings.push(filterString);
   return filterStrings;
 }
 
@@ -119,23 +118,25 @@ export default async function search(
   res: NextApiResponse
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
+  const aspect: string = req.query.aspect as string;
   const subjects: string = req.query.subjects as string;
   const availability: string = req.query.availability as string;
-  const filters: FiltersInterface = {
+  const query: Query = {
     subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
     availability: availability
       ? Availability.fromURLParam(availability)
       : new Availability(),
+    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
   };
-  const results: ReadonlyArray<User> = await searchUsers(filters);
+  const results: ReadonlyArray<User> = await searchUsers(query);
   console.log(`[DEBUG] Got ${results.length} results.`);
   res.status(200).send(
     results.map((user: User) => ({
       name: onlyFirstNameAndLastInitial(user.name),
       bio: user.bio,
       availability: user.availability.toJSON(),
-      subjects: user.subjects,
-      searches: user.searches,
+      mentoring: user.mentoring,
+      tutoring: user.tutoring,
       socials: user.socials,
       uid: user.uid,
     }))

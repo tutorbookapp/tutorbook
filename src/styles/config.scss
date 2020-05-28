@@ -1,2 +1,53 @@
-$black: #181818;
-$font-family: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif';
+@use 'sass:string';
+
+$width: 1048px;
+
+$fonts: (
+  sans:
+    string.unquote(
+      "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto','Oxygen','Ubuntu','Cantarell','Fira Sans','Droid Sans','Helvetica Neue',sans-serif"
+    ),
+  mono:
+    string.unquote(
+      'Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace'
+    ),
+);
+
+$colors: (
+  primary: #0070f3,
+  secondary: #0070f3,
+  foreground: #181818,
+  background: #fff,
+  accents-1: #fafafa,
+  accents-2: #eaeaea,
+  accents-3: #999,
+  accents-4: #888,
+  accents-5: #666,
+  accents-6: #444,
+  accents-7: #333,
+  accents-8: #111,
+  success-light: #3291ff,
+  success: #0070f3,
+  success-dark: #0366d6,
+  error-light: #ff1a1a,
+  error: #e00,
+  error-dark: #c00,
+  warning-light: #f7b955,
+  warning: #f5a623,
+  warning-dark: #f49b0b,
+  cyan: #79ffe1,
+  cyan-dark: #50e3c2,
+  cyan-darker: #29bc9b,
+  purple: #f81ce5,
+  violet: #7928ca,
+  alert: #ff0080,
+);
+
+$shadows: (
+  smallest: 0px 4px 8px rgba(0, 0, 0, 0.12),
+  small: 0 5px 10px rgba(0, 0, 0, 0.12),
+  medium: 0 8px 30px rgba(0, 0, 0, 0.12),
+  large: 0 8px 30px rgba(0, 0, 0, 0.12),
+  hover: 0 8px 30px rgba(0, 0, 0, 0.12),
+  sticky: 0 12px 10px -10px rgba(0, 0, 0, 0.12),
+);

@@ -25,7 +25,7 @@ interface ScheduleInputState {
 }
 
 export interface ScheduleInputProps extends TextFieldProps {
-  onChange: (availability: Availability) => any;
+  onChange?: (availability: Availability) => any;
   className?: string;
   val?: Availability;
 }
@@ -132,7 +132,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
     ) as Availability;
     if (event.currentTarget.checked) copy.push(timeslot);
     this.setState({ availability: copy });
-    this.props.onChange(copy);
+    this.props.onChange && this.props.onChange(copy);
   }
 
   /**
@@ -146,7 +146,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
     } else {
       this.setState({ availability: new Availability() });
     }
-    this.props.onChange(ScheduleInput.timeslots);
+    this.props.onChange && this.props.onChange(ScheduleInput.timeslots);
   }
 
   private get allTimeslotsChecked(): boolean {

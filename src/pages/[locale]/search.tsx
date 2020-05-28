@@ -14,13 +14,13 @@ import { getIntlProps, withIntl } from '@tutorbook/intl';
 import {
   User,
   UserJSONInterface,
-  FiltersInterface,
-  FiltersJSONInterface,
+  Query,
+  QueryJSONInterface,
   Availability,
 } from '@tutorbook/model';
 
 interface SearchPageProps {
-  filters: FiltersJSONInterface;
+  query: QueryJSONInterface;
   results: ReadonlyArray<UserJSONInterface>;
 }
 
@@ -30,9 +30,11 @@ interface SearchPageProps {
  * @todo Remove the `JSON.parse(JSON.stringify(ob))` workaround.
  */
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const aspect: string = context.query.aspect as string;
   const subjects: string = context.query.subjects as string;
   const availability: string = context.query.availability as string;
-  const filters: FiltersInterface = {
+  const query: Query = {
+    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
     subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
     availability: availability
       ? Availability.fromURLParam(availability)
@@ -43,6 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       method: 'get',
       url: new URL('/api/search', `http://${context.req.headers.host}`).href,
       params: {
+        aspect: context.query.aspect,
         subjects: context.query.subjects,
         availability: context.query.availability,
       },
@@ -60,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } else if (res) {
     return {
       props: {
-        filters: JSON.parse(JSON.stringify(filters)),
+        query: JSON.parse(JSON.stringify(query)),
         results: JSON.parse(JSON.stringify(res.data)),
         ...(await getIntlProps(context)),
       },
@@ -69,25 +72,29 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.warn('[WARNING] No error or response from search REST API.');
     return {
       props: {
-        filters: JSON.parse(JSON.stringify(filters)),
+        query: JSON.parse(JSON.stringify(query)),
         ...(await getIntlProps(context)),
       },
     };
   }
 };
 
-function SearchPage(props: SearchPageProps): JSX.Element {
-  const filters: FiltersInterface = {
-    subjects: props.filters.subjects,
-    availability: Availability.fromJSON(props.filters.availability),
-  };
-  const results: ReadonlyArray<User> = props.results.map(
-    (user: UserJSONInterface) => User.fromJSON(user)
-  );
+function SearchPage({ query, results }: SearchPageProps): JSX.Element {
+  const [qry, setQuery] = React.useState<Query>({
+    aspect: query.aspect,
+    subjects: query.subjects,
+    availability: Availability.fromJSON(query.availability),
+  });
   return (
     <>
-      <Header white />
-      <Search filters={filters} results={results} />
+      <Header
+        aspect={qry.aspect}
+        onChange={(aspect: Aspect) => setQuery({ ...qry, aspect })}
+      />
+      <Search
+        query={qry}
+        results={results.map((res: UserJSONInterface) => User.fromJSON(res))}
+      />
       <Footer />
       <Intercom />
     </>

@@ -1,0 +1,60 @@
+@use 'sass:map';
+@use 'config';
+
+@forward '@material/typography' with (
+  $font-family: map.get(config.$fonts, 'sans'),
+  $styles-headline1: (
+    letter-spacing: normal,
+    font-weight: bold,
+    font-size: 93px,
+  ),
+  $styles-headline2: (
+    letter-spacing: normal,
+    font-weight: bold,
+    font-size: 58px,
+  ),
+  $styles-headline3: (
+    letter-spacing: normal,
+    font-weight: bold,
+    font-size: 47px,
+  ),
+  $styles-headline4: (
+    letter-spacing: normal,
+    font-size: 33px,
+  ),
+  $styles-headline5: (
+    letter-spacing: normal,
+    font-size: 23px,
+  ),
+  $styles-headline6: (
+    letter-spacing: normal,
+    font-size: 19px,
+  ),
+  $styles-body1: (
+    letter-spacing: normal,
+    font-size: 16px,
+  ),
+  $styles-body2: (
+    letter-spacing: normal,
+    font-size: 14px,
+  ),
+  $styles-subtitle1: (
+    letter-spacing: normal,
+    font-size: 16px,
+  ),
+  $styles-subtitle2: (
+    letter-spacing: normal,
+    font-size: 14px,
+  ),
+  $styles-button: (
+    letter-spacing: normal,
+    text-transform: none,
+    font-size: 16px,
+  ),
+  $styles-overline: (
+    font-size: 10px,
+  ),
+  $styles-caption: (
+    font-size: 12px,
+  ),
+);

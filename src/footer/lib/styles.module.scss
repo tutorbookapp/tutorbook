@@ -1,8 +1,19 @@
+@use 'sass:map';
 @use '@tutorbook/styles/config';
 
 .footer {
   display: grid;
   grid-template-columns: 1fr [content] 12fr 1fr;
+  background: map.get(config.$colors, 'accents-1');
+  border-top: 1px solid map.get(config.$colors, 'accents-2');
+}
+
+.footer * {
+  line-height: normal;
+  font-family: map.get(config.$fonts, 'sans');
+  font-weight: 400;
+  font-size: 14px;
+  color: map.get(config.$colors, 'foreground');
 }
 
 .footer ul,
@@ -31,7 +42,7 @@
   display: grid;
   grid-gap: 10px;
   grid-template-columns: 1fr;
-  max-width: 1290px;
+  max-width: config.$width;
   margin: 40px auto;
 }
 
@@ -73,16 +84,29 @@
 }
 
 .linkGroup {
-  padding-bottom: 36px !important;
+  padding-bottom: 20px !important;
   width: 100%;
   -moz-column-break-inside: avoid;
   break-inside: avoid;
 }
 
 .linkGroupHeader {
-  margin: 0 0 8px;
-  font-size: 15px;
-  font-weight: 700;
+  margin: 0 0 5px;
+}
+
+.primaryLink,
+.secondaryLink,
+.langLink {
+  color: map.get(config.$colors, 'accents-5');
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  outline: none;
+}
+
+.primaryLink:hover,
+.secondaryLink:hover,
+.langLink:hover {
+  color: map.get(config.$colors, 'foreground');
 }
 
 .primaryLinkItem {
@@ -92,14 +116,8 @@
 
 .primaryLink {
   display: block;
-  padding: 6px 0;
-  color: config.$black;
-  text-decoration: none;
+  padding: 5px 0;
   position: relative;
-  outline: none;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
-  font-size: 15px;
 }
 
 .primaryLink[data-focus-visible-added] {
@@ -144,9 +162,6 @@
 }
 
 .langTitle {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
   line-height: 1.4;
   margin: 0;
 }
@@ -160,30 +175,19 @@
 }
 
 .langLink {
-  color: config.$black;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
-  font-size: 15px;
   display: block;
-  -webkit-text-decoration: none;
-  text-decoration: none;
   padding: 10px;
 }
 
 .secondaryLinks {
   grid-row-start: 4;
   display: flex !important;
-  padding: 20px 0 !important;
-  margin-left: -15px !important;
+  padding: 5px 0 !important;
+  margin-left: -10px !important;
 }
 
 .secondaryLink {
-  color: config.$black;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-  text-decoration: none;
-  padding: 15px;
+  padding: 10px;
 }
 
 .secondaryLink[data-focus-visible-added] {
@@ -200,14 +204,4 @@
   left: 0;
   border: 3px solid black;
   border-radius: 10px;
-}
-
-.primaryLink:hover,
-.primaryLink:focus,
-.langLink:hover,
-.langLink:focus,
-.secondaryLink:hover,
-.secondaryLink:focus {
-  outline: none;
-  text-decoration: underline;
 }

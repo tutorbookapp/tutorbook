@@ -1,16 +1,25 @@
 import React from 'react';
 
-import styles from './styles.module.scss';
+import { Link } from '@tutorbook/intl';
+import { Aspect } from '@tutorbook/model';
 
-export default function Header(): JSX.Element {
-  const [active, setActive] = React.useState<0 | 1>(0);
+import styles from './header.module.scss';
+
+interface HeaderProps {
+  aspect: Aspect;
+  onChange: (aspect: Aspect) => any;
+}
+
+export default function Header({ aspect, onChange }: HeaderProps): JSX.Element {
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
         <aside className={styles.upper}>
-          <div className={styles.logo}>
-            <span>TB</span>
-          </div>
+          <Link href='/'>
+            <div className={styles.logo}>
+              <span>TB</span>
+            </div>
+          </Link>
           <div className={styles.mobile}></div>
         </aside>
         <aside className={styles.lower}>
@@ -18,17 +27,19 @@ export default function Header(): JSX.Element {
             <div className={styles.left}>
               <a
                 className={
-                  styles.link + (active === 0 ? ' ' + styles.active : '')
+                  styles.link +
+                  (aspect === 'mentoring' ? ' ' + styles.active : '')
                 }
-                onClick={() => setActive(0)}
+                onClick={() => onChange('mentoring')}
               >
                 Mentoring
               </a>
               <a
                 className={
-                  styles.link + (active === 1 ? ' ' + styles.active : '')
+                  styles.link +
+                  (aspect === 'tutoring' ? ' ' + styles.active : '')
                 }
-                onClick={() => setActive(1)}
+                onClick={() => onChange('tutoring')}
               >
                 Tutoring
               </a>

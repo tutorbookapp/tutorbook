@@ -1,11 +1,10 @@
 @use '@tutorbook/styles/config';
 
 .wrapper {
-  margin: 10px auto 20px;
   max-width: config.$width;
+  margin: 0 auto;
 }
 
-.formWrapper,
-.resultsWrapper {
-  padding: 10px 0;
+.carousel {
+  margin: 40px 0;
 }

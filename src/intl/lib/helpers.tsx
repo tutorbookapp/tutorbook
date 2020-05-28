@@ -71,3 +71,11 @@ export function withIntl<P extends Object>(
 
   return WithIntl;
 }
+
+/**
+ * This is the type of an i18n helper function commonly defined within
+ * components to make using `intl.formatMessage` easier (note that this function
+ * has to be defined within the React tree using a valid `IntlShape` object
+ * which is why it can't just be defined here).
+ */
+export type IntlHelper = (msg: MessageDescriptor) => string;

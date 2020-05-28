@@ -1,0 +1,40 @@
+@use '@material/card/_index.scss' as card;
+@use '@material/elevation';
+
+.hidden {
+  display: none;
+}
+
+.card {
+  @include card.core-styles();
+  @include elevation.elevation(1);
+  transition: 100ms box-shadow ease-in-out 10ms;
+}
+
+.card:hover {
+  @include elevation.elevation(2);
+}
+
+.form {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.field {
+  margin: 0 8px;
+  flex-grow: 1.2;
+  flex-basis: 0;
+}
+
+.field:first-child {
+  margin-left: 0;
+}
+
+.btn {
+  margin-left: 8px;
+  flex-grow: 1;
+  flex-basis: 0;
+  height: 56px !important;
+}

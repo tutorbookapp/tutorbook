@@ -36,7 +36,7 @@ interface SubjectSelectState {
 }
 
 interface UniqueSubjectSelectProps extends TextFieldProps {
-  readonly onChange: (subjects: string[]) => any;
+  readonly onChange?: (subjects: string[]) => any;
   readonly className?: string;
   readonly val?: string[];
   readonly renderToPortal?: boolean;
@@ -360,7 +360,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     const selectedSubjects: string[] = Object.entries(subjects)
       .filter(([_, isSelected]) => isSelected)
       .map(([subject, _]) => subject);
-    this.props.onChange(selectedSubjects);
+    this.props.onChange && this.props.onChange(selectedSubjects);
   }
 
   private renderSubjectMenuItems(): JSX.Element[] | JSX.Element {

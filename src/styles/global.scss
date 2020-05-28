@@ -2,80 +2,12 @@
 @use 'config';
 
 @use '@material/theme' with (
-  $primary: rgb(0, 112, 243),
-  $secondary: rgb(0, 112, 243),
-  $background: rgb(250, 250, 250),
+  $primary: map.get(config.$colors, 'primary'),
+  $secondary: map.get(config.$colors, 'secondary'),
 );
-@use '@material/typography' with (
-  $font-family: config.$font-family,
-  $styles-headline1: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-weight: bold,
-    font-size: 93px,
-  ),
-  $styles-headline2: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-weight: bold,
-    font-size: 58px,
-  ),
-  $styles-headline3: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-weight: bold,
-    font-size: 47px,
-  ),
-  $styles-headline4: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-size: 33px,
-  ),
-  $styles-headline5: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-size: 23px,
-  ),
-  $styles-headline6: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-size: 19px,
-  ),
-  $styles-body1: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-size: 16px,
-  ),
-  $styles-body2: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-size: 14px,
-  ),
-  $styles-subtitle1: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-size: 16px,
-  ),
-  $styles-subtitle2: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    font-size: 14px,
-  ),
-  $styles-button: (
-    font-family: unquote("Inter"),
-    letter-spacing: normal,
-    text-transform: none,
-    font-size: 16px,
-  ),
-  $styles-overline: (
-    font-family: unquote("Inter"),
-    font-size: 10px,
-  ),
-  $styles-caption: (
-    font-family: unquote("Inter"),
-    font-size: 12px,
-  ),
-);
+
+@use 'typography';
+
 @use '@material/textfield/mdc-text-field';
 @use '@material/select/mdc-select';
 @use '@material/button/mdc-button';
@@ -89,10 +21,11 @@
 @use '@material/layout-grid/mdc-layout-grid';
 @use '@material/dialog/mdc-dialog';
 @use '@material/form-field/mdc-form-field';
-@use "@material/tab-bar/mdc-tab-bar";
-@use "@material/tab-scroller/mdc-tab-scroller";
-@use "@material/tab-indicator/mdc-tab-indicator";
-@use "@material/tab/mdc-tab";
+@use '@material/tab-bar/mdc-tab-bar';
+@use '@material/tab-scroller/mdc-tab-scroller';
+@use '@material/tab-indicator/mdc-tab-indicator';
+@use '@material/tab/mdc-tab';
+@use '@material/icon-button/mdc-icon-button';
 @use '@rmwc/avatar/avatar';
 @use '@rmwc/tooltip/tooltip';
 

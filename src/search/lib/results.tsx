@@ -5,8 +5,8 @@ import Loader from '@tutorbook/loader';
 import { UserContext } from '@tutorbook/firebase';
 import {
   AttendeeInterface,
-  FiltersInterface,
   Timeslot,
+  Query,
   Appt,
   User,
   UserJSONInterface,
@@ -19,6 +19,7 @@ import {
   ListItemPrimaryText,
   ListItemSecondaryText,
 } from '@rmwc/list';
+import { Card } from '@rmwc/card';
 import { Avatar } from '@rmwc/avatar';
 import { Typography } from '@rmwc/typography';
 import { FormattedMessage } from 'react-intl';
@@ -38,7 +39,7 @@ interface SearchResultsState {
 
 interface SearchResultsProps {
   results: ReadonlyArray<User>;
-  filters: FiltersInterface;
+  query: Query;
 }
 
 /**
@@ -65,7 +66,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
 
   public componentDidMount(): void {
     firebase.analytics().logEvent('view_search_results', {
-      search_term: this.props.filters.subjects.join(', '),
+      search_term: this.props.query.subjects.join(', '),
     });
   }
 
@@ -77,7 +78,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
    * @see {@link https://reactjs.org/docs/lifting-state-up.html#lifting-state-up}
    */
   public componentDidUpdate(prevProps: SearchResultsProps): void {
-    if (this.props.filters !== prevProps.filters) this.search();
+    if (this.props.query !== prevProps.query) this.search();
   }
 
   /**
@@ -91,8 +92,9 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
       500
     );
     const params: Record<string, string> = {
-      subjects: encodeURIComponent(JSON.stringify(this.props.filters.subjects)),
-      availability: this.props.filters.availability.toURLParam(),
+      aspect: encodeURIComponent(this.props.query.aspect),
+      subjects: encodeURIComponent(JSON.stringify(this.props.query.subjects)),
+      availability: this.props.query.availability.toURLParam(),
     };
     const [err, res] = await to<AxiosResponse, AxiosError>(
       axios({
@@ -160,11 +162,11 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
       },
     ];
     const subjects: string[] = Utils.intersection<string>(
-      this.props.filters.subjects,
-      this.state.viewing.tutoring.subjects
+      this.props.query.subjects,
+      this.state.viewing[this.props.query.aspect].subjects
     );
     const times: Timeslot[] = Utils.intersection<Timeslot>(
-      this.props.filters.availability,
+      this.props.query.availability,
       this.state.viewing.availability,
       (a, b) => a.equalTo(b)
     );
@@ -174,7 +176,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
 
   public render(): JSX.Element {
     return (
-      <>
+      <Card className={styles.card}>
         {!!this.state.viewing && (
           <UserDialog
             appt={this.appt}
@@ -186,7 +188,7 @@ export default class SearchResults extends React.Component<SearchResultsProps> {
           <Loader active={this.state.searching} />
           {this.renderResults()}
         </List>
-      </>
+      </Card>
     );
   }
 

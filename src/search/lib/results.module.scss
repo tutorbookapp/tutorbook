@@ -1,3 +1,16 @@
+@use '@material/card/_index.scss' as card;
+@use '@material/elevation';
+
+.card {
+  @include card.core-styles();
+  @include elevation.elevation(1);
+  transition: 100ms box-shadow ease-in-out 10ms;
+}
+
+.card:hover {
+  @include elevation.elevation(2);
+}
+
 .noResults {
   text-align: center;
   padding: 40px;

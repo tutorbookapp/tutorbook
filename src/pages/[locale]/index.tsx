@@ -1,27 +1,31 @@
 import React from 'react';
 
+import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 import { GetStaticProps, GetStaticPaths } from 'next';
+import { Query, Availability, Aspect } from '@tutorbook/model';
 
 import Intercom from '@tutorbook/react-intercom';
 import Header from '@tutorbook/header';
+import Hero from '@tutorbook/hero';
 import Footer from '@tutorbook/footer';
-import HeroForm from '@tutorbook/hero-form';
-import HeroAbout from '@tutorbook/hero-about';
 
-import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
-
-class IndexPage extends React.Component {
-  public render(): JSX.Element {
-    return (
-      <>
-        <Header />
-        <HeroForm />
-        <HeroAbout />
-        <Footer />
-        <Intercom />
-      </>
-    );
-  }
+function IndexPage(): JSX.Element {
+  const [query, setQuery] = React.useState<Query>({
+    subjects: [],
+    availability: new Availability(),
+    aspect: 'mentoring',
+  });
+  return (
+    <>
+      <Header
+        aspect={query.aspect}
+        onChange={(aspect: Aspect) => setQuery({ ...query, aspect })}
+      />
+      <Hero query={query} />
+      <Footer />
+      <Intercom />
+    </>
+  );
 }
 
 export const getStaticProps: GetStaticProps = async (context) => ({
