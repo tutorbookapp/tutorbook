@@ -23,12 +23,10 @@ const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 
-type SubjectsAlias = { [subject: string]: boolean };
-
 interface SubjectSelectState {
   readonly suggestionsOpen: boolean;
   readonly suggestions: string[];
-  readonly subjects: SubjectsAlias;
+  readonly subjects: string[];
   readonly errored: boolean;
   readonly inputValue: string;
   readonly inputFocused: boolean;
@@ -76,13 +74,12 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
     this.state = {
       suggestionsOpen: false,
       suggestions: [],
-      subjects: {},
+      subjects: props.val || [],
       errored: false,
       inputValue: '',
       inputFocused: false,
       lineBreak: false,
     };
-    if (props.val) props.val.forEach((s) => (this.state.subjects[s] = true));
     this.searchIndex = client.initIndex(props.searchIndex || 'subjects');
     this.inputRef = React.createRef();
     this.lastSelectedRef = React.createRef();
@@ -119,10 +116,13 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       this.inputValue !== this.state.inputValue;
     const gradeChanged = prevProps.grade !== this.props.grade;
     const indexChanged = prevProps.searchIndex !== this.props.searchIndex;
+    const valChanged = prevProps.val !== this.props.val;
     if (indexChanged)
       this.searchIndex = client.initIndex(this.props.searchIndex || 'subjects');
     if (shouldChangeInputValue) this.setState({ inputValue: this.inputValue });
     if (indexChanged || gradeChanged) this.updateSuggestions();
+    if (valChanged && this.props.val)
+      this.setState({ subjects: this.props.val });
     if (this.foundationRef) this.foundationRef.autoPosition_();
   }
 
@@ -212,7 +212,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/8}
    */
   private get subjectsAreSelected(): boolean {
-    return Object.values(this.state.subjects).reduce((a, b) => a || b, false);
+    return this.state.subjects.length > 0;
   }
 
   /**
@@ -331,10 +331,13 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * 2. Adding it as a chip to the `mdc-text-field` content.
    */
   private updateSubject(subject: string, event?: React.MouseEvent): void {
-    const subjects: SubjectsAlias = {
-      ...this.state.subjects,
-      [subject]: !this.state.subjects[subject],
-    };
+    const subjects: string[] = Array.from(this.state.subjects);
+    const selectedIndex: number = subjects.indexOf(subject);
+    if (selectedIndex < 0) {
+      subjects.push(subject);
+    } else {
+      subjects.splice(selectedIndex, 1);
+    }
 
     if (
       this.state.suggestions.length &&
@@ -349,19 +352,21 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       );
       suggestions
         .slice(Math.min(idx, idxOfLast), Math.max(idx, idxOfLast) + 1)
-        .forEach((name) => {
-          subjects[name] = !this.state.subjects[subject];
+        .forEach((subject: string) => {
+          const index: number = subjects.indexOf(subject);
+          if (selectedIndex < 0 && index < 0) {
+            subjects.push(subject);
+          } else if (selectedIndex >= 0 && index >= 0) {
+            subjects.splice(index, 1);
+          }
         });
     }
 
     this.lastSelectedRef.current = subject;
 
-    const inputValue: string = subjects[subject] ? '' : this.state.inputValue;
+    const inputValue: string = selectedIndex < 0 ? '' : this.state.inputValue;
     this.setState({ subjects, inputValue, lineBreak: false });
-    const selectedSubjects: string[] = Object.entries(subjects)
-      .filter(([_, isSelected]) => isSelected)
-      .map(([subject, _]) => subject);
-    this.props.onChange && this.props.onChange(selectedSubjects);
+    this.props.onChange && this.props.onChange(subjects);
   }
 
   private renderSubjectMenuItems(): JSX.Element[] | JSX.Element {
@@ -381,7 +386,12 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           className={styles.menuItem}
         >
           <ListItemGraphic
-            icon={<Checkbox checked={this.state.subjects[subject]} readOnly />}
+            icon={
+              <Checkbox
+                checked={this.state.subjects.indexOf(subject) >= 0}
+                readOnly
+              />
+            }
           />
           {subject}
         </ListItem>
@@ -391,19 +401,14 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
   }
 
   private renderSubjectChipItems(): JSX.Element[] {
-    const subjectChipItems: JSX.Element[] = [];
-    Object.entries(this.state.subjects).map(([subject, isSelected]) => {
-      if (isSelected)
-        subjectChipItems.push(
-          <Chip
-            key={subject}
-            label={subject}
-            trailingIcon='close'
-            onTrailingIconInteraction={() => this.updateSubject(subject)}
-            className={styles.chip}
-          ></Chip>
-        );
-    });
-    return subjectChipItems;
+    return this.state.subjects.map((subject: string) => (
+      <Chip
+        key={subject}
+        label={subject}
+        trailingIcon='close'
+        onTrailingIconInteraction={() => this.updateSubject(subject)}
+        className={styles.chip}
+      />
+    ));
   }
 }
