@@ -8,9 +8,14 @@ import styles from './header.module.scss';
 interface HeaderProps {
   aspect: Aspect;
   onChange: (aspect: Aspect) => any;
+  formWidth?: boolean;
 }
 
-export default function Header({ aspect, onChange }: HeaderProps): JSX.Element {
+export default function Header({
+  aspect,
+  onChange,
+  formWidth,
+}: HeaderProps): JSX.Element {
   const [active, setActive] = React.useState<boolean>(false);
   const toggleMobileMenu = () => {
     const menuActive: boolean = !active;
@@ -22,7 +27,7 @@ export default function Header({ aspect, onChange }: HeaderProps): JSX.Element {
     setActive(menuActive);
   };
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper + (formWidth ? ' ' + styles.formWidth : '')}>
       <header className={styles.header}>
         <div className={styles.left}>
           <Link href='/'>
@@ -65,19 +70,13 @@ export default function Header({ aspect, onChange }: HeaderProps): JSX.Element {
         >
           <ul className={styles.mobileLinks}>
             <a className={styles.mobileLink} href='/volunteers'>
-              <li className={styles.mobileLinkItem}>Become a mentor</li>
-            </a>
-            <a className={styles.mobileLink} href='/volunteers'>
-              <li className={styles.mobileLinkItem}>Become a tutor</li>
+              <li className={styles.mobileLinkItem}>Join TB</li>
             </a>
           </ul>
         </nav>
         <div className={styles.desktopLinks}>
           <a className={styles.desktopLink} href='/volunteers'>
-            Become a mentor
-          </a>
-          <a className={styles.desktopLink} href='/volunteers'>
-            Become a tutor
+            Join TB
           </a>
         </div>
       </header>

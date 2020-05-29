@@ -26,6 +26,10 @@
   padding: 0 24px;
 }
 
+.formWidth .header {
+  max-width: config.$form-width;
+}
+
 .left {
   display: flex;
   align-items: center;
@@ -163,7 +167,7 @@
 }
 
 .desktopLink:last-child {
-  padding-right: 0;
+  margin-right: -10px;
 }
 
 .desktopLink,
@@ -204,14 +208,16 @@
   border-bottom: 2px solid;
 }
 
-@media (max-width: 675px) {
-  .desktopLinks {
-    display: none;
-    visibility: hidden;
-  }
-
-  .mobileToggle {
-    display: flex;
-    visibility: visible;
-  }
-}
+/*
+ *@media (max-width: 675px) {
+ *  .desktopLinks {
+ *    display: none;
+ *    visibility: hidden;
+ *  }
+ *
+ *  .mobileToggle {
+ *    display: flex;
+ *    visibility: visible;
+ *  }
+ *}
+ */
