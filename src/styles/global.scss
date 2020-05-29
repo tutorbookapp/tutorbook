@@ -26,12 +26,14 @@
 @use '@material/tab-indicator/mdc-tab-indicator';
 @use '@material/tab/mdc-tab';
 @use '@material/icon-button/mdc-icon-button';
+@use '@material/ripple/mdc-ripple';
 @use '@rmwc/avatar/avatar';
 @use '@rmwc/tooltip/tooltip';
 
 @include typography.core-styles;
 @import url('https://fonts.googleapis.com/css?family=Inter:100,200,300,400,500,600,700,800,900');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import 'fonts';
 
 body {
   margin: 0;
