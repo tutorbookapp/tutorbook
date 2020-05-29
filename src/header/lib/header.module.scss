@@ -31,7 +31,7 @@
   width: 100%;
   max-width: 100%;
   background-color: rgba(255, 255, 255, 0.8);
-  min-height: 64px;
+  min-height: config.$nav-height;
   transition: box-shadow 0.1s ease 0s;
   box-shadow: rgba(0, 0, 0, 0.1) 0px -1px 0px 0px inset;
   z-index: 4;
@@ -39,7 +39,7 @@
 
 .header {
   width: 100%;
-  max-width: config.$width;
+  max-width: config.$default-width;
   margin: auto;
   display: flex;
   flex-direction: row;
@@ -125,4 +125,10 @@
   right: 9px;
   bottom: 0px;
   border-bottom: 2px solid;
+}
+
+@media (min-width: 951px) {
+  .mobile {
+    display: none;
+  }
 }

@@ -20,7 +20,22 @@ export default function Header({ aspect, onChange }: HeaderProps): JSX.Element {
               <span>TB</span>
             </div>
           </Link>
-          <div className={styles.mobile}></div>
+          <div className={styles.mobile}>
+            <div className={styles.toggle}></div>
+            <nav className={styles.mobileWrapper}>
+              <ul>
+                <a href='/volunteers'>
+                  <li>Mentors</li>
+                </a>
+                <a href='/volunteers'>
+                  <li>Tutors</li>
+                </a>
+                <a href='/pupils'>
+                  <li>Students</li>
+                </a>
+              </ul>
+            </nav>
+          </div>
         </aside>
         <aside className={styles.lower}>
           <div className={styles.desktop}>
@@ -45,9 +60,15 @@ export default function Header({ aspect, onChange }: HeaderProps): JSX.Element {
               </a>
             </div>
             <div className={styles.right}>
-              <a className={styles.link}>Blog</a>
-              <a className={styles.link}>Support</a>
-              <a className={styles.link}>Docs</a>
+              <a className={styles.link} href='/volunteers'>
+                Mentors
+              </a>
+              <a className={styles.link} href='/volunteers'>
+                Tutors
+              </a>
+              <a className={styles.link} href='/pupils'>
+                Students
+              </a>
             </div>
           </div>
         </aside>
