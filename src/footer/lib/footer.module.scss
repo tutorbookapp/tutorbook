@@ -42,7 +42,7 @@
   display: grid;
   grid-gap: 10px;
   grid-template-columns: 1fr;
-  max-width: config.$width;
+  max-width: config.$default-width;
   margin: 40px auto;
 }
 

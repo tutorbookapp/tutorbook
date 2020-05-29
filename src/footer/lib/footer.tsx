@@ -9,7 +9,7 @@ import {
 import config from '@tutorbook/intl/config.json';
 import { Link } from '@tutorbook/intl';
 
-import styles from './styles.module.scss';
+import styles from './footer.module.scss';
 
 const locales: Record<string, MessageDescriptor> = defineMessages({
   en: {
