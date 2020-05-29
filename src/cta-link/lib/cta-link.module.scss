@@ -1,3 +1,6 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+
 .link {
   display: inline-block;
   border-radius: 6px;
@@ -8,7 +11,7 @@
   cursor: pointer;
   font-size: 15px;
   font-weight: 700;
-  font-family: 'Poppins', sans-serif;
+  font-family: map.get(config.$fonts, 'sans');
   path {
     transition: all 200ms;
   }
