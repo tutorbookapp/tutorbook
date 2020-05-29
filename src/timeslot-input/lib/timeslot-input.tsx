@@ -31,7 +31,7 @@ import styles from './timeslot-input.module.scss';
  */
 interface TimeslotInputProps extends TextFieldProps {
   readonly intl: IntlShape;
-  readonly onChange: (timeslot: Timeslot) => any;
+  readonly onChange?: (timeslot: Timeslot) => any;
   readonly className?: string;
   readonly val?: Timeslot;
   readonly availability?: Availability;
