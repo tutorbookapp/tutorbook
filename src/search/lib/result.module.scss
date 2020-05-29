@@ -1,0 +1,53 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
+
+$height: 140px;
+$margin: 20px;
+
+.listItem {
+  height: $height;
+  position: relative;
+  border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+  cursor: pointer;
+}
+
+.img {
+  display: inline-block;
+  position: absolute;
+  left: $margin;
+  top: $margin;
+  width: $height - 2 * $margin;
+  height: $height - 2 * $margin;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #eaeaea;
+  border-radius: 4px;
+}
+
+.name {
+  @include typography.typography('body1');
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: map.get(config.$colors, 'foreground');
+  display: inline-block;
+  position: absolute;
+  left: $height;
+  top: $margin;
+  width: calc(100% - #{$height + $margin});
+  height: 24px;
+}
+
+.bio {
+  @include typography.typography('body2');
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: map.get(config.$colors, 'accents-3');
+  display: inline-block;
+  position: absolute;
+  left: $height;
+  top: $margin + 24px;
+  width: calc(100% - #{$height + $margin});
+  height: $height - (2 * $margin + 24px);
+}

@@ -1,11 +1,29 @@
+@use 'sass:map';
 @use '@tutorbook/styles/config';
 
 .wrapper {
-  margin: 10px auto 20px;
-  max-width: config.$width;
+  max-width: config.$default-width;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-.formWrapper,
-.resultsWrapper {
-  padding: 10px 0;
+.title {
+  margin-top: 50px;
+}
+
+.form {
+  margin: 20px 0;
+  position: sticky;
+  z-index: 3;
+  top: config.$nav-height + 10px;
+}
+
+.results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.results li:last-child {
+  border: none;
 }
