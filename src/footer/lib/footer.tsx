@@ -232,10 +232,16 @@ function LinkGroup(props: LinkGroupProps): JSX.Element {
   );
 }
 
-export default function Footer(): JSX.Element {
+export default function Footer({
+  formWidth,
+}: {
+  formWidth?: boolean;
+}): JSX.Element {
   const intl: IntlShape = useIntl();
   return (
-    <footer className={styles.footer}>
+    <footer
+      className={styles.footer + (formWidth ? ' ' + styles.formWidth : '')}
+    >
       <span className={styles.sitemapTitle}>
         <h1 id='sitemap'>Sitemap</h1>
       </span>

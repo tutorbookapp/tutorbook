@@ -46,6 +46,10 @@
   margin: 40px auto;
 }
 
+.formWidth .contentWrapper {
+  max-width: config.$form-width;
+}
+
 @media (min-width: 768px) {
   .contentWrapper {
     //grid-template-columns: 2fr 1fr;
