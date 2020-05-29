@@ -1,28 +1,6 @@
 @use 'sass:map';
 @use '@tutorbook/styles/config';
 
-.arrowWrapper {
-  display: inline-block;
-}
-
-.arrow {
-  margin-left: 5px;
-  margin-bottom: 2px;
-}
-
-.logo {
-  cursor: pointer;
-  display: inline-flex;
-  position: relative;
-}
-
-.logo span {
-  font-family: map.get(config.$fonts, 'sans');
-  color: map.get(config.$colors, 'primary');
-  font-weight: 700;
-  font-size: 25px;
-}
-
 .wrapper {
   position: sticky;
   top: 0;
@@ -43,61 +21,153 @@
   margin: auto;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   padding: 0 24px;
 }
 
-.upper {
+.left {
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
-.lower {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 0 0 10px;
-  width: 100%;
-  background-color: transparent;
+.logo {
+  cursor: pointer;
+  padding: 20px 0;
+  margin-right: 10px;
 }
 
-.desktop {
+.logo span {
+  color: map.get(config.$colors, 'primary');
+  font-family: map.get(config.$fonts, 'sans');
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 24px;
+}
+
+.mobileToggle {
+  width: 24px;
+  height: 40px;
+  display: none;
+  visibility: hidden;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--geist-radius);
+  background: transparent;
+  transition: background-color 0.2s ease;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.toggle {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 22px;
+    background-color: map.get(config.$colors, 'foreground');
+    transition: transform 0.15s ease;
+  }
+
+  &:before {
+    transform: translateY(-4px) rotate(0deg);
+  }
+
+  &:after {
+    transform: translateY(4px) rotate(0deg);
+  }
+}
+
+.toggleActive {
+  &:before {
+    transform: translateY(1px) rotate(45deg);
+  }
+
+  &:after {
+    transform: translateY(0) rotate(-45deg);
+  }
+}
+
+.mobileNav {
+  display: none;
+  visibility: hidden;
+  max-width: 100vw;
+  padding: 0 24px 24px 24px;
+  background: map.get(config.$colors, 'background');
+  z-index: 2000;
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: config.$nav-height - 1px;
+  bottom: 0;
+  overflow-y: scroll;
+}
+
+.mobileNavActive {
+  display: block;
   visibility: visible;
 }
 
-.left,
-.right {
+.mobileLinks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mobileLink {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+}
+
+.mobileLinkItem {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 1rem;
+  height: 2 * 24px;
+  border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+  transition: background-color 0.2s ease-in-out;
+}
+
+.desktopLinks,
+.tabs {
   display: flex;
   flex-direction: row;
   opacity: 1;
   pointer-events: all;
-  transition: opacity 0.2s ease-out;
-}
-
-.left {
+  transition: opacity 0.1s ease;
   align-items: center;
-  left: 50px;
+  right: 50px;
   will-change: opacity;
 }
 
-.left .link {
-  padding: 20px 10px;
-}
-
-.right {
+.desktopLinks {
   margin-left: auto;
 }
 
-.right .link {
-  padding: 0 8px;
+.desktopLink:last-child {
+  padding-right: 0;
 }
 
-.link {
+.desktopLink,
+.tab {
   font-size: 14px;
   line-height: 24px;
   font-family: map.get(config.$fonts, 'sans');
@@ -105,30 +175,43 @@
   text-decoration: none;
   transition: color 0.2s ease-in-out;
   position: relative;
+  padding: 20px 10px;
   cursor: pointer;
 }
 
-.link:hover {
+.desktopLink:hover,
+.tab:hover {
   color: map.get(config.$colors, 'foreground');
 }
 
-.link.active {
+.desktopLink.active,
+.tab.active {
   color: map.get(config.$colors, 'foreground');
 }
 
-.link.active::before {
+.tabsHidden {
+  opacity: 0;
+}
+
+.tab.active::before {
   content: '';
   display: block;
   position: absolute;
   height: 0px;
-  left: 9px;
   right: 9px;
+  left: 9px;
   bottom: 0px;
   border-bottom: 2px solid;
 }
 
-@media (min-width: 951px) {
-  .mobile {
+@media (max-width: 675px) {
+  .desktopLinks {
     display: none;
+    visibility: hidden;
+  }
+
+  .mobileToggle {
+    display: flex;
+    visibility: visible;
   }
 }
