@@ -11,19 +11,19 @@ export default defineMessages({
   },
   mentorSubmit: {
     id: 'mentor-form.submit',
-    defaultMessage: 'Signup as a mentor',
+    defaultMessage: 'Become a mentor',
   },
   tutorSubmit: {
     id: 'tutor-form.submit',
-    defaultMessage: 'Signup as a tutor',
+    defaultMessage: 'Become a tutor',
   },
   mentorHeader: {
     id: 'mentor-form.header',
-    defaultMessage: 'Become a mentor',
+    defaultMessage: 'Guide the next generation.',
   },
   tutorHeader: {
     id: 'tutor-form.header',
-    defaultMessage: 'Become a tutor',
+    defaultMessage: 'Support students amidst COVID-19.',
   },
   mentorDesc: {
     id: 'mentor-form.desc',

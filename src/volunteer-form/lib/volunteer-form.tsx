@@ -3,9 +3,9 @@ import React from 'react';
 import { MessageDescriptor, IntlShape, injectIntl } from 'react-intl';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
-import { Typography } from '@rmwc/typography';
 import { Card } from '@rmwc/card';
 
+import Title from '@tutorbook/title';
 import ScheduleInput from '@tutorbook/schedule-input';
 import SubjectSelect from '@tutorbook/subject-select';
 import firebase, { UserProvider } from '@tutorbook/firebase';
@@ -14,17 +14,17 @@ import {
   UserInterface,
   SocialTypeAlias,
   User,
+  Aspect,
 } from '@tutorbook/model';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
-
-import Toggle from './toggle';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
 
 interface VolunteerFormProps {
   readonly intl: IntlShape;
+  readonly aspect: Aspect;
 }
 
 type VolunteerFormState = {
@@ -34,7 +34,6 @@ type VolunteerFormState = {
   readonly submittingTutor: boolean;
   readonly submittedMentor: boolean;
   readonly submittedTutor: boolean;
-  readonly activeForm: 0 | 1;
   readonly expertise: string[];
   readonly subjects: string[];
 } & Partial<UserInterface> &
@@ -56,12 +55,10 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     submittingTutor: false,
     submittedMentor: false,
     submittedTutor: false,
-    activeForm: 0,
     name: '',
     email: '',
     phone: '',
     bio: '',
-    source: '',
     expertise: [],
     subjects: [],
     website: '',
@@ -86,56 +83,42 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     const msg = (msg: MessageDescriptor) => this.props.intl.formatMessage(msg);
     return (
       <div className={styles.wrapper}>
-        <div className={styles.content}>
-          <Toggle
-            options={[
-              this.props.intl.formatMessage(msgs.mentorToggle),
-              this.props.intl.formatMessage(msgs.tutorToggle),
-            ]}
-            onChange={(activeForm: 0 | 1) => this.setState({ activeForm })}
+        <div className={styles.header} ref={this.headerRef}>
+          <span style={this.getHeaderStyle('mentoring')}>
+            <Title>{msg(msgs.mentorHeader)}</Title>
+          </span>
+          <span style={this.getHeaderStyle('tutoring')}>
+            <Title>{msg(msgs.tutorHeader)}</Title>
+          </span>
+        </div>
+        <div className={styles.description} ref={this.descRef}>
+          <span style={this.getDescStyle('mentoring')}>
+            {msg(msgs.mentorDesc)}
+          </span>
+          <span style={this.getDescStyle('tutoring')}>
+            {msg(msgs.tutorDesc)}
+          </span>
+        </div>
+        <Card className={styles.formCard}>
+          <Loader
+            active={this.loading || this.checked}
+            checked={this.checked}
           />
-          <Typography
-            ref={this.headerRef}
-            className={styles.header}
-            use='headline2'
-          >
-            <span style={this.getHeaderStyle(0)}>{msg(msgs.mentorHeader)}</span>
-            <span style={this.getHeaderStyle(1)}>{msg(msgs.tutorHeader)}</span>
-          </Typography>
-          <Typography
-            ref={this.descRef}
-            className={styles.description}
-            use='body1'
-          >
-            <span style={this.getDescStyle(0)}>{msg(msgs.mentorDesc)}</span>
-            <span style={this.getDescStyle(1)}>{msg(msgs.tutorDesc)}</span>
-          </Typography>
-        </div>
-        <div className={styles.formWrapper}>
-          <div className={styles.content}>
-            <Card className={styles.formCard}>
-              <Loader
-                active={this.loading || this.checked}
-                checked={this.checked}
-              />
-              <form className={styles.form} onSubmit={this.handleSubmit}>
-                {this.renderInputs()}
-                <Button
-                  className={styles.formSubmitButton}
-                  label={msg(
-                    this.state.activeForm === 0
-                      ? msgs.mentorSubmit
-                      : msgs.tutorSubmit
-                  )}
-                  disabled={this.loading || this.checked}
-                  raised
-                  arrow
-                />
-              </form>
-            </Card>
-          </div>
-          <div className={styles.background} />
-        </div>
+          <form className={styles.form} onSubmit={this.handleSubmit}>
+            {this.renderInputs()}
+            <Button
+              className={styles.formSubmitButton}
+              label={msg(
+                this.props.aspect === 'mentoring'
+                  ? msgs.mentorSubmit
+                  : msgs.tutorSubmit
+              )}
+              disabled={this.loading || this.checked}
+              raised
+              arrow
+            />
+          </form>
+        </Card>
       </div>
     );
   }
@@ -145,7 +128,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       this.state.submittingMentor || this.state.submittedMentor;
     const loadingTutor: boolean =
       this.state.submittingTutor || this.state.submittedTutor;
-    return this.state.activeForm === 0 ? loadingMentor : loadingTutor;
+    return this.props.aspect === 'mentoring' ? loadingMentor : loadingTutor;
   }
 
   private get checked(): boolean {
@@ -153,7 +136,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       this.state.submittedMentor || this.state.submittedMentor;
     const checkedTutor: boolean =
       this.state.submittedTutor || this.state.submittedTutor;
-    return this.state.activeForm === 0 ? checkedMentor : checkedTutor;
+    return this.props.aspect === 'mentoring' ? checkedMentor : checkedTutor;
   }
 
   public componentDidMount(): void {
@@ -168,22 +151,28 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     }
   }
 
-  private getHeaderStyle(form: 0 | 1): Record<string, string> {
-    if (this.state.activeForm === form) return {};
+  private getHeaderStyle(aspect: Aspect): Record<string, string> {
+    if (this.props.aspect === aspect) return {};
     const height: string = this.state.headerHeight
       ? `${this.state.headerHeight}px`
-      : '3.75rem';
-    const updated: string = form === 1 ? `-${height}` : height;
-    return { transform: `translateY(${updated})` };
+      : '125px';
+    const transform: string =
+      aspect === 'mentoring'
+        ? `translateY(-${height})`
+        : `translateY(${height})`;
+    return { transform };
   }
 
-  private getDescStyle(form: 0 | 1): Record<string, string> {
-    if (this.state.activeForm === form) return {};
+  private getDescStyle(aspect: Aspect): Record<string, string> {
+    if (this.props.aspect === aspect) return {};
     const height: string = this.state.descHeight
       ? `${this.state.descHeight}px`
-      : '4.5rem';
-    const updated: string = form === 1 ? `-${height}` : height;
-    return { transform: `translateY(${updated})` };
+      : '84px';
+    const transform: string =
+      aspect === 'mentoring'
+        ? `translateY(-${height})`
+        : `translateY(${height})`;
+    return { transform };
   }
 
   private renderInputs(): JSX.Element {
@@ -228,14 +217,8 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         />
         <TextField {...shared('phone')} label={msg({ id: 'form.phone' })} />
         <ListDivider className={styles.divider} />
-        {this.state.activeForm === 0 && (
+        {this.props.aspect === 'mentoring' && (
           <>
-            <TextField
-              {...shared('source')}
-              label={msg(msgs.source)}
-              placeholder={msg(msgs.sourcePlaceholder)}
-              required={false}
-            />
             <SubjectSelect
               {...shared('expertise')}
               label={msg(msgs.expertise)}
@@ -254,7 +237,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
             />
           </>
         )}
-        {this.state.activeForm === 1 && (
+        {this.props.aspect === 'tutoring' && (
           <>
             <SubjectSelect
               {...shared('subjects')}
@@ -294,7 +277,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     firebase.analytics().logEvent('sign_up', {
-      method: this.state.activeForm === 0 ? 'mentor_form' : 'tutor_form',
+      method: this.props.aspect === 'mentoring' ? 'mentor_form' : 'tutor_form',
     });
     const {
       expertise,
@@ -334,15 +317,16 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     });
     this.setState({
       submittingMentor:
-        this.state.activeForm === 0 || this.state.submittingMentor,
+        this.props.aspect === 'mentoring' || this.state.submittingMentor,
       submittingTutor:
-        this.state.activeForm === 1 || this.state.submittingTutor,
+        this.props.aspect === 'tutoring' || this.state.submittingTutor,
     });
     await UserProvider.signup(tutor);
     this.setState({
       submittedMentor:
-        this.state.activeForm === 0 || this.state.submittedMentor,
-      submittedTutor: this.state.activeForm === 1 || this.state.submittedTutor,
+        this.props.aspect === 'mentoring' || this.state.submittedMentor,
+      submittedTutor:
+        this.props.aspect === 'tutoring' || this.state.submittedTutor,
     });
   }
 }

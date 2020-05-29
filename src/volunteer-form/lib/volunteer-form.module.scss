@@ -1,3 +1,6 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
 @use '@material/elevation';
 
 .header span,
@@ -20,19 +23,29 @@
   position: relative;
 }
 
+.header {
+  margin: 0 0 20px;
+  max-width: 0.8 * config.$form-width;
+}
+
+.description {
+  @include typography.typography('subtitle1');
+  color: map.get(config.$colors, 'accents-5');
+  margin: 0 0 40px;
+}
+
 .form {
   padding: 16px;
 }
 
 .formCard {
   margin: 16px 0;
-  transition: 200ms box-shadow;
-  // TODO: Add transition ease to `box-shadow`.
-  @include elevation.elevation(2);
+  transition: 100ms box-shadow ease-in-out 10ms;
+  @include elevation.elevation(1);
 }
 
 .formCard:hover {
-  @include elevation.elevation(8);
+  @include elevation.elevation(2);
 }
 
 .formField {
@@ -59,8 +72,9 @@
 }
 
 .wrapper {
-  text-align: center;
-  margin-bottom: 64px;
+  max-width: config.$form-width;
+  width: calc(100% - 48px);
+  margin: 60px auto;
 }
 
 .toggle {
@@ -71,55 +85,7 @@
   position: relative;
 }
 
-.content {
-  display: inline-block;
-  width: calc(100% - 32px);
-  max-width: 720px;
-}
-
 .divider {
   list-style: none;
   margin: 8px 0;
-}
-
-.background {
-  height: 60%;
-  width: 100vw;
-  background: #6200ee;
-  position: absolute;
-  z-index: -1;
-  bottom: 20%;
-}
-
-.background::before {
-  top: -17px;
-  -webkit-transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-  transform: rotate(180deg);
-  content: '';
-  position: absolute;
-  background-color: inherit;
-  height: 18px;
-  left: -3vw;
-  -webkit-mask-image: url(./svgs/border.svg);
-  mask-image: url(./svgs/border.svg);
-  -webkit-mask-repeat: repeat no-repeat;
-  mask-repeat: repeat no-repeat;
-  width: 106vw;
-  z-index: -1;
-}
-
-.background::after {
-  bottom: -17px;
-  content: '';
-  position: absolute;
-  background-color: inherit;
-  height: 18px;
-  left: -3vw;
-  -webkit-mask-image: url(./svgs/border.svg);
-  mask-image: url(./svgs/border.svg);
-  -webkit-mask-repeat: repeat no-repeat;
-  mask-repeat: repeat no-repeat;
-  width: 106vw;
-  z-index: -1;
 }
