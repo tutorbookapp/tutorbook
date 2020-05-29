@@ -76,8 +76,8 @@ export async function userUpdate(
       name: onlyFirstNameAndLastInitial(user.name),
       bio: user.bio,
       availability: availabilityToDates(user.availability),
-      subjects: user.subjects,
-      searches: user.searches,
+      mentoring: user.mentoring,
+      tutoring: user.tutoring,
       socials: user.socials,
       objectID: context.params.user,
     };
@@ -85,9 +85,10 @@ export async function userUpdate(
   }
   index.setSettings({
     attributesForFaceting: [
-      'expertise',
-      'subjects',
-      'searches',
+      'mentoring.subjects',
+      'mentoring.searches',
+      'tutoring.subjects',
+      'tutoring.searches',
       'availability',
     ].map((attr: string) => `filterOnly(${attr})`),
   });
