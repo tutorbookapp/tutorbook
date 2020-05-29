@@ -15,7 +15,6 @@ import {
 } from '@tutorbook/model';
 import { Avatar } from '@rmwc/avatar';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
-import { Typography } from '@rmwc/typography';
 import { Dialog, DialogProps } from '@rmwc/dialog';
 import { AxiosResponse, AxiosError } from 'axios';
 import {
@@ -249,11 +248,9 @@ class UserDialog extends React.Component<UserDialogProps> {
             <Avatar size='xlarge' name={user.name} className={styles.avatar} />
           </div>
           <div className={styles.rightSide}>
-            <Typography className={styles.name} use='headline4'>
-              {user.name}
-            </Typography>
+            <h4 className={styles.name}>{user.name}</h4>
             {user.socials && !!user.socials.length && (
-              <Typography className={styles.socials} use='caption'>
+              <p className={styles.socials}>
                 {user.socials
                   .map<React.ReactNode>((social, index) => (
                     <a key={index} target='_blank' href={social.url}>
@@ -263,11 +260,9 @@ class UserDialog extends React.Component<UserDialogProps> {
                     </a>
                   ))
                   .reduce((prev, curr) => [prev, ' \u2022 ', curr])}
-              </Typography>
+              </p>
             )}
-            <Typography className={styles.bio} use='body1'>
-              {user.bio}
-            </Typography>
+            <p className={styles.bio}>{user.bio}</p>
             <form className={styles.form} onSubmit={this.handleSubmit}>
               <SubjectSelect
                 outlined

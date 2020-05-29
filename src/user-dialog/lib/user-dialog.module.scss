@@ -1,6 +1,10 @@
+@use 'sass:map';
+@use '@tutorbook/styles/typography';
+@use '@tutorbook/styles/config';
+
 .avatar {
-  background: var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.38));
-  color: var(--mdc-theme-surface, white);
+  background: map.get(config.$colors, 'accents-3');
+  color: map.get(config.$colors, 'background');
   width: 80px;
   height: 80px;
   flex-shrink: 0;
@@ -8,7 +12,7 @@
   justify-content: center;
   display: inline-flex;
   font-weight: 700;
-  font-family: 'Poppins', sans-serif;
+  font-family: map.get(config.$fonts, 'sans');
 }
 
 .contentWrapper {
@@ -25,11 +29,26 @@
 }
 
 .name {
+  @include typography.typography('headline4');
+  color: map.get(config.$colors, 'foreground');
+  font-weight: 700;
   margin: 0;
 }
 
 .socials {
+  @include typography.typography('caption');
+  color: map.get(config.$colors, 'accents-3');
   margin-top: 8px;
+
+  & a {
+    color: map.get(config.$colors, 'accents-3');
+  }
+}
+
+.bio {
+  @include typography.typography('body1');
+  color: map.get(config.$colors, 'foreground');
+  margin: 8px 0;
 }
 
 .button {
