@@ -1,67 +1,156 @@
 @use 'sass:map';
-@use '@tutorbook/styles/typography';
 @use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
 
-.avatar {
-  background: map.get(config.$colors, 'accents-3');
-  color: map.get(config.$colors, 'background');
-  width: 80px;
-  height: 80px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  display: inline-flex;
-  font-weight: 700;
-  font-family: map.get(config.$fonts, 'sans');
+$min-width: 650px;
+$padding: 40px;
+$margin: 24px;
+
+.dialog :global(.mdc-dialog__surface) {
+  width: 50vw;
+  max-width: 800px;
+  min-width: $min-width;
 }
 
-.contentWrapper {
+.wrapper {
   display: flex;
-  padding: 32px;
+  padding: $padding;
 }
 
-.leftSide {
-  margin-right: 12px;
+.left {
+  flex-grow: 1;
+  flex-basis: 0;
+  max-width: 260px;
 }
 
-.rightSide {
-  margin-left: 12px;
+.right {
+  flex-grow: 1.5;
+  flex-basis: 0;
+  margin-left: $padding;
+}
+
+@media (max-width: $min-width + 32px) {
+  .dialog :global(.mdc-dialog__surface) {
+    min-width: 0;
+    width: calc(100vw - 32px);
+  }
+}
+
+@media (max-width: 500px) {
+  .wrapper {
+    flex-direction: column;
+    padding: $margin;
+  }
+
+  .left {
+    margin-bottom: $margin;
+    max-width: none;
+  }
+
+  .right {
+    margin-left: 0;
+  }
+}
+
+.imgLink:before {
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
+
+.imgLink {
+  display: block;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  background: map.get(config.$colors, 'accents-2');
+}
+
+.noImg {
+  @include typography.typography('subtitle1');
+  color: map.get(config.$colors, 'accents-5');
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+}
+
+.img {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 
 .name {
   @include typography.typography('headline4');
   color: map.get(config.$colors, 'foreground');
-  font-weight: 700;
+  margin: 12px 0 8px;
+}
+
+.bioHeader,
+.requestHeader {
+  @include typography.typography('headline6');
+  color: map.get(config.$colors, 'foreground');
+  font-weight: 600;
   margin: 0;
 }
 
-.socials {
-  @include typography.typography('caption');
-  color: map.get(config.$colors, 'accents-3');
-  margin-top: 8px;
-
-  & a {
-    color: map.get(config.$colors, 'accents-3');
-  }
+.requestHeader {
+  margin: $margin 0 16px;
 }
 
 .bio {
   @include typography.typography('body1');
-  color: map.get(config.$colors, 'foreground');
-  margin: 8px 0;
+  color: map.get(config.$colors, 'accents-5');
+  margin: 0;
 }
 
-.button {
-  margin-top: 8px;
-  width: 100%;
+.socialLink {
+  @include typography.typography('subtitle1');
+  font-size: 24px;
+  margin-right: 10px;
+  font-family: 'FontAwesome';
+  color: map.get(config.$colors, 'accents-5');
+  text-decoration: none;
+  -webkit-text-stroke: 1px transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    color: transparent;
+    -webkit-text-stroke: 1px map.get(config.$colors, 'accents-5');
+  }
 }
 
-.helperText {
-  margin-top: 8px;
+.website:before {
+  content: '\f0ac';
 }
 
-.form {
-  margin-top: 32px;
+.email:before {
+  content: '\f0e0';
+}
+
+.github:before {
+  content: '\f09b';
+}
+
+.linkedin:before {
+  content: '\f08c';
+}
+
+.twitter:before {
+  content: '\f099';
+}
+
+.facebook:before {
+  content: '\f09a';
 }
 
 .formField {
@@ -79,4 +168,9 @@
 
 .formField:last-child {
   margin-bottom: 0;
+}
+
+.button {
+  margin: 8px 0 0;
+  width: 100%;
 }

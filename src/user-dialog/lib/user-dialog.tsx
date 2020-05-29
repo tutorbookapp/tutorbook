@@ -238,31 +238,35 @@ class UserDialog extends React.Component<UserDialogProps> {
       },
     });
     return (
-      <Dialog {...rest} open>
+      <Dialog {...rest} open className={styles.dialog}>
         <Loader
           active={this.state.submitting || this.state.submitted}
           checked={this.state.submitted}
         />
-        <div className={styles.contentWrapper}>
-          <div className={styles.leftSide}>
-            <Avatar size='xlarge' name={user.name} className={styles.avatar} />
-          </div>
-          <div className={styles.rightSide}>
+        <div className={styles.wrapper + (className ? ' ' + className : '')}>
+          <div className={styles.left}>
+            <a className={styles.imgLink} href={user.photo} target='_blank'>
+              <img className={styles.img} src={user.photo} />
+              {!user.photo && <div className={styles.noImg}>No Photo</div>}
+            </a>
             <h4 className={styles.name}>{user.name}</h4>
             {user.socials && !!user.socials.length && (
-              <p className={styles.socials}>
-                {user.socials
-                  .map<React.ReactNode>((social, index) => (
-                    <a key={index} target='_blank' href={social.url}>
-                      {this.props.intl.formatMessage({
-                        id: `socials.${social.type}`,
-                      })}
-                    </a>
-                  ))
-                  .reduce((prev, curr) => [prev, ' \u2022 ', curr])}
-              </p>
+              <div className={styles.socials}>
+                {user.socials.map((social, index) => (
+                  <a
+                    key={index}
+                    target='_blank'
+                    href={social.url}
+                    className={styles.socialLink + ' ' + styles[social.type]}
+                  />
+                ))}
+              </div>
             )}
+          </div>
+          <div className={styles.right}>
+            <h6 className={styles.bioHeader}>About</h6>
             <p className={styles.bio}>{user.bio}</p>
+            <h6 className={styles.requestHeader}>Request</h6>
             <form className={styles.form} onSubmit={this.handleSubmit}>
               <SubjectSelect
                 outlined
