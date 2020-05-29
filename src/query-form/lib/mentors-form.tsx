@@ -42,7 +42,6 @@ export default function TutorsForm({
           placeholder={msg(msgs.subjectsPlaceholder)}
           searchIndex='expertise'
           outlined
-          required
         />
         <Button
           className={styles.btn}

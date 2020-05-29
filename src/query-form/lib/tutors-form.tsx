@@ -46,14 +46,12 @@ export default function TutorsForm({
           label={msg(msgs.subjects)}
           placeholder={msg(msgs.subjectsPlaceholder)}
           outlined
-          required
         />
         <ScheduleInput
           val={query.availability}
           className={styles.field}
           label={msg(msgs.availability)}
           outlined
-          required
         />
         <Button
           className={styles.btn}
