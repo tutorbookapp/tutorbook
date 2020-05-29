@@ -11,5 +11,6 @@
   @include typography.typography('headline2');
   display: inline-block;
   color: transparent;
+  padding-bottom: 5px; // Otherwise, words with 'g' and 'y' get cut off.
   margin: 0;
 }
