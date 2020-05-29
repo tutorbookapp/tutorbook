@@ -22,11 +22,19 @@ const main = async () => {
     users.map((user) => {
       const data = {
         ...(user.data() || {}),
-        searches: (user.data().searches || {}).explicit || [],
-        subjects: (user.data().subjects || {}).explicit || [],
-        expertise: [],
+        mentoring: {
+          subjects: user.data().subjects || [],
+          searches: user.data().searches || [],
+        },
+        tutoring: {
+          subjects: user.data().expertise || [],
+          searches: [],
+        },
       };
-      return user.ref.update(data);
+      delete data.subjects;
+      delete data.searches;
+      delete data.expertise;
+      return user.ref.set(data);
     })
   );
 };

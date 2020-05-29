@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "test-covid-tutoring",
+  "private_key_id": "9519d03f772cda1446023a5ca8ab45bf8e6d8d39",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCtnmCk5mpxpo73\nQXPbn9XWsD+VTFKOCzYTwoOShJ/EY/wDyEsHVdyK/Vq2yaiJi6xVwVIVh6hmwPiP\nn5+2E1esVO2AiHl2Hg+xklkyJ2t4Vh5TcDyW4GBhEi5TgsSjaIWLi9l+MoJYcl/+\ntlUWIVCnjgubzzvpBJGiUB5BZeWF/1ykh2k5vQ5sI/lP90mCdKcAc0UvB8757poW\njLqjLHVIrFcXObhhBUgVwHh1T/avMUs3CGS7cRxcKVaf9GokM5lbWOUKWt4TqKep\n9kQ2Mr6VI+ak8QO6UqK2D+vGv9jrWsPbsPF76zeKobCa7Yfd3fLk+nAPDJqdBzyn\nNUraMCZdAgMBAAECggEAATpXBaOJii864J3KY3nAaenKMVSeWtnScpZUFuOwO5PX\ncvFmMnGVgzgifZt0gTCHMf4Rhgx1EPD5cQ6YcxG084eQPHH6pe61frSBw/yKYon9\nYeqvywNgOx+FS1rn6B3zn9aH3cAesuBwNF12wZbPurei9mGjU1UQcJzvcdf2JRnz\nwt8GuV6BeuDOmpU8cAv2kx7OQU6sLTuaoHbbDA5CVcx3yvLO9M0X3Q6n7DdTb69G\nhYSkckQqIU5gbUahWwEVtig/7YRBgIDAkQ/Y4f7lhCSWJoubVZn7aCGPUMds6NB3\nQ9ueeD8oZy83wGoLY5UC/aVvXVglmlc3BE4F51ivAQKBgQDTBrBRWjH7HZfjeWxE\nwOdMVIV28Xln6I9cPr2YBQsr0V5c1dQGiSiVmk5oGxLO+qN2CGxri3JmT7CB16qD\n4ZJkcbRNSMnpd6B3bAyMzRT25sHyTId/plewFSQT26gR2pE8q+AqDORus36NiCVt\n9U+C1zzydFm1xf3aB9af3BC43QKBgQDSnsk7jjmxDt84JIIridKaaxj0kHGw2tBE\ntZMzyd7K8/Ybt4ml6GeDumYzOCJIj/voEy3OKDODzcevI/Et/MtXBdUmYjCQxd4s\nenCDTZ9K1dEVsBa8Bf9cnIVq7J3jGfgnu53I437UzWeo8Bkf6f33SOEb9zS31TRE\nyVL0Pz+LgQKBgHAHVQNbRr1xcHkqtPerER/Mny4N883eAH2QMUbLJqsUc2wFeJIf\nrpP9XzKVbN7E4JKA1k4hsZHvLF1CCRwKXJVGZ9m/krGG+IFtsxvso/yPdNcVGboC\nrPqlvolsS0VvKztyY4bvYTYDxGOOq5A8cwGbEpgEfLuraKCfGKm1QothAoGAMBZm\n1X0keONvXY8gVTZzaiQ3n2b3PizHTliykilt/6Jxt2RRPhrwv2eoe9s+IJkXJ6Zx\nV9df46DxDXDEWP6VonnHb6sNcZBrqHYQCDqJuvlUcoIwvp8T7Z4i7AW4CqjcOp4g\naURfqdB38V9YLSwsevAdzVfEppA8DdR1ZySlqoECgYAWCmDUDmXw/FdLdWk2ISS6\n3jmuZmQR6FLmRoE6lnnf+HJGW4VGdqNCT6+7PaYAHxM2U3Zkl3FVxeuzgXU8scHW\nR6Kr/dFbVONe6B56Ion3zB3PZiKtU2ysVn7HoojkPXEe3Jq29NbJDHMzJZ9Y21Y0\nkPxg3dKAPMCm2fnLf0I0ew==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-gec7w@test-covid-tutoring.iam.gserviceaccount.com",
+  "client_id": "108107037668306652977",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-gec7w%40test-covid-tutoring.iam.gserviceaccount.com"
+}
