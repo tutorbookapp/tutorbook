@@ -1,6 +1,7 @@
 import { useIntl, defMsg, IntlShape, Msg, Message } from '@tutorbook/intl';
 import { Query } from '@tutorbook/model';
 
+import Router from 'next/router';
 import SpotlightMsg from '@tutorbook/spotlight-msg';
 import QueryForm from '@tutorbook/query-form';
 import Title from '@tutorbook/title';
@@ -10,20 +11,44 @@ import PupilSignsUp from './gifs/pupil-signs-up.gif';
 import TutorSignsUp from './gifs/tutor-signs-up.gif';
 import TutorJoinsBramble from './gifs/tutor-joins-bramble.gif';
 
+import url from 'url';
 import msgs from './msgs';
 import styles from './hero.module.scss';
 
-export default function Hero({ query }: { query: Query }): JSX.Element {
+function getSearchURL(query: Query): string {
+  return url.format({
+    pathname: '/search',
+    query: {
+      aspect: encodeURIComponent(query.aspect),
+      subjects: encodeURIComponent(JSON.stringify(query.subjects)),
+      availability: query.availability.toURLParam(),
+    },
+  });
+}
+
+export default function Hero({
+  query,
+  onChange,
+}: {
+  query: Query;
+  onChange: (query: Query) => any;
+}): JSX.Element {
   const intl: IntlShape = useIntl();
 
   function CTA(): JSX.Element {
+    const handleSubmit: (query: Query) => any = (query: Query) =>
+      Router.push(`/${intl.locale}${getSearchURL(query)}`);
     return (
       <div className={styles.hero}>
         <div className={styles.wrapper}>
           <div className={styles.title}>
             <Title>{intl.formatMessage(msgs[query.aspect])}</Title>
           </div>
-          <QueryForm query={query} />
+          <QueryForm
+            query={query}
+            onChange={onChange}
+            onSubmit={handleSubmit}
+          />
         </div>
       </div>
     );

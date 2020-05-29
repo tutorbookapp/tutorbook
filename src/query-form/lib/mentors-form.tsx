@@ -20,10 +20,12 @@ const msgs: Record<string, Msg> = defMsg({
   },
 });
 
-export default function TutorsForm({
-  visible,
+export default function MentorsForm({
   query,
+  button,
+  visible,
   onSubmit,
+  onChange,
 }: FormProps): JSX.Element {
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (msg: Msg) => intl.formatMessage(msg);
@@ -34,22 +36,28 @@ export default function TutorsForm({
   };
   return (
     <Card className={styles.card + (!visible ? ' ' + styles.hidden : '')}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form
+        className={styles.form + (!button ? ' ' + styles.noButton : '')}
+        onSubmit={handleSubmit}
+      >
         <SubjectSelect
           val={query.subjects}
           className={styles.field}
           label={msg(msgs.subjects)}
           placeholder={msg(msgs.subjectsPlaceholder)}
+          onChange={(subjects: string[]) => onChange({ ...query, subjects })}
           searchIndex='expertise'
           outlined
         />
-        <Button
-          className={styles.btn}
-          label={msg(msgs.btn)}
-          disabled={submitting}
-          raised
-          arrow
-        />
+        {button && (
+          <Button
+            className={styles.btn}
+            label={msg(msgs.btn)}
+            disabled={submitting}
+            raised
+            arrow
+          />
+        )}
       </form>
     </Card>
   );

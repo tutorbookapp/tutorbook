@@ -24,6 +24,39 @@ interface SearchPageProps {
   results: ReadonlyArray<UserJSONInterface>;
 }
 
+async function getSearchResults(
+  query: Query,
+  url: string = '/api/search'
+): Promise<ReadonlyArray<User>> {
+  const [err, res] = await to<AxiosResponse<UserJSONInterface[]>, AxiosError>(
+    axios({
+      url,
+      method: 'get',
+      params: {
+        aspect: encodeURIComponent(query.aspect),
+        subjects: encodeURIComponent(JSON.stringify(query.subjects)),
+        availability: query.availability.toURLParam(),
+      },
+    })
+  );
+  if (err && err.response) {
+    console.error(`[ERROR] ${err.response.data}`);
+    throw new Error(err.response.data);
+  } else if (err && err.request) {
+    console.error('[ERROR] Search REST API did not respond:', err.request);
+    throw new Error('Search REST API did not respond.');
+  } else if (err) {
+    console.error('[ERROR] While sending request:', err);
+    throw new Error(`While sending request: ${err.message}`);
+  } else {
+    return (res as AxiosResponse<UserJSONInterface[]>).data.map(
+      (user: UserJSONInterface) => {
+        return User.fromJSON(user);
+      }
+    );
+  }
+}
+
 /**
  * We search our Algolia index from the server-side before we even respond to
  * an HTTP request.
@@ -40,46 +73,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ? Availability.fromURLParam(availability)
       : new Availability(),
   };
-  const [err, res] = await to<AxiosResponse, AxiosError>(
-    axios({
-      method: 'get',
-      url: new URL('/api/search', `http://${context.req.headers.host}`).href,
-      params: {
-        aspect: context.query.aspect,
-        subjects: context.query.subjects,
-        availability: context.query.availability,
-      },
-    })
-  );
-  if (err && err.response) {
-    console.error(`[ERROR] ${err.response.data}`);
-    throw new Error(err.response.data);
-  } else if (err && err.request) {
-    console.error('[ERROR] Search REST API did not respond:', err.request);
-    throw new Error('Search REST API did not respond.');
-  } else if (err) {
-    console.error('[ERROR] While sending request:', err);
-    throw new Error(`While sending request: ${err.message}`);
-  } else if (res) {
-    return {
-      props: {
-        query: JSON.parse(JSON.stringify(query)),
-        results: JSON.parse(JSON.stringify(res.data)),
-        ...(await getIntlProps(context)),
-      },
-    };
-  } else {
-    console.warn('[WARNING] No error or response from search REST API.');
-    return {
-      props: {
-        query: JSON.parse(JSON.stringify(query)),
-        ...(await getIntlProps(context)),
-      },
-    };
-  }
+  const url: string = new URL('/api/search', `http:${context.req.headers.host}`)
+    .href;
+  return {
+    props: {
+      query: JSON.parse(JSON.stringify(query)),
+      results: JSON.parse(JSON.stringify(await getSearchResults(query, url))),
+      ...(await getIntlProps(context)),
+    },
+  };
 };
 
 function SearchPage({ query, results }: SearchPageProps): JSX.Element {
+  const [searching, setSearching] = React.useState<boolean>(false);
+  const [res, setResults] = React.useState<ReadonlyArray<User>>(results);
   const [qry, setQuery] = React.useState<Query>({
     aspect: query.aspect,
     subjects: query.subjects,
@@ -89,11 +96,23 @@ function SearchPage({ query, results }: SearchPageProps): JSX.Element {
     <>
       <Header
         aspect={qry.aspect}
-        onChange={(aspect: Aspect) => setQuery({ ...qry, aspect })}
+        onChange={async (aspect: Aspect) => {
+          setQuery({ ...qry, aspect });
+          setSearching(true);
+          setResults(await getSearchResults({ ...qry, aspect }));
+          setSearching(false);
+        }}
       />
       <Search
         query={qry}
-        results={results.map((res: UserJSONInterface) => User.fromJSON(res))}
+        searching={searching}
+        results={res.map((res: UserJSONInterface) => User.fromJSON(res))}
+        onChange={async (query: Query) => {
+          setQuery(query);
+          setSearching(true);
+          setResults(await getSearchResults(query));
+          setSearching(false);
+        }}
       />
       <Footer />
       <Intercom />

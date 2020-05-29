@@ -19,22 +19,44 @@ import Result from './result';
 import styles from './search.module.scss';
 
 interface SearchProps {
+  readonly onChange: (query: Query) => any;
   readonly results: ReadonlyArray<User>;
+  readonly searching: boolean;
   readonly query: Query;
 }
 
 const msgs: Record<string, Msg> = defMsg({
   mentoring: {
     id: 'search.mentoring.title',
-    defaultMessage: 'Search mentors.',
+    defaultMessage: 'Expert mentors',
   },
   tutoring: {
     id: 'search.tutoring.title',
-    defaultMessage: 'Search tutors.',
+    defaultMessage: 'Volunteer tutors',
   },
 });
 
-export default function Search({ query, results }: SearchProps): JSX.Element {
+function NoResults({
+  header,
+  body,
+}: {
+  header: string;
+  body?: string;
+}): JSX.Element {
+  return (
+    <div className={styles.noResults}>
+      <h3 className={styles.noResultsHeader}>{header}</h3>
+      {body && <p className={styles.noResultsBody}>{body}</p>}
+    </div>
+  );
+}
+
+export default function Search({
+  query,
+  results,
+  searching,
+  onChange,
+}: SearchProps): JSX.Element {
   const intl: IntlShape = useIntl();
   const user = useUser();
   const [viewing, setViewing] = React.useState<User | undefined>();
@@ -76,13 +98,22 @@ export default function Search({ query, results }: SearchProps): JSX.Element {
         <Title>{intl.formatMessage(msgs[query.aspect])}</Title>
       </div>
       <div className={styles.form}>
-        <QueryForm query={query} />
+        <QueryForm query={query} onChange={onChange} />
       </div>
-      <ul className={styles.results}>
-        {results.map((res: User, index: number) => (
-          <Result user={res} key={index} onClick={() => setViewing(res)} />
-        ))}
-      </ul>
+      {!searching && !!results.length && (
+        <ul className={styles.results}>
+          {results.map((res: User, index: number) => (
+            <Result user={res} key={index} onClick={() => setViewing(res)} />
+          ))}
+        </ul>
+      )}
+      {searching && <NoResults header='Searching...' />}
+      {!searching && !results.length && (
+        <NoResults
+          header='No Results'
+          body='Try adding more availability or subjects.'
+        />
+      )}
     </div>
   );
 }

@@ -32,6 +32,7 @@ async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
   const results: User[] = [];
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
+  console.log('[DEBUG] Filtering by:', filterStrings);
   for (const filterString of filterStrings) {
     const options: SearchOptions | undefined = filterString
       ? { filters: filterString }
@@ -58,7 +59,7 @@ async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
  * limitation, we merge results from many queries on the client side (e.g. get
  * results for `A AND B` and merge them with the results for `B AND C`).
  * @example
- * '(subjects:"Chemistry H" OR subjects:"Chemistry") AND ' +
+ * '(tutoring.subjects:"Chemistry H" OR tutoring.subjects:"Chemistry") AND ' +
  * '((availability.from <= 1587304800001 AND availability.to >= 1587322800000))'
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-by-date/?language=javascript}
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/in-depth/combining-boolean-operators/#combining-ands-and-ors}

@@ -21,7 +21,7 @@ function IndexPage(): JSX.Element {
         aspect={query.aspect}
         onChange={(aspect: Aspect) => setQuery({ ...query, aspect })}
       />
-      <Hero query={query} />
+      <Hero query={query} onChange={(query: Query) => setQuery(query)} />
       <Footer />
       <Intercom />
     </>

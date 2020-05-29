@@ -1,5 +1,6 @@
 import { Card } from '@rmwc/card';
 import { defMsg, useIntl, IntlHelper, IntlShape, Msg } from '@tutorbook/intl';
+import { Availability } from '@tutorbook/model';
 
 import React from 'react';
 import ScheduleInput from '@tutorbook/schedule-input';
@@ -26,9 +27,11 @@ const msgs: Record<string, Msg> = defMsg({
 });
 
 export default function TutorsForm({
-  visible,
   query,
+  button,
+  visible,
   onSubmit,
+  onChange,
 }: FormProps): JSX.Element {
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (msg: Msg) => intl.formatMessage(msg);
@@ -39,27 +42,36 @@ export default function TutorsForm({
   };
   return (
     <Card className={styles.card + (!visible ? ' ' + styles.hidden : '')}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form
+        className={styles.form + (!button ? ' ' + styles.noButton : '')}
+        onSubmit={handleSubmit}
+      >
         <SubjectSelect
           val={query.subjects}
           className={styles.field}
           label={msg(msgs.subjects)}
           placeholder={msg(msgs.subjectsPlaceholder)}
+          onChange={(subjects: string[]) => onChange({ ...query, subjects })}
           outlined
         />
         <ScheduleInput
           val={query.availability}
           className={styles.field}
           label={msg(msgs.availability)}
+          onChange={(availability: Availability) =>
+            onChange({ ...query, availability })
+          }
           outlined
         />
-        <Button
-          className={styles.btn}
-          label={msg(msgs.btn)}
-          disabled={submitting}
-          raised
-          arrow
-        />
+        {button && (
+          <Button
+            className={styles.btn}
+            label={msg(msgs.btn)}
+            disabled={submitting}
+            raised
+            arrow
+          />
+        )}
       </form>
     </Card>
   );

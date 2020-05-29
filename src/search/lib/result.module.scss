@@ -43,7 +43,7 @@ $margin: 20px;
   @include typography.typography('body2');
   overflow: hidden;
   text-overflow: ellipsis;
-  color: map.get(config.$colors, 'accents-3');
+  color: map.get(config.$colors, 'accents-5');
   display: inline-block;
   position: absolute;
   left: $height;

@@ -1,14 +1,15 @@
 @use 'sass:map';
 @use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
 
 .wrapper {
   max-width: config.$default-width;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 24px;
 }
 
 .title {
-  margin-top: 50px;
+  margin-top: 20px;
 }
 
 .form {
@@ -26,4 +27,20 @@
 
 .results li:last-child {
   border: none;
+}
+
+.noResults {
+  margin: max(20vh, 100px) 0;
+  text-align: center;
+}
+
+.noResultsHeader {
+  @include typography.typography('headline3');
+  margin: 16px 0;
+}
+
+.noResultsBody {
+  @include typography.typography('subtitle1');
+  color: map.get(config.$colors, 'accents-5');
+  margin: 0;
 }

@@ -33,6 +33,10 @@
   }
 }
 
+.noButton .field:last-child {
+  margin-right: 0;
+}
+
 .btn {
   margin: 0 0 0 8px;
   flex-grow: 1;

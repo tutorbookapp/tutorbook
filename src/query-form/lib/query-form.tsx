@@ -1,42 +1,41 @@
-import { useIntl, IntlShape } from '@tutorbook/intl';
 import { Query } from '@tutorbook/model';
 
-import Router from 'next/router';
+import React from 'react';
 import TutorsForm from './tutors-form';
 import MentorsForm from './mentors-form';
 
-import url from 'url';
-
-function getSearchURL(query: Query): string {
-  return url.format({
-    pathname: '/search',
-    query: {
-      aspect: encodeURIComponent(query.aspect),
-      subjects: encodeURIComponent(JSON.stringify(query.subjects)),
-      availability: query.availability.toURLParam(),
-    },
-  });
+interface QueryFormProps {
+  query: Query;
+  onChange: (query: Query) => any;
+  onSubmit?: (query: Query) => any;
 }
 
-export default function QueryForm({ query }: { query: Query }): JSX.Element {
-  const intl: IntlShape = useIntl();
+export default function QueryForm({
+  query,
+  onChange,
+  onSubmit,
+}: QueryFormProps): JSX.Element {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    Router.push(`/${intl.locale}${getSearchURL(query)}`);
+    if (onSubmit) onSubmit(query);
     return false;
   };
   return (
     <>
       <TutorsForm
         query={query}
+        button={!!onSubmit}
         visible={query.aspect === 'tutoring'}
         onSubmit={handleSubmit}
+        onChange={onChange}
       />
       <MentorsForm
         query={query}
+        button={!!onSubmit}
         visible={query.aspect === 'mentoring'}
         onSubmit={handleSubmit}
+        onChange={onChange}
       />
     </>
   );
