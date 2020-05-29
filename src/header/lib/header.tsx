@@ -69,13 +69,13 @@ export default function Header({
           }
         >
           <ul className={styles.mobileLinks}>
-            <a className={styles.mobileLink} href='/volunteers'>
+            <a className={styles.mobileLink} href='/signup'>
               <li className={styles.mobileLinkItem}>Join TB</li>
             </a>
           </ul>
         </nav>
         <div className={styles.desktopLinks}>
-          <a className={styles.desktopLink} href='/volunteers'>
+          <a className={styles.desktopLink} href='/signup'>
             Join TB
           </a>
         </div>
