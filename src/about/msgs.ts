@@ -1,14 +1,6 @@
 import { defMsg } from '@tutorbook/intl';
 
 export default defMsg({
-  mentoring: {
-    id: 'hero.mentoring.title',
-    defaultMessage: 'Learn from and work with an expert.',
-  },
-  tutoring: {
-    id: 'hero.tutoring.title',
-    defaultMessage: 'Free tutoring amidst the coronavirus.',
-  },
   stepZero: {
     id: 'about.how-it-works.step-zero',
     defaultMessage: 'Step #0',

@@ -1,6 +1,4 @@
-@use 'sass:map';
 @use '@tutorbook/styles/config';
-@use '@tutorbook/styles/typography';
 
 .wrapper {
   max-width: config.$default-width;
@@ -8,40 +6,12 @@
   padding: 0 24px;
 }
 
-.hero,
-.summary {
+.hero {
   padding: 60px 0 100px;
-}
-
-.carousel {
-  margin: 40px 0;
 }
 
 .title {
   text-align: initial;
   max-width: 600px;
   padding-bottom: 40px;
-}
-
-.summary {
-  border-top: 1px solid map.get(config.$colors, 'accents-2');
-  border-bottom: 1px solid map.get(config.$colors, 'accents-2');
-  background: map.get(config.$colors, 'accents-1');
-}
-
-.header {
-  @include typography.typography('headline1');
-}
-
-.subheader {
-  @include typography.typography('headline3');
-}
-
-.body {
-  @include typography.typography('body1');
-  color: map.get(config.$colors, 'accents-5');
-}
-
-.bold {
-  font-weight: 600;
 }
