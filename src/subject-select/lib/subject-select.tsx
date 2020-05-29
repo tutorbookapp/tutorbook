@@ -294,6 +294,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
           }}
           anchorCorner='bottomStart'
           renderToPortal={renderToPortal ? '#portal' : false}
+          className={!this.state.suggestions.length ? styles.errMenu : ''}
         >
           <List>{this.renderSubjectMenuItems()}</List>
         </MenuSurface>
