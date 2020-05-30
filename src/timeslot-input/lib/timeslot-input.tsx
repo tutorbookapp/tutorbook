@@ -134,7 +134,7 @@ class TimeslotInput extends React.Component<TimeslotInputProps> {
         }
       if (fitsWithinAvailability) {
         this.setState({ err: undefined, val: timeslot });
-        this.props.onChange(timeslot);
+        if (this.props.onChange) this.props.onChange(timeslot);
       } else {
         this.setState({
           err:
