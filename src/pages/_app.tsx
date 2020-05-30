@@ -4,7 +4,7 @@ import { RMWCProvider } from '@rmwc/provider';
 
 import { UserProvider, DBProvider } from '@tutorbook/firebase';
 import CovidHead from '@tutorbook/doc-head';
-import '@tutorbook/styles';
+import '@tutorbook/styles/global.scss';
 
 export default function App({ Component, pageProps, router }: AppProps) {
   return (
