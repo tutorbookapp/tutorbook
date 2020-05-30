@@ -6,33 +6,60 @@ import {
   defineMessages,
   MessageDescriptor,
 } from 'react-intl';
-import config from '@tutorbook/intl/config.json';
+/*import config from '@tutorbook/intl/config.json';*/
 import { Link } from '@tutorbook/intl';
 
 import styles from './footer.module.scss';
 
-const locales: Record<string, MessageDescriptor> = defineMessages({
-  en: {
-    id: 'footer.lang.english',
-    defaultMessage: 'English',
-    description: 'Label for the "English" language option.',
-  },
-  fr: {
-    id: 'footer.lang.french',
-    defaultMessage: 'French',
-    description: 'Label for the "French" language option.',
-  },
-  se: {
-    id: 'footer.lang.spanish',
-    defaultMessage: 'Spanish',
-    description: 'Label for the "Spanish" language option.',
-  },
-  tr: {
-    id: 'footer.lang.turkish',
-    defaultMessage: 'Turkish',
-    description: 'Label for the "Turkish" language option.',
-  },
-});
+/*
+ *const locales: Record<string, MessageDescriptor> = defineMessages({
+ *  en: {
+ *    id: 'footer.lang.english',
+ *    defaultMessage: 'English',
+ *    description: 'Label for the "English" language option.',
+ *  },
+ *  fr: {
+ *    id: 'footer.lang.french',
+ *    defaultMessage: 'French',
+ *    description: 'Label for the "French" language option.',
+ *  },
+ *  se: {
+ *    id: 'footer.lang.spanish',
+ *    defaultMessage: 'Spanish',
+ *    description: 'Label for the "Spanish" language option.',
+ *  },
+ *  tr: {
+ *    id: 'footer.lang.turkish',
+ *    defaultMessage: 'Turkish',
+ *    description: 'Label for the "Turkish" language option.',
+ *  },
+ *});
+ */
+/*
+ *<ul className={styles.langLinks}>
+ *  <nav aria-labelledby='locale-picker-title'>
+ *    <h3 id='locale-picker-title' className={styles.langTitle}>
+ *      <span
+ *        className={styles.langTitleIcon}
+ *        role='img'
+ *        aria-hidden='true'
+ *      >
+ *        🌎{' '}
+ *      </span>
+ *      {intl.formatMessage(labels.lang)}
+ *    </h3>
+ *    <ul className={styles.langLinksList}>
+ *      {config.locales.map((locale: string, index: number) => (
+ *        <LangLink
+ *          key={index}
+ *          href={`/${locale}`}
+ *          label={intl.formatMessage(locales[locale])}
+ *        />
+ *      ))}
+ *    </ul>
+ *  </nav>
+ *</ul>
+ */
 
 const socials: Record<string, MessageDescriptor> = defineMessages({
   facebook: {
@@ -355,29 +382,6 @@ export default function Footer({
               },
             ]}
           />
-        </ul>
-        <ul className={styles.langLinks}>
-          <nav aria-labelledby='locale-picker-title'>
-            <h3 id='locale-picker-title' className={styles.langTitle}>
-              <span
-                className={styles.langTitleIcon}
-                role='img'
-                aria-hidden='true'
-              >
-                🌎{' '}
-              </span>
-              {intl.formatMessage(labels.lang)}
-            </h3>
-            <ul className={styles.langLinksList}>
-              {config.locales.map((locale: string, index: number) => (
-                <LangLink
-                  key={index}
-                  href={`/${locale}`}
-                  label={intl.formatMessage(locales[locale])}
-                />
-              ))}
-            </ul>
-          </nav>
         </ul>
       </nav>
     </footer>
