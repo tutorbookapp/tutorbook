@@ -74,6 +74,7 @@ export async function userUpdate(
     console.log(`[DEBUG] Updating ${user.name} (${context.params.user})...`);
     const ob: Record<string, any> = {
       name: onlyFirstNameAndLastInitial(user.name),
+      photo: user.photo,
       bio: user.bio,
       availability: availabilityToDates(user.availability),
       mentoring: user.mentoring,

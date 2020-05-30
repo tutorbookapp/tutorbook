@@ -20,6 +20,9 @@ import firebase from './base';
  */
 type Auth = firebase.auth.Auth;
 type FirebaseUser = firebase.User;
+type AuthError = firebase.auth.AuthError;
+type AuthProvider = firebase.auth.AuthProvider;
+type UserCredential = firebase.auth.UserCredential;
 type Unsubscribe = firebase.Unsubscribe;
 type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 type DocumentReference = firebase.firestore.DocumentReference;
@@ -74,6 +77,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         .get();
       if (!userDoc.exists) {
         console.warn(`[WARNING] No document for current user (${user.uid}).`);
+        await UserProvider.signup(new User(withToken));
       } else {
         const withData: User = User.fromFirestore(userDoc);
         Object.entries(withToken).forEach(([key, val]: [string, any]) => {
@@ -81,6 +85,8 @@ export class UserProvider extends React.Component<UserProviderProps> {
         });
         this.setState({ user: withData });
       }
+    } else {
+      this.setState({ user: new User() });
     }
   }
 
@@ -98,6 +104,40 @@ export class UserProvider extends React.Component<UserProviderProps> {
         {this.props.children}
       </UserContext.Provider>
     );
+  }
+
+  public static async signupWithGoogle(
+    user: User = new User(),
+    parents?: User[]
+  ): Promise<void> {
+    const provider: AuthProvider = new firebase.auth.GoogleAuthProvider();
+    const [err, cred] = await to<UserCredential, AuthError>(
+      UserProvider.auth.signInWithPopup(provider)
+    );
+    if (err) {
+      firebase.analytics().logEvent('exception', {
+        description: `Error while signing up with Google. ${err.message}`,
+        fatal: false,
+      });
+      throw err;
+    } else if (cred && cred.user) {
+      const firebaseUser: Partial<UserInterface> = {
+        name: cred.user.displayName as string,
+        photo: cred.user.photoURL as string,
+        email: cred.user.email as string,
+        phone: cred.user.phoneNumber as string,
+      };
+      return UserProvider.signup(
+        new User({ ...user, ...firebaseUser }),
+        parents
+      );
+    } else {
+      firebase.analytics().logEvent('exception', {
+        description: 'No user in sign-in with Google response.',
+        fatal: false,
+      });
+      throw new Error('No user in sign-in with Google response.');
+    }
   }
 
   public static async signup(user: User, parents?: User[]): Promise<void> {

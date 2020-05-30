@@ -23,12 +23,12 @@ const main = async () => {
       const data = {
         ...(user.data() || {}),
         mentoring: {
-          subjects: user.data().subjects || [],
-          searches: user.data().searches || [],
+          subjects: user.data().tutoring.subjects || [],
+          searches: [],
         },
         tutoring: {
-          subjects: user.data().expertise || [],
-          searches: [],
+          subjects: user.data().mentoring.subjects || [],
+          searches: user.data().mentoring.searches || [],
         },
       };
       delete data.subjects;
