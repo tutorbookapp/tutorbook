@@ -134,6 +134,7 @@ export default async function search(
   res.status(200).send(
     results.map((user: User) => ({
       name: onlyFirstNameAndLastInitial(user.name),
+      photo: user.photo,
       bio: user.bio,
       availability: user.availability.toJSON(),
       mentoring: user.mentoring,
