@@ -6,9 +6,46 @@ import { Aspect } from '@tutorbook/model';
 import styles from './header.module.scss';
 
 interface HeaderProps {
-  aspect: Aspect;
-  onChange: (aspect: Aspect) => any;
+  aspect?: Aspect;
+  onChange?: (aspect: Aspect) => any;
   formWidth?: boolean;
+}
+
+function Tabs({
+  aspect,
+  onChange,
+}: Omit<HeaderProps, 'formWidth'>): JSX.Element {
+  if (onChange)
+    return (
+      <>
+        <a
+          className={
+            styles.tab + (aspect === 'mentoring' ? ' ' + styles.active : '')
+          }
+          onClick={() => onChange && onChange('mentoring')}
+        >
+          Mentoring
+        </a>
+        <a
+          className={
+            styles.tab + (aspect === 'tutoring' ? ' ' + styles.active : '')
+          }
+          onClick={() => onChange && onChange('tutoring')}
+        >
+          Tutoring
+        </a>
+      </>
+    );
+  return (
+    <>
+      <Link href='/search?aspect=mentoring'>
+        <a className={styles.tab}>Mentoring</a>
+      </Link>
+      <Link href='/search?aspect=tutoring'>
+        <a className={styles.tab}>Tutoring</a>
+      </Link>
+    </>
+  );
 }
 
 export default function Header({
@@ -38,22 +75,7 @@ export default function Header({
           <div
             className={styles.tabs + (active ? ' ' + styles.tabsHidden : '')}
           >
-            <a
-              className={
-                styles.tab + (aspect === 'mentoring' ? ' ' + styles.active : '')
-              }
-              onClick={() => onChange('mentoring')}
-            >
-              Mentoring
-            </a>
-            <a
-              className={
-                styles.tab + (aspect === 'tutoring' ? ' ' + styles.active : '')
-              }
-              onClick={() => onChange('tutoring')}
-            >
-              Tutoring
-            </a>
+            <Tabs aspect={aspect} onChange={onChange} />
           </div>
         </div>
         <div className={styles.mobileToggle} onClick={toggleMobileMenu}>
@@ -69,15 +91,17 @@ export default function Header({
           }
         >
           <ul className={styles.mobileLinks}>
-            <a className={styles.mobileLink} href='/signup'>
-              <li className={styles.mobileLinkItem}>Join TB</li>
-            </a>
+            <Link href='/signup'>
+              <a className={styles.mobileLink}>
+                <li className={styles.mobileLinkItem}>Join TB</li>
+              </a>
+            </Link>
           </ul>
         </nav>
         <div className={styles.desktopLinks}>
-          <a className={styles.desktopLink} href='/signup'>
-            Join TB
-          </a>
+          <Link href='/signup'>
+            <a className={styles.desktopLink}>Join TB</a>
+          </Link>
         </div>
       </header>
     </div>
