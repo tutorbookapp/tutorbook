@@ -1,5 +1,6 @@
 import { useIntl, defMsg, Msg, IntlShape } from '@tutorbook/intl';
 import { Aspect, Query } from '@tutorbook/model';
+import { Card } from '@rmwc/card';
 
 import Router from 'next/router';
 import QueryForm from '@tutorbook/query-form';
@@ -26,7 +27,7 @@ const msgs: Record<string, Msg> = defMsg({
   },
   tutoring: {
     id: 'hero.tutoring.title',
-    defaultMessage: 'Free tutoring amidst the coronavirus.',
+    defaultMessage: 'Free tutoring amidst COVID-19.',
   },
 });
 
@@ -40,7 +41,9 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
         <div className={styles.title}>
           <Title>{intl.formatMessage(msgs[aspect])}</Title>
         </div>
-        <QueryForm aspect={aspect} onSubmit={handleSubmit} />
+        <Card className={styles.card}>
+          <QueryForm aspect={aspect} onSubmit={handleSubmit} />
+        </Card>
       </div>
     </div>
   );

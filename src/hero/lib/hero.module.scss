@@ -1,4 +1,7 @@
+@use 'sass:map';
+@use '@material/card/_index.scss' as card;
 @use '@tutorbook/styles/config';
+@use '@material/elevation';
 
 .wrapper {
   max-width: config.$default-width;
@@ -14,4 +17,15 @@
   text-align: initial;
   max-width: 600px;
   padding-bottom: 40px;
+}
+
+.card {
+  @include card.outline(map.get(config.$colors, 'accents-2'), 1px);
+  @include elevation.elevation(0);
+  transition: 200ms box-shadow ease-in-out, 200ms border ease-in-out;
+}
+
+.card:hover {
+  @include card.outline(map.get(config.$colors, 'background'), 1px);
+  @include elevation.elevation(4);
 }
