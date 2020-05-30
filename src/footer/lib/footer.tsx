@@ -188,14 +188,6 @@ function NavLink(props: LinkProps & { className: string }): JSX.Element {
   );
 }
 
-function SecondaryLink(props: LinkProps): JSX.Element {
-  return (
-    <li className={styles.secondaryLinkItem}>
-      <NavLink {...props} className={styles.secondaryLink} />
-    </li>
-  );
-}
-
 function PrimaryLink(props: LinkProps): JSX.Element {
   return (
     <li className={styles.primaryLinkItem}>
@@ -386,24 +378,6 @@ export default function Footer({
               ))}
             </ul>
           </nav>
-        </ul>
-        <ul className={styles.secondaryLinks}>
-          <SecondaryLink
-            href='/pupils'
-            label={intl.formatMessage({ id: 'header.pupils' })}
-          />
-          <SecondaryLink
-            href='/volunteers'
-            label={intl.formatMessage({ id: 'header.volunteers' })}
-          />
-          <SecondaryLink
-            href='/parents'
-            label={intl.formatMessage({ id: 'header.parents' })}
-          />
-          <SecondaryLink
-            href='https://github.com/tutorbookapp/covid-tutoring#readme'
-            label={intl.formatMessage({ id: 'header.developers' })}
-          />
         </ul>
       </nav>
     </footer>
