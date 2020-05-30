@@ -43,12 +43,12 @@ function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
 
 /**
  * Sends out two types of emails:
- * 1. Email to the pupil attendees's parents asking for parental approval of the
+ * 1. Email to the tutee attendees's parents asking for parental approval of the
  * tutoring match (the attendees are not sent the link to the Bramble room until
  * **after** we receive parental consent).
- * 2. Email to the pupil attendees letting them know that we've received their
- * request and are awaiting parental approval.
- * @todo Give the pupils an option to change their parent's contact info in
+ * 2. Email to the tutee and mentee attendees letting them know that we've
+ * received their request and are awaiting parental approval.
+ * @todo Give the tutees an option to change their parent's contact info in
  * that second email (i.e. you might have entered fake stuff just to see search
  * results and now you can't do anything because those parental emails aren't
  * going where they should be).
@@ -59,31 +59,36 @@ async function sendRequestEmails(
 ): Promise<void> {
   await Promise.all(
     attendees.map(async (pupil: UserWithRoles) => {
-      if (pupil.roles.indexOf('pupil') < 0) return;
-      for (const parentUID of pupil.parents) {
-        const parentDoc: DocumentSnapshot = await db
-          .collection('users')
-          .doc(parentUID)
-          .get();
-        if (parentDoc.exists) {
-          const parent: User = User.fromFirestore(parentDoc);
-          const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
-            mail.send(new ParentRequestEmail(parent, pupil, request, attendees))
-          );
-          if (err) {
-            console.error(
-              `[ERROR] ${err.name} sending ${parent.name} <${parent.email}> ` +
-                `the parent pending lesson request (${request.id}) email:`,
-              err
+      if (pupil.roles.indexOf('tutee') < 0 && pupil.roles.indexOf('mentee') < 0)
+        return;
+      if (pupil.roles.indexOf('tutee') >= 0) {
+        for (const parentUID of pupil.parents) {
+          const parentDoc: DocumentSnapshot = await db
+            .collection('users')
+            .doc(parentUID)
+            .get();
+          if (parentDoc.exists) {
+            const parent: User = User.fromFirestore(parentDoc);
+            const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
+              mail.send(
+                new ParentRequestEmail(parent, pupil, request, attendees)
+              )
             );
+            if (err) {
+              console.error(
+                `[ERROR] ${err.name} sending ${parent.name} <${parent.email}> ` +
+                  `the parent pending lesson request (${request.id}) email:`,
+                err
+              );
+            } else {
+              console.log(
+                `[DEBUG] Sent ${parent.name} <${parent.email}> the parent ` +
+                  `pending lesson request (${request.id}) email.`
+              );
+            }
           } else {
-            console.log(
-              `[DEBUG] Sent ${parent.name} <${parent.email}> the parent ` +
-                `pending lesson request (${request.id}) email.`
-            );
+            console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
           }
-        } else {
-          console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
         }
       }
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
@@ -91,14 +96,14 @@ async function sendRequestEmails(
       );
       if (err) {
         console.error(
-          `[ERROR] ${err.name} sending ${pupil.name} <${pupil.email}>` +
-            ` the pending lesson request (${request.id}) email:`,
+          `[ERROR] ${err.name} sending ${pupil.name} <${pupil.email}> the ` +
+            `pending request (${request.id}) email:`,
           err
         );
       } else {
         console.log(
-          `[DEBUG] Sent ${pupil.name} <${pupil.email}> the pending ` +
-            `lesson request (${request.id}) email.`
+          `[DEBUG] Sent ${pupil.name} <${pupil.email}> the pending request ` +
+            `(${request.id}) email.`
         );
       }
     })
@@ -161,6 +166,8 @@ const db: DocumentReference =
  *      and are all of the correct types).
  *    - Verifies that the requested `Timeslot` is within all of the `attendee`'s
  *      availability (by reading each `attendee`'s Firestore profile document).
+ *      Note that we **do not** throw an error if it is the request sender who
+ *      is unavailable.
  *    - Verifies that the requested `subjects` are included in each of the
  *      tutors' Firestore profile documents (where a tutor is defined as an
  *      `attendee` whose `roles` include `tutor`).
@@ -171,7 +178,7 @@ const db: DocumentReference =
  *    to connect with their tutor).
  * 3. Creates a new `request` document containing the given `appt`'s data in the
  *    pupil's (the owner of the given JWT `token`) Firestore sub-collections.
- * 4. Sends an email to the pupil's parent(s) asking for parental approval of
+ * 4. Sends an email to the tutee's parent(s) asking for parental approval of
  *    the tutoring match.
  * 5. Sends an email to the pupil (the sender of the lesson request) telling
  *    them that we're awaiting parental approval.
@@ -205,16 +212,20 @@ export default async function request(
   ) {
     error('Your appointment must have >= 2 attendees.');
   } else if (
-    !req.body.request.time ||
+    req.body.request.time &&
     typeof req.body.request.time !== 'object'
   ) {
-    error('Your appointment must have a valid time.');
+    error('Your appointment had an invalid time.');
   } else if (
+    req.body.request.time &&
     new Date(req.body.request.time.from).toString() === 'Invalid Date'
   ) {
-    error('Your appointment must have a valid start time.');
-  } else if (new Date(req.body.request.time.to).toString() === 'Invalid Date') {
-    error('Your appointment must have a valid end time.');
+    error('Your appointment had an invalid start time.');
+  } else if (
+    req.body.request.time &&
+    new Date(req.body.request.time.to).toString() === 'Invalid Date'
+  ) {
+    error('Your appointment had an invalid end time.');
   } else if (!req.body.token || typeof req.body.token !== 'string') {
     error('You must provide a valid Firebase Auth JWT.', 401);
   } else {
@@ -244,18 +255,37 @@ export default async function request(
           break;
         }
         const user: User = User.fromFirestore(doc);
-        // 1. Verify that the attendees are available.
-        if (!user.availability.contains(request.time)) {
-          error(`${user} is not available on ${request.time}.`);
-          break;
+        // 1. Verify that the attendees are available (note that we don't throw
+        // an error if it is the request sender who is unavailable).
+        if (request.time && !user.availability.contains(request.time)) {
+          if (attendee.uid === (token as DecodedIdToken).uid) {
+            console.warn(
+              `[WARNING] Sender is not available on ${request.time}.`
+            );
+          } else {
+            error(`${user} is not available on ${request.time}.`);
+            break;
+          }
         }
         // 1. Verify the tutors can teach the requested subjects.
         const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
-        const canTeachSubject: (s: string) => boolean = (subject: string) => {
-          return user.subjects.includes(subject);
+        const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
+        const canTutorSubject: (s: string) => boolean = (subject: string) => {
+          return user.tutoring.subjects.includes(subject);
         };
-        if (isTutor && !request.subjects.every(canTeachSubject)) {
-          error(`${user.name} (${user.uid}) cannot teach requested subjects.`);
+        const canMentorSubject: (s: string) => boolean = (subject: string) => {
+          return user.mentoring.subjects.includes(subject);
+        };
+        if (isTutor && !request.subjects.every(canTutorSubject)) {
+          error(
+            `${user.name} (${user.uid}) cannot tutor for the requested subjects.`
+          );
+          break;
+        }
+        if (isMentor && !request.subjects.every(canMentorSubject)) {
+          error(
+            `${user.name} (${user.uid}) cannot mentor for the requested subjects.`
+          );
           break;
         }
         (user as UserWithRoles).roles = attendee.roles;
@@ -296,14 +326,18 @@ export default async function request(
           console.log(`[DEBUG] Creating pending request (${request.id})...`);
           await Promise.all(
             attendees.map(async (attendee: UserWithRoles) => {
-              if (attendee.roles.indexOf('pupil') < 0) return;
+              if (
+                attendee.roles.indexOf('tutee') < 0 &&
+                attendee.roles.indexOf('mentee') < 0
+              )
+                return;
               // 3. Create the appointment Firestore document.
               // TODO: Ensure that the `ref` property on this request points to
               // the correct document when creating the parent request emails.
               // It should point towards the document in the parent's child's
               // subcollections. Because we only support one-on-one tutoring
               // right now, that isn't a problem. But if there is more than one
-              // pupil attendee, this will use the last one for the `ref`.
+              // tutee attendee, this will use the last one for the `ref`.
               request.ref = (attendee.ref as DocumentReference)
                 .collection('requests')
                 .doc(request.id as string);
