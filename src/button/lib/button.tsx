@@ -11,20 +11,28 @@ import styles from './button.module.scss';
 
 interface UniqueButtonProps {
   arrow?: boolean;
+  google?: boolean;
 }
 
 type ButtonProps = UniqueButtonProps & MDCButtonProps & ButtonHTMLProps;
 
-export default function Button(props: ButtonProps) {
-  const { arrow, className, children, ...rest } = props;
+export default function Button({
+  arrow,
+  google,
+  className,
+  children,
+  ...rest
+}: ButtonProps) {
   const buttonClass: string =
     styles.button +
     (className ? ' ' + className : '') +
-    (arrow ? ' ' + styles.buttonWithArrow : '');
+    (arrow ? ' ' + styles.arrowButton : '') +
+    (google ? ' ' + styles.googleButton : '');
   return (
     <MDCButton {...rest} className={buttonClass}>
+      {google && <div className={styles.googleLogo} />}
       {children}
-      {arrow && <Arrow className={styles.buttonArrow} />}
+      {arrow && <Arrow className={styles.arrowIcon} />}
     </MDCButton>
   );
 }

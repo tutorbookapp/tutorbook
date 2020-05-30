@@ -1,23 +1,54 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@material/button/_index.scss' as button;
+
+$height: 56px;
+$padding: 20px;
+$radius: 4px;
+
 .button {
-  height: 60px !important;
+  height: $height !important;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0 20px;
+  @include button.horizontal-padding($padding);
+  @include button.shape-radius($radius);
 }
 
-.buttonWithArrow :global(.mdc-button__label) {
+.googleButton {
+  @include button.outline-color(map.get(config.$colors, 'primary'));
+  @include button.outline-width(2px);
+  padding-left: $height + $padding;
+  overflow: hidden;
+}
+
+.googleLogo {
+  background-image: url(./svgs/google.svg);
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 45px;
+  position: absolute;
+  height: $height - 4px;
+  width: $height - 4px;
+  border-top-left-radius: $radius;
+  border-bottom-left-radius: $radius;
+  top: 2px;
+  left: 2px;
+}
+
+.arrowButton :global(.mdc-button__label) {
   padding-right: 25px;
 }
 
-.button:hover .buttonArrow {
+.arrowButton:hover .arrowIcon {
   transform: translateX(4px);
 }
 
-.buttonArrow {
+.arrowIcon {
   position: absolute;
   top: 50%;
   margin-top: -5px;
   margin-left: 8px;
   height: 10px;
-  transition: transform 200ms;
+  transition: transform 200ms ease-in-out;
 }
