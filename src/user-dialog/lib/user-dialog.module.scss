@@ -15,6 +15,7 @@ $margin: 24px;
 .wrapper {
   display: flex;
   padding: $padding;
+  position: relative;
 }
 
 .left {
@@ -36,7 +37,7 @@ $margin: 24px;
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 570px) {
   .wrapper {
     flex-direction: column;
     padding: $margin;
@@ -52,40 +53,9 @@ $margin: 24px;
   }
 }
 
-.imgLink:before {
-  content: '';
-  display: block;
-  padding-top: 100%;
-}
-
-.imgLink {
-  display: block;
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 4px;
-  background: map.get(config.$colors, 'accents-2');
-}
-
-.noImg {
-  @include typography.typography('subtitle1');
-  color: map.get(config.$colors, 'accents-5');
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  text-decoration: none;
-  font-weight: 600;
-  text-align: center;
-  width: 100%;
-}
-
 .img {
-  position: absolute;
+  display: block;
   width: 100%;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
 }
 
 .name {
@@ -173,4 +143,10 @@ $margin: 24px;
 .button {
   margin: 8px 0 0;
   width: 100%;
+}
+
+.errMsg {
+  color: map.get(config.$colors, 'error');
+  font-weight: 450;
+  margin-top: 16px;
 }

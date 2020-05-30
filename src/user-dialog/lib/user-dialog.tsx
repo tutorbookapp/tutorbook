@@ -3,17 +3,18 @@ import Utils from '@tutorbook/utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
+import Avatar from '@tutorbook/avatar';
 import Loader from '@tutorbook/loader';
-import { Link } from '@tutorbook/intl';
-import { UserContext } from '@tutorbook/firebase';
+
+import { UserProvider, UserContext } from '@tutorbook/firebase';
 import {
   ApiError,
   User,
   Timeslot,
   Appt,
   ApptJSONInterface,
+  Aspect,
 } from '@tutorbook/model';
-import { Avatar } from '@rmwc/avatar';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { Dialog, DialogProps } from '@rmwc/dialog';
 import { AxiosResponse, AxiosError } from 'axios';
@@ -21,7 +22,6 @@ import {
   injectIntl,
   defineMessages,
   IntlShape,
-  FormattedMessage,
   MessageDescriptor,
 } from 'react-intl';
 
@@ -35,6 +35,7 @@ interface UserDialogState {
   readonly appt: Readonly<Appt>;
   readonly submitting: boolean;
   readonly submitted: boolean;
+  readonly err?: string;
 }
 
 interface UserDialogProps extends DialogProps {
@@ -42,6 +43,7 @@ interface UserDialogProps extends DialogProps {
   readonly user: User;
   readonly appt?: Appt;
   readonly className?: string;
+  readonly aspect: Aspect;
 }
 
 /**
@@ -66,22 +68,25 @@ class UserDialog extends React.Component<UserDialogProps> {
           attendees: [
             {
               uid: props.user.uid,
-              roles: ['tutor'],
+              roles: [props.aspect === 'tutoring' ? 'tutor' : 'mentor'],
             },
             {
               uid: this.context.uid,
-              roles: ['tutee'],
+              roles: [props.aspect === 'tutoring' ? 'tutee' : 'mentee'],
             },
           ],
           subjects: Utils.intersection<string>(
             props.user.tutoring.subjects,
             this.context.searches
           ),
-          time: Utils.intersection<Timeslot>(
-            props.user.availability,
-            this.context.availability,
-            (a, b) => a.equalTo(b)
-          )[0],
+          time:
+            props.aspect === 'tutoring'
+              ? Utils.intersection<Timeslot>(
+                  props.user.availability,
+                  this.context.availability,
+                  (a, b) => a.equalTo(b)
+                )[0]
+              : undefined,
         }),
       submitting: false,
       submitted: false,
@@ -99,6 +104,11 @@ class UserDialog extends React.Component<UserDialogProps> {
         item_name: this.props.user.name,
       },
     ];
+  }
+
+  public componentDidUpdate(prevProps: UserDialogProps): void {
+    if (this.props.appt && this.props.appt !== prevProps.appt)
+      this.setState({ appt: this.props.appt });
   }
 
   public componentDidMount(): void {
@@ -150,6 +160,21 @@ class UserDialog extends React.Component<UserDialogProps> {
       items: this.items,
     });
     this.setState({ submitted: false, submitting: true });
+    if (!this.context.uid) {
+      const [err] = await to(UserProvider.signupWithGoogle(this.context));
+      if (err || !this.context.uid)
+        return this.setState({
+          submitted: false,
+          submitting: false,
+          err: `An error occurred while logging in with Google. ${
+            (err as Error).message
+          }`,
+        });
+    }
+    const period = (msg: string) => {
+      if (msg.endsWith('.')) return msg;
+      return msg + '.';
+    };
     const [err, res] = await to<
       AxiosResponse<{ request: ApptJSONInterface }>,
       AxiosError<ApiError>
@@ -170,6 +195,13 @@ class UserDialog extends React.Component<UserDialogProps> {
         request: this.state.appt.toJSON(),
         fatal: false,
       });
+      return this.setState({
+        submitted: false,
+        submitting: false,
+        err: `An error occurred while sending your request. ${period(
+          err.response.data.msg || err.message
+        )}`,
+      });
     } else if (err && err.request) {
       console.error('[ERROR] Request API did not respond:', err.request);
       firebase.analytics().logEvent('exception', {
@@ -177,12 +209,25 @@ class UserDialog extends React.Component<UserDialogProps> {
         request: this.state.appt.toJSON(),
         fatal: false,
       });
+      return this.setState({
+        submitted: false,
+        submitting: false,
+        err:
+          'An error occurred while sending your request. Please check your Internet connection and try again.',
+      });
     } else if (err) {
       console.error('[ERROR] Calling request API:', err);
       firebase.analytics().logEvent('exception', {
         description: `Error calling request API: ${err}`,
         request: this.state.appt.toJSON(),
         fatal: false,
+      });
+      return this.setState({
+        submitted: false,
+        submitting: false,
+        err: `An error occurred while sending your request. ${period(
+          err.message
+        )} Please check your Internet connection and try again.`,
       });
     } else if (res) {
       firebase.analytics().logEvent('purchase', {
@@ -225,10 +270,11 @@ class UserDialog extends React.Component<UserDialogProps> {
           " isn't available during the selected times.",
         defaultMessage: '{name} is only available {availability}.',
       },
-      message: {
-        id: 'user-dialog.message',
-        description: 'Label for the tutoring lesson message field.',
-        defaultMessage: 'Message',
+      topic: {
+        id: 'user-dialog.topic',
+        description:
+          'Label for the tutoring lesson topic (previously message) field.',
+        defaultMessage: 'Topic',
       },
       submit: {
         id: 'user-dialog.submit',
@@ -239,15 +285,14 @@ class UserDialog extends React.Component<UserDialogProps> {
     });
     return (
       <Dialog {...rest} open className={styles.dialog}>
-        <Loader
-          active={this.state.submitting || this.state.submitted}
-          checked={this.state.submitted}
-        />
         <div className={styles.wrapper + (className ? ' ' + className : '')}>
+          <Loader
+            active={this.state.submitting || this.state.submitted}
+            checked={this.state.submitted}
+          />
           <div className={styles.left}>
-            <a className={styles.imgLink} href={user.photo} target='_blank'>
-              <img className={styles.img} src={user.photo} />
-              {!user.photo && <div className={styles.noImg}>No Photo</div>}
+            <a className={styles.img} href={user.photo} target='_blank'>
+              <Avatar src={user.photo} />
             </a>
             <h4 className={styles.name}>{user.name}</h4>
             {user.socials && !!user.socials.length && (
@@ -278,62 +323,53 @@ class UserDialog extends React.Component<UserDialogProps> {
                 val={this.state.appt.subjects}
                 options={this.props.user.tutoring.subjects}
                 grade={this.context.grade}
+                searchIndex={
+                  this.props.aspect === 'mentoring' ? 'expertise' : 'subjects'
+                }
               />
-              <TimeslotInput
-                outlined
-                required
-                label={this.props.intl.formatMessage(labels.time)}
-                className={styles.formField}
-                onChange={this.handleTimeslotChange}
-                availability={user.availability}
-                val={this.state.appt.time}
-                err={this.props.intl.formatMessage(labels.timeErr, {
-                  name: user.firstName,
-                  availability: user.availability.toString(),
-                })}
-              />
+              {this.props.aspect === 'tutoring' && (
+                <TimeslotInput
+                  outlined
+                  required
+                  label={this.props.intl.formatMessage(labels.time)}
+                  className={styles.formField}
+                  onChange={this.handleTimeslotChange}
+                  availability={user.availability}
+                  val={this.state.appt.time}
+                  err={this.props.intl.formatMessage(labels.timeErr, {
+                    name: user.firstName,
+                    availability: user.availability.toString(),
+                  })}
+                />
+              )}
               <TextField
                 outlined
                 textarea
                 rows={4}
-                label={this.props.intl.formatMessage(labels.message)}
+                label={this.props.intl.formatMessage(labels.topic)}
                 className={styles.formField}
                 onChange={this.handleMessageChange}
                 value={this.state.appt.message}
               />
               <Button
                 className={styles.button}
-                label={this.props.intl.formatMessage(labels.submit, {
-                  name: user.firstName,
-                })}
-                disabled={
-                  !this.context.uid ||
-                  this.state.submitting ||
-                  this.state.submitted
+                label={
+                  !this.context.uid
+                    ? 'Signup and request'
+                    : `Request ${user.firstName}`
                 }
+                disabled={this.state.submitting || this.state.submitted}
+                google={!this.context.uid}
                 raised
                 arrow
               />
-              {!this.context.uid && (
-                <TextFieldHelperText persistent className={styles.helperText}>
-                  <FormattedMessage
-                    id='user-dialog.disabled'
-                    description={
-                      'Helper text prompting the user to login before they ' +
-                      'create tutoring lessons.'
-                    }
-                    defaultMessage={
-                      'You must login (via <a>this form</a>) before sending ' +
-                      'lesson requests.'
-                    }
-                    values={{
-                      a: (...chunks: React.ReactElement[]) => (
-                        <Link href='/pupils'>
-                          <a>{chunks}</a>
-                        </Link>
-                      ),
-                    }}
-                  />
+              {!!this.state.err && (
+                <TextFieldHelperText
+                  persistent
+                  validationMsg
+                  className={styles.errMsg}
+                >
+                  {this.state.err}
                 </TextFieldHelperText>
               )}
             </form>
