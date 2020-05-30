@@ -1,5 +1,5 @@
 import React from 'react';
-import NextLink from 'next/link';
+/*import NextLink from 'next/link';*/
 import {
   useIntl,
   IntlShape,
@@ -223,15 +223,17 @@ function PrimaryLink(props: LinkProps): JSX.Element {
   );
 }
 
-function LangLink(props: LinkProps): JSX.Element {
-  return (
-    <li className={styles.langLinkItem}>
-      <NextLink href={props.href}>
-        <a className={styles.langLink}>{props.label}</a>
-      </NextLink>
-    </li>
-  );
-}
+/*
+ *function LangLink(props: LinkProps): JSX.Element {
+ *  return (
+ *    <li className={styles.langLinkItem}>
+ *      <NextLink href={props.href}>
+ *        <a className={styles.langLink}>{props.label}</a>
+ *      </NextLink>
+ *    </li>
+ *  );
+ *}
+ */
 
 interface LinkGroupProps {
   header: string;
