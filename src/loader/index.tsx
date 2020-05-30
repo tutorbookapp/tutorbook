@@ -2,7 +2,7 @@ import { Typography } from '@rmwc/typography';
 
 import Checkmark from './checkmark';
 
-import styles from './styles.module.scss';
+import styles from './loader.module.scss';
 
 interface Props {
   readonly active: boolean;

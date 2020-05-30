@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Typography } from '@rmwc/typography';
-import Checkmark from '@tutorbook/checkmark';
+import Checkmark from '@tutorbook/loader/checkmark';
 
 import styles from './action-text.module.scss';
 
