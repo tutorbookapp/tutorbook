@@ -1,9 +1,9 @@
 @use '@tutorbook/styles/typography';
 
 .background {
-  background: rgba(0, 0, 0, 0)
-    linear-gradient(to right, #1d3dc1 9.38%, #1ba4ff 88.54%) repeat scroll 0% 0%
-    padding-box text;
+  background-image: linear-gradient(to right, #1d3dc1 9.38%, #1ba4ff 88.54%);
+  -webkit-background-clip: text;
+  background-clip: text;
   display: inline-block;
 }
 
