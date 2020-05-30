@@ -46,7 +46,7 @@ const msgs: Record<string, MessageDescriptor> = defineMessages({
   success: {
     id: 'approve-page.success',
     defaultMessage:
-      'Created tutoring appointments for {subjects} on {time}. The ' +
+      'Created tutoring appointments for {subjects}. The ' +
       'appointment attendees will each receive an email with a link to a ' +
       'Bramble room and instructions for how to make the most out of their ' +
       'virtual tutoring lessons.',
@@ -116,7 +116,6 @@ class ApprovePage extends React.Component<ApprovePageProps> {
 
   private get successMsg(): string {
     return this.props.intl.formatMessage(msgs.success, {
-      time: (this.state.appt as Appt).time.toString(),
       subjects: Utils.join((this.state.appt as Appt).subjects),
     });
   }
