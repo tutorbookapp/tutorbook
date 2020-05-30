@@ -1,4 +1,3 @@
-import { Card } from '@rmwc/card';
 import { defMsg, useIntl, IntlHelper, IntlShape, Msg } from '@tutorbook/intl';
 import { Availability } from '@tutorbook/model';
 
@@ -40,39 +39,38 @@ export default function TutorsForm({
     setSubmitting(true);
     return onSubmit(event);
   };
+  const className: string =
+    styles.form +
+    (!button ? ' ' + styles.noButton : '') +
+    (!visible ? ' ' + styles.hidden : '');
   return (
-    <Card className={styles.card + (!visible ? ' ' + styles.hidden : '')}>
-      <form
-        className={styles.form + (!button ? ' ' + styles.noButton : '')}
-        onSubmit={handleSubmit}
-      >
-        <SubjectSelect
-          val={query.subjects}
-          className={styles.field}
-          label={msg(msgs.subjects)}
-          placeholder={msg(msgs.subjectsPlaceholder)}
-          onChange={(subjects: string[]) => onChange({ ...query, subjects })}
-          outlined
+    <form className={className} onSubmit={handleSubmit}>
+      <SubjectSelect
+        val={query.subjects}
+        className={styles.field}
+        label={msg(msgs.subjects)}
+        placeholder={msg(msgs.subjectsPlaceholder)}
+        onChange={(subjects: string[]) => onChange({ ...query, subjects })}
+        outlined
+      />
+      <ScheduleInput
+        val={query.availability}
+        className={styles.field}
+        label={msg(msgs.availability)}
+        onChange={(availability: Availability) =>
+          onChange({ ...query, availability })
+        }
+        outlined
+      />
+      {button && (
+        <Button
+          className={styles.btn}
+          label={msg(msgs.btn)}
+          disabled={submitting}
+          raised
+          arrow
         />
-        <ScheduleInput
-          val={query.availability}
-          className={styles.field}
-          label={msg(msgs.availability)}
-          onChange={(availability: Availability) =>
-            onChange({ ...query, availability })
-          }
-          outlined
-        />
-        {button && (
-          <Button
-            className={styles.btn}
-            label={msg(msgs.btn)}
-            disabled={submitting}
-            raised
-            arrow
-          />
-        )}
-      </form>
-    </Card>
+      )}
+    </form>
   );
 }
