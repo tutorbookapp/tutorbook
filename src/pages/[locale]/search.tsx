@@ -15,6 +15,7 @@ import {
   User,
   UserJSONInterface,
   Query,
+  Aspect,
   QueryJSONInterface,
   Availability,
 } from '@tutorbook/model';
@@ -86,7 +87,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 function SearchPage({ query, results }: SearchPageProps): JSX.Element {
   const [searching, setSearching] = React.useState<boolean>(false);
-  const [res, setResults] = React.useState<ReadonlyArray<User>>(results);
+  const [res, setResults] = React.useState<ReadonlyArray<User>>(
+    results.map((res: UserJSONInterface) => User.fromJSON(res))
+  );
   const [qry, setQuery] = React.useState<Query>({
     aspect: query.aspect,
     subjects: query.subjects,
@@ -106,7 +109,7 @@ function SearchPage({ query, results }: SearchPageProps): JSX.Element {
       <Search
         query={qry}
         searching={searching}
-        results={res.map((res: UserJSONInterface) => User.fromJSON(res))}
+        results={res}
         onChange={async (query: Query) => {
           setQuery(query);
           setSearching(true);
