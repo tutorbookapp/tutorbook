@@ -11,6 +11,7 @@ mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 type FirebaseError = admin.FirebaseError & Error;
 type DocumentReference = admin.firestore.DocumentReference;
+type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type UserRecord = admin.auth.UserRecord;
 type Auth = admin.auth.Auth;
 type App = admin.app.App;
@@ -145,11 +146,9 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
       phoneNumber: user.phone ? user.phone : undefined,
     })
   );
-  let updateUserInsteadOfSet: boolean = false;
   if (err && err.code === 'auth/email-already-exists') {
     console.log('[DEBUG] Handling email address already exists error...');
     await updateUser(user); // Errors are already thrown in the helper function.
-    updateUserInsteadOfSet = true;
     // Note that the `user.uid` property was already set in `updateUser()`.
     console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
   } else if (err && err.code === 'auth/phone-number-already-exists') {
@@ -181,7 +180,8 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
       console.log(`[DEBUG] Created parent ${parent}.`);
     }
   }
-  if (updateUserInsteadOfSet) {
+  const userDoc: DocumentSnapshot = await userRef.get();
+  if (userDoc.exists) {
     console.log('[DEBUG] Updating profile...');
     await userRef.update(user.toFirestore());
     console.log(`[DEBUG] Updated ${user.name}'s profile (${user.uid}).`);
