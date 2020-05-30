@@ -198,18 +198,30 @@ export default async function appt(
             }
           }
           // 3. Verify that the attendees are available.
-          if (!user.availability.contains(appt.time)) {
+          if (appt.time && !user.availability.contains(appt.time)) {
             error(`${user} is not available on ${appt.time}.`);
             break;
           }
           // 3. Verify the tutors can teach the requested subjects.
           const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
-          const canTeachSubject: (s: string) => boolean = (subject: string) => {
-            return user.subjects.includes(subject);
+          const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
+          const canTutorSubject: (s: string) => boolean = (subject: string) => {
+            return user.tutoring.subjects.includes(subject);
           };
-          if (isTutor && !appt.subjects.every(canTeachSubject)) {
+          const canMentorSubject: (s: string) => boolean = (
+            subject: string
+          ) => {
+            return user.mentoring.subjects.includes(subject);
+          };
+          if (isTutor && !appt.subjects.every(canTutorSubject)) {
             error(
-              `${user.name} (${user.uid}) cannot teach requested subjects.`
+              `${user.name} (${user.uid}) cannot tutor for the appted subjects.`
+            );
+            break;
+          }
+          if (isMentor && !appt.subjects.every(canMentorSubject)) {
+            error(
+              `${user.name} (${user.uid}) cannot mentor for the appted subjects.`
             );
             break;
           }
@@ -226,7 +238,10 @@ export default async function appt(
           console.log(`[DEBUG] Creating appt (${appt.id})...`);
           await Promise.all(
             attendees.map(async (attendee: UserWithRoles) => {
-              if (attendee.roles.indexOf('pupil') >= 0) {
+              if (
+                attendee.roles.indexOf('tutee') >= 0 ||
+                attendee.roles.indexOf('mentee') >= 0
+              ) {
                 // 4. Delete the old request documents.
                 await (attendee.ref as DocumentReference)
                   .collection('requests')
@@ -239,7 +254,7 @@ export default async function appt(
                 .doc(appt.id as string)
                 .set(appt.toFirestore());
               // 6. Update the attendees availability.
-              attendee.availability.remove(appt.time);
+              if (appt.time) attendee.availability.remove(appt.time);
               await (attendee.ref as DocumentReference).update(
                 attendee.toFirestore()
               );
