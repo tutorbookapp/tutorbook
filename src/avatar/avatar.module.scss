@@ -1,0 +1,38 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
+
+.img {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.noImg {
+  @include typography.typography('subtitle1');
+  color: map.get(config.$colors, 'accents-5');
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+}
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: map.get(config.$colors, 'accents-2');
+}
+
+.wrapper:before {
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
