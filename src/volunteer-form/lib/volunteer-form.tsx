@@ -66,6 +66,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     twitter: '',
     facebook: '',
     instagram: '',
+    github: '',
   };
 
   private readonly headerRef: React.RefObject<HTMLHeadingElement>;
@@ -270,6 +271,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         <TextField {...s('twitter', (v) => `https://twitter.com/${v}`)} />
         <TextField {...s('facebook', (v) => `https://facebook.com/${v}`)} />
         <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
+        <TextField {...s('github', (v) => `https://github.com/${v}`)} />
       </>
     );
   }
@@ -287,6 +289,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       facebook,
       twitter,
       instagram,
+      github,
     } = this.state;
     const tutor: User = new User({
       ...this.state,
@@ -310,6 +313,10 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         {
           type: 'instagram',
           url: instagram,
+        },
+        {
+          type: 'github',
+          url: github,
         },
       ],
       tutoring: { subjects: subjects, searches: [] },
