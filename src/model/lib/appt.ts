@@ -37,7 +37,7 @@ export interface ApptVenueInterface extends Record<string, any> {
 export interface ApptInterface {
   subjects: string[];
   attendees: AttendeeInterface[];
-  time: Timeslot;
+  time?: Timeslot;
   venues: ApptVenueInterface[];
   message?: string;
   ref?: DocumentReference | AdminDocumentReference;
@@ -47,7 +47,7 @@ export interface ApptInterface {
 export interface ApptJSONInterface {
   subjects: string[];
   attendees: AttendeeInterface[];
-  time: TimeslotJSONInterface;
+  time?: TimeslotJSONInterface;
   message?: string;
   id?: string;
 }
@@ -56,12 +56,9 @@ export class Appt implements ApptInterface {
   public message: string = '';
   public subjects: string[] = [];
   public attendees: AttendeeInterface[] = [];
-  public time: Timeslot = new Timeslot(
-    TimeUtils.getDate(1, 7), // TODO: Why is the default time 7-8am on Mondays?
-    TimeUtils.getDate(1, 8)
-  );
   public venues: ApptVenueInterface[] = [];
   public ref?: DocumentReference | AdminDocumentReference;
+  public time?: Timeslot;
   public id?: string;
 
   /**
@@ -82,7 +79,8 @@ export class Appt implements ApptInterface {
 
   public toJSON(): ApptJSONInterface {
     const { time, ref, ...rest } = this;
-    return { ...rest, time: time.toJSON() };
+    if (time) return { ...rest, time: time.toJSON() };
+    return rest;
   }
 
   /**
@@ -91,12 +89,14 @@ export class Appt implements ApptInterface {
    */
   public static fromJSON(json: ApptJSONInterface): Appt {
     const { time, ...rest } = json;
-    return new Appt({ ...rest, time: Timeslot.fromJSON(time) });
+    if (time) return new Appt({ ...rest, time: Timeslot.fromJSON(time) });
+    return new Appt(rest);
   }
 
   public toFirestore(): DocumentData {
     const { time, ref, id, ...rest } = this;
-    return { ...rest, time: time.toFirestore() };
+    if (time) return { ...rest, time: time.toFirestore() };
+    return rest;
   }
 
   public static fromFirestore(
@@ -108,7 +108,7 @@ export class Appt implements ApptInterface {
       const { time, ...rest } = apptData;
       return new Appt({
         ...rest,
-        time: Timeslot.fromFirestore(time),
+        time: time ? Timeslot.fromFirestore(time) : undefined,
         ref: snapshot.ref,
         id: snapshot.id,
       });
