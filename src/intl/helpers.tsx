@@ -2,7 +2,7 @@ import React from 'react';
 import { ParsedUrlQuery } from 'querystring';
 import { IntlProvider, MessageDescriptor } from 'react-intl';
 
-import localeConfig from '../config.json';
+import localeConfig from './config.json';
 
 export const { locales, defaultLocale } = localeConfig;
 
@@ -39,7 +39,7 @@ export async function getIntlProps(context: {
     ((context.params || {}).locale as string) || defaultLocale;
   const messages: Record<string, string> = Object.fromEntries(
     (
-      await import(`../locales/${locale}.json`)
+      await import(`./locales/${locale}.json`)
     ).default.map((msg: MessageDescriptor) => [msg.id, msg.defaultMessage])
   );
   return { locale, messages };
