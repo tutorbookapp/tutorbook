@@ -41,6 +41,8 @@ export enum Day {
 /**
  * One's schedule contains all your booked timeslots (the inverse of one's
  * availability).
+ * @deprecated We have no use of this for now (though we might in the future
+ * when we implement a dashboard view).
  */
 export type ScheduleAlias = TimeslotInterface[];
 

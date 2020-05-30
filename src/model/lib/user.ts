@@ -51,6 +51,7 @@ export type SocialTypeAlias =
   | 'twitter'
   | 'facebook'
   | 'instagram'
+  | 'github'
   | 'website';
 
 export interface SocialInterface {
@@ -65,7 +66,6 @@ export interface SocialInterface {
  * @property bio - A short bio describing the user's education, experience,
  * interests, hobbies, etc (i.e. the concatenation of any miscellaneous form
  * questions like 'Do you have experience tutoring professionally?').
- * @property schedule - An array of `Timeslot`'s when the user is booked.
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property mentoring - The subjects that the user wants a and can mentor for.
  * @property tutoring - The subjects that the user wants a and can tutor for.
@@ -82,7 +82,6 @@ export interface UserInterface {
   photo?: string;
   grade?: GradeAlias;
   bio?: string;
-  schedule: Availability;
   availability: Availability;
   tutoring: { subjects: string[]; searches: string[] };
   mentoring: { subjects: string[]; searches: string[] };
@@ -114,7 +113,6 @@ export interface UserJSONInterface {
   photo?: string;
   grade?: GradeAlias;
   bio?: string;
-  schedule: AvailabilityJSONAlias;
   availability: AvailabilityJSONAlias;
   tutoring: { subjects: string[]; searches: string[] };
   mentoring: { subjects: string[]; searches: string[] };
@@ -143,7 +141,6 @@ export class User implements UserInterface {
   public phone: string = '';
   public photo: string = '';
   public bio: string = '';
-  public schedule: Availability = new Availability();
   public availability: Availability = new Availability();
   public mentoring: { subjects: string[]; searches: string[] } = {
     subjects: [],
@@ -237,10 +234,9 @@ export class User implements UserInterface {
   }
 
   public static fromSearchHit(hit: UserSearchHitAlias): User {
-    const { schedule, availability, objectID, ...rest } = hit;
+    const { availability, objectID, ...rest } = hit;
     const user: Partial<UserInterface> = {
       ...rest,
-      schedule: Availability.fromJSON(schedule),
       availability: Availability.fromJSON(availability),
       uid: objectID,
     };
@@ -253,10 +249,9 @@ export class User implements UserInterface {
   ): User {
     const userData: DocumentData | undefined = snapshot.data(options);
     if (userData) {
-      const { availability, schedule, ...rest } = userData;
+      const { availability, ...rest } = userData;
       return new User({
         ...rest,
-        schedule: Availability.fromFirestore(schedule),
         availability: Availability.fromFirestore(availability),
         ref: snapshot.ref,
         uid: snapshot.id,
@@ -277,22 +272,20 @@ export class User implements UserInterface {
    * @see {@link https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter}
    */
   public toFirestore(): DocumentData {
-    const { schedule, availability, token, ref, ...rest } = this;
+    const { availability, token, ref, ...rest } = this;
     const allDefinedValues = Object.fromEntries(
       Object.entries(rest).filter(([key, val]) => val !== undefined)
     );
     return {
       ...allDefinedValues,
-      schedule: schedule.toFirestore(),
       availability: availability.toFirestore(),
     };
   }
 
   public static fromJSON(json: UserJSONInterface): User {
-    const { schedule, availability, ...rest } = json;
+    const { availability, ...rest } = json;
     return new User({
       ...rest,
-      schedule: Availability.fromJSON(schedule),
       availability: Availability.fromJSON(availability),
     });
   }
@@ -305,10 +298,9 @@ export class User implements UserInterface {
    * in the `/api/user` REST API endpoint.
    */
   public toJSON(): UserJSONInterface {
-    const { schedule, availability, ref, ...rest } = this;
+    const { availability, ref, ...rest } = this;
     return {
       ...rest,
-      schedule: schedule.toJSON(),
       availability: availability.toJSON(),
     };
   }
