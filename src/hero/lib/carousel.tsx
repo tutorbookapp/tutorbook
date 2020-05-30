@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { IScrollOptions, ScrollTo, ScrollArea } from 'react-scroll-to';
 import { IconButton } from '@rmwc/icon-button';
 
 import styles from './carousel.module.scss';
@@ -31,16 +30,18 @@ export default class Carousel extends React.Component<CarouselProps> {
     this.scrollRight = this.scrollRight.bind(this);
   }
 
+  private get childWidth(): number {
+    return this.childRef.current ? this.childRef.current.clientWidth + 24 : 100;
+  }
+
   private scrollLeft(): void {
     if (this.atStart) return;
-    const width: number = (this.childRef.current || {}).clientWidth + 24 || 100;
-    this.setState({ scroll: Math.floor(this.state.scroll - width) });
+    this.setState({ scroll: Math.floor(this.state.scroll - this.childWidth) });
   }
 
   private scrollRight(): void {
     if (this.atEnd) return;
-    const width: number = (this.childRef.current || {}).clientWidth + 24 || 100;
-    this.setState({ scroll: Math.ceil(this.state.scroll + width) });
+    this.setState({ scroll: Math.ceil(this.state.scroll + this.childWidth) });
   }
 
   private get atStart(): boolean {
@@ -48,8 +49,9 @@ export default class Carousel extends React.Component<CarouselProps> {
   }
 
   private get atEnd(): boolean {
-    const width: number = (this.childRef.current || {}).clientWidth + 24;
-    const visible: number = (this.scrollerRef.current || {}).clientWidth;
+    if (!this.childRef.current || !this.scrollerRef.current) return false;
+    const width: number = this.childRef.current.clientWidth + 24;
+    const visible: number = this.scrollerRef.current.clientWidth;
     return (
       this.state.scroll >= width * this.props.children.length - visible - 48
     );
