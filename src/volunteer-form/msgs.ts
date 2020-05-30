@@ -41,13 +41,17 @@ export default defineMessages({
       'one loses out on education in these difficult times by connecting ' +
       'students with free, volunteer tutors like you.',
   },
-  source: {
-    id: 'mentor-form.source',
-    defaultMessage: 'How did you hear about Tutorbook?',
+  name: {
+    id: 'form.name',
+    defaultMessage: 'Your name',
   },
-  sourcePlaceholder: {
-    id: 'mentor-form.source-placeholder',
-    defaultMessage: 'Ex. A blog post or social media',
+  email: {
+    id: 'form.email',
+    defaultMessage: 'Your email address',
+  },
+  phone: {
+    id: 'form.phone',
+    defaultMessage: 'Your phone number',
   },
   expertise: {
     id: 'mentor-form.expertise',
@@ -69,6 +73,10 @@ export default defineMessages({
     id: 'tutor-form.subjects',
     defaultMessage: 'What can you tutor?',
     description: 'Label for the subjects-you-can-tutor field.',
+  },
+  subjectsPlaceholder: {
+    id: 'tutor-form.subjects-placeholder',
+    defaultMessage: 'Ex. Algebra or Chemistry',
   },
   availability: {
     id: 'tutor-form.availability',
@@ -108,5 +116,9 @@ export default defineMessages({
     id: 'form.instagram',
     defaultMessage: 'Your Instagram profile',
     description: 'Label for the Instagram profile URL field.',
+  },
+  github: {
+    id: 'form.github',
+    defaultMessage: 'Your GitHub profile',
   },
 });

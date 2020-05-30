@@ -17,7 +17,7 @@ const msgs: Record<string, Msg> = defMsg({
   },
   subjectsPlaceholder: {
     id: 'query-form.tutoring.subjects-placeholder',
-    defaultMessage: 'Ex. Algebra or Biology',
+    defaultMessage: 'Ex. Algebra or Chemistry',
   },
   availability: {
     id: 'query-form.tutoring.availability-label',

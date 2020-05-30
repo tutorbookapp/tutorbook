@@ -206,17 +206,9 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     });
     return (
       <>
-        <TextField
-          {...shared('name')}
-          label={msg({ id: 'form.name' })}
-          required
-        />
-        <TextField
-          {...shared('email')}
-          label={msg({ id: 'form.email' })}
-          required
-        />
-        <TextField {...shared('phone')} label={msg({ id: 'form.phone' })} />
+        <TextField {...shared('name')} label={msg(msgs.name)} required />
+        <TextField {...shared('email')} label={msg(msgs.email)} required />
+        <TextField {...shared('phone')} label={msg(msgs.phone)} />
         <ListDivider className={styles.divider} />
         {this.props.aspect === 'mentoring' && (
           <>
@@ -243,7 +235,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
             <SubjectSelect
               {...shared('subjects')}
               label={msg(msgs.subjects)}
-              placeholder={msg({ id: 'form.subjects-placeholder' })}
+              placeholder={msg(msgs.subjectsPlaceholder)}
               onChange={(subjects: string[]) => this.setState({ subjects })}
               required
             />
