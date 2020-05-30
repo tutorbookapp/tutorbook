@@ -1,25 +1,5 @@
 [
   {
-    "id": "footer.lang.english",
-    "description": "Label for the \"English\" language option.",
-    "defaultMessage": "English"
-  },
-  {
-    "id": "footer.lang.french",
-    "description": "Label for the \"French\" language option.",
-    "defaultMessage": "French"
-  },
-  {
-    "id": "footer.lang.spanish",
-    "description": "Label for the \"Spanish\" language option.",
-    "defaultMessage": "Spanish"
-  },
-  {
-    "id": "footer.lang.turkish",
-    "description": "Label for the \"Turkish\" language option.",
-    "defaultMessage": "Turkish"
-  },
-  {
     "id": "socials.facebook",
     "defaultMessage": "Facebook"
   },
