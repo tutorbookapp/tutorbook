@@ -2,6 +2,7 @@
 
 $nav-height: 64px;
 $default-width: 1048px;
+$form-width: 720px;
 
 $fonts: (
   sans:
@@ -15,6 +16,7 @@ $fonts: (
 );
 
 $colors: (
+  error: #b00020,
   primary: #0070f3,
   secondary: #0070f3,
   foreground: #181818,
@@ -31,8 +33,8 @@ $colors: (
   success: #0070f3,
   success-dark: #0366d6,
   error-light: #ff1a1a,
-  error: #e00,
-  error-dark: #c00,
+  error-dark: #e00,
+  error-darker: #c00,
   warning-light: #f7b955,
   warning: #f5a623,
   warning-dark: #f49b0b,
