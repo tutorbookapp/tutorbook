@@ -9,7 +9,7 @@ export interface Query {
   aspect: Aspect;
 }
 
-export interface QueryJSON {
+export interface QueryJSONInterface {
   subjects: string[];
   availability: TimeslotJSONInterface[];
   aspect: Aspect;

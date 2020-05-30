@@ -1,4 +1,4 @@
-import { TimeUtils, Timeslot, TimeslotJSONInterface } from './times';
+import { Timeslot, TimeslotJSONInterface } from './times';
 import * as admin from 'firebase-admin';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
