@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { Typography } from '@rmwc/typography';
 import Checkmark from '@tutorbook/loader/checkmark';
 
 import styles from './action-text.module.scss';
@@ -26,15 +25,15 @@ export default function ActionText(props: ActionTextProps): JSX.Element {
     <div className={styles.screen}>
       <div className={styles.content}>
         <main className={styles.text}>
-          <Typography className={styles.headline} use='headline2'>
+          <h2 className={styles.headline}>
             {props.headline}
             {props.loading && (
               <span className={styles.spinner}>
                 <Checkmark black />
               </span>
             )}
-          </Typography>
-          {props.body && <Typography use='body1'>{props.body}</Typography>}
+          </h2>
+          {props.body && <p className={styles.body}>{props.body}</p>}
         </main>
       </div>
     </div>
