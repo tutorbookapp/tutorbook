@@ -12,9 +12,9 @@ import {
 
 import UserDialog from '@tutorbook/user-dialog';
 import Utils from '@tutorbook/utils';
-import QueryForm from '@tutorbook/query-form';
 import Title from '@tutorbook/title';
 import Result from './result';
+import Form from './form';
 
 import styles from './search.module.scss';
 
@@ -66,11 +66,11 @@ export default function Search({
     const attendees: AttendeeInterface[] = [
       {
         uid: viewing.uid,
-        roles: ['tutor'],
+        roles: [query.aspect === 'tutoring' ? 'tutor' : 'mentor'],
       },
       {
         uid: user.uid,
-        roles: ['tutee'],
+        roles: [query.aspect === 'tutoring' ? 'tutee' : 'mentee'],
       },
     ];
     const subjects: string[] = Utils.intersection<string>(
@@ -89,6 +89,7 @@ export default function Search({
     <div className={styles.wrapper}>
       {viewing && (
         <UserDialog
+          aspect={query.aspect}
           user={viewing}
           appt={getAppt()}
           onClose={() => setViewing(undefined)}
@@ -97,17 +98,20 @@ export default function Search({
       <div className={styles.title}>
         <Title>{intl.formatMessage(msgs[query.aspect])}</Title>
       </div>
-      <div className={styles.form}>
-        <QueryForm query={query} onChange={onChange} />
-      </div>
-      {!searching && !!results.length && (
+      <Form query={query} onChange={onChange} />
+      {searching && !results.length && (
+        <NoResults
+          header='Searching...'
+          body='Fetching your stellar search results...'
+        />
+      )}
+      {!!results.length && (
         <ul className={styles.results}>
           {results.map((res: User, index: number) => (
             <Result user={res} key={index} onClick={() => setViewing(res)} />
           ))}
         </ul>
       )}
-      {searching && <NoResults header='Searching...' />}
       {!searching && !results.length && (
         <NoResults
           header='No Results'

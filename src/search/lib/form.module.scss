@@ -1,0 +1,24 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@material/card/_index.scss' as card;
+@use '@material/elevation';
+
+.form {
+  @include card.outline(map.get(config.$colors, 'accents-2'), 1px);
+  @include elevation.elevation(0);
+  transition: 200ms box-shadow ease-in-out, 200ms border ease-in-out;
+  margin-top: 30px;
+  position: sticky;
+  z-index: 3;
+  top: config.$nav-height + 10px;
+}
+
+.elevated {
+  @include card.outline(map.get(config.$colors, 'background'), 1px);
+  @include elevation.elevation(4);
+}
+
+.form:hover {
+  @include card.outline(map.get(config.$colors, 'background'), 1px);
+  @include elevation.elevation(4);
+}

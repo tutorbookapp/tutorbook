@@ -12,21 +12,10 @@
   margin-top: 20px;
 }
 
-.form {
-  margin: 20px 0;
-  position: sticky;
-  z-index: 3;
-  top: config.$nav-height + 10px;
-}
-
 .results {
   list-style: none;
   padding: 0;
-  margin: 0;
-}
-
-.results li:last-child {
-  border: none;
+  margin: 20px 0;
 }
 
 .noResults {
