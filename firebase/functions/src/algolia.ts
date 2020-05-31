@@ -80,6 +80,7 @@ export async function userUpdate(
       mentoring: user.mentoring,
       tutoring: user.tutoring,
       socials: user.socials,
+      featured: user.featured,
       objectID: context.params.user,
     };
     await index.saveObject(ob);
@@ -91,6 +92,7 @@ export async function userUpdate(
       'tutoring.subjects',
       'tutoring.searches',
       'availability',
+      'featured',
     ].map((attr: string) => `filterOnly(${attr})`),
   });
 }
