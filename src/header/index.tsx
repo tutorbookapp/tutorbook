@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Link } from '@tutorbook/intl';
 import { Aspect } from '@tutorbook/model';
+import { useUser } from '@tutorbook/firebase';
 
 import styles from './header.module.scss';
 
@@ -53,6 +54,7 @@ export default function Header({
   onChange,
   formWidth,
 }: HeaderProps): JSX.Element {
+  const { user } = useUser();
   const [active, setActive] = React.useState<boolean>(false);
   const toggleMobileMenu = () => {
     const menuActive: boolean = !active;
@@ -100,7 +102,9 @@ export default function Header({
         </nav>
         <div className={styles.desktopLinks}>
           <Link href='/signup'>
-            <a className={styles.desktopLink}>Join TB</a>
+            <a className={styles.desktopLink}>
+              {user.uid ? 'Profile' : 'Join TB'}
+            </a>
           </Link>
         </div>
       </header>
