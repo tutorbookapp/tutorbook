@@ -35,10 +35,7 @@ type VolunteerFormState = {
   readonly submittingTutor: boolean;
   readonly submittedMentor: boolean;
   readonly submittedTutor: boolean;
-  readonly expertise: string[];
-  readonly subjects: string[];
-} & Partial<UserInterface> &
-  { [type in SocialTypeAlias]: string };
+};
 
 /**
  * Wrapper for the two distinct volunteer sign-up forms:
@@ -52,27 +49,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
   public static readonly contextType: React.Context<
     UserProviderState
   > = UserContext;
-  public readonly state: VolunteerFormState = {
-    headerHeight: 0,
-    descHeight: 0,
-    submittingMentor: false,
-    submittingTutor: false,
-    submittedMentor: false,
-    submittedTutor: false,
-    name: '',
-    email: '',
-    phone: '',
-    bio: '',
-    expertise: [],
-    subjects: [],
-    website: '',
-    linkedin: '',
-    twitter: '',
-    facebook: '',
-    instagram: '',
-    github: '',
-    indiehackers: '',
-  };
+  public readonly state: VolunteerFormState;
 
   private readonly headerRef: React.RefObject<HTMLHeadingElement>;
 
@@ -80,6 +57,16 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
 
   public constructor(props: VolunteerFormProps) {
     super(props);
+
+    this.state = {
+      headerHeight: 0,
+      descHeight: 0,
+      submittingMentor: false,
+      submittingTutor: false,
+      submittedMentor: false,
+      submittedTutor: false,
+    };
+
     this.headerRef = React.createRef();
     this.descRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -115,7 +102,9 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
             <Button
               className={styles.formSubmitButton}
               label={msg(
-                this.props.aspect === 'mentoring'
+                this.context.user.uid
+                  ? msgs.updateSubmit
+                  : this.props.aspect === 'mentoring'
                   ? msgs.mentorSubmit
                   : msgs.tutorSubmit
               )}
@@ -187,46 +176,101 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       className: styles.formField,
       outlined: true,
     };
-    const shared = (key: keyof VolunteerFormState) => ({
+    const shared = (key: Extract<keyof UserInterface, keyof typeof msgs>) => ({
       ...sharedProps,
+      label: msg(msgs[key]),
       onChange: (event: React.FormEvent<HTMLInputElement>) => {
-        this.setState({ [key]: event.currentTarget.value });
+        this.context.update(
+          new User({
+            ...this.context.user,
+            [key]: event.currentTarget.value,
+          })
+        );
       },
     });
-    const s = (id: string, placeholder: (v: string) => string) => ({
+    const getSocialIndex = (type: string) => {
+      return this.context.user.socials.findIndex(
+        (social: SocialInterface) => social.type === type
+      );
+    };
+    const getSocial = (type: SocialTypeAlias) => {
+      const index: number = getSocialIndex(type);
+      return index >= 0 ? this.context.user.socials[index].url : '';
+    };
+    const hasSocial = (type: SocialTypeAlias) => getSocialIndex(type) >= 0;
+    const updateSocial = (type: SocialTypeAlias, url: string) => {
+      const index: number = getSocialIndex(type);
+      const socials: SocialInterface[] = Array.from(this.context.user.socials);
+      if (index >= 0) {
+        socials[index] = { type, url };
+      } else {
+        socials.push({ type, url });
+      }
+      this.context.update(new User({ ...this.context.user, socials }));
+    };
+    const s = (type: SocialTypeAlias, placeholder: (v: string) => string) => ({
       ...sharedProps,
-      value: (this.state as Record<string, any>)[id],
-      label: msg((msgs as Record<string, MessageDescriptor>)[id]),
-      type: 'url',
+      value: getSocial(type),
+      label: msg(msgs[type]),
       onFocus: () => {
-        const username: string = this.state.name
-          ? this.state.name.replace(' ', '').toLowerCase()
+        const username: string = this.context.user.name
+          ? this.context.user.name.replace(' ', '').toLowerCase()
           : 'yourname';
-        if (!(this.state as Record<string, any>)[id])
-          this.setState({ [id]: placeholder(username) });
+        if (!hasSocial(type)) updateSocial(type, placeholder(username));
       },
       onChange: (event: React.FormEvent<HTMLInputElement>) => {
-        this.setState({ [id]: event.currentTarget.value });
+        updateSocial(type, event.currentTarget.value);
       },
     });
     return (
       <>
-        <TextField {...shared('name')} label={msg(msgs.name)} required />
-        <TextField {...shared('email')} label={msg(msgs.email)} required />
-        <TextField {...shared('phone')} label={msg(msgs.phone)} />
+        <TextField
+          {...shared('name')}
+          value={this.context.user.name}
+          required
+        />
+        <TextField
+          {...shared('email')}
+          value={this.context.user.email}
+          required
+        />
+        <TextField
+          {...shared('phone')}
+          value={this.context.user.phone ? this.context.user.phone : undefined}
+        />
         <ListDivider className={styles.divider} />
         {this.props.aspect === 'mentoring' && (
           <>
             <SubjectSelect
-              {...shared('expertise')}
+              {...sharedProps}
+              val={this.context.user.mentoring.subjects}
               label={msg(msgs.expertise)}
               placeholder={msg(msgs.expertisePlaceholder)}
-              onChange={(expertise: string[]) => this.setState({ expertise })}
+              onChange={(subjects: string[]) =>
+                this.context.update(
+                  new User({
+                    ...this.context.user,
+                    mentoring: {
+                      subjects,
+                      searches: this.context.user.mentoring.searches,
+                    },
+                  })
+                )
+              }
               searchIndex='expertise'
               required
             />
             <TextField
-              {...shared('bio')}
+              {...sharedProps}
+              onChange={(event) =>
+                this.context.update(
+                  new User({
+                    ...this.context.user,
+                    bio: event.currentTarget.value,
+                  })
+                )
+              }
+              value={this.context.user.bio}
               label={msg(msgs.project)}
               placeholder={msg(msgs.projectPlaceholder)}
               required
@@ -238,22 +282,47 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         {this.props.aspect === 'tutoring' && (
           <>
             <SubjectSelect
-              {...shared('subjects')}
+              {...sharedProps}
+              val={this.context.user.tutoring.subjects}
               label={msg(msgs.subjects)}
               placeholder={msg(msgs.subjectsPlaceholder)}
-              onChange={(subjects: string[]) => this.setState({ subjects })}
+              onChange={(subjects: string[]) =>
+                this.context.update(
+                  new User({
+                    ...this.context.user,
+                    tutoring: {
+                      subjects,
+                      searches: this.context.user.tutoring.searches,
+                    },
+                  })
+                )
+              }
               required
             />
             <ScheduleInput
               {...shared('availability')}
-              label={msg(msgs.availability)}
+              val={this.context.user.availability}
               onChange={(availability: Availability) =>
-                this.setState({ availability })
+                this.context.update(
+                  new User({
+                    ...this.context.user,
+                    availability,
+                  })
+                )
               }
               required
             />
             <TextField
-              {...shared('bio')}
+              {...sharedProps}
+              onChange={(event) =>
+                this.context.update(
+                  new User({
+                    ...this.context.user,
+                    bio: event.currentTarget.value,
+                  })
+                )
+              }
+              value={this.context.user.bio}
               label={msg(msgs.experience)}
               placeholder={msg(msgs.experiencePlaceholder)}
               required
@@ -281,59 +350,13 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     firebase.analytics().logEvent('sign_up', {
       method: this.props.aspect === 'mentoring' ? 'mentor_form' : 'tutor_form',
     });
-    const {
-      expertise,
-      subjects,
-      website,
-      linkedin,
-      facebook,
-      twitter,
-      instagram,
-      github,
-      indiehackers,
-    } = this.state;
-    const tutor: User = new User({
-      ...this.state,
-      socials: [
-        {
-          type: 'website',
-          url: website,
-        },
-        {
-          type: 'linkedin',
-          url: linkedin,
-        },
-        {
-          type: 'facebook',
-          url: facebook,
-        },
-        {
-          type: 'twitter',
-          url: twitter,
-        },
-        {
-          type: 'instagram',
-          url: instagram,
-        },
-        {
-          type: 'github',
-          url: github,
-        },
-        {
-          type: 'indiehackers',
-          url: indiehackers,
-        },
-      ].filter((social) => !!social.url) as SocialInterface[],
-      tutoring: { subjects: subjects, searches: [] },
-      mentoring: { subjects: expertise, searches: [] },
-    });
     this.setState({
       submittingMentor:
         this.props.aspect === 'mentoring' || this.state.submittingMentor,
       submittingTutor:
         this.props.aspect === 'tutoring' || this.state.submittingTutor,
     });
-    await this.context.signup(tutor);
+    await this.context.signup(this.context.user);
     this.setState({
       submittedMentor:
         this.props.aspect === 'mentoring' || this.state.submittedMentor,

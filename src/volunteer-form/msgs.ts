@@ -9,6 +9,10 @@ export default defineMessages({
     id: 'tutor-form.toggle',
     defaultMessage: 'Tutor',
   },
+  updateSubmit: {
+    id: 'form.update-submit',
+    defaultMessage: 'Update profile',
+  },
   mentorSubmit: {
     id: 'mentor-form.submit',
     defaultMessage: 'Become a mentor',
@@ -123,6 +127,6 @@ export default defineMessages({
   },
   indiehackers: {
     id: 'form.indiehackers',
-    defaultMessage: 'Your Indie Hackers profile',
+    defaultMessage: 'Your IndieHackers profile',
   },
 });
