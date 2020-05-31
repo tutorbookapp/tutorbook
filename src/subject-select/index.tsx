@@ -41,6 +41,7 @@ interface UniqueSubjectSelectProps extends TextFieldProps {
   readonly options?: string[];
   readonly grade?: GradeAlias;
   readonly searchIndex?: string;
+  readonly autoOpenMenu?: boolean;
 }
 
 export type SubjectSelectProps = UniqueSubjectSelectProps &
@@ -240,7 +241,8 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * `TextField` input is focused).
    */
   private maybeOpenSuggestions(): void {
-    if (this.hasOpenedSuggestions) this.openSuggestions();
+    if (this.props.autoOpenMenu || this.hasOpenedSuggestions)
+      this.openSuggestions();
   }
 
   /**
@@ -281,7 +283,17 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
    * lose focus which makes us close it.
    */
   public render(): JSX.Element {
-    const { renderToPortal, className, onChange, ...rest } = this.props;
+    const {
+      onChange,
+      className,
+      val,
+      renderToPortal,
+      options,
+      grade,
+      searchIndex,
+      autoOpenMenu,
+      ...rest
+    } = this.props;
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
