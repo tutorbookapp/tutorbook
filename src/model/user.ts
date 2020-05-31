@@ -172,7 +172,8 @@ export class User implements UserInterface {
     Object.entries(user).map(([key, val]: [string, any]) => {
       if (val && key in this) (this as Record<string, any>)[key] = val;
     });
-    if (this.phone) this.phone = phone(this.phone)[0] || '';
+    this.phone = phone(this.phone)[0] || '';
+    this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
   }
 
   public get firstName(): string {
