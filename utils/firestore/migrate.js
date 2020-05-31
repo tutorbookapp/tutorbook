@@ -1,6 +1,6 @@
 const path = require('path');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env.prod') });
 
 const admin = require('firebase-admin');
 const app = admin.initializeApp({
@@ -23,17 +23,19 @@ const main = async () => {
       const data = {
         ...(user.data() || {}),
         mentoring: {
-          subjects: user.data().tutoring.subjects || [],
+          subjects: user.data().expertise || [],
           searches: [],
         },
         tutoring: {
-          subjects: user.data().mentoring.subjects || [],
-          searches: user.data().mentoring.searches || [],
+          subjects: user.data().subjects || [],
+          searches: user.data().searches || [],
         },
       };
       delete data.subjects;
       delete data.searches;
       delete data.expertise;
+      delete data.notifications;
+      delete data.schedule;
       return user.ref.set(data);
     })
   );
