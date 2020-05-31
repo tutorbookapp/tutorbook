@@ -130,7 +130,8 @@ $margin: 24px;
 
 .indiehackers:before {
   content: 'IH';
-  font-weight: 900;
+  font-weight: 800;
+  font-family: map.get(config.$fonts, 'sans');
 }
 
 .formField {
