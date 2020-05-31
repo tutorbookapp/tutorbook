@@ -92,7 +92,7 @@ export default class Carousel extends React.Component<CarouselProps> {
             ref={this.scrollerRef}
           >
             {children.map((child: JSX.Element, index: number) => (
-              <div ref={this.childRef} className={styles.child}>
+              <div key={index} ref={this.childRef} className={styles.child}>
                 {child}
               </div>
             ))}

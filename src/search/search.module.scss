@@ -19,7 +19,7 @@
 }
 
 .noResults {
-  margin: max(20vh, 100px) 0;
+  margin: 80px 0;
   text-align: center;
 }
 
@@ -31,5 +31,9 @@
 .noResultsBody {
   @include typography.typography('subtitle1');
   color: map.get(config.$colors, 'accents-5');
-  margin: 0;
+  margin: 0 0 40px;
+}
+
+.carousel {
+  margin-top: -50%;
 }

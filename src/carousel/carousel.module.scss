@@ -1,3 +1,5 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
 @use '@tutorbook/styles/typography';
 @use '@material/elevation';
 
@@ -21,7 +23,8 @@ $margin: 24px;
   position: absolute;
   border-radius: 100%;
   bottom: calc(50% - 24px);
-  background: rgba(255, 255, 255, 0.8);
+  background: map.get(config.$colors, 'background');
+  color: map.get(config.$colors, 'foreground');
   z-index: 2;
 }
 

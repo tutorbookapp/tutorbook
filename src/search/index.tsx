@@ -3,6 +3,7 @@ import React from 'react';
 import { useIntl, defMsg, IntlShape, Msg } from '@tutorbook/intl';
 import { Timeslot, User, Query } from '@tutorbook/model';
 
+import Carousel from '@tutorbook/carousel';
 import UserDialog from '@tutorbook/user-dialog';
 import Utils from '@tutorbook/utils';
 import Title from '@tutorbook/title';
@@ -29,21 +30,6 @@ const msgs: Record<string, Msg> = defMsg({
     defaultMessage: 'Volunteer tutors',
   },
 });
-
-function NoResults({
-  header,
-  body,
-}: {
-  header: string;
-  body?: string;
-}): JSX.Element {
-  return (
-    <div className={styles.noResults}>
-      <h3 className={styles.noResultsHeader}>{header}</h3>
-      {body && <p className={styles.noResultsBody}>{body}</p>}
-    </div>
-  );
-}
 
 export default function Search({
   user,
@@ -81,23 +67,34 @@ export default function Search({
       </div>
       <Form query={query} onChange={onChange} />
       {searching && !results.length && (
-        <NoResults
-          header='Searching...'
-          body='Fetching your stellar search results...'
-        />
+        <ul className={styles.results}>
+          {Array(5)
+            .fill(null)
+            .map((_: null, index: number) => (
+              <Result loading key={index} />
+            ))}
+        </ul>
       )}
       {!!results.length && (
         <ul className={styles.results}>
           {results.map((res: User, index: number) => (
-            <Result user={res} key={index} onClick={() => setViewing(res)} />
+            <Result
+              user={res}
+              key={res.uid || index}
+              onClick={() => setViewing(res)}
+            />
           ))}
         </ul>
       )}
       {!searching && !results.length && (
-        <NoResults
-          header='No Results'
-          body='Try adding more availability or subjects.'
-        />
+        <div className={styles.noResults}>
+          <h3 className={styles.noResultsHeader}>No Results</h3>
+          <p className={styles.noResultsBody}>
+            We couldn't find anyone matching those filters. But here are some
+            suggestions:
+          </p>
+          <Carousel aspect={query.aspect} onClick={setViewing} />
+        </div>
       )}
     </div>
   );
