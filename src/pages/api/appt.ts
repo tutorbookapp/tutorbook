@@ -100,6 +100,8 @@ const firestore: Firestore = firebase.firestore();
  *    the original `/api/request` endpoint):
  *    - Verifies that the requested `Timeslot` is within all of the `attendee`'s
  *      availability (by reading each `attendee`'s Firestore profile document).
+ *      Note that we **do not** throw an error if the sender (i.e. the tutee) is
+ *      unavailable.
  *    - Verifies that the requested `subjects` are included in each of the
  *      tutors' Firestore profile documents (where a tutor is defined as an
  *      `attendee` whose `roles` include `tutor`).
@@ -197,11 +199,6 @@ export default async function appt(
               pupilIsParentsChild = true;
             }
           }
-          // 3. Verify that the attendees are available.
-          if (appt.time && !user.availability.contains(appt.time)) {
-            error(`${user} is not available on ${appt.time}.`);
-            break;
-          }
           // 3. Verify the tutors can teach the requested subjects.
           const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
           const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
@@ -223,6 +220,15 @@ export default async function appt(
             error(
               `${user.name} (${user.uid}) cannot mentor for the appted subjects.`
             );
+            break;
+          }
+          // 3. Verify that the tutor and mentor attendees are available.
+          if (
+            appt.time &&
+            (isTutor || isMentor) &&
+            !user.availability.contains(appt.time)
+          ) {
+            error(`${user} is not available on ${appt.time}.`);
             break;
           }
           (user as UserWithRoles).roles = attendee.roles;

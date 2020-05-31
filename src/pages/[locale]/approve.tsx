@@ -25,7 +25,7 @@ import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 const msgs: Record<string, MessageDescriptor> = defineMessages({
   approved: {
     id: 'approve-page.approved',
-    defaultMessage: 'Approved',
+    defaultMessage: 'Approved Request',
     description:
       'Header for the parental approval page telling the parent that they ' +
       'have successfully approved of the pending lesson request.',
