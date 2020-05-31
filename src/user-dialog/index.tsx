@@ -5,7 +5,7 @@ import SubjectSelect from '@tutorbook/subject-select';
 import Avatar from '@tutorbook/avatar';
 import Loader from '@tutorbook/loader';
 
-import { UserContext } from '@tutorbook/firebase';
+import { UserProviderState, UserContext } from '@tutorbook/firebase';
 import {
   ApiError,
   User,
@@ -62,7 +62,9 @@ interface UserDialogProps {
  */
 class UserDialog extends React.Component<UserDialogProps> {
   public readonly state: UserDialogState;
-  public static readonly contextType: React.Context<User> = UserContext;
+  public static readonly contextType: React.Context<
+    UserProviderState
+  > = UserContext;
 
   public constructor(props: UserDialogProps) {
     super(props);

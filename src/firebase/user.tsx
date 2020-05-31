@@ -31,7 +31,7 @@ interface UserProviderProps {
   children: JSX.Element[] | JSX.Element;
 }
 
-interface UserProviderState {
+export interface UserProviderState {
   user: User;
   token: () => Promise<string> | undefined;
   signup: (user: User, parents?: User[]) => Promise<void>;
