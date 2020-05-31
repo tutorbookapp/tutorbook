@@ -1,0 +1,97 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
+
+$height: 200px;
+$margin: 20px;
+
+.card {
+  height: $height;
+  position: relative;
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-top: none;
+  cursor: pointer;
+}
+
+.card:first-child {
+  border-top: 1px solid map.get(config.$colors, 'accents-2');
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.card:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.img {
+  display: inline-block;
+  position: absolute;
+  left: $margin;
+  top: $margin;
+  width: $height - 2 * $margin;
+  height: $height - 2 * $margin;
+}
+
+.name {
+  @include typography.typography('body1');
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: map.get(config.$colors, 'foreground');
+  display: inline-block;
+  position: absolute;
+  left: $height;
+  top: $margin;
+  width: calc(100% - #{$height + $margin});
+  height: 24px;
+}
+
+.bio {
+  @include typography.typography('body2');
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: map.get(config.$colors, 'accents-5');
+  display: inline-block;
+  position: absolute;
+  left: $height;
+  top: $margin + 24px;
+  width: calc(100% - #{$height + $margin});
+  height: $height - (2 * $margin + 24px);
+}
+
+.bio.loading {
+  height: $height - (3 * $margin + 24px);
+  top: 2 * $margin + 24px;
+}
+
+.loading {
+  border-radius: 4px;
+  background-image: linear-gradient(
+    270deg,
+    #{map.get(config.$colors, 'accents-1')},
+    #{map.get(config.$colors, 'accents-2')},
+    #{map.get(config.$colors, 'accents-2')},
+    #{map.get(config.$colors, 'accents-1')}
+  );
+  background-size: 400% 100%;
+  -webkit-animation: loadingAnimation 8s ease-in-out infinite;
+  animation: loadingAnimation 8s ease-in-out infinite;
+}
+
+@-webkit-keyframes loadingAnimation {
+  0% {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes loadingAnimation {
+  0% {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}

@@ -34,14 +34,28 @@ export default class Carousel extends React.Component<CarouselProps> {
     return this.childRef.current ? this.childRef.current.clientWidth + 24 : 100;
   }
 
+  private get scrollerWidth(): number {
+    if (!this.childRef.current || !this.scrollerRef.current) return Infinity;
+    const width: number = this.childRef.current.clientWidth + 24;
+    const visible: number = this.scrollerRef.current.clientWidth;
+    return width * this.props.children.length - visible - 48;
+  }
+
   private scrollLeft(): void {
     if (this.atStart) return;
-    this.setState({ scroll: Math.floor(this.state.scroll - this.childWidth) });
+    this.setState({
+      scroll: Math.max(Math.floor(this.state.scroll - this.childWidth), 0),
+    });
   }
 
   private scrollRight(): void {
     if (this.atEnd) return;
-    this.setState({ scroll: Math.ceil(this.state.scroll + this.childWidth) });
+    this.setState({
+      scroll: Math.min(
+        Math.ceil(this.state.scroll + this.childWidth),
+        this.scrollerWidth
+      ),
+    });
   }
 
   private get atStart(): boolean {
@@ -49,12 +63,7 @@ export default class Carousel extends React.Component<CarouselProps> {
   }
 
   private get atEnd(): boolean {
-    if (!this.childRef.current || !this.scrollerRef.current) return false;
-    const width: number = this.childRef.current.clientWidth + 24;
-    const visible: number = this.scrollerRef.current.clientWidth;
-    return (
-      this.state.scroll >= width * this.props.children.length - visible - 48
-    );
+    return this.state.scroll >= this.scrollerWidth;
   }
 
   public render(): JSX.Element {

@@ -1,6 +1,8 @@
 @use '@tutorbook/styles/typography';
 @use '@material/elevation';
 
+$margin: 24px;
+
 .title {
   @include typography.typography('headline6');
   margin: 0 0 15px;
@@ -10,8 +12,7 @@
 .wrapper {
   position: relative;
   overflow-x: hidden;
-  margin-left: -2px;
-  width: calc(100% + 4px);
+  margin-top: $margin;
 }
 
 .left,
@@ -33,23 +34,27 @@
 }
 
 .scroller {
-  white-space: nowrap;
-  overflow: visible;
   display: flex;
-  margin: 2px;
   transition: 200ms right ease-in-out;
   position: relative;
 }
 
 .child {
   display: inline-block;
-  margin-right: 24px;
+  margin-right: $margin;
   white-space: normal;
-  flex-grow: 0;
   flex-shrink: 0;
-  flex-basis: calc((100% - 48px) / 3);
+  flex-grow: 0;
+  flex-basis: 100%;
+  max-width: 450px;
 }
 
 .child:last-child {
   margin-right: 0;
+}
+
+@media (min-width: 700px) {
+  .child {
+    flex-basis: calc((100% - #{$margin}) / 2);
+  }
 }
