@@ -59,7 +59,7 @@ export default function About(): JSX.Element {
           img={TutorSignsUp}
           cta={{
             label: intl.formatMessage(msgs.tutorCTA),
-            href: '/tutors',
+            href: '/signup',
           }}
           flipped
         />
@@ -70,7 +70,7 @@ export default function About(): JSX.Element {
           img={PupilSignsUp}
           cta={{
             label: intl.formatMessage(msgs.pupilCTA),
-            href: '/pupils',
+            href: '/search',
           }}
           gray
         />

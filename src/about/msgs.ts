@@ -16,7 +16,7 @@ export default defMsg({
   },
   tutorCTA: {
     id: 'about.how-it-works.tutor.cta',
-    defaultMessage: 'Get started as a volunteer',
+    defaultMessage: 'Become a volunteer',
     description: 'Label for the CTA link to the tutor sign-up page.',
   },
   stepOne: {
@@ -34,7 +34,7 @@ export default defMsg({
   },
   pupilCTA: {
     id: 'about.how-it-works.pupil.cta',
-    defaultMessage: 'Get started as a student',
+    defaultMessage: 'Search our volunteers',
     description: 'Label for the CTA link to the student sign-up page.',
   },
   stepTwo: {
