@@ -132,7 +132,7 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   },
   indieHackers: {
     id: 'footer.socials.indie-hackers',
-    defaultMessage: 'Indie Hackers',
+    defaultMessage: 'IndieHackers',
   },
   resources: {
     id: 'footer.resources.title',
@@ -285,7 +285,7 @@ export default function Footer({
               },
               {
                 href:
-                  'https://github.com/tutorbookapp/covid-tutoring/issues/new/choose',
+                  'https://github.com/tutorbookapp/tutorbook/issues/new/choose',
                 label: intl.formatMessage(labels.issue),
               },
             ]}
@@ -307,7 +307,7 @@ export default function Footer({
                 label: intl.formatMessage(labels.openSource),
               },
               {
-                href: 'https://github.com/tutorbookapp/covid-tutoring#readme',
+                href: 'https://github.com/tutorbookapp/tutorbook#readme',
                 label: intl.formatMessage(labels.docs),
               },
             ]}
