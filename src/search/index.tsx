@@ -16,6 +16,7 @@ interface SearchProps {
   readonly results: ReadonlyArray<User>;
   readonly searching: boolean;
   readonly query: Query;
+  readonly user?: User;
 }
 
 const msgs: Record<string, Msg> = defMsg({
@@ -45,13 +46,14 @@ function NoResults({
 }
 
 export default function Search({
+  user,
   query,
   results,
   searching,
   onChange,
 }: SearchProps): JSX.Element {
   const intl: IntlShape = useIntl();
-  const [viewing, setViewing] = React.useState<User | undefined>();
+  const [viewing, setViewing] = React.useState<User | undefined>(user);
   return (
     <div className={styles.wrapper}>
       {viewing && (
