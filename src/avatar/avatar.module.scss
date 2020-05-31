@@ -11,6 +11,9 @@
   right: 0;
 }
 
+.loadingImg {
+}
+
 .noImg {
   @include typography.typography('subtitle1');
   color: map.get(config.$colors, 'accents-5');
@@ -36,4 +39,35 @@
   content: '';
   display: block;
   padding-top: 100%;
+}
+
+.loading {
+  background-image: linear-gradient(
+    270deg,
+    #{map.get(config.$colors, 'accents-1')},
+    #{map.get(config.$colors, 'accents-2')},
+    #{map.get(config.$colors, 'accents-2')},
+    #{map.get(config.$colors, 'accents-1')}
+  );
+  background-size: 400% 100%;
+  -webkit-animation: loadingAnimation 8s ease-in-out infinite;
+  animation: loadingAnimation 8s ease-in-out infinite;
+}
+
+@-webkit-keyframes loadingAnimation {
+  0% {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes loadingAnimation {
+  0% {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
 }
