@@ -66,7 +66,7 @@
   },
   {
     "id": "footer.socials.indie-hackers",
-    "defaultMessage": "Indie Hackers"
+    "defaultMessage": "IndieHackers"
   },
   {
     "id": "footer.resources.title",
@@ -200,6 +200,10 @@
     "defaultMessage": "Tutor"
   },
   {
+    "id": "form.update-submit",
+    "defaultMessage": "Update profile"
+  },
+  {
     "id": "mentor-form.submit",
     "defaultMessage": "Become a mentor"
   },
@@ -302,5 +306,9 @@
   {
     "id": "form.github",
     "defaultMessage": "Your GitHub profile"
+  },
+  {
+    "id": "form.indiehackers",
+    "defaultMessage": "Your IndieHackers profile"
   }
 ]
