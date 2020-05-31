@@ -8,7 +8,7 @@ import { Card } from '@rmwc/card';
 import Title from '@tutorbook/title';
 import ScheduleInput from '@tutorbook/schedule-input';
 import SubjectSelect from '@tutorbook/subject-select';
-import firebase, { UserProvider } from '@tutorbook/firebase';
+import firebase, { UserProviderState, UserContext } from '@tutorbook/firebase';
 import {
   Availability,
   UserInterface,
@@ -48,6 +48,9 @@ type VolunteerFormState = {
  * to help tutor somebody affected by COVID-19.
  */
 class VolunteerForm extends React.Component<VolunteerFormProps> {
+  public static readonly contextType: React.Context<
+    UserProviderState
+  > = UserContext;
   public readonly state: VolunteerFormState = {
     headerHeight: 0,
     descHeight: 0,
@@ -320,7 +323,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       submittingTutor:
         this.props.aspect === 'tutoring' || this.state.submittingTutor,
     });
-    await UserProvider.signup(tutor);
+    await this.context.signup(tutor);
     this.setState({
       submittedMentor:
         this.props.aspect === 'mentoring' || this.state.submittedMentor,
