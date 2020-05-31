@@ -2,13 +2,14 @@
 @use '@tutorbook/styles/config';
 @use '@tutorbook/styles/typography';
 
-$min-width: 650px;
+$max-width: 800px;
+$min-width: 700px;
 $padding: 40px;
 $margin: 24px;
 
 .dialog :global(.mdc-dialog__surface) {
-  width: 50vw;
-  max-width: 800px;
+  width: 60vw;
+  max-width: $max-width;
   min-width: $min-width;
 }
 

@@ -33,9 +33,19 @@ interface UserProviderProps {
 
 interface UserProviderState {
   user: User;
+  token: () => Promise<string> | undefined;
+  signup: (user: User, parents?: User[]) => Promise<void>;
+  signupWithGoogle: (user?: User, parents?: User[]) => Promise<void>;
 }
 
-export const UserContext: React.Context<User> = React.createContext(new User());
+export const UserContext: React.Context<UserProviderState> = React.createContext(
+  {
+    user: new User(),
+    token: (() => undefined) as () => Promise<string> | undefined,
+    signup: async (user: User, parents?: User[]) => {},
+    signupWithGoogle: async (user?: User, parents?: User[]) => {},
+  }
+);
 
 export const useUser = () => React.useContext(UserContext);
 
@@ -48,17 +58,28 @@ export class UserProvider extends React.Component<UserProviderProps> {
     DocumentReference
   > = DBContext;
   private static readonly auth: Auth = firebase.auth();
-  public readonly state: UserProviderState = { user: new User() };
-  private unsubscriber?: Unsubscribe;
+  public readonly state: UserProviderState;
+  private authUnsubscriber?: Unsubscribe;
+  private docUnsubscriber?: Unsubscribe;
 
   public constructor(props: UserProviderProps) {
     super(props);
+    this.state = {
+      user: new User(),
+      token: this.getToken,
+      signup: this.signup,
+      signupWithGoogle: this.signupWithGoogle,
+    };
+    this.getToken = this.getToken.bind(this);
+    this.signup = this.signup.bind(this);
+    this.signupWithGoogle = this.signupWithGoogle.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   private async handleChange(user: FirebaseUser | null): Promise<void> {
     if (user) {
       const userRecord: Partial<UserInterface> = {
+        ref: this.context.collection('users').doc(user.uid),
         name: user.displayName || '',
         email: user.email || '',
         phone: user.phoneNumber || '',
@@ -71,42 +92,66 @@ export class UserProvider extends React.Component<UserProviderProps> {
         token: await user.getIdToken(),
       };
       this.setState({ user: new User(withToken) });
-      const userDoc: DocumentSnapshot = await this.context
-        .collection('users')
-        .doc(user.uid)
-        .get();
-      if (!userDoc.exists) {
-        console.warn(`[WARNING] No document for current user (${user.uid}).`);
-        await UserProvider.signup(new User(withToken));
-      } else {
-        const withData: User = User.fromFirestore(userDoc);
-        Object.entries(withToken).forEach(([key, val]: [string, any]) => {
-          (withData as Record<string, any>)[key] = val;
-        });
-        this.setState({ user: withData });
-      }
+      const userDoc = (
+        await to<DocumentSnapshot>((withToken.ref as DocumentReference).get())
+      )[1];
+      await this.updateDoc(
+        userDoc,
+        withToken.ref as DocumentReference,
+        withToken
+      );
     } else {
       this.setState({ user: new User() });
     }
   }
 
+  private getToken(): Promise<string> | undefined {
+    return UserProvider.auth.currentUser
+      ? UserProvider.auth.currentUser.getIdToken()
+      : undefined;
+  }
+
+  private async updateDoc(
+    doc?: DocumentSnapshot,
+    ref?: DocumentReference,
+    user: Partial<UserInterface> = this.state.user
+  ): Promise<void> {
+    if (ref)
+      this.docUnsubscriber = ref.onSnapshot((doc) => this.updateDoc(doc));
+    if (doc && !doc.exists) {
+      console.warn(`[WARNING] No document for current user (${user.uid}).`);
+      await this.signup(new User(user));
+    } else if (doc) {
+      console.log('[DEBUG] Got updated document data:', doc.data());
+      const withData: User = User.fromFirestore(doc);
+      console.log(
+        '[DEBUG] Updating current user with document data:',
+        withData
+      );
+      this.setState({ user: withData });
+    }
+  }
+
   public componentDidMount(): void {
-    this.unsubscriber = UserProvider.auth.onAuthStateChanged(this.handleChange);
+    this.authUnsubscriber = UserProvider.auth.onAuthStateChanged(
+      this.handleChange
+    );
   }
 
   public componentWillUnmount(): void {
-    if (this.unsubscriber) this.unsubscriber();
+    if (this.authUnsubscriber) this.authUnsubscriber();
+    if (this.docUnsubscriber) this.docUnsubscriber();
   }
 
   public render(): JSX.Element {
     return (
-      <UserContext.Provider value={this.state.user}>
+      <UserContext.Provider value={this.state}>
         {this.props.children}
       </UserContext.Provider>
     );
   }
 
-  public static async signupWithGoogle(
+  private async signupWithGoogle(
     user: User = new User(),
     parents?: User[]
   ): Promise<void> {
@@ -127,10 +172,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         email: cred.user.email as string,
         phone: cred.user.phoneNumber as string,
       };
-      return UserProvider.signup(
-        new User({ ...user, ...firebaseUser }),
-        parents
-      );
+      return this.signup(new User({ ...user, ...firebaseUser }), parents);
     } else {
       firebase.analytics().logEvent('exception', {
         description: 'No user in sign-in with Google response.',
@@ -140,7 +182,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
     }
   }
 
-  public static async signup(user: User, parents?: User[]): Promise<void> {
+  private async signup(user: User, parents?: User[]): Promise<void> {
     const [err, res] = await to<
       AxiosResponse<{ user: UserJSONInterface }>,
       AxiosError<ApiError>
@@ -163,6 +205,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
+      throw new Error(err.response.data.msg);
     } else if (err && err.request) {
       // The request was made but no response was received
       // `err.request` is an instance of XMLHttpRequest in the
@@ -173,6 +216,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
+      throw new Error('User creation API did not respond.');
     } else if (err) {
       // Something happened in setting up the request that triggered
       // an err
@@ -182,6 +226,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
+      throw new Error(`Error calling user API: ${err}`);
     } else if (res) {
       // TODO: Find a way to `this.setState()` with `res.data.user` ASAP
       // (instead of waiting on Firebase Auth to call our auth state listener).
@@ -199,6 +244,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
+      throw new Error('No error or response from user creation API.');
     }
   }
 }

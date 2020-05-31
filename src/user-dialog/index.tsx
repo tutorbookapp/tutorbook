@@ -1,12 +1,11 @@
 import React from 'react';
-import Utils from '@tutorbook/utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
 import Avatar from '@tutorbook/avatar';
 import Loader from '@tutorbook/loader';
 
-import { UserProvider, UserContext } from '@tutorbook/firebase';
+import { UserContext } from '@tutorbook/firebase';
 import {
   ApiError,
   User,
@@ -16,7 +15,7 @@ import {
   Aspect,
 } from '@tutorbook/model';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
-import { Dialog, DialogProps } from '@rmwc/dialog';
+import { Dialog } from '@rmwc/dialog';
 import { AxiosResponse, AxiosError } from 'axios';
 import {
   injectIntl,
@@ -32,18 +31,24 @@ import firebase from '@tutorbook/firebase';
 import styles from './user-dialog.module.scss';
 
 interface UserDialogState {
-  readonly appt: Readonly<Appt>;
+  readonly time?: Timeslot;
+  readonly message: string;
+  readonly subjects: string[];
+  readonly parentName: string;
+  readonly parentEmail: string;
   readonly submitting: boolean;
   readonly submitted: boolean;
   readonly err?: string;
 }
 
-interface UserDialogProps extends DialogProps {
+interface UserDialogProps {
+  readonly subjects: string[];
+  readonly time?: Timeslot;
   readonly intl: IntlShape;
   readonly user: User;
-  readonly appt?: Appt;
   readonly className?: string;
   readonly aspect: Aspect;
+  readonly onClosed: () => any;
 }
 
 /**
@@ -62,39 +67,38 @@ class UserDialog extends React.Component<UserDialogProps> {
   public constructor(props: UserDialogProps) {
     super(props);
     this.state = {
-      appt:
-        props.appt ||
-        new Appt({
-          attendees: [
-            {
-              uid: props.user.uid,
-              roles: [props.aspect === 'tutoring' ? 'tutor' : 'mentor'],
-            },
-            {
-              uid: this.context.uid,
-              roles: [props.aspect === 'tutoring' ? 'tutee' : 'mentee'],
-            },
-          ],
-          subjects: Utils.intersection<string>(
-            props.user.tutoring.subjects,
-            this.context.searches
-          ),
-          time:
-            props.aspect === 'tutoring'
-              ? Utils.intersection<Timeslot>(
-                  props.user.availability,
-                  this.context.availability,
-                  (a, b) => a.equalTo(b)
-                )[0]
-              : undefined,
-        }),
+      subjects: props.subjects,
+      time: props.time,
+      message: '',
+      parentName: '',
+      parentEmail: '',
       submitting: false,
       submitted: false,
     };
     this.handleSubjectsChange = this.handleSubjectsChange.bind(this);
     this.handleTimeslotChange = this.handleTimeslotChange.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleParentNameChange = this.handleParentNameChange.bind(this);
+    this.handleParentEmailChange = this.handleParentEmailChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  private get appt(): Appt {
+    return new Appt({
+      attendees: [
+        {
+          uid: this.context.user.uid,
+          roles: [this.props.aspect === 'tutoring' ? 'tutee' : 'mentee'],
+        },
+        {
+          uid: this.props.user.uid,
+          roles: [this.props.aspect === 'tutoring' ? 'tutor' : 'mentor'],
+        },
+      ],
+      subjects: this.state.subjects,
+      message: this.state.message,
+      time: this.state.time,
+    });
   }
 
   private get items(): firebase.analytics.Item[] {
@@ -106,69 +110,94 @@ class UserDialog extends React.Component<UserDialogProps> {
     ];
   }
 
-  public componentDidUpdate(prevProps: UserDialogProps): void {
-    if (this.props.appt && this.props.appt !== prevProps.appt)
-      this.setState({ appt: this.props.appt });
-  }
-
   public componentDidMount(): void {
     firebase.analytics().logEvent('view_item', {
       items: this.items,
     });
     firebase.analytics().logEvent('begin_checkout', {
-      request: this.state.appt.toJSON(),
+      request: this.appt.toJSON(),
       items: this.items,
     });
   }
 
   private handleSubjectsChange(subjects: string[]): void {
-    const appt: Appt = new Appt({ ...this.state.appt, subjects });
+    this.setState({ subjects });
     firebase.analytics().logEvent('checkout_progress', {
       checkout_step: 1,
-      request: appt.toJSON(),
+      request: this.appt.toJSON(),
       items: this.items,
     });
-    this.setState({ appt });
   }
 
   private handleTimeslotChange(time: Timeslot): void {
-    const appt: Appt = new Appt({ ...this.state.appt, time });
+    this.setState({ time });
     firebase.analytics().logEvent('checkout_progress', {
       checkout_step: 2,
-      request: appt.toJSON(),
+      request: this.appt.toJSON(),
       items: this.items,
     });
-    this.setState({ appt });
   }
 
   private handleMessageChange(event: React.FormEvent<HTMLInputElement>): void {
     const message: string = event.currentTarget.value;
-    const appt: Appt = new Appt({ ...this.state.appt, message });
+    this.setState({ message });
     firebase.analytics().logEvent('checkout_progress', {
       checkout_step: 3,
-      request: appt.toJSON(),
+      request: this.appt.toJSON(),
       items: this.items,
     });
-    this.setState({ appt });
+  }
+
+  private handleParentNameChange(
+    event: React.FormEvent<HTMLInputElement>
+  ): void {
+    const parentName: string = event.currentTarget.value;
+    this.setState({ parentName });
+  }
+
+  private handleParentEmailChange(
+    event: React.FormEvent<HTMLInputElement>
+  ): void {
+    const parentEmail: string = event.currentTarget.value;
+    this.setState({ parentEmail });
   }
 
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     firebase.analytics().logEvent('checkout_progress', {
       checkout_step: 4,
-      request: this.state.appt.toJSON(),
+      request: this.appt.toJSON(),
       items: this.items,
     });
     this.setState({ submitted: false, submitting: true });
-    if (!this.context.uid) {
-      const [err] = await to(UserProvider.signupWithGoogle(this.context));
-      if (err || !this.context.uid)
+    const parent: User = new User({
+      name: this.state.parentName,
+      email: this.state.parentEmail,
+    });
+    if (!this.context.user.uid) {
+      const [err] = await to(
+        this.context.signupWithGoogle(
+          this.context.user,
+          !this.context.user.parents.length ? [parent] : undefined
+        )
+      );
+      if (err || !this.context.user.uid)
         return this.setState({
           submitted: false,
           submitting: false,
-          err: `An error occurred while logging in with Google. ${
-            (err as Error).message
-          }`,
+          err:
+            'An error occurred while logging in with Google.' +
+            (err ? ' ' + err.message : ''),
+        });
+    } else if (!this.context.user.parents.length) {
+      const [err] = await to(this.context.signup(this.context.user, [parent]));
+      if (err || !this.context.user.parents.length)
+        return this.setState({
+          submitted: false,
+          submitting: false,
+          err:
+            "An error occurred while creating your parent's profile." +
+            (err ? ' ' + err.message : ''),
         });
     }
     const period = (msg: string) => {
@@ -183,8 +212,8 @@ class UserDialog extends React.Component<UserDialogProps> {
         method: 'post',
         url: '/api/request',
         data: {
-          token: this.context.token,
-          request: this.state.appt.toJSON(),
+          token: await this.context.token(),
+          request: this.appt.toJSON(),
         },
       })
     );
@@ -192,7 +221,7 @@ class UserDialog extends React.Component<UserDialogProps> {
       console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
       firebase.analytics().logEvent('exception', {
         description: `Request API responded with error: ${err.response.data.msg}`,
-        request: this.state.appt.toJSON(),
+        request: this.appt.toJSON(),
         fatal: false,
       });
       return this.setState({
@@ -206,7 +235,7 @@ class UserDialog extends React.Component<UserDialogProps> {
       console.error('[ERROR] Request API did not respond:', err.request);
       firebase.analytics().logEvent('exception', {
         description: `Request API did not respond: ${err.request}`,
-        request: this.state.appt.toJSON(),
+        request: this.appt.toJSON(),
         fatal: false,
       });
       return this.setState({
@@ -219,7 +248,7 @@ class UserDialog extends React.Component<UserDialogProps> {
       console.error('[ERROR] Calling request API:', err);
       firebase.analytics().logEvent('exception', {
         description: `Error calling request API: ${err}`,
-        request: this.state.appt.toJSON(),
+        request: this.appt.toJSON(),
         fatal: false,
       });
       return this.setState({
@@ -240,7 +269,7 @@ class UserDialog extends React.Component<UserDialogProps> {
       console.warn('[WARNING] No error or response from request API.');
       firebase.analytics().logEvent('exception', {
         description: 'No error or response from request API.',
-        request: this.state.appt.toJSON(),
+        request: this.appt.toJSON(),
         fatal: false,
       });
     }
@@ -251,8 +280,15 @@ class UserDialog extends React.Component<UserDialogProps> {
    * Renders the `UserDialog` that shows profile info and enables booking.
    */
   public render(): JSX.Element {
-    const { user, className, appt, ...rest } = this.props;
     const labels: Record<string, MessageDescriptor> = defineMessages({
+      parentName: {
+        id: 'user-dialog.parent-name',
+        defaultMessage: "Your parent's name",
+      },
+      parentEmail: {
+        id: 'user-dialog.parent-email',
+        defaultMessage: "Your parent's email address",
+      },
       subjects: {
         id: 'user-dialog.subjects',
         description: 'Label for the tutoring lesson subjects field.',
@@ -284,20 +320,24 @@ class UserDialog extends React.Component<UserDialogProps> {
       },
     });
     return (
-      <Dialog {...rest} open className={styles.dialog}>
-        <div className={styles.wrapper + (className ? ' ' + className : '')}>
+      <Dialog open onClosed={this.props.onClosed} className={styles.dialog}>
+        <div className={styles.wrapper}>
           <Loader
             active={this.state.submitting || this.state.submitted}
             checked={this.state.submitted}
           />
           <div className={styles.left}>
-            <a className={styles.img} href={user.photo} target='_blank'>
-              <Avatar src={user.photo} />
+            <a
+              className={styles.img}
+              href={this.props.user.photo}
+              target='_blank'
+            >
+              <Avatar src={this.props.user.photo} />
             </a>
-            <h4 className={styles.name}>{user.name}</h4>
-            {user.socials && !!user.socials.length && (
+            <h4 className={styles.name}>{this.props.user.name}</h4>
+            {this.props.user.socials && !!this.props.user.socials.length && (
               <div className={styles.socials}>
-                {user.socials.map((social, index) => (
+                {this.props.user.socials.map((social, index) => (
                   <a
                     key={index}
                     target='_blank'
@@ -310,19 +350,41 @@ class UserDialog extends React.Component<UserDialogProps> {
           </div>
           <div className={styles.right}>
             <h6 className={styles.bioHeader}>About</h6>
-            <p className={styles.bio}>{user.bio}</p>
+            <p className={styles.bio}>{this.props.user.bio}</p>
             <h6 className={styles.requestHeader}>Request</h6>
             <form className={styles.form} onSubmit={this.handleSubmit}>
+              {!this.context.user.parents.length && (
+                <>
+                  <TextField
+                    outlined
+                    required
+                    label={this.props.intl.formatMessage(labels.parentName)}
+                    className={styles.formField}
+                    onChange={this.handleParentNameChange}
+                    value={this.state.parentName}
+                  />
+                  <TextField
+                    outlined
+                    required
+                    type='email'
+                    label={this.props.intl.formatMessage(labels.parentEmail)}
+                    className={styles.formField}
+                    onChange={this.handleParentEmailChange}
+                    value={this.state.parentEmail}
+                  />
+                </>
+              )}
               <SubjectSelect
                 outlined
                 required
+                autoOpenMenu
                 renderToPortal
                 label={this.props.intl.formatMessage(labels.subjects)}
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
-                val={this.state.appt.subjects}
-                options={this.props.user.tutoring.subjects}
-                grade={this.context.grade}
+                val={this.state.subjects}
+                options={this.props.user[this.props.aspect].subjects}
+                grade={this.context.user.grade}
                 searchIndex={
                   this.props.aspect === 'mentoring' ? 'expertise' : 'subjects'
                 }
@@ -334,11 +396,11 @@ class UserDialog extends React.Component<UserDialogProps> {
                   label={this.props.intl.formatMessage(labels.time)}
                   className={styles.formField}
                   onChange={this.handleTimeslotChange}
-                  availability={user.availability}
-                  val={this.state.appt.time}
+                  availability={this.props.user.availability}
+                  val={this.state.time}
                   err={this.props.intl.formatMessage(labels.timeErr, {
-                    name: user.firstName,
-                    availability: user.availability.toString(),
+                    name: this.props.user.firstName,
+                    availability: this.props.user.availability.toString(),
                   })}
                 />
               )}
@@ -349,17 +411,17 @@ class UserDialog extends React.Component<UserDialogProps> {
                 label={this.props.intl.formatMessage(labels.topic)}
                 className={styles.formField}
                 onChange={this.handleMessageChange}
-                value={this.state.appt.message}
+                value={this.state.message}
               />
               <Button
                 className={styles.button}
                 label={
-                  !this.context.uid
+                  !this.context.user.uid
                     ? 'Signup and request'
-                    : `Request ${user.firstName}`
+                    : `Request ${this.props.user.firstName}`
                 }
                 disabled={this.state.submitting || this.state.submitted}
-                google={!this.context.uid}
+                google={!this.context.user.uid}
                 raised
                 arrow
               />

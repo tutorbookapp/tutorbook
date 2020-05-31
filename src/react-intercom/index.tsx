@@ -121,7 +121,7 @@ export default function IntercomHOC(): JSX.Element {
   const intl: IntlShape = useIntl();
   return (
     <UserContext.Consumer>
-      {(user: User) => <Intercom user={user} locale={intl.locale} />}
+      {({ user }) => <Intercom user={user} locale={intl.locale} />}
     </UserContext.Consumer>
   );
 }

@@ -1,14 +1,7 @@
 import React from 'react';
 
-import { useUser } from '@tutorbook/firebase';
 import { useIntl, defMsg, IntlShape, Msg } from '@tutorbook/intl';
-import {
-  Appt,
-  AttendeeInterface,
-  Timeslot,
-  User,
-  Query,
-} from '@tutorbook/model';
+import { Timeslot, User, Query } from '@tutorbook/model';
 
 import UserDialog from '@tutorbook/user-dialog';
 import Utils from '@tutorbook/utils';
@@ -58,41 +51,27 @@ export default function Search({
   onChange,
 }: SearchProps): JSX.Element {
   const intl: IntlShape = useIntl();
-  const user = useUser();
   const [viewing, setViewing] = React.useState<User | undefined>();
-  const getAppt: () => Appt = () => {
-    if (!viewing) return new Appt();
-
-    const attendees: AttendeeInterface[] = [
-      {
-        uid: viewing.uid,
-        roles: [query.aspect === 'tutoring' ? 'tutor' : 'mentor'],
-      },
-      {
-        uid: user.uid,
-        roles: [query.aspect === 'tutoring' ? 'tutee' : 'mentee'],
-      },
-    ];
-    const subjects: string[] = Utils.intersection<string>(
-      query.subjects,
-      viewing[query.aspect].subjects
-    );
-    const times: Timeslot[] = Utils.intersection<Timeslot>(
-      query.availability,
-      viewing.availability,
-      (a: Timeslot, b: Timeslot) => a.equalTo(b)
-    );
-
-    return new Appt({ attendees, subjects, time: times[0] });
-  };
   return (
     <div className={styles.wrapper}>
       {viewing && (
         <UserDialog
-          aspect={query.aspect}
           user={viewing}
-          appt={getAppt()}
-          onClose={() => setViewing(undefined)}
+          aspect={query.aspect}
+          onClosed={() => setViewing(undefined)}
+          subjects={Utils.intersection<string>(
+            query.subjects,
+            viewing[query.aspect].subjects
+          )}
+          time={
+            query.aspect === 'tutoring'
+              ? Utils.intersection<Timeslot>(
+                  query.availability,
+                  viewing.availability,
+                  (a: Timeslot, b: Timeslot) => a.equalTo(b)
+                )[0]
+              : undefined
+          }
         />
       )}
       <div className={styles.title}>
