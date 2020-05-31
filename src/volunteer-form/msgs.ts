@@ -121,4 +121,8 @@ export default defineMessages({
     id: 'form.github',
     defaultMessage: 'Your GitHub profile',
   },
+  indiehackers: {
+    id: 'form.indiehackers',
+    defaultMessage: 'Your Indie Hackers profile',
+  },
 });

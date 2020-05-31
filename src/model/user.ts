@@ -47,12 +47,13 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  * feel assured about a potential tutor's qualifications.
  */
 export type SocialTypeAlias =
+  | 'website'
   | 'linkedin'
   | 'twitter'
   | 'facebook'
   | 'instagram'
   | 'github'
-  | 'website';
+  | 'indiehackers';
 
 export interface SocialInterface {
   type: SocialTypeAlias;

@@ -15,6 +15,7 @@ import {
   SocialTypeAlias,
   User,
   Aspect,
+  SocialInterface,
 } from '@tutorbook/model';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
@@ -70,6 +71,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     facebook: '',
     instagram: '',
     github: '',
+    indiehackers: '',
   };
 
   private readonly headerRef: React.RefObject<HTMLHeadingElement>;
@@ -267,6 +269,9 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         <TextField {...s('facebook', (v) => `https://facebook.com/${v}`)} />
         <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
         <TextField {...s('github', (v) => `https://github.com/${v}`)} />
+        <TextField
+          {...s('indiehackers', (v) => `https://indiehackers.com/${v}`)}
+        />
       </>
     );
   }
@@ -285,6 +290,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       twitter,
       instagram,
       github,
+      indiehackers,
     } = this.state;
     const tutor: User = new User({
       ...this.state,
@@ -313,7 +319,11 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
           type: 'github',
           url: github,
         },
-      ],
+        {
+          type: 'indiehackers',
+          url: indiehackers,
+        },
+      ].filter((social) => !!social.url) as SocialInterface[],
       tutoring: { subjects: subjects, searches: [] },
       mentoring: { subjects: expertise, searches: [] },
     });
