@@ -33,6 +33,7 @@ interface UserProviderProps {
 
 export interface UserProviderState {
   user: User;
+  update: (user: User) => void;
   token: () => Promise<string> | undefined;
   signup: (user: User, parents?: User[]) => Promise<void>;
   signupWithGoogle: (user?: User, parents?: User[]) => Promise<void>;
@@ -41,6 +42,7 @@ export interface UserProviderState {
 export const UserContext: React.Context<UserProviderState> = React.createContext(
   {
     user: new User(),
+    update: (user: User) => {},
     token: (() => undefined) as () => Promise<string> | undefined,
     signup: async (user: User, parents?: User[]) => {},
     signupWithGoogle: async (user?: User, parents?: User[]) => {},
@@ -66,6 +68,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
     super(props);
     this.state = {
       user: new User(),
+      update: (user: User) => this.setState({ user }),
       token: this.getToken,
       signup: this.signup,
       signupWithGoogle: this.signupWithGoogle,
@@ -120,7 +123,6 @@ export class UserProvider extends React.Component<UserProviderProps> {
       this.docUnsubscriber = ref.onSnapshot((doc) => this.updateDoc(doc));
     if (doc && !doc.exists) {
       console.warn(`[WARNING] No document for current user (${user.uid}).`);
-      await this.signup(new User(user));
     } else if (doc) {
       console.log('[DEBUG] Got updated document data:', doc.data());
       const withData: User = User.fromFirestore(doc);
