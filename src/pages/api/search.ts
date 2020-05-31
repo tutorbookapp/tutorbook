@@ -32,11 +32,12 @@ async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
   const results: User[] = [];
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
-  console.log('[DEBUG] Filtering by:', filterStrings);
+  const optionalFilters: string[] = [`featured:${query.aspect}`];
+  console.log('[DEBUG] Filtering by:', { filterStrings, optionalFilters });
   for (const filterString of filterStrings) {
     const options: SearchOptions | undefined = filterString
-      ? { filters: filterString }
-      : undefined;
+      ? { optionalFilters, filters: filterString }
+      : { optionalFilters };
     const [err, res] = await to<SearchResponse<UserSearchHitAlias>>(
       index.search('', options) as Promise<SearchResponse<UserSearchHitAlias>>
     );
