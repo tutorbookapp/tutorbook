@@ -13,6 +13,7 @@ interface Data {
   appt: Appt;
   pupil: UserWithRoles;
   attendees: UserWithRolesAndVerifications[];
+  description: string;
 }
 
 /**
@@ -49,6 +50,10 @@ export class PupilRequestEmail implements Email {
       appt,
       pupil,
       attendees: attendees.map((a: UserWithRoles) => addVerifications(a)),
+      description:
+        pupil.roles.indexOf('tutee') >= 0
+          ? `${Utils.join(appt.subjects)} tutoring lessons on ${appt.time}`
+          : `a cool ${Utils.join(appt.subjects)} project`,
     });
   }
 }
