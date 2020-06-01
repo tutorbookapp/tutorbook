@@ -51,6 +51,7 @@ export default function TutorsForm({
         label={msg(msgs.subjects)}
         placeholder={msg(msgs.subjectsPlaceholder)}
         onChange={(subjects: string[]) => onChange({ ...query, subjects })}
+        aspect={query.aspect}
         outlined
       />
       <ScheduleInput

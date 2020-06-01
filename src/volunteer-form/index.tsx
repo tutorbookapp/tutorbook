@@ -250,14 +250,14 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
                 this.context.update(
                   new User({
                     ...this.context.user,
-                    mentoring: {
+                    [this.props.aspect]: {
                       subjects,
-                      searches: this.context.user.mentoring.searches,
+                      searches: this.context.user[this.props.aspect].searches,
                     },
                   })
                 )
               }
-              searchIndex='expertise'
+              aspect={this.props.aspect}
               required
             />
             <TextField
@@ -290,13 +290,14 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
                 this.context.update(
                   new User({
                     ...this.context.user,
-                    tutoring: {
+                    [this.props.aspect]: {
                       subjects,
-                      searches: this.context.user.tutoring.searches,
+                      searches: this.context.user[this.props.aspect].searches,
                     },
                   })
                 )
               }
+              aspect={this.props.aspect}
               required
             />
             <ScheduleInput

@@ -45,7 +45,7 @@ export default function MentorsForm({
         label={msg(msgs.subjects)}
         placeholder={msg(msgs.subjectsPlaceholder)}
         onChange={(subjects: string[]) => onChange({ ...query, subjects })}
-        searchIndex='expertise'
+        aspect={query.aspect}
         outlined
       />
       {button && (

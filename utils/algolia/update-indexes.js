@@ -10,7 +10,7 @@ const to = require('await-to-js').default;
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs');
 
-const main = async (id = 'subjects') => {
+const main = async (id) => {
   const index = client.initIndex(id);
   index.setSettings({
     attributesForFaceting: ['filterOnly(grades)', 'filterOnly(name)'],
@@ -35,4 +35,5 @@ const main = async (id = 'subjects') => {
   }
 };
 
-main('expertise');
+main('mentoring');
+main('tutoring');

@@ -6,7 +6,7 @@ import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import { GradeAlias } from '@tutorbook/model';
+import { Aspect, GradeAlias } from '@tutorbook/model';
 import {
   SearchOptions,
   SearchResponse,
@@ -40,7 +40,7 @@ interface UniqueSubjectSelectProps extends TextFieldProps {
   readonly renderToPortal?: boolean;
   readonly options?: string[];
   readonly grade?: GradeAlias;
-  readonly searchIndex?: string;
+  readonly aspect: Aspect;
   readonly autoOpenMenu?: boolean;
 }
 
@@ -81,7 +81,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       inputFocused: false,
       lineBreak: false,
     };
-    this.searchIndex = client.initIndex(props.searchIndex || 'subjects');
+    this.searchIndex = client.initIndex(props.aspect);
     this.inputRef = React.createRef();
     this.lastSelectedRef = React.createRef();
     this.ghostElementRef = React.createRef();
@@ -116,10 +116,9 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       (this.state.inputValue === '' || this.state.inputValue === '\xa0') &&
       this.inputValue !== this.state.inputValue;
     const gradeChanged = prevProps.grade !== this.props.grade;
-    const indexChanged = prevProps.searchIndex !== this.props.searchIndex;
+    const indexChanged = prevProps.aspect !== this.props.aspect;
     const valChanged = prevProps.val !== this.props.val;
-    if (indexChanged)
-      this.searchIndex = client.initIndex(this.props.searchIndex || 'subjects');
+    if (indexChanged) this.searchIndex = client.initIndex(this.props.aspect);
     if (shouldChangeInputValue) this.setState({ inputValue: this.inputValue });
     if (indexChanged || gradeChanged) this.updateSuggestions();
     if (valChanged && this.props.val)
@@ -290,7 +289,7 @@ export default class SubjectSelect extends React.Component<SubjectSelectProps> {
       renderToPortal,
       options,
       grade,
-      searchIndex,
+      aspect,
       autoOpenMenu,
       ...rest
     } = this.props;

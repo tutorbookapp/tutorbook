@@ -387,9 +387,7 @@ class UserDialog extends React.Component<UserDialogProps> {
                 val={this.state.subjects}
                 options={this.props.user[this.props.aspect].subjects}
                 grade={this.context.user.grade}
-                searchIndex={
-                  this.props.aspect === 'mentoring' ? 'expertise' : 'subjects'
-                }
+                aspect={this.props.aspect}
               />
               {this.props.aspect === 'tutoring' && (
                 <TimeslotInput
