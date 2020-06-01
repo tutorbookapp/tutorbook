@@ -1,16 +1,58 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
 @use '@tutorbook/styles/typography';
 
-.background {
-  background-image: linear-gradient(to right, #1d3dc1 9.38%, #1ba4ff 88.54%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  display: inline-block;
+// Update: September 2016, after a lot of grumbling, decided to simplify this.
+// Cons: The color accuracy has gone down and mostly works on very dark or very
+// light backgrounds.
+// Pros: The code is far simpler and doesn't require doubling-up the text.
+// @see {@link https://css-tricks.com/how-to-do-knockout-text/}
+@mixin gradient-text($gradient, $bg: 'light') {
+  @supports (mix-blend-mode: lighten) {
+    display: inline-block;
+    position: relative;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+
+      background: unquote($gradient);
+      pointer-events: none;
+    }
+
+    @if ($bg == 'light') {
+      color: #000;
+      background: #fff;
+      mix-blend-mode: multiply;
+
+      &::before {
+        mix-blend-mode: screen;
+      }
+    } @else {
+      color: #fff;
+      background: #000;
+      mix-blend-mode: lighten;
+
+      &::before {
+        mix-blend-mode: multiply;
+      }
+    }
+  }
 }
 
 .title {
   @include typography.typography('headline2');
+  @include gradient-text(
+    'linear-gradient(to right, #1d3dc1 9.38%, #1ba4ff 88.54%)',
+    'light'
+  );
   display: inline-block;
-  color: transparent;
   padding-bottom: 5px; // Otherwise, words with 'g' and 'y' get cut off.
-  margin: 0;
+  border: 1px solid #fff; // Otherwise, the background peeks out on mobile.
+  margin: -1px;
 }
