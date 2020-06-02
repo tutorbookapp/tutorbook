@@ -4,6 +4,7 @@ import {
   User,
   UserJSONInterface,
   UserInterface,
+  ApiCallResult,
 } from '@tutorbook/model';
 import { AxiosError, AxiosResponse } from 'axios';
 import { DBContext } from './db';
@@ -35,7 +36,7 @@ export interface UserProviderState {
   user: User;
   update: (user: User) => void;
   token: () => Promise<string> | undefined;
-  signup: (user: User, parents?: User[]) => Promise<void>;
+  signup: (user: User, parents?: User[]) => Promise<any>;
   signupWithGoogle: (user?: User, parents?: User[]) => Promise<void>;
 }
 
@@ -174,7 +175,8 @@ export class UserProvider extends React.Component<UserProviderProps> {
         email: cred.user.email as string,
         phone: cred.user.phoneNumber as string,
       };
-      return this.signup(new User({ ...user, ...firebaseUser }), parents);
+      this.signup(new User({ ...user, ...firebaseUser }), parents);
+      return;
     } else {
       firebase.analytics().logEvent('exception', {
         description: 'No user in sign-in with Google response.',
@@ -184,7 +186,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
     }
   }
 
-  private async signup(user: User, parents?: User[]): Promise<void> {
+  private async signup(user: User, parents?: User[]): Promise<ApiCallResult> {
     const [err, res] = await to<
       AxiosResponse<{ user: UserJSONInterface }>,
       AxiosError<ApiError>
@@ -207,7 +209,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
-      throw new Error(err.response.data.msg);
+      return { code: err.response.status, msg: err.response.data.msg };
     } else if (err && err.request) {
       // The request was made but no response was received
       // `err.request` is an instance of XMLHttpRequest in the
@@ -218,7 +220,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
-      throw new Error('User creation API did not respond.');
+      return { msg: 'User creation API did not respond.' };
     } else if (err) {
       // Something happened in setting up the request that triggered
       // an err
@@ -228,7 +230,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
-      throw new Error(`Error calling user API: ${err}`);
+      return { msg: `Error calling user API: ${err}` };
     } else if (res) {
       // TODO: Find a way to `this.setState()` with `res.data.user` ASAP
       // (instead of waiting on Firebase Auth to call our auth state listener).
@@ -238,6 +240,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
       firebase.analytics().logEvent('login', {
         method: 'custom_token',
       });
+      return { code: res.status, msg: 'Signup succeeded.' };
     } else {
       // This should never actually happen, but we include it here just in case.
       console.warn('[WARNING] No error or response from user API.');
@@ -246,7 +249,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         user: user.toJSON(),
         fatal: true,
       });
-      throw new Error('No error or response from user creation API.');
+      return { msg: 'No error or response from user creation API.' };
     }
   }
 }

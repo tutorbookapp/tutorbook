@@ -1,0 +1,28 @@
+.detailsCtrl {
+  display: flex;
+  align-items: center;
+}
+
+.detailsBtn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin-right: 0.5rem;
+}
+
+.details {
+  border-radius: 4px;
+  padding: 0 0.5rem;
+  background-color: #f0f3f5;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.6s ease-out;
+}
+
+.shown {
+  max-height: 600px;
+}
+
+.actions {
+  justify-content: center;
+}

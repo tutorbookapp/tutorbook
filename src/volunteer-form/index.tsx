@@ -16,9 +16,11 @@ import {
   User,
   Aspect,
   SocialInterface,
+  ApiCallResult,
 } from '@tutorbook/model';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
+import { HttpErrorDialog } from '@tutorbook/http-error-dialog';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
@@ -35,6 +37,7 @@ type VolunteerFormState = {
   readonly submittingTutor: boolean;
   readonly submittedMentor: boolean;
   readonly submittedTutor: boolean;
+  error: ApiCallResult | undefined;
 };
 
 /**
@@ -45,11 +48,13 @@ type VolunteerFormState = {
  * 1. The volunteer tutor sign-up form where altruistic individuals can sign-up
  * to help tutor somebody affected by COVID-19.
  */
-class VolunteerForm extends React.Component<VolunteerFormProps> {
+class VolunteerForm extends React.Component<
+  VolunteerFormProps,
+  VolunteerFormState
+> {
   public static readonly contextType: React.Context<
     UserProviderState
   > = UserContext;
-  public readonly state: VolunteerFormState;
 
   private readonly headerRef: React.RefObject<HTMLHeadingElement>;
 
@@ -65,6 +70,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       submittingTutor: false,
       submittedMentor: false,
       submittedTutor: false,
+      error: undefined,
     };
 
     this.headerRef = React.createRef();
@@ -74,47 +80,51 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
 
   public render(): JSX.Element {
     const msg = (msg: MessageDescriptor) => this.props.intl.formatMessage(msg);
+    const { error } = this.state;
     return (
-      <div className={styles.wrapper}>
-        <div className={styles.header} ref={this.headerRef}>
-          <span style={this.getHeaderStyle('mentoring')}>
-            <Title>{msg(msgs.mentorHeader)}</Title>
-          </span>
-          <span style={this.getHeaderStyle('tutoring')}>
-            <Title>{msg(msgs.tutorHeader)}</Title>
-          </span>
-        </div>
-        <div className={styles.description} ref={this.descRef}>
-          <span style={this.getDescStyle('mentoring')}>
-            {msg(msgs.mentorDesc)}
-          </span>
-          <span style={this.getDescStyle('tutoring')}>
-            {msg(msgs.tutorDesc)}
-          </span>
-        </div>
-        <Card className={styles.formCard}>
-          <Loader
-            active={this.loading || this.checked}
-            checked={this.checked}
-          />
-          <form className={styles.form} onSubmit={this.handleSubmit}>
-            {this.renderInputs()}
-            <Button
-              className={styles.formSubmitButton}
-              label={msg(
-                this.context.user.uid
-                  ? msgs.updateSubmit
-                  : this.props.aspect === 'mentoring'
-                  ? msgs.mentorSubmit
-                  : msgs.tutorSubmit
-              )}
-              disabled={this.loading || this.checked}
-              raised
-              arrow
+      <>
+        <div className={styles.wrapper}>
+          <div className={styles.header} ref={this.headerRef}>
+            <span style={this.getHeaderStyle('mentoring')}>
+              <Title>{msg(msgs.mentorHeader)}</Title>
+            </span>
+            <span style={this.getHeaderStyle('tutoring')}>
+              <Title>{msg(msgs.tutorHeader)}</Title>
+            </span>
+          </div>
+          <div className={styles.description} ref={this.descRef}>
+            <span style={this.getDescStyle('mentoring')}>
+              {msg(msgs.mentorDesc)}
+            </span>
+            <span style={this.getDescStyle('tutoring')}>
+              {msg(msgs.tutorDesc)}
+            </span>
+          </div>
+          <Card className={styles.formCard}>
+            <Loader
+              active={this.loading || this.checked}
+              checked={this.checked}
             />
-          </form>
-        </Card>
-      </div>
+            <form className={styles.form} onSubmit={this.handleSubmit}>
+              {this.renderInputs()}
+              <Button
+                className={styles.formSubmitButton}
+                label={msg(
+                  this.context.user.uid
+                    ? msgs.updateSubmit
+                    : this.props.aspect === 'mentoring'
+                    ? msgs.mentorSubmit
+                    : msgs.tutorSubmit
+                )}
+                disabled={this.loading || this.checked}
+                raised
+                arrow
+              />
+            </form>
+          </Card>
+        </div>
+        {error ? <HttpErrorDialog open={!!error} error={error} /> : null}
+      </>
     );
   }
 
@@ -356,13 +366,20 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       submittingTutor:
         this.props.aspect === 'tutoring' || this.state.submittingTutor,
     });
-    await this.context.signup(this.context.user);
-    this.setState({
-      submittedMentor:
-        this.props.aspect === 'mentoring' || this.state.submittedMentor,
-      submittedTutor:
-        this.props.aspect === 'tutoring' || this.state.submittedTutor,
-    });
+
+    const result = (await this.context.signup(
+      this.context.user
+    )) as ApiCallResult;
+    if (result.code === 201) {
+      this.setState({
+        submittedMentor:
+          this.props.aspect === 'mentoring' || this.state.submittedMentor,
+        submittedTutor:
+          this.props.aspect === 'tutoring' || this.state.submittedTutor,
+      });
+      return;
+    }
+    this.setState({ error: result });
   }
 }
 
