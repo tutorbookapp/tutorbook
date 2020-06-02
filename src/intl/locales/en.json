@@ -310,5 +310,41 @@
   {
     "id": "form.indiehackers",
     "defaultMessage": "Your IndieHackers profile"
+  },
+  {
+    "id": "http-error-dialog.error-type",
+    "defaultMessage": "{type} error"
+  },
+  {
+    "id": "http-error-dialog.details-show",
+    "defaultMessage": "Show details"
+  },
+  {
+    "id": "http-error-dialog.details-hide",
+    "defaultMessage": "Hide details"
+  },
+  {
+    "id": "http-error-dialog.suggestion",
+    "defaultMessage": "You can try later, or contact the support team."
+  },
+  {
+    "id": "http-error-dialog.suggestion-report",
+    "defaultMessage": "Press 'Help' to get support."
+  },
+  {
+    "id": "http-error-dialog.error-code",
+    "defaultMessage": "Response status code: {code}"
+  },
+  {
+    "id": "http-error-dialog.error-details",
+    "defaultMessage": "Error: {details}"
+  },
+  {
+    "id": "btn-tag.close",
+    "defaultMessage": "Close"
+  },
+  {
+    "id": "btn-tag.help",
+    "defaultMessage": "Help"
   }
 ]

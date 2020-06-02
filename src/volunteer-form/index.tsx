@@ -102,7 +102,7 @@ class VolunteerForm extends React.Component<
           </div>
           <Card className={styles.formCard}>
             <Loader
-              active={this.loading || this.checked}
+              active={(this.loading || this.checked) && !error}
               checked={this.checked}
             />
             <form className={styles.form} onSubmit={this.handleSubmit}>
@@ -116,7 +116,7 @@ class VolunteerForm extends React.Component<
                     ? msgs.mentorSubmit
                     : msgs.tutorSubmit
                 )}
-                disabled={this.loading || this.checked}
+                disabled={(this.loading || this.checked) && !error}
                 raised
                 arrow
               />

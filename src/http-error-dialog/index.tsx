@@ -54,14 +54,14 @@ export const HttpErrorDialog: FC<HttpErrorDialogProps> = ({
   return (
     <Dialog {...dialogProps}>
       <DialogTitle>
-        {intl.formatMessage({ id: 'error-dialog.error-type' }, { type })}
+        {intl.formatMessage({ id: 'http-error-dialog.error-type' }, { type })}
       </DialogTitle>
       <DialogContent>
         <Typography use='body1'>
-          {intl.formatMessage({ id: 'error-dialog.suggestion' })}
+          {intl.formatMessage({ id: 'http-error-dialog.suggestion' })}
         </Typography>
         <Typography use='body1'>
-          {intl.formatMessage({ id: 'error-dialog.suggestion-report' })}
+          {intl.formatMessage({ id: 'http-error-dialog.suggestion-report' })}
         </Typography>
         <div className={styles.detailsCtrl}>
           <IconButton
@@ -73,18 +73,21 @@ export const HttpErrorDialog: FC<HttpErrorDialogProps> = ({
           <Typography use='button'>
             {intl.formatMessage(
               detailsShown
-                ? { id: 'error-dialog.details-hide' }
-                : { id: 'error-dialog.details-show' }
+                ? { id: 'http-error-dialog.details-hide' }
+                : { id: 'http-error-dialog.details-show' }
             )}
           </Typography>
         </div>
         <div ref={detailsRef} className={styles.details}>
           <Typography use='body2'>
-            {intl.formatMessage({ id: 'error-dialog.error-code' }, { code })}
+            {intl.formatMessage(
+              { id: 'http-error-dialog.error-code' },
+              { code }
+            )}
           </Typography>
           <Typography use='body2'>
             {intl.formatMessage(
-              { id: 'error-dialog.error-details' },
+              { id: 'http-error-dialog.error-details' },
               { details }
             )}
           </Typography>
