@@ -2,6 +2,8 @@ const path = require('path');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env.prod') });
 
+const parse = require('csv-parse/lib/sync');
+const fs = require('fs');
 const admin = require('firebase-admin');
 const app = admin.initializeApp({
   credential: admin.credential.cert({
@@ -14,29 +16,88 @@ const app = admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
-const db = app.firestore().collection('partitions').doc('test');
+const db = app.firestore().collection('partitions').doc('default');
+
+const getSubjects = (id) => {
+  return parse(fs.readFileSync(`../algolia/${id}.csv`), {
+    columns: true,
+    skip_empty_lines: true,
+  }).filter((subject) => !!subject.name);
+};
+
+const GRADES = [
+  'Kindergarten',
+  '1st Grade',
+  '2nd Grade',
+  '3rd Grade',
+  '4th Grade',
+  '5th Grade',
+  '6th Grade',
+  '7th Grade',
+  '8th Grade',
+  '9th Grade',
+  '10th Grade',
+  '11th Grade',
+  '12th Grade',
+];
+
+const SUBJECT_LEVELS = ['1', '2', '3', '4'];
 
 const main = async () => {
+  const mentoringSubjects = getSubjects('mentoring');
+  const tutoringSubjects = getSubjects('tutoring');
+
+  const updateSubjects = (subjects, validSubjects) => {
+    const all = subjects.map((subject) => {
+      const idx = validSubjects.findIndex((s) => {
+        if (s.name === subject) return true;
+        const synonyms = s.synonyms.split(', ');
+        if (synonyms.indexOf(subject) >= 0) return true;
+        for (const grade of GRADES) {
+          const subjectWithoutGrade = subject.replace(grade + ' ', '');
+          if (s.name === subjectWithoutGrade) return true;
+          if (synonyms.indexOf(subjectWithoutGrade) >= 0) return true;
+        }
+        for (const subjectLevel of SUBJECT_LEVELS) {
+          const subjectWithoutLevel = subject.replace(' ' + subjectLevel, '');
+          if (s.name === subjectWithoutLevel) return true;
+          if (synonyms.indexOf(subjectWithoutLevel) >= 0) return true;
+        }
+        return false;
+      });
+      if (idx < 0) {
+        console.log(`[DEBUG] Subject "${subject}" could not be found.`);
+        debugger;
+      }
+      return idx >= 0 ? validSubjects[idx].name : subject;
+    });
+    return [...new Set(all)];
+  };
+
   const users = (await db.collection('users').get()).docs;
   await Promise.all(
     users.map((user) => {
-      const data = {
-        ...(user.data() || {}),
+      const data = user.data();
+      return user.ref.set({
+        uid: data.uid || user.id,
+        name: data.name || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        photo: data.photo || '',
+        bio: data.bio || '',
+        featured: data.featured || [],
+        availability: data.availability || [],
+        parents: data.parents || [],
+        socials: (data.socials || []).filter((s) => !!s.url),
         mentoring: {
-          subjects: user.data().expertise || [],
-          searches: [],
+          subjects: updateSubjects(data.mentoring.subjects, mentoringSubjects),
+          searches: updateSubjects(data.mentoring.searches, mentoringSubjects),
         },
         tutoring: {
-          subjects: user.data().subjects || [],
-          searches: user.data().searches || [],
+          subjects: updateSubjects(data.tutoring.subjects, tutoringSubjects),
+          searches: updateSubjects(data.tutoring.searches, tutoringSubjects),
         },
-      };
-      delete data.subjects;
-      delete data.searches;
-      delete data.expertise;
-      delete data.notifications;
-      delete data.schedule;
-      return user.ref.set(data);
+      });
     })
   );
 };

@@ -3,38 +3,38 @@ PSAT,,"11, 12"
 ACT,,"11, 12"
 SAT,,"11, 12"
 ,,
-Math,"SAT: Math 1, SAT: Math 2","0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+Math,"SAT Math, SAT: Math1, SAT: Math2, SAT: Math 1, SAT: Math 2","0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Algebra,"Pre-Algebra, Algebra 1, Algebra 2","7, 8, 9, 10"
-Geometry,Geometry Honors,"9, 10"
-Trigonometry,Trigonometry Honors,10
-Calculus,"AP Calculus AB, AP Calculus BC, Pre-Calculus, Multivariable Calculus",12
+Geometry,"Geometry Honors, Geometry H","9, 10"
+Trigonometry,"Trigonometry Honors, Trigonometry H",10
+Calculus,"AP Calculus, AP Calculus AB, AP Calculus BC, Pre-Calculus, Multivariable Calculus",12
 Statistics,AP Statistics,11
 Additional Mathematics,,"8, 9, 10"
 ,,
 Science,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Physics,"SAT: Physics, AP Physics 1, AP Physics 2, AP Physics C","11, 12"
-Biology,"SAT: Biology, AP Biology, Biology Honors","11, 12"
-Chemistry,"SAT: Chemistry, AP Chemistry, Chemistry Honors",12
+Biology,"SAT: Biology, AP Biology, Biology Honors, Biology H","11, 12"
+Chemistry,"SAT: Chemistry, AP Chemistry, Chemistry Honors, Chemistry H",12
 Environmental Science,AP Environmental Science,"11, 12"
 ,,
-History,"AP U.S. Government, AP Art History, AP European History, AP U.S. History, AP World History, European History, U.S. History, World History","11, 12"
+History,"AP U.S. Government, AP US Government, AP Art History, AP European History, AP U.S. History, AP US History, AP World History, European History, U.S. History, US History, World History","11, 12"
 Economics,"AP Macroeconomics, AP Microeconomics","11, 12"
 Government,"AP U.S. Government and Politics, Politics, U.S. Government","11, 12"
 Psychology,AP Psychology,12
 ,,
-Latin Language,AP Latin,"6, 7, 8, 9, 10, 11, 12"
-Spanish Language,"AP Spanish Language, AP Spanish Literature","6, 7, 8, 9, 10, 11, 12"
-Chinese Language,AP Chinese Language,"6, 7, 8, 9, 10, 11, 12"
-Urdu Language,,"6, 7, 8, 9, 10, 11, 12"
-Hindi Language,,"6, 7, 8, 9, 10, 11, 12"
-Japanese Language,AP Japanese Language,"6, 7, 8, 9, 10, 11, 12"
-French Language,"AP French Language, AP French Literature","6, 7, 8, 9, 10, 11, 12"
-German Language,AP German Language,"6, 7, 8, 9, 10, 11, 12"
+Latin Language,"AP Latin, Latin","6, 7, 8, 9, 10, 11, 12"
+Spanish Language,"AP Spanish Language, AP Spanish Literature, Spanish, SAT: Spanish","6, 7, 8, 9, 10, 11, 12"
+Chinese Language,"AP Chinese Language, Chinese","6, 7, 8, 9, 10, 11, 12"
+Urdu Language,"Urdu","6, 7, 8, 9, 10, 11, 12"
+Hindi Language,"Hindi","6, 7, 8, 9, 10, 11, 12"
+Japanese Language,"AP Japanese Language, Japanese","6, 7, 8, 9, 10, 11, 12"
+French Language,"AP French Language, AP French Literature, French, SAT: French","6, 7, 8, 9, 10, 11, 12"
+German Language,"AP German Language, German","6, 7, 8, 9, 10, 11, 12"
 ,,
 English,"AP English Language and Composition, AP English Literature and Composition, SAT: Literature","0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 General Paper,,"11, 12"
 ,,
-Computer Science,"AP Computer Science Advanced, AP Computer Science Principles","1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+Computer Science,"AP Computer Science A, AP Computer Science Advanced, AP Computer Science P, AP Computer Science Principles","1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Engineering,,"7, 8, 9, 10, 11, 12"
 Design,"Design and Technology, Design and Communication","11, 12"
 Accounting,,"8, 9, 10, 11, 12"
