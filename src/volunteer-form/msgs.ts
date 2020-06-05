@@ -71,11 +71,11 @@ export default defineMessages({
   },
   project: {
     id: 'mentor-form.project',
-    defaultMessage: 'What projects are you working on?',
+    defaultMessage: "What's your background? What projects are you working on?",
   },
   projectPlaceholder: {
     id: 'mentor-form.project-placeholder',
-    defaultMessage: 'Ex. A research paper or a music album',
+    defaultMessage: 'Hint: Copy-and-paste your LinkedIn or Facebook bio',
   },
   subjects: {
     id: 'tutor-form.subjects',
@@ -93,12 +93,12 @@ export default defineMessages({
   },
   experience: {
     id: 'tutor-form.experience',
-    defaultMessage: 'Education and experience',
+    defaultMessage: "What's your background? Why are you a good tutor?",
     description: 'Label for the education and experience field.',
   },
   experiencePlaceholder: {
     id: 'tutor-form.experience-placeholder',
-    defaultMessage: 'Ex. Your college degree or work experience',
+    defaultMessage: 'Hint: Copy-and-paste your LinkedIn or Facebook bio',
   },
   website: {
     id: 'form.website',
