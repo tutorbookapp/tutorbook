@@ -16,7 +16,7 @@ export default function About(): JSX.Element {
     <>
       <div className={styles.summary}>
         <div className={styles.wrapper}>
-          <h2 className={styles.subheader}>What is TB?</h2>
+          <h2 className={styles.subheader}>What is Tutorbook?</h2>
           <p className={styles.body}>
             <b className={styles.bold}>
               <Message
