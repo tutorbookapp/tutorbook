@@ -57,6 +57,10 @@ export default defineMessages({
     id: 'form.phone',
     defaultMessage: 'Your phone number',
   },
+  photo: {
+    id: 'form.photo',
+    defaultMessage: 'Your profile photo',
+  },
   expertise: {
     id: 'mentor-form.expertise',
     defaultMessage: 'What are your fields of expertise?',

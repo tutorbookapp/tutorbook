@@ -6,6 +6,7 @@ import { ListDivider } from '@rmwc/list';
 import { Card } from '@rmwc/card';
 
 import Title from '@tutorbook/title';
+import PhotoInput from '@tutorbook/photo-input';
 import ScheduleInput from '@tutorbook/schedule-input';
 import SubjectSelect from '@tutorbook/subject-select';
 import firebase, { UserProviderState, UserContext } from '@tutorbook/firebase';
@@ -237,6 +238,18 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         <TextField
           {...shared('phone')}
           value={this.context.user.phone ? this.context.user.phone : undefined}
+        />
+        <PhotoInput
+          {...shared('photo')}
+          val={this.context.user.photo}
+          onChange={(photo: string) =>
+            this.context.update(
+              new User({
+                ...this.context.user,
+                photo,
+              })
+            )
+          }
         />
         <ListDivider className={styles.divider} />
         {this.props.aspect === 'mentoring' && (

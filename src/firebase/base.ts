@@ -3,6 +3,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/firestore'; // Only import the Firebase modules you use.
 import 'firebase/analytics';
+import 'firebase/storage';
 import 'firebase/auth';
 
 const clientCredentials = {
