@@ -20,7 +20,9 @@ function IndexPage(): JSX.Element {
       />
       <Hero aspect={aspect} />
       <About />
-      <Hero aspect={aspect} />
+      <div style={{ marginBottom: '60px' }}>
+        <Hero aspect={aspect} />
+      </div>
       <Footer />
       <Intercom />
     </>
