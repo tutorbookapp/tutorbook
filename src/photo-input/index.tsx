@@ -89,7 +89,11 @@ export default function PhotoInput(props: PhotoInputProps): JSX.Element {
       value=''
       {...rest}
     >
-      <button className={styles.clickArea} onClick={handleClick} />
+      <button
+        className={styles.clickArea}
+        onFocus={handleClick}
+        onClick={handleClick}
+      />
     </TextField>
   );
 }
