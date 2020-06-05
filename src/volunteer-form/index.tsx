@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { to } from 'await-to-js';
+import { ApiCallError } from '@tutorbook/custom-errors';
 import { MessageDescriptor, IntlShape, injectIntl } from 'react-intl';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
@@ -16,7 +17,6 @@ import {
   User,
   Aspect,
   SocialInterface,
-  ApiCallResult,
 } from '@tutorbook/model';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
@@ -37,7 +37,7 @@ type VolunteerFormState = {
   readonly submittingTutor: boolean;
   readonly submittedMentor: boolean;
   readonly submittedTutor: boolean;
-  error: ApiCallResult | undefined;
+  error: ApiCallError | undefined;
 };
 
 /**
@@ -367,19 +367,20 @@ class VolunteerForm extends React.Component<
         this.props.aspect === 'tutoring' || this.state.submittingTutor,
     });
 
-    const result = (await this.context.signup(
-      this.context.user
-    )) as ApiCallResult;
-    if (result.code === 201) {
-      this.setState({
-        submittedMentor:
-          this.props.aspect === 'mentoring' || this.state.submittedMentor,
-        submittedTutor:
-          this.props.aspect === 'tutoring' || this.state.submittedTutor,
-      });
+    const [error] = await to<null, ApiCallError>(
+      this.context.signup(this.context.user)
+    );
+    if (error) {
+      this.setState({ error });
       return;
     }
-    this.setState({ error: result });
+
+    this.setState({
+      submittedMentor:
+        this.props.aspect === 'mentoring' || this.state.submittedMentor,
+      submittedTutor:
+        this.props.aspect === 'tutoring' || this.state.submittedTutor,
+    });
   }
 }
 

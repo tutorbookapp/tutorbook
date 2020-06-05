@@ -1,3 +1,10 @@
+.brief {
+  p {
+    margin: 0;
+  }
+  margin-bottom: 1rem;
+}
+
 .detailsCtrl {
   display: flex;
   align-items: center;
@@ -21,8 +28,4 @@
 
 .shown {
   max-height: 600px;
-}
-
-.actions {
-  justify-content: center;
 }

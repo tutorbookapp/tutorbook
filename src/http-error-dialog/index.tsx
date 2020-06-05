@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { useIntl, defineMessages, MessageDescriptor } from 'react-intl';
 import {
   Dialog,
   DialogTitle,
@@ -8,14 +8,53 @@ import {
   DialogButton,
   DialogProps,
 } from '@rmwc/dialog';
-import { ApiCallResult } from '@tutorbook/model';
+import { ApiCallError } from '@tutorbook/custom-errors';
 import { Typography } from '@rmwc/typography';
 import { IconButton } from '@rmwc/icon-button';
 
 import styles from './http-error-dialog.module.scss';
 
+const msgs: Record<string, MessageDescriptor> = defineMessages({
+  type: {
+    id: 'http-error-dialog.error-type',
+    defaultMessage: 'A {type} error occurred',
+  },
+  show: {
+    id: 'http-error-dialog.details-show',
+    defaultMessage: 'Show details',
+  },
+  hide: {
+    id: 'http-error-dialog.details-hide',
+    defaultMessage: 'Hide details',
+  },
+  suggestion: {
+    id: 'http-error-dialog.suggestion',
+    defaultMessage: 'You can try later, or contact the support team.',
+  },
+  report: {
+    id: 'http-error-dialog.suggestion-report',
+    defaultMessage: "Press 'Help' to get support.",
+  },
+  code: {
+    id: 'http-error-dialog.error-code',
+    defaultMessage: 'Response status code: {code}',
+  },
+  details: {
+    id: 'http-error-dialog.error-details',
+    defaultMessage: 'Error: {details}',
+  },
+  close: {
+    id: 'btn-tag.close',
+    defaultMessage: 'Close',
+  },
+  help: {
+    id: 'btn-tag.help',
+    defaultMessage: 'Help',
+  },
+});
+
 interface HttpErrorDialogProps extends DialogProps {
-  error: ApiCallResult;
+  error: ApiCallError;
 }
 
 export const HttpErrorDialog: FC<HttpErrorDialogProps> = ({
@@ -26,13 +65,14 @@ export const HttpErrorDialog: FC<HttpErrorDialogProps> = ({
   const [detailsShown, toggleDetailsShown] = useState(false);
   const detailsRef = useRef<HTMLDivElement>(null);
 
-  const code = error.code ?? 'Unknown';
-  const details = error.msg.length > 0 ? error.msg : 'No details available';
+  const code = error.statusCode ?? 'Unknown';
+  const details =
+    error.message.length > 0 ? error.message : 'No details available';
   const type =
     code >= 400 && code < 500
-      ? 'Client'
+      ? 'client'
       : code >= 500 && code < 600
-      ? 'Server'
+      ? 'server'
       : 'Unknown';
 
   const requestHelp = () => {
@@ -53,16 +93,14 @@ export const HttpErrorDialog: FC<HttpErrorDialogProps> = ({
 
   return (
     <Dialog {...dialogProps}>
-      <DialogTitle>
-        {intl.formatMessage({ id: 'http-error-dialog.error-type' }, { type })}
-      </DialogTitle>
+      <DialogTitle>{intl.formatMessage(msgs.type, { type })}</DialogTitle>
       <DialogContent>
-        <Typography use='body1'>
-          {intl.formatMessage({ id: 'http-error-dialog.suggestion' })}
-        </Typography>
-        <Typography use='body1'>
-          {intl.formatMessage({ id: 'http-error-dialog.suggestion-report' })}
-        </Typography>
+        <div className={styles.brief}>
+          <Typography use='body1'>
+            {intl.formatMessage(msgs.suggestion)}
+          </Typography>
+          <Typography use='body1'>{intl.formatMessage(msgs.report)}</Typography>
+        </div>
         <div className={styles.detailsCtrl}>
           <IconButton
             onClick={toggleDetails}
@@ -71,34 +109,29 @@ export const HttpErrorDialog: FC<HttpErrorDialogProps> = ({
             onIcon='keyboard_arrow_down'
           />
           <Typography use='button'>
-            {intl.formatMessage(
-              detailsShown
-                ? { id: 'http-error-dialog.details-hide' }
-                : { id: 'http-error-dialog.details-show' }
-            )}
+            {intl.formatMessage(detailsShown ? msgs.hide : msgs.show)}
           </Typography>
         </div>
         <div ref={detailsRef} className={styles.details}>
           <Typography use='body2'>
-            {intl.formatMessage(
-              { id: 'http-error-dialog.error-code' },
-              { code }
-            )}
+            {intl.formatMessage(msgs.code, { code })}
           </Typography>
           <Typography use='body2'>
-            {intl.formatMessage(
-              { id: 'http-error-dialog.error-details' },
-              { details }
-            )}
+            {intl.formatMessage(msgs.details, { details })}
           </Typography>
         </div>
       </DialogContent>
-      <DialogActions className={styles.actions}>
-        <DialogButton action='close' raised ripple>
-          {intl.formatMessage({ id: 'btn-tag.close' })}
+      <DialogActions>
+        <DialogButton action='close' unelevated ripple>
+          {intl.formatMessage(msgs.close)}
         </DialogButton>
-        <DialogButton action='report-error' onClick={requestHelp} raised ripple>
-          {intl.formatMessage({ id: 'btn-tag.help' })}
+        <DialogButton
+          action='report-error'
+          onClick={requestHelp}
+          unelevated
+          ripple
+        >
+          {intl.formatMessage(msgs.help)}
         </DialogButton>
       </DialogActions>
     </Dialog>
