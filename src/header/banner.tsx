@@ -21,11 +21,11 @@ export default function Banner(): JSX.Element {
           width='18'
           height='18'
           stroke='currentColor'
-          stroke-width='1.5'
-          stroke-linecap='round'
-          stroke-linejoin='round'
+          strokeWidth='1.5'
+          strokeLinecap='round'
+          strokeLinejoin='round'
           fill='none'
-          shape-rendering='geometricPrecision'
+          shapeRendering='geometricPrecision'
           style={{ color: 'currentcolor' }}
         >
           <path d='M18 6L6 18'></path>
