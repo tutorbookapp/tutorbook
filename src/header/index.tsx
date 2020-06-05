@@ -100,7 +100,7 @@ export default function Header({
             <ul className={styles.mobileLinks}>
               <Link href='/signup'>
                 <a className={styles.mobileLink}>
-                  <li className={styles.mobileLinkItem}>Join TB</li>
+                  <li className={styles.mobileLinkItem}>Signup</li>
                 </a>
               </Link>
             </ul>
@@ -108,7 +108,7 @@ export default function Header({
           <div className={styles.desktopLinks}>
             <Link href='/signup'>
               <a className={styles.desktopLink}>
-                {user.uid ? 'Profile' : 'Join TB'}
+                {user.uid ? 'Profile' : 'Signup'}
               </a>
             </Link>
           </div>
