@@ -1,0 +1,61 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
+
+$message-width: 800px;
+
+.wrapper {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: map.get(config.$dark-colors, 'accents-1');
+  transform-origin: top center;
+  border-bottom: 1px solid map.get(config.$dark-colors, 'accents-2');
+  transition: transform 0.2s ease, height 0.3s ease;
+  z-index: 102;
+  font-size: 14px;
+  text-align: center;
+  color: map.get(config.$dark-colors, 'foreground');
+}
+
+.hidden {
+  height: 0;
+  transform: scaleY(0);
+}
+
+.content {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+}
+
+.mobileTitle,
+.desktopTitle {
+  @include typography.typography('body1');
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.close {
+  display: inline-flex;
+  color: map.get(config.$dark-colors, 'accents-5');
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: $message-width) {
+  .desktopTitle {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: $message-width + 1px) {
+  .mobileTitle {
+    display: none;
+  }
+}

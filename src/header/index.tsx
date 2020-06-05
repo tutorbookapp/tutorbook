@@ -1,8 +1,9 @@
-import React from 'react';
-
 import { Link } from '@tutorbook/intl';
 import { Aspect } from '@tutorbook/model';
 import { useUser } from '@tutorbook/firebase';
+
+import React from 'react';
+import Banner from './banner';
 
 import styles from './header.module.scss';
 
@@ -66,48 +67,53 @@ export default function Header({
     setActive(menuActive);
   };
   return (
-    <div className={styles.wrapper + (formWidth ? ' ' + styles.formWidth : '')}>
-      <header className={styles.header}>
-        <div className={styles.left}>
-          <Link href='/'>
-            <div className={styles.logo}>
-              <span>TB</span>
+    <>
+      <Banner />
+      <div
+        className={styles.wrapper + (formWidth ? ' ' + styles.formWidth : '')}
+      >
+        <header className={styles.header}>
+          <div className={styles.left}>
+            <Link href='/'>
+              <div className={styles.logo}>
+                <span>TB</span>
+              </div>
+            </Link>
+            <div
+              className={styles.tabs + (active ? ' ' + styles.tabsHidden : '')}
+            >
+              <Tabs aspect={aspect} onChange={onChange} />
             </div>
-          </Link>
-          <div
-            className={styles.tabs + (active ? ' ' + styles.tabsHidden : '')}
-          >
-            <Tabs aspect={aspect} onChange={onChange} />
           </div>
-        </div>
-        <div className={styles.mobileToggle} onClick={toggleMobileMenu}>
-          <div
+          <div className={styles.mobileToggle} onClick={toggleMobileMenu}>
+            <div
+              className={
+                styles.toggle + (active ? ' ' + styles.toggleActive : '')
+              }
+            />
+          </div>
+          <nav
             className={
-              styles.toggle + (active ? ' ' + styles.toggleActive : '')
+              styles.mobileNav + (active ? ' ' + styles.mobileNavActive : '')
             }
-          />
-        </div>
-        <nav
-          className={
-            styles.mobileNav + (active ? ' ' + styles.mobileNavActive : '')
-          }
-        >
-          <ul className={styles.mobileLinks}>
+          >
+            <ul className={styles.mobileLinks}>
+              <Link href='/signup'>
+                <a className={styles.mobileLink}>
+                  <li className={styles.mobileLinkItem}>Join TB</li>
+                </a>
+              </Link>
+            </ul>
+          </nav>
+          <div className={styles.desktopLinks}>
             <Link href='/signup'>
-              <a className={styles.mobileLink}>
-                <li className={styles.mobileLinkItem}>Join TB</li>
+              <a className={styles.desktopLink}>
+                {user.uid ? 'Profile' : 'Join TB'}
               </a>
             </Link>
-          </ul>
-        </nav>
-        <div className={styles.desktopLinks}>
-          <Link href='/signup'>
-            <a className={styles.desktopLink}>
-              {user.uid ? 'Profile' : 'Join TB'}
-            </a>
-          </Link>
-        </div>
-      </header>
-    </div>
+          </div>
+        </header>
+      </div>
+    </>
   );
 }
