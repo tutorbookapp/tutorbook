@@ -46,6 +46,34 @@ $colors: (
   alert: #ff0080,
 );
 
+$dark-colors: (
+  foreground: #fff,
+  background: #181818,
+  accents-1: #111,
+  accents-2: #333,
+  accents-3: #444,
+  accents-4: #666,
+  accents-5: #888,
+  accents-6: #999,
+  accents-7: #eaeaea,
+  accents-8: #fafafa,
+  success-light: #3291ff,
+  success: #0070f3,
+  success-dark: #0366d6,
+  error-light: #f33,
+  error: red,
+  error-dark: #e60000,
+  warning-light: #f7b955,
+  warning: #f5a623,
+  warning-dark: #f49b0b,
+  cyan: #79ffe1,
+  cyan-dark: #50e3c2,
+  cyan-darker: #29bc9b,
+  purple: #f81ce5,
+  violet: #7928ca,
+  alert: #ff0080,
+);
+
 $shadows: (
   smallest: 0px 4px 8px rgba(0, 0, 0, 0.12),
   small: 0 5px 10px rgba(0, 0, 0, 0.12),
