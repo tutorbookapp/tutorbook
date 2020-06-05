@@ -33,7 +33,7 @@ export default function About(): JSX.Element {
               id='hero-about.second-paragraph'
               defaultMessage={
                 "We're connecting 9-12 students with expert mentors to " +
-                "collaborate on meaningful (summer) projects that they're both " +
+                "collaborate on projects they're both " +
                 'passionate about (e.g. writing a research paper or releasing ' +
                 'a music album together).'
               }
@@ -43,9 +43,9 @@ export default function About(): JSX.Element {
             <Message
               id='hero-about.third-paragraph'
               defaultMessage={
-                "We're also making sure that no one loses out on education " +
-                'amidst COVID-19 by connecting K-12 students with free, ' +
-                'volunteer tutors.'
+                "We're also connecting K-12 students with free, " +
+                'volunteer tutors to make sure that no one loses out on ' +
+                'education amidst COVID-19.'
               }
             />
           </p>

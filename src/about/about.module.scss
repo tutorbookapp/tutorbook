@@ -28,7 +28,6 @@
 
 .body {
   @include typography.typography('body1');
-  color: map.get(config.$colors, 'accents-5');
 }
 
 .bold {
