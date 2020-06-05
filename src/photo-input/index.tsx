@@ -18,7 +18,6 @@ interface PhotoInputProps extends TextFieldProps {
 export default function PhotoInput(props: PhotoInputProps): JSX.Element {
   const inputRef: React.RefObject<HTMLInputElement> = React.createRef();
   const helperRef: React.RefObject<HTMLParagraphElement> = React.createRef();
-  const [helperHeight, setHelperHeight] = React.useState<number>(0);
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -26,13 +25,11 @@ export default function PhotoInput(props: PhotoInputProps): JSX.Element {
       inputRef.current.accept = 'image/*';
       inputRef.current.style.display = 'none';
     }
-    /*setTimeout(() => {*/
-    /*if (helperRef.current && helperRef.current.clientHeight !== helperHeight) */
-    /*setHelperHeight(helperRef.current.clientHeight);*/
-    /*});*/
   });
 
-  const [value, setValue] = React.useState<string>('');
+  const [value, setValue] = React.useState<string>(
+    'Click the text field above to upload a photo.'
+  );
   const [errored, setErrored] = React.useState<boolean>(false);
   const handleClick = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -84,13 +81,6 @@ export default function PhotoInput(props: PhotoInputProps): JSX.Element {
         className: styles.helper,
         children: value,
         ref: helperRef,
-        style: {
-          maxHeight: value
-            ? helperHeight + 'px'
-            : helperHeight
-            ? '0px'
-            : 'none',
-        },
       }}
       className={styles.textField}
       onChange={handleChange}
