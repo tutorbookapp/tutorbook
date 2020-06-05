@@ -1,0 +1,7 @@
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{partition}/temp/{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
