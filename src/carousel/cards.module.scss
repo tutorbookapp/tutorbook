@@ -12,6 +12,7 @@ $margin: 20px;
   border: 1px solid map.get(config.$colors, 'accents-2');
   border-top: none;
   cursor: pointer;
+  text-align: initial;
 }
 
 .card:first-child {
