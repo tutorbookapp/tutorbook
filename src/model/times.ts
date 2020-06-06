@@ -122,6 +122,54 @@ export class Timeslot implements TimeslotInterface {
   }
 
   /**
+   * Parses an input (see below for examples) into a `Timeslot`:
+   * > Mondays at 3:00 PM to 4:00 PM.
+   * > Monday at 3:00 PM to 3:30 PM.
+   * This getter should only ever be called within a `try{} catch {}` sequence
+   * b/c it will throw an error every time if `this.state.value` isn't parsable.
+   * @deprecated We're going to put these into strings within the React tree so
+   * that we can use `react-intl` for better i18n support (e.g. we'll set the
+   * localization in the `pages/_app.tsx` top-level component and all children
+   * components will render their `Date`s properly for that locale).
+   */
+  public static fromString(timeslot: string): Timeslot {
+    const split: string[] = timeslot.split(' ');
+    if (split.length !== 7) throw new Error('Invalid time string.');
+
+    const dayStr: string = split[0];
+    const fromStr: string = split[2];
+    const fromAMPM: string = split[3];
+    const toStr: string = split[5];
+    const toAMPM: string = split[6];
+
+    const day: keyof typeof Day = (dayStr.endsWith('s')
+      ? dayStr.slice(0, -1)
+      : dayStr) as keyof typeof Day;
+    const dayNum: DayAlias = Day[day];
+
+    let fromHr: number = new Number(fromStr.split(':')[0]).valueOf();
+    const fromMin: number = new Number(fromStr.split(':')[1]).valueOf();
+    if (fromAMPM === 'PM') {
+      fromHr += 12;
+    } else if (fromAMPM !== 'AM') {
+      throw new Error('Invalid AM/PM format for from time.');
+    }
+
+    let toHr: number = new Number(toStr.split(':')[0]).valueOf();
+    const toMin: number = new Number(toStr.split(':')[1]).valueOf();
+    if (toAMPM === 'PM' || toAMPM === 'PM.') {
+      toHr += 12;
+    } else if (toAMPM !== 'AM' && toAMPM !== 'AM.') {
+      throw new Error('Invalid AM/PM format for to time.');
+    }
+
+    return new Timeslot(
+      TimeUtils.getDate(dayNum, fromHr, fromMin),
+      TimeUtils.getDate(dayNum, toHr, toMin)
+    );
+  }
+
+  /**
    * Helper string conversion method that's **only** used by the `TimeslotInput`
    * to convert it's value into a timestring.
    * @todo Move the parsing logic from that input to this class.

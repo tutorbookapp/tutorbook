@@ -52,13 +52,11 @@ export default function Search({
             viewing[query.aspect].subjects
           )}
           time={
-            query.aspect === 'tutoring'
-              ? Utils.intersection<Timeslot>(
-                  query.availability,
-                  viewing.availability,
-                  (a: Timeslot, b: Timeslot) => a.equalTo(b)
-                )[0]
-              : undefined
+            Utils.intersection<Timeslot>(
+              query.availability,
+              viewing.availability,
+              (a: Timeslot, b: Timeslot) => a.equalTo(b)
+            )[0]
           }
         />
       )}

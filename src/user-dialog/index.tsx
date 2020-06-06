@@ -31,7 +31,7 @@ import firebase from '@tutorbook/firebase';
 import styles from './user-dialog.module.scss';
 
 interface UserDialogState {
-  readonly time?: Timeslot;
+  readonly time: Timeslot;
   readonly message: string;
   readonly subjects: string[];
   readonly parentName: string;
@@ -43,7 +43,7 @@ interface UserDialogState {
 
 interface UserDialogProps {
   readonly subjects: string[];
-  readonly time?: Timeslot;
+  readonly time: Timeslot;
   readonly intl: IntlShape;
   readonly user: User;
   readonly className?: string;
@@ -391,17 +391,12 @@ class UserDialog extends React.Component<UserDialogProps> {
               />
               {this.props.aspect === 'tutoring' && (
                 <TimeslotInput
-                  outlined
                   required
                   label={this.props.intl.formatMessage(labels.time)}
                   className={styles.formField}
                   onChange={this.handleTimeslotChange}
                   availability={this.props.user.availability}
-                  val={this.state.time}
-                  err={this.props.intl.formatMessage(labels.timeErr, {
-                    name: this.props.user.firstName,
-                    availability: this.props.user.availability.toString(),
-                  })}
+                  value={this.state.time}
                 />
               )}
               <TextField

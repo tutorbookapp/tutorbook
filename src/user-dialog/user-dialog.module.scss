@@ -137,6 +137,7 @@ $margin: 24px;
 .formField {
   margin: 8px 0;
   width: 100%;
+  display: inline-flex;
 }
 
 .formField textarea {
@@ -149,6 +150,14 @@ $margin: 24px;
 
 .formField:last-child {
   margin-bottom: 0;
+}
+
+.formField :global(.mdc-select__anchor) {
+  width: 100%;
+}
+
+.formField:global(.mdc-select > .mdc-menu > .mdc-list > .mdc-list-item) {
+  white-space: nowrap;
 }
 
 .button {
