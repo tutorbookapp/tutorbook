@@ -10,30 +10,38 @@ import { SelectHint } from './select-hint';
 import to from 'await-to-js';
 import styles from './select.module.scss';
 
-interface SelectState {
+export interface Option<T extends any> {
+  label: string;
+  value: T;
+}
+
+interface SelectState<T extends any> {
   suggestionsOpen: boolean;
-  suggestions: string[];
-  selected: string[];
+  suggestions: Option<T>[];
+  selected: Option<T>[];
   errored: boolean;
   inputValue: string;
   inputFocused: boolean;
   lineBreak: boolean;
 }
 
-interface UniqueSelectProps extends TextFieldProps {
-  onChange?: (selected: string[]) => any;
+interface UniqueSelectProps<T extends any> extends TextFieldProps {
+  onChange?: (selected: T[]) => any;
   className?: string;
-  val?: string[];
+  val?: Option<T>[];
   renderToPortal?: boolean;
   autoOpenMenu?: boolean;
-  getSuggestions: (query: string) => Promise<string[]>;
+  getSuggestions: (query: string) => Promise<Option<T>[]>;
 }
 
-export type SelectProps = UniqueSelectProps &
+export type SelectProps<T extends any> = UniqueSelectProps<T> &
   Omit<TextFieldHTMLProps, 'onChange' | 'ref'>;
 
-export default class Select extends React.Component<SelectProps> {
-  public readonly state: SelectState;
+export default class Select<T extends any> extends React.Component<
+  SelectProps<T>,
+  SelectState<T>
+> {
+  public readonly state: SelectState<T>;
 
   private suggestionsTimeoutID?: ReturnType<typeof setTimeout>;
 
@@ -43,13 +51,13 @@ export default class Select extends React.Component<SelectProps> {
 
   private ghostElementRef: React.RefObject<HTMLSpanElement>;
 
-  private lastSelectedRef: React.MutableRefObject<string | null>;
+  private lastSelectedRef: React.MutableRefObject<Option<T> | null>;
 
   private textareaBreakWidth: React.MutableRefObject<number | null>;
 
   private hasOpenedSuggestions: boolean = false;
 
-  public constructor(props: SelectProps) {
+  public constructor(props: SelectProps<T>) {
     super(props);
     this.state = {
       suggestionsOpen: false,
@@ -80,11 +88,13 @@ export default class Select extends React.Component<SelectProps> {
   }
 
   private async updateSuggestions(query: string = ''): Promise<void> {
-    const [err, options] = await to<string[]>(this.props.getSuggestions(query));
+    const [err, options] = await to<Option<T>[]>(
+      this.props.getSuggestions(query)
+    );
     if (err) {
       this.setState({ suggestions: [], errored: true });
     } else {
-      this.setState({ suggestions: options, errored: false });
+      this.setState({ suggestions: options as Option<T>[], errored: false });
     }
   }
 
@@ -98,7 +108,7 @@ export default class Select extends React.Component<SelectProps> {
    * changes shape.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
-  public componentDidUpdate(prevProps: SelectProps): void {
+  public componentDidUpdate(prevProps: SelectProps<T>): void {
     const shouldChangeInputValue: boolean =
       (this.state.inputValue === '' || this.state.inputValue === '\xa0') &&
       this.inputValue !== this.state.inputValue;
@@ -106,8 +116,6 @@ export default class Select extends React.Component<SelectProps> {
     if (shouldChangeInputValue) this.setState({ inputValue: this.inputValue });
     if (valChanged && this.props.val)
       this.setState({ selected: this.props.val });
-    if (prevProps.getSuggestions !== this.props.getSuggestions)
-      this.updateSuggestions();
     if (this.foundationRef) this.foundationRef.autoPosition_();
   }
 
@@ -230,14 +238,12 @@ export default class Select extends React.Component<SelectProps> {
    */
   public render(): JSX.Element {
     const {
+      val,
       onChange,
       className,
-      val,
       renderToPortal,
-      options,
-      grade,
-      searchIndex,
       autoOpenMenu,
+      getSuggestions,
       ...rest
     } = this.props;
     return (
@@ -288,9 +294,11 @@ export default class Select extends React.Component<SelectProps> {
    * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
    * 2. Adding it as a chip to the `mdc-text-field` content.
    */
-  private updateSelected(option: string, event?: React.MouseEvent): void {
-    const selected: string[] = Array.from(this.state.selected);
-    const selectedIndex: number = selected.indexOf(option);
+  private updateSelected(option: Option<T>, event?: React.MouseEvent): void {
+    const selected: Option<T>[] = Array.from(this.state.selected);
+    const selectedIndex: number = selected.findIndex(
+      (selected: Option<T>) => selected.value === option.value
+    );
     if (selectedIndex < 0) {
       selected.push(option);
     } else {
@@ -305,13 +313,16 @@ export default class Select extends React.Component<SelectProps> {
       // Select/unselect multiple options with 'SHIFT + click'
       const { suggestions } = this.state;
       const idx: number = suggestions.indexOf(option);
-      const idxOfLast: number = suggestions.indexOf(
-        this.lastSelectedRef.current
+      const idxOfLast: number = suggestions.findIndex(
+        (selected: Option<T>) =>
+          selected.value === (this.lastSelectedRef.current || {}).value
       );
       suggestions
         .slice(Math.min(idx, idxOfLast), Math.max(idx, idxOfLast) + 1)
-        .forEach((option: string) => {
-          const index: number = selected.indexOf(option);
+        .forEach((option: Option<T>) => {
+          const index: number = selected.findIndex(
+            (selected: Option<T>) => selected.value === option.value
+          );
           if (selectedIndex < 0 && index < 0) {
             selected.push(option);
           } else if (selectedIndex >= 0 && index >= 0) {
@@ -324,7 +335,7 @@ export default class Select extends React.Component<SelectProps> {
 
     const inputValue: string = selectedIndex < 0 ? '' : this.state.inputValue;
     this.setState({ selected, inputValue, lineBreak: false });
-    this.props.onChange && this.props.onChange(selected);
+    this.props.onChange && this.props.onChange(selected.map((s) => s.value));
   }
 
   private renderSuggestionMenuItems(): JSX.Element[] | JSX.Element {
@@ -334,10 +345,10 @@ export default class Select extends React.Component<SelectProps> {
       </Typography>
     );
     const suggestionMenuItems: JSX.Element[] = [];
-    this.state.suggestions.map((option) =>
+    this.state.suggestions.map((option: Option<T>) =>
       suggestionMenuItems.push(
         <ListItem
-          key={option}
+          key={option.label}
           onClick={(event: React.MouseEvent) =>
             this.updateSelected(option, event)
           }
@@ -346,12 +357,16 @@ export default class Select extends React.Component<SelectProps> {
           <ListItemGraphic
             icon={
               <Checkbox
-                checked={this.state.selected.indexOf(option) >= 0}
+                checked={
+                  this.state.selected.findIndex(
+                    (selected: Option<T>) => selected.value === option.value
+                  ) >= 0
+                }
                 readOnly
               />
             }
           />
-          {option}
+          {option.label}
         </ListItem>
       )
     );
@@ -359,10 +374,10 @@ export default class Select extends React.Component<SelectProps> {
   }
 
   private renderSelectedChipItems(): JSX.Element[] {
-    return this.state.selected.map((option: string) => (
+    return this.state.selected.map((option: Option<T>, index: number) => (
       <Chip
-        key={option}
-        label={option}
+        key={option.label}
+        label={option.label}
         trailingIcon='close'
         onTrailingIconInteraction={() => this.updateSelected(option)}
         className={styles.chip}

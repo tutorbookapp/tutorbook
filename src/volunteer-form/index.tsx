@@ -4,12 +4,6 @@ import { MessageDescriptor, IntlShape, injectIntl } from 'react-intl';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
 import { Card } from '@rmwc/card';
-
-import Title from '@tutorbook/title';
-import PhotoInput from '@tutorbook/photo-input';
-import ScheduleInput from '@tutorbook/schedule-input';
-import SubjectSelect from '@tutorbook/subject-select';
-import firebase, { UserProviderState, UserContext } from '@tutorbook/firebase';
 import {
   Availability,
   UserInterface,
@@ -18,8 +12,16 @@ import {
   Aspect,
   SocialInterface,
 } from '@tutorbook/model';
+
+import Title from '@tutorbook/title';
+import PhotoInput from '@tutorbook/photo-input';
+import ScheduleInput from '@tutorbook/schedule-input';
+import SubjectSelect from '@tutorbook/subject-select';
+import LangSelect from '@tutorbook/lang-select';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
+
+import firebase, { UserProviderState, UserContext } from '@tutorbook/firebase';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
@@ -252,6 +254,20 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
           }
         />
         <ListDivider className={styles.divider} />
+        <LangSelect
+          {...sharedProps}
+          val={this.context.user.langs}
+          label={msg(msgs.lang)}
+          onChange={(langs: string[]) =>
+            this.context.update(
+              new User({
+                ...this.context.user,
+                langs,
+              })
+            )
+          }
+          required
+        />
         {this.props.aspect === 'mentoring' && (
           <>
             <SubjectSelect

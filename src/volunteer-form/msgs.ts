@@ -61,6 +61,10 @@ export default defineMessages({
     id: 'form.photo',
     defaultMessage: 'Your profile photo',
   },
+  lang: {
+    id: 'form.lang',
+    defaultMessage: 'What languages do you speak?',
+  },
   expertise: {
     id: 'mentor-form.expertise',
     defaultMessage: 'What are your fields of expertise?',

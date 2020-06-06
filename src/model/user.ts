@@ -86,6 +86,7 @@ export interface UserInterface {
   availability: Availability;
   tutoring: { subjects: string[]; searches: string[] };
   mentoring: { subjects: string[]; searches: string[] };
+  langs: string[];
   parents?: string[];
   ref?: DocumentReference | AdminDocumentReference;
   token?: string;
@@ -117,6 +118,7 @@ export interface UserJSONInterface {
   availability: AvailabilityJSONAlias;
   tutoring: { subjects: string[]; searches: string[] };
   mentoring: { subjects: string[]; searches: string[] };
+  langs: string[];
   parents?: string[];
   token?: string;
   socials: SocialInterface[];
@@ -151,6 +153,7 @@ export class User implements UserInterface {
     subjects: [],
     searches: [],
   };
+  public langs: string[] = [];
   public parents: string[] = [];
   public ref?: DocumentReference | AdminDocumentReference;
   public token?: string;

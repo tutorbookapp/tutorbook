@@ -1,7 +1,7 @@
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { Aspect, GradeAlias } from '@tutorbook/model';
-import { SelectProps } from '@tutorbook/select';
+import { SelectProps, Option } from '@tutorbook/select';
 
 import Select from '@tutorbook/select';
 
@@ -12,10 +12,14 @@ const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 
-type SubjectSelectProps = Omit<SelectProps, 'searchIndex'> & {
+type SubjectSelectProps = Omit<
+  SelectProps<string>,
+  'getSuggestions' | 'val'
+> & {
+  options?: string[];
   aspect: Aspect;
   grade?: GradeAlias;
-  options?: string[];
+  val?: string[];
 };
 
 interface SubjectHit extends ObjectWithObjectID {
@@ -26,6 +30,7 @@ export default function SubjectSelect({
   options,
   aspect,
   grade,
+  val,
   ...props
 }: SubjectSelectProps): JSX.Element {
   const searchIndex: SearchIndex = client.initIndex(aspect);
@@ -35,7 +40,7 @@ export default function SubjectSelect({
    * on the results of the user's current input to an Algolia search query.
    * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
    */
-  async function getSuggestions(query: string = ''): Promise<string[]> {
+  async function getSuggestions(query: string = ''): Promise<Option<string>[]> {
     if (options && !options.length) return [];
     const filters: string | undefined =
       options !== undefined
@@ -47,8 +52,17 @@ export default function SubjectSelect({
       filters,
       optionalFilters,
     });
-    return res.hits.map((subject: SubjectHit) => subject.name);
+    return res.hits.map((subject: SubjectHit) => ({
+      label: subject.name,
+      value: subject.name,
+    }));
   }
 
-  return <Select {...props} getSuggestions={getSuggestions} />;
+  return (
+    <Select
+      {...props}
+      val={(val || []).map((s: string) => ({ label: s, value: s }))}
+      getSuggestions={getSuggestions}
+    />
+  );
 }
