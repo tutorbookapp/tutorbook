@@ -1,8 +1,13 @@
-import { Availability, Aspect, Query } from '@tutorbook/model';
+import { useIntl, IntlHelper, IntlShape, Msg } from '@tutorbook/intl';
+import { Aspect, Query, Availability } from '@tutorbook/model';
 
 import React from 'react';
-import TutorsForm from './tutors-form';
-import MentorsForm from './mentors-form';
+import ScheduleInput from '@tutorbook/schedule-input';
+import SubjectSelect from '@tutorbook/subject-select';
+import Button from '@tutorbook/button';
+
+import msgs from './msgs';
+import styles from './query-form.module.scss';
 
 interface QueryFormProps {
   query?: Query;
@@ -17,6 +22,12 @@ export default function QueryForm({
   onChange,
   onSubmit,
 }: QueryFormProps): JSX.Element {
+  const intl: IntlShape = useIntl();
+  const msg: IntlHelper = (msg: Msg) => intl.formatMessage(msg);
+  const className: string =
+    styles.form + (!onSubmit ? ' ' + styles.noButton : '');
+
+  const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [qry, setQuery] = React.useState<Query>(
     query || {
       aspect: aspect || 'mentoring',
@@ -25,12 +36,15 @@ export default function QueryForm({
     }
   );
 
-  if (query && query !== qry) setQuery(query);
-  if (aspect && aspect !== qry.aspect) setQuery({ ...qry, aspect });
+  React.useEffect(() => {
+    if (query && query !== qry) setQuery(query);
+    if (aspect && aspect !== qry.aspect) setQuery({ ...qry, aspect });
+  }, [query, aspect]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
+    setSubmitting(true);
     if (onSubmit) onSubmit(qry);
     return false;
   };
@@ -40,21 +54,36 @@ export default function QueryForm({
   };
 
   return (
-    <>
-      <TutorsForm
-        query={qry}
-        button={!!onSubmit}
-        visible={qry.aspect === 'tutoring'}
-        onSubmit={handleSubmit}
-        onChange={handleChange}
+    <form className={className} onSubmit={handleSubmit}>
+      <SubjectSelect
+        val={qry.subjects}
+        className={styles.field}
+        label={msg(msgs.subjects)}
+        placeholder={msg(msgs[qry.aspect + 'SubjectsPlaceholder'])}
+        onChange={(subjects: string[]) => handleChange({ ...qry, subjects })}
+        aspect={qry.aspect}
+        outlined
       />
-      <MentorsForm
-        query={qry}
-        button={!!onSubmit}
-        visible={qry.aspect === 'mentoring'}
-        onSubmit={handleSubmit}
-        onChange={handleChange}
-      />
-    </>
+      {qry.aspect === 'tutoring' && (
+        <ScheduleInput
+          val={qry.availability}
+          className={styles.field}
+          label={msg(msgs.availability)}
+          onChange={(availability: Availability) =>
+            handleChange({ ...qry, availability })
+          }
+          outlined
+        />
+      )}
+      {!!onSubmit && (
+        <Button
+          className={styles.btn}
+          label={msg(msgs[qry.aspect + 'Btn'])}
+          disabled={submitting}
+          raised
+          arrow
+        />
+      )}
+    </form>
   );
 }
