@@ -1,7 +1,7 @@
 # [![Tutorbook Logo](https://raw.githubusercontent.com/tutorbookapp/old-tutorbook/develop/build/favicon/text-logo.png)](https://tutorbook.org/)
 
 [![NPM Version](https://img.shields.io/npm/v/@tutorbook/covid?color=brightgreen)](https://npmjs.com/package/@tutorbook/covid)
-[![Dependencies](https://img.shields.io/david/tutorbookapp/covid-tutoring)](https://david-dm.org/tutorbookapp/covid-tutoring)
+[![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
 [![Website Status](https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Ftutorbook.org%2F)](https://tutorbook.org/)
 [![Typescript](https://img.shields.io/badge/uses-typescript-orange?styles=flat)](https://www.typescriptlang.org)
 [![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
