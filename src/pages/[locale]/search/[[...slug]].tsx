@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   async function getUser(
     params?: ParsedUrlQuery
   ): Promise<UserJSONInterface | null> {
-    if (!params || !params.user) return null;
+    if (!params || !params.slug || !params.slug.length) return null;
 
     /**
      * Initializes a new `firebase.admin` instance with limited database/Firestore
@@ -124,7 +124,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const userDoc: DocumentSnapshot = await db
       .collection('users')
-      .doc(params.user as string)
+      .doc(params.slug[0])
       .get();
     if (!userDoc.exists) return null;
     const user: User = User.fromFirestore(userDoc);
@@ -140,10 +140,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const langs: string = context.query.langs as string;
   const aspect: string = context.query.aspect as string;
   const subjects: string = context.query.subjects as string;
   const availability: string = context.query.availability as string;
   const query: Query = {
+    langs: langs ? JSON.parse(decodeURIComponent(langs)) : [],
     aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
     subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
     availability: availability
@@ -168,6 +170,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     results.map((res: UserJSONInterface) => User.fromJSON(res))
   );
   const [qry, setQuery] = React.useState<Query>({
+    langs: query.langs,
     aspect: query.aspect,
     subjects: query.subjects,
     availability: Availability.fromJSON(query.availability),

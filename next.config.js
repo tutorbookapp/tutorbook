@@ -10,6 +10,7 @@ module.exports = withImages({
     ],
   },
   experimental: {
+    optionalCatchAll: true,
     redirects() {
       // Not exactly sure why this is happening, but going to `/[locale]/` with
       // a trailing slash seems to break Next.js's routing. Here, we just always
