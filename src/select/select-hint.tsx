@@ -8,7 +8,7 @@ interface SelectHintProps {
   readonly open: boolean;
 }
 
-export function SelectHint(props: SelectHintProps): JSX.Element {
+export default function SelectHint(props: SelectHintProps): JSX.Element {
   return (
     <Tooltip
       content={

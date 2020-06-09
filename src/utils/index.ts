@@ -11,15 +11,13 @@ export default class Utils {
    * the given `compare` function to check if elements overlap).
    * @see {@link https://stackoverflow.com/a/16227294/10023158}
    */
-  public static intersection<T = any>(
-    a: Array<T>,
-    b: Array<T>,
-    compare: (a: T, b: T) => boolean = (a, b) => a === b
-  ): Array<T> {
-    let t: Array<T>;
-    if (b.length > a.length) (t = b), (b = a), (a = t); // Use smaller array.
-    return a.filter((item: T) => {
-      return b.findIndex((i: T) => compare(i, item)) > -1;
+  public static intersection<A extends any, B extends any>(
+    a: Array<A>,
+    b: Array<B>,
+    compare: (a: A, b: B) => boolean = (a, b) => a === b
+  ): Array<A> {
+    return a.filter((itemA: A) => {
+      return b.findIndex((itemB: B) => compare(itemA, itemB)) > -1;
     });
   }
 

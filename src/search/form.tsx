@@ -1,8 +1,7 @@
 import React from 'react';
-import QueryForm from '@tutorbook/query-form';
+import FilterForm from '@tutorbook/filter-form';
 
 import { Query } from '@tutorbook/model';
-import { Card } from '@rmwc/card';
 
 import styles from './form.module.scss';
 
@@ -20,7 +19,7 @@ export default function Form({
     const listener = () => {
       if (!formRef.current) return;
       const viewportOffset = formRef.current.getBoundingClientRect();
-      const updated: boolean = viewportOffset.top <= 74;
+      const updated: boolean = viewportOffset.top <= 76;
       // We have to wait a tick before changing the class for the animation to
       // work. @see {@link https://stackoverflow.com/a/37643388/10023158}
       if (updated !== elevated) setTimeout(() => setElevated(updated), 100);
@@ -30,11 +29,11 @@ export default function Form({
   });
 
   return (
-    <Card
+    <div
       className={styles.form + (elevated ? ' ' + styles.elevated : '')}
       ref={formRef}
     >
-      <QueryForm query={query} onChange={onChange} />
-    </Card>
+      <FilterForm query={query} onChange={onChange} />
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Checkbox } from '@rmwc/checkbox';
 import { FormField } from '@rmwc/formfield';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import { TextField, TextFieldProps } from '@rmwc/textfield';
+import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import {
   DataTable,
   DataTableContent,
@@ -13,36 +13,61 @@ import {
   DataTableCell,
 } from '@rmwc/data-table';
 import { FormattedMessage, FormattedDate, FormattedTime } from 'react-intl';
-import { TimeUtils, DayAlias, Timeslot, Availability } from '@tutorbook/model';
+import {
+  Callback,
+  TimeUtils,
+  DayAlias,
+  Timeslot,
+  Availability,
+} from '@tutorbook/model';
 
 import { v4 as uuid } from 'uuid';
 
 import styles from './schedule-input.module.scss';
 
 interface ScheduleInputState {
-  readonly menuOpen: boolean;
-  readonly availability: Availability;
+  menuOpen: boolean;
 }
 
-export interface ScheduleInputProps extends TextFieldProps {
-  onChange?: (availability: Availability) => any;
-  className?: string;
-  val?: Availability;
+type OverriddenProps =
+  | 'textarea'
+  | 'outlined'
+  | 'readOnly'
+  | 'onFocus'
+  | 'onBlur';
+
+interface UniqueScheduleInputProps {
+  value: Availability;
+  onChange: Callback<Availability>;
+  renderToPortal?: boolean;
+  focused?: boolean;
+  onFocused?: () => any;
+  onBlurred?: () => any;
 }
+
+export type ScheduleInputProps = Omit<
+  TextFieldHTMLProps,
+  keyof UniqueScheduleInputProps | OverriddenProps
+> &
+  Omit<TextFieldProps, keyof UniqueScheduleInputProps | OverriddenProps> &
+  UniqueScheduleInputProps;
 
 export default class ScheduleInput extends React.Component<ScheduleInputProps> {
   public readonly state: ScheduleInputState;
   private menuTimeoutID?: number;
+  private inputRef: React.RefObject<HTMLInputElement> = React.createRef();
 
   public constructor(props: ScheduleInputProps) {
     super(props);
-    this.state = {
-      menuOpen: false,
-      availability: props.val || new Availability(),
-    };
-    this.setAllChecked = this.setAllChecked.bind(this);
+    this.state = { menuOpen: false };
+    this.toggleAllChecked = this.toggleAllChecked.bind(this);
     this.openMenu = this.openMenu.bind(this);
     this.closeMenu = this.closeMenu.bind(this);
+  }
+
+  public componentDidUpdate(): void {
+    if (this.props.focused && this.inputRef.current)
+      this.inputRef.current.focus();
   }
 
   /**
@@ -113,7 +138,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * returns `true`. If not, `false`.
    */
   private isChecked(time: Timeslot): boolean {
-    return this.state.availability.hasTimeslot(time);
+    return this.props.value.hasTimeslot(time);
   }
 
   /**
@@ -123,16 +148,15 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * 2. If it was checked, this function adds the timeslot to
    * `this.state.availability`.
    */
-  private setChecked(
+  private toggleChecked(
     timeslot: Timeslot,
     event: React.FormEvent<HTMLInputElement>
   ): void {
-    const copy: Availability = this.state.availability.filter(
+    const copy: Availability = this.props.value.filter(
       (t) => !t.equalTo(timeslot)
     ) as Availability;
     if (event.currentTarget.checked) copy.push(timeslot);
-    this.setState({ availability: copy });
-    this.props.onChange && this.props.onChange(copy);
+    this.props.onChange(copy);
   }
 
   /**
@@ -140,17 +164,16 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * @todo Perhaps just reset the availability to it's state before the select
    * all checkbox was selected.
    */
-  private setAllChecked(event: React.FormEvent<HTMLInputElement>): void {
+  private toggleAllChecked(event: React.FormEvent<HTMLInputElement>): void {
     if (event.currentTarget.checked) {
-      this.setState({ availability: ScheduleInput.timeslots });
+      this.props.onChange(ScheduleInput.timeslots);
     } else {
-      this.setState({ availability: new Availability() });
+      this.props.onChange(new Availability());
     }
-    this.props.onChange && this.props.onChange(ScheduleInput.timeslots);
   }
 
   private get allTimeslotsChecked(): boolean {
-    return this.state.availability.equalTo(ScheduleInput.timeslots);
+    return this.props.value.equalTo(ScheduleInput.timeslots);
   }
 
   /**
@@ -164,7 +187,15 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * lose focus which makes us close it.
    */
   public render(): JSX.Element {
-    const { onChange, className, ...rest } = this.props;
+    const {
+      onChange,
+      className,
+      renderToPortal,
+      focused,
+      onFocused,
+      onBlurred,
+      ...textFieldProps
+    } = this.props;
     const checkboxId: string = uuid();
     return (
       <MenuSurfaceAnchor className={className}>
@@ -173,6 +204,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
           onFocus={this.openMenu}
           onBlur={this.closeMenu}
           anchorCorner='bottomStart'
+          renderToPortal={renderToPortal ? '#portal' : false}
         >
           <DataTable>
             <DataTableContent>
@@ -182,7 +214,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
                     <FormField>
                       <Checkbox
                         checked={this.allTimeslotsChecked}
-                        onChange={this.setAllChecked}
+                        onChange={this.toggleAllChecked}
                         id={checkboxId}
                       />
                       <label htmlFor={checkboxId}>
@@ -244,7 +276,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
                                   timeslotCheckboxRepresents
                                 )}
                                 onChange={(evt) => {
-                                  this.setChecked(
+                                  this.toggleChecked(
                                     timeslotCheckboxRepresents,
                                     evt
                                   );
@@ -261,12 +293,21 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
           </DataTable>
         </MenuSurface>
         <TextField
-          {...rest}
+          {...textFieldProps}
           readOnly
-          value={this.state.availability.toString()}
+          outlined
+          textarea={false}
+          inputRef={this.inputRef}
+          value={this.props.value.toString()}
           className={styles.textField}
-          onFocus={this.openMenu}
-          onBlur={this.closeMenu}
+          onFocus={() => {
+            if (onFocused) onFocused();
+            this.openMenu();
+          }}
+          onBlur={() => {
+            if (onBlurred) onBlurred();
+            this.closeMenu();
+          }}
         />
       </MenuSurfaceAnchor>
     );

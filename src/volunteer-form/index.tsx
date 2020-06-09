@@ -11,6 +11,7 @@ import {
   User,
   Aspect,
   SocialInterface,
+  Option,
 } from '@tutorbook/model';
 
 import Title from '@tutorbook/title';
@@ -27,17 +28,20 @@ import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
 
 interface VolunteerFormProps {
-  readonly intl: IntlShape;
-  readonly aspect: Aspect;
+  intl: IntlShape;
+  aspect: Aspect;
 }
 
 type VolunteerFormState = {
-  readonly headerHeight: number;
-  readonly descHeight: number;
-  readonly submittingMentor: boolean;
-  readonly submittingTutor: boolean;
-  readonly submittedMentor: boolean;
-  readonly submittedTutor: boolean;
+  headerHeight: number;
+  descHeight: number;
+  submittingMentor: boolean;
+  submittingTutor: boolean;
+  submittedMentor: boolean;
+  submittedTutor: boolean;
+  tutoringSubjects: Option<string>[];
+  mentoringSubjects: Option<string>[];
+  langs: Option<string>[];
 };
 
 /**
@@ -68,6 +72,9 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
       submittingTutor: false,
       submittedMentor: false,
       submittedTutor: false,
+      tutoringSubjects: [],
+      mentoringSubjects: [],
+      langs: [],
     };
 
     this.headerRef = React.createRef();
@@ -256,36 +263,42 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         <ListDivider className={styles.divider} />
         <LangSelect
           {...sharedProps}
-          val={this.context.user.langs}
+          value={this.state.langs}
+          values={this.context.user.langs}
           label={msg(msgs.lang)}
-          onChange={(langs: string[]) =>
+          onChange={(langs: Option<string>[]) => {
+            this.setState({ langs });
             this.context.update(
               new User({
                 ...this.context.user,
-                langs,
+                langs: langs.map((lang: Option<string>) => lang.value),
               })
-            )
-          }
+            );
+          }}
           required
         />
         {this.props.aspect === 'mentoring' && (
           <>
             <SubjectSelect
               {...sharedProps}
-              val={this.context.user.mentoring.subjects}
+              value={this.state.mentoringSubjects}
+              values={this.context.user.mentoring.subjects}
               label={msg(msgs.expertise)}
               placeholder={msg(msgs.expertisePlaceholder)}
-              onChange={(subjects: string[]) =>
+              onChange={(mentoringSubjects: Option<string>[]) => {
+                this.setState({ mentoringSubjects });
                 this.context.update(
                   new User({
                     ...this.context.user,
                     [this.props.aspect]: {
-                      subjects,
+                      subjects: mentoringSubjects.map(
+                        (subject) => subject.value
+                      ),
                       searches: this.context.user[this.props.aspect].searches,
                     },
                   })
-                )
-              }
+                );
+              }}
               aspect={this.props.aspect}
               required
             />
@@ -312,26 +325,30 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
           <>
             <SubjectSelect
               {...sharedProps}
-              val={this.context.user.tutoring.subjects}
+              value={this.state.tutoringSubjects}
+              values={this.context.user.tutoring.subjects}
               label={msg(msgs.subjects)}
               placeholder={msg(msgs.subjectsPlaceholder)}
-              onChange={(subjects: string[]) =>
+              onChange={(tutoringSubjects: Option<string>[]) => {
+                this.setState({ tutoringSubjects });
                 this.context.update(
                   new User({
                     ...this.context.user,
                     [this.props.aspect]: {
-                      subjects,
+                      subjects: tutoringSubjects.map(
+                        (subject) => subject.value
+                      ),
                       searches: this.context.user[this.props.aspect].searches,
                     },
                   })
-                )
-              }
+                );
+              }}
               aspect={this.props.aspect}
               required
             />
             <ScheduleInput
               {...shared('availability')}
-              val={this.context.user.availability}
+              value={this.context.user.availability}
               onChange={(availability: Availability) =>
                 this.context.update(
                   new User({

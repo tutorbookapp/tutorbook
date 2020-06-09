@@ -1,0 +1,9 @@
+@use '@tutorbook/styles/query-form';
+
+.form {
+  @include query-form.form;
+}
+
+.button {
+  @include query-form.button;
+}

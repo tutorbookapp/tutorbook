@@ -1,89 +1,90 @@
 import { useIntl, IntlHelper, IntlShape, Msg } from '@tutorbook/intl';
-import { Aspect, Query, Availability } from '@tutorbook/model';
+import { Option, Availability, Query, Callback } from '@tutorbook/model';
 
 import React from 'react';
+import LangSelect from '@tutorbook/lang-select';
 import ScheduleInput from '@tutorbook/schedule-input';
 import SubjectSelect from '@tutorbook/subject-select';
-import Button from '@tutorbook/button';
 
 import msgs from './msgs';
 import styles from './query-form.module.scss';
 
 interface QueryFormProps {
-  query?: Query;
-  aspect?: Aspect;
-  onChange?: (query: Query) => any;
-  onSubmit?: (query: Query) => any;
+  query: Query;
+  onChange: Callback<Query>;
+  vertical?: boolean;
+  subjects?: boolean;
+  availability?: boolean;
+  langs?: boolean;
+  orgs?: boolean;
+  focusTarget?: FocusTarget;
 }
+
+type FocusTarget = 'subjects' | 'availability' | 'langs' | 'orgs';
 
 export default function QueryForm({
   query,
-  aspect,
   onChange,
-  onSubmit,
+  vertical,
+  subjects,
+  availability,
+  langs,
+  orgs,
+  focusTarget,
 }: QueryFormProps): JSX.Element {
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (msg: Msg) => intl.formatMessage(msg);
-  const className: string =
-    styles.form + (!onSubmit ? ' ' + styles.noButton : '');
-
-  const [submitting, setSubmitting] = React.useState<boolean>(false);
-  const [qry, setQuery] = React.useState<Query>(
-    query || {
-      aspect: aspect || 'mentoring',
-      subjects: [],
-      availability: new Availability(),
-    }
+  const [focused, setFocused] = React.useState<FocusTarget | undefined>(
+    focusTarget
   );
+  const className: string = vertical ? styles.vertField : styles.horzField;
 
-  React.useEffect(() => {
-    if (query && query !== qry) setQuery(query);
-    if (aspect && aspect !== qry.aspect) setQuery({ ...qry, aspect });
-  }, [query, aspect]);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setSubmitting(true);
-    if (onSubmit) onSubmit(qry);
-    return false;
-  };
-  const handleChange = (query: Query) => {
-    setQuery(query);
-    if (onChange) onChange(query);
-  };
+  React.useEffect(() => setFocused(focusTarget), [focusTarget]);
 
   return (
-    <form className={className} onSubmit={handleSubmit}>
-      <SubjectSelect
-        val={qry.subjects}
-        className={styles.field}
-        label={msg(msgs.subjects)}
-        placeholder={msg(msgs[qry.aspect + 'SubjectsPlaceholder'])}
-        onChange={(subjects: string[]) => handleChange({ ...qry, subjects })}
-        aspect={qry.aspect}
-        outlined
-      />
-      {qry.aspect === 'tutoring' && (
-        <ScheduleInput
-          val={qry.availability}
-          className={styles.field}
-          label={msg(msgs.availability)}
-          onChange={(availability: Availability) =>
-            handleChange({ ...qry, availability })
+    <>
+      {subjects && (
+        <SubjectSelect
+          value={query.subjects}
+          onChange={(subjects: Option<string>[]) =>
+            onChange({ ...query, subjects })
           }
-          outlined
+          className={className}
+          label={msg(msgs.subjects)}
+          placeholder={msg(msgs[query.aspect + 'SubjectsPlaceholder'])}
+          aspect={query.aspect}
+          renderToPortal
+          focused={focused === 'subjects'}
+          onFocused={() => setFocused('subjects')}
+          onBlurred={() => setFocused(undefined)}
         />
       )}
-      {!!onSubmit && (
-        <Button
-          className={styles.btn}
-          label={msg(msgs[qry.aspect + 'Btn'])}
-          disabled={submitting}
-          raised
-          arrow
+      {availability && (
+        <ScheduleInput
+          value={query.availability}
+          onChange={(availability: Availability) =>
+            onChange({ ...query, availability })
+          }
+          className={className}
+          label={msg(msgs.availability)}
+          renderToPortal
+          focused={focused === 'availability'}
+          onFocused={() => setFocused('availability')}
+          onBlurred={() => setFocused(undefined)}
         />
       )}
-    </form>
+      {langs && (
+        <LangSelect
+          value={query.langs}
+          onChange={(langs: Option<string>[]) => onChange({ ...query, langs })}
+          className={className}
+          label={msg(msgs.langs)}
+          renderToPortal
+          focused={focused === 'langs'}
+          onFocused={() => setFocused('langs')}
+          onBlurred={() => setFocused(undefined)}
+        />
+      )}
+    </>
   );
 }

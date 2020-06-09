@@ -1,8 +1,9 @@
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import { Aspect, GradeAlias } from '@tutorbook/model';
-import { SelectProps, Option } from '@tutorbook/select';
+import { Option, Aspect, GradeAlias } from '@tutorbook/model';
+import { SelectProps } from '@tutorbook/select';
 
+import React from 'react';
 import Select from '@tutorbook/select';
 
 import algoliasearch from 'algoliasearch/lite';
@@ -12,28 +13,45 @@ const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 
-type SubjectSelectProps = Omit<
-  SelectProps<string>,
-  'getSuggestions' | 'val'
-> & {
+interface UniqueSubjectSelectProps {
+  values?: string[];
   options?: string[];
   aspect: Aspect;
   grade?: GradeAlias;
-  val?: string[];
-};
+}
+
+type SubjectSelectProps = Omit<
+  SelectProps<string>,
+  keyof UniqueSubjectSelectProps | 'getSuggestions'
+> &
+  UniqueSubjectSelectProps;
 
 interface SubjectHit extends ObjectWithObjectID {
   name: string;
 }
 
 export default function SubjectSelect({
+  values,
   options,
   aspect,
   grade,
-  val,
   ...props
 }: SubjectSelectProps): JSX.Element {
   const searchIndex: SearchIndex = client.initIndex(aspect);
+
+  // TODO: This will become an async update function that filters our Algolia
+  // search index to get the labels of the selected subjects (using their IDs).
+  React.useEffect(() => {
+    if (!values) return;
+    const valuesHaveLabels = values.every(
+      (value: string) =>
+        props.value.findIndex(
+          (valueWithLabel: Option<string>) => valueWithLabel.value === value
+        ) >= 0
+    );
+    if (!valuesHaveLabels)
+      props.onChange(values.map((v) => ({ label: v, value: v })));
+  }, [values]);
 
   /**
    * Updates the suggestions shown in the select below the subjects input based
@@ -58,11 +76,5 @@ export default function SubjectSelect({
     }));
   }
 
-  return (
-    <Select
-      {...props}
-      val={(val || []).map((s: string) => ({ label: s, value: s }))}
-      getSuggestions={getSuggestions}
-    />
-  );
+  return <Select {...props} getSuggestions={getSuggestions} />;
 }

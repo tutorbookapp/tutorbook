@@ -1,7 +1,8 @@
 import { useIntl, IntlShape } from '@tutorbook/intl';
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import { Option, SelectProps } from '@tutorbook/select';
+import { SelectProps } from '@tutorbook/select';
+import { Option } from '@tutorbook/model';
 
 import React from 'react';
 import Select from '@tutorbook/select';
@@ -19,33 +20,43 @@ type LocaleCodeAlias = typeof config.locales[number];
 type LangHit = ObjectWithObjectID &
   { [key in LocaleCodeAlias]: { name: string; synonyms: string[] } };
 
-type LangSelectProps = Omit<SelectProps<string>, 'getSuggestions' | 'val'> & {
-  val: LocaleCodeAlias[];
-};
+type LangSelectProps = { values?: string[] } & Omit<
+  SelectProps<string>,
+  'getSuggestions'
+>;
 
 export default function LangSelect({
-  val,
-  onChange,
+  values,
   ...props
 }: LangSelectProps): JSX.Element {
   const searchIndex: SearchIndex = client.initIndex('langs');
   const intl: IntlShape = useIntl();
-  const [value, setValue] = React.useState<Option<string>[]>([]);
 
+  // TODO: Implement this using `react-async` or `swr`.
+  // See https://blog.logrocket.com/how-to-handle-async-side-effects-in-2019/
   React.useEffect(() => {
-    if (!value.length) updateValue();
-  });
+    if (values && values.length) {
+      const valuesHaveLabels = values.every(
+        (value: string) =>
+          props.value.findIndex(
+            (valueWithLabel: Option<string>) => valueWithLabel.value === value
+          ) >= 0
+      );
+      if (!valuesHaveLabels) updateValue(values);
+    } else if (!props.value.length) {
+      updateValue([intl.locale]);
+    }
+  }, [values]);
 
   const langHitToOption = (lang: LangHit) => ({
     label: lang[intl.locale].name,
     value: lang.objectID,
   });
-  const updateValue = async () => {
+  const updateValue = async (values: string[]) => {
     const res: SearchResponse<LangHit> = await searchIndex.search('', {
-      filters: [intl.locale, ...val].map((l) => `objectID:${l}`).join(' OR '),
+      filters: values.map((val: string) => `objectID:${val}`).join(' OR '),
     });
-    setValue(res.hits.map(langHitToOption));
-    if (onChange) onChange(res.hits.map((lang: LangHit) => lang.objectID));
+    props.onChange(res.hits.map(langHitToOption));
   };
 
   /**
@@ -58,13 +69,5 @@ export default function LangSelect({
     return res.hits.map(langHitToOption);
   }
 
-  return (
-    <Select
-      {...props}
-      val={value}
-      onChange={onChange}
-      getSuggestions={getSuggestions}
-      autoOpenMenu
-    />
-  );
+  return <Select {...props} getSuggestions={getSuggestions} />;
 }

@@ -1,13 +1,9 @@
 import { Msg, defMsg } from '@tutorbook/intl';
 
 export default defMsg({
-  tutoringBtn: {
-    id: 'query-form.tutoring.btn',
-    defaultMessage: 'Search tutors',
-  },
-  mentoringBtn: {
-    id: 'query-form.mentoring.btn',
-    defaultMessage: 'Search mentors',
+  langs: {
+    id: 'query-form.tutoring.langs-label',
+    defaultMessage: 'What languages do you speak?',
   },
   subjects: {
     id: 'query-form.tutoring.subjects-label',

@@ -13,6 +13,7 @@ import {
   Appt,
   ApptJSONInterface,
   Aspect,
+  Option,
 } from '@tutorbook/model';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { Dialog } from '@rmwc/dialog';
@@ -31,9 +32,9 @@ import firebase from '@tutorbook/firebase';
 import styles from './user-dialog.module.scss';
 
 interface UserDialogState {
-  readonly time: Timeslot;
+  readonly time?: Timeslot;
   readonly message: string;
-  readonly subjects: string[];
+  readonly subjects: Option<string>[];
   readonly parentName: string;
   readonly parentEmail: string;
   readonly submitting: boolean;
@@ -42,8 +43,8 @@ interface UserDialogState {
 }
 
 interface UserDialogProps {
-  readonly subjects: string[];
-  readonly time: Timeslot;
+  readonly subjects: Option<string>[];
+  readonly time?: Timeslot;
   readonly intl: IntlShape;
   readonly user: User;
   readonly className?: string;
@@ -97,7 +98,7 @@ class UserDialog extends React.Component<UserDialogProps> {
           roles: [this.props.aspect === 'tutoring' ? 'tutor' : 'mentor'],
         },
       ],
-      subjects: this.state.subjects,
+      subjects: this.state.subjects.map((s: Option<string>) => s.value),
       message: this.state.message,
       time: this.state.time,
     });
@@ -122,7 +123,7 @@ class UserDialog extends React.Component<UserDialogProps> {
     });
   }
 
-  private handleSubjectsChange(subjects: string[]): void {
+  private handleSubjectsChange(subjects: Option<string>[]): void {
     this.setState({ subjects });
     firebase.analytics().logEvent('checkout_progress', {
       checkout_step: 1,
@@ -333,6 +334,7 @@ class UserDialog extends React.Component<UserDialogProps> {
               className={styles.img}
               href={this.props.user.photo}
               target='_blank'
+              tabIndex={-1}
             >
               <Avatar src={this.props.user.photo} />
             </a>
@@ -377,19 +379,18 @@ class UserDialog extends React.Component<UserDialogProps> {
                 </>
               )}
               <SubjectSelect
-                outlined
                 required
                 autoOpenMenu
                 renderToPortal
                 label={this.props.intl.formatMessage(labels.subjects)}
                 className={styles.formField}
                 onChange={this.handleSubjectsChange}
-                val={this.state.subjects}
+                value={this.state.subjects}
                 options={this.props.user[this.props.aspect].subjects}
                 grade={this.context.user.grade}
                 aspect={this.props.aspect}
               />
-              {this.props.aspect === 'tutoring' && (
+              {this.props.aspect === 'tutoring' && this.state.time && (
                 <TimeslotInput
                   required
                   label={this.props.intl.formatMessage(labels.time)}

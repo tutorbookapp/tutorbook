@@ -1,41 +1,44 @@
-import React from 'react';
 import { Typography } from '@rmwc/typography';
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
+import { Option, Callback } from '@tutorbook/model';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
-import { SelectHint } from './select-hint';
+
+import React from 'react';
+import SelectHint from './select-hint';
 
 import to from 'await-to-js';
 import styles from './select.module.scss';
 
-export interface Option<T extends any> {
-  label: string;
-  value: T;
-}
+type OverriddenProps = 'textarea' | 'outlined' | 'onFocus' | 'onBlur';
 
 interface SelectState<T extends any> {
   suggestionsOpen: boolean;
   suggestions: Option<T>[];
-  selected: Option<T>[];
-  errored: boolean;
   inputValue: string;
-  inputFocused: boolean;
   lineBreak: boolean;
+  errored: boolean;
 }
 
-interface UniqueSelectProps<T extends any> extends TextFieldProps {
-  onChange?: (selected: T[]) => any;
-  className?: string;
-  val?: Option<T>[];
+interface UniqueSelectProps<T extends any> {
+  value: Option<T>[];
+  onChange: Callback<Option<T>[]>;
+  getSuggestions: (query: string) => Promise<Option<T>[]>;
   renderToPortal?: boolean;
   autoOpenMenu?: boolean;
-  getSuggestions: (query: string) => Promise<Option<T>[]>;
+  focused?: boolean;
+  onFocused?: () => any;
+  onBlurred?: () => any;
 }
 
-export type SelectProps<T extends any> = UniqueSelectProps<T> &
-  Omit<TextFieldHTMLProps, 'onChange' | 'ref'>;
+export type SelectProps<T extends any> = Omit<
+  TextFieldHTMLProps,
+  keyof UniqueSelectProps<T> | OverriddenProps
+> &
+  Omit<TextFieldProps, keyof UniqueSelectProps<T> | OverriddenProps> &
+  UniqueSelectProps<T>;
 
 export default class Select<T extends any> extends React.Component<
   SelectProps<T>,
@@ -62,10 +65,8 @@ export default class Select<T extends any> extends React.Component<
     this.state = {
       suggestionsOpen: false,
       suggestions: [],
-      selected: props.val || [],
       errored: false,
       inputValue: '',
-      inputFocused: false,
       lineBreak: false,
     };
     this.inputRef = React.createRef();
@@ -79,10 +80,6 @@ export default class Select<T extends any> extends React.Component<
     this.updateInputLine = this.updateInputLine.bind(this);
   }
 
-  /**
-   * We can't call `updateSuggestions` in the constructor because we're not
-   * allowed to `setState` until **after** the component is mounted.
-   */
   public componentDidMount(): void {
     this.updateSuggestions();
   }
@@ -99,24 +96,18 @@ export default class Select<T extends any> extends React.Component<
   }
 
   /**
-   * Make sure to update the "above-the-fold" options based on the given grade
-   * level.
-   * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/20#issuecomment-630958982}
-   *
-   * Note that this also contains a painful workaround to ensure that the select
-   * menu is positioned correctly **even** if it's anchor (the `TextField`)
-   * changes shape.
+   * Ensure that the select menu is positioned correctly **even** if it's anchor
+   * (the `TextField`) changes shape.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
   public componentDidUpdate(prevProps: SelectProps<T>): void {
     const shouldChangeInputValue: boolean =
       (this.state.inputValue === '' || this.state.inputValue === '\xa0') &&
       this.inputValue !== this.state.inputValue;
-    const valChanged = prevProps.val !== this.props.val;
     if (shouldChangeInputValue) this.setState({ inputValue: this.inputValue });
-    if (valChanged && this.props.val)
-      this.setState({ selected: this.props.val });
     if (this.foundationRef) this.foundationRef.autoPosition_();
+    if (this.props.focused && this.inputRef.current)
+      this.inputRef.current.focus();
   }
 
   /**
@@ -147,27 +138,13 @@ export default class Select<T extends any> extends React.Component<
    * - The `TextField`'s value isn't empty.
    * - The `TextField` is focused.
    * - There are options selected (this is the only thing that's custom).
-   */
-  private get inputValue(): string {
-    return this.optionsAreSelected ? '\xa0' : '';
-  }
-  /*
-   *private get labelShouldFloat(): boolean {
-   *  return (
-   *    this.state.inputValue !== '' ||
-   *    this.state.inputFocused ||
-   *    this.optionsAreSelected
-   *  );
-   *}
-   */
-
-  /**
+   *
    * Make sure to float the `TextField`'s label if there are options selected.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
    * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/8}
    */
-  private get optionsAreSelected(): boolean {
-    return this.state.selected.length > 0;
+  private get inputValue(): string {
+    return this.props.value.length > 0 ? '\xa0' : '';
   }
 
   /**
@@ -238,13 +215,16 @@ export default class Select<T extends any> extends React.Component<
    */
   public render(): JSX.Element {
     const {
-      val,
+      value,
       onChange,
-      className,
+      getSuggestions,
       renderToPortal,
       autoOpenMenu,
-      getSuggestions,
-      ...rest
+      className,
+      focused,
+      onFocused,
+      onBlurred,
+      ...textFieldProps
     } = this.props;
     return (
       <MenuSurfaceAnchor className={className}>
@@ -255,6 +235,7 @@ export default class Select<T extends any> extends React.Component<
             event.preventDefault();
             event.stopPropagation();
             if (this.inputRef.current) this.inputRef.current.focus();
+            return false;
           }}
           anchorCorner='bottomStart'
           renderToPortal={renderToPortal ? '#portal' : false}
@@ -264,16 +245,17 @@ export default class Select<T extends any> extends React.Component<
         </MenuSurface>
         <SelectHint open={this.state.suggestionsOpen}>
           <TextField
-            {...rest}
+            {...textFieldProps}
             textarea
-            ref={this.inputRef}
+            outlined
+            inputRef={this.inputRef}
             value={this.state.inputValue}
             onFocus={() => {
-              this.setState({ inputFocused: true });
+              if (onFocused) onFocused();
               this.maybeOpenSuggestions();
             }}
             onBlur={() => {
-              this.setState({ inputFocused: false });
+              if (onBlurred) onBlurred();
               this.closeSuggestions();
             }}
             onChange={this.updateInputValue}
@@ -295,7 +277,7 @@ export default class Select<T extends any> extends React.Component<
    * 2. Adding it as a chip to the `mdc-text-field` content.
    */
   private updateSelected(option: Option<T>, event?: React.MouseEvent): void {
-    const selected: Option<T>[] = Array.from(this.state.selected);
+    const selected: Option<T>[] = Array.from(this.props.value);
     const selectedIndex: number = selected.findIndex(
       (selected: Option<T>) => selected.value === option.value
     );
@@ -334,8 +316,8 @@ export default class Select<T extends any> extends React.Component<
     this.lastSelectedRef.current = option;
 
     const inputValue: string = selectedIndex < 0 ? '' : this.state.inputValue;
-    this.setState({ selected, inputValue, lineBreak: false });
-    this.props.onChange && this.props.onChange(selected.map((s) => s.value));
+    this.setState({ inputValue, lineBreak: false });
+    this.props.onChange(selected);
   }
 
   private renderSuggestionMenuItems(): JSX.Element[] | JSX.Element {
@@ -358,7 +340,7 @@ export default class Select<T extends any> extends React.Component<
             icon={
               <Checkbox
                 checked={
-                  this.state.selected.findIndex(
+                  this.props.value.findIndex(
                     (selected: Option<T>) => selected.value === option.value
                   ) >= 0
                 }
@@ -374,7 +356,7 @@ export default class Select<T extends any> extends React.Component<
   }
 
   private renderSelectedChipItems(): JSX.Element[] {
-    return this.state.selected.map((option: Option<T>, index: number) => (
+    return this.props.value.map((option: Option<T>, index: number) => (
       <Chip
         key={option.label}
         label={option.label}

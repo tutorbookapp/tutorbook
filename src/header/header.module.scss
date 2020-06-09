@@ -17,20 +17,36 @@
 
 .header {
   width: 100%;
-  max-width: config.$default-width;
+  max-width: config.$default-width + 48px;
   margin: auto;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .formWidth .header {
   max-width: config.$form-width;
 }
 
-.left {
+.center {
+  flex: 1 1 auto;
+  text-align: center;
+  padding: 0 24px;
+  min-width: 0;
+}
+
+@media only screen and (max-width: 800px) {
+  .center {
+    visibility: hidden;
+    display: none;
+  }
+}
+
+.left,
+.right {
   display: flex;
   align-items: center;
 }

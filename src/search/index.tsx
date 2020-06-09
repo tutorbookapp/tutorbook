@@ -1,12 +1,10 @@
 import React from 'react';
 
-import { useIntl, defMsg, IntlShape, Msg } from '@tutorbook/intl';
-import { Timeslot, User, Query } from '@tutorbook/model';
+import { Option, Timeslot, User, Query } from '@tutorbook/model';
 
 import Carousel from '@tutorbook/carousel';
 import UserDialog from '@tutorbook/user-dialog';
 import Utils from '@tutorbook/utils';
-import Title from '@tutorbook/title';
 import Result from './result';
 import Form from './form';
 
@@ -20,17 +18,6 @@ interface SearchProps {
   readonly user?: User;
 }
 
-const msgs: Record<string, Msg> = defMsg({
-  mentoring: {
-    id: 'search.mentoring.title',
-    defaultMessage: 'Expert mentors',
-  },
-  tutoring: {
-    id: 'search.tutoring.title',
-    defaultMessage: 'Volunteer tutors',
-  },
-});
-
 export default function Search({
   user,
   query,
@@ -38,8 +25,23 @@ export default function Search({
   searching,
   onChange,
 }: SearchProps): JSX.Element {
-  const intl: IntlShape = useIntl();
   const [viewing, setViewing] = React.useState<User | undefined>(user);
+  const [elevated, setElevated] = React.useState<boolean>(false);
+  const formRef: React.RefObject<HTMLDivElement> = React.createRef();
+
+  React.useEffect(() => {
+    const listener = () => {
+      if (!formRef.current) return;
+      const viewportOffset = formRef.current.getBoundingClientRect();
+      const updated: boolean = viewportOffset.top <= 74;
+      // We have to wait a tick before changing the class for the animation to
+      // work. @see {@link https://stackoverflow.com/a/37643388/10023158}
+      if (updated !== elevated) setTimeout(() => setElevated(updated), 100);
+    };
+    window.addEventListener('scroll', listener);
+    return () => window.removeEventListener('scroll', listener);
+  });
+
   return (
     <div className={styles.wrapper}>
       {viewing && (
@@ -47,12 +49,13 @@ export default function Search({
           user={viewing}
           aspect={query.aspect}
           onClosed={() => setViewing(undefined)}
-          subjects={Utils.intersection<string>(
+          subjects={Utils.intersection<Option<string>, string>(
             query.subjects,
-            viewing[query.aspect].subjects
+            viewing[query.aspect].subjects,
+            (a: Option<string>, b: string) => a.value === b
           )}
           time={
-            Utils.intersection<Timeslot>(
+            Utils.intersection<Timeslot, Timeslot>(
               query.availability,
               viewing.availability,
               (a: Timeslot, b: Timeslot) => a.equalTo(b)
@@ -60,9 +63,6 @@ export default function Search({
           }
         />
       )}
-      <div className={styles.title}>
-        <Title>{intl.formatMessage(msgs[query.aspect])}</Title>
-      </div>
       <Form query={query} onChange={onChange} />
       {searching && !results.length && (
         <ul className={styles.results}>

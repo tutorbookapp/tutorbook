@@ -70,10 +70,19 @@ function getFilterStrings(query: Query): string[] {
   let filterString: string = '';
   for (let i = 0; i < query.subjects.length; i++) {
     filterString += i === 0 ? '(' : ' OR ';
-    filterString += `${query.aspect}.subjects:"${query.subjects[i]}"`;
+    filterString += `${query.aspect}.subjects:"${query.subjects[i].value}"`;
     if (i === query.subjects.length - 1) filterString += ')';
   }
-  if (query.availability.length && query.subjects.length)
+  if (query.langs.length && query.subjects.length) filterString += ' AND ';
+  for (let i = 0; i < query.langs.length; i++) {
+    filterString += i === 0 ? '(' : ' OR ';
+    filterString += `langs:"${query.langs[i].value}"`;
+    if (i === query.langs.length - 1) filterString += ')';
+  }
+  if (
+    (query.availability.length && query.langs.length) ||
+    (query.availability.length && query.subjects.length)
+  )
     filterString += ' AND ';
   const filterStrings: string[] = [];
   for (const timeslot of query.availability)
@@ -120,10 +129,12 @@ export default async function search(
   res: NextApiResponse
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
-  const aspect: string = req.query.aspect as string;
+  const langs: string = req.query.langs as string;
   const subjects: string = req.query.subjects as string;
   const availability: string = req.query.availability as string;
+  const aspect: string = req.query.aspect as string;
   const query: Query = {
+    langs: langs ? JSON.parse(decodeURIComponent(langs)) : [],
     subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
     availability: availability
       ? Availability.fromURLParam(availability)

@@ -1,0 +1,88 @@
+@use 'sass:map';
+@use '@tutorbook/styles/query-form';
+@use '@tutorbook/styles/typography';
+@use '@tutorbook/styles/config';
+@use '@material/elevation';
+
+.search {
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  background: map.get(config.$colors, 'background');
+  height: config.$nav-height - 24px;
+  -moz-box-align: center;
+  align-items: center;
+  display: inline-flex;
+  position: relative;
+  vertical-align: middle;
+  border-radius: 4px;
+  z-index: 5;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.searchButton {
+  @include typography.typography('body2');
+  -moz-appearance: none;
+  background: transparent none repeat scroll 0% 0%;
+  border: 0px none;
+  color: map.get(config.$colors, 'foreground');
+  cursor: pointer;
+  display: inline-block;
+  margin: 0px;
+  outline: currentcolor none medium;
+  padding: 0px 16px;
+  text-decoration: none;
+  user-select: auto;
+  height: 100%;
+  position: relative;
+  flex: 1 1 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchButton:first-child {
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+.searchButton:last-child {
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+.searchDivider {
+  flex: 0 0 1px;
+  height: 100%;
+  width: 1px;
+  position: relative;
+  z-index: 1;
+  background-color: map.get(config.$colors, 'accents-2');
+}
+
+.form {
+  @include query-form.form(true);
+  @include elevation.elevation(0);
+  visibility: hidden;
+  position: absolute;
+  border-radius: 4px;
+  z-index: 6;
+  background: map.get(config.$colors, 'background');
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  width: 100%;
+  top: 0;
+  left: 50%;
+
+  &.active {
+    @include elevation.elevation(4);
+    visibility: visible;
+  }
+}
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 0;
+}

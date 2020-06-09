@@ -1,22 +1,24 @@
-import React from 'react';
 import { Availability, TimeslotJSONInterface } from './times';
 
 export type Aspect = 'mentoring' | 'tutoring';
 
 export interface Query {
-  subjects: string[];
+  langs: Option<string>[];
+  subjects: Option<string>[];
   availability: Availability;
   aspect: Aspect;
 }
 
 export interface QueryJSONInterface {
-  subjects: string[];
+  langs: Option<string>[];
+  subjects: Option<string>[];
   availability: TimeslotJSONInterface[];
   aspect: Aspect;
 }
 
-export const QueryContext: React.Context<Query> = React.createContext({
-  subjects: [],
-  availability: new Availability(),
-  aspect: 'mentoring',
-} as Query);
+export interface Option<T extends any> {
+  label: string;
+  value: T;
+}
+
+export type Callback<T> = (value: T) => any;

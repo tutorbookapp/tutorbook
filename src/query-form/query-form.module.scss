@@ -1,58 +1,9 @@
-.form {
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+@use '@tutorbook/styles/query-form';
+
+.horzField {
+  @include query-form.field(false);
 }
 
-.field {
-  margin: 0 8px;
-  flex-grow: 1.5;
-  flex-basis: 0;
-  width: 100%;
-
-  &:first-child {
-    margin-left: 0;
-  }
-
-  &:last-child {
-    margin-right: 0;
-  }
-}
-
-.btn {
-  margin: 0 0 0 8px;
-  flex-grow: 0;
-  flex-basis: 0;
-  min-height: 56px;
-  max-height: 56px;
-  min-width: 300px;
-  width: 100%;
-}
-
-@media (max-width: 768px) {
-  .form {
-    flex-direction: column;
-  }
-
-  .field {
-    margin: 8px 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .btn {
-    margin: 8px 0 0;
-    min-width: 0;
-  }
-}
-
-.hidden {
-  display: none;
+.vertField {
+  @include query-form.field(true);
 }

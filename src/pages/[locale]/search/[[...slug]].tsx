@@ -47,9 +47,10 @@ async function getSearchResults(
       url,
       method: 'get',
       params: {
-        aspect: encodeURIComponent(query.aspect),
+        langs: encodeURIComponent(JSON.stringify(query.langs)),
         subjects: encodeURIComponent(JSON.stringify(query.subjects)),
         availability: query.availability.toURLParam(),
+        aspect: encodeURIComponent(query.aspect),
       },
     })
   );
@@ -146,11 +147,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const availability: string = context.query.availability as string;
   const query: Query = {
     langs: langs ? JSON.parse(decodeURIComponent(langs)) : [],
-    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
     subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
     availability: availability
       ? Availability.fromURLParam(availability)
       : new Availability(),
+    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
   };
   const url: string = new URL('/api/search', `http:${context.req.headers.host}`)
     .href;
@@ -171,26 +172,26 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   );
   const [qry, setQuery] = React.useState<Query>({
     langs: query.langs,
-    aspect: query.aspect,
     subjects: query.subjects,
     availability: Availability.fromJSON(query.availability),
+    aspect: query.aspect,
   });
   return (
     <>
       <Header
-        aspect={qry.aspect}
-        onChange={async (aspect: Aspect) => {
-          setQuery({ ...qry, aspect });
+        query={qry}
+        onChange={async (query: Query) => {
+          setQuery(query);
           setSearching(true);
-          setResults(await getSearchResults({ ...qry, aspect }));
+          setResults(await getSearchResults(query));
           setSearching(false);
         }}
       />
       <Search
-        user={user ? User.fromJSON(user) : undefined}
         query={qry}
-        searching={searching}
         results={res}
+        searching={searching}
+        user={user ? User.fromJSON(user) : undefined}
         onChange={async (query: Query) => {
           setQuery(query);
           setSearching(true);
