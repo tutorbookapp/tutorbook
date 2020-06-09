@@ -76,6 +76,7 @@ export async function userUpdate(
       name: onlyFirstNameAndLastInitial(user.name),
       photo: user.photo,
       bio: user.bio,
+      langs: user.langs,
       availability: availabilityToDates(user.availability),
       mentoring: user.mentoring,
       tutoring: user.tutoring,
@@ -93,6 +94,7 @@ export async function userUpdate(
       'tutoring.searches',
       'availability',
       'featured',
+      'langs',
     ].map((attr: string) => `filterOnly(${attr})`),
   });
 }
