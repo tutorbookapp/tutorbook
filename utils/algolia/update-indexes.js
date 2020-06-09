@@ -10,7 +10,7 @@ const to = require('await-to-js').default;
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs');
 
-const main = async (id) => {
+const subjects = async (id) => {
   const index = client.initIndex(id);
   index.setSettings({
     attributesForFaceting: ['filterOnly(grades)', 'filterOnly(name)'],
@@ -35,5 +35,29 @@ const main = async (id) => {
   }
 };
 
-main('mentoring');
-main('tutoring');
+const langs = async () => {
+  const index = client.initIndex('langs');
+  const langs = parse(fs.readFileSync(`./langs.csv`), {
+    columns: true,
+    skip_empty_lines: true,
+  })
+    .filter((lang) => !!lang.code)
+    .map((lang) => {
+      const res = { objectID: lang.code };
+      delete lang.code;
+      for (const [key, val] of Object.entries(lang)) {
+        const name = val.split(', ')[0];
+        const synonyms = val.split(', ').filter((n) => n !== name);
+        res[key] = { name, synonyms };
+      }
+      return res;
+    });
+  const [err, res] = await to(index.saveObjects(langs));
+  if (err) {
+    console.error('[ERROR] While saving langs:', err);
+    debugger;
+  }
+};
+
+subjects('mentoring');
+subjects('tutoring');

@@ -1,0 +1,185 @@
+code,en,fr
+aa,Afar,Afar
+ab,Abkhazian,Abkhaze
+ae,Avestan,Avestique
+af,Afrikaans,Afrikaans
+ak,Akan,Akan
+am,Amharic,Amharique
+an,Aragonese,Aragonais
+ar,Arabic,Arabe
+as,Assamese,Assamais
+av,Avaric,Avar
+ay,Aymara,Aymara
+az,Azerbaijani,Azéri
+ba,Bashkir,Bachkir
+be,Belarusian,Biélorusse
+bg,Bulgarian,Bulgare
+bh,Bihari languages,Bihari
+bi,Bislama,Bichelamar
+bm,Bambara,Bambara
+bn,Bengali,Bengali
+bo,Tibetan,Tibétain
+br,Breton,Breton
+bs,Bosnian,Bosnien
+ca,"Catalan, Valencian",Catalan
+ce,Chechen,Tchétchène
+ch,Chamorro,Chamorro
+co,Corsican,Corse
+cr,Cree,Cri
+cs,Czech,Tchèque
+cu,"Church Slavic, Old Slavonic, Church Slavonic, Old Bulgarian, Old Church Slavonic",Vieux-slave
+cv,Chuvash,Tchouvache
+cy,Welsh,Gallois
+da,Danish,Danois
+de,German,Allemand
+dv,"Divehi, Dhivehi, Maldivian",Maldivien
+dz,Dzongkha,Dzongkha
+ee,Ewe,Ewe
+el,"Greek, Modern (1453–)",Grec moderne
+en,English,Anglais
+eo,Esperanto,Espéranto
+es,"Spanish, Castilian",Espagnol
+et,Estonian,Estonien
+eu,Basque,Basque
+fa,Persian,Persan
+ff,Fulah,Peul
+fi,Finnish,Finnois
+fj,Fijian,Fidjien
+fo,Faroese,Féroïen
+fr,French,Français
+fy,Western Frisian,Frison occidental
+ga,Irish,Irlandais
+gd,"Gaelic, Scottish Gaelic",Écossais
+gl,Galician,Galicien
+gn,Guarani,Guarani
+gu,Gujarati,Gujarati
+gv,Manx,Mannois
+ha,Hausa,Haoussa
+he,Hebrew,Hébreu
+hi,Hindi,Hindi
+ho,Hiri Motu,Hiri motu
+hr,Croatian,Croate
+ht,"Haitian, Haitian Creole",Créole haïtien
+hu,Hungarian,Hongrois
+hy,Armenian,Arménien
+hz,Herero,Héréro
+ia,Interlingua (International Auxiliary Language Association),Interlingua
+id,Indonesian,Indonésien
+ie,"Interlingue, Occidental",Occidental
+ig,Igbo,Igbo
+ii,"Sichuan Yi, Nuosu",Yi
+ik,Inupiaq,Inupiak
+io,Ido,Ido
+is,Icelandic,Islandais
+it,Italian,Italien
+iu,Inuktitut,Inuktitut
+ja,Japanese,Japonais
+jv,Javanese,Javanais
+ka,Georgian,Géorgien
+kg,Kongo,Kikongo
+ki,"Kikuyu, Gikuyu",Kikuyu
+kj,"Kuanyama, Kwanyama",Kuanyama
+kk,Kazakh,Kazakh
+kl,"Kalaallisut, Greenlandic",Groenlandais
+km,Central Khmer,Khmer
+kn,Kannada,Kannada
+ko,Korean,Coréen
+kr,Kanuri,Kanouri
+ks,Kashmiri,Cachemiri
+ku,Kurdish,Kurde
+kv,Komi,Komi
+kw,Cornish,Cornique
+ky,"Kirghiz, Kyrgyz",Kirghiz
+la,Latin,Latin
+lb,"Luxembourgish, Letzeburgesch",Luxembourgeois
+lg,Ganda,Ganda
+li,"Limburgan, Limburger, Limburgish",Limbourgeois
+ln,Lingala,Lingala
+lo,Lao,Lao
+lt,Lithuanian,Lituanien
+lu,Luba-Katanga,Luba
+lv,Latvian,Letton
+mg,Malagasy,Malgache
+mh,Marshallese,Marshallais
+mi,Maori,Maori de Nouvelle-Zélande
+mk,Macedonian,Macédonien
+ml,Malayalam,Malayalam
+mn,Mongolian,Mongol
+mr,Marathi,Marathi
+ms,Malay,Malais
+mt,Maltese,Maltais
+my,Burmese,Birman
+na,Nauru,Nauruan
+nb,Norwegian Bokmål,Norvégien Bokmål
+nd,North Ndebele,Sindebele
+ne,Nepali,Népalais
+ng,Ndonga,Ndonga
+nl,"Dutch, Flemish",Néerlandais
+nn,Norwegian Nynorsk,Norvégien Nynorsk
+no,Norwegian,Norvégien
+nr,South Ndebele,Nrebele
+nv,"Navajo, Navaho",Navajo
+ny,"Chichewa, Chewa, Nyanja",Chichewa
+oc,Occitan,Occitan
+oj,Ojibwa,Ojibwé
+om,Oromo,Oromo
+or,Oriya,Oriya
+os,"Ossetian, Ossetic",Ossète
+pa,"Punjabi, Panjabi",Pendjabi
+pi,Pali,Pali
+pl,Polish,Polonais
+ps,"Pashto, Pushto",Pachto
+pt,Portuguese,Portugais
+qu,Quechua,Quechua
+rm,Romansh,Romanche
+rn,Rundi,Kirundi
+ro,"Romanian, Moldavian, Moldovan",Roumain
+ru,Russian,Russe
+rw,Kinyarwanda,Kinyarwanda
+sa,Sanskrit,Sanskrit
+sc,Sardinian,Sarde
+sd,Sindhi,Sindhi
+se,Northern Sami,Same du Nord
+sg,Sango,Sango
+si,"Sinhala, Sinhalese",Cingalais
+sk,Slovak,Slovaque
+sl,Slovenian,Slovène
+sm,Samoan,Samoan
+sn,Shona,Shona
+so,Somali,Somali
+sq,Albanian,Albanais
+sr,Serbian,Serbe
+ss,Swati,Swati
+st,Southern Sotho,Sotho du Sud
+su,Sundanese,Soundanais
+sv,Swedish,Suédois
+sw,Swahili,Swahili
+ta,Tamil,Tamoul
+te,Telugu,Télougou
+tg,Tajik,Tadjik
+th,Thai,Thaï
+ti,Tigrinya,Tigrigna
+tk,Turkmen,Turkmène
+tl,Tagalog,Tagalog
+tn,Tswana,Tswana
+to,Tonga (Tonga Islands),Tongien
+tr,Turkish,Turc
+ts,Tsonga,Tsonga
+tt,Tatar,Tatar
+tw,Twi,Twi
+ty,Tahitian,Tahitien
+ug,"Uighur, Uyghur",Ouïghour
+uk,Ukrainian,Ukrainien
+ur,Urdu,Ourdou
+uz,Uzbek,Ouzbek
+ve,Venda,Venda
+vi,Vietnamese,Vietnamien
+vo,Volapük,Volapük
+wa,Walloon,Wallon
+wo,Wolof,Wolof
+xh,Xhosa,Xhosa
+yi,Yiddish,Yiddish
+yo,Yoruba,Yoruba
+za,"Zhuang, Chuang",Zhuang
+zh,Chinese,Chinois
+zu,Zulu,Zoulou
