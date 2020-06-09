@@ -1,6 +1,6 @@
 const path = require('path');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env.prod') });
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs');
@@ -16,7 +16,7 @@ const app = admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
-const db = app.firestore().collection('partitions').doc('default');
+const db = app.firestore().collection('partitions').doc('test');
 
 const getSubjects = (id) => {
   return parse(fs.readFileSync(`../algolia/${id}.csv`), {
@@ -25,6 +25,16 @@ const getSubjects = (id) => {
   }).filter((subject) => !!subject.name);
 };
 
+const SUBJECT_TO_LANG_DICT = {
+  Latin: 'la',
+  Spanish: 'es',
+  Chinese: 'zh',
+  Urdu: 'ur',
+  Hindi: 'hi',
+  Japanese: 'ja',
+  French: 'fr',
+  German: 'de',
+};
 const GRADES = [
   'Kindergarten',
   '1st Grade',
@@ -74,10 +84,20 @@ const main = async () => {
     return [...new Set(all)];
   };
 
+  const updateLangs = (subjects) => {
+    const langs = ['en'];
+    for (const subject of subjects) {
+      const langCode = SUBJECT_TO_LANG_DICT[subject.replace(' Language', '')];
+      if (langCode) langs.push(langCode);
+    }
+    return langs;
+  };
+
   const users = (await db.collection('users').get()).docs;
   await Promise.all(
     users.map((user) => {
       const data = user.data();
+      const subjects = updateSubjects(data.tutoring.subjects, tutoringSubjects);
       return user.ref.set({
         uid: data.uid || user.id,
         name: data.name || '',
@@ -86,6 +106,7 @@ const main = async () => {
         photo: data.photo || '',
         bio: data.bio || '',
         featured: data.featured || [],
+        langs: updateLangs(subjects),
         availability: data.availability || [],
         parents: data.parents || [],
         socials: (data.socials || []).filter((s) => !!s.url),
@@ -94,7 +115,7 @@ const main = async () => {
           searches: updateSubjects(data.mentoring.searches, mentoringSubjects),
         },
         tutoring: {
-          subjects: updateSubjects(data.tutoring.subjects, tutoringSubjects),
+          subjects: subjects,
           searches: updateSubjects(data.tutoring.searches, tutoringSubjects),
         },
       });
