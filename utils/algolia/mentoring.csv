@@ -1,36 +1,36 @@
-name,synonyms
-Photography,
-Filmmaking,Video Production
-,
-Music,
-Music Production,
-Singing,
-,
-Business,Business and Commerce
-Entrepreneurship,
-Marketing,Advertising
-Sales,
-Economics,
-,
-Computer Science,
-Artificial Intelligence,"Machine Learning, ML, AI"
-Machine Vision,Artificial Intelligence
-Networking,
-Back-End Development,Full-Stack Development
-Web Development,"Full-Stack Development, Front-End Development"
-Data Science,Artificial Intelligence
-App Development,"Web Development, iOS Development, Android Development"
-Frameworks,"Open Source Development, Back-End Development"
-Systems,"Computer Architecture, Operating Systems, Back-End Development"
-,
-Design,UI/UX Design
-Graphic Design,
-,
-Engineering,
-Chemistry,
-,
-Writing,English
-,
-Fitness,"Sports, Athletics"
-,
-Politics,Public Policy
+name,synonyms,category
+Art,,
+Photography,,Art
+Filmmaking,Video Production,Art
+Music,,Art
+Music Production,,Art
+Singing,,Art
+,,
+Business,Business and Commerce,
+Entrepreneurship,,Business
+Marketing,Advertising,Business
+Sales,,Business
+Economics,,Business
+,,
+Computer Science,,
+Artificial Intelligence,"Machine Learning, ML, AI",Computer Science
+Machine Vision,Artificial Intelligence,Computer Science
+Networking,,Computer Science
+Back-End Development,Full-Stack Development,Computer Science
+Web Development,"Full-Stack Development, Front-End Development",Computer Science
+Data Science,Artificial Intelligence,Computer Science
+App Development,"Web Development, iOS Development, Android Development",Computer Science
+Frameworks,"Open Source Development, Back-End Development",Computer Science
+Systems,"Computer Architecture, Operating Systems, Back-End Development",Computer Science
+,,
+Design,UI/UX Design,
+Graphic Design,,Design
+,,
+Engineering,,
+Chemistry,,
+,,
+Writing,English,
+,,
+Fitness,"Sports, Athletics",
+,,
+Politics,Public Policy,
