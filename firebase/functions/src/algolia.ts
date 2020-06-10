@@ -76,25 +76,25 @@ export async function userUpdate(
       name: onlyFirstNameAndLastInitial(user.name),
       photo: user.photo,
       bio: user.bio,
-      langs: user.langs,
       availability: availabilityToDates(user.availability),
       mentoring: user.mentoring,
       tutoring: user.tutoring,
       socials: user.socials,
-      featured: user.featured,
+      langs: user.langs,
       objectID: context.params.user,
+      featured: user.featured,
     };
     await index.saveObject(ob);
   }
   index.setSettings({
     attributesForFaceting: [
+      'availability',
       'mentoring.subjects',
       'mentoring.searches',
       'tutoring.subjects',
       'tutoring.searches',
-      'availability',
-      'featured',
       'langs',
+      'featured',
     ].map((attr: string) => `filterOnly(${attr})`),
   });
 }
