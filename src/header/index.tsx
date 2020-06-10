@@ -8,13 +8,6 @@ import Banner from './banner';
 
 import styles from './header.module.scss';
 
-interface HeaderProps {
-  aspect?: Aspect;
-  query?: Query;
-  onChange?: Callback<Query | Aspect>;
-  formWidth?: boolean;
-}
-
 function DesktopTabs({
   aspect,
   onChange,
@@ -126,12 +119,11 @@ function DesktopNav({ user }: { user: User }): JSX.Element {
   );
 }
 
-export default function Header({
-  query,
-  aspect,
-  onChange,
-  formWidth,
-}: HeaderProps): JSX.Element {
+interface LinkHeaderProps {
+  formWidth?: boolean;
+}
+
+export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
   const { user } = useUser();
   return (
     <>
@@ -142,31 +134,77 @@ export default function Header({
         <header className={styles.header}>
           <div className={styles.left}>
             <Logo />
-            {!aspect && !query && <DesktopTabLinks />}
-            {aspect && (
-              <DesktopTabs
-                aspect={aspect}
-                onChange={(newAspect: Aspect) =>
-                  onChange && onChange(newAspect)
-                }
-              />
-            )}
-            {query && (
-              <DesktopTabs
-                aspect={query.aspect}
-                onChange={(newAspect: Aspect) =>
-                  onChange && onChange({ ...query, aspect: newAspect })
-                }
-              />
-            )}
+            <DesktopTabLinks />
+          </div>
+          <div className={styles.right}>
+            <MobileNav user={user} />
+            <DesktopNav user={user} />
+          </div>
+        </header>
+      </div>
+    </>
+  );
+}
+
+interface AspectHeaderProps extends LinkHeaderProps {
+  aspect: Aspect;
+  onChange: Callback<Aspect>;
+}
+
+export function AspectHeader({
+  aspect,
+  onChange,
+  formWidth,
+}: AspectHeaderProps): JSX.Element {
+  const { user } = useUser();
+  return (
+    <>
+      <Banner />
+      <div
+        className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}
+      >
+        <header className={styles.header}>
+          <div className={styles.left}>
+            <Logo />
+            <DesktopTabs aspect={aspect} onChange={onChange} />
+          </div>
+          <div className={styles.right}>
+            <MobileNav user={user} />
+            <DesktopNav user={user} />
+          </div>
+        </header>
+      </div>
+    </>
+  );
+}
+
+interface QueryHeaderProps extends LinkHeaderProps {
+  query: Query;
+  onChange: Callback<Query>;
+}
+
+export function QueryHeader({
+  query,
+  onChange,
+  formWidth,
+}: QueryHeaderProps): JSX.Element {
+  const { user } = useUser();
+  return (
+    <>
+      <Banner />
+      <div
+        className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}
+      >
+        <header className={styles.header}>
+          <div className={styles.left}>
+            <Logo />
+            <DesktopTabs
+              aspect={query.aspect}
+              onChange={(aspect: Aspect) => onChange({ ...query, aspect })}
+            />
           </div>
           <div className={styles.center}>
-            {query && (
-              <FilterForm
-                query={query}
-                onChange={(newQuery: Query) => onChange && onChange(newQuery)}
-              />
-            )}
+            <FilterForm query={query} onChange={onChange} />
           </div>
           <div className={styles.right}>
             <MobileNav user={user} />

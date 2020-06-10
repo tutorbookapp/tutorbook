@@ -9,9 +9,9 @@ import to from 'await-to-js';
 import Utils from '@tutorbook/utils';
 import Intercom from '@tutorbook/react-intercom';
 import ActionText from '@tutorbook/action-text';
-import Header from '@tutorbook/header';
 import Footer from '@tutorbook/footer';
 
+import { LinkHeader } from '@tutorbook/header';
 import { ApiError, Appt, ApptJSONInterface } from '@tutorbook/model';
 import {
   getIntlProps,
@@ -133,7 +133,7 @@ class ApprovePage extends React.Component<ApprovePageProps, ApprovePageState> {
     const intermediateHeadline = err ? msg(msgs.failed) : msg(msgs.approving);
     return (
       <>
-        <Header />
+        <LinkHeader />
         <ActionText
           loading={!appt && !err}
           headline={appt ? msg(msgs.approved) : intermediateHeadline}
@@ -150,6 +150,7 @@ export const getStaticProps: GetStaticProps = async (context) => ({
   props: await getIntlProps(context),
 });
 
+/* eslint-disable-next-line @typescript-eslint/require-await */
 export const getStaticPaths: GetStaticPaths = async () => ({
   paths: getIntlPaths(),
   fallback: false,

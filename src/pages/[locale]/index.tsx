@@ -3,9 +3,9 @@ import React from 'react';
 import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { Aspect } from '@tutorbook/model';
+import { AspectHeader } from '@tutorbook/header';
 
 import Intercom from '@tutorbook/react-intercom';
-import Header from '@tutorbook/header';
 import Hero from '@tutorbook/hero';
 import About from '@tutorbook/about';
 import Footer from '@tutorbook/footer';
@@ -14,7 +14,7 @@ function IndexPage(): JSX.Element {
   const [aspect, setAspect] = React.useState<Aspect>('mentoring');
   return (
     <>
-      <Header
+      <AspectHeader
         aspect={aspect}
         onChange={(newAspect: Aspect) => setAspect(newAspect)}
       />
@@ -33,6 +33,7 @@ export const getStaticProps: GetStaticProps = async (context) => ({
   props: await getIntlProps(context),
 });
 
+/* eslint-disable-next-line @typescript-eslint/require-await */
 export const getStaticPaths: GetStaticPaths = async () => ({
   paths: getIntlPaths(),
   fallback: false,

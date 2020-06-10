@@ -9,10 +9,10 @@ import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
 import Intercom from '@tutorbook/react-intercom';
-import Header from '@tutorbook/header';
 import Footer from '@tutorbook/footer';
 import Search from '@tutorbook/search';
 
+import { QueryHeader } from '@tutorbook/header';
 import { getIntlProps, withIntl } from '@tutorbook/intl';
 import {
   ApiError,
@@ -208,7 +208,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   };
   return (
     <>
-      <Header query={qry} onChange={handleChange} />
+      <QueryHeader query={qry} onChange={handleChange} />
       <Search
         query={qry}
         results={res}
