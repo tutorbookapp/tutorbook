@@ -29,7 +29,7 @@ export const getStaticProps: GetStaticProps = async (context) => ({
   props: await getIntlProps(context),
 });
 
-export const getStaticPaths: GetStaticPaths = () => ({
+export const getStaticPaths: GetStaticPaths = async () => ({
   paths: getIntlPaths(),
   fallback: false,
 });
