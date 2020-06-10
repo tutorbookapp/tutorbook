@@ -22,12 +22,12 @@ export default function Button({
   className,
   children,
   ...rest
-}: ButtonProps) {
+}: ButtonProps): JSX.Element {
   const buttonClass: string =
     styles.button +
-    (className ? ' ' + className : '') +
-    (arrow ? ' ' + styles.arrowButton : '') +
-    (google ? ' ' + styles.googleButton : '');
+    (className ? ` ${className}` : '') +
+    (arrow ? ` ${styles.arrowButton}` : '') +
+    (google ? ` ${styles.googleButton}` : '');
   return (
     <MDCButton {...rest} className={buttonClass}>
       {google && <div className={styles.googleLogo} />}

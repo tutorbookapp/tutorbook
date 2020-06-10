@@ -23,12 +23,13 @@ export type UserWithRolesAndVerifications = UserWithRoles & {
 export function addVerifications(
   user: UserWithRoles
 ): UserWithRolesAndVerifications {
-  return Object.assign(Object.assign({}, user), {
+  return {
+    ...user,
     verifications: Object.fromEntries(
       user.socials.map((social: SocialInterface) => {
         const { type, ...rest } = social;
-        return [type as SocialTypeAlias, { label: Utils.caps(type), ...rest }];
+        return [type, { label: Utils.caps(type), ...rest }];
       })
     ),
-  }) as UserWithRolesAndVerifications;
+  } as UserWithRolesAndVerifications;
 }

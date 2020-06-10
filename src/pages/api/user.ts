@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+
 import { NextApiRequest, NextApiResponse } from 'next';
 import { User, UserJSONInterface, ApiError } from '@tutorbook/model';
 import { SignUpEmail } from '@tutorbook/emails';
@@ -82,6 +84,7 @@ const db: DocumentReference =
  * both the parent and the pupil at the pupil signup form.
  */
 async function updateUser(user: User): Promise<void> {
+  /* eslint-disable no-param-reassign */
   const userRecord: UserRecord = await auth.getUserByEmail(user.email);
   const userNeedsToBeUpdated: boolean =
     (!!user.name && userRecord.displayName !== user.name) ||
@@ -112,7 +115,9 @@ async function updateUser(user: User): Promise<void> {
       user.photo = updatedRecord.photoURL || userRecord.photoURL || '';
       user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
     } else if (err) {
-      throw new Error(`${err.name} updating ${user}: ${err.message}`);
+      throw new Error(
+        `${err.name} updating ${user.toString()}: ${err.message}`
+      );
     } else if (updatedRecord) {
       // Don't let the user delete past known info (e.g. if the old `userRecord`
       // has data that this new `User` doesn't; we don't just get rid of data).
@@ -121,6 +126,7 @@ async function updateUser(user: User): Promise<void> {
       user.phone = updatedRecord.phoneNumber || userRecord.phoneNumber || '';
     }
   }
+  /* eslint-enable no-param-reassign */
 }
 
 /**
@@ -135,7 +141,8 @@ async function updateUser(user: User): Promise<void> {
  * effects on the given `user` object (i.e. adding the uID).
  */
 async function createUser(user: User, parents?: User[]): Promise<void> {
-  console.log(`[DEBUG] Creating user ${user}...`);
+  /* eslint-disable no-param-reassign */
+  console.log(`[DEBUG] Creating user ${user.toString()}...`);
   const [err, userRecord] = await to<UserRecord, FirebaseError>(
     auth.createUser({
       disabled: false,
@@ -162,23 +169,28 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
         emailVerified: false,
       })
     );
-    if (err) throw new Error(`${err.name} creating ${user}: ${err.message}`);
+    if (err)
+      throw new Error(
+        `${err.name} creating ${user.toString()}: ${err.message}`
+      );
     user.uid = (userRecord as UserRecord).uid;
     console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
   } else if (err) {
-    throw new Error(`${err.name} creating ${user}: ${err.message}`);
+    throw new Error(`${err.name} creating ${user.toString()}: ${err.message}`);
   } else {
     user.uid = (userRecord as UserRecord).uid;
     console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
   }
   const userRef: DocumentReference = db.collection('users').doc(user.uid);
   if (parents) {
-    for (const parent of parents) {
-      console.log(`[DEBUG] Creating parent ${parent}...`);
-      await createUser(parent);
-      user.parents.push(parent.uid);
-      console.log(`[DEBUG] Created parent ${parent}.`);
-    }
+    await Promise.all(
+      parents.map(async (parent: User) => {
+        console.log(`[DEBUG] Creating parent ${parent.toString()}...`);
+        await createUser(parent);
+        user.parents.push(parent.uid);
+        console.log(`[DEBUG] Created parent ${parent.toString()}.`);
+      })
+    );
   }
   const userDoc: DocumentSnapshot = await userRef.get();
   if (userDoc.exists) {
@@ -190,6 +202,7 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
     await userRef.set(user.toFirestore());
     console.log(`[DEBUG] Set ${user.name}'s profile (${user.uid}).`);
   }
+  /* eslint-enable no-param-reassign */
 }
 
 /**
@@ -216,9 +229,10 @@ export default async function user(
   req: NextApiRequest,
   res: NextApiResponse<ApiError | { user: UserJSONInterface }>
 ): Promise<void> {
-  function error(msg: string, code: number = 400, err?: Error): void {
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+  function error(msg: string, code = 400, err?: Error): void {
     console.error(`[ERROR] Sending client ${code} with msg (${msg})...`, err);
-    res.status(code).send(Object.assign({ msg }, err || {}));
+    res.status(code).send({ msg, ...(err || {}) });
   }
   if (!req.body) {
     error('You must provide a request body.');
@@ -227,7 +241,7 @@ export default async function user(
   } else {
     const user: User = User.fromJSON(req.body.user);
     const parents: User[] = (
-      req.body.parents || []
+      (req.body.parents as UserJSONInterface[]) || []
     ).map((parentJSON: UserJSONInterface) => User.fromJSON(parentJSON));
     const [err] = await to(createUser(user, parents));
     if (err) {
@@ -245,4 +259,5 @@ export default async function user(
       }
     }
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access */
 }

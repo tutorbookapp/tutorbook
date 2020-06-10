@@ -85,16 +85,20 @@ $margin: 24px;
 
 .socialLink {
   @include typography.typography('subtitle1');
-  font-size: 24px;
   margin-right: 10px;
-  font-family: 'FontAwesome';
-  color: map.get(config.$colors, 'accents-5');
-  text-decoration: none;
-  -webkit-text-stroke: 1px transparent;
-  transition: all 0.2s;
-  cursor: pointer;
+  font-size: 0;
 
-  &:hover {
+  &:before {
+    font-size: 24px;
+    font-family: 'FontAwesome';
+    color: map.get(config.$colors, 'accents-5');
+    text-decoration: none;
+    -webkit-text-stroke: 1px transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  &:hover:before {
     color: transparent;
     -webkit-text-stroke: 1px map.get(config.$colors, 'accents-5');
   }

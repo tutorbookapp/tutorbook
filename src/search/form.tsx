@@ -1,7 +1,7 @@
 import React from 'react';
 import FilterForm from '@tutorbook/filter-form';
 
-import { Query } from '@tutorbook/model';
+import { Callback, Query } from '@tutorbook/model';
 
 import styles from './form.module.scss';
 
@@ -10,7 +10,7 @@ export default function Form({
   onChange,
 }: {
   query: Query;
-  onChange: (query: Query) => any;
+  onChange: Callback<Query>;
 }): JSX.Element {
   const [elevated, setElevated] = React.useState<boolean>(false);
   const formRef: React.RefObject<HTMLDivElement> = React.createRef();
@@ -30,7 +30,7 @@ export default function Form({
 
   return (
     <div
-      className={styles.form + (elevated ? ' ' + styles.elevated : '')}
+      className={styles.form + (elevated ? ` ${styles.elevated}` : '')}
       ref={formRef}
     >
       <FilterForm query={query} onChange={onChange} />

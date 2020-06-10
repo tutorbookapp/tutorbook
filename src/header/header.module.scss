@@ -213,6 +213,11 @@
   opacity: 0;
 }
 
+.tab {
+  background: transparent;
+  border: none;
+}
+
 .tab.active::before {
   content: '';
   display: block;

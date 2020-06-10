@@ -15,7 +15,7 @@ export default function Loader(props: Props): JSX.Element {
   return (
     <div
       className={
-        styles.overlay + (props.active ? ' ' + styles.overlayActive : '')
+        styles.overlay + (props.active ? ` ${styles.overlayActive}` : '')
       }
     >
       <div className={styles.overlayContent}>

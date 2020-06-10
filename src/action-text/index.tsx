@@ -20,20 +20,24 @@ interface ActionTextProps {
  * Right now, this is only being used in the `src/pages/[locale]/approve.tsx`
  * page (that is shown to parents when they approve a tutoring match).
  */
-export default function ActionText(props: ActionTextProps): JSX.Element {
+export default function ActionText({
+  body,
+  loading,
+  headline,
+}: ActionTextProps): JSX.Element {
   return (
     <div className={styles.screen}>
       <div className={styles.content}>
         <main className={styles.text}>
           <h2 className={styles.headline}>
-            {props.headline}
-            {props.loading && (
+            {headline}
+            {loading && (
               <span className={styles.spinner}>
                 <Checkmark black />
               </span>
             )}
           </h2>
-          {props.body && <p className={styles.body}>{props.body}</p>}
+          {body && <p className={styles.body}>{body}</p>}
         </main>
       </div>
     </div>

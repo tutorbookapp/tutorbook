@@ -1,3 +1,5 @@
+import React from 'react';
+
 import styles from './avatar.module.scss';
 
 interface AvatarProps {
@@ -13,8 +15,8 @@ interface AvatarProps {
  */
 export default function Avatar({ src, loading }: AvatarProps): JSX.Element {
   return (
-    <div className={styles.wrapper + (loading ? ' ' + styles.loading : '')}>
-      {!loading && <img className={styles.img} src={src} />}
+    <div className={styles.wrapper + (loading ? ` ${styles.loading}` : '')}>
+      {!loading && <img className={styles.img} src={src} alt='' />}
       {!src && !loading && <div className={styles.noImg}>No Photo</div>}
     </div>
   );

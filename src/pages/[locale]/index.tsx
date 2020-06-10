@@ -16,7 +16,7 @@ function IndexPage(): JSX.Element {
     <>
       <Header
         aspect={aspect}
-        onChange={(aspect: Aspect) => setAspect(aspect)}
+        onChange={(newAspect: Aspect) => setAspect(newAspect)}
       />
       <Hero aspect={aspect} />
       <About />
@@ -33,7 +33,7 @@ export const getStaticProps: GetStaticProps = async (context) => ({
   props: await getIntlProps(context),
 });
 
-export const getStaticPaths: GetStaticPaths = async () => ({
+export const getStaticPaths: GetStaticPaths = () => ({
   paths: getIntlPaths(),
   fallback: false,
 });

@@ -17,24 +17,30 @@ interface Data {
  * to the Bramble room and instructions for how to make the most out of the
  * virtual tutoring session.
  */
-export class ApptEmail implements Email {
+export default class ApptEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
     Data
   > = Handlebars.compile(Template);
+
   public readonly from: string = 'Tutorbook <team@tutorbook.org>';
+
   public readonly bcc: string = 'team@tutorbook.org';
+
   public readonly to: string;
+
   public readonly subject: string;
+
   public readonly html: string;
+
   public readonly text: string;
 
   private addRoles(user: User): UserWithRoles {
     const attendee: AttendeeInterface | undefined = this.appt.attendees.find(
-      (attendee: AttendeeInterface) => attendee.uid === user.uid
+      (a: AttendeeInterface) => a.uid === user.uid
     );
-    return Object.assign(Object.assign({}, user), {
-      roles: attendee ? attendee.roles : [],
-    });
+    const userWithRoles: UserWithRoles = user as UserWithRoles;
+    userWithRoles.roles = attendee ? attendee.roles : [];
+    return userWithRoles;
   }
 
   private get attendeesWithRoles(): UserWithRoles[] {

@@ -5,11 +5,10 @@ import {
   UserJSONInterface,
   UserInterface,
 } from '@tutorbook/model';
-import { AxiosError, AxiosResponse } from 'axios';
-import { DBContext } from './db';
-
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
+
+import { DBContext } from './db';
 import firebase from './base';
 
 /**
@@ -31,15 +30,18 @@ interface UserProviderProps {
   children: JSX.Element[] | JSX.Element;
 }
 
-export interface UserProviderState {
+interface UserProviderState {
   user: User;
+}
+
+export interface UserContextValue extends UserProviderState {
   update: (user: User) => void;
   token: () => Promise<string> | undefined;
   signup: (user: User, parents?: User[]) => Promise<void>;
   signupWithGoogle: (user?: User, parents?: User[]) => Promise<void>;
 }
 
-export const UserContext: React.Context<UserProviderState> = React.createContext(
+export const UserContext: React.Context<UserContextValue> = React.createContext(
   {
     user: new User(),
     update: (user: User) => {},
@@ -49,89 +51,43 @@ export const UserContext: React.Context<UserProviderState> = React.createContext
   }
 );
 
-export const useUser = () => React.useContext(UserContext);
+export function useUser(): UserContextValue {
+  return React.useContext(UserContext);
+}
 
 /**
  * Class that manages authentication state and provides a `UserContext` provider
  * so all child components can access the current user's data.
  */
-export class UserProvider extends React.Component<UserProviderProps> {
+export class UserProvider extends React.Component<
+  UserProviderProps,
+  UserProviderState
+> {
   public static readonly contextType: React.Context<
     DocumentReference
   > = DBContext;
+
   private static readonly auth: Auth = firebase.auth();
-  public readonly state: UserProviderState;
+
+  public readonly context: DocumentReference;
+
   private authUnsubscriber?: Unsubscribe;
+
   private docUnsubscriber?: Unsubscribe;
 
-  public constructor(props: UserProviderProps) {
+  public constructor(props: UserProviderProps, context: DocumentReference) {
     super(props);
-    this.state = {
-      user: new User(),
-      update: (user: User) => this.setState({ user }),
-      token: this.getToken,
-      signup: this.signup,
-      signupWithGoogle: this.signupWithGoogle,
-    };
-    this.getToken = this.getToken.bind(this);
+    this.context = context;
+    this.state = { user: new User() };
     this.signup = this.signup.bind(this);
     this.signupWithGoogle = this.signupWithGoogle.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  private async handleChange(user: FirebaseUser | null): Promise<void> {
-    if (user) {
-      const userRecord: Partial<UserInterface> = {
-        ref: this.context.collection('users').doc(user.uid),
-        name: user.displayName || '',
-        email: user.email || '',
-        phone: user.phoneNumber || '',
-        photo: user.photoURL || '',
-        uid: user.uid,
-      };
-      this.setState({ user: new User(userRecord) });
-      const withToken: Partial<UserInterface> = {
-        ...userRecord,
-        token: await user.getIdToken(),
-      };
-      this.setState({ user: new User(withToken) });
-      const userDoc = (
-        await to<DocumentSnapshot>((withToken.ref as DocumentReference).get())
-      )[1];
-      await this.updateDoc(
-        userDoc,
-        withToken.ref as DocumentReference,
-        withToken
-      );
-    } else {
-      this.setState({ user: new User() });
-    }
-  }
-
-  private getToken(): Promise<string> | undefined {
+  private static getToken(): Promise<string> | undefined {
     return UserProvider.auth.currentUser
       ? UserProvider.auth.currentUser.getIdToken()
       : undefined;
-  }
-
-  private async updateDoc(
-    doc?: DocumentSnapshot,
-    ref?: DocumentReference,
-    user: Partial<UserInterface> = this.state.user
-  ): Promise<void> {
-    if (ref)
-      this.docUnsubscriber = ref.onSnapshot((doc) => this.updateDoc(doc));
-    if (doc && !doc.exists) {
-      console.warn(`[WARNING] No document for current user (${user.uid}).`);
-    } else if (doc) {
-      console.log('[DEBUG] Got updated document data:', doc.data());
-      const withData: User = User.fromFirestore(doc);
-      console.log(
-        '[DEBUG] Updating current user with document data:',
-        withData
-      );
-      this.setState({ user: withData });
-    }
   }
 
   public componentDidMount(): void {
@@ -145,12 +101,36 @@ export class UserProvider extends React.Component<UserProviderProps> {
     if (this.docUnsubscriber) this.docUnsubscriber();
   }
 
-  public render(): JSX.Element {
-    return (
-      <UserContext.Provider value={this.state}>
-        {this.props.children}
-      </UserContext.Provider>
-    );
+  private async handleChange(user: FirebaseUser | null): Promise<void> {
+    if (user) {
+      const userRecord: Partial<UserInterface> = {
+        /* eslint-disable-next-line react/destructuring-assignment */
+        ref: this.context.collection('users').doc(user.uid),
+        name: user.displayName || '',
+        email: user.email || '',
+        phone: user.phoneNumber || '',
+        photo: user.photoURL || '',
+        uid: user.uid,
+      };
+      this.setState({ user: new User(userRecord) });
+      const withToken: Partial<UserInterface> = {
+        ...userRecord,
+        token: await user.getIdToken(),
+      };
+      this.setState({ user: new User(withToken) });
+      const userDoc = await (withToken.ref as DocumentReference).get();
+      this.updateDoc(userDoc, withToken.ref as DocumentReference);
+    } else {
+      this.setState({ user: new User() });
+    }
+  }
+
+  private updateDoc(doc?: DocumentSnapshot, ref?: DocumentReference): void {
+    if (ref) this.docUnsubscriber = ref.onSnapshot((d) => this.updateDoc(d));
+    if (doc && doc.exists) {
+      const withData: User = User.fromFirestore(doc);
+      this.setState({ user: withData });
+    }
   }
 
   private async signupWithGoogle(
@@ -166,7 +146,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
         description: `Error while signing up with Google. ${err.message}`,
         fatal: false,
       });
-      throw err;
+      throw new Error(err.message);
     } else if (cred && cred.user) {
       const firebaseUser: Partial<UserInterface> = {
         name: cred.user.displayName as string,
@@ -203,7 +183,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
       // code that falls out of the range of 2xx
       console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
       firebase.analytics().logEvent('exception', {
-        description: `User API responded with error: ${err.response.data}`,
+        description: `User API responded with error: ${err.response.data.msg}`,
         user: user.toJSON(),
         fatal: true,
       });
@@ -214,7 +194,7 @@ export class UserProvider extends React.Component<UserProviderProps> {
       // browser and an instance of http.ClientRequest in node.js
       console.error('[ERROR] User API did not respond:', err.request);
       firebase.analytics().logEvent('exception', {
-        description: `User API did not respond: ${err.request}`,
+        description: 'User API did not respond.',
         user: user.toJSON(),
         fatal: true,
       });
@@ -224,14 +204,13 @@ export class UserProvider extends React.Component<UserProviderProps> {
       // an err
       console.error('[ERROR] Calling user API:', err);
       firebase.analytics().logEvent('exception', {
-        description: `Error calling user API: ${err}`,
+        description: `Error calling user API: ${err.message}`,
         user: user.toJSON(),
         fatal: true,
       });
-      throw new Error(`Error calling user API: ${err}`);
+      throw new Error(`Error calling user API: ${err.message}`);
     } else if (res) {
-      // TODO: Find a way to `this.setState()` with `res.data.user` ASAP
-      // (instead of waiting on Firebase Auth to call our auth state listener).
+      this.setState({ user: User.fromJSON(res.data.user) });
       await UserProvider.auth.signInWithCustomToken(
         res.data.user.token as string
       );
@@ -240,7 +219,6 @@ export class UserProvider extends React.Component<UserProviderProps> {
       });
     } else {
       // This should never actually happen, but we include it here just in case.
-      console.warn('[WARNING] No error or response from user API.');
       firebase.analytics().logEvent('exception', {
         description: 'No error or response from user API.',
         user: user.toJSON(),
@@ -248,5 +226,23 @@ export class UserProvider extends React.Component<UserProviderProps> {
       });
       throw new Error('No error or response from user creation API.');
     }
+  }
+
+  public render(): JSX.Element {
+    const { user } = this.state;
+    const { children } = this.props;
+    return (
+      <UserContext.Provider
+        value={{
+          user,
+          update: (newUser: User) => this.setState({ user: newUser }),
+          token: UserProvider.getToken,
+          signup: this.signup,
+          signupWithGoogle: this.signupWithGoogle,
+        }}
+      >
+        {children}
+      </UserContext.Provider>
+    );
   }
 }

@@ -34,16 +34,15 @@ export default function TimeslotInput({
   className,
   required,
 }: TimeslotInputProps): JSX.Element {
-  let fitsWithinAvailability: boolean = false;
-  for (const timeslot of availability) {
-    if (timeslot.contains(value)) {
-      fitsWithinAvailability = true;
-      break;
+  let fitsWithinAvailability = false;
+  availability.forEach((timeslot: Timeslot) => {
+    if (!fitsWithinAvailability) {
+      fitsWithinAvailability = timeslot.contains(value);
     }
-  }
+  });
   const options: Timeslot[] = [];
   const millisecondsInThirtyMinutes: number = 30 * 60 * 1000;
-  for (const timeslot of availability) {
+  availability.forEach((timeslot: Timeslot) => {
     let start: Date = timeslot.from;
     let end: Date = new Date(start.getTime() + millisecondsInThirtyMinutes);
     while (end.getTime() <= timeslot.to.getTime()) {
@@ -51,7 +50,7 @@ export default function TimeslotInput({
       start = end;
       end = new Date(start.getTime() + millisecondsInThirtyMinutes);
     }
-  }
+  });
   return (
     <Select
       enhanced

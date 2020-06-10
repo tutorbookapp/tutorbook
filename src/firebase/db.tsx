@@ -14,13 +14,13 @@ export const DBContext: React.Context<DocumentReference> = React.createContext(
   firebase.firestore().collection('partitions').doc('default')
 );
 
-export const useDB = () => React.useContext(DBContext);
+export const useDB: () => DocumentReference = () => React.useContext(DBContext);
 
 export function DBProvider({
   children,
 }: {
   children: JSX.Element[] | JSX.Element;
-}) {
+}): JSX.Element {
   const db: DocumentReference =
     process.env.NODE_ENV === 'development'
       ? firebase.firestore().collection('partitions').doc('test')

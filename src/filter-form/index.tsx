@@ -8,7 +8,7 @@ import styles from './filter-form.module.scss';
 
 interface SearchButtonProps {
   children: string;
-  onClick: (event: React.FormEvent<HTMLButtonElement>) => any;
+  onClick: (event: React.FormEvent<HTMLButtonElement>) => void;
 }
 
 function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
@@ -47,15 +47,15 @@ export default function FilterForm({
     if (!formRef.current) return;
 
     const element: HTMLElement = formRef.current;
+    const removeClickListener = () => {
+      document.removeEventListener('click', outsideClickListener);
+    };
     const outsideClickListener = (event: MouseEvent) => {
-      if (!element.contains(event.target as any) && active) {
+      if (!element.contains(event.target as Node) && active) {
         setActive(false);
         setFocused(undefined);
         removeClickListener();
       }
-    };
-    const removeClickListener = () => {
-      document.removeEventListener('click', outsideClickListener);
     };
 
     document.addEventListener('click', outsideClickListener);
@@ -67,7 +67,7 @@ export default function FilterForm({
     <>
       <div className={styles.wrapper}>
         <div
-          className={styles.form + (active ? ' ' + styles.active : '')}
+          className={styles.form + (active ? ` ${styles.active}` : '')}
           ref={formRef}
         >
           <QueryForm

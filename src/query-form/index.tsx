@@ -33,7 +33,7 @@ export default function QueryForm({
   focusTarget,
 }: QueryFormProps): JSX.Element {
   const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (msg: Msg) => intl.formatMessage(msg);
+  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   const [focused, setFocused] = React.useState<FocusTarget | undefined>(
     focusTarget
   );
@@ -46,12 +46,12 @@ export default function QueryForm({
       {subjects && (
         <SubjectSelect
           value={query.subjects}
-          onChange={(subjects: Option<string>[]) =>
-            onChange({ ...query, subjects })
+          onChange={(newSubjects: Option<string>[]) =>
+            onChange({ ...query, subjects: newSubjects })
           }
           className={className}
           label={msg(msgs.subjects)}
-          placeholder={msg(msgs[query.aspect + 'SubjectsPlaceholder'])}
+          placeholder={msg(msgs[`${query.aspect}SubjectsPlaceholder`])}
           aspect={query.aspect}
           renderToPortal
           focused={focused === 'subjects'}
@@ -62,8 +62,8 @@ export default function QueryForm({
       {availability && (
         <ScheduleInput
           value={query.availability}
-          onChange={(availability: Availability) =>
-            onChange({ ...query, availability })
+          onChange={(newAvailability: Availability) =>
+            onChange({ ...query, availability: newAvailability })
           }
           className={className}
           label={msg(msgs.availability)}
@@ -76,7 +76,9 @@ export default function QueryForm({
       {langs && (
         <LangSelect
           value={query.langs}
-          onChange={(langs: Option<string>[]) => onChange({ ...query, langs })}
+          onChange={(newLangs: Option<string>[]) =>
+            onChange({ ...query, langs: newLangs })
+          }
           className={className}
           label={msg(msgs.langs)}
           renderToPortal

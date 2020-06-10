@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchOptions, SearchResponse } from '@algolia/client-search';
 import {
   User,
@@ -7,10 +7,11 @@ import {
   Query,
   Aspect,
   Availability,
+  Option,
+  Timeslot,
 } from '@tutorbook/model';
 
 import to from 'await-to-js';
-import algoliasearch from 'algoliasearch/lite';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
@@ -19,39 +20,6 @@ const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 const index: SearchIndex = client.initIndex(
   process.env.NODE_ENV === 'development' ? 'test-users' : 'default-users'
 );
-
-/**
- * Searches users based on the current filters by querying like:
- * > Show me all users whose availability contains a timeslot whose open time
- * > is equal to or before the desired open time and whose close time is equal
- * > to or after the desired close time.
- * Note that due to Algolia limitations, we must query for each availability
- * timeslot separately and then manually merge the results on the client side.
- */
-async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
-  const results: User[] = [];
-  let filterStrings: (string | undefined)[] = getFilterStrings(query);
-  if (!filterStrings.length) filterStrings = [undefined];
-  const optionalFilters: string[] = [`featured:${query.aspect}`];
-  console.log('[DEBUG] Filtering by:', { filterStrings, optionalFilters });
-  for (const filterString of filterStrings) {
-    const options: SearchOptions | undefined = filterString
-      ? { optionalFilters, filters: filterString }
-      : { optionalFilters };
-    const [err, res] = await to<SearchResponse<UserSearchHitAlias>>(
-      index.search('', options) as Promise<SearchResponse<UserSearchHitAlias>>
-    );
-    if (err || !res) {
-      console.error(`[ERROR] While searching ${filterString}:`, err);
-    } else {
-      res.hits.forEach((hit: UserSearchHitAlias) => {
-        if (results.findIndex((h) => h.uid === hit.objectID) < 0)
-          results.push(User.fromSearchHit(hit));
-      });
-    }
-  }
-  return results;
-}
 
 /**
  * Creates and returns the filter string to search our Algolia index based on
@@ -67,14 +35,14 @@ async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-arrays/?language=javascript}
  */
 function getFilterStrings(query: Query): string[] {
-  let filterString: string = '';
-  for (let i = 0; i < query.subjects.length; i++) {
+  let filterString = '';
+  for (let i = 0; i < query.subjects.length; i += 1) {
     filterString += i === 0 ? '(' : ' OR ';
     filterString += `${query.aspect}.subjects:"${query.subjects[i].value}"`;
     if (i === query.subjects.length - 1) filterString += ')';
   }
   if (query.langs.length && query.subjects.length) filterString += ' AND ';
-  for (let i = 0; i < query.langs.length; i++) {
+  for (let i = 0; i < query.langs.length; i += 1) {
     filterString += i === 0 ? '(' : ' OR ';
     filterString += `langs:"${query.langs[i].value}"`;
     if (i === query.langs.length - 1) filterString += ')';
@@ -85,14 +53,50 @@ function getFilterStrings(query: Query): string[] {
   )
     filterString += ' AND ';
   const filterStrings: string[] = [];
-  for (const timeslot of query.availability)
+  query.availability.forEach((timeslot: Timeslot) =>
     filterStrings.push(
-      filterString +
-        `(availability.from <= ${timeslot.from.valueOf()}` +
+      `${filterString}(availability.from <= ${timeslot.from.valueOf()}` +
         ` AND availability.to >= ${timeslot.to.valueOf()})`
-    );
+    )
+  );
   if (!query.availability.length) filterStrings.push(filterString);
   return filterStrings;
+}
+
+/**
+ * Searches users based on the current filters by querying like:
+ * > Show me all users whose availability contains a timeslot whose open time
+ * > is equal to or before the desired open time and whose close time is equal
+ * > to or after the desired close time.
+ * Note that due to Algolia limitations, we must query for each availability
+ * timeslot separately and then manually merge the results on the client side.
+ */
+async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
+  const results: User[] = [];
+  let filterStrings: (string | undefined)[] = getFilterStrings(query);
+  if (!filterStrings.length) filterStrings = [undefined];
+  const optionalFilters: string[] = [`featured:${query.aspect}`];
+  console.log('[DEBUG] Filtering by:', { filterStrings, optionalFilters });
+  await Promise.all(
+    filterStrings.map(async (filterString) => {
+      const options: SearchOptions | undefined = filterString
+        ? { optionalFilters, filters: filterString }
+        : { optionalFilters };
+      const [err, res] = await to<SearchResponse<UserSearchHitAlias>>(
+        index.search('', options) as Promise<SearchResponse<UserSearchHitAlias>>
+      );
+      if (err || !res) {
+        /* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */
+        console.error(`[ERROR] While searching ${filterString}:`, err);
+      } else {
+        res.hits.forEach((hit: UserSearchHitAlias) => {
+          if (results.findIndex((h) => h.uid === hit.objectID) < 0)
+            results.push(User.fromSearchHit(hit));
+        });
+      }
+    })
+  );
+  return results;
 }
 
 /**
@@ -134,8 +138,12 @@ export default async function search(
   const availability: string = req.query.availability as string;
   const aspect: string = req.query.aspect as string;
   const query: Query = {
-    langs: langs ? JSON.parse(decodeURIComponent(langs)) : [],
-    subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
+    langs: langs
+      ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
+      : [],
+    subjects: subjects
+      ? (JSON.parse(decodeURIComponent(subjects)) as Option<string>[])
+      : [],
     availability: availability
       ? Availability.fromURLParam(availability)
       : new Availability(),

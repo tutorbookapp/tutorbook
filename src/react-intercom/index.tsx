@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+
 import React from 'react';
 
 import { IntlShape, useIntl } from 'react-intl';
 import { UserContext } from '@tutorbook/firebase';
 import { User } from '@tutorbook/model';
 
-const appID: string = 'faz7lcyb';
-const canUseDOM: boolean = !!(
+const appID = 'faz7lcyb';
+const canUseDOM = !!(
   typeof window !== 'undefined' &&
   window.document &&
   window.document.createElement
@@ -55,17 +57,18 @@ class Intercom extends React.Component<IntercomProps> {
     if (canUseDOM) {
       if (!window.Intercom) {
         (function (w: Window, d: Document, id: string) {
-          function i() {
-            i.c(arguments);
+          function i(...args: any[]) {
+            i.c(args);
           }
           i.q = [] as any[];
           i.c = function (args: any) {
             i.q.push(args);
           };
+          /* eslint-disable-next-line no-param-reassign */
           w.Intercom = i;
           const s: HTMLScriptElement = d.createElement('script');
           s.async = true;
-          s.src = 'https://widget.intercom.io/widget/' + id;
+          s.src = `https://widget.intercom.io/widget/${id}`;
           d.head.appendChild(s);
         })(window, document, appID);
       }
@@ -76,16 +79,9 @@ class Intercom extends React.Component<IntercomProps> {
     }
   }
 
-  private get settings(): IntercomSettings {
-    return {
-      app_id: appID,
-      language_override: this.props.locale,
-      ...this.props.user.toIntercom(),
-    };
-  }
-
   public componentDidUpdate(prevProps: IntercomProps): void {
     if (!canUseDOM) {
+      console.warn('[WARNING] No DOM, skipping Intercom update.');
     } else {
       window.intercomSettings = this.settings;
 
@@ -105,11 +101,21 @@ class Intercom extends React.Component<IntercomProps> {
 
   public componentWillUnmount(): void {
     if (!canUseDOM || !window.Intercom) {
+      console.warn('[WARNING] No DOM, skipping Intercom unmounting.');
     } else {
       window.Intercom('shutdown');
       delete window.Intercom;
       delete window.intercomSettings;
     }
+  }
+
+  private get settings(): IntercomSettings {
+    const { locale, user } = this.props;
+    return {
+      app_id: appID,
+      language_override: locale,
+      ...user.toIntercom(),
+    };
   }
 
   public render(): boolean {

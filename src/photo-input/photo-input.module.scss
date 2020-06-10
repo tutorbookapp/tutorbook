@@ -22,22 +22,3 @@
   font-weight: 450;
   margin: -8px 0 8px;
 }
-
-.textField + :global(.mdc-text-field-helper-line) {
-  display: block;
-}
-
-:global(.mdc-text-field--focused + .mdc-text-field-helper-line) .helper {
-  // Here, our transitions are staggered such that the help text expands first
-  // and then appears/fades in (although there is 50ms of overlap for speed).
-  transition: max-height 200ms ease-out,
-    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 150ms;
-}
-
-.helper {
-  overflow: hidden;
-  // Our transitions are staggered such that the help text disappears first and
-  // then collapses (although there is 50ms of overlap for speed).
-  transition: max-height 200ms ease-out 100ms,
-    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}

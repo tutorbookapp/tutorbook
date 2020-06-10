@@ -22,7 +22,7 @@ import LangSelect from '@tutorbook/lang-select';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
 
-import firebase, { UserProviderState, UserContext } from '@tutorbook/firebase';
+import firebase, { UserContextValue, UserContext } from '@tutorbook/firebase';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
@@ -52,19 +52,24 @@ type VolunteerFormState = {
  * 1. The volunteer tutor sign-up form where altruistic individuals can sign-up
  * to help tutor somebody affected by COVID-19.
  */
-class VolunteerForm extends React.Component<VolunteerFormProps> {
+class VolunteerForm extends React.Component<
+  VolunteerFormProps,
+  VolunteerFormState
+> {
   public static readonly contextType: React.Context<
-    UserProviderState
+    UserContextValue
   > = UserContext;
-  public readonly state: VolunteerFormState;
+
+  public readonly context: UserContextValue;
 
   private readonly headerRef: React.RefObject<HTMLHeadingElement>;
 
   private readonly descRef: React.RefObject<HTMLParagraphElement>;
 
-  public constructor(props: VolunteerFormProps) {
+  public constructor(props: VolunteerFormProps, context: UserContextValue) {
     super(props);
 
+    this.context = context;
     this.state = {
       headerHeight: 0,
       descHeight: 0,
@@ -82,8 +87,280 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  public componentDidMount(): void {
+    const { headerHeight, descHeight } = this.state;
+    if (this.headerRef.current) {
+      const newHeight: number = this.headerRef.current.clientHeight;
+      if (newHeight !== headerHeight)
+        this.setState({ headerHeight: newHeight });
+    }
+    if (this.descRef.current) {
+      const newHeight: number = this.descRef.current.clientHeight;
+      if (newHeight !== descHeight) this.setState({ descHeight: newHeight });
+    }
+  }
+
+  private get loading(): boolean {
+    const {
+      submittingMentor,
+      submittedMentor,
+      submittingTutor,
+      submittedTutor,
+    } = this.state;
+    const loadingMentor: boolean = submittingMentor || submittedMentor;
+    const loadingTutor: boolean = submittingTutor || submittedTutor;
+    const { aspect } = this.props;
+    return aspect === 'mentoring' ? loadingMentor : loadingTutor;
+  }
+
+  private get checked(): boolean {
+    const { aspect } = this.props;
+    const { submittedMentor, submittedTutor } = this.state;
+    return aspect === 'mentoring' ? submittedMentor : submittedTutor;
+  }
+
+  private getHeaderStyle(a: Aspect): Record<string, string> {
+    const { aspect } = this.props;
+    const { headerHeight } = this.state;
+    if (aspect === a) return {};
+    const height: string = headerHeight ? `${headerHeight}px` : '125px';
+    const transform: string =
+      aspect === 'mentoring'
+        ? `translateY(-${height})`
+        : `translateY(${height})`;
+    return { transform };
+  }
+
+  private getDescStyle(a: Aspect): Record<string, string> {
+    const { aspect } = this.props;
+    const { descHeight } = this.state;
+    if (aspect === a) return {};
+    const height: string = descHeight ? `${descHeight}px` : '84px';
+    const transform: string =
+      aspect === 'mentoring'
+        ? `translateY(-${height})`
+        : `translateY(${height})`;
+    return { transform };
+  }
+
+  private async handleSubmit(event: React.FormEvent): Promise<void> {
+    event.preventDefault();
+    const { signup, user } = this.context;
+    const { aspect } = this.props;
+    firebase.analytics().logEvent('sign_up', {
+      method: aspect === 'mentoring' ? 'mentor_form' : 'tutor_form',
+    });
+    /* eslint-disable-next-line no-shadow */
+    this.setState(({ submittingMentor, submittingTutor }, { aspect }) => ({
+      submittingMentor: aspect === 'mentoring' || submittingMentor,
+      submittingTutor: aspect === 'tutoring' || submittingTutor,
+    }));
+    await signup(user);
+    /* eslint-disable-next-line no-shadow */
+    this.setState(({ submittedMentor, submittedTutor }, { aspect }) => ({
+      submittedMentor: aspect === 'mentoring' || submittedMentor,
+      submittedTutor: aspect === 'tutoring' || submittedTutor,
+    }));
+  }
+
+  private renderInputs(): JSX.Element {
+    const { intl, aspect } = this.props;
+    const { update, user } = this.context;
+    const { langs, mentoringSubjects, tutoringSubjects } = this.state;
+    const msg = (message: MessageDescriptor) => intl.formatMessage(message);
+    const sharedProps = {
+      className: styles.formField,
+      outlined: true,
+    };
+    const shared = (key: Extract<keyof UserInterface, keyof typeof msgs>) => ({
+      ...sharedProps,
+      label: msg(msgs[key]),
+      onChange: (event: React.FormEvent<HTMLInputElement>) =>
+        update(
+          new User({
+            ...user,
+            [key]: event.currentTarget.value,
+          })
+        ),
+    });
+    const getSocialIndex = (type: string) => {
+      return user.socials.findIndex((s: SocialInterface) => s.type === type);
+    };
+    const getSocial = (type: SocialTypeAlias) => {
+      const index: number = getSocialIndex(type);
+      return index >= 0 ? user.socials[index].url : '';
+    };
+    const hasSocial = (type: SocialTypeAlias) => getSocialIndex(type) >= 0;
+    const updateSocial = (type: SocialTypeAlias, url: string) => {
+      const index: number = getSocialIndex(type);
+      const socials: SocialInterface[] = Array.from(user.socials);
+      if (index >= 0) {
+        socials[index] = { type, url };
+      } else {
+        socials.push({ type, url });
+      }
+      update(new User({ ...user, socials }));
+    };
+    const s = (type: SocialTypeAlias, placeholder: (v: string) => string) => ({
+      ...sharedProps,
+      value: getSocial(type),
+      label: msg(msgs[type]),
+      onFocus: () => {
+        const username: string = user.name
+          ? user.name.replace(' ', '').toLowerCase()
+          : 'yourname';
+        if (!hasSocial(type)) updateSocial(type, placeholder(username));
+      },
+      onChange: (event: React.FormEvent<HTMLInputElement>) => {
+        updateSocial(type, event.currentTarget.value);
+      },
+    });
+    return (
+      <>
+        <TextField {...shared('name')} value={user.name} required />
+        <TextField {...shared('email')} value={user.email} required />
+        <TextField
+          {...shared('phone')}
+          value={user.phone ? user.phone : undefined}
+        />
+        <PhotoInput
+          {...shared('photo')}
+          value={user.photo}
+          onChange={(photo: string) => update(new User({ ...user, photo }))}
+        />
+        <ListDivider className={styles.divider} />
+        <LangSelect
+          {...sharedProps}
+          value={langs}
+          values={user.langs}
+          label={msg(msgs.lang)}
+          onChange={(newLangs: Option<string>[]) => {
+            this.setState({ langs: newLangs });
+            update(
+              new User({
+                ...user,
+                langs: newLangs.map((lang: Option<string>) => lang.value),
+              })
+            );
+          }}
+          required
+        />
+        {aspect === 'mentoring' && (
+          <>
+            <SubjectSelect
+              {...sharedProps}
+              value={mentoringSubjects}
+              values={user.mentoring.subjects}
+              label={msg(msgs.expertise)}
+              placeholder={msg(msgs.expertisePlaceholder)}
+              onChange={(subjects: Option<string>[]) => {
+                this.setState({ mentoringSubjects: subjects });
+                update(
+                  new User({
+                    ...user,
+                    [aspect]: {
+                      subjects: subjects.map((subject) => subject.value),
+                      searches: user[aspect].searches,
+                    },
+                  })
+                );
+              }}
+              aspect={aspect}
+              required
+            />
+            <TextField
+              {...sharedProps}
+              onChange={(event) =>
+                update(
+                  new User({
+                    ...user,
+                    bio: event.currentTarget.value,
+                  })
+                )
+              }
+              value={user.bio}
+              label={msg(msgs.project)}
+              placeholder={msg(msgs.projectPlaceholder)}
+              required
+              rows={4}
+              textarea
+            />
+          </>
+        )}
+        {aspect === 'tutoring' && (
+          <>
+            <SubjectSelect
+              {...sharedProps}
+              value={tutoringSubjects}
+              values={user.tutoring.subjects}
+              label={msg(msgs.subjects)}
+              placeholder={msg(msgs.subjectsPlaceholder)}
+              onChange={(subjects: Option<string>[]) => {
+                this.setState({ tutoringSubjects: subjects });
+                update(
+                  new User({
+                    ...user,
+                    [aspect]: {
+                      subjects: subjects.map((subject) => subject.value),
+                      searches: user[aspect].searches,
+                    },
+                  })
+                );
+              }}
+              aspect={aspect}
+              required
+            />
+            <ScheduleInput
+              {...shared('availability')}
+              value={user.availability}
+              onChange={(availability: Availability) =>
+                update(
+                  new User({
+                    ...user,
+                    availability,
+                  })
+                )
+              }
+              required
+            />
+            <TextField
+              {...sharedProps}
+              onChange={(event) =>
+                update(
+                  new User({
+                    ...user,
+                    bio: event.currentTarget.value,
+                  })
+                )
+              }
+              value={user.bio}
+              label={msg(msgs.experience)}
+              placeholder={msg(msgs.experiencePlaceholder)}
+              required
+              rows={4}
+              textarea
+            />
+          </>
+        )}
+        <ListDivider className={styles.divider} />
+        <TextField {...s('website', (v) => `https://${v}.com`)} />
+        <TextField {...s('linkedin', (v) => `https://linkedin.com/in/${v}`)} />
+        <TextField {...s('twitter', (v) => `https://twitter.com/${v}`)} />
+        <TextField {...s('facebook', (v) => `https://facebook.com/${v}`)} />
+        <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
+        <TextField {...s('github', (v) => `https://github.com/${v}`)} />
+        <TextField
+          {...s('indiehackers', (v) => `https://indiehackers.com/${v}`)}
+        />
+      </>
+    );
+  }
+
   public render(): JSX.Element {
-    const msg = (msg: MessageDescriptor) => this.props.intl.formatMessage(msg);
+    const { user } = this.context;
+    const { intl, aspect } = this.props;
+    const label = aspect === 'mentoring' ? msgs.mentorSubmit : msgs.tutorSubmit;
+    const msg = (message: MessageDescriptor) => intl.formatMessage(message);
     return (
       <div className={styles.wrapper}>
         <div className={styles.header} ref={this.headerRef}>
@@ -111,13 +388,7 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
             {this.renderInputs()}
             <Button
               className={styles.formSubmitButton}
-              label={msg(
-                this.context.user.uid
-                  ? msgs.updateSubmit
-                  : this.props.aspect === 'mentoring'
-                  ? msgs.mentorSubmit
-                  : msgs.tutorSubmit
-              )}
+              label={msg(user.uid ? msgs.updateSubmit : label)}
               disabled={this.loading || this.checked}
               raised
               arrow
@@ -126,290 +397,6 @@ class VolunteerForm extends React.Component<VolunteerFormProps> {
         </Card>
       </div>
     );
-  }
-
-  private get loading(): boolean {
-    const loadingMentor: boolean =
-      this.state.submittingMentor || this.state.submittedMentor;
-    const loadingTutor: boolean =
-      this.state.submittingTutor || this.state.submittedTutor;
-    return this.props.aspect === 'mentoring' ? loadingMentor : loadingTutor;
-  }
-
-  private get checked(): boolean {
-    const checkedMentor: boolean =
-      this.state.submittedMentor || this.state.submittedMentor;
-    const checkedTutor: boolean =
-      this.state.submittedTutor || this.state.submittedTutor;
-    return this.props.aspect === 'mentoring' ? checkedMentor : checkedTutor;
-  }
-
-  public componentDidMount(): void {
-    if (this.headerRef.current) {
-      const headerHeight: number = this.headerRef.current.clientHeight;
-      if (headerHeight !== this.state.headerHeight)
-        this.setState({ headerHeight });
-    }
-    if (this.descRef.current) {
-      const descHeight: number = this.descRef.current.clientHeight;
-      if (descHeight !== this.state.descHeight) this.setState({ descHeight });
-    }
-  }
-
-  private getHeaderStyle(aspect: Aspect): Record<string, string> {
-    if (this.props.aspect === aspect) return {};
-    const height: string = this.state.headerHeight
-      ? `${this.state.headerHeight}px`
-      : '125px';
-    const transform: string =
-      aspect === 'mentoring'
-        ? `translateY(-${height})`
-        : `translateY(${height})`;
-    return { transform };
-  }
-
-  private getDescStyle(aspect: Aspect): Record<string, string> {
-    if (this.props.aspect === aspect) return {};
-    const height: string = this.state.descHeight
-      ? `${this.state.descHeight}px`
-      : '84px';
-    const transform: string =
-      aspect === 'mentoring'
-        ? `translateY(-${height})`
-        : `translateY(${height})`;
-    return { transform };
-  }
-
-  private renderInputs(): JSX.Element {
-    const msg = (msg: MessageDescriptor) => this.props.intl.formatMessage(msg);
-    const sharedProps = {
-      className: styles.formField,
-      outlined: true,
-    };
-    const shared = (key: Extract<keyof UserInterface, keyof typeof msgs>) => ({
-      ...sharedProps,
-      label: msg(msgs[key]),
-      onChange: (event: React.FormEvent<HTMLInputElement>) => {
-        this.context.update(
-          new User({
-            ...this.context.user,
-            [key]: event.currentTarget.value,
-          })
-        );
-      },
-    });
-    const getSocialIndex = (type: string) => {
-      return this.context.user.socials.findIndex(
-        (social: SocialInterface) => social.type === type
-      );
-    };
-    const getSocial = (type: SocialTypeAlias) => {
-      const index: number = getSocialIndex(type);
-      return index >= 0 ? this.context.user.socials[index].url : '';
-    };
-    const hasSocial = (type: SocialTypeAlias) => getSocialIndex(type) >= 0;
-    const updateSocial = (type: SocialTypeAlias, url: string) => {
-      const index: number = getSocialIndex(type);
-      const socials: SocialInterface[] = Array.from(this.context.user.socials);
-      if (index >= 0) {
-        socials[index] = { type, url };
-      } else {
-        socials.push({ type, url });
-      }
-      this.context.update(new User({ ...this.context.user, socials }));
-    };
-    const s = (type: SocialTypeAlias, placeholder: (v: string) => string) => ({
-      ...sharedProps,
-      value: getSocial(type),
-      label: msg(msgs[type]),
-      onFocus: () => {
-        const username: string = this.context.user.name
-          ? this.context.user.name.replace(' ', '').toLowerCase()
-          : 'yourname';
-        if (!hasSocial(type)) updateSocial(type, placeholder(username));
-      },
-      onChange: (event: React.FormEvent<HTMLInputElement>) => {
-        updateSocial(type, event.currentTarget.value);
-      },
-    });
-    return (
-      <>
-        <TextField
-          {...shared('name')}
-          value={this.context.user.name}
-          required
-        />
-        <TextField
-          {...shared('email')}
-          value={this.context.user.email}
-          required
-        />
-        <TextField
-          {...shared('phone')}
-          value={this.context.user.phone ? this.context.user.phone : undefined}
-        />
-        <PhotoInput
-          {...shared('photo')}
-          val={this.context.user.photo}
-          onChange={(photo: string) =>
-            this.context.update(
-              new User({
-                ...this.context.user,
-                photo,
-              })
-            )
-          }
-        />
-        <ListDivider className={styles.divider} />
-        <LangSelect
-          {...sharedProps}
-          value={this.state.langs}
-          values={this.context.user.langs}
-          label={msg(msgs.lang)}
-          onChange={(langs: Option<string>[]) => {
-            this.setState({ langs });
-            this.context.update(
-              new User({
-                ...this.context.user,
-                langs: langs.map((lang: Option<string>) => lang.value),
-              })
-            );
-          }}
-          required
-        />
-        {this.props.aspect === 'mentoring' && (
-          <>
-            <SubjectSelect
-              {...sharedProps}
-              value={this.state.mentoringSubjects}
-              values={this.context.user.mentoring.subjects}
-              label={msg(msgs.expertise)}
-              placeholder={msg(msgs.expertisePlaceholder)}
-              onChange={(mentoringSubjects: Option<string>[]) => {
-                this.setState({ mentoringSubjects });
-                this.context.update(
-                  new User({
-                    ...this.context.user,
-                    [this.props.aspect]: {
-                      subjects: mentoringSubjects.map(
-                        (subject) => subject.value
-                      ),
-                      searches: this.context.user[this.props.aspect].searches,
-                    },
-                  })
-                );
-              }}
-              aspect={this.props.aspect}
-              required
-            />
-            <TextField
-              {...sharedProps}
-              onChange={(event) =>
-                this.context.update(
-                  new User({
-                    ...this.context.user,
-                    bio: event.currentTarget.value,
-                  })
-                )
-              }
-              value={this.context.user.bio}
-              label={msg(msgs.project)}
-              placeholder={msg(msgs.projectPlaceholder)}
-              required
-              rows={4}
-              textarea
-            />
-          </>
-        )}
-        {this.props.aspect === 'tutoring' && (
-          <>
-            <SubjectSelect
-              {...sharedProps}
-              value={this.state.tutoringSubjects}
-              values={this.context.user.tutoring.subjects}
-              label={msg(msgs.subjects)}
-              placeholder={msg(msgs.subjectsPlaceholder)}
-              onChange={(tutoringSubjects: Option<string>[]) => {
-                this.setState({ tutoringSubjects });
-                this.context.update(
-                  new User({
-                    ...this.context.user,
-                    [this.props.aspect]: {
-                      subjects: tutoringSubjects.map(
-                        (subject) => subject.value
-                      ),
-                      searches: this.context.user[this.props.aspect].searches,
-                    },
-                  })
-                );
-              }}
-              aspect={this.props.aspect}
-              required
-            />
-            <ScheduleInput
-              {...shared('availability')}
-              value={this.context.user.availability}
-              onChange={(availability: Availability) =>
-                this.context.update(
-                  new User({
-                    ...this.context.user,
-                    availability,
-                  })
-                )
-              }
-              required
-            />
-            <TextField
-              {...sharedProps}
-              onChange={(event) =>
-                this.context.update(
-                  new User({
-                    ...this.context.user,
-                    bio: event.currentTarget.value,
-                  })
-                )
-              }
-              value={this.context.user.bio}
-              label={msg(msgs.experience)}
-              placeholder={msg(msgs.experiencePlaceholder)}
-              required
-              rows={4}
-              textarea
-            />
-          </>
-        )}
-        <ListDivider className={styles.divider} />
-        <TextField {...s('website', (v) => `https://${v}.com`)} />
-        <TextField {...s('linkedin', (v) => `https://linkedin.com/in/${v}`)} />
-        <TextField {...s('twitter', (v) => `https://twitter.com/${v}`)} />
-        <TextField {...s('facebook', (v) => `https://facebook.com/${v}`)} />
-        <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
-        <TextField {...s('github', (v) => `https://github.com/${v}`)} />
-        <TextField
-          {...s('indiehackers', (v) => `https://indiehackers.com/${v}`)}
-        />
-      </>
-    );
-  }
-
-  private async handleSubmit(event: React.FormEvent): Promise<void> {
-    event.preventDefault();
-    firebase.analytics().logEvent('sign_up', {
-      method: this.props.aspect === 'mentoring' ? 'mentor_form' : 'tutor_form',
-    });
-    this.setState({
-      submittingMentor:
-        this.props.aspect === 'mentoring' || this.state.submittingMentor,
-      submittingTutor:
-        this.props.aspect === 'tutoring' || this.state.submittingTutor,
-    });
-    await this.context.signup(this.context.user);
-    this.setState({
-      submittedMentor:
-        this.props.aspect === 'mentoring' || this.state.submittedMentor,
-      submittedTutor:
-        this.props.aspect === 'tutoring' || this.state.submittedTutor,
-    });
   }
 }
 

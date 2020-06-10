@@ -1,15 +1,17 @@
 import React from 'react';
-import Carousel from './carousel';
 
-import { UserCard, LoadingCard } from './cards';
 import { Aspect, User, UserJSONInterface } from '@tutorbook/model';
 
 import axios from 'axios';
 import useSWR from 'swr';
+import { v4 as uuid } from 'uuid';
+
+import Carousel from './carousel';
+import { UserCard, LoadingCard } from './cards';
 
 interface Props {
   aspect: Aspect;
-  onClick: (user: User) => any;
+  onClick: (user: User) => void;
 }
 
 export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
@@ -35,8 +37,8 @@ export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
         <Carousel>
           {Array(3)
             .fill(null)
-            .map((_: null, index: number) => (
-              <LoadingCard key={index} />
+            .map(() => (
+              <LoadingCard key={uuid()} />
             ))}
         </Carousel>
       )}

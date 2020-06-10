@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -28,19 +30,20 @@ async function sendApptEmails(
 ): Promise<void> {
   await Promise.all(
     attendees.map(async (attendee: User) => {
+      /* eslint-disable-next-line @typescript-eslint/ban-types */
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
         mail.send(new ApptEmail(attendee, appt, attendees))
       );
       if (err) {
         console.error(
           `[ERROR] ${err.name} sending ${attendee.name} <${attendee.email}>` +
-            ` the appt (${appt.id}) email:`,
+            ` the appt (${appt.id as string}) email:`,
           err
         );
       } else {
         console.log(
           `[DEBUG] Sent ${attendee.name} <${attendee.email}> the appt ` +
-            `(${appt.id}) email.`
+            `(${appt.id as string}) email.`
         );
       }
     })
@@ -130,10 +133,11 @@ export default async function appt(
   req: NextApiRequest,
   res: NextApiResponse<ApiError | { appt: ApptJSONInterface }>
 ): Promise<void> {
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // 1. Verify that the request body is valid.
-  function error(msg: string, code: number = 400, err?: Error): void {
+  function error(msg: string, code = 400, err?: Error): void {
     console.error(`[ERROR] Sending client ${code} with msg (${msg})...`, err);
-    res.status(code).json(Object.assign({ msg }, err || {}));
+    res.status(code).json({ msg, ...(err || {}) });
   }
   if (!req.body) {
     error('You must provide a request body.');
@@ -150,10 +154,11 @@ export default async function appt(
       // Partition is 4th parent (e.g. `/test/users/PUPIL-DOC/requests/DOC`).
       db = (((ref.parent as CollectionReference).parent as DocumentReference)
         .parent as CollectionReference).parent;
+      if (!db) throw new Error('Database partition did not exist.');
     } catch (err) {
       error('You must provide a valid request document path.', 400, err);
     }
-    if (!ref || !db) {
+    if (!db || !ref) {
       // Don't do anything b/c we already sent an error code to the client.
     } else {
       const doc: DocumentSnapshot = await ref.get();
@@ -170,78 +175,94 @@ export default async function appt(
         // profile document).
         const pupilUID: string = ((doc.ref.parent as CollectionReference)
           .parent as DocumentReference).id;
-        let attendeesIncludePupil: boolean = false;
-        let pupilIsParentsChild: boolean = false;
+        let attendeesIncludePupil = false;
+        let pupilIsParentsChild = false;
+        let errored = false;
         const attendees: UserWithRoles[] = [];
-        for (const attendee of appt.attendees) {
-          // 3. Verify that the attendees have uIDs.
-          if (!attendee.uid) {
-            error('All attendees must have valid uIDs.');
-            break;
-          }
-          const ref: DocumentReference = db
-            .collection('users')
-            .doc(attendee.uid);
-          const doc: DocumentSnapshot = await ref.get();
-          // 3. Verify that the attendees exist.
-          if (!doc.exists) {
-            error(`Attendee (${attendee.uid}) does not exist.`);
-            break;
-          }
-          const user: User = User.fromFirestore(doc);
-          if (user.uid === pupilUID) {
-            // 3. Verify that the pupil is among the appointment's attendees.
-            attendeesIncludePupil = true;
-            // 3. Verify that the pupil is the parent's child.
-            if (user.parents.indexOf(req.body.uid) < 0) {
-              error(`${user} is not (${req.body.uid})'s child.`);
-            } else {
-              pupilIsParentsChild = true;
+        await Promise.all(
+          appt.attendees.map(async (attendee) => {
+            // 3. Verify that the attendees have uIDs.
+            if (!attendee.uid) {
+              error('All attendees must have valid uIDs.');
+              errored = false;
+              return;
             }
-          }
-          // 3. Verify the tutors can teach the requested subjects.
-          const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
-          const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
-          const canTutorSubject: (s: string) => boolean = (subject: string) => {
-            return user.tutoring.subjects.includes(subject);
-          };
-          const canMentorSubject: (s: string) => boolean = (
-            subject: string
-          ) => {
-            return user.mentoring.subjects.includes(subject);
-          };
-          if (isTutor && !appt.subjects.every(canTutorSubject)) {
-            error(
-              `${user.name} (${user.uid}) cannot tutor for the appted subjects.`
-            );
-            break;
-          }
-          if (isMentor && !appt.subjects.every(canMentorSubject)) {
-            error(
-              `${user.name} (${user.uid}) cannot mentor for the appted subjects.`
-            );
-            break;
-          }
-          // 3. Verify that the tutor and mentor attendees are available.
-          if (
-            appt.time &&
-            (isTutor || isMentor) &&
-            !user.availability.contains(appt.time)
-          ) {
-            error(`${user} is not available on ${appt.time}.`);
-            break;
-          }
-          (user as UserWithRoles).roles = attendee.roles;
-          attendees.push(user as UserWithRoles);
-        }
-        if (!attendees.length || attendees.length !== appt.attendees.length) {
+            const ref: DocumentReference = (db as DocumentReference)
+              .collection('users')
+              .doc(attendee.uid);
+            const doc: DocumentSnapshot = await ref.get();
+            // 3. Verify that the attendees exist.
+            if (!doc.exists) {
+              error(`Attendee (${attendee.uid}) does not exist.`);
+              errored = false;
+              return;
+            }
+            const user: User = User.fromFirestore(doc);
+            if (user.uid === pupilUID) {
+              // 3. Verify that the pupil is among the appointment's attendees.
+              attendeesIncludePupil = true;
+              // 3. Verify that the pupil is the parent's child.
+              if (user.parents.indexOf(req.body.uid) < 0) {
+                error(
+                  `${user.toString()} is not (${
+                    req.body.uid as string
+                  })'s child.`
+                );
+              } else {
+                pupilIsParentsChild = true;
+              }
+            }
+            // 3. Verify the tutors can teach the requested subjects.
+            const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
+            const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
+            const canTutorSubject: (s: string) => boolean = (
+              subject: string
+            ) => {
+              return user.tutoring.subjects.includes(subject);
+            };
+            const canMentorSubject: (s: string) => boolean = (
+              subject: string
+            ) => {
+              return user.mentoring.subjects.includes(subject);
+            };
+            if (isTutor && !appt.subjects.every(canTutorSubject)) {
+              error(
+                `${user.toString()}) cannot tutor for the appted subjects.`
+              );
+              errored = false;
+              return;
+            }
+            if (isMentor && !appt.subjects.every(canMentorSubject)) {
+              error(
+                `${user.toString()}) cannot mentor for the appted subjects.`
+              );
+              errored = false;
+              return;
+            }
+            // 3. Verify that the tutor and mentor attendees are available.
+            if (
+              appt.time &&
+              (isTutor || isMentor) &&
+              !user.availability.contains(appt.time)
+            ) {
+              error(
+                `${user.toString()} is not available on ${appt.time.toString()}.`
+              );
+              errored = false;
+              return;
+            }
+            (user as UserWithRoles).roles = attendee.roles;
+            attendees.push(user as UserWithRoles);
+          })
+        );
+        if (errored) {
           // Don't do anything b/c we already sent an error code to the client.
         } else if (!pupilIsParentsChild) {
           // Don't do anything b/c we already sent an error code to the client.
         } else if (!attendeesIncludePupil) {
           error(`Parent's pupil (${pupilUID}) must attend the appointment.`);
         } else {
-          console.log(`[DEBUG] Creating appt (${appt.id})...`);
+          console.log(`[DEBUG] Creating appt (${appt.id as string})...`);
           await Promise.all(
             attendees.map(async (attendee: UserWithRoles) => {
               if (
@@ -269,9 +290,12 @@ export default async function appt(
           // 7. Send out the invitation email to the attendees.
           await sendApptEmails(appt, attendees);
           res.status(201).json({ appt: appt.toJSON() });
-          console.log(`[DEBUG] Created appt (${appt.id}) and sent emails.`);
+          console.log(
+            `[DEBUG] Created appt (${appt.id as string}) and sent emails.`
+          );
         }
       }
     }
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access */
 }

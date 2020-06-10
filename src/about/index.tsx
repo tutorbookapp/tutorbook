@@ -1,5 +1,6 @@
-import { useIntl, IntlShape, Message } from '@tutorbook/intl';
+import { useIntl, IntlShape, Msg, IntlHelper, Message } from '@tutorbook/intl';
 
+import React from 'react';
 import SpotlightMsg from '@tutorbook/spotlight-msg';
 
 import ParentApproves from './gifs/parent-approves.gif';
@@ -12,6 +13,7 @@ import styles from './about.module.scss';
 
 export default function About(): JSX.Element {
   const intl: IntlShape = useIntl();
+  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   return (
     <>
       <div className={styles.summary}>
@@ -53,45 +55,45 @@ export default function About(): JSX.Element {
       </div>
       <div className={styles.howItWorks}>
         <SpotlightMsg
-          label={intl.formatMessage(msgs.stepZero)}
-          headline={intl.formatMessage(msgs.tutorTitle)}
-          body={intl.formatMessage(msgs.tutorBody)}
+          label={msg(msgs.stepZero)}
+          headline={msg(msgs.tutorTitle)}
+          body={msg(msgs.tutorBody)}
           img={TutorSignsUp}
           cta={{
-            label: intl.formatMessage(msgs.tutorCTA),
+            label: msg(msgs.tutorCTA),
             href: '/signup',
           }}
           flipped
         />
         <SpotlightMsg
-          label={intl.formatMessage(msgs.stepOne)}
-          headline={intl.formatMessage(msgs.pupilTitle)}
-          body={intl.formatMessage(msgs.pupilBody)}
+          label={msg(msgs.stepOne)}
+          headline={msg(msgs.pupilTitle)}
+          body={msg(msgs.pupilBody)}
           img={PupilSignsUp}
           cta={{
-            label: intl.formatMessage(msgs.pupilCTA),
+            label: msg(msgs.pupilCTA),
             href: '/search',
           }}
           gray
         />
         <SpotlightMsg
-          label={intl.formatMessage(msgs.stepTwo)}
-          headline={intl.formatMessage(msgs.parentTitle)}
-          body={intl.formatMessage(msgs.parentBody)}
+          label={msg(msgs.stepTwo)}
+          headline={msg(msgs.parentTitle)}
+          body={msg(msgs.parentBody)}
           img={ParentApproves}
           cta={{
-            label: intl.formatMessage(msgs.learnMore),
+            label: msg(msgs.learnMore),
             href: 'https://intercom.help/tutorbook/',
           }}
           flipped
         />
         <SpotlightMsg
-          label={intl.formatMessage(msgs.stepThree)}
-          headline={intl.formatMessage(msgs.brambleTitle)}
-          body={intl.formatMessage(msgs.brambleBody)}
+          label={msg(msgs.stepThree)}
+          headline={msg(msgs.brambleTitle)}
+          body={msg(msgs.brambleBody)}
           img={TutorJoinsBramble}
           cta={{
-            label: intl.formatMessage(msgs.learnMore),
+            label: msg(msgs.learnMore),
             href: 'https://about.bramble.io/',
           }}
           gray

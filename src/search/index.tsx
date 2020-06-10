@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Option, Timeslot, User, Query } from '@tutorbook/model';
+import { useIntl, defMsg, Msg, IntlShape, IntlHelper } from '@tutorbook/intl';
+import { Callback, Option, Timeslot, User, Query } from '@tutorbook/model';
+import { v4 as uuid } from 'uuid';
 
 import Carousel from '@tutorbook/carousel';
 import UserDialog from '@tutorbook/user-dialog';
@@ -11,12 +13,25 @@ import Form from './form';
 import styles from './search.module.scss';
 
 interface SearchProps {
-  readonly onChange: (query: Query) => any;
+  readonly onChange: Callback<Query>;
   readonly results: ReadonlyArray<User>;
   readonly searching: boolean;
   readonly query: Query;
   readonly user?: User;
 }
+
+const msgs: Record<string, Msg> = defMsg({
+  noResultsTitle: {
+    id: 'search.no-results.title',
+    defaultMessage: 'No Results',
+  },
+  noResultsBody: {
+    id: 'search.no-results.body',
+    defaultMessage:
+      "We couldn't find anyone matching those filters. But here are some " +
+      'suggestions:',
+  },
+});
 
 export default function Search({
   user,
@@ -25,6 +40,9 @@ export default function Search({
   searching,
   onChange,
 }: SearchProps): JSX.Element {
+  const intl: IntlShape = useIntl();
+  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+
   const [viewing, setViewing] = React.useState<User | undefined>(user);
   const [elevated, setElevated] = React.useState<boolean>(false);
   const formRef: React.RefObject<HTMLDivElement> = React.createRef();
@@ -68,8 +86,8 @@ export default function Search({
         <ul className={styles.results}>
           {Array(5)
             .fill(null)
-            .map((_: null, index: number) => (
-              <Result loading key={index} />
+            .map(() => (
+              <Result loading key={uuid()} />
             ))}
         </ul>
       )}
@@ -86,11 +104,8 @@ export default function Search({
       )}
       {!searching && !results.length && (
         <div className={styles.noResults}>
-          <h3 className={styles.noResultsHeader}>No Results</h3>
-          <p className={styles.noResultsBody}>
-            We couldn't find anyone matching those filters. But here are some
-            suggestions:
-          </p>
+          <h3 className={styles.noResultsHeader}>{msg(msgs.noResultsTitle)}</h3>
+          <p className={styles.noResultsBody}>{msg(msgs.noResultsBody)}</p>
           <Carousel aspect={query.aspect} onClick={setViewing} />
         </div>
       )}

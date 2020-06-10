@@ -2,6 +2,8 @@ import React from 'react';
 
 import { IconButton } from '@rmwc/icon-button';
 
+import { v4 as uuid } from 'uuid';
+
 import styles from './carousel.module.scss';
 
 interface CarouselProps {
@@ -13,9 +15,10 @@ interface CarouselState {
   readonly scroll: number;
 }
 
-export default class Carousel extends React.Component<CarouselProps> {
-  public readonly state: CarouselState = { scroll: 0 };
-
+export default class Carousel extends React.Component<
+  CarouselProps,
+  CarouselState
+> {
   private readonly scrollerRef: React.RefObject<
     HTMLDivElement
   > = React.createRef();
@@ -26,6 +29,7 @@ export default class Carousel extends React.Component<CarouselProps> {
 
   public constructor(props: CarouselProps) {
     super(props);
+    this.state = { scroll: 0 };
     this.scrollLeft = this.scrollLeft.bind(this);
     this.scrollRight = this.scrollRight.bind(this);
   }
@@ -38,32 +42,35 @@ export default class Carousel extends React.Component<CarouselProps> {
     if (!this.childRef.current || !this.scrollerRef.current) return Infinity;
     const width: number = this.childRef.current.clientWidth + 24;
     const visible: number = this.scrollerRef.current.clientWidth;
-    return width * this.props.children.length - visible - 48;
+    const { children } = this.props;
+    return width * children.length - visible - 48;
+  }
+
+  private get atStart(): boolean {
+    const { scroll } = this.state;
+    return scroll <= 0;
+  }
+
+  private get atEnd(): boolean {
+    const { scroll } = this.state;
+    return scroll >= this.scrollerWidth;
   }
 
   private scrollLeft(): void {
     if (this.atStart) return;
-    this.setState({
-      scroll: Math.max(Math.floor(this.state.scroll - this.childWidth), 0),
-    });
+    this.setState((state: CarouselState) => ({
+      scroll: Math.max(Math.floor(state.scroll - this.childWidth), 0),
+    }));
   }
 
   private scrollRight(): void {
     if (this.atEnd) return;
-    this.setState({
+    this.setState((state: CarouselState) => ({
       scroll: Math.min(
-        Math.ceil(this.state.scroll + this.childWidth),
+        Math.ceil(state.scroll + this.childWidth),
         this.scrollerWidth
       ),
-    });
-  }
-
-  private get atStart(): boolean {
-    return this.state.scroll <= 0;
-  }
-
-  private get atEnd(): boolean {
-    return this.state.scroll >= this.scrollerWidth;
+    }));
   }
 
   public render(): JSX.Element {
@@ -91,8 +98,8 @@ export default class Carousel extends React.Component<CarouselProps> {
             style={{ right: scroll }}
             ref={this.scrollerRef}
           >
-            {children.map((child: JSX.Element, index: number) => (
-              <div key={index} ref={this.childRef} className={styles.child}>
+            {children.map((child: JSX.Element) => (
+              <div key={uuid()} ref={this.childRef} className={styles.child}>
                 {child}
               </div>
             ))}

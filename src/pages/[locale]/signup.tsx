@@ -15,7 +15,7 @@ function SignupPage(): JSX.Element {
     <>
       <Header
         aspect={aspect}
-        onChange={(aspect: Aspect) => setAspect(aspect)}
+        onChange={(newAspect: Aspect) => setAspect(newAspect)}
         formWidth
       />
       <VolunteerForm aspect={aspect} />
@@ -29,7 +29,7 @@ export const getStaticProps: GetStaticProps = async (context) => ({
   props: await getIntlProps(context),
 });
 
-export const getStaticPaths: GetStaticPaths = async () => ({
+export const getStaticPaths: GetStaticPaths = () => ({
   paths: getIntlPaths(),
   fallback: false,
 });

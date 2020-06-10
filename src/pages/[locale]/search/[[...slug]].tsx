@@ -1,10 +1,10 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import { AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
 import to from 'await-to-js';
-import axios from 'axios';
+
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
@@ -15,6 +15,8 @@ import Search from '@tutorbook/search';
 
 import { getIntlProps, withIntl } from '@tutorbook/intl';
 import {
+  ApiError,
+  Option,
   User,
   UserJSONInterface,
   Query,
@@ -40,9 +42,12 @@ function onlyFirstAndLastInitial(name: string): string {
 
 async function getSearchResults(
   query: Query,
-  url: string = '/api/search'
+  url = '/api/search'
 ): Promise<ReadonlyArray<User>> {
-  const [err, res] = await to<AxiosResponse<UserJSONInterface[]>, AxiosError>(
+  const [err, res] = await to<
+    AxiosResponse<UserJSONInterface[]>,
+    AxiosError<ApiError>
+  >(
     axios({
       url,
       method: 'get',
@@ -55,7 +60,7 @@ async function getSearchResults(
     })
   );
   if (err && err.response) {
-    console.error(`[ERROR] ${err.response.data}`);
+    console.error(`[ERROR] ${err.response.data.msg}`);
     throw new Error(err.response.data);
   } else if (err && err.request) {
     console.error('[ERROR] Search REST API did not respond:', err.request);
@@ -146,20 +151,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const subjects: string = context.query.subjects as string;
   const availability: string = context.query.availability as string;
   const query: Query = {
-    langs: langs ? JSON.parse(decodeURIComponent(langs)) : [],
-    subjects: subjects ? JSON.parse(decodeURIComponent(subjects)) : [],
+    langs: langs
+      ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
+      : [],
+    subjects: subjects
+      ? (JSON.parse(decodeURIComponent(subjects)) as Option<string>[])
+      : [],
     availability: availability
       ? Availability.fromURLParam(availability)
       : new Availability(),
     aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
   };
-  const url: string = new URL('/api/search', `http:${context.req.headers.host}`)
-    .href;
+  const url: string = new URL(
+    '/api/search',
+    `http:${context.req.headers.host as string}`
+  ).href;
   return {
     props: {
-      query: JSON.parse(JSON.stringify(query)),
-      results: JSON.parse(JSON.stringify(await getSearchResults(query, url))),
-      user: JSON.parse(JSON.stringify(await getUser(context.params))),
+      query: JSON.parse(JSON.stringify(query)) as QueryJSONInterface,
+      results: JSON.parse(
+        JSON.stringify(await getSearchResults(query, url))
+      ) as UserJSONInterface[],
+      user: JSON.parse(
+        JSON.stringify(await getUser(context.params))
+      ) as UserJSONInterface | null,
       ...(await getIntlProps(context)),
     },
   };
@@ -168,7 +183,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   const [searching, setSearching] = React.useState<boolean>(false);
   const [res, setResults] = React.useState<ReadonlyArray<User>>(
-    results.map((res: UserJSONInterface) => User.fromJSON(res))
+    results.map((searchResult: UserJSONInterface) =>
+      User.fromJSON(searchResult)
+    )
   );
   const [qry, setQuery] = React.useState<Query>({
     langs: query.langs,
@@ -176,28 +193,28 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     availability: Availability.fromJSON(query.availability),
     aspect: query.aspect,
   });
+  const handleChange = async (newQuery: Query) => {
+    // TODO: Store the availability filters in the tutoring aspect and then
+    // re-fill them when we go back to that aspect. Or, just keep them in the
+    // query and ignore them when searching for mentors (i.e. in `api/search`).
+    const updatedQuery: Query =
+      newQuery.aspect === 'mentoring'
+        ? { ...newQuery, availability: new Availability() }
+        : newQuery;
+    setQuery(updatedQuery);
+    setSearching(true);
+    setResults(await getSearchResults(updatedQuery));
+    setSearching(false);
+  };
   return (
     <>
-      <Header
-        query={qry}
-        onChange={async (query: Query) => {
-          setQuery(query);
-          setSearching(true);
-          setResults(await getSearchResults(query));
-          setSearching(false);
-        }}
-      />
+      <Header query={qry} onChange={handleChange} />
       <Search
         query={qry}
         results={res}
         searching={searching}
         user={user ? User.fromJSON(user) : undefined}
-        onChange={async (query: Query) => {
-          setQuery(query);
-          setSearching(true);
-          setResults(await getSearchResults(query));
-          setSearching(false);
-        }}
+        onChange={handleChange}
       />
       <Footer />
       <Intercom />

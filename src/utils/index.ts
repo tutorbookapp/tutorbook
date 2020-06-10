@@ -12,12 +12,12 @@ export default class Utils {
    * @see {@link https://stackoverflow.com/a/16227294/10023158}
    */
   public static intersection<A extends any, B extends any>(
-    a: Array<A>,
-    b: Array<B>,
+    arrA: Array<A>,
+    arrB: Array<B>,
     compare: (a: A, b: B) => boolean = (a, b) => a === b
   ): Array<A> {
-    return a.filter((itemA: A) => {
-      return b.findIndex((itemB: B) => compare(itemA, itemB)) > -1;
+    return arrA.filter((itemA: A) => {
+      return arrB.findIndex((itemB: B) => compare(itemA, itemB)) > -1;
     });
   }
 
@@ -39,17 +39,15 @@ export default class Utils {
    */
   public static join<T = any>(
     arr: Array<T>,
-    ending: string = 'and',
-    oxfordComma: boolean = false
+    ending = 'and',
+    oxfordComma = false
   ): string {
-    if (arr.length === 0) {
-      return '';
-    } else if (arr.length === 1) {
-      return '' + arr[0];
-    } else {
-      const lastItem: T | undefined = arr.pop();
-      const str: string = arr.join(', ');
-      return str + (oxfordComma ? ', ' : ' ') + ending + ' ' + lastItem;
-    }
+    /* eslint-disable @typescript-eslint/restrict-template-expressions */
+    if (arr.length === 0) return '';
+    if (arr.length === 1) return `${arr[0]}`;
+    const lastItem: T | undefined = arr.pop();
+    const str: string = arr.join(', ');
+    return `${str + (oxfordComma ? ', ' : ' ') + ending} ${lastItem}`;
+    /* eslint-enable @typescript-eslint/restrict-template-expressions */
   }
 }

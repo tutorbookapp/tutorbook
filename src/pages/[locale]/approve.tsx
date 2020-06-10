@@ -1,16 +1,9 @@
 import React from 'react';
 import { Router, withRouter } from 'next/router';
-import {
-  IntlShape,
-  injectIntl,
-  defineMessages,
-  MessageDescriptor,
-} from 'react-intl';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
-import axios from 'axios';
 import to from 'await-to-js';
 
 import Utils from '@tutorbook/utils';
@@ -20,9 +13,18 @@ import Header from '@tutorbook/header';
 import Footer from '@tutorbook/footer';
 
 import { ApiError, Appt, ApptJSONInterface } from '@tutorbook/model';
-import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
+import {
+  getIntlProps,
+  getIntlPaths,
+  withIntl,
+  injectIntl,
+  defMsg,
+  Msg,
+  IntlShape,
+  IntlHelper,
+} from '@tutorbook/intl';
 
-const msgs: Record<string, MessageDescriptor> = defineMessages({
+const msgs: Record<string, Msg> = defMsg({
   approved: {
     id: 'approve-page.approved',
     defaultMessage: 'Approved Request',
@@ -84,45 +86,16 @@ type ApprovePageProps = WithRouterProps & { intl: IntlShape };
  * only allow pupils to add the contact information of one parent. And we don't
  * really care **which** parent approves the lesson request anyways.
  */
-class ApprovePage extends React.Component<ApprovePageProps> {
-  public readonly state: ApprovePageState = { appt: undefined, err: undefined };
-
-  public render(): JSX.Element {
-    return (
-      <>
-        <Header />
-        <ActionText
-          loading={!this.state.appt && !this.state.err}
-          headline={
-            this.state.appt
-              ? this.props.intl.formatMessage(msgs.approved)
-              : this.state.err
-              ? this.props.intl.formatMessage(msgs.failed)
-              : this.props.intl.formatMessage(msgs.approving)
-          }
-          body={
-            this.state.appt
-              ? this.successMsg
-              : this.state.err
-              ? this.state.err
-              : undefined
-          }
-        />
-        <Footer />
-        <Intercom />
-      </>
-    );
-  }
-
-  private get successMsg(): string {
-    return this.props.intl.formatMessage(msgs.success, {
-      subjects: Utils.join((this.state.appt as Appt).subjects),
-    });
+class ApprovePage extends React.Component<ApprovePageProps, ApprovePageState> {
+  public constructor(props: ApprovePageProps) {
+    super(props);
+    this.state = {};
   }
 
   public async componentDidMount(): Promise<void> {
-    console.log('[DEBUG] Approving request...', this.props.router.query);
-    const { request, uid } = this.props.router.query;
+    const { router } = this.props;
+    console.log('[DEBUG] Approving request...', router.query);
+    const { request, uid } = router.query;
     const [err, res] = await to<
       AxiosResponse<{ appt: ApptJSONInterface }>,
       AxiosError<ApiError>
@@ -144,13 +117,40 @@ class ApprovePage extends React.Component<ApprovePageProps> {
       this.setState({ appt: Appt.fromJSON(res.data.appt) });
     }
   }
+
+  private get successMsg(): string {
+    const { intl } = this.props;
+    const { appt } = this.state;
+    return intl.formatMessage(msgs.success, {
+      subjects: Utils.join((appt as Appt).subjects),
+    });
+  }
+
+  public render(): JSX.Element {
+    const { appt, err } = this.state;
+    const { intl } = this.props;
+    const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+    const intermediateHeadline = err ? msg(msgs.failed) : msg(msgs.approving);
+    return (
+      <>
+        <Header />
+        <ActionText
+          loading={!appt && !err}
+          headline={appt ? msg(msgs.approved) : intermediateHeadline}
+          body={appt ? this.successMsg : err}
+        />
+        <Footer />
+        <Intercom />
+      </>
+    );
+  }
 }
 
 export const getStaticProps: GetStaticProps = async (context) => ({
   props: await getIntlProps(context),
 });
 
-export const getStaticPaths: GetStaticPaths = async () => ({
+export const getStaticPaths: GetStaticPaths = () => ({
   paths: getIntlPaths(),
   fallback: false,
 });
@@ -163,6 +163,7 @@ function withPageRouter<P extends WithRouterProps>(
   Component: React.ComponentType<P>
 ): React.ComponentType<ExcludeRouterProps<P>> {
   return withRouter<P>(({ router, ...props }) => {
+    /* eslint-disable-next-line no-param-reassign */
     router.query = [
       ...new URLSearchParams((router.asPath || '').split(/\?/)[1]).entries(),
     ].reduce((q, [k, v]) => Object.assign(q, { [k]: v }), {});

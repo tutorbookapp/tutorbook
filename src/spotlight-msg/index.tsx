@@ -14,51 +14,56 @@ interface SpotlightMsgProps {
   cta: CTALinkProps;
 }
 
-export default function SpotlightMsg(props: SpotlightMsgProps): JSX.Element {
-  const colorClass: string = props.gray ? styles.featureSpotlightGray : '';
+export default function SpotlightMsg({
+  gray,
+  flipped,
+  headline,
+  body,
+  label,
+  img,
+  cta,
+}: SpotlightMsgProps): JSX.Element {
+  const colorClass: string = gray ? styles.featureSpotlightGray : '';
   return (
     <div className={styles.spotlight}>
-      <div className={styles.featureSpotlight + ' ' + colorClass}>
+      <div className={`${styles.featureSpotlight} ${colorClass}`}>
         <div className={styles.featureSpotlightBackground}>
           <div
             className={
               styles.featureSpotlightLead +
-              (props.flipped ? ' ' + styles.featureSpotlightLeadFlipped : '')
+              (flipped ? ` ${styles.featureSpotlightLeadFlipped}` : '')
             }
           >
             <div className={styles.featureSpotlightIconWrapper}>
-              {/* <img className={styles.featureSpotlightIcon} src={props.icon} /> */}
+              {/* <img className={styles.featureSpotlightIcon} src={icon} /> */}
               <div className={styles.featureSpotlightIconText}>
-                <span>{props.label}</span>
+                <span>{label}</span>
               </div>
             </div>
-            <h2 className={styles.featureSpotlightHeading}>{props.headline}</h2>
-            <div className={styles.featureSpotlightSubheading}>
-              {props.body}
-            </div>
+            <h2 className={styles.featureSpotlightHeading}>{headline}</h2>
+            <div className={styles.featureSpotlightSubheading}>{body}</div>
           </div>
           <div
-            className={
-              styles.featureSpotlightChildren +
-              ' ' +
-              styles.featureSpotlightChildrenZippered +
-              (props.flipped
-                ? ' ' + styles.featureSpotlightChildrenFlipped
-                : '')
-            }
+            className={`${styles.featureSpotlightChildren} ${
+              styles.featureSpotlightChildrenZippered
+            }${flipped ? ` ${styles.featureSpotlightChildrenFlipped}` : ''}`}
           >
             <div className={styles.featureSpotlightCTA}>
-              <CTALink {...props.cta} />
+              <CTALink {...cta} />
             </div>
           </div>
           <div
-            style={{ backgroundImage: `url(${props.img}` }}
+            style={{ backgroundImage: `url(${img}` }}
             className={
               styles.featureSpotlightMedia +
-              (props.flipped ? ' ' + styles.featureSpotlightMediaFlipped : '')
+              (flipped ? ` ${styles.featureSpotlightMediaFlipped}` : '')
             }
           >
-            <img className={styles.featureSpotlightMediaImg} src={props.img} />
+            <img
+              className={styles.featureSpotlightMediaImg}
+              alt={body}
+              src={img}
+            />
           </div>
         </div>
       </div>

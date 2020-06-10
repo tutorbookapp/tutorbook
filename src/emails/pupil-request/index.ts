@@ -25,15 +25,21 @@ interface Data {
  * results and now you can't do anything because those parental emails aren't
  * going where they should be).
  */
-export class PupilRequestEmail implements Email {
+export default class PupilRequestEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
     Data
   > = Handlebars.compile(Template);
+
   public readonly from: string = 'Tutorbook <team@tutorbook.org>';
+
   public readonly bcc: string = 'team@tutorbook.org';
+
   public readonly to: string;
+
   public readonly subject: string;
+
   public readonly html: string;
+
   public readonly text: string;
 
   public constructor(
@@ -51,8 +57,10 @@ export class PupilRequestEmail implements Email {
       pupil,
       attendees: attendees.map((a: UserWithRoles) => addVerifications(a)),
       description:
-        pupil.roles.indexOf('tutee') >= 0
-          ? `${Utils.join(appt.subjects)} tutoring lessons on ${appt.time}`
+        pupil.roles.indexOf('tutee') >= 0 && appt.time
+          ? `${Utils.join(
+              appt.subjects
+            )} tutoring lessons on ${appt.time.toString()}`
           : `a cool ${Utils.join(appt.subjects)} project`,
     });
   }

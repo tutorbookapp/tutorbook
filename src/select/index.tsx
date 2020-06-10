@@ -5,16 +5,17 @@ import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { Option, Callback } from '@tutorbook/model';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
+import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 
 import React from 'react';
+import to from 'await-to-js';
 import SelectHint from './select-hint';
 
-import to from 'await-to-js';
 import styles from './select.module.scss';
 
 type OverriddenProps = 'textarea' | 'outlined' | 'onFocus' | 'onBlur';
 
-interface SelectState<T extends any> {
+interface SelectState<T> {
   suggestionsOpen: boolean;
   suggestions: Option<T>[];
   inputValue: string;
@@ -22,7 +23,7 @@ interface SelectState<T extends any> {
   errored: boolean;
 }
 
-interface UniqueSelectProps<T extends any> {
+interface UniqueSelectProps<T> {
   value: Option<T>[];
   onChange: Callback<Option<T>[]>;
   getSuggestions: (query: string) => Promise<Option<T>[]>;
@@ -33,22 +34,20 @@ interface UniqueSelectProps<T extends any> {
   onBlurred?: () => any;
 }
 
-export type SelectProps<T extends any> = Omit<
+export type SelectProps<T> = Omit<
   TextFieldHTMLProps,
   keyof UniqueSelectProps<T> | OverriddenProps
 > &
   Omit<TextFieldProps, keyof UniqueSelectProps<T> | OverriddenProps> &
   UniqueSelectProps<T>;
 
-export default class Select<T extends any> extends React.Component<
+export default class Select<T> extends React.Component<
   SelectProps<T>,
   SelectState<T>
 > {
-  public readonly state: SelectState<T>;
-
   private suggestionsTimeoutID?: ReturnType<typeof setTimeout>;
 
-  private foundationRef: any;
+  private foundationRef: React.RefObject<MDCMenuSurfaceFoundation>;
 
   private inputRef: React.RefObject<HTMLInputElement>;
 
@@ -58,7 +57,7 @@ export default class Select<T extends any> extends React.Component<
 
   private textareaBreakWidth: React.MutableRefObject<number | null>;
 
-  private hasOpenedSuggestions: boolean = false;
+  private hasOpenedSuggestions = false;
 
   public constructor(props: SelectProps<T>) {
     super(props);
@@ -69,6 +68,7 @@ export default class Select<T extends any> extends React.Component<
       inputValue: '',
       lineBreak: false,
     };
+    this.foundationRef = React.createRef();
     this.inputRef = React.createRef();
     this.lastSelectedRef = React.createRef();
     this.ghostElementRef = React.createRef();
@@ -81,18 +81,7 @@ export default class Select<T extends any> extends React.Component<
   }
 
   public componentDidMount(): void {
-    this.updateSuggestions();
-  }
-
-  private async updateSuggestions(query: string = ''): Promise<void> {
-    const [err, options] = await to<Option<T>[]>(
-      this.props.getSuggestions(query)
-    );
-    if (err) {
-      this.setState({ suggestions: [], errored: true });
-    } else {
-      this.setState({ suggestions: options as Option<T>[], errored: false });
-    }
+    void this.updateSuggestions();
   }
 
   /**
@@ -100,37 +89,19 @@ export default class Select<T extends any> extends React.Component<
    * (the `TextField`) changes shape.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
-  public componentDidUpdate(prevProps: SelectProps<T>): void {
+  public componentDidUpdate(): void {
+    const { inputValue } = this.state;
+    const { focused } = this.props;
     const shouldChangeInputValue: boolean =
-      (this.state.inputValue === '' || this.state.inputValue === '\xa0') &&
-      this.inputValue !== this.state.inputValue;
+      (inputValue === '' || inputValue === '\xa0') &&
+      this.inputValue !== inputValue;
+    /* eslint-disable-next-line react/no-did-update-set-state */
     if (shouldChangeInputValue) this.setState({ inputValue: this.inputValue });
-    if (this.foundationRef) this.foundationRef.autoPosition_();
-    if (this.props.focused && this.inputRef.current)
-      this.inputRef.current.focus();
-  }
-
-  /**
-   * We clear the timeout set by `this.closeSuggestions` to ensure that the
-   * user doesn't get a blip where the suggestion select menu disappears and
-   * reappears abruptly.
-   * @see {@link https://bit.ly/2x9eM27}
-   */
-  private openSuggestions(): void {
-    if (this.suggestionsTimeoutID) clearTimeout(this.suggestionsTimeoutID);
-    if (!this.state.suggestionsOpen) {
-      this.hasOpenedSuggestions = true;
-      this.setState({ suggestionsOpen: true });
+    if (this.foundationRef.current) {
+      /* eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+      (this.foundationRef.current as any).autoPosition_();
     }
-  }
-
-  private closeSuggestions(): void {
-    this.suggestionsTimeoutID = setTimeout(() => {
-      if (this.state.suggestionsOpen) {
-        this.setState({ suggestionsOpen: false });
-        this.lastSelectedRef.current = null;
-      }
-    }, 0);
+    if (focused && this.inputRef.current) this.inputRef.current.focus();
   }
 
   /**
@@ -144,7 +115,43 @@ export default class Select<T extends any> extends React.Component<
    * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/8}
    */
   private get inputValue(): string {
-    return this.props.value.length > 0 ? '\xa0' : '';
+    const { value } = this.props;
+    return value.length > 0 ? '\xa0' : '';
+  }
+
+  private async updateSuggestions(query = ''): Promise<void> {
+    const { getSuggestions } = this.props;
+    const [err, options] = await to<Option<T>[]>(getSuggestions(query));
+    if (err) {
+      this.setState({ suggestions: [], errored: true });
+    } else {
+      this.setState({ suggestions: options as Option<T>[], errored: false });
+    }
+  }
+
+  /**
+   * We clear the timeout set by `this.closeSuggestions` to ensure that the
+   * user doesn't get a blip where the suggestion select menu disappears and
+   * reappears abruptly.
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  private openSuggestions(): void {
+    const { suggestionsOpen } = this.state;
+    if (this.suggestionsTimeoutID) clearTimeout(this.suggestionsTimeoutID);
+    if (!suggestionsOpen) {
+      this.hasOpenedSuggestions = true;
+      this.setState({ suggestionsOpen: true });
+    }
+  }
+
+  private closeSuggestions(): void {
+    const { suggestionsOpen } = this.state;
+    this.suggestionsTimeoutID = setTimeout(() => {
+      if (suggestionsOpen) {
+        this.setState({ suggestionsOpen: false });
+        this.lastSelectedRef.current = null;
+      }
+    }, 0);
   }
 
   /**
@@ -160,7 +167,7 @@ export default class Select<T extends any> extends React.Component<
     const inputValue: string = event.currentTarget.value || this.inputValue;
     this.updateInputLine(event);
     this.setState({ inputValue });
-    this.updateSuggestions(event.currentTarget.value);
+    void this.updateSuggestions(event.currentTarget.value);
     this.openSuggestions();
   }
 
@@ -172,8 +179,8 @@ export default class Select<T extends any> extends React.Component<
    * `TextField` input is focused).
    */
   private maybeOpenSuggestions(): void {
-    if (this.props.autoOpenMenu || this.hasOpenedSuggestions)
-      this.openSuggestions();
+    const { autoOpenMenu } = this.props;
+    if (autoOpenMenu || this.hasOpenedSuggestions) this.openSuggestions();
   }
 
   /**
@@ -208,6 +215,104 @@ export default class Select<T extends any> extends React.Component<
   }
 
   /**
+   * Selects or un-selects the given option string by setting it's value in
+   * `this.state.selected` to `true` which:
+   * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
+   * 2. Adding it as a chip to the `mdc-text-field` content.
+   */
+  private updateSelected(option: Option<T>, event?: React.MouseEvent): void {
+    const { value, onChange } = this.props;
+    const { suggestions, inputValue } = this.state;
+    const selected: Option<T>[] = Array.from(value);
+    const selectedIndex: number = selected.findIndex(
+      (s: Option<T>) => s.value === option.value
+    );
+    if (selectedIndex < 0) {
+      selected.push(option);
+    } else {
+      selected.splice(selectedIndex, 1);
+    }
+
+    if (suggestions.length && this.lastSelectedRef.current && event?.shiftKey) {
+      // Select/unselect multiple options with 'SHIFT + click'
+      const idx: number = suggestions.indexOf(option);
+      const idxOfLast: number = suggestions.findIndex(
+        (s: Option<T>) => s.value === (this.lastSelectedRef.current || {}).value
+      );
+      suggestions
+        .slice(Math.min(idx, idxOfLast), Math.max(idx, idxOfLast) + 1)
+        .forEach((suggestion: Option<T>) => {
+          const index: number = selected.findIndex(
+            (s: Option<T>) => s.value === suggestion.value
+          );
+          if (selectedIndex < 0 && index < 0) {
+            selected.push(suggestion);
+          } else if (selectedIndex >= 0 && index >= 0) {
+            selected.splice(index, 1);
+          }
+        });
+    }
+
+    this.lastSelectedRef.current = option;
+
+    onChange(selected);
+    this.setState({
+      inputValue: selectedIndex < 0 ? '' : inputValue,
+      lineBreak: false,
+    });
+  }
+
+  private renderSuggestionMenuItems(): JSX.Element[] | JSX.Element {
+    const { errored, suggestions } = this.state;
+    const { value } = this.props;
+    const noResults: JSX.Element = (
+      <Typography use='body1' className={styles.noResults}>
+        {errored ? 'Errored, try again' : 'No results'}
+      </Typography>
+    );
+    const suggestionMenuItems: JSX.Element[] = [];
+    suggestions.forEach((option: Option<T>) =>
+      suggestionMenuItems.push(
+        <ListItem
+          key={option.label}
+          onClick={(event: React.MouseEvent) =>
+            this.updateSelected(option, event)
+          }
+          className={styles.menuItem}
+        >
+          <ListItemGraphic
+            icon={
+              <Checkbox
+                checked={
+                  value.findIndex(
+                    (selected: Option<T>) => selected.value === option.value
+                  ) >= 0
+                }
+                readOnly
+              />
+            }
+          />
+          {option.label}
+        </ListItem>
+      )
+    );
+    return suggestionMenuItems.length ? suggestionMenuItems : noResults;
+  }
+
+  private renderSelectedChipItems(): JSX.Element[] {
+    const { value } = this.props;
+    return value.map((option: Option<T>) => (
+      <Chip
+        key={option.label}
+        label={option.label}
+        trailingIcon='close'
+        onTrailingIconInteraction={() => this.updateSelected(option)}
+        className={styles.chip}
+      />
+    ));
+  }
+
+  /**
    * @todo Allow the user to interact with the static content of the menu (i.e.
    * the text that doesn't cause an `onFocus` event when clicked). Right now,
    * interacting with such static content within the menu causes the menu to
@@ -226,11 +331,12 @@ export default class Select<T extends any> extends React.Component<
       onBlurred,
       ...textFieldProps
     } = this.props;
+    const { suggestionsOpen, suggestions, inputValue, lineBreak } = this.state;
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
-          foundationRef={(ref: any) => (this.foundationRef = ref)}
-          open={this.state.suggestionsOpen}
+          foundationRef={this.foundationRef}
+          open={suggestionsOpen}
           onFocus={(event: React.SyntheticEvent<HTMLDivElement>) => {
             event.preventDefault();
             event.stopPropagation();
@@ -239,17 +345,17 @@ export default class Select<T extends any> extends React.Component<
           }}
           anchorCorner='bottomStart'
           renderToPortal={renderToPortal ? '#portal' : false}
-          className={!this.state.suggestions.length ? styles.errMenu : ''}
+          className={!suggestions.length ? styles.errMenu : ''}
         >
           <List>{this.renderSuggestionMenuItems()}</List>
         </MenuSurface>
-        <SelectHint open={this.state.suggestionsOpen}>
+        <SelectHint open={suggestionsOpen}>
           <TextField
             {...textFieldProps}
             textarea
             outlined
             inputRef={this.inputRef}
-            value={this.state.inputValue}
+            value={inputValue}
             onFocus={() => {
               if (onFocused) onFocused();
               this.maybeOpenSuggestions();
@@ -262,108 +368,11 @@ export default class Select<T extends any> extends React.Component<
             className={styles.textField}
           >
             {this.renderSelectedChipItems()}
-            {this.state.lineBreak && <div className={styles.lineBreak}></div>}
-            <span ref={this.ghostElementRef} className={styles.ghost}></span>
+            {lineBreak && <div className={styles.lineBreak} />}
+            <span ref={this.ghostElementRef} className={styles.ghost} />
           </TextField>
         </SelectHint>
       </MenuSurfaceAnchor>
     );
-  }
-
-  /**
-   * Selects or un-selects the given option string by setting it's value in
-   * `this.state.selected` to `true` which:
-   * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
-   * 2. Adding it as a chip to the `mdc-text-field` content.
-   */
-  private updateSelected(option: Option<T>, event?: React.MouseEvent): void {
-    const selected: Option<T>[] = Array.from(this.props.value);
-    const selectedIndex: number = selected.findIndex(
-      (selected: Option<T>) => selected.value === option.value
-    );
-    if (selectedIndex < 0) {
-      selected.push(option);
-    } else {
-      selected.splice(selectedIndex, 1);
-    }
-
-    if (
-      this.state.suggestions.length &&
-      this.lastSelectedRef.current &&
-      event?.shiftKey
-    ) {
-      // Select/unselect multiple options with 'SHIFT + click'
-      const { suggestions } = this.state;
-      const idx: number = suggestions.indexOf(option);
-      const idxOfLast: number = suggestions.findIndex(
-        (selected: Option<T>) =>
-          selected.value === (this.lastSelectedRef.current || {}).value
-      );
-      suggestions
-        .slice(Math.min(idx, idxOfLast), Math.max(idx, idxOfLast) + 1)
-        .forEach((option: Option<T>) => {
-          const index: number = selected.findIndex(
-            (selected: Option<T>) => selected.value === option.value
-          );
-          if (selectedIndex < 0 && index < 0) {
-            selected.push(option);
-          } else if (selectedIndex >= 0 && index >= 0) {
-            selected.splice(index, 1);
-          }
-        });
-    }
-
-    this.lastSelectedRef.current = option;
-
-    const inputValue: string = selectedIndex < 0 ? '' : this.state.inputValue;
-    this.setState({ inputValue, lineBreak: false });
-    this.props.onChange(selected);
-  }
-
-  private renderSuggestionMenuItems(): JSX.Element[] | JSX.Element {
-    const noResults: JSX.Element = (
-      <Typography use='body1' className={styles.noResults}>
-        {this.state.errored ? 'Errored, try again' : 'No results'}
-      </Typography>
-    );
-    const suggestionMenuItems: JSX.Element[] = [];
-    this.state.suggestions.map((option: Option<T>) =>
-      suggestionMenuItems.push(
-        <ListItem
-          key={option.label}
-          onClick={(event: React.MouseEvent) =>
-            this.updateSelected(option, event)
-          }
-          className={styles.menuItem}
-        >
-          <ListItemGraphic
-            icon={
-              <Checkbox
-                checked={
-                  this.props.value.findIndex(
-                    (selected: Option<T>) => selected.value === option.value
-                  ) >= 0
-                }
-                readOnly
-              />
-            }
-          />
-          {option.label}
-        </ListItem>
-      )
-    );
-    return suggestionMenuItems.length ? suggestionMenuItems : noResults;
-  }
-
-  private renderSelectedChipItems(): JSX.Element[] {
-    return this.props.value.map((option: Option<T>, index: number) => (
-      <Chip
-        key={option.label}
-        label={option.label}
-        trailingIcon='close'
-        onTrailingIconInteraction={() => this.updateSelected(option)}
-        className={styles.chip}
-      />
-    ));
   }
 }

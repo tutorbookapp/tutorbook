@@ -12,13 +12,13 @@ export default function Checkmark(props: Props) {
       {...props}
       className={
         styles.checkmark +
-        (props.className ? ' ' + props.className : '') +
+        (props.className ? ` ${props.className}` : '') +
         (props.checked && props.black
-          ? ' ' + styles.checkmarkCheckedBlack
+          ? ` ${styles.checkmarkCheckedBlack}`
           : props.checked
-          ? ' ' + styles.checkmarkChecked
+          ? ` ${styles.checkmarkChecked}`
           : '') +
-        (props.black ? ' ' + styles.checkmarkBlack : '')
+        (props.black ? ` ${styles.checkmarkBlack}` : '')
       }
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 52 52'
@@ -26,7 +26,7 @@ export default function Checkmark(props: Props) {
       <circle
         className={
           styles.checkmarkCircle +
-          (props.black ? ' ' + styles.checkmarkCircleBlack : '')
+          (props.black ? ` ${styles.checkmarkCircleBlack}` : '')
         }
         cx='26'
         cy='26'

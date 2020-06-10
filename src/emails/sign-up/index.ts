@@ -8,18 +8,23 @@ import {
 import Handlebars from '../handlebars';
 import Template from './template.hbs';
 
-export class SignUpEmail implements Email {
+export default class SignUpEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
     UserWithRolesAndVerifications
   > = Handlebars.compile(Template);
+
   public readonly from: string = 'Tutorbook <team@tutorbook.org>';
+
   public readonly to: string = 'team@tutorbook.org';
+
   public readonly subject: string;
+
   public readonly html: string;
+
   public readonly text: string;
 
   public constructor(user: User) {
-    this.subject = `${user} just signed up on Tutorbook!`;
+    this.subject = `${user.toString()} just signed up on Tutorbook!`;
     this.text = this.subject;
     const roles: RoleAlias[] = [];
     if (user.tutoring.searches.length > 0) roles.push('tutee');

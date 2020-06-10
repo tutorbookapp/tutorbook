@@ -1,12 +1,12 @@
 import React from 'react';
-/*import NextLink from 'next/link';*/
+/* import NextLink from 'next/link'; */
 import {
   useIntl,
   IntlShape,
   defineMessages,
   MessageDescriptor,
 } from 'react-intl';
-/*import config from '@tutorbook/intl/config.json';*/
+/* import config from '@tutorbook/intl/config.json'; */
 import { Link } from '@tutorbook/intl';
 
 import styles from './footer.module.scss';
@@ -201,16 +201,22 @@ interface LinkProps {
   label: string;
 }
 
-function NavLink(props: LinkProps & { className: string }): JSX.Element {
-  if (props.href.indexOf('http') < 0 && props.href.indexOf('mailto') < 0)
+function NavLink({
+  href,
+  label,
+  className,
+}: LinkProps & { className: string }): JSX.Element {
+  if (href.indexOf('http') < 0 && href.indexOf('mailto') < 0)
     return (
-      <Link href={props.href}>
-        <a className={props.className}>{props.label}</a>
+      /* eslint-disable jsx-a11y/anchor-is-valid */
+      <Link href={href}>
+        <a className={className}>{label}</a>
       </Link>
+      /* eslint-enable jsx-a11y/anchor-is-valid */
     );
   return (
-    <a className={props.className} href={props.href}>
-      {props.label}
+    <a className={className} href={href}>
+      {label}
     </a>
   );
 }
@@ -240,13 +246,13 @@ interface LinkGroupProps {
   links: LinkProps[];
 }
 
-function LinkGroup(props: LinkGroupProps): JSX.Element {
+function LinkGroup({ header, links }: LinkGroupProps): JSX.Element {
   return (
     <li className={styles.linkGroup}>
-      <h2 className={styles.linkGroupHeader}>{props.header}</h2>
+      <h2 className={styles.linkGroupHeader}>{header}</h2>
       <ul className={styles.linkGroupList}>
-        {props.links.map((link: LinkProps, index: number) => (
-          <PrimaryLink key={index} {...link} />
+        {links.map((link) => (
+          <PrimaryLink key={link.href} {...link} />
         ))}
       </ul>
     </li>
@@ -261,7 +267,7 @@ export default function Footer({
   const intl: IntlShape = useIntl();
   return (
     <footer
-      className={styles.footer + (formWidth ? ' ' + styles.formWidth : '')}
+      className={styles.footer + (formWidth ? ` ${styles.formWidth}` : '')}
     >
       <span className={styles.sitemapTitle}>
         <h1 id='sitemap'>Sitemap</h1>

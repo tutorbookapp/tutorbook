@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { TextField, TextFieldProps } from '@rmwc/textfield';
+import { Callback } from '@tutorbook/model';
+import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { v4 as uuid } from 'uuid';
 
 import firebase from '@tutorbook/firebase';
@@ -9,13 +10,26 @@ import styles from './photo-input.module.scss';
 
 type Reference = firebase.storage.Reference;
 
-interface PhotoInputProps extends TextFieldProps {
+type OverriddenProps = 'helpText' | 'inputRef' | 'invalid';
+
+interface UniquePhotoInputProps {
   label: string;
-  val: string;
-  onChange: (url: string) => any;
+  value: string;
+  onChange: Callback<string>;
 }
 
-export default function PhotoInput(props: PhotoInputProps): JSX.Element {
+export type PhotoInputProps = Omit<
+  TextFieldHTMLProps,
+  keyof UniquePhotoInputProps | OverriddenProps
+> &
+  Omit<TextFieldProps, keyof UniquePhotoInputProps | OverriddenProps> &
+  UniquePhotoInputProps;
+
+export default function PhotoInput({
+  value,
+  onChange,
+  ...textFieldProps
+}: PhotoInputProps): JSX.Element {
   const inputRef: React.RefObject<HTMLInputElement> = React.createRef();
   const helperRef: React.RefObject<HTMLParagraphElement> = React.createRef();
 
@@ -27,7 +41,7 @@ export default function PhotoInput(props: PhotoInputProps): JSX.Element {
     }
   });
 
-  const [value, setValue] = React.useState<string>(
+  const [helperValue, setHelperValue] = React.useState<string>(
     'Click the text field above to upload a photo.'
   );
   const [errored, setErrored] = React.useState<boolean>(false);
@@ -35,9 +49,8 @@ export default function PhotoInput(props: PhotoInputProps): JSX.Element {
     event.preventDefault();
     event.stopPropagation();
     if (inputRef.current) inputRef.current.click();
-    return false;
   };
-  const handleChange = async (event: React.FormEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -49,51 +62,49 @@ export default function PhotoInput(props: PhotoInputProps): JSX.Element {
     const lastDotIndex: number = file.name.lastIndexOf('.');
     const filename: string = file.name.substring(0, lastDotIndex);
     const extension: string = file.name.substring(lastDotIndex + 1);
-    const pathname: string =
-      (process.env.NODE_ENV === 'development' ? 'test' : 'default') +
-      `/temp/${uuid()}.${extension}`;
+    const pathname = `${
+      process.env.NODE_ENV === 'development' ? 'test' : 'default'
+    }/temp/${uuid()}.${extension}`;
     const ref: Reference = firebase.storage().ref(pathname);
 
-    setValue(`Uploading ${filename}.${extension}...`);
+    setHelperValue(`Uploading ${filename}.${extension}...`);
 
     ref.put(file).on(firebase.storage.TaskEvent.STATE_CHANGED, {
       next() {}, // See https://github.com/firebase/firebase-js-sdk/issues/3158
       async complete() {
         onChange(await ref.getDownloadURL());
-        setValue(`Uploaded ${filename}.${extension}.`);
+        setHelperValue(`Uploaded ${filename}.${extension}.`);
       },
       error(error: Error) {
         setErrored(true);
-        setValue(
+        setHelperValue(
           `An error occurred while uploading ${filename}.${extension}. ${error.message}`
         );
       },
     });
-
-    return false;
   };
-  const { val, onChange, ...rest } = props;
+  /* eslint-disable jsx-a11y/control-has-associated-label */
   return (
     <TextField
+      {...textFieldProps}
       helpText={{
         persistent: true,
         validationMsg: errored,
         className: styles.helper,
-        children: value,
+        children: helperValue,
         ref: helperRef,
       }}
-      className={styles.textField}
       onChange={handleChange}
       inputRef={inputRef}
       invalid={errored}
       value=''
-      {...rest}
     >
       <button
+        type='button'
         className={styles.clickArea}
-        onFocus={handleClick}
         onClick={handleClick}
       />
     </TextField>
   );
+  /* eslint-enable jsx-a11y/control-has-associated-label */
 }

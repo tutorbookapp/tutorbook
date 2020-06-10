@@ -1,14 +1,12 @@
 import { useIntl, IntlShape } from '@tutorbook/intl';
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
-import { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import { SelectProps } from '@tutorbook/select';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import Select, { SelectProps } from '@tutorbook/select';
 import { Option } from '@tutorbook/model';
 
 import React from 'react';
-import Select from '@tutorbook/select';
 
 import * as config from '@tutorbook/intl/config.json';
-import algoliasearch from 'algoliasearch/lite';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
@@ -64,7 +62,7 @@ export default function LangSelect({
    * on the results of the user's current input to an Algolia search query.
    * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
    */
-  async function getSuggestions(query: string = ''): Promise<Option<string>[]> {
+  async function getSuggestions(query = ''): Promise<Option<string>[]> {
     const res: SearchResponse<LangHit> = await searchIndex.search(query);
     return res.hits.map(langHitToOption);
   }

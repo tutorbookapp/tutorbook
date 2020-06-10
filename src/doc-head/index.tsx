@@ -8,7 +8,7 @@ import Head from 'next/head';
  * @see {@link https://nextjs.org/docs/basic-features/static-file-serving}
  * @see {@link https://nextjs.org/docs/api-reference/next/head}
  */
-export default function CovidHead() {
+export default function CovidHead(): JSX.Element {
   return (
     <Head>
       <title>Tutorbook</title>
@@ -22,7 +22,6 @@ export default function CovidHead() {
           ' (who want to make a difference from home).'
         }
       />
-      // Site favicons (see the `public/favicon` directory in this repository).
       <link
         rel='icon'
         type='image/png'
@@ -47,7 +46,6 @@ export default function CovidHead() {
         sizes='16x16'
         href='/favicon/favicon-16x16.png'
       />
-      // Add to homescreen for Safari on iOS.
       <meta name='apple-mobile-web-app-capable' content='yes' />
       <meta
         name='apple-mobile-web-app-status-bar-style'
@@ -64,12 +62,10 @@ export default function CovidHead() {
         href='/favicon/safari-pinned-tab.svg'
         color='#6200EE'
       />
-      // Add to homescreen for Chrome on Android.
       <meta name='mobile-web-app-capable' content='yes' />
       <meta name='application-name' content='Tutorbook' />
       <meta name='theme-color' content='#FFFFFF' />
       <link rel='manifest' href='/favicon/manifest.json' />
-      // Add to homescreen for Windows.
       <link rel='shortcut icon' href='/favicon/favicon.ico' />
       <meta name='msapplication-tap-highlight' content='no' />
       <meta name='msapplication-config' content='/favicon/browserconfig.xml' />

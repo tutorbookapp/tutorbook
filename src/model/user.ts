@@ -1,11 +1,12 @@
+import * as admin from 'firebase-admin';
+
+import firebase from '@tutorbook/firebase';
+import phone from 'phone';
+import url from 'url';
+
 import { ObjectWithObjectID } from '@algolia/client-search';
 import { RoleAlias } from './appt';
 import { Availability, AvailabilityJSONAlias } from './times';
-import * as admin from 'firebase-admin';
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
-import phone from 'phone';
-import url from 'url';
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
@@ -138,26 +139,40 @@ export type UserSearchHitAlias = UserJSONInterface & ObjectWithObjectID;
  * @see {@link https://stackoverflow.com/a/54857125/10023158}
  */
 export class User implements UserInterface {
-  public uid: string = '';
-  public name: string = '';
-  public email: string = '';
-  public phone: string = '';
-  public photo: string = '';
-  public bio: string = '';
+  public uid = '';
+
+  public name = '';
+
+  public email = '';
+
+  public phone = '';
+
+  public photo = '';
+
+  public bio = '';
+
   public availability: Availability = new Availability();
+
   public mentoring: { subjects: string[]; searches: string[] } = {
     subjects: [],
     searches: [],
   };
+
   public tutoring: { subjects: string[]; searches: string[] } = {
     subjects: [],
     searches: [],
   };
+
   public langs: string[] = [];
+
   public parents: string[] = [];
+
   public ref?: DocumentReference | AdminDocumentReference;
+
   public token?: string;
+
   public grade?: GradeAlias;
+
   public socials: SocialInterface[] = [];
 
   /**
@@ -172,7 +187,8 @@ export class User implements UserInterface {
    * default value if the types match.
    */
   public constructor(user: Partial<UserInterface> = {}) {
-    Object.entries(user).map(([key, val]: [string, any]) => {
+    Object.entries(user).forEach(([key, val]: [string, any]) => {
+      /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
       if (val && key in this) (this as Record<string, any>)[key] = val;
     });
     this.phone = phone(this.phone)[0] || '';
@@ -226,7 +242,7 @@ export class User implements UserInterface {
       return false;
     };
     const intercomValues: Record<string, any> = {
-      user_id: uid ? uid : undefined,
+      user_id: uid || undefined,
       ref: ref ? ref.path : undefined,
       avatar: photo ? { type: 'avatar', image_url: photo } : undefined,
       ...rest,
@@ -261,13 +277,12 @@ export class User implements UserInterface {
         ref: snapshot.ref,
         uid: snapshot.id,
       });
-    } else {
-      console.warn(
-        `[WARNING] Tried to create user (${snapshot.ref.id}) from ` +
-          'non-existent Firestore document.'
-      );
-      return new User();
     }
+    console.warn(
+      `[WARNING] Tried to create user (${snapshot.ref.id}) from ` +
+        'non-existent Firestore document.'
+    );
+    return new User();
   }
 
   /**

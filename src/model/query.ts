@@ -16,9 +16,9 @@ export interface QueryJSONInterface {
   aspect: Aspect;
 }
 
-export interface Option<T extends any> {
+export interface Option<T> {
   label: string;
   value: T;
 }
 
-export type Callback<T> = (value: T) => any;
+export type Callback<T> = (value: T) => void;

@@ -1,5 +1,6 @@
 export {
   useIntl,
+  injectIntl,
   defineMessages as defMsg,
   FormattedMessage as Message,
 } from 'react-intl';

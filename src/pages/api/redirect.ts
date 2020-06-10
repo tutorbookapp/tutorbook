@@ -22,9 +22,10 @@ export default function redirect(
 ): void {
   const locale: string =
     parser.pick(locales, req.headers['accept-language'] || '') || defaultLocale;
+  const url: string = req.url as string;
   console.log(`[DEBUG] Redirecting to locale (${locale})...`);
   res.statusCode = 302;
-  res.setHeader('Location', `/${locale}${req.url}`);
+  res.setHeader('Location', `/${locale}${url}`);
   res.end();
-  console.log(`[DEBUG] Redirected '${req.url}' to '/${locale}${req.url}'.`);
+  console.log(`[DEBUG] Redirected '${url}' to '/${locale}${url}'.`);
 }

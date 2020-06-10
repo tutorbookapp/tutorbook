@@ -69,7 +69,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       />
       <Button
         className={styles.button}
-        label={msg(msgs[query.aspect + 'Btn'])}
+        label={msg(msgs[`${query.aspect}Btn`])}
         disabled={submitting}
         raised
         arrow

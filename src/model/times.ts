@@ -13,7 +13,7 @@ import { DAYS } from './constants';
  * incompatible.
  * @see {@link https://stackoverflow.com/a/57984831/10023158}
  */
-const Timestamp = firebase.firestore.Timestamp;
+const { Timestamp } = firebase.firestore;
 type Timestamp = firebase.firestore.Timestamp;
 
 /**
@@ -101,21 +101,15 @@ export class Timeslot implements TimeslotInterface {
    * localization in the `pages/_app.tsx` top-level component and all children
    * components will render their `Date`s properly for that locale).
    */
-  public toString(showDay: boolean = true): string {
-    let str =
-      this.from.toLocaleTimeString() + ' - ' + this.to.toLocaleTimeString();
+  public toString(showDay = true): string {
+    let str = `${this.from.toLocaleTimeString()} - ${this.to.toLocaleTimeString()}`;
     if (showDay) {
       if (this.from.getDay() === this.to.getDay()) {
-        str = DAYS[this.from.getDay()] + ' ' + str;
+        str = `${DAYS[this.from.getDay()]} ${str}`;
       } else {
-        str =
-          DAYS[this.from.getDay()] +
-          ' ' +
-          str.split(' - ')[0] +
-          ' - ' +
-          DAYS[this.to.getDay()] +
-          ' ' +
-          str.split(' - ')[1];
+        str = `${DAYS[this.from.getDay()]} ${str.split(' - ')[0]} - ${
+          DAYS[this.to.getDay()]
+        } ${str.split(' - ')[1]}`;
       }
     }
     return str;
@@ -183,8 +177,8 @@ export class Timeslot implements TimeslotInterface {
   public toParsableString(): string {
     return (
       `${DAYS[this.from.getDay()]}s from ${this.from.getHours()}:` +
-      `${('0' + this.from.getMinutes()).slice(-2)} AM to ` +
-      `${this.to.getHours()}:${('0' + this.to.getMinutes()).slice(-2)} AM`
+      `${`0${this.from.getMinutes()}`.slice(-2)} AM to ` +
+      `${this.to.getHours()}:${`0${this.to.getMinutes()}`.slice(-2)} AM`
     );
   }
 
@@ -347,7 +341,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * localization in the `pages/_app.tsx` top-level component and all children
    * components will render their `Date`s properly for that locale).
    */
-  public toString(showDay: boolean = true): string {
+  public toString(showDay = true): string {
     return this.length > 0
       ? this.map((timeslot: Timeslot) => timeslot.toString(showDay)).join(', ')
       : '';
@@ -436,9 +430,9 @@ export class TimeUtils {
    */
   public static getDateWithTime(
     hours: number,
-    minutes: number = 0,
-    seconds: number = 0,
-    milliseconds: number = 0
+    minutes = 0,
+    seconds = 0,
+    milliseconds = 0
   ): Date {
     return TimeUtils.getNextDateWithTime(
       hours,
@@ -506,9 +500,9 @@ export class TimeUtils {
   public static getDate(
     day: DayAlias,
     hours: number,
-    minutes: number = 0,
-    seconds: number = 0,
-    milliseconds: number = 0
+    minutes = 0,
+    seconds = 0,
+    milliseconds = 0
   ): Date {
     const time: Date = TimeUtils.getDateWithTime(
       hours,

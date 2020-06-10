@@ -52,47 +52,10 @@ export type ScheduleInputProps = Omit<
   Omit<TextFieldProps, keyof UniqueScheduleInputProps | OverriddenProps> &
   UniqueScheduleInputProps;
 
-export default class ScheduleInput extends React.Component<ScheduleInputProps> {
-  public readonly state: ScheduleInputState;
-  private menuTimeoutID?: number;
-  private inputRef: React.RefObject<HTMLInputElement> = React.createRef();
-
-  public constructor(props: ScheduleInputProps) {
-    super(props);
-    this.state = { menuOpen: false };
-    this.toggleAllChecked = this.toggleAllChecked.bind(this);
-    this.openMenu = this.openMenu.bind(this);
-    this.closeMenu = this.closeMenu.bind(this);
-  }
-
-  public componentDidUpdate(): void {
-    if (this.props.focused && this.inputRef.current)
-      this.inputRef.current.focus();
-  }
-
-  /**
-   * We clear the timeout set by `this.closeMenu` to ensure that they user
-   * doesn't get a blip where the schedule input menu disappears and reappears
-   * abruptly.
-   * @see {@link https://bit.ly/2x9eM27}
-   */
-  private openMenu(): void {
-    window.clearTimeout(this.menuTimeoutID);
-    if (!this.state.menuOpen) this.setState({ menuOpen: true });
-  }
-
-  /**
-   * We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
-   * before toggling. Waiting ensures that the user hasn't clicked on the
-   * schedule input menu (and thus called `this.openMenu`).
-   * @see {@link https://bit.ly/2x9eM27}
-   */
-  private closeMenu(): void {
-    this.menuTimeoutID = window.setTimeout(() => {
-      if (this.state.menuOpen) this.setState({ menuOpen: false });
-    });
-  }
-
+export default class ScheduleInput extends React.Component<
+  ScheduleInputProps,
+  ScheduleInputState
+> {
   /**
    * Timeslots that users can choose their availability from: either morning
    * (7am to 12pm), afternoon (12pm to 5pm), or evening (5pm to 10pm).
@@ -121,15 +84,38 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    */
   public static get timeslots(): Availability {
     const timeslots = new Availability();
-    for (let day = 0; day < 7; day++)
-      for (const time of Object.values(ScheduleInput.times))
+    for (let day = 0; day < 7; day += 1)
+      Object.values(ScheduleInput.times).forEach((time: Timeslot) =>
         timeslots.push(
           new Timeslot(
             TimeUtils.getNextDateWithDay(day as DayAlias, time.from),
             TimeUtils.getNextDateWithDay(day as DayAlias, time.to)
           )
-        );
+        )
+      );
     return timeslots;
+  }
+
+  private menuTimeoutID?: number;
+
+  private inputRef: React.RefObject<HTMLInputElement> = React.createRef();
+
+  public constructor(props: ScheduleInputProps) {
+    super(props);
+    this.state = { menuOpen: false };
+    this.toggleAllChecked = this.toggleAllChecked.bind(this);
+    this.openMenu = this.openMenu.bind(this);
+    this.closeMenu = this.closeMenu.bind(this);
+  }
+
+  public componentDidUpdate(): void {
+    const { focused } = this.props;
+    if (focused && this.inputRef.current) this.inputRef.current.focus();
+  }
+
+  private get allTimeslotsChecked(): boolean {
+    const { value } = this.props;
+    return value.equalTo(ScheduleInput.timeslots);
   }
 
   /**
@@ -138,7 +124,37 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * returns `true`. If not, `false`.
    */
   private isChecked(time: Timeslot): boolean {
-    return this.props.value.hasTimeslot(time);
+    const { value } = this.props;
+    return value.hasTimeslot(time);
+  }
+
+  /**
+   * We clear the timeout set by `this.closeMenu` to ensure that they user
+   * doesn't get a blip where the schedule input menu disappears and reappears
+   * abruptly.
+   * @todo Perhaps we can remove this workaround by passing a callback to
+   * `this.setState()`.
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  private openMenu(): void {
+    window.clearTimeout(this.menuTimeoutID);
+    const { menuOpen } = this.state;
+    if (!menuOpen) this.setState({ menuOpen: true });
+  }
+
+  /**
+   * We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
+   * before toggling. Waiting ensures that the user hasn't clicked on the
+   * schedule input menu (and thus called `this.openMenu`).
+   * @todo Perhaps we can remove this workaround by passing a callback to
+   * `this.setState()`.
+   * @see {@link https://bit.ly/2x9eM27}
+   */
+  private closeMenu(): void {
+    this.menuTimeoutID = window.setTimeout(() => {
+      const { menuOpen } = this.state;
+      if (menuOpen) this.setState({ menuOpen: false });
+    });
   }
 
   /**
@@ -152,11 +168,12 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
     timeslot: Timeslot,
     event: React.FormEvent<HTMLInputElement>
   ): void {
-    const copy: Availability = this.props.value.filter(
+    const { value, onChange } = this.props;
+    const copy: Availability = value.filter(
       (t) => !t.equalTo(timeslot)
     ) as Availability;
     if (event.currentTarget.checked) copy.push(timeslot);
-    this.props.onChange(copy);
+    onChange(copy);
   }
 
   /**
@@ -165,15 +182,12 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    * all checkbox was selected.
    */
   private toggleAllChecked(event: React.FormEvent<HTMLInputElement>): void {
+    const { onChange } = this.props;
     if (event.currentTarget.checked) {
-      this.props.onChange(ScheduleInput.timeslots);
+      onChange(ScheduleInput.timeslots);
     } else {
-      this.props.onChange(new Availability());
+      onChange(new Availability());
     }
-  }
-
-  private get allTimeslotsChecked(): boolean {
-    return this.props.value.equalTo(ScheduleInput.timeslots);
   }
 
   /**
@@ -188,6 +202,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
    */
   public render(): JSX.Element {
     const {
+      value,
       onChange,
       className,
       renderToPortal,
@@ -196,11 +211,12 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
       onBlurred,
       ...textFieldProps
     } = this.props;
+    const { menuOpen } = this.state;
     const checkboxId: string = uuid();
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
-          open={this.state.menuOpen}
+          open={menuOpen}
           onFocus={this.openMenu}
           onBlur={this.closeMenu}
           anchorCorner='bottomStart'
@@ -232,6 +248,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
                   {Array(7)
                     .fill(null)
                     .map((_: null, dayNum: number) => (
+                      /* eslint-disable-next-line react/no-array-index-key */
                       <DataTableHeadCell key={dayNum}>
                         <FormattedDate
                           value={TimeUtils.getNextDateWithDay(
@@ -265,6 +282,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
                               timeslot.to
                             )
                           );
+                          /* eslint-disable react/no-array-index-key */
                           return (
                             <DataTableCell
                               key={dayNum}
@@ -284,6 +302,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
                               />
                             </DataTableCell>
                           );
+                          /* eslint-enable react/no-array-index-key */
                         })}
                     </DataTableRow>
                   )
@@ -298,7 +317,7 @@ export default class ScheduleInput extends React.Component<ScheduleInputProps> {
           outlined
           textarea={false}
           inputRef={this.inputRef}
-          value={this.props.value.toString()}
+          value={value.toString()}
           className={styles.textField}
           onFocus={() => {
             if (onFocused) onFocused();

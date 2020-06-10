@@ -1,6 +1,6 @@
-import { Timeslot, TimeslotJSONInterface } from './times';
 import * as admin from 'firebase-admin';
 import * as firebase from 'firebase/app';
+import { Timeslot, TimeslotJSONInterface } from './times';
 import 'firebase/firestore';
 
 /**
@@ -53,12 +53,18 @@ export interface ApptJSONInterface {
 }
 
 export class Appt implements ApptInterface {
-  public message: string = '';
+  public message = '';
+
   public subjects: string[] = [];
+
   public attendees: AttendeeInterface[] = [];
+
   public venues: ApptVenueInterface[] = [];
+
   public ref?: DocumentReference | AdminDocumentReference;
+
   public time?: Timeslot;
+
   public id?: string;
 
   /**
@@ -112,12 +118,11 @@ export class Appt implements ApptInterface {
         ref: snapshot.ref,
         id: snapshot.id,
       });
-    } else {
-      console.warn(
-        `[WARNING] Tried to create appt (${snapshot.ref.id}) from ` +
-          'non-existent Firestore document.'
-      );
-      return new Appt();
     }
+    console.warn(
+      `[WARNING] Tried to create appt (${snapshot.ref.id}) from ` +
+        'non-existent Firestore document.'
+    );
+    return new Appt();
   }
 }

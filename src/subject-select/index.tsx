@@ -1,12 +1,9 @@
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
-import { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { Option, Aspect, GradeAlias } from '@tutorbook/model';
-import { SelectProps } from '@tutorbook/select';
+import Select, { SelectProps } from '@tutorbook/select';
 
 import React from 'react';
-import Select from '@tutorbook/select';
-
-import algoliasearch from 'algoliasearch/lite';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
@@ -41,6 +38,7 @@ export default function SubjectSelect({
 
   // TODO: This will become an async update function that filters our Algolia
   // search index to get the labels of the selected subjects (using their IDs).
+  // TODO: Debug issue with `react-hooks/exhaustive-deps`.
   React.useEffect(() => {
     if (!values) return;
     const valuesHaveLabels = values.every(
@@ -51,6 +49,7 @@ export default function SubjectSelect({
     );
     if (!valuesHaveLabels)
       props.onChange(values.map((v) => ({ label: v, value: v })));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [values]);
 
   /**
@@ -58,7 +57,7 @@ export default function SubjectSelect({
    * on the results of the user's current input to an Algolia search query.
    * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
    */
-  async function getSuggestions(query: string = ''): Promise<Option<string>[]> {
+  async function getSuggestions(query = ''): Promise<Option<string>[]> {
     if (options && !options.length) return [];
     const filters: string | undefined =
       options !== undefined
@@ -76,5 +75,6 @@ export default function SubjectSelect({
     }));
   }
 
+  /* eslint-disable-next-line react/jsx-props-no-spreading */
   return <Select {...props} getSuggestions={getSuggestions} />;
 }

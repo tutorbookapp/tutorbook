@@ -1,7 +1,9 @@
+/* eslint-disable no-shadow */
+
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AxiosResponse, AxiosPromise } from 'axios';
+import axios, { AxiosResponse, AxiosPromise } from 'axios';
 import {
   ApiError,
   User,
@@ -12,103 +14,12 @@ import {
 import { PupilRequestEmail, ParentRequestEmail } from '@tutorbook/emails';
 
 import { v4 as uuid } from 'uuid';
-import axios from 'axios';
+
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
 import * as admin from 'firebase-admin';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
-
-interface BrambleRes {
-  APImethod: string;
-  status: string;
-  result: string;
-}
-
-/**
- * Creates a new Bramble room using their REST API.
- * @see {@link https://about.bramble.io/api.html}
- */
-function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
-  return axios({
-    method: 'post',
-    url: 'https://api.bramble.io/createRoom',
-    headers: {
-      room: appt.id,
-      agency: 'tutorbook',
-      auth_token: process.env.BRAMBLE_API_KEY as string,
-    },
-  });
-}
-
-/**
- * Sends out two types of emails:
- * 1. Email to the tutee attendees's parents asking for parental approval of the
- * tutoring match (the attendees are not sent the link to the Bramble room until
- * **after** we receive parental consent).
- * 2. Email to the tutee and mentee attendees letting them know that we've
- * received their request and are awaiting parental approval.
- * @todo Give the tutees an option to change their parent's contact info in
- * that second email (i.e. you might have entered fake stuff just to see search
- * results and now you can't do anything because those parental emails aren't
- * going where they should be).
- */
-async function sendRequestEmails(
-  request: Appt,
-  attendees: ReadonlyArray<UserWithRoles>
-): Promise<void> {
-  await Promise.all(
-    attendees.map(async (pupil: UserWithRoles) => {
-      if (pupil.roles.indexOf('tutee') < 0 && pupil.roles.indexOf('mentee') < 0)
-        return;
-      if (pupil.roles.indexOf('tutee') >= 0) {
-        for (const parentUID of pupil.parents) {
-          const parentDoc: DocumentSnapshot = await db
-            .collection('users')
-            .doc(parentUID)
-            .get();
-          if (parentDoc.exists) {
-            const parent: User = User.fromFirestore(parentDoc);
-            const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
-              mail.send(
-                new ParentRequestEmail(parent, pupil, request, attendees)
-              )
-            );
-            if (err) {
-              console.error(
-                `[ERROR] ${err.name} sending ${parent.name} <${parent.email}> ` +
-                  `the parent pending lesson request (${request.id}) email:`,
-                err
-              );
-            } else {
-              console.log(
-                `[DEBUG] Sent ${parent.name} <${parent.email}> the parent ` +
-                  `pending lesson request (${request.id}) email.`
-              );
-            }
-          } else {
-            console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
-          }
-        }
-      }
-      const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
-        mail.send(new PupilRequestEmail(pupil, request, attendees))
-      );
-      if (err) {
-        console.error(
-          `[ERROR] ${err.name} sending ${pupil.name} <${pupil.email}> the ` +
-            `pending request (${request.id}) email:`,
-          err
-        );
-      } else {
-        console.log(
-          `[DEBUG] Sent ${pupil.name} <${pupil.email}> the pending request ` +
-            `(${request.id}) email.`
-        );
-      }
-    })
-  );
-}
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
@@ -158,6 +69,106 @@ const db: DocumentReference =
     ? firebase.firestore().collection('partitions').doc('test')
     : firebase.firestore().collection('partitions').doc('default');
 
+interface BrambleRes {
+  APImethod: string;
+  status: string;
+  result: string;
+}
+
+/**
+ * Creates a new Bramble room using their REST API.
+ * @see {@link https://about.bramble.io/api.html}
+ */
+function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
+  return axios({
+    method: 'post',
+    url: 'https://api.bramble.io/createRoom',
+    headers: {
+      room: appt.id,
+      agency: 'tutorbook',
+      auth_token: process.env.BRAMBLE_API_KEY as string,
+    },
+  }) as AxiosPromise<BrambleRes>;
+}
+
+/**
+ * Sends out two types of emails:
+ * 1. Email to the tutee attendees's parents asking for parental approval of the
+ * tutoring match (the attendees are not sent the link to the Bramble room until
+ * **after** we receive parental consent).
+ * 2. Email to the tutee and mentee attendees letting them know that we've
+ * received their request and are awaiting parental approval.
+ * @todo Give the tutees an option to change their parent's contact info in
+ * that second email (i.e. you might have entered fake stuff just to see search
+ * results and now you can't do anything because those parental emails aren't
+ * going where they should be).
+ */
+async function sendRequestEmails(
+  request: Appt,
+  attendees: ReadonlyArray<UserWithRoles>
+): Promise<void> {
+  await Promise.all(
+    attendees.map(async (pupil: UserWithRoles) => {
+      if (pupil.roles.indexOf('tutee') < 0 && pupil.roles.indexOf('mentee') < 0)
+        return;
+      if (pupil.roles.indexOf('tutee') >= 0) {
+        await Promise.all(
+          pupil.parents.map(async (parentUID: string) => {
+            const parentDoc: DocumentSnapshot = await db
+              .collection('users')
+              .doc(parentUID)
+              .get();
+            if (parentDoc.exists) {
+              const parent: User = User.fromFirestore(parentDoc);
+              /* eslint-disable-next-line @typescript-eslint/ban-types */
+              const [err] = await to<
+                [ClientResponse, {}],
+                Error | ResponseError
+              >(
+                mail.send(
+                  new ParentRequestEmail(parent, pupil, request, attendees)
+                )
+              );
+              if (err) {
+                console.error(
+                  `[ERROR] ${err.name} sending ${parent.name} <${parent.email}> ` +
+                    `the parent pending lesson request (${
+                      request.id as string
+                    }) email:`,
+                  err
+                );
+              } else {
+                console.log(
+                  `[DEBUG] Sent ${parent.name} <${parent.email}> the parent ` +
+                    `pending lesson request (${request.id as string}) email.`
+                );
+              }
+            } else {
+              console.warn(`[WARNING] Parent (${parentUID}) did not exist.`);
+            }
+          })
+        );
+      }
+      /* eslint-disable-next-line @typescript-eslint/ban-types */
+      const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
+        mail.send(new PupilRequestEmail(pupil, request, attendees))
+      );
+      if (err) {
+        console.error(
+          `[ERROR] ${err.name} sending ${pupil.name} <${pupil.email}> the ` +
+            `pending request (${request.id as string}) email:`,
+          err
+        );
+      } else {
+        console.log(
+          `[DEBUG] Sent ${pupil.name} <${pupil.email}> the pending request ` +
+            `(${request.id as string}) email.`
+        );
+      }
+    })
+  );
+}
+
 /**
  * Takes an `ApptJSONInterface` object, an authentication token, and:
  * 1. Performs the following verifications (sends a `400` error code and an
@@ -195,10 +206,11 @@ export default async function request(
   req: NextApiRequest,
   res: NextApiResponse<ApiError | { request: ApptJSONInterface }>
 ): Promise<void> {
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // 1. Verify that the request body is valid.
-  function error(msg: string, code: number = 400, err?: Error): void {
+  function error(msg: string, code = 400, err?: Error): void {
     console.error(`[ERROR] Sending client ${code} with msg (${msg})...`, err);
-    res.status(code).json(Object.assign({ msg }, err || {}));
+    res.status(code).json({ msg, ...(err || {}) });
   }
   if (!req.body) {
     error('You must provide a request body.');
@@ -237,61 +249,77 @@ export default async function request(
     } else {
       const request: Appt = Appt.fromJSON(req.body.request);
       const attendees: UserWithRoles[] = [];
-      let attendeesIncludeAuthToken: boolean = false;
-      for (const attendee of request.attendees) {
-        // 1. Verify that the attendees have uIDs.
-        if (!attendee.uid) {
-          error('All attendees must have valid uIDs.');
-          break;
-        } else if (attendee.uid === (token as DecodedIdToken).uid) {
-          // 1. Verify that the appointment creator is an attendee.
-          attendeesIncludeAuthToken = true;
-        }
-        const ref: DocumentReference = db.collection('users').doc(attendee.uid);
-        const doc: DocumentSnapshot = await ref.get();
-        // 1. Verify that the attendees exist.
-        if (!doc.exists) {
-          error(`Attendee (${attendee.uid}) does not exist.`);
-          break;
-        }
-        const user: User = User.fromFirestore(doc);
-        // 1. Verify that the attendees are available (note that we don't throw
-        // an error if it is the request sender who is unavailable).
-        if (request.time && !user.availability.contains(request.time)) {
-          if (attendee.uid === (token as DecodedIdToken).uid) {
-            console.warn(
-              `[WARNING] Sender is not available on ${request.time}.`
-            );
-          } else {
-            error(`${user} is not available on ${request.time}.`);
-            break;
+      let attendeesIncludeAuthToken = false;
+      let errored = false;
+      await Promise.all(
+        request.attendees.map(async (attendee) => {
+          if (errored) return;
+          // 1. Verify that the attendees have uIDs.
+          if (!attendee.uid) {
+            error('All attendees must have valid uIDs.');
+            errored = true;
+            return;
           }
-        }
-        // 1. Verify the tutors can teach the requested subjects.
-        const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
-        const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
-        const canTutorSubject: (s: string) => boolean = (subject: string) => {
-          return user.tutoring.subjects.includes(subject);
-        };
-        const canMentorSubject: (s: string) => boolean = (subject: string) => {
-          return user.mentoring.subjects.includes(subject);
-        };
-        if (isTutor && !request.subjects.every(canTutorSubject)) {
-          error(
-            `${user.name} (${user.uid}) cannot tutor for the requested subjects.`
-          );
-          break;
-        }
-        if (isMentor && !request.subjects.every(canMentorSubject)) {
-          error(
-            `${user.name} (${user.uid}) cannot mentor for the requested subjects.`
-          );
-          break;
-        }
-        (user as UserWithRoles).roles = attendee.roles;
-        attendees.push(user as UserWithRoles);
-      }
-      if (!attendees.length || attendees.length !== request.attendees.length) {
+          if (attendee.uid === (token as DecodedIdToken).uid) {
+            // 1. Verify that the appointment creator is an attendee.
+            attendeesIncludeAuthToken = true;
+          }
+          const ref: DocumentReference = db
+            .collection('users')
+            .doc(attendee.uid);
+          const doc: DocumentSnapshot = await ref.get();
+          // 1. Verify that the attendees exist.
+          if (!doc.exists) {
+            error(`Attendee (${attendee.uid}) does not exist.`);
+            errored = true;
+            return;
+          }
+          const user: User = User.fromFirestore(doc);
+          // 1. Verify that the attendees are available (note that we don't throw
+          // an error if it is the request sender who is unavailable).
+          if (request.time && !user.availability.contains(request.time)) {
+            if (attendee.uid === (token as DecodedIdToken).uid) {
+              console.warn(
+                `[WARNING] Sender is not available on ${request.time.toString()}.`
+              );
+            } else {
+              error(
+                `${user.toString()} is not available on ${request.time.toString()}.`
+              );
+              errored = true;
+              return;
+            }
+          }
+          // 1. Verify the tutors can teach the requested subjects.
+          const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
+          const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
+          const canTutorSubject: (s: string) => boolean = (subject: string) => {
+            return user.tutoring.subjects.includes(subject);
+          };
+          const canMentorSubject: (s: string) => boolean = (
+            subject: string
+          ) => {
+            return user.mentoring.subjects.includes(subject);
+          };
+          if (isTutor && !request.subjects.every(canTutorSubject)) {
+            error(
+              `${user.toString()} cannot tutor for the requested subjects.`
+            );
+            errored = true;
+            return;
+          }
+          if (isMentor && !request.subjects.every(canMentorSubject)) {
+            error(
+              `${user.toString()} cannot mentor for the requested subjects.`
+            );
+            errored = true;
+            return;
+          }
+          (user as UserWithRoles).roles = attendee.roles;
+          attendees.push(user as UserWithRoles);
+        })
+      );
+      if (errored) {
         // Don't do anything b/c we already sent an error code to the client.
       } else if (!attendeesIncludeAuthToken) {
         error(
@@ -354,4 +382,5 @@ export default async function request(
       }
     }
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access */
 }

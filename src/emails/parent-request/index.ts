@@ -34,15 +34,21 @@ interface Data {
  * parents approve of the pupil-tutor match by opening this email and clicking
  * on the "APPROVE" CTA.
  */
-export class ParentRequestEmail implements Email {
+export default class ParentRequestEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
     Data
   > = Handlebars.compile(Template);
+
   public readonly from: string = 'Tutorbook <team@tutorbook.org>';
+
   public readonly bcc: string = 'team@tutorbook.org';
+
   public readonly to: string;
+
   public readonly subject: string;
+
   public readonly html: string;
+
   public readonly text: string;
 
   public constructor(
@@ -56,7 +62,7 @@ export class ParentRequestEmail implements Email {
       appt.subjects
     )} lessons on Tutorbook!`;
     this.text = this.subject;
-    const linkStyling: string = `color:#067df7!important;font-size:inherit;text-decoration:none`;
+    const linkStyling = `color:#067df7!important;font-size:inherit;text-decoration:none`;
     const data: Data = {
       approveURL:
         `https://tutorbook.org/approve` +

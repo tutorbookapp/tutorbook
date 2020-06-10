@@ -1,6 +1,6 @@
 export type { Email } from './common';
 
-export * from './appt';
-export * from './sign-up';
-export * from './pupil-request';
-export * from './parent-request';
+export { default as ApptEmail } from './appt';
+export { default as SignUpEmail } from './sign-up';
+export { default as PupilRequestEmail } from './pupil-request';
+export { default as ParentRequestEmail } from './parent-request';

@@ -54,3 +54,8 @@ p + h6 {
 ul {
   @include typography.typography('body1');
 }
+
+::selection {
+  background-color: map.get(config.$colors, 'selection');
+  color: map.get(config.$colors, 'foreground');
+}

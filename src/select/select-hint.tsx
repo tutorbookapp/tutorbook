@@ -8,24 +8,25 @@ interface SelectHintProps {
   readonly open: boolean;
 }
 
-export default function SelectHint(props: SelectHintProps): JSX.Element {
+export default function SelectHint({
+  children,
+  open,
+}: SelectHintProps): JSX.Element {
   return (
     <Tooltip
       content={
         <Typography use='caption'>
           <FormattedMessage
             id='subject-select.select-hint'
-            description={
-              'The tooltip text prompting the user to shift-select subjects.'
-            }
+            description='The tooltip text prompting the user to shift-select subjects.'
             defaultMessage="Use 'SHIFT + click' for multiple select"
           />
         </Typography>
       }
       align='topRight'
-      open={props.open}
+      open={open}
     >
-      {props.children}
+      {children}
     </Tooltip>
   );
 }
