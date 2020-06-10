@@ -139,26 +139,6 @@
     "defaultMessage": "Use 'SHIFT + click' for multiple select"
   },
   {
-    "id": "timeslot-input.input-time-within-availability",
-    "description": "Helper text prompting the user to input a time that fits within a certain availability.",
-    "defaultMessage": "Input a time on {availability}."
-  },
-  {
-    "id": "timeslot-input.format-input-correctly",
-    "description": "Helper text prompting the user to format their input correctly.",
-    "defaultMessage": "Please format your input correctly."
-  },
-  {
-    "id": "timeslot-input.default-placeholder",
-    "description": "The default placeholder for the timeslot input.",
-    "defaultMessage": "Ex. Mondays from 3:00 PM to 3:45 PM"
-  },
-  {
-    "id": "timeslot-input.placeholder",
-    "description": "The placeholder for the timeslot input.",
-    "defaultMessage": "Ex. {timeslot}"
-  },
-  {
     "id": "user-dialog.parent-name",
     "defaultMessage": "Your parent's name"
   },
@@ -242,6 +222,10 @@
   {
     "id": "form.photo",
     "defaultMessage": "Your profile photo"
+  },
+  {
+    "id": "form.lang",
+    "defaultMessage": "What languages do you speak?"
   },
   {
     "id": "mentor-form.expertise",
