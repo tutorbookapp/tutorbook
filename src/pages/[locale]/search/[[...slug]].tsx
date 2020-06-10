@@ -61,7 +61,7 @@ async function getSearchResults(
   );
   if (err && err.response) {
     console.error(`[ERROR] ${err.response.data.msg}`);
-    throw new Error(err.response.data);
+    throw new Error(err.response.data.msg);
   } else if (err && err.request) {
     console.error('[ERROR] Search REST API did not respond:', err.request);
     throw new Error('Search REST API did not respond.');
@@ -142,6 +142,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       mentoring: user.mentoring,
       tutoring: user.tutoring,
       socials: user.socials,
+      langs: user.langs,
       uid: user.uid,
     };
   }

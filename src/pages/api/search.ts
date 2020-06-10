@@ -160,6 +160,7 @@ export default async function search(
       mentoring: user.mentoring,
       tutoring: user.tutoring,
       socials: user.socials,
+      langs: user.langs,
       uid: user.uid,
     }))
   );
