@@ -32,7 +32,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
             user={viewing}
             aspect={aspect}
             onClosed={() => setViewing(undefined)}
-            subjects={viewing[aspect].subjects.slice(0, 2)}
+            subjects={[]}
             time={aspect === 'tutoring' ? viewing.availability[0] : undefined}
           />
         )}
