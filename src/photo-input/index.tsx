@@ -10,7 +10,7 @@ import styles from './photo-input.module.scss';
 
 type Reference = firebase.storage.Reference;
 
-type OverriddenProps = 'helpText' | 'inputRef' | 'invalid';
+type TextFieldPropOverrides = 'helpText' | 'inputRef' | 'invalid';
 
 interface UniquePhotoInputProps {
   label: string;
@@ -18,11 +18,10 @@ interface UniquePhotoInputProps {
   onChange: Callback<string>;
 }
 
-export type PhotoInputProps = Omit<
-  TextFieldHTMLProps,
-  keyof UniquePhotoInputProps | OverriddenProps
-> &
-  Omit<TextFieldProps, keyof UniquePhotoInputProps | OverriddenProps> &
+type Overrides = TextFieldPropOverrides | keyof UniquePhotoInputProps;
+
+export type PhotoInputProps = Omit<TextFieldHTMLProps, Overrides> &
+  Omit<TextFieldProps, Overrides> &
   UniquePhotoInputProps;
 
 export default function PhotoInput({

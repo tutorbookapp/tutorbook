@@ -13,7 +13,7 @@ import SelectHint from './select-hint';
 
 import styles from './select.module.scss';
 
-type OverriddenProps = 'textarea' | 'outlined' | 'onFocus' | 'onBlur';
+type TextFieldPropOverrides = 'textarea' | 'outlined' | 'onFocus' | 'onBlur';
 
 interface SelectState<T> {
   suggestionsOpen: boolean;
@@ -34,11 +34,13 @@ interface UniqueSelectProps<T> {
   onBlurred?: () => any;
 }
 
-export type SelectProps<T> = Omit<
-  TextFieldHTMLProps,
-  keyof UniqueSelectProps<T> | OverriddenProps
-> &
-  Omit<TextFieldProps, keyof UniqueSelectProps<T> | OverriddenProps> &
+type Overrides<T> =
+  | TextFieldPropOverrides
+  | keyof UniqueSelectProps<T>
+  | keyof JSX.IntrinsicClassAttributes<Select<T>>;
+
+export type SelectProps<T> = Omit<TextFieldHTMLProps, Overrides<T>> &
+  Omit<TextFieldProps, Overrides<T>> &
   UniqueSelectProps<T>;
 
 export default class Select<T> extends React.Component<
