@@ -51,6 +51,9 @@ export default function TimeslotInput({
       end = new Date(start.getTime() + millisecondsInThirtyMinutes);
     }
   });
+  // TODO: Address the `renderToPortal` issue as soon as RMWC gets it resolved.
+  // @see {@link https://github.com/jamesmfriedman/rmwc/issues/613}
+  // @see {@link https://github.com/jamesmfriedman/rmwc/pull/649}
   return (
     <Select
       enhanced
