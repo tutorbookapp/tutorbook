@@ -63,7 +63,7 @@
 
 .form {
   @include query-form.form(true);
-  @include elevation.elevation(0);
+  @include elevation.elevation(4);
   visibility: hidden;
   position: absolute;
   border-radius: 4px;
@@ -76,7 +76,6 @@
   left: 50%;
 
   &.active {
-    @include elevation.elevation(4);
     visibility: visible;
   }
 }
