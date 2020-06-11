@@ -1,5 +1,5 @@
 import React from 'react';
-import { ApiError, User, UserJSON, UserInterface } from '@tutorbook/model';
+import { ApiError, User, UserJSON, Org, UserInterface } from '@tutorbook/model';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
@@ -18,8 +18,6 @@ type AuthError = firebase.auth.AuthError;
 type AuthProvider = firebase.auth.AuthProvider;
 type UserCredential = firebase.auth.UserCredential;
 type Unsubscribe = firebase.Unsubscribe;
-type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-type DocumentReference = firebase.firestore.DocumentReference;
 
 interface UserProviderProps {
   children: JSX.Element[] | JSX.Element;
@@ -58,21 +56,12 @@ export class UserProvider extends React.Component<
   UserProviderProps,
   UserProviderState
 > {
-  public static readonly contextType: React.Context<
-    DocumentReference
-  > = DBContext;
-
   private static readonly auth: Auth = firebase.auth();
-
-  public readonly context: DocumentReference;
 
   private authUnsubscriber?: Unsubscribe;
 
-  private docUnsubscriber?: Unsubscribe;
-
-  public constructor(props: UserProviderProps, context: DocumentReference) {
+  public constructor(props: UserProviderProps) {
     super(props);
-    this.context = context;
     this.state = { user: new User() };
     this.signup = this.signup.bind(this);
     this.signupWithGoogle = this.signupWithGoogle.bind(this);
@@ -93,14 +82,12 @@ export class UserProvider extends React.Component<
 
   public componentWillUnmount(): void {
     if (this.authUnsubscriber) this.authUnsubscriber();
-    if (this.docUnsubscriber) this.docUnsubscriber();
   }
 
   private async handleChange(user: FirebaseUser | null): Promise<void> {
     if (user) {
       const userRecord: Partial<UserInterface> = {
         /* eslint-disable-next-line react/destructuring-assignment */
-        ref: this.context.collection('users').doc(user.uid),
         name: user.displayName || '',
         email: user.email || '',
         phone: user.phoneNumber || '',
@@ -113,18 +100,40 @@ export class UserProvider extends React.Component<
         token: await user.getIdToken(),
       };
       this.setState({ user: new User(withToken) });
-      const userDoc = await (withToken.ref as DocumentReference).get();
-      this.updateDoc(userDoc, withToken.ref as DocumentReference);
+      const [err, res] = await to<
+        AxiosResponse<{ user: UserJSON; orgs: Org[] }>,
+        AxiosError<ApiError>
+      >(
+        axios({
+          method: 'get',
+          url: '/api/account',
+          params: { token: withToken.token },
+        })
+      );
+      if (err && err.response) {
+        console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
+        firebase.analytics().logEvent('exception', {
+          description: `Account API responded with error: ${err.response.data.msg}`,
+          fatal: false,
+        });
+      } else if (err && err.request) {
+        console.error('[ERROR] Account API did not respond:', err.request);
+        firebase.analytics().logEvent('exception', {
+          description: 'Account API did not respond.',
+          fatal: false,
+        });
+      } else if (err) {
+        console.error('[ERROR] Calling account API:', err);
+        firebase.analytics().logEvent('exception', {
+          description: `Error calling account API: ${err.message}`,
+          fatal: false,
+        });
+      } else {
+        const { data } = res as AxiosResponse<{ user: UserJSON; orgs: Org[] }>;
+        this.setState({ user: User.fromJSON(data.user) });
+      }
     } else {
       this.setState({ user: new User() });
-    }
-  }
-
-  private updateDoc(doc?: DocumentSnapshot, ref?: DocumentReference): void {
-    if (ref) this.docUnsubscriber = ref.onSnapshot((d) => this.updateDoc(d));
-    if (doc && doc.exists) {
-      const withData: User = User.fromFirestore(doc);
-      this.setState({ user: withData });
     }
   }
 
@@ -204,22 +213,11 @@ export class UserProvider extends React.Component<
         fatal: true,
       });
       throw new Error(`Error calling user API: ${err.message}`);
-    } else if (res) {
-      this.setState({ user: User.fromJSON(res.data.user) });
-      await UserProvider.auth.signInWithCustomToken(
-        res.data.user.token as string
-      );
-      firebase.analytics().logEvent('login', {
-        method: 'custom_token',
-      });
     } else {
-      // This should never actually happen, but we include it here just in case.
-      firebase.analytics().logEvent('exception', {
-        description: 'No error or response from user API.',
-        user: user.toJSON(),
-        fatal: true,
-      });
-      throw new Error('No error or response from user creation API.');
+      const { data } = res as AxiosResponse<{ user: UserJSON }>;
+      this.setState({ user: User.fromJSON(data.user) });
+      await UserProvider.auth.signInWithCustomToken(data.user.token as string);
+      firebase.analytics().logEvent('login', { method: 'custom_token' });
     }
   }
 

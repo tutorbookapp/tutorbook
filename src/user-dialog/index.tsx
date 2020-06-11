@@ -214,10 +214,7 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
       axios({
         method: 'post',
         url: '/api/request',
-        data: {
-          token: await token(),
-          request: this.appt.toJSON(),
-        },
+        data: { token: await token(), request: this.appt.toJSON() },
       })
     );
     if (err && err.response) {
@@ -264,21 +261,12 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
         )} Please check your Internet connection and try again.`,
       });
     }
-    if (res) {
-      firebase.analytics().logEvent('purchase', {
-        transaction_id: res.data.request.id,
-        request: res.data.request,
-        items: this.items,
-      });
-    } else {
-      // This should never actually happen, but we include it here just in case.
-      console.warn('[WARNING] No error or response from request API.');
-      firebase.analytics().logEvent('exception', {
-        description: 'No error or response from request API.',
-        request: this.appt.toJSON(),
-        fatal: false,
-      });
-    }
+    const { data } = res as AxiosResponse<{ request: ApptJSONInterface }>;
+    firebase.analytics().logEvent('purchase', {
+      transaction_id: data.request.id,
+      request: data.request,
+      items: this.items,
+    });
     return this.setState({ submitted: true, submitting: false });
   }
 

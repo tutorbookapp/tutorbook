@@ -1,13 +1,12 @@
 import * as admin from 'firebase-admin';
 
 import firebase from '@tutorbook/firebase';
-import phone from 'phone';
 import url from 'url';
 
 import { ObjectWithObjectID } from '@algolia/client-search';
 import { RoleAlias } from './appt';
 import { Availability, AvailabilityJSONAlias } from './times';
-import { Account } from './account';
+import { Account, AccountInterface } from './account';
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
@@ -17,10 +16,8 @@ import { Account } from './account';
  */
 type DocumentData = firebase.firestore.DocumentData;
 type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-type DocumentReference = firebase.firestore.DocumentReference;
 type SnapshotOptions = firebase.firestore.SnapshotOptions;
 type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
-type AdminDocumentReference = admin.firestore.DocumentReference;
 
 /**
  * Duplicate definition from the `@tutorbook/react-intercom` package. These are
@@ -65,23 +62,23 @@ export interface SocialInterface {
 /**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
+ * @property orgs - An array of the IDs of the orgs this user belongs to.
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property mentoring - The subjects that the user wants a and can mentor for.
  * @property tutoring - The subjects that the user wants a and can tutor for.
  * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property socials - An array of the user's socials (e.g. LinkedIn, Facebook).
- * @property ref - The user's Firestore profile `DocumentReference`.
  * @property token - The user's Firebase Authentication JWT `idToken`.
  */
-export interface UserInterface extends Account {
+export interface UserInterface extends AccountInterface {
+  orgs: string[];
   availability: Availability;
   mentoring: { subjects: string[]; searches: string[] };
   tutoring: { subjects: string[]; searches: string[] };
   langs: string[];
   parents: string[];
   socials: SocialInterface[];
-  ref?: DocumentReference | AdminDocumentReference;
   token?: string;
 }
 
@@ -102,18 +99,8 @@ export type UserSearchHitAlias = UserJSON & ObjectWithObjectID;
  * Class that provides default values for our `UserInterface` data model.
  * @see {@link https://stackoverflow.com/a/54857125/10023158}
  */
-export class User implements UserInterface {
-  public id = '';
-
-  public name = '';
-
-  public email = '';
-
-  public phone = '';
-
-  public photo = '';
-
-  public bio = '';
+export class User extends Account implements UserInterface {
+  public orgs: string[] = [];
 
   public availability: Availability = new Availability();
 
@@ -133,8 +120,6 @@ export class User implements UserInterface {
 
   public socials: SocialInterface[] = [];
 
-  public ref?: DocumentReference | AdminDocumentReference;
-
   public token?: string;
 
   /**
@@ -149,11 +134,12 @@ export class User implements UserInterface {
    * default value if the types match.
    */
   public constructor(user: Partial<UserInterface> = {}) {
+    super(user);
     Object.entries(user).forEach(([key, val]: [string, any]) => {
       /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-      if (val && key in this) (this as Record<string, any>)[key] = val;
+      if (val && key in this && !(key in new Account()))
+        (this as Record<string, any>)[key] = val;
     });
-    this.phone = phone(this.phone)[0] || '';
     this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
   }
 
