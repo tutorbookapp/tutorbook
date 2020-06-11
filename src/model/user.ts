@@ -82,6 +82,18 @@ export interface UserInterface extends AccountInterface {
   token?: string;
 }
 
+export interface SearchResult {
+  id: string;
+  name: string;
+  photo: string;
+  bio: string;
+  availability: AvailabilityJSONAlias;
+  mentoring: { subjects: string[]; searches: string[] };
+  tutoring: { subjects: string[]; searches: string[] };
+  langs: string[];
+  socials: SocialInterface[];
+}
+
 export type UserWithRoles = User & { roles: RoleAlias[] };
 
 export type UserJSON = Omit<UserInterface, 'availability'> & {

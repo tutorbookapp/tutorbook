@@ -3,7 +3,7 @@ import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchOptions, SearchResponse } from '@algolia/client-search';
 import {
   User,
-  UserJSON,
+  SearchResult,
   UserSearchHitAlias,
   Query,
   Aspect,
@@ -114,7 +114,7 @@ function onlyFirstNameAndLastInitial(name: string): string {
 
 /**
  * Takes filter parameters (subjects and availability) and sends back an array
- * of `UserJSON`s that match the given filters.
+ * of `SearchResult`s that match the given filters.
  *
  * Note that we only send non-sensitive user information back to the client:
  * - User's first name and last initial
@@ -131,7 +131,7 @@ function onlyFirstNameAndLastInitial(name: string): string {
  */
 export default async function search(
   req: NextApiRequest,
-  res: NextApiResponse<Partial<UserJSON>[]>
+  res: NextApiResponse<SearchResult[]>
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
   const langs: string = req.query.langs as string;

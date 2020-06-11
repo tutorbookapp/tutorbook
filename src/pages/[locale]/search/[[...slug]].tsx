@@ -19,6 +19,7 @@ import {
   Option,
   User,
   UserJSON,
+  SearchResult,
   Query,
   Aspect,
   QueryJSONInterface,
@@ -31,8 +32,8 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 interface SearchPageProps {
   query: QueryJSONInterface;
-  results: ReadonlyArray<UserJSON>;
-  user?: UserJSON;
+  results: ReadonlyArray<SearchResult>;
+  user?: SearchResult;
 }
 
 function onlyFirstAndLastInitial(name: string): string {
@@ -44,7 +45,10 @@ async function getSearchResults(
   query: Query,
   url = '/api/search'
 ): Promise<ReadonlyArray<User>> {
-  const [err, res] = await to<AxiosResponse<UserJSON[]>, AxiosError<ApiError>>(
+  const [err, res] = await to<
+    AxiosResponse<SearchResult[]>,
+    AxiosError<ApiError>
+  >(
     axios({
       url,
       method: 'get',
@@ -66,9 +70,11 @@ async function getSearchResults(
     console.error('[ERROR] While sending request:', err);
     throw new Error(`While sending request: ${err.message}`);
   } else {
-    return (res as AxiosResponse<UserJSON[]>).data.map((user: UserJSON) => {
-      return User.fromJSON(user);
-    });
+    return (res as AxiosResponse<SearchResult[]>).data.map(
+      (user: SearchResult) => {
+        return User.fromJSON(user as UserJSON);
+      }
+    );
   }
 }
 
@@ -78,7 +84,9 @@ async function getSearchResults(
  * @todo Remove the `JSON.parse(JSON.stringify(ob))` workaround.
  */
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  async function getUser(params?: ParsedUrlQuery): Promise<UserJSON | null> {
+  async function getUser(
+    params?: ParsedUrlQuery
+  ): Promise<SearchResult | null> {
     if (!params || !params.slug || !params.slug.length) return null;
 
     /**
@@ -165,10 +173,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       query: JSON.parse(JSON.stringify(query)) as QueryJSONInterface,
       results: JSON.parse(
         JSON.stringify(await getSearchResults(query, url))
-      ) as UserJSON[],
+      ) as SearchResult[],
       user: JSON.parse(
         JSON.stringify(await getUser(context.params))
-      ) as UserJSON | null,
+      ) as SearchResult | null,
       ...(await getIntlProps(context)),
     },
   };
@@ -177,7 +185,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   const [searching, setSearching] = React.useState<boolean>(false);
   const [res, setResults] = React.useState<ReadonlyArray<User>>(
-    results.map((searchResult: UserJSON) => User.fromJSON(searchResult))
+    results.map((searchResult: SearchResult) =>
+      User.fromJSON(searchResult as UserJSON)
+    )
   );
   const [qry, setQuery] = React.useState<Query>({
     langs: query.langs,
@@ -205,7 +215,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
         query={qry}
         results={res}
         searching={searching}
-        user={user ? User.fromJSON(user) : undefined}
+        user={user ? User.fromJSON(user as UserJSON) : undefined}
         onChange={handleChange}
       />
       <Footer />
