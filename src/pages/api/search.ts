@@ -3,6 +3,7 @@ import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchOptions, SearchResponse } from '@algolia/client-search';
 import {
   User,
+  UserJSON,
   UserSearchHitAlias,
   Query,
   Aspect,
@@ -130,7 +131,7 @@ function onlyFirstNameAndLastInitial(name: string): string {
  */
 export default async function search(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<Partial<UserJSON>[]>
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
   const langs: string = req.query.langs as string;
