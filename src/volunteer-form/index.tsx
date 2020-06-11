@@ -388,7 +388,7 @@ class VolunteerForm extends React.Component<
             {this.renderInputs()}
             <Button
               className={styles.formSubmitButton}
-              label={msg(user.uid ? msgs.updateSubmit : label)}
+              label={msg(user.id ? msgs.updateSubmit : label)}
               disabled={this.loading || this.checked}
               raised
               arrow

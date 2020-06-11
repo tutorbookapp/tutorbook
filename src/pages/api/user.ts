@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, UserJSONInterface, ApiError } from '@tutorbook/model';
+import { User, UserJSON, ApiError } from '@tutorbook/model';
 import { SignUpEmail } from '@tutorbook/emails';
 
 import { v4 as uuid } from 'uuid';
@@ -90,7 +90,7 @@ async function updateUser(user: User): Promise<void> {
     (!!user.name && userRecord.displayName !== user.name) ||
     (!!user.photo && userRecord.photoURL !== user.photo) ||
     (!!user.phone && userRecord.phoneNumber !== user.phone);
-  user.uid = userRecord.uid;
+  user.id = userRecord.uid;
   if (userNeedsToBeUpdated) {
     const [err, updatedRecord] = await to<UserRecord, FirebaseError>(
       auth.updateUser(userRecord.uid, {
@@ -156,8 +156,8 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
   if (err && err.code === 'auth/email-already-exists') {
     console.log('[DEBUG] Handling email address already exists error...');
     await updateUser(user); // Errors are already thrown in the helper function.
-    // Note that the `user.uid` property was already set in `updateUser()`.
-    console.log(`[DEBUG] Updated ${user.name}'s account (${user.uid}).`);
+    // Note that the `user.id` property was already set in `updateUser()`.
+    console.log(`[DEBUG] Updated ${user.name}'s account (${user.id}).`);
   } else if (err && err.code === 'auth/phone-number-already-exists') {
     console.log('[DEBUG] Handling phone number already exists error...');
     const [err, userRecord] = await to<UserRecord, FirebaseError>(
@@ -173,21 +173,21 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
       throw new Error(
         `${err.name} creating ${user.toString()}: ${err.message}`
       );
-    user.uid = (userRecord as UserRecord).uid;
-    console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
+    user.id = (userRecord as UserRecord).uid;
+    console.log(`[DEBUG] Created ${user.name}'s account (${user.id}).`);
   } else if (err) {
     throw new Error(`${err.name} creating ${user.toString()}: ${err.message}`);
   } else {
-    user.uid = (userRecord as UserRecord).uid;
-    console.log(`[DEBUG] Created ${user.name}'s account (${user.uid}).`);
+    user.id = (userRecord as UserRecord).uid;
+    console.log(`[DEBUG] Created ${user.name}'s account (${user.id}).`);
   }
-  const userRef: DocumentReference = db.collection('users').doc(user.uid);
+  const userRef: DocumentReference = db.collection('users').doc(user.id);
   if (parents) {
     await Promise.all(
       parents.map(async (parent: User) => {
         console.log(`[DEBUG] Creating parent ${parent.toString()}...`);
         await createUser(parent);
-        user.parents.push(parent.uid);
+        user.parents.push(parent.id);
         console.log(`[DEBUG] Created parent ${parent.toString()}.`);
       })
     );
@@ -196,11 +196,11 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
   if (userDoc.exists) {
     console.log('[DEBUG] Updating profile...');
     await userRef.update(user.toFirestore());
-    console.log(`[DEBUG] Updated ${user.name}'s profile (${user.uid}).`);
+    console.log(`[DEBUG] Updated ${user.name}'s profile (${user.id}).`);
   } else {
     console.log('[DEBUG] Setting profile...');
     await userRef.set(user.toFirestore());
-    console.log(`[DEBUG] Set ${user.name}'s profile (${user.uid}).`);
+    console.log(`[DEBUG] Set ${user.name}'s profile (${user.id}).`);
   }
   /* eslint-enable no-param-reassign */
 }
@@ -227,7 +227,7 @@ async function createUser(user: User, parents?: User[]): Promise<void> {
  */
 export default async function user(
   req: NextApiRequest,
-  res: NextApiResponse<ApiError | { user: UserJSONInterface }>
+  res: NextApiResponse<ApiError | { user: UserJSON }>
 ): Promise<void> {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   function error(msg: string, code = 400, err?: Error): void {
@@ -241,14 +241,14 @@ export default async function user(
   } else {
     const user: User = User.fromJSON(req.body.user);
     const parents: User[] = (
-      (req.body.parents as UserJSONInterface[]) || []
-    ).map((parentJSON: UserJSONInterface) => User.fromJSON(parentJSON));
+      (req.body.parents as UserJSON[]) || []
+    ).map((parentJSON: UserJSON) => User.fromJSON(parentJSON));
     const [err] = await to(createUser(user, parents));
     if (err) {
       error(err.message, 500, err);
     } else {
       const [err, token] = await to<string, FirebaseError>(
-        auth.createCustomToken(user.uid)
+        auth.createCustomToken(user.id)
       );
       if (err) {
         error(`${err.name} creating login token: ${err.message}`, 500, err);

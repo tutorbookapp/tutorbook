@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  ApiError,
-  User,
-  UserJSONInterface,
-  UserInterface,
-} from '@tutorbook/model';
+import { ApiError, User, UserJSON, UserInterface } from '@tutorbook/model';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
@@ -110,7 +105,7 @@ export class UserProvider extends React.Component<
         email: user.email || '',
         phone: user.phoneNumber || '',
         photo: user.photoURL || '',
-        uid: user.uid,
+        id: user.uid,
       };
       this.setState({ user: new User(userRecord) });
       const withToken: Partial<UserInterface> = {
@@ -166,7 +161,7 @@ export class UserProvider extends React.Component<
 
   private async signup(user: User, parents?: User[]): Promise<void> {
     const [err, res] = await to<
-      AxiosResponse<{ user: UserJSONInterface }>,
+      AxiosResponse<{ user: UserJSON }>,
       AxiosError<ApiError>
     >(
       axios({

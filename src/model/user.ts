@@ -7,6 +7,7 @@ import url from 'url';
 import { ObjectWithObjectID } from '@algolia/client-search';
 import { RoleAlias } from './appt';
 import { Availability, AvailabilityJSONAlias } from './times';
+import { Account } from './account';
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
@@ -64,82 +65,45 @@ export interface SocialInterface {
 /**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
- * @property name - The user's name (e.g. their Google `displayName`).
- * @property bio - A short bio describing the user's education, experience,
- * interests, hobbies, etc (i.e. the concatenation of any miscellaneous form
- * questions like 'Do you have experience tutoring professionally?').
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property mentoring - The subjects that the user wants a and can mentor for.
  * @property tutoring - The subjects that the user wants a and can tutor for.
+ * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
+ * @property socials - An array of the user's socials (e.g. LinkedIn, Facebook).
  * @property ref - The user's Firestore profile `DocumentReference`.
  * @property token - The user's Firebase Authentication JWT `idToken`.
- * @property socials - An array of the user's socials (e.g. LinkedIn, Facebook).
  */
-export interface UserInterface {
-  uid?: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  photo?: string;
-  grade?: GradeAlias;
-  bio?: string;
+export interface UserInterface extends Account {
   availability: Availability;
-  tutoring: { subjects: string[]; searches: string[] };
   mentoring: { subjects: string[]; searches: string[] };
+  tutoring: { subjects: string[]; searches: string[] };
   langs: string[];
-  parents?: string[];
+  parents: string[];
+  socials: SocialInterface[];
   ref?: DocumentReference | AdminDocumentReference;
   token?: string;
-  socials: SocialInterface[];
 }
 
 export type UserWithRoles = User & { roles: RoleAlias[] };
 
-/**
- * Note that the `notifications` property is optional in this JSON
- * representation of a `User` because it needs to be able to represent a search
- * result object that only contains:
- * - User's first name and last initial
- * - User's bio (e.g. their education and experience)
- * - User's availability (for tutoring)
- * - User's subjects (what they can tutor)
- * - User's searches (what they need tutoring for)
- * - User's Firebase Authentication uID (as the Algolia `objectID`)
- * @todo Update the above doc comment.
- */
-export interface UserJSONInterface {
-  uid?: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  photo?: string;
-  grade?: GradeAlias;
-  bio?: string;
+export type UserJSON = Omit<UserInterface, 'availability'> & {
   availability: AvailabilityJSONAlias;
-  tutoring: { subjects: string[]; searches: string[] };
-  mentoring: { subjects: string[]; searches: string[] };
-  langs: string[];
-  parents?: string[];
-  token?: string;
-  socials: SocialInterface[];
-}
+};
 
 /**
  * What results from searching our users Algolia index.
  * @todo Perhaps we don't want to have duplicate fields (i.e. the `objectID`
  * field is **always** going to be equal to the `uid` field).
  */
-export type UserSearchHitAlias = UserJSONInterface & ObjectWithObjectID;
+export type UserSearchHitAlias = UserJSON & ObjectWithObjectID;
 
 /**
  * Class that provides default values for our `UserInterface` data model.
- * @todo Implement useful helper methods here and replace all instances of
- * `UserInterface` with `User` throughout the web app.
  * @see {@link https://stackoverflow.com/a/54857125/10023158}
  */
 export class User implements UserInterface {
-  public uid = '';
+  public id = '';
 
   public name = '';
 
@@ -167,13 +131,11 @@ export class User implements UserInterface {
 
   public parents: string[] = [];
 
+  public socials: SocialInterface[] = [];
+
   public ref?: DocumentReference | AdminDocumentReference;
 
   public token?: string;
-
-  public grade?: GradeAlias;
-
-  public socials: SocialInterface[] = [];
 
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
@@ -205,7 +167,7 @@ export class User implements UserInterface {
   }
 
   public toString(): string {
-    return `${this.name} (${this.uid})`;
+    return `${this.name} (${this.id})`;
   }
 
   /**
@@ -217,7 +179,7 @@ export class User implements UserInterface {
    * @see {@link https://developers.intercom.com/installing-intercom/docs/javascript-api-attributes-objects#section-data-attributes}
    */
   public toIntercom(): Record<string, IntercomCustomAttribute> {
-    const { uid, photo, token, ref, ...rest } = this;
+    const { id, photo, token, ref, ...rest } = this;
     const isFilled: (val: any) => boolean = (val: any) => {
       switch (typeof val) {
         case 'string':
@@ -242,7 +204,7 @@ export class User implements UserInterface {
       return false;
     };
     const intercomValues: Record<string, any> = {
-      user_id: uid || undefined,
+      user_id: id || undefined,
       ref: ref ? ref.path : undefined,
       avatar: photo ? { type: 'avatar', image_url: photo } : undefined,
       ...rest,
@@ -259,7 +221,7 @@ export class User implements UserInterface {
     const user: Partial<UserInterface> = {
       ...rest,
       availability: Availability.fromJSON(availability),
-      uid: objectID,
+      id: objectID,
     };
     return new User(user);
   }
@@ -275,7 +237,7 @@ export class User implements UserInterface {
         ...rest,
         availability: Availability.fromFirestore(availability),
         ref: snapshot.ref,
-        uid: snapshot.id,
+        id: snapshot.id,
       });
     }
     console.warn(
@@ -302,7 +264,7 @@ export class User implements UserInterface {
     };
   }
 
-  public static fromJSON(json: UserJSONInterface): User {
+  public static fromJSON(json: UserJSON): User {
     const { availability, ...rest } = json;
     return new User({
       ...rest,
@@ -317,7 +279,7 @@ export class User implements UserInterface {
    * @todo Perhaps remove the `token` from the JSON object and add it manually
    * in the `/api/user` REST API endpoint.
    */
-  public toJSON(): UserJSONInterface {
+  public toJSON(): UserJSON {
     const { availability, ref, ...rest } = this;
     return {
       ...rest,
@@ -342,45 +304,3 @@ export class User implements UserInterface {
     });
   }
 }
-
-/**
- * A configuration object that denotes where to send notifications and for what
- * reasons.
- * @example
- * {
- *  email: ['nicholas.h.chiang@gmail.com'], // Send emails to this address.
- *  sms: ['+16508543726', '+18003758900'], // Send SMS to these two phone #s.
- *  webpush: [], // User hasn't enabled webpush notifications... yet.
- *  newRequest: ['email', 'sms', 'webpush'], // Send it all for new requests.
- *  newLesson: ['sms', 'webpush'], // Send webpush and SMS for new lessons.
- *  canceledLesson: [], // Don't send any notifications for canceled lessons.
- * }
- * @typedef {Object} NotificationsConfigAlias
- * @property email - An array of emails to send email notifications to.
- * @property sms - An array of phone numbers to send SMS text messages to.
- * @property webpush - An array of webpush notification tokens (where we send
- * webpush notifications to).
- * @todo Support different phone #s, emails, etc. for different
- * `NotificationReason`'s (e.g. send a text message to my Mom's phone if a
- * lesson is canceled).
- * @todo Why do we have to use an intersection type for this? Why can't we just
- * put both mapped types in the same alias definition? And shouldn't we be using
- * an `interface` for this?
- * @see {@link https://www.typescriptlang.org/docs/handbook/advanced-types.html#mapped-types}
- */
-export type NotificationsConfigAlias = {
-  [TargetString in NotificationTargetAlias]: string[];
-} &
-  { [ReasonString in NotificationReasonAlias]: NotificationTargetAlias[] };
-
-/**
- * Current ways we send notifications (e.g. via email, through text messages,
- * through PWA webpush notifications).
- */
-export type NotificationTargetAlias = 'email' | 'sms' | 'webpush';
-
-/**
- * All the different reasons why we'd send you a notification (e.g. `newRequest`
- * for whenever anyone sends you a new lesson request).
- */
-export type NotificationReasonAlias = 'newRequest' | 'newLesson';

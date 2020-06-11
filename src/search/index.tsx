@@ -93,10 +93,10 @@ export default function Search({
       )}
       {!!results.length && (
         <ul className={styles.results}>
-          {results.map((res: User, index: number) => (
+          {results.map((res: User) => (
             <Result
               user={res}
-              key={res.uid || index}
+              key={res.id || uuid()}
               onClick={() => setViewing(res)}
             />
           ))}

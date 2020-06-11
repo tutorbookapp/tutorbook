@@ -108,9 +108,9 @@ const firestore: Firestore = firebase.firestore();
  *    - Verifies that the requested `subjects` are included in each of the
  *      tutors' Firestore profile documents (where a tutor is defined as an
  *      `attendee` whose `roles` include `tutor`).
- *    - Verifies that the parent (the owner of the given `uid`) is actually the
+ *    - Verifies that the parent (the owner of the given `id`) is actually the
  *      pupil's parent (i.e. the `attendee`s who have the `pupil` role all
- *      include the given `uid` in their profile's `parents` field).
+ *      include the given `id` in their profile's `parents` field).
  * 4. Deletes the old `request` documents.
  * 5. Creates a new `appt` document containing the request body in each of the
  *    `attendee`'s Firestore `appts` subcollection.
@@ -122,7 +122,7 @@ const firestore: Firestore = firebase.firestore();
  *
  * @param {string} request - The path of the pending tutoring lesson's Firestore
  * document to approve (e.g. `partitions/default/users/MKroB319GCfMdVZ2QQFBle8GtCZ2/requests/CEt4uGqTtRg17rZamCLC`).
- * @param {string} uid - The user ID of the parent approving the lesson request
+ * @param {string} id - The user ID of the parent approving the lesson request
  * (e.g. `MKroB319GCfMdVZ2QQFBle8GtCZ2`).
  *
  * @todo Is it really required that we have the parent's user ID? Right now, we
@@ -143,8 +143,8 @@ export default async function appt(
     error('You must provide a request body.');
   } else if (!req.body.request || typeof req.body.request !== 'string') {
     error('Your request body must contain a request field.');
-  } else if (!req.body.uid || typeof req.body.uid !== 'string') {
-    error('Your request body must contain a uid field.');
+  } else if (!req.body.id || typeof req.body.id !== 'string') {
+    error('Your request body must contain a id field.');
   } else {
     // 2. Fetch the lesson request data.
     let ref: DocumentReference | null = null;
@@ -182,30 +182,30 @@ export default async function appt(
         await Promise.all(
           appt.attendees.map(async (attendee) => {
             // 3. Verify that the attendees have uIDs.
-            if (!attendee.uid) {
+            if (!attendee.id) {
               error('All attendees must have valid uIDs.');
               errored = false;
               return;
             }
             const ref: DocumentReference = (db as DocumentReference)
               .collection('users')
-              .doc(attendee.uid);
+              .doc(attendee.id);
             const doc: DocumentSnapshot = await ref.get();
             // 3. Verify that the attendees exist.
             if (!doc.exists) {
-              error(`Attendee (${attendee.uid}) does not exist.`);
+              error(`Attendee (${attendee.id}) does not exist.`);
               errored = false;
               return;
             }
             const user: User = User.fromFirestore(doc);
-            if (user.uid === pupilUID) {
+            if (user.id === pupilUID) {
               // 3. Verify that the pupil is among the appointment's attendees.
               attendeesIncludePupil = true;
               // 3. Verify that the pupil is the parent's child.
-              if (user.parents.indexOf(req.body.uid) < 0) {
+              if (user.parents.indexOf(req.body.id) < 0) {
                 error(
                   `${user.toString()} is not (${
-                    req.body.uid as string
+                    req.body.id as string
                   })'s child.`
                 );
               } else {

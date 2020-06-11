@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Aspect, User, UserJSONInterface } from '@tutorbook/model';
+import { Aspect, User, UserJSON } from '@tutorbook/model';
 
 import axios from 'axios';
 import useSWR from 'swr';
@@ -16,9 +16,9 @@ interface Props {
 
 export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
   const { data } = useSWR<User[]>(`/api/search?aspect=${aspect}`, async (url) =>
-    (
-      await axios.get<UserJSONInterface[]>(url)
-    ).data.map((user: UserJSONInterface) => User.fromJSON(user))
+    (await axios.get<UserJSON[]>(url)).data.map((user: UserJSON) =>
+      User.fromJSON(user)
+    )
   );
   return (
     <>
@@ -26,7 +26,7 @@ export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
         <Carousel>
           {data.map((user: User, index: number) => (
             <UserCard
-              key={user.uid || index}
+              key={user.id || index}
               user={user}
               onClick={() => onClick(user)}
             />

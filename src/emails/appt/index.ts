@@ -36,7 +36,7 @@ export default class ApptEmail implements Email {
 
   private addRoles(user: User): UserWithRoles {
     const attendee: AttendeeInterface | undefined = this.appt.attendees.find(
-      (a: AttendeeInterface) => a.uid === user.uid
+      (a: AttendeeInterface) => a.id === user.id
     );
     const userWithRoles: UserWithRoles = user as UserWithRoles;
     userWithRoles.roles = attendee ? attendee.roles : [];

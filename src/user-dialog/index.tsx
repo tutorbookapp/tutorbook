@@ -105,11 +105,11 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
       attendees: [
         {
           /* eslint-disable-next-line react/destructuring-assignment */
-          uid: this.context.user.uid,
+          id: this.context.user.id,
           roles: [aspect === 'tutoring' ? 'tutee' : 'mentee'],
         },
         {
-          uid: user.uid,
+          id: user.id,
           roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
         },
       ],
@@ -121,7 +121,7 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
     const { user } = this.props;
     return [
       {
-        item_id: user.uid,
+        item_id: user.id,
         item_name: user.name,
       },
     ];
@@ -180,11 +180,11 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
     const { parentName, parentEmail } = this.state;
     const { user, signup, signupWithGoogle, token } = this.context;
     const parent: User = new User({ name: parentName, email: parentEmail });
-    if (!user.uid) {
+    if (!user.id) {
       const [err] = await to(
         signupWithGoogle(user, !user.parents.length ? [parent] : undefined)
       );
-      if (err || !user.uid)
+      if (err || !user.id)
         return this.setState({
           submitted: false,
           submitting: false,
@@ -429,12 +429,12 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
               <Button
                 className={styles.button}
                 label={
-                  !currentUser.uid
+                  !currentUser.id
                     ? 'Signup and request'
                     : `Request ${user.firstName}`
                 }
                 disabled={submitting || submitted}
-                google={!currentUser.uid}
+                google={!currentUser.id}
                 raised
                 arrow
               />

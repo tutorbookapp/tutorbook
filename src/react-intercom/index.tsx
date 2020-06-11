@@ -85,7 +85,7 @@ class Intercom extends React.Component<IntercomProps> {
     } else {
       window.intercomSettings = this.settings;
 
-      const loggedIn = (props: IntercomProps) => !!props.user.uid;
+      const loggedIn = (props: IntercomProps) => !!props.user.id;
 
       if (window.Intercom) {
         if (loggedIn(prevProps) && !loggedIn(this.props)) {

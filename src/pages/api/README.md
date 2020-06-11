@@ -33,7 +33,7 @@ The `Attendee` object represents a user attending a tutoring appointment.
 | Property | Type       | Description                                                                                             |
 | -------- | ---------- | ------------------------------------------------------------------------------------------------------- |
 | `roles`  | `string[]` | An array of the roles (i.e. `tutor` or `pupil`) that the attendee will play during the tutoring lesson. |
-| `uid`    | `string`   | The user's Firebase Authentication uID (i.e. also the ID of their Firestore profile document).          |
+| `id`     | `string`   | The user's Firebase Authentication uID (i.e. also the ID of their Firestore profile document).          |
 
 ### `Timeslot`
 
@@ -159,7 +159,7 @@ The following parameters should be sent in the HTTP request body.
 | Parameter | Type     | Description                                                                                                                                                           |
 | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `request` | `string` | The path of the pending tutoring lesson's Firestore document to approve (e.g. `partitions/default/users/MKroB319GCfMdVZ2QQFBle8GtCZ2/requests/CEt4uGqTtRg17rZamCLC`). |
-| `uid`     | `string` | The user ID of the parent approving the lesson request (e.g. `MKroB319GCfMdVZ2QQFBle8GtCZ2`).                                                                         |
+| `id`      | `string` | The user ID of the parent approving the lesson request (e.g. `MKroB319GCfMdVZ2QQFBle8GtCZ2`).                                                                         |
 
 #### Actions
 
@@ -173,9 +173,9 @@ Upon request, the `/api/appt` serverless API function:
    - Verifies that the `attendees` all have user IDs and profile documents.
    - Verifies that the pupil (the user whose profile document was referenced in
      the given `request` Firestore document path) is within the `attendees`.
-   - Verifies that the parent (the owner of the given `uid`) is actually the
+   - Verifies that the parent (the owner of the given `id`) is actually the
      pupil's parent (i.e. the `attendee` whose profile document was referenced
-     in the given `request` Firestore document path has the given `uid` in their
+     in the given `request` Firestore document path has the given `id` in their
      profile's `parents` field).
    - Verifies that the requested `Timeslot` is within all of the `attendee`'s
      availability (by reading each `attendee`'s Firestore profile document).

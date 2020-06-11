@@ -53,7 +53,7 @@ const GRADES = [
 
 const SUBJECT_LEVELS = ['1', '2', '3', '4'];
 
-const main = async () => {
+const users = async () => {
   const mentoringSubjects = getSubjects('mentoring');
   const tutoringSubjects = getSubjects('tutoring');
 
@@ -99,7 +99,7 @@ const main = async () => {
       const data = user.data();
       const subjects = updateSubjects(data.tutoring.subjects, tutoringSubjects);
       return user.ref.set({
-        uid: data.uid || user.id,
+        id: data.uid || user.id,
         name: data.name || '',
         email: data.email || '',
         phone: data.phone || '',
@@ -123,4 +123,24 @@ const main = async () => {
   );
 };
 
-main();
+const updateAppt = (apptDoc) => {
+  const appt = apptDoc.data();
+  return apptDoc.ref.set({
+    ...appt,
+    attendees: appt.attendees.map((a) => ({ id: a.uid, roles: a.roles })),
+  });
+};
+
+const appts = async () => {
+  const users = (await db.collection('users').get()).docs;
+  await Promise.all(
+    users.map(async (user) => {
+      const requests = (await user.ref.collection('requests').get()).docs;
+      const appts = (await user.ref.collection('appts').get()).docs;
+      await Promise.all(requests.map((request) => updateAppt(request)));
+      await Promise.all(appts.map((appt) => updateAppt(appt)));
+    })
+  );
+};
+
+appts();

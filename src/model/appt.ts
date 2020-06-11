@@ -20,7 +20,7 @@ export type ApptVenueTypeAlias = 'bramble';
 export type RoleAlias = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
 export interface AttendeeInterface {
-  uid: string;
+  id: string;
   roles: RoleAlias[];
 }
 

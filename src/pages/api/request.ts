@@ -255,22 +255,22 @@ export default async function request(
         request.attendees.map(async (attendee) => {
           if (errored) return;
           // 1. Verify that the attendees have uIDs.
-          if (!attendee.uid) {
+          if (!attendee.id) {
             error('All attendees must have valid uIDs.');
             errored = true;
             return;
           }
-          if (attendee.uid === (token as DecodedIdToken).uid) {
+          if (attendee.id === (token as DecodedIdToken).uid) {
             // 1. Verify that the appointment creator is an attendee.
             attendeesIncludeAuthToken = true;
           }
           const ref: DocumentReference = db
             .collection('users')
-            .doc(attendee.uid);
+            .doc(attendee.id);
           const doc: DocumentSnapshot = await ref.get();
           // 1. Verify that the attendees exist.
           if (!doc.exists) {
-            error(`Attendee (${attendee.uid}) does not exist.`);
+            error(`Attendee (${attendee.id}) does not exist.`);
             errored = true;
             return;
           }
@@ -278,7 +278,7 @@ export default async function request(
           // 1. Verify that the attendees are available (note that we don't throw
           // an error if it is the request sender who is unavailable).
           if (request.time && !user.availability.contains(request.time)) {
-            if (attendee.uid === (token as DecodedIdToken).uid) {
+            if (attendee.id === (token as DecodedIdToken).uid) {
               console.warn(
                 `[WARNING] Sender is not available on ${request.time.toString()}.`
               );

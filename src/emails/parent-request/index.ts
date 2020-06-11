@@ -67,7 +67,7 @@ export default class ParentRequestEmail implements Email {
       approveURL:
         `https://tutorbook.org/approve` +
         `?request=${encodeURIComponent((appt.ref as DocumentReference).path)}` +
-        `&uid=${encodeURIComponent(parent.uid)}`,
+        `&id=${encodeURIComponent(parent.id)}`,
       brambleDescription:
         `They will be conducting their tutoring lessons via <a href="` +
         `${appt.venues[0].url}" style="${linkStyling}">this Bramble room</a>.` +

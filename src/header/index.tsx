@@ -112,7 +112,7 @@ function DesktopNav({ user }: { user: User }): JSX.Element {
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
       <Link href='/signup'>
-        <a className={styles.desktopLink}>{user.uid ? 'Profile' : 'Signup'}</a>
+        <a className={styles.desktopLink}>{user.id ? 'Profile' : 'Signup'}</a>
       </Link>
     </div>
     /* eslint-enable jsx-a11y/anchor-is-valid */

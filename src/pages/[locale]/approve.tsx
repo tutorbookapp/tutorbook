@@ -81,7 +81,7 @@ type ApprovePageProps = WithRouterProps & { intl: IntlShape };
  * @param {string} request - The path of the pending lesson request's Firestore
  * document (this should be the path of the parent's child's document if there
  * are multiple pupil attendees).
- * @param {string} uid - The parent's user ID.
+ * @param {string} id - The parent's user ID.
  * @todo Is it really required that we have the parent's user ID? Right now, we
  * only allow pupils to add the contact information of one parent. And we don't
  * really care **which** parent approves the lesson request anyways.
@@ -95,7 +95,7 @@ class ApprovePage extends React.Component<ApprovePageProps, ApprovePageState> {
   public async componentDidMount(): Promise<void> {
     const { router } = this.props;
     console.log('[DEBUG] Approving request...', router.query);
-    const { request, uid } = router.query;
+    const { request, id } = router.query;
     const [err, res] = await to<
       AxiosResponse<{ appt: ApptJSONInterface }>,
       AxiosError<ApiError>
@@ -103,7 +103,7 @@ class ApprovePage extends React.Component<ApprovePageProps, ApprovePageState> {
       axios({
         method: 'post',
         url: '/api/appt',
-        data: { request, uid },
+        data: { request, id },
       })
     );
     if (err && err.response) {

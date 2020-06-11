@@ -90,7 +90,7 @@ async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
         console.error(`[ERROR] While searching ${filterString}:`, err);
       } else {
         res.hits.forEach((hit: UserSearchHitAlias) => {
-          if (results.findIndex((h) => h.uid === hit.objectID) < 0)
+          if (results.findIndex((h) => h.id === hit.objectID) < 0)
             results.push(User.fromSearchHit(hit));
         });
       }
@@ -113,7 +113,7 @@ function onlyFirstNameAndLastInitial(name: string): string {
 
 /**
  * Takes filter parameters (subjects and availability) and sends back an array
- * of `UserJSONInterface`s that match the given filters.
+ * of `UserJSON`s that match the given filters.
  *
  * Note that we only send non-sensitive user information back to the client:
  * - User's first name and last initial
@@ -161,7 +161,7 @@ export default async function search(
       tutoring: user.tutoring,
       socials: user.socials,
       langs: user.langs,
-      uid: user.uid,
+      id: user.id,
     }))
   );
 }
