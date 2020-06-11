@@ -44,10 +44,11 @@ export default function FilterForm({
   const [focused, setFocused] = React.useState<FocusTarget | undefined>();
 
   React.useEffect(() => {
-    if (!formRef.current) return;
+    if (!formRef.current) return () => {};
 
     const element: HTMLElement = formRef.current;
     const removeClickListener = () => {
+      /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
       document.removeEventListener('click', outsideClickListener);
     };
     const outsideClickListener = (event: MouseEvent) => {
