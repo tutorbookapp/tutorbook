@@ -28,7 +28,7 @@
 }
 
 .formWidth .header {
-  max-width: config.$form-width;
+  max-width: config.$form-width + 48px;
 }
 
 .center {
