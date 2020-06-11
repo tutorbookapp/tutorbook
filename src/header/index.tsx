@@ -3,6 +3,7 @@ import { User, Query, Aspect, Callback } from '@tutorbook/model';
 import { useUser } from '@tutorbook/firebase';
 
 import React from 'react';
+import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
 import Banner from './banner';
 
@@ -97,7 +98,9 @@ function MobileNav({ user }: { user: User }): JSX.Element {
         <ul className={styles.mobileLinks}>
           <Link href='/signup'>
             <a className={styles.mobileLink}>
-              <li className={styles.mobileLinkItem}>Signup</li>
+              <li className={styles.mobileLinkItem}>
+                {user.id ? 'Profile' : 'Signup'}
+              </li>
             </a>
           </Link>
         </ul>
@@ -108,14 +111,19 @@ function MobileNav({ user }: { user: User }): JSX.Element {
 }
 
 function DesktopNav({ user }: { user: User }): JSX.Element {
-  return (
-    /* eslint-disable jsx-a11y/anchor-is-valid */
-    <div className={styles.desktopLinks}>
-      <Link href='/signup'>
-        <a className={styles.desktopLink}>{user.id ? 'Profile' : 'Signup'}</a>
-      </Link>
+  /* eslint-disable jsx-a11y/anchor-is-valid */
+  const linkElement: JSX.Element = user.photo ? (
+    <div className={styles.avatar}>
+      <Avatar src={user.photo} />
     </div>
-    /* eslint-enable jsx-a11y/anchor-is-valid */
+  ) : (
+    <a className={styles.desktopLink}>{user.id ? 'Profile' : 'Signup'}</a>
+  );
+  /* eslint-enable jsx-a11y/anchor-is-valid */
+  return (
+    <div className={styles.desktopLinks}>
+      <Link href='/signup'>{linkElement}</Link>
+    </div>
   );
 }
 

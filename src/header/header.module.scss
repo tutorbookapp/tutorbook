@@ -51,6 +51,11 @@
   align-items: center;
 }
 
+.avatar {
+  width: config.$nav-height - 24px;
+  cursor: pointer;
+}
+
 .logo {
   cursor: pointer;
   padding: 20px 0;
