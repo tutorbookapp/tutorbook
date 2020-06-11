@@ -392,7 +392,6 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
                 onChange={this.handleSubjectsChange}
                 value={subjects}
                 options={user[aspect].subjects}
-                grade={currentUser.grade}
                 aspect={aspect}
               />
               {aspect === 'tutoring' && time && (
