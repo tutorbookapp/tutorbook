@@ -1,0 +1,143 @@
+@use 'sass:map';
+@use '@material/elevation';
+@use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
+
+$triangle-height: 8px;
+$width: 225px;
+$offset: -2px;
+
+.anchor {
+  position: relative;
+
+  &.open::before {
+    content: '';
+    background: transparent;
+    position: fixed;
+    top: -100vh;
+    left: -100vw;
+    right: -100vw;
+    bottom: -100vh;
+    cursor: default;
+    z-index: 80;
+  }
+}
+
+.wrapper {
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  z-index: 90;
+  opacity: 0;
+  transition: opacity elevation.$transition-duration
+    elevation.$transition-timing-function;
+  will-change: opacity;
+
+  .inner {
+    transform: translate(-100%);
+    position: absolute;
+    box-sizing: inherit;
+  }
+
+  .up {
+    display: inline-block;
+    position: relative;
+  }
+
+  .triangle {
+    left: $width - 24px - 8px;
+    text-align: left;
+    display: block;
+    line-height: $triangle-height - 3px;
+    z-index: 1;
+    position: absolute;
+    top: $offset;
+
+    .path {
+      stroke: map.get(config.$colors, 'background');
+      fill: map.get(config.$colors, 'background');
+    }
+  }
+
+  .menu {
+    transition: elevation.transition-value();
+    will-change: elevation.$property;
+    margin-top: $triangle-height + $offset;
+    width: $width;
+    min-width: auto;
+    padding: 8px 0px;
+    color: map.get(config.$colors, 'foreground');
+    display: inline-block;
+    text-align: left;
+    background: map.get(config.$colors, 'background');
+    max-width: 100vw;
+    border-radius: 5px;
+  }
+
+  button.item {
+    background: inherit;
+    border: none;
+    width: 100%;
+    display: flex;
+    cursor: pointer;
+  }
+
+  .item {
+    @include typography.typography('body1');
+    position: relative;
+    font-size: 14px;
+    color: map.get(config.$colors, 'accents-5');
+    line-height: 20px;
+    transition: color 0.1s ease 0s, background-color 0.1s ease 0s;
+    max-width: 100%;
+    padding: 8px 20px;
+    text-align: left;
+
+    > a {
+      color: currentcolor;
+      display: flex;
+      -moz-box-align: center;
+      align-items: center;
+      text-decoration: none;
+      margin: -8px -20px;
+      padding: 8px 20px;
+    }
+
+    &:hover {
+      color: map.get(config.$colors, 'foreground');
+    }
+
+    .icon {
+      position: absolute;
+      top: 0px;
+      bottom: 0px;
+      right: 20px;
+      pointer-events: none;
+      display: flex;
+      -moz-box-align: center;
+      align-items: center;
+
+      > i {
+        font-size: 20px !important;
+      }
+    }
+
+    .avatar {
+      width: 24px;
+      margin-right: 10px;
+    }
+  }
+
+  .line {
+    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    margin: 8px 0;
+  }
+
+  &.open {
+    opacity: 1;
+
+    .menu {
+      @include elevation.elevation(8);
+    }
+  }
+}

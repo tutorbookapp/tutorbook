@@ -1,3 +1,4 @@
+import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { Link } from '@tutorbook/intl';
 import { User, Query, Aspect, Callback } from '@tutorbook/model';
 import { useUser } from '@tutorbook/firebase';
@@ -6,6 +7,7 @@ import React from 'react';
 import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
 import Banner from './banner';
+import PopOver from './pop-over';
 
 import styles from './header.module.scss';
 
@@ -111,19 +113,27 @@ function MobileNav({ user }: { user: User }): JSX.Element {
 }
 
 function DesktopNav({ user }: { user: User }): JSX.Element {
-  /* eslint-disable jsx-a11y/anchor-is-valid */
-  const linkElement: JSX.Element = user.photo ? (
-    <div className={styles.avatar}>
-      <Avatar src={user.photo} />
-    </div>
-  ) : (
-    <a className={styles.desktopLink}>{user.id ? 'Profile' : 'Signup'}</a>
-  );
-  /* eslint-enable jsx-a11y/anchor-is-valid */
+  const [open, setOpen] = React.useState<boolean>(false);
+  if (user.id)
+    return (
+      <PopOver open={open} onClose={() => setOpen(false)}>
+        <button
+          type='button'
+          className={styles.avatar}
+          onClick={() => setOpen(true)}
+        >
+          <Avatar src={user.photo} />
+        </button>
+      </PopOver>
+    );
   return (
+    /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
-      <Link href='/signup'>{linkElement}</Link>
+      <Link href='/signup'>
+        <a className={styles.desktopLink}>Signup</a>
+      </Link>
     </div>
+    /* eslint-enable jsx-a11y/anchor-is-valid */
   );
 }
 

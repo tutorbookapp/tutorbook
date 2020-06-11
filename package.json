@@ -80,6 +80,7 @@
     "@rmwc/dialog": "^6.1.0",
     "@rmwc/formfield": "^6.0.14",
     "@rmwc/grid": "^6.0.14",
+    "@rmwc/icon": "^6.0.14",
     "@rmwc/icon-button": "^6.0.14",
     "@rmwc/list": "^6.0.14",
     "@rmwc/menu": "^6.0.14",
