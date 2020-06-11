@@ -3,7 +3,6 @@ import { ApiError, User, UserJSON, Org, UserInterface } from '@tutorbook/model';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
-import { DBContext } from './db';
 import firebase from './base';
 
 /**
