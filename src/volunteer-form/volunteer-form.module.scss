@@ -42,13 +42,15 @@
 .formCard {
   @include card.outline(map.get(config.$colors, 'accents-2'), 1px);
   @include elevation.elevation(0);
-  transition: 200ms box-shadow ease-in-out, 200ms border ease-in-out;
+  transition: elevation.transition-value(),
+    border elevation.$transition-duration elevation.$transition-timing-function;
+  will-change: elevation.$property, border;
   margin: 16px 0;
 }
 
 .formCard:hover {
   @include card.outline(map.get(config.$colors, 'background'), 1px);
-  @include elevation.elevation(4);
+  @include elevation.elevation(8);
 }
 
 .formField {
