@@ -4,6 +4,28 @@
 @use '@material/card/_index.scss' as card;
 @use '@material/elevation';
 
+.switchAccountHeader {
+  @include typography.typography('headline5');
+  margin: 0 0 16px;
+}
+
+.switchAccountBody {
+  @include typography.typography('subtitle1');
+  color: map.get(config.$colors, 'accents-5');
+  margin: 0;
+}
+
+.switchAccountWrapper {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 32px 0;
+  max-width: 350px;
+  margin: auto;
+}
+
 .header span,
 .description span {
   display: block;

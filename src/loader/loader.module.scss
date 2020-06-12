@@ -6,14 +6,19 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.3);
   opacity: 0;
-  z-index: -1;
-  border-radius: inherit;
-  transition: opacity 500ms;
-}
-
-.overlayActive {
-  opacity: 1;
   z-index: 1;
+  visibility: hidden;
+  border-radius: inherit;
+  transition: 500ms opacity;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &.closing {
+    opacity: 0;
+  }
 }
 
 .overlayContent {

@@ -1,6 +1,16 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  switchAccountTitle: {
+    id: 'form.switch-account.title',
+    defaultMessage: 'Switch to Personal Account',
+  },
+  switchAccountBody: {
+    id: 'form.switch-account.body',
+    defaultMessage:
+      'You must use a personal account to sign-up as a tutor or mentor. Click' +
+      ' on the profile picture in the top-right and select a personal account.',
+  },
   mentorToggle: {
     id: 'mentor-form.toggle',
     defaultMessage: 'Mentor',

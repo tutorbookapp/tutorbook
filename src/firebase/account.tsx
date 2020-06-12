@@ -1,5 +1,13 @@
 import React from 'react';
-import { ApiError, User, UserJSON, Org, UserInterface } from '@tutorbook/model';
+import {
+  ApiError,
+  Account,
+  User,
+  UserJSON,
+  Org,
+  OrgJSON,
+  UserInterface,
+} from '@tutorbook/model';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
@@ -18,63 +26,100 @@ type AuthProvider = firebase.auth.AuthProvider;
 type UserCredential = firebase.auth.UserCredential;
 type Unsubscribe = firebase.Unsubscribe;
 
-interface UserProviderProps {
+interface AccountProviderProps {
   children: JSX.Element[] | JSX.Element;
 }
 
-interface UserProviderState {
+interface AccountProviderState {
+  account: Account;
   user: User;
+  orgs: Org[];
 }
 
-export interface UserContextValue extends UserProviderState {
-  update: (user: User) => void;
+export interface AccountContextValue {
+  account: Account;
+  accounts: Account[];
+  switchAccount: (id: string) => void;
+  update: (account: Account) => void;
   token: () => Promise<string> | undefined;
   signup: (user: User, parents?: User[]) => Promise<void>;
   signupWithGoogle: (user?: User, parents?: User[]) => Promise<void>;
-}
-
-export const UserContext: React.Context<UserContextValue> = React.createContext(
-  {
-    user: new User(),
-    update: (user: User) => {},
-    token: (() => undefined) as () => Promise<string> | undefined,
-    signup: async (user: User, parents?: User[]) => {},
-    signupWithGoogle: async (user?: User, parents?: User[]) => {},
-  }
-);
-
-export function useUser(): UserContextValue {
-  return React.useContext(UserContext);
+  signout: () => void;
 }
 
 /**
- * Class that manages authentication state and provides a `UserContext` provider
- * so all child components can access the current user's data.
+ * The `Account` object is the base for both the `User` and the `Org` objects.
+ * Because of this, we can have one `AccountProvider` for both organizations and
+ * users.
+ *
+ * Behind the scenes, the `AccountProvider` depends on the
+ * `firebase.auth.currentUser` to fetch account data from the `api/account` API
+ * endpoint **but** it exposes only the `User` or `Org` data to it's consumers.
+ *
+ * The `api/account` REST API endpoint returns **both** user account data (i.e.
+ * the signed-in `User` object) _and_ the account data of any organizations that
+ * the user belongs to.
+ *
+ * We store the last used account as a session cookie (i.e. so that the
+ * signed-in user doesn't have to switch to an org account for every session).
+ *
+ * The value of the `AccountProvider` is controlled by the profile drop-down
+ * menu (included in our `Header` component). That drop-down menu enables the
+ * signed-in user to switch between their personal account and any org accounts
+ * to which they have access.
+ *
+ * Our UI/UX changes based on the value of the `AccountProvider` (i.e. most of
+ * our UI/UX is a consumer of the `AccountContext`).
  */
-export class UserProvider extends React.Component<
-  UserProviderProps,
-  UserProviderState
+export const AccountContext: React.Context<AccountContextValue> = React.createContext(
+  {
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    account: new Account(),
+    accounts: [] as Account[],
+    switchAccount: (id: string) => {},
+    update: (account: Account) => {},
+    token: (() => undefined) as () => Promise<string> | undefined,
+    signup: async (user: User, parents?: User[]) => {},
+    signupWithGoogle: async (user?: User, parents?: User[]) => {},
+    signout: () => {},
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+  }
+);
+
+export function useAccount(): AccountContextValue {
+  return React.useContext(AccountContext);
+}
+
+/**
+ * Class that manages authentication state and provides a `AccountContext`
+ * provider so all child components can access the current user's data. See the
+ * `AccountContext` doc comment for more info.
+ */
+export class AccountProvider extends React.Component<
+  AccountProviderProps,
+  AccountProviderState
 > {
-  private static readonly auth: Auth = firebase.auth();
+  static readonly auth: Auth = firebase.auth();
 
   private authUnsubscriber?: Unsubscribe;
 
-  public constructor(props: UserProviderProps) {
+  public constructor(props: AccountProviderProps) {
     super(props);
-    this.state = { user: new User() };
+    this.state = { account: new User(), user: new User(), orgs: [] };
     this.signup = this.signup.bind(this);
     this.signupWithGoogle = this.signupWithGoogle.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.switchAccount = this.switchAccount.bind(this);
   }
 
   private static getToken(): Promise<string> | undefined {
-    return UserProvider.auth.currentUser
-      ? UserProvider.auth.currentUser.getIdToken()
+    return AccountProvider.auth.currentUser
+      ? AccountProvider.auth.currentUser.getIdToken()
       : undefined;
   }
 
   public componentDidMount(): void {
-    this.authUnsubscriber = UserProvider.auth.onAuthStateChanged(
+    this.authUnsubscriber = AccountProvider.auth.onAuthStateChanged(
       this.handleChange
     );
   }
@@ -83,24 +128,36 @@ export class UserProvider extends React.Component<
     if (this.authUnsubscriber) this.authUnsubscriber();
   }
 
+  /**
+   * Updates the current user and the selected account **if** the current user's
+   * uID matches the account.
+   */
+  private updateUser(user: User): void {
+    this.setState(({ account }) => ({
+      user,
+      account:
+        !account.id || !user.id || user.id === account.id ? user : account,
+    }));
+  }
+
   private async handleChange(user: FirebaseUser | null): Promise<void> {
     if (user) {
-      const userRecord: Partial<UserInterface> = {
+      const withUserRecord: User = new User({
         /* eslint-disable-next-line react/destructuring-assignment */
         name: user.displayName || '',
         email: user.email || '',
         phone: user.phoneNumber || '',
         photo: user.photoURL || '',
         id: user.uid,
-      };
-      this.setState({ user: new User(userRecord) });
-      const withToken: Partial<UserInterface> = {
-        ...userRecord,
+      });
+      this.updateUser(withUserRecord);
+      const withToken: User = new User({
+        ...withUserRecord,
         token: await user.getIdToken(),
-      };
-      this.setState({ user: new User(withToken) });
+      });
+      this.updateUser(withToken);
       const [err, res] = await to<
-        AxiosResponse<{ user: UserJSON; orgs: Org[] }>,
+        AxiosResponse<{ user: UserJSON; orgs: OrgJSON[] }>,
         AxiosError<ApiError>
       >(
         axios({
@@ -128,11 +185,15 @@ export class UserProvider extends React.Component<
           fatal: false,
         });
       } else {
-        const { data } = res as AxiosResponse<{ user: UserJSON; orgs: Org[] }>;
-        this.setState({ user: User.fromJSON(data.user) });
+        const { data } = res as AxiosResponse<{
+          user: UserJSON;
+          orgs: OrgJSON[];
+        }>;
+        this.updateUser(User.fromJSON(data.user));
+        this.setState({ orgs: data.orgs.map((org) => Org.fromJSON(org)) });
       }
     } else {
-      this.setState({ user: new User() });
+      this.updateUser(new User());
     }
   }
 
@@ -142,7 +203,7 @@ export class UserProvider extends React.Component<
   ): Promise<void> {
     const provider: AuthProvider = new firebase.auth.GoogleAuthProvider();
     const [err, cred] = await to<UserCredential, AuthError>(
-      UserProvider.auth.signInWithPopup(provider)
+      AccountProvider.auth.signInWithPopup(provider)
     );
     if (err) {
       firebase.analytics().logEvent('exception', {
@@ -215,26 +276,57 @@ export class UserProvider extends React.Component<
     } else {
       const { data } = res as AxiosResponse<{ user: UserJSON }>;
       this.setState({ user: User.fromJSON(data.user) });
-      await UserProvider.auth.signInWithCustomToken(data.user.token as string);
+      await AccountProvider.auth.signInWithCustomToken(
+        data.user.token as string
+      );
       firebase.analytics().logEvent('login', { method: 'custom_token' });
     }
   }
 
+  /**
+   * Switches the current account to one of the already signed-in accounts.
+   * @todo In the future, we'll want to be able to pass any account that belongs
+   * to one of the `this.state.orgs` (to enable "view as" functionality).
+   * @todo Just use one `setState` with a callback function (that contains all
+   * the logic in this method).
+   */
+  private switchAccount(id: string): void {
+    console.log(`[DEBUG] Switching to account (${id})...`);
+    const { account, user, orgs } = this.state;
+    if (id === account.id) return;
+    if (id === user.id) {
+      console.log('[DEBUG] Account was current signed-in user.');
+      this.setState({ account: user });
+      return;
+    }
+    const index: number = orgs.findIndex((org: Org) => id === org.id);
+    if (index >= 0) {
+      console.log('[DEBUG] Account was current signed-in orgs.');
+      this.setState({ account: orgs[index] });
+      return;
+    }
+    throw new Error(`User is not signed into account (${id}).`);
+  }
+
   public render(): JSX.Element {
-    const { user } = this.state;
+    const { account, user, orgs } = this.state;
     const { children } = this.props;
     return (
-      <UserContext.Provider
+      <AccountContext.Provider
         value={{
-          user,
-          update: (newUser: User) => this.setState({ user: newUser }),
-          token: UserProvider.getToken,
+          account,
+          accounts: [user, ...orgs],
+          switchAccount: this.switchAccount,
+          update: (newAccount: Account) =>
+            this.setState({ account: newAccount }),
+          token: AccountProvider.getToken,
           signup: this.signup,
           signupWithGoogle: this.signupWithGoogle,
+          signout: AccountProvider.auth.signOut.bind(AccountProvider.auth),
         }}
       >
         {children}
-      </UserContext.Provider>
+      </AccountContext.Provider>
     );
   }
 }

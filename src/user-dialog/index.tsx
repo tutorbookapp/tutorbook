@@ -5,7 +5,10 @@ import SubjectSelect from '@tutorbook/subject-select';
 import Avatar from '@tutorbook/avatar';
 import Loader from '@tutorbook/loader';
 
-import firebase, { UserContextValue, UserContext } from '@tutorbook/firebase';
+import firebase, {
+  AccountContextValue,
+  AccountContext,
+} from '@tutorbook/firebase';
 import {
   ApiError,
   User,
@@ -61,12 +64,12 @@ interface UserDialogProps {
  */
 class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
   public static readonly contextType: React.Context<
-    UserContextValue
-  > = UserContext;
+    AccountContextValue
+  > = AccountContext;
 
-  public readonly context: UserContextValue;
+  public readonly context: AccountContextValue;
 
-  public constructor(props: UserDialogProps, context: UserContextValue) {
+  public constructor(props: UserDialogProps, context: AccountContextValue) {
     super(props);
     this.context = context;
     this.state = {
@@ -99,13 +102,13 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
   private get appt(): Appt {
     const { aspect, user } = this.props;
     const { subjects, message, time } = this.state;
+    const { account } = this.context;
     return new Appt({
       time,
       message,
       attendees: [
         {
-          /* eslint-disable-next-line react/destructuring-assignment */
-          id: this.context.user.id,
+          id: account.id,
           roles: [aspect === 'tutoring' ? 'tutee' : 'mentee'],
         },
         {
@@ -178,29 +181,40 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
     });
     this.setState({ submitted: false, submitting: true });
     const { parentName, parentEmail } = this.state;
-    const { user, signup, signupWithGoogle, token } = this.context;
+    const { account, signup, signupWithGoogle, token } = this.context;
     const parent: User = new User({ name: parentName, email: parentEmail });
-    if (!user.id) {
+    if (!(account instanceof User))
+      return this.setState({
+        submitted: false,
+        submitting: false,
+        err:
+          'You must use a personal account when sending requests. Click on the ' +
+          'profile picture in the top-right and select a personal account.',
+      });
+    if (!account.id) {
       const [err] = await to(
-        signupWithGoogle(user, !user.parents.length ? [parent] : undefined)
+        signupWithGoogle(
+          account,
+          !account.parents.length ? [parent] : undefined
+        )
       );
-      if (err || !user.id)
+      if (err || !account.id)
         return this.setState({
           submitted: false,
           submitting: false,
-          err: `An error occurred while logging in with Google.${
-            err ? ` ${err.message}` : ''
-          }`,
+          err:
+            'An error occurred while logging in with Google.' +
+            `${err ? ` ${err.message}` : ''}`,
         });
-    } else if (!user.parents.length) {
-      const [err] = await to(signup(user, [parent]));
-      if (err || !user.parents.length)
+    } else if (!account.parents.length) {
+      const [err] = await to(signup(account, [parent]));
+      if (err || !account.parents.length)
         return this.setState({
           submitted: false,
           submitting: false,
-          err: `An error occurred while creating your parent's profile.${
-            err ? ` ${err.message}` : ''
-          }`,
+          err:
+            "An error occurred while creating your parent's profile." +
+            `${err ? ` ${err.message}` : ''}`,
         });
     }
     const period = (msg: string) => {
@@ -285,8 +299,7 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
       err,
     } = this.state;
     const { onClosed, user, aspect, intl } = this.props;
-    /* eslint-disable-next-line react/destructuring-assignment */
-    const currentUser = this.context.user;
+    const { account } = this.context;
     const labels: Record<string, MessageDescriptor> = defineMessages({
       parentName: {
         id: 'user-dialog.parent-name',
@@ -362,7 +375,7 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
             <p className={styles.bio}>{user.bio}</p>
             <h6 className={styles.requestHeader}>Request</h6>
             <form className={styles.form} onSubmit={this.handleSubmit}>
-              {!currentUser.parents.length && (
+              {account instanceof User && !account.parents.length && (
                 <>
                   <TextField
                     outlined
@@ -416,15 +429,26 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
               <Button
                 className={styles.button}
                 label={
-                  !currentUser.id
+                  !account.id
                     ? 'Signup and request'
                     : `Request ${user.firstName}`
                 }
-                disabled={submitting || submitted}
-                google={!currentUser.id}
+                disabled={!(account instanceof User) || submitting || submitted}
+                google={!account.id}
                 raised
                 arrow
               />
+              {!(account instanceof User) && !err && (
+                <TextFieldHelperText
+                  persistent
+                  validationMsg
+                  className={styles.errMsg}
+                >
+                  You must use a personal account when sending requests. Click
+                  on the profile picture in the top-right and select a personal
+                  account.
+                </TextFieldHelperText>
+              )}
               {!!err && (
                 <TextFieldHelperText
                   persistent

@@ -1,7 +1,6 @@
-import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { Link } from '@tutorbook/intl';
-import { User, Query, Aspect, Callback } from '@tutorbook/model';
-import { useUser } from '@tutorbook/firebase';
+import { Account, Query, Aspect, Callback } from '@tutorbook/model';
+import { useAccount } from '@tutorbook/firebase';
 
 import React from 'react';
 import Avatar from '@tutorbook/avatar';
@@ -69,7 +68,8 @@ function Logo(): JSX.Element {
   );
 }
 
-function MobileNav({ user }: { user: User }): JSX.Element {
+function MobileNav(): JSX.Element {
+  const { account } = useAccount();
   const [active, setActive] = React.useState<boolean>(false);
   const toggleMobileMenu = () => {
     const menuActive = !active;
@@ -101,7 +101,7 @@ function MobileNav({ user }: { user: User }): JSX.Element {
           <Link href='/signup'>
             <a className={styles.mobileLink}>
               <li className={styles.mobileLinkItem}>
-                {user.id ? 'Profile' : 'Signup'}
+                {account.id ? 'Profile' : 'Signup'}
               </li>
             </a>
           </Link>
@@ -112,9 +112,10 @@ function MobileNav({ user }: { user: User }): JSX.Element {
   );
 }
 
-function DesktopNav({ user }: { user: User }): JSX.Element {
+function DesktopNav(): JSX.Element {
+  const { account } = useAccount();
   const [open, setOpen] = React.useState<boolean>(false);
-  if (user.id)
+  if (account.id)
     return (
       <PopOver open={open} onClose={() => setOpen(false)}>
         <button
@@ -122,7 +123,7 @@ function DesktopNav({ user }: { user: User }): JSX.Element {
           className={styles.avatar}
           onClick={() => setOpen(true)}
         >
-          <Avatar src={user.photo} />
+          <Avatar src={account.photo} />
         </button>
       </PopOver>
     );
@@ -142,7 +143,6 @@ interface LinkHeaderProps {
 }
 
 export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
-  const { user } = useUser();
   return (
     <>
       <Banner />
@@ -155,8 +155,8 @@ export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
             <DesktopTabLinks />
           </div>
           <div className={styles.right}>
-            <MobileNav user={user} />
-            <DesktopNav user={user} />
+            <MobileNav />
+            <DesktopNav />
           </div>
         </header>
       </div>
@@ -174,7 +174,6 @@ export function AspectHeader({
   onChange,
   formWidth,
 }: AspectHeaderProps): JSX.Element {
-  const { user } = useUser();
   return (
     <>
       <Banner />
@@ -187,8 +186,8 @@ export function AspectHeader({
             <DesktopTabs aspect={aspect} onChange={onChange} />
           </div>
           <div className={styles.right}>
-            <MobileNav user={user} />
-            <DesktopNav user={user} />
+            <MobileNav />
+            <DesktopNav />
           </div>
         </header>
       </div>
@@ -206,7 +205,6 @@ export function QueryHeader({
   onChange,
   formWidth,
 }: QueryHeaderProps): JSX.Element {
-  const { user } = useUser();
   return (
     <>
       <Banner />
@@ -225,8 +223,8 @@ export function QueryHeader({
             <FilterForm query={query} onChange={onChange} />
           </div>
           <div className={styles.right}>
-            <MobileNav user={user} />
-            <DesktopNav user={user} />
+            <MobileNav />
+            <DesktopNav />
           </div>
         </header>
       </div>

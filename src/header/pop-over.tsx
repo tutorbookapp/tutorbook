@@ -3,6 +3,9 @@ import Avatar from '@tutorbook/avatar';
 
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
+import { Link } from '@tutorbook/intl';
+import { Account } from '@tutorbook/model';
+import { useAccount } from '@tutorbook/firebase';
 
 import styles from './pop-over.module.scss';
 
@@ -29,24 +32,54 @@ function PopOverLink({ href, children, icon }: PopOverLinkProps): JSX.Element {
   );
 }
 
-interface PopOverAccountProps {
-  photo: string;
-  name: string;
+interface PopOverButtonProps {
   onClick: () => void;
+  children: string;
+  icon?: string;
+}
+
+function PopOverButton({
+  onClick,
+  children,
+  icon,
+}: PopOverButtonProps): JSX.Element {
+  return (
+    <Ripple>
+      <button type='button' onClick={onClick} className={styles.item}>
+        {children}
+        {icon && (
+          <div className={styles.icon}>
+            <Icon icon={icon} />
+          </div>
+        )}
+      </button>
+    </Ripple>
+  );
+}
+
+interface PopOverAccountProps {
+  account: Account;
+  onClick: () => void;
+  checked?: boolean;
 }
 
 function PopOverAccount({
-  name,
-  photo,
+  account,
   onClick,
+  checked,
 }: PopOverAccountProps): JSX.Element {
   return (
     <Ripple>
       <button type='button' onClick={onClick} className={styles.item}>
         <div className={styles.avatar}>
-          <Avatar src={photo} />
+          <Avatar src={account.photo} />
         </div>
-        {name}
+        {account.name}
+        {checked && (
+          <div className={styles.icon}>
+            <Icon icon='account_circle' />
+          </div>
+        )}
       </button>
     </Ripple>
   );
@@ -63,6 +96,7 @@ export default function PopOverMenu({
   onClose,
   children,
 }: PopOverMenuProps): JSX.Element {
+  const { account, accounts, switchAccount, signout } = useAccount();
   const menuRef: React.RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
@@ -107,23 +141,25 @@ export default function PopOverMenu({
               </svg>
             </div>
             <div className={styles.menu}>
-              <PopOverAccount
-                name='Project Access'
-                photo='https://firebasestorage.googleapis.com/v0/b/covid-tutoring.appspot.com/o/default%2Fusers%2FzsSQBJk9NTZQqzpvKb6m3XnuMkw2.png?alt=media&token=e822cb84-e578-49ec-94c3-853395d43f31'
-              />
-              <PopOverAccount
-                name='StudyRoom'
-                photo='https://firebasestorage.googleapis.com/v0/b/covid-tutoring.appspot.com/o/default%2Fusers%2FubyXSJtLxHfICLasqfgSAsIPyDE3.jpeg?alt=media&token=1296bce5-6a50-4a8e-ac48-9c89e0f205d4'
-              />
+              {accounts.map((a) =>
+                a.id === account.id ? (
+                  <Link href='/signup'>
+                    <PopOverAccount
+                      account={account}
+                      onClick={() => {}}
+                      checked
+                    />
+                  </Link>
+                ) : (
+                  <PopOverAccount
+                    key={a.id}
+                    account={a}
+                    onClick={() => switchAccount(a.id)}
+                  />
+                )
+              )}
               <div className={styles.line} />
-              <PopOverLink href='/dashboard' icon='add'>
-                New Account
-              </PopOverLink>
-              <div className={styles.line} />
-              <PopOverLink href='/dashboard'>Dashboard</PopOverLink>
-              <PopOverLink href='/dashboard'>Contact Support</PopOverLink>
-              <div className={styles.line} />
-              <PopOverLink href='/dashboard'>Logout</PopOverLink>
+              <PopOverButton onClick={() => signout()}>Logout</PopOverButton>
             </div>
           </div>
         </div>

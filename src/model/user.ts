@@ -171,9 +171,6 @@ export class User extends Account implements UserInterface {
   /**
    * Converts this `User` object into a `Record<string, any>` that Intercom can
    * understand.
-   * @todo Create some sort of getter that only returns the values that should
-   * ever be stored (i.e. we don't ever really want to send the `ref` or
-   * `token` fields).
    * @see {@link https://developers.intercom.com/installing-intercom/docs/javascript-api-attributes-objects#section-data-attributes}
    */
   public toIntercom(): Record<string, IntercomCustomAttribute> {
@@ -201,17 +198,12 @@ export class User extends Account implements UserInterface {
       if (val instanceof Date) return true;
       return false;
     };
-    const intercomValues: Record<string, any> = {
-      user_id: id || undefined,
-      ref: ref ? ref.path : undefined,
-      avatar: photo ? { type: 'avatar', image_url: photo } : undefined,
-      ...rest,
-    };
-    return Object.fromEntries(
-      Object.entries(intercomValues)
+    const intercomValues: Record<string, any> = Object.fromEntries(
+      Object.entries(rest)
         .filter(([key, val]) => isFilled(val))
         .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
+    return { ...intercomValues, ...super.toIntercom() };
   }
 
   public static fromSearchHit(hit: UserSearchHitAlias): User {

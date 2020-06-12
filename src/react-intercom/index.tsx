@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { IntlShape, useIntl } from 'react-intl';
-import { UserContext } from '@tutorbook/firebase';
+import { AccountContext } from '@tutorbook/firebase';
 import { User } from '@tutorbook/model';
 
 const appID = 'faz7lcyb';
@@ -28,7 +28,7 @@ interface IntercomSettings {
 
 interface IntercomProps {
   locale: string;
-  user: User;
+  account: Account;
 }
 
 declare global {
@@ -85,10 +85,12 @@ class Intercom extends React.Component<IntercomProps> {
     } else {
       window.intercomSettings = this.settings;
 
-      const loggedIn = (props: IntercomProps) => !!props.user.id;
+      const { account } = this.props;
 
       if (window.Intercom) {
-        if (loggedIn(prevProps) && !loggedIn(this.props)) {
+        // TODO: We should have each user signed into Intercom and then just
+        // have their orgs as 'companies' within the Intercom CRM.
+        if (prevProps.account.id !== account.id) {
           // Shutdown & boot each time the user logs out to clear conversations.
           window.Intercom('shutdown');
           window.Intercom('boot', this.settings);
@@ -110,11 +112,11 @@ class Intercom extends React.Component<IntercomProps> {
   }
 
   private get settings(): IntercomSettings {
-    const { locale, user } = this.props;
+    const { locale, account } = this.props;
     return {
       app_id: appID,
       language_override: locale,
-      ...user.toIntercom(),
+      ...account.toIntercom(),
     };
   }
 
@@ -126,8 +128,8 @@ class Intercom extends React.Component<IntercomProps> {
 export default function IntercomHOC(): JSX.Element {
   const intl: IntlShape = useIntl();
   return (
-    <UserContext.Consumer>
-      {({ user }) => <Intercom user={user} locale={intl.locale} />}
-    </UserContext.Consumer>
+    <AccountContext.Consumer>
+      {({ account }) => <Intercom account={account} locale={intl.locale} />}
+    </AccountContext.Consumer>
   );
 }

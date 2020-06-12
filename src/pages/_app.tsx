@@ -2,13 +2,13 @@ import React from 'react';
 import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 
-import { UserProvider } from '@tutorbook/firebase';
+import { AccountProvider } from '@tutorbook/firebase';
 import CovidHead from '@tutorbook/doc-head';
 import '@tutorbook/styles/global.scss';
 
 export default function App({ Component, pageProps, router }: AppProps) {
   return (
-    <UserProvider>
+    <AccountProvider>
       <RMWCProvider
         typography={{
           defaultTag: 'div',
@@ -26,6 +26,6 @@ export default function App({ Component, pageProps, router }: AppProps) {
         <CovidHead />
         <Component {...pageProps} />
       </RMWCProvider>
-    </UserProvider>
+    </AccountProvider>
   );
 }

@@ -22,7 +22,10 @@ import LangSelect from '@tutorbook/lang-select';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
 
-import firebase, { UserContextValue, UserContext } from '@tutorbook/firebase';
+import firebase, {
+  AccountContextValue,
+  AccountContext,
+} from '@tutorbook/firebase';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
@@ -57,16 +60,16 @@ class VolunteerForm extends React.Component<
   VolunteerFormState
 > {
   public static readonly contextType: React.Context<
-    UserContextValue
-  > = UserContext;
+    AccountContextValue
+  > = AccountContext;
 
-  public readonly context: UserContextValue;
+  public readonly context: AccountContextValue;
 
   private readonly headerRef: React.RefObject<HTMLHeadingElement>;
 
   private readonly descRef: React.RefObject<HTMLParagraphElement>;
 
-  public constructor(props: VolunteerFormProps, context: UserContextValue) {
+  public constructor(props: VolunteerFormProps, context: AccountContextValue) {
     super(props);
 
     this.context = context;
@@ -100,20 +103,13 @@ class VolunteerForm extends React.Component<
     }
   }
 
-  private get loading(): boolean {
-    const {
-      submittingMentor,
-      submittedMentor,
-      submittingTutor,
-      submittedTutor,
-    } = this.state;
-    const loadingMentor: boolean = submittingMentor || submittedMentor;
-    const loadingTutor: boolean = submittingTutor || submittedTutor;
+  private get submitting(): boolean {
     const { aspect } = this.props;
-    return aspect === 'mentoring' ? loadingMentor : loadingTutor;
+    const { submittingMentor, submittingTutor } = this.state;
+    return aspect === 'mentoring' ? submittingMentor : submittingTutor;
   }
 
-  private get checked(): boolean {
+  private get submitted(): boolean {
     const { aspect } = this.props;
     const { submittedMentor, submittedTutor } = this.state;
     return aspect === 'mentoring' ? submittedMentor : submittedTutor;
@@ -145,29 +141,55 @@ class VolunteerForm extends React.Component<
 
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
-    const { signup, user } = this.context;
+    const { signup, account } = this.context;
     const { aspect } = this.props;
     firebase.analytics().logEvent('sign_up', {
       method: aspect === 'mentoring' ? 'mentor_form' : 'tutor_form',
     });
-    /* eslint-disable-next-line no-shadow */
-    this.setState(({ submittingMentor, submittingTutor }, { aspect }) => ({
+    this.setState(({ submittingMentor, submittingTutor }) => ({
       submittingMentor: aspect === 'mentoring' || submittingMentor,
       submittingTutor: aspect === 'tutoring' || submittingTutor,
     }));
-    await signup(user);
-    /* eslint-disable-next-line no-shadow */
-    this.setState(({ submittedMentor, submittedTutor }, { aspect }) => ({
-      submittedMentor: aspect === 'mentoring' || submittedMentor,
-      submittedTutor: aspect === 'tutoring' || submittedTutor,
-    }));
+    await signup(account as User);
+    this.setState(
+      ({
+        submittedMentor,
+        submittedTutor,
+        submittingMentor,
+        submittingTutor,
+      }) => ({
+        submittedMentor: aspect === 'mentoring' || submittedMentor,
+        submittedTutor: aspect === 'tutoring' || submittedTutor,
+        submittingMentor: aspect === 'mentoring' && !submittingMentor,
+        submittingTutor: aspect === 'tutoring' && !submittingTutor,
+      })
+    );
+    setTimeout(
+      () =>
+        this.setState(({ submittedMentor, submittedTutor }) => ({
+          submittedMentor: aspect === 'mentoring' && !submittedMentor,
+          submittedTutor: aspect === 'tutoring' && !submittedTutor,
+        })),
+      2000
+    );
   }
 
   private renderInputs(): JSX.Element {
     const { intl, aspect } = this.props;
-    const { update, user } = this.context;
+    const { update, account } = this.context;
     const { langs, mentoringSubjects, tutoringSubjects } = this.state;
     const msg = (message: MessageDescriptor) => intl.formatMessage(message);
+    if (!(account instanceof User))
+      return (
+        <div className={styles.switchAccountWrapper}>
+          <h5 className={styles.switchAccountHeader}>
+            {msg(msgs.switchAccountTitle)}
+          </h5>
+          <p className={styles.switchAccountBody}>
+            {msg(msgs.switchAccountBody)}
+          </p>
+        </div>
+      );
     const sharedProps = {
       className: styles.formField,
       outlined: true,
@@ -178,38 +200,38 @@ class VolunteerForm extends React.Component<
       onChange: (event: React.FormEvent<HTMLInputElement>) =>
         update(
           new User({
-            ...user,
+            ...account,
             [key]: event.currentTarget.value,
           })
         ),
     });
     const getSocialIndex = (type: string) => {
-      return user.socials.findIndex((s: SocialInterface) => s.type === type);
+      return account.socials.findIndex((s: SocialInterface) => s.type === type);
     };
     const getSocial = (type: SocialTypeAlias) => {
       const index: number = getSocialIndex(type);
-      return index >= 0 ? user.socials[index].url : '';
+      return index >= 0 ? account.socials[index].url : '';
     };
     const hasSocial = (type: SocialTypeAlias) => getSocialIndex(type) >= 0;
     const updateSocial = (type: SocialTypeAlias, url: string) => {
       const index: number = getSocialIndex(type);
-      const socials: SocialInterface[] = Array.from(user.socials);
+      const socials: SocialInterface[] = Array.from(account.socials);
       if (index >= 0) {
         socials[index] = { type, url };
       } else {
         socials.push({ type, url });
       }
-      update(new User({ ...user, socials }));
+      update(new User({ ...account, socials }));
     };
     const s = (type: SocialTypeAlias, placeholder: (v: string) => string) => ({
       ...sharedProps,
       value: getSocial(type),
       label: msg(msgs[type]),
       onFocus: () => {
-        const username: string = user.name
-          ? user.name.replace(' ', '').toLowerCase()
+        const name: string = account.name
+          ? account.name.replace(' ', '').toLowerCase()
           : 'yourname';
-        if (!hasSocial(type)) updateSocial(type, placeholder(username));
+        if (!hasSocial(type)) updateSocial(type, placeholder(name));
       },
       onChange: (event: React.FormEvent<HTMLInputElement>) => {
         updateSocial(type, event.currentTarget.value);
@@ -217,28 +239,28 @@ class VolunteerForm extends React.Component<
     });
     return (
       <>
-        <TextField {...shared('name')} value={user.name} required />
-        <TextField {...shared('email')} value={user.email} required />
+        <TextField {...shared('name')} value={account.name} required />
+        <TextField {...shared('email')} value={account.email} required />
         <TextField
           {...shared('phone')}
-          value={user.phone ? user.phone : undefined}
+          value={account.phone ? account.phone : undefined}
         />
         <PhotoInput
           {...shared('photo')}
-          value={user.photo}
-          onChange={(photo: string) => update(new User({ ...user, photo }))}
+          value={account.photo}
+          onChange={(photo: string) => update(new User({ ...account, photo }))}
         />
         <ListDivider className={styles.divider} />
         <LangSelect
           {...sharedProps}
           value={langs}
-          values={user.langs}
+          values={account.langs}
           label={msg(msgs.lang)}
           onChange={(newLangs: Option<string>[]) => {
             this.setState({ langs: newLangs });
             update(
               new User({
-                ...user,
+                ...account,
                 langs: newLangs.map((lang: Option<string>) => lang.value),
               })
             );
@@ -250,17 +272,17 @@ class VolunteerForm extends React.Component<
             <SubjectSelect
               {...sharedProps}
               value={mentoringSubjects}
-              values={user.mentoring.subjects}
+              values={account.mentoring.subjects}
               label={msg(msgs.expertise)}
               placeholder={msg(msgs.expertisePlaceholder)}
               onChange={(subjects: Option<string>[]) => {
                 this.setState({ mentoringSubjects: subjects });
                 update(
                   new User({
-                    ...user,
+                    ...account,
                     [aspect]: {
                       subjects: subjects.map((subject) => subject.value),
-                      searches: user[aspect].searches,
+                      searches: account[aspect].searches,
                     },
                   })
                 );
@@ -273,12 +295,12 @@ class VolunteerForm extends React.Component<
               onChange={(event) =>
                 update(
                   new User({
-                    ...user,
+                    ...account,
                     bio: event.currentTarget.value,
                   })
                 )
               }
-              value={user.bio}
+              value={account.bio}
               label={msg(msgs.project)}
               placeholder={msg(msgs.projectPlaceholder)}
               required
@@ -292,17 +314,17 @@ class VolunteerForm extends React.Component<
             <SubjectSelect
               {...sharedProps}
               value={tutoringSubjects}
-              values={user.tutoring.subjects}
+              values={account.tutoring.subjects}
               label={msg(msgs.subjects)}
               placeholder={msg(msgs.subjectsPlaceholder)}
               onChange={(subjects: Option<string>[]) => {
                 this.setState({ tutoringSubjects: subjects });
                 update(
                   new User({
-                    ...user,
+                    ...account,
                     [aspect]: {
                       subjects: subjects.map((subject) => subject.value),
-                      searches: user[aspect].searches,
+                      searches: account[aspect].searches,
                     },
                   })
                 );
@@ -312,11 +334,11 @@ class VolunteerForm extends React.Component<
             />
             <ScheduleInput
               {...shared('availability')}
-              value={user.availability}
+              value={account.availability}
               onChange={(availability: Availability) =>
                 update(
                   new User({
-                    ...user,
+                    ...account,
                     availability,
                   })
                 )
@@ -328,12 +350,12 @@ class VolunteerForm extends React.Component<
               onChange={(event) =>
                 update(
                   new User({
-                    ...user,
+                    ...account,
                     bio: event.currentTarget.value,
                   })
                 )
               }
-              value={user.bio}
+              value={account.bio}
               label={msg(msgs.experience)}
               placeholder={msg(msgs.experiencePlaceholder)}
               required
@@ -357,7 +379,7 @@ class VolunteerForm extends React.Component<
   }
 
   public render(): JSX.Element {
-    const { user } = this.context;
+    const { account } = this.context;
     const { intl, aspect } = this.props;
     const label = aspect === 'mentoring' ? msgs.mentorSubmit : msgs.tutorSubmit;
     const msg = (message: MessageDescriptor) => intl.formatMessage(message);
@@ -381,18 +403,20 @@ class VolunteerForm extends React.Component<
         </div>
         <Card className={styles.formCard}>
           <Loader
-            active={this.loading || this.checked}
-            checked={this.checked}
+            active={this.submitting || this.submitted}
+            checked={this.submitted}
           />
           <form className={styles.form} onSubmit={this.handleSubmit}>
             {this.renderInputs()}
-            <Button
-              className={styles.formSubmitButton}
-              label={msg(user.id ? msgs.updateSubmit : label)}
-              disabled={this.loading || this.checked}
-              raised
-              arrow
-            />
+            {account instanceof User && (
+              <Button
+                className={styles.formSubmitButton}
+                label={msg(account.id ? msgs.updateSubmit : label)}
+                disabled={this.submitting || this.submitted}
+                raised
+                arrow
+              />
+            )}
           </form>
         </Card>
       </div>
