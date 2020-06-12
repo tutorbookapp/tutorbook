@@ -158,13 +158,8 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
     id: 'footer.useful-links.title',
     defaultMessage: 'Useful Links',
   },
-  pupils: {
-    id: 'footer.useful-links.pupils',
-    defaultMessage: 'Student Signup',
-    description: 'Label for the link to the student sign-up page.',
-  },
-  tutors: {
-    id: 'footer.useful-links.tutors',
+  signup: {
+    id: 'footer.useful-links.signup',
     defaultMessage: 'Volunteer Signup',
     description: 'Label for the link to the tutor sign-up page.',
   },
@@ -193,6 +188,14 @@ const labels: Record<string, MessageDescriptor> = defineMessages({
   learnpanion: {
     id: 'footer.partners.learnpanion',
     defaultMessage: 'Learnpanion',
+  },
+  studyRoom: {
+    id: 'footer.partners.study-room',
+    defaultMessage: 'StudyRoom',
+  },
+  interns4Good: {
+    id: 'footer.partners.interns4good',
+    defaultMessage: 'Interns4Good',
   },
 });
 
@@ -278,12 +281,8 @@ export default function Footer({
             header={intl.formatMessage(labels.usefulLinks)}
             links={[
               {
-                href: '/pupils',
-                label: intl.formatMessage(labels.pupils),
-              },
-              {
-                href: '/tutors',
-                label: intl.formatMessage(labels.tutors),
+                href: '/signup',
+                label: intl.formatMessage(labels.signup),
               },
               {
                 href: '/search',
@@ -332,6 +331,14 @@ export default function Footer({
               {
                 href: 'http://learnpanion.com/',
                 label: intl.formatMessage(labels.learnpanion),
+              },
+              {
+                href: 'https://studyroom.at/',
+                label: intl.formatMessage(labels.studyRoom),
+              },
+              {
+                href: 'https://interns4good.org/',
+                label: intl.formatMessage(labels.interns4Good),
               },
             ]}
           />
