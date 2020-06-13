@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  isUserJSON,
+  isOrgJSON,
   ApiError,
   Account,
   User,
@@ -8,8 +10,11 @@ import {
   OrgJSON,
   UserInterface,
 } from '@tutorbook/model';
+
+import isEqual from 'lodash.isequal';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
+import useSWR, { mutate } from 'swr';
 
 import firebase from './base';
 
@@ -24,14 +29,14 @@ type FirebaseUser = firebase.User;
 type AuthError = firebase.auth.AuthError;
 type AuthProvider = firebase.auth.AuthProvider;
 type UserCredential = firebase.auth.UserCredential;
-type Unsubscribe = firebase.Unsubscribe;
+
+const auth: Auth = firebase.auth();
 
 interface AccountProviderProps {
   children: JSX.Element[] | JSX.Element;
 }
 
-interface AccountProviderState {
-  account: Account;
+interface AccountData {
   user: User;
   orgs: Org[];
 }
@@ -39,9 +44,7 @@ interface AccountProviderState {
 export interface AccountContextValue {
   account: Account;
   accounts: Account[];
-  switchAccount: (id: string) => void;
   update: (account: Account) => void;
-  token: () => Promise<string> | undefined;
   signup: (user: User, parents?: User[]) => Promise<void>;
   signupWithGoogle: (user?: User, parents?: User[]) => Promise<void>;
   signout: () => void;
@@ -76,9 +79,7 @@ export const AccountContext: React.Context<AccountContextValue> = React.createCo
     /* eslint-disable @typescript-eslint/no-unused-vars */
     account: new Account(),
     accounts: [] as Account[],
-    switchAccount: (id: string) => {},
     update: (account: Account) => {},
-    token: (() => undefined) as () => Promise<string> | undefined,
     signup: async (user: User, parents?: User[]) => {},
     signupWithGoogle: async (user?: User, parents?: User[]) => {},
     signout: () => {},
@@ -90,145 +91,176 @@ export function useAccount(): AccountContextValue {
   return React.useContext(AccountContext);
 }
 
-/**
- * Class that manages authentication state and provides a `AccountContext`
- * provider so all child components can access the current user's data. See the
- * `AccountContext` doc comment for more info.
- */
-export class AccountProvider extends React.Component<
-  AccountProviderProps,
-  AccountProviderState
-> {
-  static readonly auth: Auth = firebase.auth();
+const initialData: AccountData = { user: new User(), orgs: [] };
 
-  private authUnsubscriber?: Unsubscribe;
+export function AccountProvider({
+  children,
+}: AccountProviderProps): JSX.Element {
+  if (process.browser) (window as any).auth = auth;
 
-  public constructor(props: AccountProviderProps) {
-    super(props);
-    this.state = { account: new User(), user: new User(), orgs: [] };
-    this.signup = this.signup.bind(this);
-    this.signupWithGoogle = this.signupWithGoogle.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.switchAccount = this.switchAccount.bind(this);
-  }
-
-  private static getToken(): Promise<string> | undefined {
-    return AccountProvider.auth.currentUser
-      ? AccountProvider.auth.currentUser.getIdToken()
-      : undefined;
-  }
-
-  public componentDidMount(): void {
-    this.authUnsubscriber = AccountProvider.auth.onAuthStateChanged(
-      this.handleChange
-    );
-  }
-
-  public componentWillUnmount(): void {
-    if (this.authUnsubscriber) this.authUnsubscriber();
-  }
-
-  /**
-   * Updates the current user and the selected account **if** the current user's
-   * uID matches the account.
-   */
-  private updateUser(user: User): void {
-    this.setState(({ account }) => ({
-      user,
-      account:
-        !account.id || !user.id || user.id === account.id ? user : account,
-    }));
-  }
-
-  private async handleChange(user: FirebaseUser | null): Promise<void> {
-    if (user) {
-      const withUserRecord: User = new User({
-        /* eslint-disable-next-line react/destructuring-assignment */
-        name: user.displayName || '',
-        email: user.email || '',
-        phone: user.phoneNumber || '',
-        photo: user.photoURL || '',
-        id: user.uid,
-      });
-      this.updateUser(withUserRecord);
-      const withToken: User = new User({
-        ...withUserRecord,
-        token: await user.getIdToken(),
-      });
-      this.updateUser(withToken);
-      const [err, res] = await to<
-        AxiosResponse<{ user: UserJSON; orgs: OrgJSON[] }>,
-        AxiosError<ApiError>
-      >(
-        axios({
-          method: 'get',
-          url: '/api/account',
-          params: { token: withToken.token },
-        })
-      );
-      if (err && err.response) {
-        console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
-        firebase.analytics().logEvent('exception', {
-          description: `Account API responded with error: ${err.response.data.msg}`,
-          fatal: false,
-        });
-      } else if (err && err.request) {
-        console.error('[ERROR] Account API did not respond:', err.request);
-        firebase.analytics().logEvent('exception', {
-          description: 'Account API did not respond.',
-          fatal: false,
-        });
-      } else if (err) {
-        console.error('[ERROR] Calling account API:', err);
-        firebase.analytics().logEvent('exception', {
-          description: `Error calling account API: ${err.message}`,
-          fatal: false,
-        });
-      } else {
-        const { data } = res as AxiosResponse<{
-          user: UserJSON;
-          orgs: OrgJSON[];
-        }>;
-        this.updateUser(User.fromJSON(data.user));
-        this.setState({ orgs: data.orgs.map((org) => Org.fromJSON(org)) });
-      }
-    } else {
-      this.updateUser(new User());
-    }
-  }
-
-  private async signupWithGoogle(
-    user: User = new User(),
-    parents?: User[]
-  ): Promise<void> {
-    const provider: AuthProvider = new firebase.auth.GoogleAuthProvider();
-    const [err, cred] = await to<UserCredential, AuthError>(
-      AccountProvider.auth.signInWithPopup(provider)
-    );
-    if (err) {
+  // Fetch the latest `user` and `orgs` data from the `/api/account` endpoint.
+  async function fetchData(url: string): Promise<AccountData> {
+    console.log(`[DEBUG] Fetching account data...`);
+    if (!auth.currentUser) throw new Error(`No signed-in user.`);
+    const token: string = await auth.currentUser.getIdToken();
+    const [err, res] = await to<
+      AxiosResponse<{ user: UserJSON; orgs: OrgJSON[] }>,
+      AxiosError<ApiError>
+    >(axios.get(url, { params: { token } }));
+    if (err && err.response) {
+      console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
       firebase.analytics().logEvent('exception', {
-        description: `Error while signing up with Google. ${err.message}`,
+        description: `Account API responded with error: ${err.response.data.msg}`,
         fatal: false,
       });
-      throw new Error(err.message);
-    } else if (cred && cred.user) {
-      const firebaseUser: Partial<UserInterface> = {
-        name: cred.user.displayName as string,
-        photo: cred.user.photoURL as string,
-        email: cred.user.email as string,
-        phone: cred.user.phoneNumber as string,
+      throw new Error(err.response.data.msg);
+    } else if (err && err.request) {
+      console.error('[ERROR] Account API did not respond:', err.request);
+      firebase.analytics().logEvent('exception', {
+        description: 'Account API did not respond.',
+        fatal: false,
+      });
+      throw new Error('Account API did not respond.');
+    } else if (err) {
+      console.error('[ERROR] Calling account API:', err);
+      firebase.analytics().logEvent('exception', {
+        description: `Error calling account API: ${err.message}`,
+        fatal: false,
+      });
+      throw new Error(`Error while calling account API: ${err.message}`);
+    } else {
+      const {
+        data: { user, orgs },
+      } = res as AxiosResponse<{
+        user: UserJSON;
+        orgs: OrgJSON[];
+      }>;
+      return {
+        user: User.fromJSON(user),
+        orgs: orgs.map((org: OrgJSON) => Org.fromJSON(org)),
       };
-      return this.signup(new User({ ...user, ...firebaseUser }), parents);
-    } else {
-      firebase.analytics().logEvent('exception', {
-        description: 'No user in sign-in with Google response.',
-        fatal: false,
-      });
-      throw new Error('No user in sign-in with Google response.');
     }
   }
 
-  private async signup(user: User, parents?: User[]): Promise<void> {
+  const { data } = useSWR<AccountData>('/api/account', fetchData, {
+    initialData,
+  });
+  console.log('[DEBUG] Account data:', data);
+  const [account, setAccount] = React.useState<Account>(() => {
+    if (process.browser) {
+      const cacheString: string = localStorage.getItem('account') || '';
+      if (!cacheString) return new User();
+      const cacheData: Record<keyof User | keyof Org, any> = JSON.parse(
+        cacheString
+      ) as Record<keyof User | keyof Org, any>;
+      if (isUserJSON(cacheData)) return User.fromJSON(cacheData);
+      if (isOrgJSON(cacheData)) return Org.fromJSON(cacheData);
+    }
+    return new User();
+  });
+
+  // Add a listener that updates our `user` state variable whenever the Firebase
+  // auth state changes.
+  React.useEffect(
+    () =>
+      auth.onAuthStateChanged((firebaseUser: FirebaseUser | null) => {
+        console.log('[DEBUG] Firebase auth state changed:', firebaseUser);
+        if (firebaseUser)
+          return mutate(
+            '/api/account',
+            async (prev: AccountData = initialData) => {
+              console.log('[DEBUG] Firebase user signed-in, updating user...');
+              const user = new User({
+                ...(prev && firebaseUser.uid === prev.user.id ? prev.user : {}),
+                name: firebaseUser.displayName || '',
+                email: firebaseUser.email || '',
+                phone: firebaseUser.phoneNumber || '',
+                photo: firebaseUser.photoURL || '',
+                id: firebaseUser.uid,
+                token: await firebaseUser.getIdToken(),
+              });
+              return { ...prev, user };
+            }
+          );
+        console.log('[DEBUG] Firebase user signed-out, updating user...');
+        return mutate('/api/account', { orgs: [], user: new User() });
+      }),
+    []
+  );
+
+  // When the account is updated:
+  // 1. Update `data.user` if the account is a `User`, the account's `id` is the
+  //    same as `data.user`'s id, and the account is different than `data.user`.
+  // 2. Update one of the `data.orgs` if the given account is an `Org` and there
+  //    is an org with the same id and the account is different than that org.
+  React.useEffect(() => {
+    /* eslint-disable-next-line @typescript-eslint/require-await */
+    void mutate('/api/account', async (prev: AccountData = initialData) => {
+      if (
+        account instanceof User &&
+        account.id === prev.user.id &&
+        !isEqual(account, prev.user)
+      ) {
+        console.log('[DEBUG] Account was updated, updating user...');
+        return { ...prev, user: account };
+      }
+
+      const orgs: Org[] = Array.from(prev.orgs);
+      const idx = orgs.findIndex((org: Org) => org.id === account.id);
+      if (account instanceof Org && idx >= 0 && !isEqual(account, orgs[idx])) {
+        console.log('[DEBUG] Account was updated, updating orgs...');
+        orgs[idx] = account;
+        return { ...prev, orgs };
+      }
+
+      console.log(
+        '[DEBUG] Account was updated but it matched our current data, skipping local mutation...'
+      );
+      return prev;
+    });
+  }, [account]);
+
+  React.useEffect(() => {
+    if (process.browser)
+      localStorage.setItem('account', JSON.stringify(account));
+  }, [account]);
+
+  // When data is updated:
+  // 1. Reset the account if the data is empty.
+  // 2. Update the account to match `data.user` if the account doesn't have an
+  //    id (yet) but the `data.user` does.
+  // 3. Update the account to match `data.user` if the account's id is the
+  //    same as `data.user`'s id and the account is different than `data.user`.
+  // 4. Update the account to match one of the `data.orgs` if the account's id
+  //    is the same as one of the `data.orgs`'s id and the account is different
+  //    from that org.
+  React.useEffect(() => {
+    setAccount((prevAccount: Account) => {
+      if (!data) {
+        console.log('[DEBUG] Data was empty, reseting account...');
+        return new User();
+      }
+      if (data.user.id && !prevAccount.id) {
+        console.log('[DEBUG] User just signed-in, updating account...');
+        return data.user;
+      }
+      if (data.user.id === prevAccount.id && !isEqual(prevAccount, data.user)) {
+        console.log('[DEBUG] User was updated, updating account...');
+        return data.user;
+      }
+      const idx = data.orgs.findIndex((org: Org) => org.id === prevAccount.id);
+      if (idx >= 0 && !isEqual(prevAccount, data.orgs[idx])) {
+        console.log('[DEBUG] Orgs were updated, updating account...');
+        return data.orgs[idx];
+      }
+      console.log(
+        '[DEBUG] Data was updated but it matched our current account, skipping state update...'
+      );
+      return prevAccount;
+    });
+  }, [data]);
+
+  async function signup(newUser: User, parents?: User[]): Promise<void> {
     const [err, res] = await to<
       AxiosResponse<{ user: UserJSON }>,
       AxiosError<ApiError>
@@ -237,7 +269,7 @@ export class AccountProvider extends React.Component<
         method: 'post',
         url: '/api/user',
         data: {
-          user: user.toJSON(),
+          user: newUser.toJSON(),
           parents: (parents || []).map((parent: User) => parent.toJSON()),
         },
       })
@@ -248,7 +280,7 @@ export class AccountProvider extends React.Component<
       console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
       firebase.analytics().logEvent('exception', {
         description: `User API responded with error: ${err.response.data.msg}`,
-        user: user.toJSON(),
+        user: newUser.toJSON(),
         fatal: true,
       });
       throw new Error(err.response.data.msg);
@@ -259,7 +291,7 @@ export class AccountProvider extends React.Component<
       console.error('[ERROR] User API did not respond:', err.request);
       firebase.analytics().logEvent('exception', {
         description: 'User API did not respond.',
-        user: user.toJSON(),
+        user: newUser.toJSON(),
         fatal: true,
       });
       throw new Error('User creation API did not respond.');
@@ -269,64 +301,67 @@ export class AccountProvider extends React.Component<
       console.error('[ERROR] Calling user API:', err);
       firebase.analytics().logEvent('exception', {
         description: `Error calling user API: ${err.message}`,
-        user: user.toJSON(),
+        user: newUser.toJSON(),
         fatal: true,
       });
       throw new Error(`Error calling user API: ${err.message}`);
     } else {
-      const { data } = res as AxiosResponse<{ user: UserJSON }>;
-      this.setState({ user: User.fromJSON(data.user) });
-      await AccountProvider.auth.signInWithCustomToken(
-        data.user.token as string
+      const signedInUser: User = User.fromJSON(
+        (res as AxiosResponse<{ user: UserJSON }>).data.user
       );
+      await auth.signInWithCustomToken(signedInUser.token as string);
       firebase.analytics().logEvent('login', { method: 'custom_token' });
     }
   }
 
-  /**
-   * Switches the current account to one of the already signed-in accounts.
-   * @todo In the future, we'll want to be able to pass any account that belongs
-   * to one of the `this.state.orgs` (to enable "view as" functionality).
-   * @todo Just use one `setState` with a callback function (that contains all
-   * the logic in this method).
-   */
-  private switchAccount(id: string): void {
-    console.log(`[DEBUG] Switching to account (${id})...`);
-    const { account, user, orgs } = this.state;
-    if (id === account.id) return;
-    if (id === user.id) {
-      console.log('[DEBUG] Account was current signed-in user.');
-      this.setState({ account: user });
-      return;
+  async function signupWithGoogle(
+    newUser?: User,
+    parents?: User[]
+  ): Promise<void> {
+    const provider: AuthProvider = new firebase.auth.GoogleAuthProvider();
+    const [err, cred] = await to<UserCredential, AuthError>(
+      auth.signInWithPopup(provider)
+    );
+    if (err) {
+      firebase.analytics().logEvent('exception', {
+        description: `Error while signing up with Google. ${err.message}`,
+        user: (newUser || new User()).toJSON(),
+        fatal: false,
+      });
+      throw new Error(err.message);
+    } else if (cred && cred.user) {
+      const firebaseUser: Partial<UserInterface> = {
+        name: cred.user.displayName as string,
+        photo: cred.user.photoURL as string,
+        email: cred.user.email as string,
+        phone: cred.user.phoneNumber as string,
+      };
+      const signedInUser = new User({ ...newUser, ...firebaseUser });
+      return signup(signedInUser, parents);
+    } else {
+      firebase.analytics().logEvent('exception', {
+        description: 'No user in sign-in with Google response.',
+        fatal: false,
+      });
+      throw new Error('No user in sign-in with Google response.');
     }
-    const index: number = orgs.findIndex((org: Org) => id === org.id);
-    if (index >= 0) {
-      console.log('[DEBUG] Account was current signed-in orgs.');
-      this.setState({ account: orgs[index] });
-      return;
-    }
-    throw new Error(`User is not signed into account (${id}).`);
   }
 
-  public render(): JSX.Element {
-    const { account, user, orgs } = this.state;
-    const { children } = this.props;
-    return (
-      <AccountContext.Provider
-        value={{
-          account,
-          accounts: [user, ...orgs],
-          switchAccount: this.switchAccount,
-          update: (newAccount: Account) =>
-            this.setState({ account: newAccount }),
-          token: AccountProvider.getToken,
-          signup: this.signup,
-          signupWithGoogle: this.signupWithGoogle,
-          signout: AccountProvider.auth.signOut.bind(AccountProvider.auth),
-        }}
-      >
-        {children}
-      </AccountContext.Provider>
-    );
-  }
+  return (
+    <AccountContext.Provider
+      value={{
+        signup,
+        signupWithGoogle,
+        account,
+        accounts: data ? [data.user, ...data.orgs] : [account],
+        update: (newAccount: Account) => {
+          if (process.browser) localStorage.setItem('account', newAccount.id);
+          setAccount(newAccount);
+        },
+        signout: auth.signOut.bind(auth),
+      }}
+    >
+      {children}
+    </AccountContext.Provider>
+  );
 }

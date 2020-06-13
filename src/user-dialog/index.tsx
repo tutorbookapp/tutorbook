@@ -181,7 +181,7 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
     });
     this.setState({ submitted: false, submitting: true });
     const { parentName, parentEmail } = this.state;
-    const { account, signup, signupWithGoogle, token } = this.context;
+    const { account, signup, signupWithGoogle } = this.context;
     const parent: User = new User({ name: parentName, email: parentEmail });
     if (!(account instanceof User))
       return this.setState({
@@ -228,7 +228,7 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
       axios({
         method: 'post',
         url: '/api/request',
-        data: { token: await token(), request: this.appt.toJSON() },
+        data: { token: account.token as string, request: this.appt.toJSON() },
       })
     );
     if (err && err.response) {

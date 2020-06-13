@@ -14,7 +14,7 @@ import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
 import Banner from './banner';
 import PopOver from './pop-over';
-import Tabs from './tabs';
+import Tabs, { TabsProps } from './tabs';
 
 import styles from './header.module.scss';
 
@@ -37,17 +37,21 @@ function DesktopTabs({
   onChange: Callback<Aspect>;
 }): JSX.Element {
   const intl: IntlShape = useIntl();
-  const aspectToTab: Record<Aspect, string> = Object.fromEntries(
-    Object.entries(tabLabels).map(([k, v]) => [k, intl.formatMessage(v)])
-  ) as Record<Aspect, string>;
-  const tabToAspect: Record<string, Aspect> = Object.fromEntries(
-    Object.entries(aspectToTab).map(([k, v]) => [v, k])
-  ) as Record<string, Aspect>;
+  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   return (
     <Tabs
-      tabs={Object.values(aspectToTab)}
-      active={aspectToTab[aspect]}
-      onChange={(tab: string) => onChange(tabToAspect[tab])}
+      tabs={[
+        {
+          label: msg(tabLabels.mentoring),
+          active: aspect === 'mentoring',
+          onClick: () => onChange('mentoring'),
+        },
+        {
+          label: msg(tabLabels.tutoring),
+          active: aspect === 'tutoring',
+          onClick: () => onChange('tutoring'),
+        },
+      ]}
     />
   );
 }
@@ -149,17 +153,7 @@ function DesktopNav(): JSX.Element {
   );
 }
 
-interface TabHeaderProps {
-  tabs: string[];
-  active: string;
-  onChange: (tab: string) => void;
-}
-
-export function TabHeader({
-  tabs,
-  active,
-  onChange,
-}: TabHeaderProps): JSX.Element {
+export function TabHeader(props: TabsProps): JSX.Element {
   return (
     <>
       <Banner />
@@ -167,7 +161,7 @@ export function TabHeader({
         <header className={styles.header}>
           <div className={styles.left}>
             <Logo />
-            <Tabs tabs={tabs} active={active} onChange={onChange} />
+            <Tabs {...props} />
           </div>
           <div className={styles.right}>
             <DesktopTabLinks />

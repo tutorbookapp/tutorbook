@@ -100,6 +100,10 @@ export type UserJSON = Omit<UserInterface, 'availability'> & {
   availability: AvailabilityJSONAlias;
 };
 
+export function isUserJSON(json: any): json is UserJSON {
+  return (json as UserJSON).availability !== undefined;
+}
+
 /**
  * What results from searching our users Algolia index.
  * @todo Perhaps we don't want to have duplicate fields (i.e. the `objectID`

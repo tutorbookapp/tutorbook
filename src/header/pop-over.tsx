@@ -59,15 +59,14 @@ function PopOverButton({
 
 interface PopOverAccountProps {
   account: Account;
-  onClick: () => void;
   checked?: boolean;
 }
 
-function PopOverAccount({
+function PopOverAccountButton({
   account,
   onClick,
   checked,
-}: PopOverAccountProps): JSX.Element {
+}: { onClick: () => void } & PopOverAccountProps): JSX.Element {
   return (
     <Ripple>
       <button type='button' onClick={onClick} className={styles.item}>
@@ -85,6 +84,34 @@ function PopOverAccount({
   );
 }
 
+function PopOverAccountLink({
+  account,
+  href,
+  checked,
+}: { href: string } & PopOverAccountProps): JSX.Element {
+  return (
+    /* eslint-disable jsx-a11y/anchor-is-valid */
+    <Ripple>
+      <div className={styles.item}>
+        <Link href={href}>
+          <a className={styles.itemLink}>
+            <div className={styles.avatar}>
+              <Avatar src={account.photo} />
+            </div>
+            {account.name}
+            {checked && (
+              <div className={styles.icon}>
+                <Icon icon='account_circle' />
+              </div>
+            )}
+          </a>
+        </Link>
+      </div>
+    </Ripple>
+    /* eslint-enable jsx-a11y/anchor-is-valid */
+  );
+}
+
 interface PopOverMenuProps {
   open: boolean;
   onClose: () => void;
@@ -96,7 +123,7 @@ export default function PopOverMenu({
   onClose,
   children,
 }: PopOverMenuProps): JSX.Element {
-  const { account, accounts, switchAccount, signout } = useAccount();
+  const { account, accounts, update, signout } = useAccount();
   const menuRef: React.RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
@@ -160,18 +187,17 @@ export default function PopOverMenu({
             <div className={styles.menu}>
               {accounts.map((a) =>
                 a.id === account.id ? (
-                  <Link href={a instanceof Org ? '/dashboard' : '/signup'}>
-                    <PopOverAccount
-                      account={account}
-                      onClick={() => {}}
-                      checked
-                    />
-                  </Link>
+                  <PopOverAccountLink
+                    checked
+                    key={a.id}
+                    account={account}
+                    href={a instanceof Org ? '/dashboard' : '/signup'}
+                  />
                 ) : (
-                  <PopOverAccount
+                  <PopOverAccountButton
                     key={a.id}
                     account={a}
-                    onClick={() => switchAccount(a.id)}
+                    onClick={() => update(a)}
                   />
                 )
               )}

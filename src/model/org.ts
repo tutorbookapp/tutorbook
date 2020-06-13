@@ -33,6 +33,10 @@ export interface OrgInterface extends AccountInterface {
 
 export type OrgJSON = OrgInterface;
 
+export function isOrgJSON(json: any): json is OrgJSON {
+  return (json as OrgJSON).members !== undefined;
+}
+
 export class Org extends Account implements OrgInterface {
   public members: string[] = [];
 
@@ -95,6 +99,7 @@ export class Org extends Account implements OrgInterface {
   }
 
   public toJSON(): OrgJSON {
-    return { ...this };
+    const { ref, ...rest } = this;
+    return { ...rest };
   }
 }

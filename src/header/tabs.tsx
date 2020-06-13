@@ -1,14 +1,19 @@
+import { Link } from '@tutorbook/intl';
+
 import React from 'react';
 
 import styles from './tabs.module.scss';
 
 interface TabProps {
   label: string;
-  onClick: () => void;
   active?: boolean;
 }
 
-function Tab({ label, onClick, active }: TabProps): JSX.Element {
+interface TabButtonProps extends TabProps {
+  onClick: () => void;
+}
+
+function TabButton({ label, onClick, active }: TabButtonProps): JSX.Element {
   const className = styles.tab + (active ? ` ${styles.active}` : '');
   return (
     <button role='tab' type='button' className={className} onClick={onClick}>
@@ -17,27 +22,46 @@ function Tab({ label, onClick, active }: TabProps): JSX.Element {
   );
 }
 
-interface TabsProps {
-  tabs: string[];
-  active: string;
-  onChange: (tab: string) => void;
+interface TabLinkProps extends TabProps {
+  href: string;
 }
 
-export default function Tabs({
-  tabs,
-  active,
-  onChange,
-}: TabsProps): JSX.Element {
+function TabLink({ label, href, active }: TabLinkProps): JSX.Element {
+  const className = styles.tab + (active ? ` ${styles.active}` : '');
+  if (href.indexOf('http') < 0)
+    return (
+      /* eslint-disable-next-line jsx-a11y/anchor-is-valid */
+      <Link href={href}>
+        <a className={className}>{label}</a>
+      </Link>
+    );
+  return (
+    <a href={href} className={className}>
+      {label}
+    </a>
+  );
+}
+
+export interface TabsProps {
+  tabs: (TabLinkProps | TabButtonProps)[];
+}
+
+function isTabLinkProps(
+  tab: TabLinkProps | TabButtonProps
+): tab is TabLinkProps {
+  return (tab as TabLinkProps).href !== undefined;
+}
+
+export default function Tabs({ tabs }: TabsProps): JSX.Element {
   return (
     <div className={styles.tabs}>
-      {tabs.map((tab: string) => (
-        <Tab
-          key={tab}
-          label={tab}
-          active={active === tab}
-          onClick={() => onChange(tab)}
-        />
-      ))}
+      {tabs.map((tab: TabLinkProps | TabButtonProps) =>
+        isTabLinkProps(tab) ? (
+          <TabLink key={tab.label} {...tab} />
+        ) : (
+          <TabButton key={tab.label} {...tab} />
+        )
+      )}
     </div>
   );
 }
