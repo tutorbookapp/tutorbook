@@ -6,4 +6,4 @@ export {
 } from 'react-intl';
 export type { IntlShape, MessageDescriptor as Msg } from 'react-intl';
 export * from './helpers';
-export * from './link';
+export { default as Link } from './link';

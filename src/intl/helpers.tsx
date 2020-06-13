@@ -53,7 +53,7 @@ export async function getIntlProps(context: {
  * Types were made easy to define thanks to the following blog post.
  * @see {@link https://bit.ly/3b7ZuZb}
  */
-export function withIntl<P extends Object>(
+export function withIntl<P extends Record<string, any>>(
   Component: React.ComponentType<P>
 ): React.FunctionComponent<P & IntlProps> {
   function WithIntl({ locale, messages, ...props }: IntlProps): JSX.Element {
