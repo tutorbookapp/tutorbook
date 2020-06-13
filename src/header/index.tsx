@@ -251,7 +251,9 @@ export function QueryHeader({
             <Logo />
             <DesktopTabs
               aspect={query.aspect}
-              onChange={(aspect: Aspect) => onChange({ ...query, aspect })}
+              onChange={(aspect: Aspect) =>
+                onChange(new Query({ ...query, aspect }))
+              }
             />
           </div>
           <div className={styles.center}>

@@ -138,7 +138,7 @@ export default async function search(
   const subjects: string = req.query.subjects as string;
   const availability: string = req.query.availability as string;
   const aspect: string = req.query.aspect as string;
-  const query: Query = {
+  const query: Query = new Query({
     langs: langs
       ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
       : [],
@@ -149,7 +149,7 @@ export default async function search(
       ? Availability.fromURLParam(availability)
       : new Availability(),
     aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
-  };
+  });
   const results: ReadonlyArray<User> = await searchUsers(query);
   console.log(`[DEBUG] Got ${results.length} results.`);
   res.status(200).send(

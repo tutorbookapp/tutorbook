@@ -47,7 +47,7 @@ export default function QueryForm({
         <SubjectSelect
           value={query.subjects}
           onChange={(newSubjects: Option<string>[]) =>
-            onChange({ ...query, subjects: newSubjects })
+            onChange(new Query({ ...query, subjects: newSubjects }))
           }
           className={className}
           label={msg(msgs.subjects)}
@@ -63,7 +63,7 @@ export default function QueryForm({
         <ScheduleInput
           value={query.availability}
           onChange={(newAvailability: Availability) =>
-            onChange({ ...query, availability: newAvailability })
+            onChange(new Query({ ...query, availability: newAvailability }))
           }
           className={className}
           label={msg(msgs.availability)}
@@ -77,7 +77,7 @@ export default function QueryForm({
         <LangSelect
           value={query.langs}
           onChange={(newLangs: Option<string>[]) =>
-            onChange({ ...query, langs: newLangs })
+            onChange(new Query({ ...query, langs: newLangs }))
           }
           className={className}
           label={msg(msgs.langs)}

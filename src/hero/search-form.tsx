@@ -6,22 +6,10 @@ import Router from 'next/router';
 import Button from '@tutorbook/button';
 import QueryForm from '@tutorbook/query-form';
 
-import url from 'url';
 import styles from './search-form.module.scss';
 
 interface SearchFormProps {
   aspect: Aspect;
-}
-
-function getSearchURL(query: Query): string {
-  return url.format({
-    pathname: '/search',
-    query: {
-      aspect: encodeURIComponent(query.aspect),
-      subjects: encodeURIComponent(JSON.stringify(query.subjects)),
-      availability: query.availability.toURLParam(),
-    },
-  });
 }
 
 const msgs: Record<string, Msg> = defMsg({
@@ -37,25 +25,37 @@ const msgs: Record<string, Msg> = defMsg({
 
 export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
   const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (msg: Msg) => intl.formatMessage(msg);
+  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
 
   const [submitting, setSubmitting] = React.useState<boolean>(false);
-  const [query, setQuery] = React.useState<Query>({
-    aspect: aspect || 'mentoring',
-    langs: [], // TODO: Pre-fill with current locale language.
-    subjects: [],
-    availability: new Availability(),
-  });
+  const [query, setQuery] = React.useState<Query>(
+    new Query({
+      aspect: aspect || 'mentoring',
+      langs: [], // TODO: Pre-fill with current locale language.
+      subjects: [],
+      availability: new Availability(),
+    })
+  );
 
-  React.useEffect(() => {
-    if (aspect && aspect !== query.aspect) setQuery({ ...query, aspect });
-  }, [aspect]);
+  React.useEffect(
+    () =>
+      setQuery((oldQuery: Query) => {
+        if (aspect && aspect !== oldQuery.aspect)
+          return new Query({ ...oldQuery, aspect });
+        return oldQuery;
+      }),
+    [aspect]
+  );
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setSubmitting(true);
-    Router.push(`/${intl.locale}${getSearchURL(query)}`);
+    // TODO: Show an intermediate loader above the top app bar as we redirect.
+    await Router.push(
+      '/[locale]/search/[[...slug]]',
+      `/${intl.locale}${query.url}`
+    );
     return false;
   };
 
@@ -64,7 +64,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       <QueryForm
         subjects
         availability={query.aspect === 'tutoring'}
-        onChange={(query: Query) => setQuery(query)}
+        onChange={(newQuery: Query) => setQuery(newQuery)}
         query={query}
       />
       <Button

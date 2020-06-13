@@ -1,19 +1,19 @@
-import React from 'react';
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 import to from 'await-to-js';
-
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
+import React from 'react';
+import Router from 'next/router';
 import Intercom from '@tutorbook/react-intercom';
 import Footer from '@tutorbook/footer';
 import Search from '@tutorbook/search';
 
 import { QueryHeader } from '@tutorbook/header';
-import { getIntlProps, withIntl } from '@tutorbook/intl';
+import { useIntl, getIntlProps, withIntl } from '@tutorbook/intl';
 import {
   ApiError,
   Option,
@@ -22,7 +22,7 @@ import {
   SearchResult,
   Query,
   Aspect,
-  QueryJSONInterface,
+  QueryJSON,
   Availability,
 } from '@tutorbook/model';
 
@@ -31,7 +31,7 @@ type DocumentReference = admin.firestore.DocumentReference;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 interface SearchPageProps {
-  query: QueryJSONInterface;
+  query: QueryJSON;
   results: ReadonlyArray<SearchResult>;
   user?: SearchResult;
 }
@@ -76,6 +76,25 @@ async function getSearchResults(
       }
     );
   }
+}
+
+function getQueryFromURLParams(params: ParsedUrlQuery): Query {
+  const langs: string = params.langs as string;
+  const aspect: string = params.aspect as string;
+  const subjects: string = params.subjects as string;
+  const availability: string = params.availability as string;
+  return new Query({
+    langs: langs
+      ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
+      : [],
+    subjects: subjects
+      ? (JSON.parse(decodeURIComponent(subjects)) as Option<string>[])
+      : [],
+    availability: availability
+      ? Availability.fromURLParam(availability)
+      : new Availability(),
+    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
+  });
 }
 
 /**
@@ -148,29 +167,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const langs: string = context.query.langs as string;
-  const aspect: string = context.query.aspect as string;
-  const subjects: string = context.query.subjects as string;
-  const availability: string = context.query.availability as string;
-  const query: Query = {
-    langs: langs
-      ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
-      : [],
-    subjects: subjects
-      ? (JSON.parse(decodeURIComponent(subjects)) as Option<string>[])
-      : [],
-    availability: availability
-      ? Availability.fromURLParam(availability)
-      : new Availability(),
-    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
-  };
+  const query: Query = getQueryFromURLParams(context.query);
   const url: string = new URL(
     '/api/search',
     `http:${context.req.headers.host as string}`
   ).href;
+
   return {
     props: {
-      query: JSON.parse(JSON.stringify(query)) as QueryJSONInterface,
+      query: JSON.parse(JSON.stringify(query)) as QueryJSON,
       results: JSON.parse(
         JSON.stringify(await getSearchResults(query, url))
       ) as SearchResult[],
@@ -189,25 +194,28 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
       User.fromJSON(searchResult as UserJSON)
     )
   );
-  const [qry, setQuery] = React.useState<Query>({
-    langs: query.langs,
-    subjects: query.subjects,
-    availability: Availability.fromJSON(query.availability),
-    aspect: query.aspect,
-  });
+  const [qry, setQuery] = React.useState<Query>(Query.fromJSON(query));
+  const { locale } = useIntl();
   const handleChange = async (newQuery: Query) => {
     // TODO: Store the availability filters in the tutoring aspect and then
     // re-fill them when we go back to that aspect. Or, just keep them in the
     // query and ignore them when searching for mentors (i.e. in `api/search`).
     const updatedQuery: Query =
       newQuery.aspect === 'mentoring'
-        ? { ...newQuery, availability: new Availability() }
+        ? new Query({ ...newQuery, availability: new Availability() })
         : newQuery;
     setQuery(updatedQuery);
     setSearching(true);
     setResults(await getSearchResults(updatedQuery));
     setSearching(false);
   };
+
+  React.useEffect(() => {
+    void Router.push('/[locale]/search/[[...slug]]', `/${locale}${qry.url}`, {
+      shallow: true,
+    });
+  }, [qry, locale]);
+
   return (
     <>
       <QueryHeader query={qry} onChange={handleChange} />
