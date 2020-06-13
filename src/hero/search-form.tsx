@@ -47,6 +47,13 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     [aspect]
   );
 
+  React.useEffect(() => {
+    void Router.prefetch(
+      '/[locale]/search/[[...slug]]',
+      `/${intl.locale}${query.url}`
+    );
+  }, [query, intl.locale]);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
