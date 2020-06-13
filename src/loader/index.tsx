@@ -13,11 +13,11 @@ export default function Loader({ active, checked }: Props): JSX.Element {
   const [closing, setClosing] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    // We have to wait a tick before changing the class for the animation to
-    // work. @see {@link https://stackoverflow.com/a/37643388/10023158}
+    // Workaround to ensure `visibility` stays `visible` while animating the
+    // opacity and elevation (during closing).
     if (!active) {
       setClosing(true);
-      setTimeout(() => setVisible(false), 500);
+      setTimeout(() => setVisible(false), 280);
     } else {
       setClosing(false);
       setVisible(true);

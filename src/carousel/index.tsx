@@ -24,9 +24,9 @@ export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
     <>
       {data && (
         <Carousel>
-          {data.map((user: User, index: number) => (
+          {data.map((user: User) => (
             <UserCard
-              key={user.id || index}
+              key={user.id || uuid()}
               user={user}
               onClick={() => onClick(user)}
             />

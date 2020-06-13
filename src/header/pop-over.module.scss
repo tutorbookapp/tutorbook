@@ -7,31 +7,16 @@ $triangle-height: 8px;
 $width: 225px;
 $offset: -2px;
 
-.anchor {
-  position: relative;
-
-  &.open::before {
-    content: '';
-    background: transparent;
-    position: fixed;
-    top: -100vh;
-    left: -100vw;
-    right: -100vw;
-    bottom: -100vh;
-    cursor: default;
-    z-index: 80;
-  }
-}
-
 .wrapper {
   position: absolute;
   top: 100%;
   left: 100%;
-  z-index: 90;
+  z-index: -1;
   opacity: 0;
+  visibility: hidden;
   transition: opacity elevation.$transition-duration
     elevation.$transition-timing-function;
-  will-change: opacity;
+  will-change: opacity, visibility;
 
   .inner {
     transform: translate(-100%);
@@ -132,12 +117,39 @@ $offset: -2px;
     border-top: 1px solid map.get(config.$colors, 'accents-2');
     margin: 8px 0;
   }
+}
 
-  &.open {
+.anchor {
+  position: relative;
+  height: 40px;
+
+  &.visible::before {
+    content: '';
+    background: transparent;
+    position: fixed;
+    top: -100vh;
+    left: -100vw;
+    right: -100vw;
+    bottom: -100vh;
+    cursor: default;
+    z-index: 80;
+  }
+
+  &.visible .wrapper {
     opacity: 1;
+    visibility: visible;
+    z-index: 90;
 
     .menu {
       @include elevation.elevation(8);
+    }
+  }
+
+  &.closing .wrapper {
+    opacity: 0;
+
+    .menu {
+      @include elevation.elevation(0);
     }
   }
 }

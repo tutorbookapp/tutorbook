@@ -43,7 +43,10 @@
   grid-gap: 10px;
   grid-template-columns: 1fr;
   max-width: config.$default-width;
+  width: 100vw;
   margin: 40px auto;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .formWidth .contentWrapper {

@@ -17,7 +17,7 @@
 
 .header {
   width: 100%;
-  max-width: config.$default-width + 48px;
+  max-width: config.$default-width;
   margin: auto;
   display: flex;
   flex-direction: row;
@@ -28,7 +28,7 @@
 }
 
 .formWidth .header {
-  max-width: config.$form-width + 48px;
+  max-width: config.$form-width;
 }
 
 .center {
@@ -58,7 +58,7 @@
   background: none;
   border: none;
   padding: 0;
-  margin: 0;
+  margin: 0 0 0 20px;
 }
 
 .logo {
@@ -155,29 +155,28 @@
   list-style: none;
   margin: 0;
   padding: 0;
+
+  .mobileLink {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+
+    .mobileLinkItem {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      font-size: 1rem;
+      height: 2 * 24px;
+      border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+      transition: background-color 0.2s ease-in-out;
+    }
+  }
 }
 
-.mobileLink {
-  color: inherit;
-  text-decoration: none;
-  cursor: pointer;
-  display: block;
-}
-
-.mobileLinkItem {
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  font-size: 1rem;
-  height: 2 * 24px;
-  border-bottom: 1px solid map.get(config.$colors, 'accents-2');
-  transition: background-color 0.2s ease-in-out;
-}
-
-.desktopLinks,
-.tabs {
+.desktopLinks {
   display: flex;
   flex-direction: row;
   opacity: 1;
@@ -186,57 +185,31 @@
   align-items: center;
   right: 50px;
   will-change: opacity;
-}
-
-.desktopLinks {
   margin-left: auto;
-}
 
-.desktopLink:last-child {
-  margin-right: -10px;
-}
+  .desktopLink {
+    font-size: 14px;
+    line-height: 24px;
+    font-family: map.get(config.$fonts, 'sans');
+    color: map.get(config.$colors, 'accents-5');
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+    position: relative;
+    padding: 20px 10px;
+    cursor: pointer;
 
-.desktopLink,
-.tab {
-  font-size: 14px;
-  line-height: 24px;
-  font-family: map.get(config.$fonts, 'sans');
-  color: map.get(config.$colors, 'accents-5');
-  text-decoration: none;
-  transition: color 0.2s ease-in-out;
-  position: relative;
-  padding: 20px 10px;
-  cursor: pointer;
-}
+    &:hover {
+      color: map.get(config.$colors, 'foreground');
+    }
 
-.desktopLink:hover,
-.tab:hover {
-  color: map.get(config.$colors, 'foreground');
-}
+    &.active {
+      color: map.get(config.$colors, 'foreground');
+    }
 
-.desktopLink.active,
-.tab.active {
-  color: map.get(config.$colors, 'foreground');
-}
-
-.tabsHidden {
-  opacity: 0;
-}
-
-.tab {
-  background: transparent;
-  border: none;
-}
-
-.tab.active::before {
-  content: '';
-  display: block;
-  position: absolute;
-  height: 0px;
-  right: 9px;
-  left: 9px;
-  bottom: 0px;
-  border-bottom: 2px solid;
+    &.signUpLink {
+      margin-right: -10px;
+    }
+  }
 }
 
 /*

@@ -248,8 +248,15 @@ export class User extends Account implements UserInterface {
     const allDefinedValues = Object.fromEntries(
       Object.entries(rest).filter(([key, val]) => val !== undefined)
     );
+    const allFilledValues = Object.fromEntries(
+      Object.entries(allDefinedValues).filter(([key, val]) => {
+        if (!val) return false;
+        if (typeof val === 'object' && !Object.keys(val).length) return false;
+        return true;
+      })
+    );
     return {
-      ...allDefinedValues,
+      ...allFilledValues,
       availability: availability.toFirestore(),
     };
   }

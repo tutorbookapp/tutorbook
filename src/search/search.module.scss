@@ -7,6 +7,7 @@
   max-width: config.$default-width;
   margin: 0 auto;
   padding: 48px 24px;
+  box-sizing: border-box;
 }
 
 .results {

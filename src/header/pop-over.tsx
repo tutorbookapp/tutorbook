@@ -4,7 +4,7 @@ import Avatar from '@tutorbook/avatar';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { Link } from '@tutorbook/intl';
-import { Account } from '@tutorbook/model';
+import { Org, Account } from '@tutorbook/model';
 import { useAccount } from '@tutorbook/firebase';
 
 import styles from './pop-over.module.scss';
@@ -100,6 +100,8 @@ export default function PopOverMenu({
   const menuRef: React.RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
+  const [visible, setVisible] = React.useState<boolean>(open);
+  const [closing, setClosing] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!menuRef.current) return () => {};
@@ -121,13 +123,28 @@ export default function PopOverMenu({
     return removeClickListener;
   });
 
+  React.useEffect(() => {
+    // Workaround to ensure `visibility` stays `visible` while animating the
+    // opacity and elevation (during closing).
+    if (!open) {
+      setClosing(true);
+      setTimeout(() => setVisible(false), 500);
+    } else {
+      setClosing(false);
+      setVisible(true);
+    }
+  }, [open]);
+
   return (
-    <div className={styles.anchor + (open ? ` ${styles.open}` : '')}>
+    <div
+      className={
+        styles.anchor +
+        (visible ? ` ${styles.visible}` : '') +
+        (closing ? ` ${styles.closing}` : '')
+      }
+    >
       {children}
-      <div
-        ref={menuRef}
-        className={styles.wrapper + (open ? ` ${styles.open}` : '')}
-      >
+      <div ref={menuRef} className={styles.wrapper}>
         <div className={styles.inner}>
           <div className={styles.up}>
             <div className={styles.triangle}>
@@ -143,7 +160,7 @@ export default function PopOverMenu({
             <div className={styles.menu}>
               {accounts.map((a) =>
                 a.id === account.id ? (
-                  <Link href='/signup'>
+                  <Link href={a instanceof Org ? '/dashboard' : '/signup'}>
                     <PopOverAccount
                       account={account}
                       onClick={() => {}}

@@ -100,8 +100,9 @@
 
 .wrapper {
   max-width: config.$form-width;
-  width: calc(100% - 48px);
+  padding: 0 24px;
   margin: 60px auto;
+  box-sizing: border-box;
 }
 
 .toggle {

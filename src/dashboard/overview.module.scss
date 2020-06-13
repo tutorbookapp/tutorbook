@@ -1,0 +1,47 @@
+@use 'title';
+@use '@tutorbook/styles/config';
+
+.results {
+  list-style: none;
+  padding: 0 24px;
+  max-width: config.$default-width;
+  margin: 48px auto;
+  box-sizing: border-box;
+}
+
+.wrapper {
+  @include title.wrapper;
+
+  .content {
+    @include title.content;
+    justify-content: space-between;
+
+    .left {
+      display: flex;
+
+      .avatar {
+        margin-right: 24px;
+        width: 102px;
+      }
+
+      .title {
+        @include title.title;
+        max-width: 50%;
+
+        .header {
+          @include title.header;
+          height: 54px;
+        }
+
+        .body {
+          @include title.body;
+          max-height: 48px;
+        }
+      }
+    }
+
+    .right {
+      display: block;
+    }
+  }
+}

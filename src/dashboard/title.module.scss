@@ -1,0 +1,21 @@
+@use 'title';
+
+.wrapper {
+  @include title.wrapper;
+
+  .content {
+    @include title.content;
+
+    .title {
+      @include title.title;
+
+      .header {
+        @include title.header;
+      }
+
+      .body {
+        @include title.body;
+      }
+    }
+  }
+}

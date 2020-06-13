@@ -98,6 +98,7 @@
     "algoliasearch": "^4.2.0",
     "await-to-js": "^2.1.1",
     "axios": "^0.19.2",
+    "dotdotdot-js": "^4.0.11",
     "firebase": "^7.14.2",
     "firebase-admin": "^8.11.0",
     "handlebars": "^4.7.6",

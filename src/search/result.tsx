@@ -11,8 +11,25 @@ interface Props {
   loading?: boolean;
 }
 
+const canUseDOM = !!(
+  typeof window !== 'undefined' &&
+  window.document &&
+  window.document.createElement
+);
+
 export default function Result({ user, onClick, loading }: Props): JSX.Element {
   const loaderClass: string = loading ? ` ${styles.loading}` : '';
+  const bioRef = React.createRef<HTMLDivElement>();
+  const truncateBio = async () => {
+    if (loading || !canUseDOM) return;
+    const Dotdotdot = (await import('dotdotdot-js')).default;
+    if (bioRef.current) new Dotdotdot(bioRef.current, { watch: true });
+  };
+
+  React.useEffect(() => {
+    void truncateBio();
+  });
+
   return (
     <Ripple onClick={onClick}>
       <li className={styles.listItem}>
@@ -20,7 +37,9 @@ export default function Result({ user, onClick, loading }: Props): JSX.Element {
           <Avatar loading={loading} src={(user || {}).photo} />
         </div>
         <div className={styles.name + loaderClass}>{user && user.name}</div>
-        <div className={styles.bio + loaderClass}>{user && user.bio}</div>
+        <div ref={bioRef} className={styles.bio + loaderClass}>
+          {user && user.bio}
+        </div>
       </li>
     </Ripple>
   );

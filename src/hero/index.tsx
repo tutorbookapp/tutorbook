@@ -4,8 +4,8 @@ import { Card } from '@rmwc/card';
 
 import React from 'react';
 import UserDialog from '@tutorbook/user-dialog';
-import Title from '@tutorbook/title';
 import Carousel from '@tutorbook/carousel';
+import Title from '@tutorbook/title';
 import SearchForm from './search-form';
 
 import styles from './hero.module.scss';

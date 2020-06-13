@@ -1,5 +1,12 @@
-import { Link } from '@tutorbook/intl';
-import { Account, Query, Aspect, Callback } from '@tutorbook/model';
+import {
+  useIntl,
+  defMsg,
+  Link,
+  IntlShape,
+  IntlHelper,
+  Msg,
+} from '@tutorbook/intl';
+import { Query, Aspect, Callback } from '@tutorbook/model';
 import { useAccount } from '@tutorbook/firebase';
 
 import React from 'react';
@@ -7,8 +14,20 @@ import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
 import Banner from './banner';
 import PopOver from './pop-over';
+import Tabs from './tabs';
 
 import styles from './header.module.scss';
+
+const tabLabels: Record<Aspect, Msg> = defMsg({
+  mentoring: {
+    id: 'header.tabs.mentoring',
+    defaultMessage: 'Mentors',
+  },
+  tutoring: {
+    id: 'header.tabs.tutoring',
+    defaultMessage: 'Tutors',
+  },
+});
 
 function DesktopTabs({
   aspect,
@@ -17,41 +36,33 @@ function DesktopTabs({
   aspect: Aspect;
   onChange: Callback<Aspect>;
 }): JSX.Element {
+  const intl: IntlShape = useIntl();
+  const aspectToTab: Record<Aspect, string> = Object.fromEntries(
+    Object.entries(tabLabels).map(([k, v]) => [k, intl.formatMessage(v)])
+  ) as Record<Aspect, string>;
+  const tabToAspect: Record<string, Aspect> = Object.fromEntries(
+    Object.entries(aspectToTab).map(([k, v]) => [v, k])
+  ) as Record<string, Aspect>;
   return (
-    <div className={styles.tabs}>
-      <button
-        role='tab'
-        type='button'
-        className={
-          styles.tab + (aspect === 'mentoring' ? ` ${styles.active}` : '')
-        }
-        onClick={() => onChange('mentoring')}
-      >
-        Mentoring
-      </button>
-      <button
-        role='tab'
-        type='button'
-        className={
-          styles.tab + (aspect === 'tutoring' ? ` ${styles.active}` : '')
-        }
-        onClick={() => onChange('tutoring')}
-      >
-        Tutoring
-      </button>
-    </div>
+    <Tabs
+      tabs={Object.values(aspectToTab)}
+      active={aspectToTab[aspect]}
+      onChange={(tab: string) => onChange(tabToAspect[tab])}
+    />
   );
 }
 
 function DesktopTabLinks(): JSX.Element {
+  const intl: IntlShape = useIntl();
+  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
-    <div className={styles.tabs}>
+    <div className={styles.desktopLinks}>
       <Link href='/search?aspect=mentoring'>
-        <a className={styles.tab}>Mentoring</a>
+        <a className={styles.desktopLink}>{msg(tabLabels.mentoring)}</a>
       </Link>
       <Link href='/search?aspect=tutoring'>
-        <a className={styles.tab}>Tutoring</a>
+        <a className={styles.desktopLink}>{msg(tabLabels.tutoring)}</a>
       </Link>
     </div>
     /* eslint-enable jsx-a11y/anchor-is-valid */
@@ -131,10 +142,40 @@ function DesktopNav(): JSX.Element {
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
       <Link href='/signup'>
-        <a className={styles.desktopLink}>Signup</a>
+        <a className={`${styles.desktopLink} ${styles.signUpLink}`}>Signup</a>
       </Link>
     </div>
     /* eslint-enable jsx-a11y/anchor-is-valid */
+  );
+}
+
+interface TabHeaderProps {
+  tabs: string[];
+  active: string;
+  onChange: (tab: string) => void;
+}
+
+export function TabHeader({
+  tabs,
+  active,
+  onChange,
+}: TabHeaderProps): JSX.Element {
+  return (
+    <>
+      <Banner />
+      <div className={styles.wrapper}>
+        <header className={styles.header}>
+          <div className={styles.left}>
+            <Logo />
+            <Tabs tabs={tabs} active={active} onChange={onChange} />
+          </div>
+          <div className={styles.right}>
+            <DesktopTabLinks />
+            <DesktopNav />
+          </div>
+        </header>
+      </div>
+    </>
   );
 }
 

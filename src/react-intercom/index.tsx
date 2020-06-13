@@ -4,7 +4,7 @@ import React from 'react';
 
 import { IntlShape, useIntl } from 'react-intl';
 import { AccountContext } from '@tutorbook/firebase';
-import { User } from '@tutorbook/model';
+import { Account } from '@tutorbook/model';
 
 const appID = 'faz7lcyb';
 const canUseDOM = !!(
