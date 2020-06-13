@@ -16,7 +16,7 @@ const canUseDOM = !!(
 
 export default function Overview(): JSX.Element {
   const { account } = useAccount();
-  const bioRef = React.createRef<HTMLParagraphElement>();
+  const bioRef = React.useRef<HTMLParagraphElement>(null);
   const truncateBio = async () => {
     if (!canUseDOM) return;
     const Dotdotdot = (await import('dotdotdot-js')).default;

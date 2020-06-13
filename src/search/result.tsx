@@ -19,7 +19,7 @@ const canUseDOM = !!(
 
 export default function Result({ user, onClick, loading }: Props): JSX.Element {
   const loaderClass: string = loading ? ` ${styles.loading}` : '';
-  const bioRef = React.createRef<HTMLDivElement>();
+  const bioRef = React.useRef<HTMLDivElement>(null);
   const truncateBio = async () => {
     if (loading || !canUseDOM) return;
     const Dotdotdot = (await import('dotdotdot-js')).default;
