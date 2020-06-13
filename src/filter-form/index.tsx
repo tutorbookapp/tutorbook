@@ -14,7 +14,7 @@ interface SearchButtonProps {
 function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
   return (
     <Ripple>
-      <button onClick={onClick} className={styles.searchButton}>
+      <button type='button' onClick={onClick} className={styles.searchButton}>
         {children}
       </button>
     </Ripple>
