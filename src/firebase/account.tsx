@@ -150,11 +150,15 @@ export function AccountProvider({
     if (process.browser) {
       const cacheString: string = localStorage.getItem('account') || '';
       if (!cacheString) return new User();
-      const cacheData: Record<keyof User | keyof Org, any> = JSON.parse(
-        cacheString
-      ) as Record<keyof User | keyof Org, any>;
-      if (isUserJSON(cacheData)) return User.fromJSON(cacheData);
-      if (isOrgJSON(cacheData)) return Org.fromJSON(cacheData);
+      try {
+        const cacheData: Record<keyof User | keyof Org, any> = JSON.parse(
+          cacheString
+        ) as Record<keyof User | keyof Org, any>;
+        if (isUserJSON(cacheData)) return User.fromJSON(cacheData);
+        if (isOrgJSON(cacheData)) return Org.fromJSON(cacheData);
+      } catch (err) {
+        console.warn(`[WARNING] Error parsing cache (${cacheString}):`, err);
+      }
     }
     return new User();
   });
@@ -220,6 +224,7 @@ export function AccountProvider({
     });
   }, [account]);
 
+  // TODO: Perhaps remove this backup as it could cause security issues.
   React.useEffect(() => {
     if (process.browser)
       localStorage.setItem('account', JSON.stringify(account));
