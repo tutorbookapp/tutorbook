@@ -25,14 +25,22 @@ export interface Option<T> {
 
 export type Callback<T> = (value: T) => void;
 
+// [aspect, subjects, availability, langs]
+export type QueryDepArray = [
+  Aspect,
+  Option<string>[],
+  Availability,
+  Option<string>[]
+];
+
 export class Query implements QueryInterface {
-  public langs: Option<string>[] = [];
+  public aspect: Aspect = 'mentoring';
 
   public subjects: Option<string>[] = [];
 
   public availability: Availability = new Availability();
 
-  public aspect: Aspect = 'mentoring';
+  public langs: Option<string>[] = [];
 
   public constructor(query: Partial<QueryInterface> = {}) {
     Object.entries(query).forEach(([key, val]: [string, any]) => {
@@ -50,6 +58,26 @@ export class Query implements QueryInterface {
         availability: this.availability.toURLParam(),
       },
     });
+  }
+
+  /**
+   * Turns this `Query` object into an array of "stable" values that can be
+   * passed around and compared to uniquely identify this `Query`.
+   * @example
+   * // You can do this because the `QueryDepArray` will be unique for each
+   * // different query.
+   * const { data: results } = useSWR(['/api/search', ...query.toDepArray]);
+   * @see {@link https://github.com/vercel/swr#multiple-arguments}
+   * @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#but-i-cant-put-this-function-inside-an-effect}
+   */
+  public toDepArray(): QueryDepArray {
+    const { aspect, subjects, availability, langs } = this;
+    return [aspect, subjects, availability, langs];
+  }
+
+  public static fromDepArray(arr: QueryDepArray): Query {
+    const [aspect, subjects, availability, langs] = arr;
+    return new Query({ aspect, subjects, availability, langs });
   }
 
   public static fromJSON(json: QueryJSON): Query {
