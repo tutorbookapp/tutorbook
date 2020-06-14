@@ -100,7 +100,7 @@ export function AccountProvider({
 
   // Fetch the latest `user` and `orgs` data from the `/api/account` endpoint.
   async function fetchData(url: string): Promise<AccountData> {
-    console.log(`[DEBUG] Fetching account data...`);
+    //console.log(`[DEBUG] Fetching account data...`);
     if (!auth.currentUser) throw new Error(`No signed-in user.`);
     const token: string = await auth.currentUser.getIdToken();
     const [err, res] = await to<
@@ -145,7 +145,7 @@ export function AccountProvider({
   const { data } = useSWR<AccountData>('/api/account', fetchData, {
     initialData,
   });
-  console.log('[DEBUG] Account data:', data);
+  //console.log('[DEBUG] Account data:', data);
   const [account, setAccount] = React.useState<Account>(() => {
     if (process.browser) {
       const cacheString: string = localStorage.getItem('account') || '';
@@ -168,12 +168,12 @@ export function AccountProvider({
   React.useEffect(
     () =>
       auth.onAuthStateChanged((firebaseUser: FirebaseUser | null) => {
-        console.log('[DEBUG] Firebase auth state changed:', firebaseUser);
+        //console.log('[DEBUG] Firebase auth state changed:', firebaseUser);
         if (firebaseUser)
           return mutate(
             '/api/account',
             async (prev: AccountData = initialData) => {
-              console.log('[DEBUG] Firebase user signed-in, updating user...');
+              //console.log('[DEBUG] Firebase user signed-in, updating user...');
               const user = new User({
                 ...(prev && firebaseUser.uid === prev.user.id ? prev.user : {}),
                 name: firebaseUser.displayName || '',
@@ -186,7 +186,7 @@ export function AccountProvider({
               return { ...prev, user };
             }
           );
-        console.log('[DEBUG] Firebase user signed-out, updating user...');
+        //console.log('[DEBUG] Firebase user signed-out, updating user...');
         return mutate('/api/account', { orgs: [], user: new User() });
       }),
     []
@@ -205,21 +205,21 @@ export function AccountProvider({
         account.id === prev.user.id &&
         !isEqual(account, prev.user)
       ) {
-        console.log('[DEBUG] Account was updated, updating user...');
+        //console.log('[DEBUG] Account was updated, updating user...');
         return { ...prev, user: account };
       }
 
       const orgs: Org[] = Array.from(prev.orgs);
       const idx = orgs.findIndex((org: Org) => org.id === account.id);
       if (account instanceof Org && idx >= 0 && !isEqual(account, orgs[idx])) {
-        console.log('[DEBUG] Account was updated, updating orgs...');
+        //console.log('[DEBUG] Account was updated, updating orgs...');
         orgs[idx] = account;
         return { ...prev, orgs };
       }
 
-      console.log(
-        '[DEBUG] Account was updated but it matched our current data, skipping local mutation...'
-      );
+      //console.log(
+      //'[DEBUG] Account was updated but it matched our current data, skipping local mutation...'
+      //);
       return prev;
     });
   }, [account]);
@@ -242,25 +242,25 @@ export function AccountProvider({
   React.useEffect(() => {
     setAccount((prevAccount: Account) => {
       if (!data) {
-        console.log('[DEBUG] Data was empty, reseting account...');
+        //console.log('[DEBUG] Data was empty, reseting account...');
         return new User();
       }
       if (data.user.id && !prevAccount.id) {
-        console.log('[DEBUG] User just signed-in, updating account...');
+        //console.log('[DEBUG] User just signed-in, updating account...');
         return data.user;
       }
       if (data.user.id === prevAccount.id && !isEqual(prevAccount, data.user)) {
-        console.log('[DEBUG] User was updated, updating account...');
+        //console.log('[DEBUG] User was updated, updating account...');
         return data.user;
       }
       const idx = data.orgs.findIndex((org: Org) => org.id === prevAccount.id);
       if (idx >= 0 && !isEqual(prevAccount, data.orgs[idx])) {
-        console.log('[DEBUG] Orgs were updated, updating account...');
+        //console.log('[DEBUG] Orgs were updated, updating account...');
         return data.orgs[idx];
       }
-      console.log(
-        '[DEBUG] Data was updated but it matched our current account, skipping state update...'
-      );
+      //console.log(
+      //'[DEBUG] Data was updated but it matched our current account, skipping state update...'
+      //);
       return prevAccount;
     });
   }, [data]);
