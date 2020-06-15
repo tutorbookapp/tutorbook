@@ -1,17 +1,14 @@
-import { Change, EventContext } from 'firebase-functions';
-import { SearchClient, SearchIndex } from 'algoliasearch';
-import {
-  DocumentData,
-  DocumentSnapshot,
-  Timestamp,
-} from '@google-cloud/firestore';
+import { config, Change, EventContext } from 'firebase-functions';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 
-import * as functions from 'firebase-functions';
-import algoliasearch from 'algoliasearch';
+import * as admin from 'firebase-admin';
+
+type DocumentSnapshot = admin.firestore.DocumentSnapshot;
+type Timestamp = admin.firestore.Timestamp;
 
 const client: SearchClient = algoliasearch(
-  functions.config().algolia.id,
-  functions.config().algolia.key
+  (config().algolia as Record<'id' | 'key', string>).id,
+  (config().algolia as Record<'id' | 'key', string>).key
 );
 
 interface Timeslot<T> {
@@ -60,33 +57,36 @@ function onlyFirstNameAndLastInitial(name: string): string {
  * @todo Perhaps we should also include a `photoURL` here (to make our search
  * results look more appealing).
  */
-export async function userUpdate(
+export default async function userUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
-  const indexId: string = context.params.partition + '-users';
+  const uid: string = context.params.user as string;
+  const indexId = `${context.params.partition as string}-users`;
   const index: SearchIndex = client.initIndex(indexId);
   if (!change.after.exists) {
-    console.log(`[DEBUG] Deleting user (${context.params.user})...`);
-    await index.deleteObject(context.params.user);
+    console.log(`[DEBUG] Deleting user (${uid})...`);
+    await index.deleteObject(uid);
   } else {
-    const user: DocumentData = change.after.data() as DocumentData;
-    console.log(`[DEBUG] Updating ${user.name} (${context.params.user})...`);
-    const ob: Record<string, any> = {
-      name: onlyFirstNameAndLastInitial(user.name),
+    const user = change.after.data() as Record<string, unknown>;
+    console.log(`[DEBUG] Updating ${user.name as string} (${uid})...`);
+    const ob: Record<string, unknown> = {
+      name: onlyFirstNameAndLastInitial(user.name as string),
       photo: user.photo,
       bio: user.bio,
-      availability: availabilityToDates(user.availability),
+      availability: availabilityToDates(
+        user.availability as Timeslot<Timestamp>[]
+      ),
       mentoring: user.mentoring,
       tutoring: user.tutoring,
       socials: user.socials,
       langs: user.langs,
-      objectID: context.params.user,
+      objectID: uid,
       featured: user.featured,
     };
     await index.saveObject(ob);
   }
-  index.setSettings({
+  await index.setSettings({
     attributesForFaceting: [
       'availability',
       'mentoring.subjects',
