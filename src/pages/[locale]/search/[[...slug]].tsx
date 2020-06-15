@@ -1,8 +1,5 @@
 import { GetServerSideProps } from 'next';
-import { ParsedUrlQuery } from 'querystring';
-import axios, { AxiosResponse, AxiosError } from 'axios';
 
-import to from 'await-to-js';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
@@ -15,7 +12,6 @@ import Search from '@tutorbook/search';
 import { QueryHeader } from '@tutorbook/header';
 import { useIntl, getIntlProps, withIntl } from '@tutorbook/intl';
 import {
-  ApiError,
   Option,
   User,
   UserJSON,
@@ -39,62 +35,6 @@ interface SearchPageProps {
 function onlyFirstAndLastInitial(name: string): string {
   const split: string[] = name.split(' ');
   return `${split[0]} ${split[split.length - 1][0]}.`;
-}
-
-async function getSearchResults(
-  query: Query,
-  url = '/api/search'
-): Promise<ReadonlyArray<User>> {
-  const [err, res] = await to<
-    AxiosResponse<SearchResult[]>,
-    AxiosError<ApiError>
-  >(
-    axios({
-      url,
-      method: 'get',
-      params: {
-        langs: encodeURIComponent(JSON.stringify(query.langs)),
-        subjects: encodeURIComponent(JSON.stringify(query.subjects)),
-        availability: query.availability.toURLParam(),
-        aspect: encodeURIComponent(query.aspect),
-      },
-    })
-  );
-  if (err && err.response) {
-    console.error(`[ERROR] ${err.response.data.msg}`);
-    throw new Error(err.response.data.msg);
-  } else if (err && err.request) {
-    console.error('[ERROR] Search REST API did not respond:', err.request);
-    throw new Error('Search REST API did not respond.');
-  } else if (err) {
-    console.error('[ERROR] While sending request:', err);
-    throw new Error(`While sending request: ${err.message}`);
-  } else {
-    return (res as AxiosResponse<SearchResult[]>).data.map(
-      (user: SearchResult) => {
-        return User.fromJSON(user as UserJSON);
-      }
-    );
-  }
-}
-
-function getQueryFromURLParams(params: ParsedUrlQuery): Query {
-  const langs: string = params.langs as string;
-  const aspect: string = params.aspect as string;
-  const subjects: string = params.subjects as string;
-  const availability: string = params.availability as string;
-  return new Query({
-    langs: langs
-      ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
-      : [],
-    subjects: subjects
-      ? (JSON.parse(decodeURIComponent(subjects)) as Option<string>[])
-      : [],
-    availability: availability
-      ? Availability.fromURLParam(availability)
-      : new Availability(),
-    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
-  });
 }
 
 /**
@@ -167,7 +107,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const query: Query = getQueryFromURLParams(context.query);
+  const query: Query = Query.fromURLParams(context.query);
   const url: string = new URL(
     '/api/search',
     `http:${context.req.headers.host as string}`
@@ -177,7 +117,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       query: JSON.parse(JSON.stringify(query)) as QueryJSON,
       results: JSON.parse(
-        JSON.stringify(await getSearchResults(query, url))
+        JSON.stringify(await query.search(url))
       ) as SearchResult[],
       user: JSON.parse(
         JSON.stringify(await getUser(context.params))
@@ -206,7 +146,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
         : newQuery;
     setQuery(updatedQuery);
     setSearching(true);
-    setResults(await getSearchResults(updatedQuery));
+    setResults(await updatedQuery.search());
     setSearching(false);
   };
 

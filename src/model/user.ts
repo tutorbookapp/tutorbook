@@ -11,7 +11,8 @@ import {
 } from './times';
 import { Account, AccountInterface } from './account';
 import { RoleAlias } from './appt';
-import { Aspect } from './query';
+
+export type Aspect = 'mentoring' | 'tutoring';
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
@@ -65,6 +66,40 @@ export interface SocialInterface {
 }
 
 /**
+ * A check is a single aspect of a verification.
+ * @example
+ * - A verified university email address (e.g. `@stanford.edu`).
+ * - A verified normal email address.
+ * - A verified social (@see {@link SocialTypeAlias}) account (e.g. LinkedIn).
+ * - A DBS check on file.
+ */
+export type Check =
+  | SocialTypeAlias
+  | 'email'
+  | 'dbs'
+  | 'academic-email'
+  | 'training';
+
+interface Resource {
+  created: Date;
+  updated: Date;
+}
+
+/**
+ * A verification is run by a non-profit organization (the `org`) by a member of
+ * that organization (the `user`). The non-profit takes full responsibility for
+ * their verification and liability for the user's actions.
+ * @property user - The uID of the user who ran the verification.
+ * @property org - The id of the non-profit org that the `user` belongs to.
+ * @property checks - An array of checks (@see {@link Check}) passed.
+ */
+export interface Verification extends Resource {
+  user: string;
+  org: string;
+  checks: Check[];
+}
+
+/**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
  * @property orgs - An array of the IDs of the orgs this user belongs to.
@@ -84,6 +119,7 @@ export interface UserInterface extends AccountInterface {
   langs: string[];
   parents: string[];
   socials: SocialInterface[];
+  verifications: Verification[];
   token?: string;
 }
 

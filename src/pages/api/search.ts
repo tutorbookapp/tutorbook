@@ -6,9 +6,6 @@ import {
   SearchResult,
   UserSearchHitAlias,
   Query,
-  Aspect,
-  Availability,
-  Option,
   Timeslot,
 } from '@tutorbook/model';
 
@@ -49,8 +46,31 @@ function getFilterStrings(query: Query): string[] {
     if (i === query.langs.length - 1) filterString += ')';
   }
   if (
+    (query.checks.length && query.langs.length) ||
+    (query.checks.length && query.subjects.length)
+  )
+    filterString += ' AND ';
+  for (let i = 0; i < query.checks.length; i += 1) {
+    filterString += i === 0 ? '(' : ' AND ';
+    filterString += `verifications.checks:"${query.checks[i].value}"`;
+    if (i === query.checks.length - 1) filterString += ')';
+  }
+  if (
+    (query.orgs.length && query.langs.length) ||
+    (query.orgs.length && query.subjects.length) ||
+    (query.orgs.length && query.checks.length)
+  )
+    filterString += ' AND ';
+  for (let i = 0; i < query.orgs.length; i += 1) {
+    filterString += i === 0 ? '(' : ' OR ';
+    filterString += `orgs:"${query.orgs[i].value}"`;
+    if (i === query.orgs.length - 1) filterString += ')';
+  }
+  if (
     (query.availability.length && query.langs.length) ||
-    (query.availability.length && query.subjects.length)
+    (query.availability.length && query.subjects.length) ||
+    (query.availability.length && query.checks.length) ||
+    (query.availability.length && query.orgs.length)
   )
     filterString += ' AND ';
   const filterStrings: string[] = [];
@@ -65,6 +85,16 @@ function getFilterStrings(query: Query): string[] {
 }
 
 /**
+ * This is our way of showing the most relevant search results first without
+ * paying for Algolia's visual editor.
+ * @todo Show verified results first.
+ * @see {@link https://www.algolia.com/doc/guides/managing-results/rules/merchandising-and-promoting/how-to/how-to-promote-with-optional-filters/}
+ */
+function getOptionalFilterStrings(query: Query): string[] {
+  return [`featured:${query.aspect}<score=2>`];
+}
+
+/**
  * Searches users based on the current filters by querying like:
  * > Show me all users whose availability contains a timeslot whose open time
  * > is equal to or before the desired open time and whose close time is equal
@@ -76,7 +106,7 @@ async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
   const results: User[] = [];
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
-  const optionalFilters: string[] = [`featured:${query.aspect}`];
+  const optionalFilters: string[] = getOptionalFilterStrings(query);
   console.log('[DEBUG] Filtering by:', { filterStrings, optionalFilters });
   await Promise.all(
     filterStrings.map(async (filterString) => {
@@ -134,22 +164,7 @@ export default async function search(
   res: NextApiResponse<SearchResult[]>
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
-  const langs: string = req.query.langs as string;
-  const subjects: string = req.query.subjects as string;
-  const availability: string = req.query.availability as string;
-  const aspect: string = req.query.aspect as string;
-  const query: Query = new Query({
-    langs: langs
-      ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
-      : [],
-    subjects: subjects
-      ? (JSON.parse(decodeURIComponent(subjects)) as Option<string>[])
-      : [],
-    availability: availability
-      ? Availability.fromURLParam(availability)
-      : new Availability(),
-    aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
-  });
+  const query: Query = Query.fromURLParams(req.query);
   const results: ReadonlyArray<User> = await searchUsers(query);
   console.log(`[DEBUG] Got ${results.length} results.`);
   res.status(200).send(
@@ -157,6 +172,7 @@ export default async function search(
       name: onlyFirstNameAndLastInitial(user.name),
       photo: user.photo,
       bio: user.bio,
+      orgs: user.orgs,
       availability: user.availability.toJSON(),
       mentoring: user.mentoring,
       tutoring: user.tutoring,
