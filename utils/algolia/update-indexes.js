@@ -12,6 +12,7 @@ const fs = require('fs');
 
 const subjects = async (id) => {
   const index = client.initIndex(id);
+  await index.clearObjects();
   index.setSettings({
     attributesForFaceting: ['filterOnly(grades)', 'filterOnly(name)'],
   });
@@ -37,6 +38,7 @@ const subjects = async (id) => {
 
 const langs = async () => {
   const index = client.initIndex('langs');
+  await index.clearObjects();
   const langs = parse(fs.readFileSync(`./langs.csv`), {
     columns: true,
     skip_empty_lines: true,
@@ -59,5 +61,19 @@ const langs = async () => {
   }
 };
 
-subjects('mentoring');
-subjects('tutoring');
+const main = async (id) => {
+  const index = client.initIndex(id);
+  await index.clearObjects();
+  const objs = parse(fs.readFileSync(`./${id}.csv`), {
+    columns: true,
+    skip_empty_lines: true,
+  }).filter((obj) => !!obj.objectID);
+  const [err, res] = await to(index.saveObjects(objs));
+  debugger;
+  if (err) {
+    console.error(`[ERROR] While saving ${id} objs:`, err);
+    debugger;
+  }
+};
+
+main('checks');
