@@ -4,6 +4,7 @@ import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios, { AxiosResponse, AxiosPromise } from 'axios';
+import { PupilRequestEmail, ParentRequestEmail } from '@tutorbook/emails';
 import {
   ApiError,
   User,
@@ -11,63 +12,18 @@ import {
   Appt,
   ApptJSONInterface,
 } from '@tutorbook/model';
-import { PupilRequestEmail, ParentRequestEmail } from '@tutorbook/emails';
-
-import { v4 as uuid } from 'uuid';
+import {
+  db,
+  auth,
+  DecodedIdToken,
+  DocumentSnapshot,
+  DocumentReference,
+} from '@tutorbook/admin';
 
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
-import * as admin from 'firebase-admin';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
-
-/**
- * Type aliases so that we don't have to type out the whole type. We could try
- * importing these directly from the `@firebase/firestore-types` or the
- * `@google-cloud/firestore` packages, but that's not recommended.
- * @todo Perhaps figure out a way to **only** import the type defs we need.
- */
-type DocumentReference = admin.firestore.DocumentReference;
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DecodedIdToken = admin.auth.DecodedIdToken;
-type Auth = admin.auth.Auth;
-type App = admin.app.App;
-
-/**
- * Initializes a new `firebase.admin` instance with limited database/Firestore
- * capabilities (using the `databaseAuthVariableOverride` option).
- * @see {@link https://firebase.google.com/docs/reference/admin/node/admin.AppOptions#optional-databaseauthvariableoverride}
- * @see {@link https://firebase.google.com/docs/database/admin/start#authenticate-with-limited-privileges}
- *
- * Also note that we use [UUID]{@link https://github.com/uuidjs/uuid} package to
- * generate a unique `firebaseAppId` every time this API is called.
- * @todo Lift this Firebase app definition to a top-level file that is imported
- * by all the `/api/` endpoints.
- */
-const firebase: App = admin.initializeApp(
-  {
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: (process.env.FIREBASE_ADMIN_KEY as string).replace(
-        /\\n/g,
-        '\n'
-      ),
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-    }),
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    databaseAuthVariableOverride: { uid: 'server' },
-  },
-  uuid()
-);
-
-const auth: Auth = firebase.auth();
-const db: DocumentReference =
-  process.env.NODE_ENV === 'development'
-    ? firebase.firestore().collection('partitions').doc('test')
-    : firebase.firestore().collection('partitions').doc('default');
 
 interface BrambleRes {
   APImethod: string;
