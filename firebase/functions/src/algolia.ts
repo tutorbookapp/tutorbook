@@ -78,6 +78,7 @@ export default async function userUpdate(
       availability: availabilityToDates(
         user.availability as Timeslot<Timestamp>[]
       ),
+      verifications: user.verifications,
       mentoring: user.mentoring,
       tutoring: user.tutoring,
       socials: user.socials,
@@ -95,6 +96,7 @@ export default async function userUpdate(
       'mentoring.searches',
       'tutoring.subjects',
       'tutoring.searches',
+      'verifications.checks',
       'langs',
       'featured',
     ].map((attr: string) => `filterOnly(${attr})`),
