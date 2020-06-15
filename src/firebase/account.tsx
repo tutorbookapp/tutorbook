@@ -47,6 +47,7 @@ interface AccountData {
 }
 
 export interface AccountContextValue {
+  token: string;
   account: Account;
   accounts: Account[];
   update: (account: Account) => void;
@@ -82,6 +83,7 @@ export interface AccountContextValue {
 export const AccountContext: React.Context<AccountContextValue> = React.createContext(
   {
     /* eslint-disable @typescript-eslint/no-unused-vars */
+    token: '',
     account: new Account(),
     accounts: [] as Account[],
     update: (account: Account) => {},
@@ -360,6 +362,7 @@ export function AccountProvider({
         signup,
         signupWithGoogle,
         account,
+        token: data ? data.user.token || '' : '',
         accounts: data ? [data.user, ...data.orgs] : [account],
         update: (newAccount: Account) => {
           if (canUseDOM) localStorage.setItem('account', newAccount.id);
