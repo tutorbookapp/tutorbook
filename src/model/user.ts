@@ -92,6 +92,7 @@ export interface SearchResult {
   name: string;
   photo: string;
   bio: string;
+  orgs: string[];
   availability: AvailabilityJSONAlias;
   mentoring: { subjects: string[]; searches: string[] };
   tutoring: { subjects: string[]; searches: string[] };
@@ -114,12 +115,9 @@ export function isUserJSON(json: any): json is UserJSON {
  * @todo Perhaps we don't want to have duplicate fields (i.e. the `objectID`
  * field is **always** going to be equal to the `uid` field).
  */
-export type UserSearchHitAlias = Omit<
-  UserJSON,
-  'orgs' | 'parents' | 'email' | 'phone' | 'id' | 'availability'
-> & { availability: AvailabilitySearchHitAlias } & {
-  featured?: Aspect[];
-} & ObjectWithObjectID;
+export type UserSearchHitAlias = Omit<SearchResult, 'id' | 'availability'> & {
+  availability: AvailabilitySearchHitAlias;
+} & { featured: Aspect[] } & ObjectWithObjectID;
 
 /**
  * Class that provides default values for our `UserInterface` data model.
@@ -224,7 +222,7 @@ export class User extends Account implements UserInterface {
     const { availability, objectID, ...rest } = hit;
     const user: Partial<UserInterface> = {
       ...rest,
-      availability: Availability.fromJSON(availability),
+      availability: Availability.fromSearchHit(availability),
       id: objectID,
     };
     return new User(user);

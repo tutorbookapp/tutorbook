@@ -3,6 +3,9 @@ import * as admin from 'firebase-admin';
 import firebase from '@tutorbook/firebase';
 import phone from 'phone';
 
+type DocumentReference = firebase.firestore.DocumentReference;
+type AdminDocumentReference = admin.firestore.DocumentReference;
+
 /**
  * Duplicate definition from the `@tutorbook/react-intercom` package. These are
  * all the valid datatypes for custom Intercom user attributes.

@@ -237,6 +237,10 @@ export class Timeslot implements TimeslotBase<Date> {
     return new Timeslot(new Date(json.from), new Date(json.to));
   }
 
+  public static fromSearchHit(hit: TimeslotSearchHitInterface): Timeslot {
+    return new Timeslot(new Date(hit.from), new Date(hit.to));
+  }
+
   public toURLParam(): string {
     return encodeURIComponent(JSON.stringify(this));
   }
@@ -376,7 +380,13 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
 
   public static fromJSON(json: AvailabilityJSONAlias): Availability {
     const availability: Availability = new Availability();
-    json && json.forEach((t) => availability.push(Timeslot.fromJSON(t)));
+    json.forEach((t) => availability.push(Timeslot.fromJSON(t)));
+    return availability;
+  }
+
+  public static fromSearchHit(hit: AvailabilitySearchHitAlias): Availability {
+    const availability: Availability = new Availability();
+    hit.forEach((t) => availability.push(Timeslot.fromSearchHit(t)));
     return availability;
   }
 
