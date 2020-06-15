@@ -35,7 +35,7 @@ function PeopleDashboardPage(): JSX.Element {
           {
             label: msg(msgs.people),
             active: true,
-            onClick: () => {},
+            href: '/dashboard/people',
           },
         ]}
       />
