@@ -74,6 +74,7 @@ export default async function userUpdate(
       name: onlyFirstNameAndLastInitial(user.name as string),
       photo: user.photo,
       bio: user.bio,
+      orgs: user.orgs,
       availability: availabilityToDates(
         user.availability as Timeslot<Timestamp>[]
       ),
@@ -88,6 +89,7 @@ export default async function userUpdate(
   }
   await index.setSettings({
     attributesForFaceting: [
+      'orgs',
       'availability',
       'mentoring.subjects',
       'mentoring.searches',
