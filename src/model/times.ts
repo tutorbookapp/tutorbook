@@ -53,16 +53,32 @@ export type ScheduleAlias = TimeslotInterface[];
 export type AvailabilityAlias = TimeslotInterface[];
 export type AvailabilityJSONAlias = TimeslotJSONInterface[];
 export type AvailabilityFirestoreAlias = TimeslotFirestoreInterface[];
+export type AvailabilitySearchHitAlias = TimeslotSearchHitInterface[];
+
+export interface TimeslotBase<T> {
+  from: T;
+  to: T;
+}
 
 /**
  * Interface that represents an availability time opening or slot. Note that
  * right now, we just assume that these are recurring weekly.
  */
-export interface TimeslotInterface {
-  from: Date;
-  to: Date;
-  recurrance?: 'monthly' | 'weekly' | 'daily';
-}
+export type TimeslotInterface = TimeslotBase<Date>;
+
+/**
+ * Interface that represents how `Timeslot`s are stored in our Firestore
+ * database; with `Timestamp`s instead of `Date`s (b/c they're more accurate).
+ */
+export type TimeslotFirestoreInterface = TimeslotBase<Timestamp>;
+
+/**
+ * Interface that results from serializing the `Timeslot` object as JSON (i.e.
+ * running `JSON.parse(JSON.stringify(timeslot))`) where the `from` and `to`
+ * fields are both ISO strings.
+ */
+export type TimeslotJSONInterface = TimeslotBase<string>;
+export type TimeslotSearchHitInterface = TimeslotBase<number>;
 
 /**
  * Class that represents a time opening or slot where tutoring can take place
@@ -70,7 +86,7 @@ export interface TimeslotInterface {
  * some useful methods for comparison and a better `toString` representation
  * than `[Object object]`.
  */
-export class Timeslot implements TimeslotInterface {
+export class Timeslot implements TimeslotBase<Date> {
   /**
    * Constructor that takes advantage of Typescript's shorthand assignment.
    * @see {@link https://bit.ly/2XjNmB5}
@@ -232,25 +248,6 @@ export class Timeslot implements TimeslotInterface {
       new Date(params.get('to') as string)
     );
   }
-}
-
-/**
- * Interface that represents how `Timeslot`s are stored in our Firestore
- * database; with `Timestamp`s instead of `Date`s (b/c they're more accurate).
- */
-export interface TimeslotFirestoreInterface {
-  from: Timestamp;
-  to: Timestamp;
-}
-
-/**
- * Interface that results from serializing the `Timeslot` object as JSON (i.e.
- * running `JSON.parse(JSON.stringify(timeslot))`) where the `from` and `to`
- * fields are both ISO strings.
- */
-export interface TimeslotJSONInterface {
-  from: string;
-  to: string;
 }
 
 /**

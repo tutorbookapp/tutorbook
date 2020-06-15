@@ -4,9 +4,14 @@ import firebase from '@tutorbook/firebase';
 import url from 'url';
 
 import { ObjectWithObjectID } from '@algolia/client-search';
-import { RoleAlias } from './appt';
-import { Availability, AvailabilityJSONAlias } from './times';
+import {
+  Availability,
+  AvailabilitySearchHitAlias,
+  AvailabilityJSONAlias,
+} from './times';
 import { Account, AccountInterface } from './account';
+import { RoleAlias } from './appt';
+import { Aspect } from './query';
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
@@ -109,7 +114,12 @@ export function isUserJSON(json: any): json is UserJSON {
  * @todo Perhaps we don't want to have duplicate fields (i.e. the `objectID`
  * field is **always** going to be equal to the `uid` field).
  */
-export type UserSearchHitAlias = UserJSON & ObjectWithObjectID;
+export type UserSearchHitAlias = Omit<
+  UserJSON,
+  'orgs' | 'parents' | 'email' | 'phone' | 'id' | 'availability'
+> & { availability: AvailabilitySearchHitAlias } & {
+  featured?: Aspect[];
+} & ObjectWithObjectID;
 
 /**
  * Class that provides default values for our `UserInterface` data model.

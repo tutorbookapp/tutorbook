@@ -10,6 +10,7 @@ import { AccountInterface, Account } from './account';
  * `@google-cloud/firestore` packages, but that's not recommended.
  * @todo Perhaps figure out a way to **only** import the type defs we need.
  */
+type DocumentData = firebase.firestore.DocumentData;
 type SnapshotOptions = firebase.firestore.SnapshotOptions;
 type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -91,7 +92,19 @@ export class Org extends Account implements OrgInterface {
     snapshot: DocumentSnapshot | AdminDocumentSnapshot,
     options?: SnapshotOptions
   ): Org {
-    return new Org(Account.fromFirestore(snapshot, options));
+    const orgData: DocumentData | undefined = snapshot.data(options);
+    if (orgData) {
+      return new Org({
+        ...orgData,
+        ref: snapshot.ref,
+        id: snapshot.id,
+      });
+    }
+    console.warn(
+      `[WARNING] Tried to create account (${snapshot.ref.id}) from ` +
+        'non-existent Firestore document.'
+    );
+    return new Org();
   }
 
   public static fromJSON(json: OrgJSON): Org {
