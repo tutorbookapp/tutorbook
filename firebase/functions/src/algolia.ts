@@ -46,6 +46,18 @@ function onlyFirstNameAndLastInitial(name: string): string {
 }
 
 /**
+ * We use Algolia's tagging feature to support some otherwise impossible
+ * querying logic (i.e. the logic is run here, during indexing time, and then
+ * can be queried later).
+ */
+function getTags(user: Record<string, unknown>): string[] {
+  const tags: string[] = [];
+  if (!((user.verifications as unknown[]) || []).length)
+    tags.push('is_not_vetted');
+  return tags;
+}
+
+/**
  * We only add non-sensitive information to our Algolia search index (because it
  * is publicly available via our `/api/search` REST API endpoint):
  * - User's first name and last initial
@@ -64,9 +76,12 @@ export default async function userUpdate(
   const uid: string = context.params.user as string;
   const indexId = `${context.params.partition as string}-users`;
   const index: SearchIndex = client.initIndex(indexId);
+  const adminIndexId = `${context.params.partition as string}-admin-users`;
+  const adminIndex: SearchIndex = client.initIndex(adminIndexId);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting user (${uid})...`);
     await index.deleteObject(uid);
+    await adminIndex.deleteObject(uid);
   } else {
     const user = change.after.data() as Record<string, unknown>;
     console.log(`[DEBUG] Updating ${user.name as string} (${uid})...`);
@@ -87,8 +102,10 @@ export default async function userUpdate(
       featured: user.featured,
     };
     await index.saveObject(ob);
+    const adminOb: Record<string, unknown> = { ...ob, _tags: getTags(user) };
+    await adminIndex.saveObject(adminOb);
   }
-  await index.setSettings({
+  const settings = {
     attributesForFaceting: [
       'orgs',
       'availability',
@@ -100,5 +117,7 @@ export default async function userUpdate(
       'langs',
       'featured',
     ].map((attr: string) => `filterOnly(${attr})`),
-  });
+  };
+  await index.setSettings(settings);
+  await adminIndex.setSettings(settings);
 }
