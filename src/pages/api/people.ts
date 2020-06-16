@@ -1,8 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Org, User, UserJSON, ApiError } from '@tutorbook/model';
-import { db, auth, DecodedIdToken, DocumentSnapshot } from '@tutorbook/admin';
+import { SearchHit, Org, User, UserJSON, ApiError } from '@tutorbook/model';
+import { db, auth, DecodedIdToken } from '@tutorbook/admin';
 
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import to from 'await-to-js';
+
+const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
+const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
+
+const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
+const index: SearchIndex = client.initIndex(
+  process.env.NODE_ENV === 'development'
+    ? 'test-admin-users'
+    : 'default-admin-users'
+);
 
 export default async function people(
   req: NextApiRequest,
@@ -41,11 +52,10 @@ export default async function people(
         );
       } else {
         const users: UserJSON[] = (
-          await db
-            .collection('users')
-            .where('orgs', 'array-contains', org.id)
-            .get()
-        ).docs.map((doc: DocumentSnapshot) => User.fromFirestore(doc).toJSON());
+          await index.search<SearchHit>('', {
+            filters: `orgs:${org.id} AND is_not_vetted`,
+          })
+        ).hits.map((hit: SearchHit) => User.fromSearchHit(hit).toJSON());
         res.status(200).send(users);
       }
     }
