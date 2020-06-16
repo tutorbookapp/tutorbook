@@ -13,17 +13,21 @@ $margin: 20px;
   border-top: none;
   cursor: pointer;
   text-align: initial;
-}
 
-.card:first-child {
-  border-top: 1px solid map.get(config.$colors, 'accents-2');
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-}
+  &.disabled {
+    cursor: not-allowed;
+  }
 
-.card:last-child {
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
+  &:first-child {
+    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+
+  &:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
 }
 
 .img {
@@ -59,11 +63,11 @@ $margin: 20px;
   top: $margin + 24px;
   width: calc(100% - #{$height + $margin});
   height: $height - (2 * $margin + 24px);
-}
 
-.bio.loading {
-  height: $height - (3 * $margin + 24px);
-  top: 2 * $margin + 24px;
+  &.loading {
+    height: $height - (3 * $margin + 24px);
+    top: 2 * $margin + 24px;
+  }
 }
 
 .loading {

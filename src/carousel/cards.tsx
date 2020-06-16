@@ -33,8 +33,8 @@ export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
 
 export function LoadingCard(): JSX.Element {
   return (
-    <Ripple>
-      <div className={styles.card}>
+    <Ripple disabled>
+      <div className={`${styles.card} ${styles.disabled}`}>
         <div className={styles.img}>
           <Avatar loading />
         </div>
