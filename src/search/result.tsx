@@ -31,8 +31,8 @@ export default function Result({ user, onClick, loading }: Props): JSX.Element {
   });
 
   return (
-    <Ripple onClick={onClick}>
-      <li className={styles.listItem}>
+    <Ripple disabled={loading} onClick={onClick}>
+      <li className={styles.listItem + (loading ? ` ${styles.disabled}` : '')}>
         <div className={styles.img}>
           <Avatar loading={loading} src={(user || {}).photo} />
         </div>
