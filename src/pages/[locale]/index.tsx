@@ -5,6 +5,7 @@ import { GetStaticProps, GetStaticPaths } from 'next';
 import { Aspect } from '@tutorbook/model';
 import { AspectHeader } from '@tutorbook/header';
 
+import Banner from '@tutorbook/banner';
 import Intercom from '@tutorbook/react-intercom';
 import Hero from '@tutorbook/hero';
 import About from '@tutorbook/about';
@@ -14,6 +15,7 @@ function IndexPage(): JSX.Element {
   const [aspect, setAspect] = React.useState<Aspect>('mentoring');
   return (
     <>
+      <Banner />
       <AspectHeader
         aspect={aspect}
         onChange={(newAspect: Aspect) => setAspect(newAspect)}

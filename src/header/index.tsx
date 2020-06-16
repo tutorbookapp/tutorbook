@@ -12,7 +12,6 @@ import { useAccount } from '@tutorbook/firebase';
 import React from 'react';
 import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
-import Banner from './banner';
 import PopOver from './pop-over';
 import Tabs, { TabsProps } from './tabs';
 
@@ -155,21 +154,18 @@ function DesktopNav(): JSX.Element {
 
 export function TabHeader(props: TabsProps): JSX.Element {
   return (
-    <>
-      <Banner />
-      <div className={styles.wrapper}>
-        <header className={styles.header}>
-          <div className={styles.left}>
-            <Logo />
-            <Tabs {...props} />
-          </div>
-          <div className={styles.right}>
-            <DesktopTabLinks />
-            <DesktopNav />
-          </div>
-        </header>
-      </div>
-    </>
+    <div className={styles.wrapper}>
+      <header className={styles.header}>
+        <div className={styles.left}>
+          <Logo />
+          <Tabs {...props} />
+        </div>
+        <div className={styles.right}>
+          <DesktopTabLinks />
+          <DesktopNav />
+        </div>
+      </header>
+    </div>
   );
 }
 
@@ -179,23 +175,18 @@ interface LinkHeaderProps {
 
 export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
   return (
-    <>
-      <Banner />
-      <div
-        className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}
-      >
-        <header className={styles.header}>
-          <div className={styles.left}>
-            <Logo />
-            <DesktopTabLinks />
-          </div>
-          <div className={styles.right}>
-            <MobileNav />
-            <DesktopNav />
-          </div>
-        </header>
-      </div>
-    </>
+    <div className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}>
+      <header className={styles.header}>
+        <div className={styles.left}>
+          <Logo />
+          <DesktopTabLinks />
+        </div>
+        <div className={styles.right}>
+          <MobileNav />
+          <DesktopNav />
+        </div>
+      </header>
+    </div>
   );
 }
 
@@ -210,23 +201,18 @@ export function AspectHeader({
   formWidth,
 }: AspectHeaderProps): JSX.Element {
   return (
-    <>
-      <Banner />
-      <div
-        className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}
-      >
-        <header className={styles.header}>
-          <div className={styles.left}>
-            <Logo />
-            <DesktopTabs aspect={aspect} onChange={onChange} />
-          </div>
-          <div className={styles.right}>
-            <MobileNav />
-            <DesktopNav />
-          </div>
-        </header>
-      </div>
-    </>
+    <div className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}>
+      <header className={styles.header}>
+        <div className={styles.left}>
+          <Logo />
+          <DesktopTabs aspect={aspect} onChange={onChange} />
+        </div>
+        <div className={styles.right}>
+          <MobileNav />
+          <DesktopNav />
+        </div>
+      </header>
+    </div>
   );
 }
 
@@ -241,30 +227,25 @@ export function QueryHeader({
   formWidth,
 }: QueryHeaderProps): JSX.Element {
   return (
-    <>
-      <Banner />
-      <div
-        className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}
-      >
-        <header className={styles.header}>
-          <div className={styles.left}>
-            <Logo />
-            <DesktopTabs
-              aspect={query.aspect}
-              onChange={(aspect: Aspect) =>
-                onChange(new Query({ ...query, aspect }))
-              }
-            />
-          </div>
-          <div className={styles.center}>
-            <FilterForm query={query} onChange={onChange} />
-          </div>
-          <div className={styles.right}>
-            <MobileNav />
-            <DesktopNav />
-          </div>
-        </header>
-      </div>
-    </>
+    <div className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}>
+      <header className={styles.header}>
+        <div className={styles.left}>
+          <Logo />
+          <DesktopTabs
+            aspect={query.aspect}
+            onChange={(aspect: Aspect) =>
+              onChange(new Query({ ...query, aspect }))
+            }
+          />
+        </div>
+        <div className={styles.center}>
+          <FilterForm query={query} onChange={onChange} />
+        </div>
+        <div className={styles.right}>
+          <MobileNav />
+          <DesktopNav />
+        </div>
+      </header>
+    </div>
   );
 }
