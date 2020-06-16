@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParsedUrlQuery } from 'querystring';
-import { IntlProvider, MessageDescriptor } from 'react-intl';
+import { IntlShape, IntlProvider, MessageDescriptor } from 'react-intl';
 
 import localeConfig from './config.json';
 
@@ -78,4 +78,4 @@ export function withIntl<P extends Record<string, any>>(
  * has to be defined within the React tree using a valid `IntlShape` object
  * which is why it can't just be defined here).
  */
-export type IntlHelper = (msg: MessageDescriptor) => string;
+export type IntlHelper = IntlShape['formatMessage'];

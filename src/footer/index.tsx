@@ -1,5 +1,6 @@
 import React from 'react';
 /* import NextLink from 'next/link'; */
+import { socials } from '@tutorbook/intl/msgs';
 import {
   useIntl,
   IntlShape,
@@ -60,33 +61,6 @@ import styles from './footer.module.scss';
  *  </nav>
  *</ul>
  */
-
-const socials: Record<string, MessageDescriptor> = defineMessages({
-  facebook: {
-    id: 'socials.facebook',
-    defaultMessage: 'Facebook',
-  },
-  instagram: {
-    id: 'socials.instagram',
-    defaultMessage: 'Instagram',
-  },
-  twitter: {
-    id: 'socials.twitter',
-    defaultMessage: 'Twitter',
-  },
-  linkedin: {
-    id: 'socials.linkedin',
-    defaultMessage: 'LinkedIn',
-  },
-  github: {
-    id: 'socials.github',
-    defaultMessage: 'GitHub',
-  },
-  website: {
-    id: 'socials.website',
-    defaultMessage: 'Website',
-  },
-});
 
 const labels: Record<string, MessageDescriptor> = defineMessages({
   lang: {
