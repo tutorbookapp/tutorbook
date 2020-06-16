@@ -27,8 +27,11 @@
 @use '@material/tab/mdc-tab';
 @use '@material/icon-button/mdc-icon-button';
 @use '@material/ripple/mdc-ripple';
+@use '@material/switch/mdc-switch';
 @use '@rmwc/avatar/avatar';
 @use '@rmwc/tooltip/tooltip';
+@use '@rmwc/select/select';
+@use '@rmwc/data-table/data-table';
 
 @include typography.core-styles;
 @import url('https://fonts.googleapis.com/css?family=Inter:100,200,300,400,500,600,700,800,900');
