@@ -30,7 +30,7 @@ import {
 
 import to from 'await-to-js';
 
-import styles from './user-dialog.module.scss';
+import styles from './request-dialog.module.scss';
 
 interface UserDialogState {
   time?: Timeslot;
@@ -302,38 +302,38 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
     const { account } = this.context;
     const labels: Record<string, MessageDescriptor> = defineMessages({
       parentName: {
-        id: 'user-dialog.parent-name',
+        id: 'request-dialog.parent-name',
         defaultMessage: "Your parent's name",
       },
       parentEmail: {
-        id: 'user-dialog.parent-email',
+        id: 'request-dialog.parent-email',
         defaultMessage: "Your parent's email address",
       },
       subjects: {
-        id: 'user-dialog.subjects',
+        id: 'request-dialog.subjects',
         description: 'Label for the tutoring lesson subjects field.',
         defaultMessage: 'Subjects',
       },
       time: {
-        id: 'user-dialog.time',
+        id: 'request-dialog.time',
         description: 'Label for the tutoring lesson time field.',
         defaultMessage: 'Time',
       },
       timeErr: {
-        id: 'user-dialog.time-err',
+        id: 'request-dialog.time-err',
         description:
           "Error message telling the user that the person they're requesting" +
           " isn't available during the selected times.",
         defaultMessage: '{name} is only available {availability}.',
       },
       topic: {
-        id: 'user-dialog.topic',
+        id: 'request-dialog.topic',
         description:
           'Label for the tutoring lesson topic (previously message) field.',
         defaultMessage: 'Topic',
       },
       submit: {
-        id: 'user-dialog.submit',
+        id: 'request-dialog.submit',
         description:
           'Label for the submit button that creates the appointment.',
         defaultMessage: 'Request {name}',

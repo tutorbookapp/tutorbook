@@ -3,7 +3,7 @@ import { User, Aspect } from '@tutorbook/model';
 import { Card } from '@rmwc/card';
 
 import React from 'react';
-import UserDialog from '@tutorbook/user-dialog';
+import RequestDialog from '@tutorbook/request-dialog';
 import Carousel from '@tutorbook/carousel';
 import Title from '@tutorbook/title';
 import SearchForm from './search-form';
@@ -28,7 +28,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
     <div className={styles.hero}>
       <div className={styles.wrapper}>
         {viewing && (
-          <UserDialog
+          <RequestDialog
             user={viewing}
             aspect={aspect}
             onClosed={() => setViewing(undefined)}

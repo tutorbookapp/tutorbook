@@ -5,7 +5,7 @@ import { Callback, Option, Timeslot, User, Query } from '@tutorbook/model';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from '@tutorbook/carousel';
-import UserDialog from '@tutorbook/user-dialog';
+import RequestDialog from '@tutorbook/request-dialog';
 import Utils from '@tutorbook/utils';
 import Result from './result';
 import Form from './form';
@@ -63,7 +63,7 @@ export default function Search({
   return (
     <div className={styles.wrapper}>
       {viewing && (
-        <UserDialog
+        <RequestDialog
           user={viewing}
           aspect={query.aspect}
           onClosed={() => setViewing(undefined)}
