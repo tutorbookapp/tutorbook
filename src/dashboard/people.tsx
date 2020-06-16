@@ -3,11 +3,14 @@ import useSWR from 'swr';
 import to from 'await-to-js';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
+import { Snackbar } from '@rmwc/snackbar';
 import React from 'react';
+import CreateUserDialog from '@tutorbook/create-user-dialog';
 import Result from '@tutorbook/search/result';
 import VerificationDialog from '@tutorbook/verification-dialog';
 import { useAccount } from '@tutorbook/firebase';
 import { ApiError, User, UserJSON } from '@tutorbook/model';
+import { IntercomAPI } from '@tutorbook/react-intercom';
 import Title from './title';
 
 import styles from './people.module.scss';
@@ -47,6 +50,10 @@ export default function People(): JSX.Element {
     fetchPeopleData
   );
 
+  const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
+  const [viewingCreateUserDialog, setViewingCreateUserDialog] = React.useState<
+    boolean
+  >(false);
   const [viewing, setViewing] = React.useState<User | undefined>();
 
   return (
@@ -57,9 +64,37 @@ export default function People(): JSX.Element {
           onClosed={() => setViewing(undefined)}
         />
       )}
+      {viewingCreateUserDialog && (
+        <CreateUserDialog onClosed={() => setViewingCreateUserDialog(false)} />
+      )}
+      {viewingSnackbar && (
+        <Snackbar
+          open={viewingSnackbar}
+          className={styles.snackbar}
+          onClose={() => setViewingSnackbar(false)}
+          message='Link copied to clipboard.'
+          dismissIcon
+          leading
+        />
+      )}
       <Title
         header='People'
         body='Pending sign-ups that have yet to be vetted.'
+        actions={[
+          {
+            label: 'Create user',
+            onClick: () => setViewingCreateUserDialog(true),
+          },
+          {
+            label: 'Import data',
+            onClick: () =>
+              IntercomAPI('showNewMessage', "I'd like to import data."),
+          },
+          {
+            label: 'Share sign-up link',
+            onClick: () => setViewingSnackbar(true),
+          },
+        ]}
       />
       <ul className={styles.results}>
         {!data &&
@@ -75,15 +110,7 @@ export default function People(): JSX.Element {
             />
           ))}
         {data && !data.length && (
-          <div className={styles.noResults}>
-            <div className={styles.content}>
-              <h3 className={styles.header}>No Pending Sign-Ups</h3>
-              <p className={styles.body}>
-                Go to the search view to see the sign-ups you've already
-                verified.
-              </p>
-            </div>
-          </div>
+          <div className={styles.empty}>NO PEOPLE TO SHOW</div>
         )}
       </ul>
     </>

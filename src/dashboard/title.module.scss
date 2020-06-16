@@ -1,4 +1,6 @@
 @use 'title';
+@use 'sass:map';
+@use '@tutorbook/styles/config';
 
 .wrapper {
   @include title.wrapper;
@@ -15,6 +17,66 @@
 
       .body {
         @include title.body;
+      }
+    }
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: row;
+    -moz-box-pack: justify;
+    justify-content: space-between;
+    -mox-box-align: center;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 0 24px;
+    width: config.$default-width;
+    max-width: 100%;
+    margin: 0 auto 24px;
+    box-sizing: border-box;
+
+    .actions {
+      display: flex;
+
+      .button {
+        min-width: auto;
+        height: 24px;
+        line-height: 22px;
+        padding: 0 10px;
+        -moz-appearance: none;
+        position: relative;
+        display: inline-flex;
+        -moz-box-align: center;
+        align-items: center;
+        -moz-box-pack: center;
+        justify-content: center;
+        text-align: center;
+        text-decoration: none;
+        white-space: nowrap;
+        font-weight: 500;
+        font-family: map.get(config.$fonts, 'sans');
+        border-radius: 4px;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+        margin: 0px;
+        color: map.get(config.$colors, 'accents-5');
+        background-color: map.get(config.$colors, 'background');
+        border: 1px solid map.get(config.$colors, 'accents-2');
+        transition: all 0.2s ease 0s;
+        user-select: none;
+        cursor: pointer;
+        overflow: hidden;
+        outline: currentcolor none medium;
+        box-sizing: border-box;
+
+        &:hover {
+          color: map.get(config.$colors, 'foreground');
+          border: 1px solid map.get(config.$colors, 'foreground');
+        }
+
+        &:not(:first-child) {
+          margin-left: 10px;
+        }
       }
     }
   }

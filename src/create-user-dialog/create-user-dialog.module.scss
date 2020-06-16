@@ -1,0 +1,15 @@
+@use '@tutorbook/styles/typography';
+
+.content {
+  padding: 32px;
+
+  .header {
+    @include typography.typography('headline5');
+    margin: 0 0 16px;
+  }
+
+  .body {
+    @include typography.typography('body1');
+    margin: 0;
+  }
+}

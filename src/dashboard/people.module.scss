@@ -1,7 +1,7 @@
-@use 'title';
 @use 'sass:map';
 @use '@tutorbook/styles/config';
 @use '@tutorbook/styles/typography';
+@use '@material/snackbar/_index.scss' as snackbar;
 
 .results {
   list-style: none;
@@ -11,54 +11,19 @@
   box-sizing: border-box;
 }
 
-.wrapper {
-  @include title.wrapper;
-
-  .content {
-    @include title.content;
-
-    .title {
-      @include title.title;
-      max-width: 50%;
-
-      .avatar {
-        width: 100px;
-      }
-
-      .header {
-        @include title.header;
-      }
-
-      .body {
-        @include title.body;
-      }
-    }
-  }
+.empty {
+  @include typography.typography('body1');
+  border: 1px dashed map.get(config.$colors, 'accents-2');
+  border-radius: 4px;
+  color: map.get(config.$colors, 'accents-3');
+  font-size: 14px;
+  margin: 45px 0;
+  padding: 180px 0;
+  position: relative;
+  text-align: center;
+  line-height: 24px;
 }
 
-.noResults {
-  border: 1px solid map.get(config.$colors, 'accents-2');
-  border-radius: 4px;
-
-  .content {
-    max-width: 500px;
-    margin: 15vh auto;
-    padding: 24px;
-    text-align: center;
-
-    .header {
-      @include typography.typography('headline4');
-      margin: 0 0 16px;
-
-      @media only screen and (max-width: 500px) {
-        font-size: 1.5rem;
-      }
-    }
-
-    .body {
-      @include typography.typography('subtitle1');
-      color: map.get(config.$colors, 'accents-5');
-      margin: 0;
-    }
-  }
+.snackbar {
+  @include snackbar.viewport-margin(24px);
 }
