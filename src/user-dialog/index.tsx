@@ -13,17 +13,23 @@ interface UserDialogProps {
   children?: JSX.Element | JSX.Element[];
   submitting?: boolean;
   submitted?: boolean;
+  className?: string;
 }
 
 export default function UserDialog({
   children,
+  className,
   submitting,
   submitted,
   onClosed,
   user,
 }: UserDialogProps): JSX.Element {
   return (
-    <Dialog open onClosed={onClosed} className={styles.dialog}>
+    <Dialog
+      open
+      onClosed={onClosed}
+      className={styles.dialog + (className ? ` ${className}` : '')}
+    >
       <div className={styles.wrapper}>
         <Loader active={submitting || submitted || false} checked={submitted} />
         <div className={styles.left}>

@@ -3,14 +3,12 @@
 @use '@tutorbook/styles/typography';
 
 $max-width: 800px;
-$min-width: 700px;
 $padding: 40px;
 $margin: 24px;
 
 .dialog :global(.mdc-dialog__surface) {
-  width: 60vw;
+  width: calc(100vw - 32px);
   max-width: $max-width;
-  min-width: $min-width;
 }
 
 .wrapper {
@@ -29,13 +27,6 @@ $margin: 24px;
   flex-grow: 1.5;
   flex-basis: 0;
   margin-left: $padding;
-}
-
-@media (max-width: $min-width + 32px) {
-  .dialog :global(.mdc-dialog__surface) {
-    min-width: 0;
-    width: calc(100vw - 32px);
-  }
 }
 
 @media (max-width: 570px) {
