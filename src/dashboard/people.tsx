@@ -5,6 +5,7 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 
 import React from 'react';
 import Result from '@tutorbook/search/result';
+import VerificationDialog from '@tutorbook/verification-dialog';
 import { useAccount } from '@tutorbook/firebase';
 import { ApiError, User, UserJSON } from '@tutorbook/model';
 import Title from './title';
@@ -41,13 +42,21 @@ export default function People(): JSX.Element {
     account: { id },
     token,
   } = useAccount();
-  console.log(`[DEBUG] Rerendered with account (${id}) and token:`, token);
   const { data } = useSWR(
     () => (id && token ? ['/api/people', id, token] : null),
     fetchPeopleData
   );
+
+  const [viewing, setViewing] = React.useState<User | undefined>();
+
   return (
     <>
+      {viewing && (
+        <VerificationDialog
+          user={viewing}
+          onClosed={() => setViewing(undefined)}
+        />
+      )}
       <Title
         header='People'
         body='Pending sign-ups that have yet to be vetted.'
@@ -59,7 +68,11 @@ export default function People(): JSX.Element {
             .map(() => <Result loading key={uuid()} />)}
         {data &&
           data.map((person: User) => (
-            <Result user={person} key={person.id || uuid()} />
+            <Result
+              user={person}
+              key={person.id || uuid()}
+              onClick={() => setViewing(person)}
+            />
           ))}
       </ul>
     </>

@@ -1,0 +1,41 @@
+@use '@tutorbook/user-dialog/user-dialog';
+
+.dialog :global(.mdc-dialog__surface) {
+  max-width: 900px;
+}
+
+.header {
+  @include user-dialog.header;
+}
+
+.field {
+  @include user-dialog.field;
+}
+
+.button {
+  @include user-dialog.button;
+}
+
+.error {
+  @include user-dialog.error;
+}
+
+.table {
+  width: 100%;
+
+  .textField {
+    vertical-align: middle;
+    background-color: transparent;
+    margin: -0.75rem -1rem;
+    border-radius: 0;
+    display: block;
+  }
+}
+
+.switch {
+  margin: 16px;
+
+  label {
+    margin-left: 16px;
+  }
+}
