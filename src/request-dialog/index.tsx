@@ -2,8 +2,7 @@ import React from 'react';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
-import Avatar from '@tutorbook/avatar';
-import Loader from '@tutorbook/loader';
+import UserDialog from '@tutorbook/user-dialog';
 
 import firebase, {
   AccountContextValue,
@@ -19,7 +18,6 @@ import {
   Option,
 } from '@tutorbook/model';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
-import { Dialog } from '@rmwc/dialog';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import {
   injectIntl,
@@ -32,7 +30,7 @@ import to from 'await-to-js';
 
 import styles from './request-dialog.module.scss';
 
-interface UserDialogState {
+interface RequestDialogState {
   time?: Timeslot;
   message: string;
   subjects: Option<string>[];
@@ -43,7 +41,7 @@ interface UserDialogState {
   err?: string;
 }
 
-interface UserDialogProps {
+interface RequestDialogProps {
   subjects: Option<string>[];
   time?: Timeslot;
   intl: IntlShape;
@@ -62,14 +60,17 @@ interface UserDialogProps {
  * 4. Sending the request (we only log a `purchase` event once the request has
  * been successfully sent by our API).
  */
-class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
+class RequestDialog extends React.Component<
+  RequestDialogProps,
+  RequestDialogState
+> {
   public static readonly contextType: React.Context<
     AccountContextValue
   > = AccountContext;
 
   public readonly context: AccountContextValue;
 
-  public constructor(props: UserDialogProps, context: AccountContextValue) {
+  public constructor(props: RequestDialogProps, context: AccountContextValue) {
     super(props);
     this.context = context;
     this.state = {
@@ -285,7 +286,7 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
   }
 
   /**
-   * Renders the `UserDialog` that shows profile info and enables booking.
+   * Renders the `RequestDialog` that shows profile info and enables booking.
    */
   public render(): JSX.Element {
     const {
@@ -340,130 +341,99 @@ class UserDialog extends React.Component<UserDialogProps, UserDialogState> {
       },
     });
     return (
-      <Dialog open onClosed={onClosed} className={styles.dialog}>
-        <div className={styles.wrapper}>
-          <Loader active={submitting || submitted} checked={submitted} />
-          <div className={styles.left}>
-            <a
-              className={styles.img}
-              href={user.photo}
-              target='_blank'
-              rel='noreferrer'
-              tabIndex={-1}
-            >
-              <Avatar src={user.photo} />
-            </a>
-            <h4 className={styles.name}>{user.name}</h4>
-            {user.socials && !!user.socials.length && (
-              <div className={styles.socials}>
-                {user.socials.map((social) => (
-                  <a
-                    key={social.type}
-                    target='_blank'
-                    rel='noreferrer'
-                    href={social.url}
-                    className={`${styles.socialLink} ${styles[social.type]}`}
-                  >
-                    {social.type}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className={styles.right}>
-            <h6 className={styles.bioHeader}>About</h6>
-            <p className={styles.bio}>{user.bio}</p>
-            <h6 className={styles.requestHeader}>Request</h6>
-            <form className={styles.form} onSubmit={this.handleSubmit}>
-              {account instanceof User && !account.parents.length && (
-                <>
-                  <TextField
-                    outlined
-                    required
-                    label={intl.formatMessage(labels.parentName)}
-                    className={styles.formField}
-                    onChange={this.handleParentNameChange}
-                    value={parentName}
-                  />
-                  <TextField
-                    outlined
-                    required
-                    type='email'
-                    label={intl.formatMessage(labels.parentEmail)}
-                    className={styles.formField}
-                    onChange={this.handleParentEmailChange}
-                    value={parentEmail}
-                  />
-                </>
-              )}
-              <SubjectSelect
-                required
-                autoOpenMenu
-                renderToPortal
-                label={intl.formatMessage(labels.subjects)}
-                className={styles.formField}
-                onChange={this.handleSubjectsChange}
-                value={subjects}
-                options={user[aspect].subjects}
-                aspect={aspect}
-              />
-              {aspect === 'tutoring' && time && (
-                <TimeslotInput
-                  required
-                  label={intl.formatMessage(labels.time)}
-                  className={styles.formField}
-                  onChange={this.handleTimeslotChange}
-                  availability={user.availability}
-                  value={time}
-                />
-              )}
+      <UserDialog
+        onClosed={onClosed}
+        submitting={submitting}
+        submitted={submitted}
+        user={user}
+      >
+        <h6 className={styles.requestHeader}>Request</h6>
+        <form className={styles.form} onSubmit={this.handleSubmit}>
+          {account instanceof User && !account.parents.length && (
+            <>
               <TextField
                 outlined
-                textarea
-                rows={4}
-                label={intl.formatMessage(labels.topic)}
+                required
+                label={intl.formatMessage(labels.parentName)}
                 className={styles.formField}
-                onChange={this.handleMessageChange}
-                value={message}
+                onChange={this.handleParentNameChange}
+                value={parentName}
               />
-              <Button
-                className={styles.button}
-                label={
-                  !account.id
-                    ? 'Signup and request'
-                    : `Request ${user.firstName}`
-                }
-                disabled={!(account instanceof User) || submitting || submitted}
-                google={!account.id}
-                raised
-                arrow
+              <TextField
+                outlined
+                required
+                type='email'
+                label={intl.formatMessage(labels.parentEmail)}
+                className={styles.formField}
+                onChange={this.handleParentEmailChange}
+                value={parentEmail}
               />
-              {!(account instanceof User) && !err && (
-                <TextFieldHelperText
-                  persistent
-                  validationMsg
-                  className={styles.errMsg}
-                >
-                  You must use a personal account when sending requests. Click
-                  on the profile picture in the top-right and select a personal
-                  account.
-                </TextFieldHelperText>
-              )}
-              {!!err && (
-                <TextFieldHelperText
-                  persistent
-                  validationMsg
-                  className={styles.errMsg}
-                >
-                  {err}
-                </TextFieldHelperText>
-              )}
-            </form>
-          </div>
-        </div>
-      </Dialog>
+            </>
+          )}
+          <SubjectSelect
+            required
+            autoOpenMenu
+            renderToPortal
+            label={intl.formatMessage(labels.subjects)}
+            className={styles.formField}
+            onChange={this.handleSubjectsChange}
+            value={subjects}
+            options={user[aspect].subjects}
+            aspect={aspect}
+          />
+          {aspect === 'tutoring' && time && (
+            <TimeslotInput
+              required
+              label={intl.formatMessage(labels.time)}
+              className={styles.formField}
+              onChange={this.handleTimeslotChange}
+              availability={user.availability}
+              value={time}
+            />
+          )}
+          <TextField
+            outlined
+            textarea
+            rows={4}
+            label={intl.formatMessage(labels.topic)}
+            className={styles.formField}
+            onChange={this.handleMessageChange}
+            value={message}
+          />
+          <Button
+            className={styles.button}
+            label={
+              !account.id ? 'Signup and request' : `Request ${user.firstName}`
+            }
+            disabled={!(account instanceof User) || submitting || submitted}
+            google={!account.id}
+            raised
+            arrow
+          />
+          {!(account instanceof User) && !err && (
+            <TextFieldHelperText
+              persistent
+              validationMsg
+              className={styles.errMsg}
+            >
+              You must use a personal account when sending requests. Click on
+              the profile picture in the top-right and select a personal
+              account.
+            </TextFieldHelperText>
+          )}
+          {!!err && (
+            <TextFieldHelperText
+              persistent
+              validationMsg
+              className={styles.errMsg}
+            >
+              {err}
+            </TextFieldHelperText>
+          )}
+        </form>
+      </UserDialog>
     );
   }
 }
 
-export default injectIntl(UserDialog);
+export default injectIntl(RequestDialog);
