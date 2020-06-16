@@ -1,5 +1,3 @@
-import { GetServerSideProps } from 'next';
-
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
@@ -9,15 +7,14 @@ import Intercom from '@tutorbook/react-intercom';
 import Footer from '@tutorbook/footer';
 import Search from '@tutorbook/search';
 
+import { GetServerSideProps } from 'next';
+import { ParsedUrlQuery } from 'querystring';
 import { QueryHeader } from '@tutorbook/header';
 import { useIntl, getIntlProps, withIntl } from '@tutorbook/intl';
 import {
-  Option,
   User,
   UserJSON,
-  SearchResult,
   Query,
-  Aspect,
   QueryJSON,
   Availability,
 } from '@tutorbook/model';
@@ -28,8 +25,8 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 interface SearchPageProps {
   query: QueryJSON;
-  results: ReadonlyArray<SearchResult>;
-  user?: SearchResult;
+  results: ReadonlyArray<UserJSON>;
+  user?: UserJSON;
 }
 
 function onlyFirstAndLastInitial(name: string): string {
@@ -43,9 +40,7 @@ function onlyFirstAndLastInitial(name: string): string {
  * @todo Remove the `JSON.parse(JSON.stringify(ob))` workaround.
  */
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  async function getUser(
-    params?: ParsedUrlQuery
-  ): Promise<SearchResult | null> {
+  async function getUser(params?: ParsedUrlQuery): Promise<UserJSON | null> {
     if (!params || !params.slug || !params.slug.length) return null;
 
     /**
@@ -118,10 +113,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       query: JSON.parse(JSON.stringify(query)) as QueryJSON,
       results: JSON.parse(
         JSON.stringify(await query.search(url))
-      ) as SearchResult[],
+      ) as UserJSON[],
       user: JSON.parse(
         JSON.stringify(await getUser(context.params))
-      ) as SearchResult | null,
+      ) as UserJSON | null,
       ...(await getIntlProps(context)),
     },
   };
@@ -130,9 +125,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   const [searching, setSearching] = React.useState<boolean>(false);
   const [res, setResults] = React.useState<ReadonlyArray<User>>(
-    results.map((searchResult: SearchResult) =>
-      User.fromJSON(searchResult as UserJSON)
-    )
+    results.map((result: UserJSON) => User.fromJSON(result))
   );
   const [qry, setQuery] = React.useState<Query>(Query.fromJSON(query));
   const { locale } = useIntl();
@@ -163,7 +156,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
         query={qry}
         results={res}
         searching={searching}
-        user={user ? User.fromJSON(user as UserJSON) : undefined}
+        user={user ? User.fromJSON(user) : undefined}
         onChange={handleChange}
       />
       <Footer />

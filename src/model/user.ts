@@ -91,11 +91,13 @@ interface Resource {
  * their verification and liability for the user's actions.
  * @property user - The uID of the user who ran the verification.
  * @property org - The id of the non-profit org that the `user` belongs to.
+ * @property notes - Any notes about the verification (e.g. what happened).
  * @property checks - An array of checks (@see {@link Check}) passed.
  */
 export interface Verification extends Resource {
   user: string;
   org: string;
+  notes: string;
   checks: Check[];
 }
 
@@ -123,16 +125,19 @@ export interface UserInterface extends AccountInterface {
   token?: string;
 }
 
-export interface SearchResult {
-  id: string;
+/**
+ * What results from searching our users Algolia index.
+ */
+export interface SearchHit extends ObjectWithObjectID {
   name: string;
   photo: string;
   bio: string;
   orgs: string[];
-  availability: AvailabilityJSONAlias;
+  availability: AvailabilitySearchHitAlias;
   mentoring: { subjects: string[]; searches: string[] };
   tutoring: { subjects: string[]; searches: string[] };
   langs: string[];
+  featured: Aspect[];
   socials: SocialInterface[];
 }
 
@@ -145,15 +150,6 @@ export type UserJSON = Omit<UserInterface, 'availability'> & {
 export function isUserJSON(json: any): json is UserJSON {
   return (json as UserJSON).availability !== undefined;
 }
-
-/**
- * What results from searching our users Algolia index.
- * @todo Perhaps we don't want to have duplicate fields (i.e. the `objectID`
- * field is **always** going to be equal to the `uid` field).
- */
-export type UserSearchHitAlias = Omit<SearchResult, 'id' | 'availability'> & {
-  availability: AvailabilitySearchHitAlias;
-} & { featured: Aspect[] } & ObjectWithObjectID;
 
 /**
  * Class that provides default values for our `UserInterface` data model.
@@ -179,6 +175,8 @@ export class User extends Account implements UserInterface {
   public parents: string[] = [];
 
   public socials: SocialInterface[] = [];
+
+  public verifications: Verification[] = [];
 
   public token?: string;
 
@@ -254,7 +252,7 @@ export class User extends Account implements UserInterface {
     return { ...intercomValues, ...super.toIntercom() };
   }
 
-  public static fromSearchHit(hit: UserSearchHitAlias): User {
+  public static fromSearchHit(hit: SearchHit): User {
     const { availability, objectID, ...rest } = hit;
     const user: Partial<UserInterface> = {
       ...rest,

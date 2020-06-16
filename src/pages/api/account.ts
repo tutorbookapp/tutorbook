@@ -30,22 +30,62 @@ export default async function account(
       error(`Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
       const { uid } = token as DecodedIdToken;
-      const doc: DocumentSnapshot = await db.collection('users').doc(uid).get();
-      if (!doc.exists) {
-        const msg: string =
-          `Firestore profile document (${uid}) did not exist. You can create ` +
-          `it by calling the '/api/user' REST API endpoint.`;
-        error(msg, 500);
-      } else {
-        const user: UserJSON = User.fromFirestore(doc).toJSON();
-        const orgs: OrgJSON[] = (
+      if (req.query.id && typeof req.query.id === 'string') {
+        // Organizational user is requesting the account data of a member of
+        // their organization.
+        const authOrgs: Org[] = (
           await db
             .collection('orgs')
             .where('members', 'array-contains', uid)
             .get()
-        ).docs.map((org: DocumentSnapshot) => Org.fromFirestore(org).toJSON());
-        user.token = req.query.token;
-        res.status(200).json({ orgs, user });
+        ).docs.map((org: DocumentSnapshot) => Org.fromFirestore(org));
+        const doc: DocumentSnapshot = await db
+          .collection('users')
+          .doc(req.query.id)
+          .get();
+        const user: UserJSON = User.fromFirestore(doc).toJSON();
+        if (!doc.exists) {
+          const msg: string =
+            `Firestore profile document (${req.query.id}) did not exist. You ` +
+            `can create it by calling the '/api/user' REST API endpoint.`;
+          error(msg, 500);
+        } else if (authOrgs.every((org) => user.orgs.indexOf(org.id) < 0)) {
+          error(`User (${req.query.id}) was not a member of your orgs.`, 401);
+        } else {
+          const orgs: OrgJSON[] = (
+            await db
+              .collection('orgs')
+              .where('members', 'array-contains', req.query.id)
+              .get()
+          ).docs.map((org: DocumentSnapshot) =>
+            Org.fromFirestore(org).toJSON()
+          );
+          res.status(200).json({ orgs, user });
+        }
+      } else {
+        // User is merely requesting their own account data.
+        const doc: DocumentSnapshot = await db
+          .collection('users')
+          .doc(uid)
+          .get();
+        if (!doc.exists) {
+          const msg: string =
+            `Firestore profile document (${uid}) did not exist. You can create ` +
+            `it by calling the '/api/user' REST API endpoint.`;
+          error(msg, 500);
+        } else {
+          const user: UserJSON = User.fromFirestore(doc).toJSON();
+          const orgs: OrgJSON[] = (
+            await db
+              .collection('orgs')
+              .where('members', 'array-contains', uid)
+              .get()
+          ).docs.map((org: DocumentSnapshot) =>
+            Org.fromFirestore(org).toJSON()
+          );
+          user.token = req.query.token;
+          res.status(200).json({ orgs, user });
+        }
       }
     }
   }

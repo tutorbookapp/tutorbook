@@ -1,10 +1,10 @@
 import url from 'url';
 import to from 'await-to-js';
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import { ParsedUrlQuery } from 'querystring';
 
 import { ApiError } from './api';
-import { ParsedUrlQuery } from 'querystring';
-import { User, UserJSON, SearchResult, Check, Aspect } from './user';
+import { User, UserJSON, Check, Aspect } from './user';
 import { Availability, AvailabilityJSONAlias } from './times';
 
 /**
@@ -85,7 +85,7 @@ export class Query implements QueryInterface {
 
   public async search(endpoint = '/api/search'): Promise<ReadonlyArray<User>> {
     const [err, res] = await to<
-      AxiosResponse<SearchResult[]>,
+      AxiosResponse<UserJSON[]>,
       AxiosError<ApiError>
     >(
       axios({
@@ -111,10 +111,8 @@ export class Query implements QueryInterface {
       console.error('[ERROR] While sending request:', err);
       throw new Error(`While sending request: ${err.message}`);
     } else {
-      return (res as AxiosResponse<SearchResult[]>).data.map(
-        (user: SearchResult) => {
-          return User.fromJSON(user as UserJSON);
-        }
+      return (res as AxiosResponse<UserJSON[]>).data.map((user: UserJSON) =>
+        User.fromJSON(user)
       );
     }
   }

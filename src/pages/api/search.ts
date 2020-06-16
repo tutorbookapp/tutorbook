@@ -1,13 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchOptions, SearchResponse } from '@algolia/client-search';
-import {
-  User,
-  SearchResult,
-  UserSearchHitAlias,
-  Query,
-  Timeslot,
-} from '@tutorbook/model';
+import { User, UserJSON, SearchHit, Query, Timeslot } from '@tutorbook/model';
 
 import to from 'await-to-js';
 
@@ -91,7 +85,7 @@ function getFilterStrings(query: Query): string[] {
  * @see {@link https://www.algolia.com/doc/guides/managing-results/rules/merchandising-and-promoting/how-to/how-to-promote-with-optional-filters/}
  */
 function getOptionalFilterStrings(query: Query): string[] {
-  return [`featured:${query.aspect}<score=2>`];
+  return [`featured:${query.aspect}`];
 }
 
 /**
@@ -113,14 +107,14 @@ async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
       const options: SearchOptions | undefined = filterString
         ? { optionalFilters, filters: filterString }
         : { optionalFilters };
-      const [err, res] = await to<SearchResponse<UserSearchHitAlias>>(
-        index.search('', options) as Promise<SearchResponse<UserSearchHitAlias>>
+      const [err, res] = await to<SearchResponse<SearchHit>>(
+        index.search('', options) as Promise<SearchResponse<SearchHit>>
       );
       if (err || !res) {
         /* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */
         console.error(`[ERROR] While searching ${filterString}:`, err);
       } else {
-        res.hits.forEach((hit: UserSearchHitAlias) => {
+        res.hits.forEach((hit: SearchHit) => {
           if (results.findIndex((h) => h.id === hit.objectID) < 0)
             results.push(User.fromSearchHit(hit));
         });
@@ -161,24 +155,27 @@ function onlyFirstNameAndLastInitial(name: string): string {
  */
 export default async function search(
   req: NextApiRequest,
-  res: NextApiResponse<SearchResult[]>
+  res: NextApiResponse<UserJSON[]>
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
   const query: Query = Query.fromURLParams(req.query);
   const results: ReadonlyArray<User> = await searchUsers(query);
   console.log(`[DEBUG] Got ${results.length} results.`);
   res.status(200).send(
-    results.map((user: User) => ({
-      name: onlyFirstNameAndLastInitial(user.name),
-      photo: user.photo,
-      bio: user.bio,
-      orgs: user.orgs,
-      availability: user.availability.toJSON(),
-      mentoring: user.mentoring,
-      tutoring: user.tutoring,
-      socials: user.socials,
-      langs: user.langs,
-      id: user.id,
-    }))
+    results.map(
+      (user: User) =>
+        ({
+          name: onlyFirstNameAndLastInitial(user.name),
+          photo: user.photo,
+          bio: user.bio,
+          orgs: user.orgs,
+          availability: user.availability.toJSON(),
+          mentoring: user.mentoring,
+          tutoring: user.tutoring,
+          socials: user.socials,
+          langs: user.langs,
+          id: user.id,
+        } as UserJSON)
+    )
   );
 }
