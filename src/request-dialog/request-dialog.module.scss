@@ -1,47 +1,17 @@
-@use 'sass:map';
-@use '@tutorbook/styles/config';
-@use '@tutorbook/styles/typography';
+@use '@tutorbook/user-dialog/user-dialog';
 
-.requestHeader {
-  @include typography.typography('headline6');
-  color: map.get(config.$colors, 'foreground');
-  font-weight: 600;
-  margin: 24px 0 16px;
+.header {
+  @include user-dialog.header;
 }
 
-.formField {
-  margin: 8px 0;
-  width: 100%;
-  display: inline-flex;
-}
-
-.formField textarea {
-  resize: vertical;
-}
-
-.formField:first-child {
-  margin-top: 0;
-}
-
-.formField:last-child {
-  margin-bottom: 0;
-}
-
-.formField :global(.mdc-select__anchor) {
-  width: 100%;
-}
-
-.formField:global(.mdc-select > .mdc-menu > .mdc-list > .mdc-list-item) {
-  white-space: nowrap;
+.field {
+  @include user-dialog.field;
 }
 
 .button {
-  margin: 8px 0 0;
-  width: 100%;
+  @include user-dialog.button;
 }
 
-.errMsg {
-  color: map.get(config.$colors, 'error');
-  font-weight: 450;
-  margin-top: 16px;
+.error {
+  @include user-dialog.error;
 }

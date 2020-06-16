@@ -1,4 +1,5 @@
 import React from 'react';
+import Utils from '@tutorbook/utils';
 import Button from '@tutorbook/button';
 import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
@@ -21,10 +22,11 @@ import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import {
   injectIntl,
-  defineMessages,
+  defMsg,
+  Msg,
   IntlShape,
-  MessageDescriptor,
-} from 'react-intl';
+  IntlHelper,
+} from '@tutorbook/intl';
 
 import to from 'await-to-js';
 
@@ -48,7 +50,7 @@ interface RequestDialogProps {
   user: User;
   className?: string;
   aspect: Aspect;
-  onClosed: () => any;
+  onClosed: () => void;
 }
 
 /**
@@ -218,10 +220,6 @@ class RequestDialog extends React.Component<
             `${err ? ` ${err.message}` : ''}`,
         });
     }
-    const period = (msg: string) => {
-      if (msg.endsWith('.')) return msg;
-      return `${msg}.`;
-    };
     const [err, res] = await to<
       AxiosResponse<{ request: ApptJSONInterface }>,
       AxiosError<ApiError>
@@ -242,7 +240,7 @@ class RequestDialog extends React.Component<
       return this.setState({
         submitted: false,
         submitting: false,
-        err: `An error occurred while sending your request. ${period(
+        err: `An error occurred while sending your request. ${Utils.period(
           err.response.data.msg || err.message
         )}`,
       });
@@ -271,7 +269,7 @@ class RequestDialog extends React.Component<
       return this.setState({
         submitted: false,
         submitting: false,
-        err: `An error occurred while sending your request. ${period(
+        err: `An error occurred while sending your request. ${Utils.period(
           err.message
         )} Please check your Internet connection and try again.`,
       });
@@ -301,7 +299,8 @@ class RequestDialog extends React.Component<
     } = this.state;
     const { onClosed, user, aspect, intl } = this.props;
     const { account } = this.context;
-    const labels: Record<string, MessageDescriptor> = defineMessages({
+    const msg: IntlHelper = (message, val) => intl.formatMessage(message, val);
+    const labels: Record<string, Msg> = defMsg({
       parentName: {
         id: 'request-dialog.parent-name',
         defaultMessage: "Your parent's name",
@@ -335,9 +334,11 @@ class RequestDialog extends React.Component<
       },
       submit: {
         id: 'request-dialog.submit',
-        description:
-          'Label for the submit button that creates the appointment.',
         defaultMessage: 'Request {name}',
+      },
+      signUpAndSubmit: {
+        id: 'request-dialog.sign-up-and-submit',
+        defaultMessage: 'Signup and request',
       },
     });
     return (
@@ -347,15 +348,15 @@ class RequestDialog extends React.Component<
         submitted={submitted}
         user={user}
       >
-        <h6 className={styles.requestHeader}>Request</h6>
+        <h6 className={styles.header}>Request</h6>
         <form className={styles.form} onSubmit={this.handleSubmit}>
           {account instanceof User && !account.parents.length && (
             <>
               <TextField
                 outlined
                 required
-                label={intl.formatMessage(labels.parentName)}
-                className={styles.formField}
+                label={msg(labels.parentName)}
+                className={styles.field}
                 onChange={this.handleParentNameChange}
                 value={parentName}
               />
@@ -363,8 +364,8 @@ class RequestDialog extends React.Component<
                 outlined
                 required
                 type='email'
-                label={intl.formatMessage(labels.parentEmail)}
-                className={styles.formField}
+                label={msg(labels.parentEmail)}
+                className={styles.field}
                 onChange={this.handleParentEmailChange}
                 value={parentEmail}
               />
@@ -374,8 +375,8 @@ class RequestDialog extends React.Component<
             required
             autoOpenMenu
             renderToPortal
-            label={intl.formatMessage(labels.subjects)}
-            className={styles.formField}
+            label={msg(labels.subjects)}
+            className={styles.field}
             onChange={this.handleSubjectsChange}
             value={subjects}
             options={user[aspect].subjects}
@@ -384,8 +385,8 @@ class RequestDialog extends React.Component<
           {aspect === 'tutoring' && time && (
             <TimeslotInput
               required
-              label={intl.formatMessage(labels.time)}
-              className={styles.formField}
+              label={msg(labels.time)}
+              className={styles.field}
               onChange={this.handleTimeslotChange}
               availability={user.availability}
               value={time}
@@ -395,15 +396,17 @@ class RequestDialog extends React.Component<
             outlined
             textarea
             rows={4}
-            label={intl.formatMessage(labels.topic)}
-            className={styles.formField}
+            label={msg(labels.topic)}
+            className={styles.field}
             onChange={this.handleMessageChange}
             value={message}
           />
           <Button
             className={styles.button}
             label={
-              !account.id ? 'Signup and request' : `Request ${user.firstName}`
+              !account.id
+                ? msg(labels.signUpAndSubmit)
+                : msg(labels.submit, { name: user.firstName })
             }
             disabled={!(account instanceof User) || submitting || submitted}
             google={!account.id}
@@ -414,7 +417,7 @@ class RequestDialog extends React.Component<
             <TextFieldHelperText
               persistent
               validationMsg
-              className={styles.errMsg}
+              className={styles.error}
             >
               You must use a personal account when sending requests. Click on
               the profile picture in the top-right and select a personal
@@ -425,7 +428,7 @@ class RequestDialog extends React.Component<
             <TextFieldHelperText
               persistent
               validationMsg
-              className={styles.errMsg}
+              className={styles.error}
             >
               {err}
             </TextFieldHelperText>
