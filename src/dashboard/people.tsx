@@ -74,6 +74,17 @@ export default function People(): JSX.Element {
               onClick={() => setViewing(person)}
             />
           ))}
+        {data && !data.length && (
+          <div className={styles.noResults}>
+            <div className={styles.content}>
+              <h3 className={styles.header}>No Pending Sign-Ups</h3>
+              <p className={styles.body}>
+                Go to the search view to see the sign-ups you've already
+                verified.
+              </p>
+            </div>
+          </div>
+        )}
       </ul>
     </>
   );

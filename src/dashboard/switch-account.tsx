@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from './create-org.module.scss';
+import styles from './switch-account.module.scss';
 
 export default function CreateOrg(): JSX.Element {
   return (

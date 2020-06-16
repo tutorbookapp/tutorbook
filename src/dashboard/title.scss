@@ -20,6 +20,11 @@
   max-width: 100%;
   margin: 0 auto 48px;
   box-sizing: border-box;
+
+  @media only screen and (max-width: 800px) {
+    text-align: center;
+    justify-content: center;
+  }
 }
 
 @mixin title {

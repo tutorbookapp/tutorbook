@@ -1,5 +1,7 @@
 @use 'title';
+@use 'sass:map';
 @use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
 
 .results {
   list-style: none;
@@ -30,6 +32,33 @@
       .body {
         @include title.body;
       }
+    }
+  }
+}
+
+.noResults {
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-radius: 4px;
+
+  .content {
+    max-width: 500px;
+    margin: 15vh auto;
+    padding: 24px;
+    text-align: center;
+
+    .header {
+      @include typography.typography('headline4');
+      margin: 0 0 16px;
+
+      @media only screen and (max-width: 500px) {
+        font-size: 1.5rem;
+      }
+    }
+
+    .body {
+      @include typography.typography('subtitle1');
+      color: map.get(config.$colors, 'accents-5');
+      margin: 0;
     }
   }
 }
