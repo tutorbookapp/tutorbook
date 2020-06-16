@@ -1,5 +1,13 @@
 export default class Utils {
   /**
+   * Ensures that the given string ends in a period.
+   */
+  public static period(msg: string): string {
+    if (msg.endsWith('.')) return msg;
+    return `${msg}.`;
+  }
+
+  /**
    * Capitalizes the first letter of the given string.
    */
   public static caps(str: string): string {
