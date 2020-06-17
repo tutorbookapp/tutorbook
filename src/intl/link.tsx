@@ -11,11 +11,10 @@ interface LinkProps extends NextLinkProps {
 
 export default function Link(props: LinkProps): JSX.Element {
   const intl: IntlShape = useIntl();
-  const { href, ...rest } = props;
-  const withLocaleAs: string = `/${intl.locale}${href.toString()}`.replace(
-    /\/$/,
-    ''
-  );
+  const { href, as, ...rest } = props;
+  const withLocaleAs: string = `/${intl.locale}${(
+    as || href
+  ).toString()}`.replace(/\/$/, '');
   const withLocaleHref: string = `/[locale]${href.toString()}`.replace(
     /\/$/,
     ''
