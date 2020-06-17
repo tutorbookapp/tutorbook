@@ -1,5 +1,6 @@
-@use 'title';
+@use 'sass:map';
 @use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
 
 .results {
   list-style: none;
@@ -9,39 +10,15 @@
   box-sizing: border-box;
 }
 
-.wrapper {
-  @include title.wrapper;
-
-  .content {
-    @include title.content;
-    justify-content: space-between;
-
-    .left {
-      display: flex;
-
-      .avatar {
-        margin-right: 24px;
-        width: 102px;
-      }
-
-      .title {
-        @include title.title;
-        max-width: 50%;
-
-        .header {
-          @include title.header;
-          height: 54px;
-        }
-
-        .body {
-          @include title.body;
-          max-height: 48px;
-        }
-      }
-    }
-
-    .right {
-      display: block;
-    }
-  }
+.empty {
+  @include typography.typography('body1');
+  border: 1px dashed map.get(config.$colors, 'accents-2');
+  border-radius: 4px;
+  color: map.get(config.$colors, 'accents-3');
+  font-size: 14px;
+  margin: 45px 0;
+  padding: 180px 0;
+  position: relative;
+  text-align: center;
+  line-height: 24px;
 }
