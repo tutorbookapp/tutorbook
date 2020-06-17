@@ -2,6 +2,7 @@
 @use '@tutorbook/styles/config';
 @use '@tutorbook/styles/typography';
 @use '@tutorbook/styles/loader';
+@use '@material/elevation';
 
 .img {
   position: absolute;
@@ -44,4 +45,35 @@
 
 .loading {
   @include loader.loading();
+}
+
+// TODO: Make the ripple go on top of this.
+.verifiedIcon {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  color: map.get(config.$colors, 'background');
+  font-size: 18px;
+}
+
+.verifiedText {
+  @include elevation.elevation(4);
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: map.get(config.$colors, 'foreground');
+  background: map.get(config.$colors, 'background');
+  z-index: 1;
+  font-family: map.get(config.$fonts, 'sans');
+  font-size: 14px;
+  padding: 4px 6px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: help;
+}
+
+.verifiedHover {
+  @include typography.typography('body1');
+  font-size: 14px;
+  max-width: 250px;
 }
