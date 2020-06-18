@@ -36,6 +36,8 @@ const subjects = async (id) => {
   }
 };
 
+subjects('mentoring');
+
 const langs = async () => {
   const index = client.initIndex('langs');
   await index.clearObjects();
@@ -75,5 +77,3 @@ const main = async (id) => {
     debugger;
   }
 };
-
-main('checks');
