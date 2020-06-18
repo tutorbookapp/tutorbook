@@ -102,7 +102,14 @@ export default async function userUpdate(
       featured: user.featured,
     };
     await index.saveObject(ob);
-    const adminOb: Record<string, unknown> = { ...ob, _tags: getTags(user) };
+    const adminOb: Record<string, unknown> = {
+      ...user,
+      availability: availabilityToDates(
+        user.availability as Timeslot<Timestamp>[]
+      ),
+      objectID: uid,
+      _tags: getTags(user),
+    };
     await adminIndex.saveObject(adminOb);
   }
   const settings = {
