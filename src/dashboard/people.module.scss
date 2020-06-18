@@ -2,6 +2,111 @@
 @use '@tutorbook/styles/config';
 @use '@tutorbook/styles/typography';
 @use '@material/snackbar/_index.scss' as snackbar;
+@use '@material/textfield/_index.scss' as textfield;
+
+$filters-height: 56px;
+
+.filters {
+  height: $filters-height;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+
+  .left {
+    display: flex;
+    align-items: center;
+
+    .filtersButton {
+      margin-left: 12px;
+    }
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+
+    .searchField {
+      height: $filters-height - 20px;
+      margin-right: 12px;
+
+      &:not(:global(.mdc-text-field--focused)) {
+        :global(.mdc-notched-outline__leading),
+        :global(.mdc-notched-outline__notch),
+        :global(.mdc-notched-outline__trailing) {
+          border-color: rgba(0, 0, 0, 0.12);
+          transition: border-color 0.2s ease 0s;
+          will-change: border-color;
+        }
+      }
+
+      input {
+        @include typography.typography('body2');
+      }
+    }
+
+    .menuButton {
+      margin-right: 12px;
+    }
+  }
+}
+
+.table {
+  width: 100%;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+
+  :global(.mdc-data-table__row:not(.mdc-data-table__row--selected):hover)
+    .sticky
+    .field {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .sticky {
+    position: sticky;
+    top: auto;
+    left: 0;
+    background-color: map.get(config.$colors, 'background');
+    box-shadow: 1px 0 rgba(0, 0, 0, 0.12), 0 -1px rgba(0, 0, 0, 0.12);
+    z-index: 1;
+  }
+
+  td {
+    max-width: 500px;
+
+    .field {
+      vertical-align: middle;
+      background-color: transparent;
+      margin: -0.75rem -1rem;
+      border-radius: 0;
+      display: block;
+      min-width: 150px;
+      height: 52px;
+
+      :global(.mdc-line-ripple::before) {
+        border-bottom-width: 0;
+      }
+
+      &.bio {
+        min-width: 400px;
+      }
+
+      &.email {
+        min-width: 200px;
+      }
+
+      input {
+        @include typography.typography('body2');
+      }
+    }
+
+    .select :global(.mdc-select__selected-text) {
+      //@include typography.typography('body2');
+    }
+  }
+}
 
 .results {
   list-style: none;

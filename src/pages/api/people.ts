@@ -52,9 +52,7 @@ export default async function people(
         );
       } else {
         const users: UserJSON[] = (
-          await index.search<SearchHit>('', {
-            filters: `orgs:${org.id} AND is_not_vetted`,
-          })
+          await index.search<SearchHit>('', { filters: `orgs:${org.id}` })
         ).hits.map((hit: SearchHit) => User.fromSearchHit(hit).toJSON());
         res.status(200).send(users);
       }

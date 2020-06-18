@@ -1,6 +1,7 @@
 import { useAccount } from '@tutorbook/firebase';
 
 import React from 'react';
+import Utils from '@tutorbook/utils';
 import Title from './title';
 
 import styles from './overview.module.scss';
@@ -12,7 +13,7 @@ export default function Overview(): JSX.Element {
     <>
       <Title
         header='Overview'
-        body={`Analytics dashboard for ${account.name}`}
+        body={Utils.period(`Analytics dashboard for ${account.name}`)}
         actions={[
           {
             label: 'View search',
