@@ -1,25 +1,19 @@
-/* eslint-disable no-shadow */
-
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
-import {
-  ApiError,
-  User,
-  UserWithRoles,
-  Appt,
-  ApptJSONInterface,
-} from '@tutorbook/model';
+import { User, UserWithRoles, Appt, ApptJSONInterface } from '@tutorbook/model';
 import { ApptEmail } from '@tutorbook/emails';
 
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
+import error from './error';
+
 import {
   firestore,
   DocumentSnapshot,
   DocumentReference,
   CollectionReference,
-} from '@tutorbook/admin';
+} from './firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -38,21 +32,19 @@ async function sendApptEmails(
       const [err] = await to<[ClientResponse, {}], Error | ResponseError>(
         mail.send(new ApptEmail(attendee, appt, attendees))
       );
+      const emailStr = `the appt (${appt.id as string}) email`;
+      const attendeeStr = `${attendee.name} <${attendee.email}>`;
       if (err) {
-        console.error(
-          `[ERROR] ${err.name} sending ${attendee.name} <${attendee.email}>` +
-            ` the appt (${appt.id as string}) email:`,
-          err
-        );
+        const msg = `[ERROR] ${err.name} sending ${attendeeStr} ${emailStr}:`;
+        console.error(msg, err);
       } else {
-        console.log(
-          `[DEBUG] Sent ${attendee.name} <${attendee.email}> the appt ` +
-            `(${appt.id as string}) email.`
-        );
+        console.log(`[DEBUG] Sent ${attendeeStr} ${emailStr}.`);
       }
     })
   );
 }
+
+export type CreateApptRes = ApptJSONInterface;
 
 /**
  * Takes an `ApptJSONInterface` object, an authentication token, and:
@@ -88,23 +80,21 @@ async function sendApptEmails(
  * @todo Is it really required that we have the parent's user ID? Right now, we
  * only allow pupils to add the contact information of one parent. And we don't
  * really care **which** parent approves the lesson request anyways.
+ *
+ * @todo Require and check authentication headers for parent's JWT.
  */
-export default async function appt(
+export default async function createAppt(
   req: NextApiRequest,
-  res: NextApiResponse<ApiError | { appt: ApptJSONInterface }>
+  res: NextApiResponse<CreateApptRes>
 ): Promise<void> {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // 1. Verify that the request body is valid.
-  function error(msg: string, code = 400, err?: Error): void {
-    console.error(`[ERROR] Sending client ${code} with msg (${msg})...`, err);
-    res.status(code).json({ msg, ...(err || {}) });
-  }
   if (!req.body) {
-    error('You must provide a request body.');
+    error(res, 'You must provide a request body.');
   } else if (!req.body.request || typeof req.body.request !== 'string') {
-    error('Your request body must contain a request field.');
+    error(res, 'Your request body must contain a request field.');
   } else if (!req.body.id || typeof req.body.id !== 'string') {
-    error('Your request body must contain a id field.');
+    error(res, 'Your request body must contain a id field.');
   } else {
     // 2. Fetch the lesson request data.
     let ref: DocumentReference | null = null;
@@ -116,7 +106,7 @@ export default async function appt(
         .parent as CollectionReference).parent;
       if (!db) throw new Error('Database partition did not exist.');
     } catch (err) {
-      error('You must provide a valid request document path.', 400, err);
+      error(res, 'You must provide a valid request document path.', 400, err);
     }
     if (!db || !ref) {
       // Don't do anything b/c we already sent an error code to the client.
@@ -124,6 +114,7 @@ export default async function appt(
       const doc: DocumentSnapshot = await ref.get();
       if (!doc.exists) {
         error(
+          res,
           'This pending lesson request no longer exists (it was probably ' +
             'already approved).'
         );
@@ -143,27 +134,28 @@ export default async function appt(
           appt.attendees.map(async (attendee) => {
             // 3. Verify that the attendees have uIDs.
             if (!attendee.id) {
-              error('All attendees must have valid uIDs.');
+              error(res, 'All attendees must have valid uIDs.');
               errored = false;
               return;
             }
-            const ref: DocumentReference = (db as DocumentReference)
+            const attendeeRef: DocumentReference = (db as DocumentReference)
               .collection('users')
               .doc(attendee.id);
-            const doc: DocumentSnapshot = await ref.get();
+            const attendeeDoc: DocumentSnapshot = await attendeeRef.get();
             // 3. Verify that the attendees exist.
-            if (!doc.exists) {
-              error(`Attendee (${attendee.id}) does not exist.`);
+            if (!attendeeDoc.exists) {
+              error(res, `Attendee (${attendee.id}) does not exist.`);
               errored = false;
               return;
             }
-            const user: User = User.fromFirestore(doc);
+            const user: User = User.fromFirestore(attendeeDoc);
             if (user.id === pupilUID) {
               // 3. Verify that the pupil is among the appointment's attendees.
               attendeesIncludePupil = true;
               // 3. Verify that the pupil is the parent's child.
               if (user.parents.indexOf(req.body.id) < 0) {
                 error(
+                  res,
                   `${user.toString()} is not (${
                     req.body.id as string
                   })'s child.`
@@ -186,16 +178,12 @@ export default async function appt(
               return user.mentoring.subjects.includes(subject);
             };
             if (isTutor && !appt.subjects.every(canTutorSubject)) {
-              error(
-                `${user.toString()}) cannot tutor for the appted subjects.`
-              );
+              error(res, `${user.toString()}) cannot tutor these subjects.`);
               errored = false;
               return;
             }
             if (isMentor && !appt.subjects.every(canMentorSubject)) {
-              error(
-                `${user.toString()}) cannot mentor for the appted subjects.`
-              );
+              error(res, `${user.toString()}) cannot mentor these subjects.`);
               errored = false;
               return;
             }
@@ -206,7 +194,8 @@ export default async function appt(
               !user.availability.contains(appt.time)
             ) {
               error(
-                `${user.toString()} is not available on ${appt.time.toString()}.`
+                res,
+                `${user.toString()} isn't available on ${appt.time.toString()}.`
               );
               errored = false;
               return;
@@ -220,7 +209,7 @@ export default async function appt(
         } else if (!pupilIsParentsChild) {
           // Don't do anything b/c we already sent an error code to the client.
         } else if (!attendeesIncludePupil) {
-          error(`Parent's pupil (${pupilUID}) must attend the appointment.`);
+          error(res, `Parent's pupil (${pupilUID}) must attend the appt.`);
         } else {
           console.log(`[DEBUG] Creating appt (${appt.id as string})...`);
           await Promise.all(
@@ -249,10 +238,8 @@ export default async function appt(
           );
           // 7. Send out the invitation email to the attendees.
           await sendApptEmails(appt, attendees);
-          res.status(201).json({ appt: appt.toJSON() });
-          console.log(
-            `[DEBUG] Created appt (${appt.id as string}) and sent emails.`
-          );
+          res.status(201).json(appt.toJSON());
+          console.log(`[DEBUG] Created appt (${appt.id as string}).`);
         }
       }
     }

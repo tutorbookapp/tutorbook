@@ -1,9 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchOptions, SearchResponse } from '@algolia/client-search';
-import { User, UserJSON, SearchHit, Query, Timeslot } from '@tutorbook/model';
+import {
+  Org,
+  User,
+  UserJSON,
+  SearchHit,
+  Query,
+  Timeslot,
+} from '@tutorbook/model';
 
 import to from 'await-to-js';
+
+import { db, auth, DecodedIdToken, DocumentSnapshot } from './firebase';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
@@ -96,7 +105,7 @@ function getOptionalFilterStrings(query: Query): string[] {
  * Note that due to Algolia limitations, we must query for each availability
  * timeslot separately and then manually merge the results on the client side.
  */
-async function searchUsers(query: Query): Promise<ReadonlyArray<User>> {
+async function searchUsers(query: Query): Promise<User[]> {
   const results: User[] = [];
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
@@ -136,6 +145,8 @@ function onlyFirstNameAndLastInitial(name: string): string {
   return `${split[0]} ${split[split.length - 1][0]}.`;
 }
 
+export type ListUsersRes = UserJSON[];
+
 /**
  * Takes filter parameters (subjects and availability) and sends back an array
  * of `SearchResult`s that match the given filters.
@@ -148,34 +159,48 @@ function onlyFirstNameAndLastInitial(name: string): string {
  * - User's searches (what they need tutoring for)
  * - User's Firebase Authentication uID (as the Algolia `objectID`)
  *
- * @todo Perhaps we should also include a `photoURL` here (to make our search
- * results look more appealing).
- * @todo Should the client have to be authenticated to make this request (i.e.
- * should we require a Firebase Authentication JWT to see search results)?
+ * We send full data back to client if and only if that data is owned by the
+ * client's organization (i.e. the JWT sent belongs to a user whose a member of
+ * an organization listed in the result's `orgs` field).
  */
-export default async function search(
+export default async function listUsers(
   req: NextApiRequest,
-  res: NextApiResponse<UserJSON[]>
+  res: NextApiResponse<ListUsersRes>
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
-  const query: Query = Query.fromURLParams(req.query);
-  const results: ReadonlyArray<User> = await searchUsers(query);
+  const users: User[] = await searchUsers(Query.fromURLParams(req.query));
+  const orgs: Org[] = [];
+  if (req.headers.authorization) {
+    const [err, token] = await to<DecodedIdToken>(
+      auth.verifyIdToken(req.headers.authorization.replace('Bearer ', ''), true)
+    );
+    if (err) {
+      console.warn('[WARNING] Firebase Authorization JWT invalid:', err);
+    } else {
+      (
+        await db
+          .collection('orgs')
+          .where('members', 'array-contains', (token as DecodedIdToken).uid)
+          .get()
+      ).forEach((org: DocumentSnapshot) => orgs.push(Org.fromFirestore(org)));
+    }
+  }
+  const results: UserJSON[] = users.map((user: User) => {
+    const truncated: UserJSON = {
+      name: onlyFirstNameAndLastInitial(user.name),
+      photo: user.photo,
+      bio: user.bio,
+      orgs: user.orgs,
+      availability: user.availability.toJSON(),
+      mentoring: user.mentoring,
+      tutoring: user.tutoring,
+      socials: user.socials,
+      langs: user.langs,
+      id: user.id,
+    } as UserJSON;
+    if (orgs.every((org) => user.orgs.indexOf(org.id) < 0)) return truncated;
+    return user.toJSON();
+  });
   console.log(`[DEBUG] Got ${results.length} results.`);
-  res.status(200).send(
-    results.map(
-      (user: User) =>
-        ({
-          name: onlyFirstNameAndLastInitial(user.name),
-          photo: user.photo,
-          bio: user.bio,
-          orgs: user.orgs,
-          availability: user.availability.toJSON(),
-          mentoring: user.mentoring,
-          tutoring: user.tutoring,
-          socials: user.socials,
-          langs: user.langs,
-          id: user.id,
-        } as UserJSON)
-    )
-  );
+  res.status(200).json(results);
 }

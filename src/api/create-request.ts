@@ -1,27 +1,21 @@
-/* eslint-disable no-shadow */
-
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios, { AxiosResponse, AxiosPromise } from 'axios';
 import { PupilRequestEmail, ParentRequestEmail } from '@tutorbook/emails';
-import {
-  ApiError,
-  User,
-  UserWithRoles,
-  Appt,
-  ApptJSONInterface,
-} from '@tutorbook/model';
+import { User, UserWithRoles, Appt, ApptJSONInterface } from '@tutorbook/model';
+
+import to from 'await-to-js';
+import mail from '@sendgrid/mail';
+import error from './error';
+
 import {
   db,
   auth,
   DecodedIdToken,
   DocumentSnapshot,
   DocumentReference,
-} from '@tutorbook/admin';
-
-import to from 'await-to-js';
-import mail from '@sendgrid/mail';
+} from './firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -76,11 +70,12 @@ async function sendRequestEmails(
               .get();
             if (parentDoc.exists) {
               const parent: User = User.fromFirestore(parentDoc);
-              /* eslint-disable-next-line @typescript-eslint/ban-types */
+              /* eslint-disable @typescript-eslint/ban-types */
               const [err] = await to<
                 [ClientResponse, {}],
                 Error | ResponseError
               >(
+                /* eslint-enable @typescript-eslint/ban-types */
                 mail.send(
                   new ParentRequestEmail(parent, pupil, request, attendees)
                 )
@@ -125,6 +120,8 @@ async function sendRequestEmails(
   );
 }
 
+export type CreateRequestRes = ApptJSONInterface;
+
 /**
  * Takes an `ApptJSONInterface` object, an authentication token, and:
  * 1. Performs the following verifications (sends a `400` error code and an
@@ -158,50 +155,46 @@ async function sendRequestEmails(
  * request for. The given `idToken` **must** be from one of the appointment's
  * `attendees` (see the above description for more requirements).
  */
-export default async function request(
+export default async function createRequest(
   req: NextApiRequest,
-  res: NextApiResponse<ApiError | { request: ApptJSONInterface }>
+  res: NextApiResponse<CreateRequestRes>
 ): Promise<void> {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // 1. Verify that the request body is valid.
-  function error(msg: string, code = 400, err?: Error): void {
-    console.error(`[ERROR] Sending client ${code} with msg (${msg})...`, err);
-    res.status(code).json({ msg, ...(err || {}) });
-  }
   if (!req.body) {
-    error('You must provide a request body.');
+    error(res, 'You must provide a request body.');
   } else if (!req.body.request || typeof req.body.request !== 'object') {
-    error('Your request body must contain a user field.');
+    error(res, 'Your request body must contain a user field.');
   } else if (!req.body.request.subjects || !req.body.request.subjects.length) {
-    error('Your appointment must contain valid subjects.');
+    error(res, 'Your appointment must contain valid subjects.');
   } else if (
     !req.body.request.attendees ||
     req.body.request.attendees.length < 2
   ) {
-    error('Your appointment must have >= 2 attendees.');
+    error(res, 'Your appointment must have >= 2 attendees.');
   } else if (
     req.body.request.time &&
     typeof req.body.request.time !== 'object'
   ) {
-    error('Your appointment had an invalid time.');
+    error(res, 'Your appointment had an invalid time.');
   } else if (
     req.body.request.time &&
     new Date(req.body.request.time.from).toString() === 'Invalid Date'
   ) {
-    error('Your appointment had an invalid start time.');
+    error(res, 'Your appointment had an invalid start time.');
   } else if (
     req.body.request.time &&
     new Date(req.body.request.time.to).toString() === 'Invalid Date'
   ) {
-    error('Your appointment had an invalid end time.');
-  } else if (!req.body.token || typeof req.body.token !== 'string') {
-    error('You must provide a valid Firebase Auth JWT.', 401);
+    error(res, 'Your appointment had an invalid end time.');
+  } else if (!req.headers.authorization) {
+    error(res, 'You must provide a valid Firebase Auth JWT.', 401);
   } else {
     const [err, token] = await to<DecodedIdToken>(
-      auth.verifyIdToken(req.body.token, true)
+      auth.verifyIdToken(req.headers.authorization.replace('Bearer ', ''), true)
     );
     if (err) {
-      error(`Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
+      error(res, `Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
       const request: Appt = Appt.fromJSON(req.body.request);
       const attendees: UserWithRoles[] = [];
@@ -212,7 +205,7 @@ export default async function request(
           if (errored) return;
           // 1. Verify that the attendees have uIDs.
           if (!attendee.id) {
-            error('All attendees must have valid uIDs.');
+            error(res, 'All attendees must have valid uIDs.');
             errored = true;
             return;
           }
@@ -220,17 +213,17 @@ export default async function request(
             // 1. Verify that the appointment creator is an attendee.
             attendeesIncludeAuthToken = true;
           }
-          const ref: DocumentReference = db
+          const attendeeRef: DocumentReference = db
             .collection('users')
             .doc(attendee.id);
-          const doc: DocumentSnapshot = await ref.get();
+          const attendeeDoc: DocumentSnapshot = await attendeeRef.get();
           // 1. Verify that the attendees exist.
-          if (!doc.exists) {
-            error(`Attendee (${attendee.id}) does not exist.`);
+          if (!attendeeDoc.exists) {
+            error(res, `Attendee (${attendee.id}) does not exist.`);
             errored = true;
             return;
           }
-          const user: User = User.fromFirestore(doc);
+          const user: User = User.fromFirestore(attendeeDoc);
           // 1. Verify that the attendees are available (note that we don't throw
           // an error if it is the request sender who is unavailable).
           if (request.time && !user.availability.contains(request.time)) {
@@ -240,6 +233,7 @@ export default async function request(
               );
             } else {
               error(
+                res,
                 `${user.toString()} is not available on ${request.time.toString()}.`
               );
               errored = true;
@@ -258,16 +252,12 @@ export default async function request(
             return user.mentoring.subjects.includes(subject);
           };
           if (isTutor && !request.subjects.every(canTutorSubject)) {
-            error(
-              `${user.toString()} cannot tutor for the requested subjects.`
-            );
+            error(res, `${user.toString()} cannot tutor these subjects.`);
             errored = true;
             return;
           }
           if (isMentor && !request.subjects.every(canMentorSubject)) {
-            error(
-              `${user.toString()} cannot mentor for the requested subjects.`
-            );
+            error(res, `${user.toString()} cannot mentor these subjects.`);
             errored = true;
             return;
           }
@@ -278,22 +268,20 @@ export default async function request(
       if (errored) {
         // Don't do anything b/c we already sent an error code to the client.
       } else if (!attendeesIncludeAuthToken) {
-        error(
-          `Appointment creator (${(token as DecodedIdToken).uid}) must attend` +
-            ' the tutoring appointment.'
-        );
+        error(res, `Creator (${(token as DecodedIdToken).uid}) must attend.`);
       } else {
         // 2. Create a new Bramble room for the tutoring appointment.
         request.id = (attendees[0].ref as DocumentReference)
           .collection('requests')
           .doc().id;
         console.log(`[DEBUG] Creating Bramble room (${request.id})...`);
-        const [err, brambleRes] = await to<AxiosResponse<BrambleRes>>(
+        const [brambleErr, brambleRes] = await to<AxiosResponse<BrambleRes>>(
           createBrambleRoom(request)
         );
-        if (err) {
-          console.error(`[ERROR] ${err.name} creating Bramble room:`, err);
-          error(`${err.name} creating Bramble room: ${err.message}`, 500, err);
+        if (brambleErr) {
+          const msg = `${brambleErr.name} using Bramble: ${brambleErr.message}`;
+          console.error(`[ERROR] ${msg}:`, brambleErr);
+          error(res, msg, 500, brambleErr);
         } else {
           const brambleURL: string = (brambleRes as AxiosResponse<BrambleRes>)
             .data.result;
@@ -330,10 +318,8 @@ export default async function request(
           );
           // 4-5. Send out the pending request emails.
           await sendRequestEmails(request, attendees);
-          res.status(201).json({ request: request.toJSON() });
-          console.log(
-            `[DEBUG] Created pending request (${request.id}) and sent emails.`
-          );
+          res.status(201).json(request.toJSON());
+          console.log(`[DEBUG] Created pending request (${request.id}).`);
         }
       }
     }
