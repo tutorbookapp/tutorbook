@@ -116,7 +116,7 @@ export default async function updateUserEndpoint(
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   if (!req.body) {
     error(res, 'You must provide a request body.');
-  } else if (!req.body.id || typeof req.body.id !== 'string') {
+  } else if (typeof req.body.id !== 'string') {
     error(res, 'Your request body must contain a valid user ID.');
   } else if (!req.headers.authorization) {
     error(res, 'You must provide a valid JWT Authorization header.', 401);

@@ -83,7 +83,7 @@ export class Query implements QueryInterface {
     });
   }
 
-  public async search(endpoint = '/api/search'): Promise<ReadonlyArray<User>> {
+  public async search(endpoint = '/api/users'): Promise<ReadonlyArray<User>> {
     const [err, res] = await to<
       AxiosResponse<UserJSON[]>,
       AxiosError<ApiError>

@@ -83,7 +83,7 @@ function Logo(): JSX.Element {
 }
 
 function MobileNav(): JSX.Element {
-  const { account } = useAccount();
+  const { user } = useAccount();
   const [active, setActive] = React.useState<boolean>(false);
   const toggleMobileMenu = () => {
     const menuActive = !active;
@@ -115,7 +115,7 @@ function MobileNav(): JSX.Element {
           <Link href='/signup'>
             <a className={styles.mobileLink}>
               <li className={styles.mobileLinkItem}>
-                {account.id ? 'Profile' : 'Signup'}
+                {user.id ? 'Profile' : 'Signup'}
               </li>
             </a>
           </Link>
@@ -127,26 +127,22 @@ function MobileNav(): JSX.Element {
 }
 
 function DesktopNav(): JSX.Element {
-  const { account } = useAccount();
-  const [open, setOpen] = React.useState<boolean>(false);
-  if (account.id)
-    return (
-      <PopOver open={open} onClose={() => setOpen(false)}>
-        <button
-          type='button'
-          className={styles.avatar}
-          onClick={() => setOpen(true)}
-        >
-          <Avatar src={account.photo} />
-        </button>
-      </PopOver>
-    );
+  const { user } = useAccount();
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
-      <Link href='/signup'>
-        <a className={`${styles.desktopLink} ${styles.signUpLink}`}>Signup</a>
-      </Link>
+      {!user.id && (
+        <Link href='/signup'>
+          <a className={`${styles.desktopLink} ${styles.signUpLink}`}>Signup</a>
+        </Link>
+      )}
+      {!!user.id && (
+        <Link href='/dashboard/people'>
+          <a className={styles.avatar}>
+            <Avatar src={user.photo} />
+          </a>
+        </Link>
+      )}
     </div>
     /* eslint-enable jsx-a11y/anchor-is-valid */
   );

@@ -163,7 +163,7 @@ export default async function createRequest(
   // 1. Verify that the request body is valid.
   if (!req.body) {
     error(res, 'You must provide a request body.');
-  } else if (!req.body.request || typeof req.body.request !== 'object') {
+  } else if (typeof req.body.request !== 'object') {
     error(res, 'Your request body must contain a user field.');
   } else if (!req.body.request.subjects || !req.body.request.subjects.length) {
     error(res, 'Your appointment must contain valid subjects.');
@@ -172,10 +172,7 @@ export default async function createRequest(
     req.body.request.attendees.length < 2
   ) {
     error(res, 'Your appointment must have >= 2 attendees.');
-  } else if (
-    req.body.request.time &&
-    typeof req.body.request.time !== 'object'
-  ) {
+  } else if (typeof req.body.request.time !== 'object') {
     error(res, 'Your appointment had an invalid time.');
   } else if (
     req.body.request.time &&

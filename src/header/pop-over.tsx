@@ -123,7 +123,7 @@ export default function PopOverMenu({
   onClose,
   children,
 }: PopOverMenuProps): JSX.Element {
-  const { account, accounts, update, signout } = useAccount();
+  const { signout } = useAccount();
   const menuRef: React.RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
@@ -185,23 +185,6 @@ export default function PopOverMenu({
               </svg>
             </div>
             <div className={styles.menu}>
-              {accounts.map((a) =>
-                a.id === account.id ? (
-                  <PopOverAccountLink
-                    checked
-                    key={a.id}
-                    account={account}
-                    href={a instanceof Org ? '/dashboard' : '/signup'}
-                  />
-                ) : (
-                  <PopOverAccountButton
-                    key={a.id}
-                    account={a}
-                    onClick={() => update(a)}
-                  />
-                )
-              )}
-              <div className={styles.line} />
               <PopOverButton onClick={() => signout()}>Logout</PopOverButton>
             </div>
           </div>

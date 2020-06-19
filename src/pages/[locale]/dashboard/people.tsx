@@ -9,7 +9,7 @@ import {
   IntlShape,
   IntlHelper,
 } from '@tutorbook/intl';
-import { SwitchAccount, People } from '@tutorbook/dashboard';
+import { People } from '@tutorbook/dashboard';
 import { TabHeader } from '@tutorbook/header';
 import { useAccount } from '@tutorbook/firebase';
 import { Org, User } from '@tutorbook/model';
@@ -20,7 +20,6 @@ import Footer from '@tutorbook/footer';
 import msgs from '@tutorbook/dashboard/msgs';
 
 function PeopleDashboardPage(): JSX.Element {
-  const { account } = useAccount();
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   return (
@@ -39,8 +38,7 @@ function PeopleDashboardPage(): JSX.Element {
           },
         ]}
       />
-      {account instanceof User && <SwitchAccount />}
-      {account instanceof Org && <People />}
+      <People />
       <Footer />
       <Intercom />
     </>

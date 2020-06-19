@@ -9,7 +9,7 @@ import {
   IntlShape,
   IntlHelper,
 } from '@tutorbook/intl';
-import { SwitchAccount, Overview } from '@tutorbook/dashboard';
+import { Overview } from '@tutorbook/dashboard';
 import { TabHeader } from '@tutorbook/header';
 import { useAccount } from '@tutorbook/firebase';
 import { Org, User } from '@tutorbook/model';
@@ -40,7 +40,6 @@ import msgs from '@tutorbook/dashboard/msgs';
  * @see {@link https://github.com/vercel/next.js/issues/14200}
  */
 function OverviewDashboardPage(): JSX.Element {
-  const { account } = useAccount();
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   return (
@@ -59,8 +58,7 @@ function OverviewDashboardPage(): JSX.Element {
           },
         ]}
       />
-      {account instanceof Org && <Overview />}
-      {account instanceof User && <SwitchAccount />}
+      <Overview />
       <Footer />
       <Intercom />
     </>

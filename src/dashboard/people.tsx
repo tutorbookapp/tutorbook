@@ -37,7 +37,10 @@ async function fetchPeopleData(
 ): Promise<User[]> {
   console.log('[DEBUG] Fetching people data...', [url, id, token]);
   const [err, res] = await to<AxiosResponse<UserJSON[]>, AxiosError<ApiError>>(
-    axios.get(url, { params: { id, token } })
+    axios.get(url, {
+      params: { id },
+      headers: { Authorization: `Bearer ${token}` },
+    })
   );
   if (err && err.response) {
     console.error(`[ERROR] ${err.response.data.msg}`);
@@ -61,7 +64,7 @@ export default function People(): JSX.Element {
     token,
   } = useAccount();
   const { data } = useSWR(
-    () => (id && token ? ['/api/people', id, token] : null),
+    () => (id && token ? ['/api/users', id, token] : null),
     fetchPeopleData
   );
   const [users, setUsers] = React.useState<User[]>(data || []);

@@ -104,7 +104,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const query: Query = Query.fromURLParams(context.query);
   const url: string = new URL(
-    '/api/search',
+    '/api/users',
     `http:${context.req.headers.host as string}`
   ).href;
 
@@ -132,7 +132,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   const handleChange = async (newQuery: Query) => {
     // TODO: Store the availability filters in the tutoring aspect and then
     // re-fill them when we go back to that aspect. Or, just keep them in the
-    // query and ignore them when searching for mentors (i.e. in `api/search`).
+    // query and ignore them when searching for mentors (i.e. in `api/users`).
     const updatedQuery: Query =
       newQuery.aspect === 'mentoring'
         ? new Query({ ...newQuery, availability: new Availability() })

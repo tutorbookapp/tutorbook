@@ -93,4 +93,8 @@ export class Account implements AccountInterface {
         .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
   }
+
+  public toString(): string {
+    return `${this.name} (${this.id})`;
+  }
 }

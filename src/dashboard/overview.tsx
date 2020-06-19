@@ -7,13 +7,13 @@ import Title from './title';
 import styles from './overview.module.scss';
 
 export default function Overview(): JSX.Element {
-  const { account } = useAccount();
+  const { user } = useAccount();
 
   return (
     <>
       <Title
         header='Overview'
-        body={Utils.period(`Analytics dashboard for ${account.name}`)}
+        body={Utils.period(`Analytics dashboard for ${user.name}`)}
         actions={[
           {
             label: 'View search',

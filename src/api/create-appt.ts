@@ -91,9 +91,9 @@ export default async function createAppt(
   // 1. Verify that the request body is valid.
   if (!req.body) {
     error(res, 'You must provide a request body.');
-  } else if (!req.body.request || typeof req.body.request !== 'string') {
+  } else if (typeof req.body.request !== 'string') {
     error(res, 'Your request body must contain a request field.');
-  } else if (!req.body.id || typeof req.body.id !== 'string') {
+  } else if (typeof req.body.id !== 'string') {
     error(res, 'Your request body must contain a id field.');
   } else {
     // 2. Fetch the lesson request data.
