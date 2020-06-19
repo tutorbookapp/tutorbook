@@ -18,61 +18,81 @@ Each of these API functions catches all known errors and sends them back to the
 client in plain English (i.e. you can display `res.data` to the user when you
 receive a `400` or `500` HTTP error code).
 
-## Objects
+## Data Model
 
-Included below are the impromptu reference of the objects referred to in our
-REST API specs (impromptu because they're already all defined as interfaces in
-the [`@tutorbook/model`](https://github.com/tutorbookapp/covid-tutoring/tree/master/src/model/lib/)
-package; the interfaces defined there are **ground truth** and will always be
-up-to-date):
-
-### `Attendee`
-
-The `Attendee` object represents a user attending a tutoring appointment.
-
-| Property | Type       | Description                                                                                             |
-| -------- | ---------- | ------------------------------------------------------------------------------------------------------- |
-| `roles`  | `string[]` | An array of the roles (i.e. `tutor` or `pupil`) that the attendee will play during the tutoring lesson. |
-| `id`     | `string`   | The user's Firebase Authentication uID (i.e. also the ID of their Firestore profile document).          |
-
-### `Timeslot`
-
-The `Timeslot` object represents a window of time (in which a tutoring
-appointment will take place).
-
-| Property | Type                  | Description        |
-| -------- | --------------------- | ------------------ |
-| `from`   | `Date` or `Timestamp` | The starting time. |
-| `to`     | `Date` or `Timestamp` | The ending time.   |
+All data model references can be found in [this
+README](https://github.com/tutorbookapp/tutorbook/tree/develop/src/model#readme)
+and are defined in [the `src/model`
+directory](https://github.com/tutorbookapp/tutorbook/tree/develop/src/model).
 
 ## REST API
 
-Included below are the specifications of our REST API endpoints (accessible from
-`https://tutorbook.org/api/{functionName}`).
+Included below are the specifications of our REST API (which strive to follow
+the guidelines [outlined here](https://hackernoon.com/restful-api-designing-guidelines-the-best-practices-60e1d954e7c9))
+endpoints (accessible from `https://tutorbook.org/api/{functionName}`).
 
-Note that this are listed in the order that they will be called by a new user:
+The Firebase Authentication JWT (JSON Web Tokens) referred to below can be
+retrieved via the client-side [Firebase Authentication JavaScript
+SDK](https://firebase.google.com/docs/auth/web/start) like so:
 
-1. The user will create and login to their account by calling `/api/user`.
-2. The user will send a lesson request by calling `/api/request`.
-3. The user's parent will approve that lesson request by calling `/api/approve`
-   via a CTA in the "Your son scheduled a lesson on Tutorbook!" email.
+```typescript
+const token: string = await firebase.auth.currentUser.getIdToken();
+const { data } = await axios({
+  method: 'get',
+  url: `/api/users/${firebase.auth.currentUser.uid}`,
+  headers: { Authorization: `Bearer ${token}` },
+});
+const user: User = new User(data);
+```
 
-### `user`
+### `/api/users`
 
-The `/api/user` endpoint creates a new Firebase Authentication user and
-Firestore profile document for that user (in the `/partitions/default/users`
-collection).
+#### `GET`
 
-#### Parameters
+Lists all of Tutorbook's users (to a certain extent; and typically with
+truncated data).
 
-The following parameters should be sent in the HTTP request body.
+##### Authentication
 
-| Parameter | Type     | Description                                                                        |
+You may optionally pass a JWT that gives full access to some data (i.e. the data
+will not be truncated and will include contact information). If given a JWT, we
+will un-truncate data belonging to the owner of the JWT and any of the
+organizations that owner is a part of.
+
+Note that passing a JWT **does not** apply any filters to the data; they are
+still filtered as before and thus can be a mix of both truncated and
+un-truncated data. Thus, it is recommended that you filter by `orgs` using the
+parameters described below to ensure that you're receiving un-truncated data.
+
+##### Parameters
+
+We support all of the `Query` fields as URL query parameters. These parameters
+are entirely optional and only serve to further filter the data.
+
+#### `POST`
+
+Creates a new user's profile document and Firebase Authentication account.
+
+**Note:** This will fail if a user with the given email address already exists
+(in which case, one should use a `PUT` request to the `/api/users/[user]`
+endpoint instead).
+
+##### Authentication
+
+No authentication is required to create a new user. This request will fail
+however, if a user with the same email address already exists (in which case,
+one should use the `/api/user/update` endpoint to update an existing profile).
+
+##### Data
+
+The following data fields should be sent in the HTTP request body.
+
+| Field     | Type     | Description                                                                        |
 | --------- | -------- | ---------------------------------------------------------------------------------- |
 | `user`    | `User`   | The user to create (i.e. output of one of the two sign-up forms).                  |
 | `parents` | `User[]` | The user's parents (i.e. output of the "parent" fields in the pupil sign-up form). |
 
-#### Actions
+##### Actions
 
 Upon request, the `/api/user` serverless API function:
 
@@ -82,41 +102,85 @@ Upon request, the `/api/user` serverless API function:
 4. Creates a new Firestore profile document for the given user.
 5. Sends an email verification link to the new user (and his/her parents).
 
-Note that this endpoint **will still function** if a user with the given email
-already exists. If that is the case, we'll just update that user's info to match
-the newly given info and respond with a login token as normal.
+##### Response
 
-#### Response
+Responds with the created `User` document in JSON form (i.e. `UserJSON` that
+exactly matches what is now in our Firestore document-based NoSQL database).
 
-A custom Firebase Authentication login token (that can be used to log the user
-into Firebase client-side; a requirement to retrieve the user's JWT for
-subsequent API requests).
+### `/api/users/[user]`
 
-For example:
+#### `GET`
 
-```json
-{
-  "token": "custom-firebase-json-web-token"
-}
-```
+Fetches the user's profile document.
 
-### `request`
+##### Authentication
+
+Requires a JWT that belongs to either:
+
+1. The user whose profile document we're retrieving.
+2. A member of an organization who owns the profile document we're retrieving
+   (i.e. the organization's ID is listed in the profile's `orgs` field).
+
+##### Response
+
+Responds with a `User` object in JSON form (i.e. `UserJSON`).
+
+#### `PUT`
+
+Updates the user's profile document.
+
+##### Authentication
+
+As usual, this requires a JWT that belongs to either:
+
+1. The user whose profile document we're retrieving.
+2. A member of an organization who owns the profile document we're retrieving
+   (i.e. the organization's ID is listed in the profile's `orgs` field).
+
+##### Data
+
+Accepts a `User` object (in the form of JSON) in the request body.
+
+**Note:** That `User` object must contain certain fields or the request will
+fail:
+
+- A valid email address; one cannot remove the account's associated email
+  address.
+- A valid `id` (i.e the unique Firebase Authentication uID assigned during
+  account creation).
+
+#### `DELETE`
+
+Deletes the user's profile document and it's associated Firebase Authentication
+account.
+
+##### Authentication
+
+As usual, this requires a JWT that belongs to either:
+
+1. The user whose profile document we're retrieving.
+2. A member of an organization who owns the profile document we're retrieving
+   (i.e. the organization's ID is listed in the profile's `orgs` field).
+
+### `/api/requests`
+
+#### `POST`
 
 The `/api/request` endpoint creates a new lesson request that is awaiting
 parental approval (each time a pupil sends a lesson request, the parent must
 first approve of the requested tutor before the appointment emails (with a link
 to the Bramble room) are sent).
 
-#### Parameters
+##### Data
 
-The following parameters should be sent in the HTTP request body.
+The following data fields should be sent in the HTTP request body.
 
-| Parameter | Type     | Description                                               |
-| --------- | -------- | --------------------------------------------------------- |
-| `appt`    | `Appt`   | The tutoring appointment to create a pending request for. |
-| `token`   | `string` | The logged in user's Firebase Authentication `idToken`.   |
+| Field   | Type     | Description                                               |
+| ------- | -------- | --------------------------------------------------------- |
+| `appt`  | `Appt`   | The tutoring appointment to create a pending request for. |
+| `token` | `string` | The logged in user's Firebase Authentication `idToken`.   |
 
-#### Actions
+##### Actions
 
 Upon request, the `/api/request` serverless API function:
 
@@ -143,25 +207,27 @@ Upon request, the `/api/request` serverless API function:
 5. Sends an email to the pupil (the sender of the lesson request) telling them
    that we're awaiting parental approval.
 
-#### Response
+##### Response
 
 The created request object (that includes the ID of it's Firestore document).
 
-### `appt`
+### `/api/appts`
+
+#### `POST`
 
 The `/api/appt` endpoint approves a pending lesson request and creates a
 tutoring appointment.
 
-#### Parameters
+##### Data
 
 The following parameters should be sent in the HTTP request body.
 
-| Parameter | Type     | Description                                                                                                                                                           |
+| Field     | Type     | Description                                                                                                                                                           |
 | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `request` | `string` | The path of the pending tutoring lesson's Firestore document to approve (e.g. `partitions/default/users/MKroB319GCfMdVZ2QQFBle8GtCZ2/requests/CEt4uGqTtRg17rZamCLC`). |
 | `id`      | `string` | The user ID of the parent approving the lesson request (e.g. `MKroB319GCfMdVZ2QQFBle8GtCZ2`).                                                                         |
 
-#### Actions
+##### Actions
 
 Upon request, the `/api/appt` serverless API function:
 
@@ -191,7 +257,7 @@ Upon request, the `/api/appt` serverless API function:
 7. Sends each of the `appt`'s `attendee`'s an email containing instructions for
    how to access their Bramble virtual-tutoring room.
 
-#### Response
+##### Response
 
 The created appointment object (that includes the ID of the Firestore
 documents).
