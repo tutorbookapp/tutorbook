@@ -1,9 +1,15 @@
+const path = require('path');
+
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'postcss-modules'],
   parserOptions: {
-    project: './tsconfig.json',
+    project: [
+      path.resolve(__dirname, 'tsconfig.json'),
+      path.resolve(__dirname, 'sw/tsconfig.json'),
+      path.resolve(__dirname, 'firebase/functions/tsconfig.json'),
+    ],
   },
   extends: [
     'airbnb-typescript',

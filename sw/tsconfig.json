@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "webworker"],
+    "noEmit": false,
+    "outDir": "../public"
+  },
+  "include": ["index.ts"]
+}
