@@ -1,8 +1,10 @@
-import firebase from './base';
-import 'firebase/auth';
+import { User, UserJSON, UserInterface, ApiError } from '@tutorbook/model';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
+
+import firebase from '@tutorbook/firebase';
+import 'firebase/auth';
 
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
@@ -11,14 +13,13 @@ import to from 'await-to-js';
  * @todo Perhaps figure out a way to **only** import the type defs we need.
  */
 type Auth = firebase.auth.Auth;
-type FirebaseUser = firebase.User;
 type AuthError = firebase.auth.AuthError;
 type AuthProvider = firebase.auth.AuthProvider;
 type UserCredential = firebase.auth.UserCredential;
 
 const auth: Auth = firebase.auth();
 
-async function signup(newUser: User, parents?: User[]): Promise<void> {
+export async function signup(newUser: User, parents?: User[]): Promise<void> {
   const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
     axios({
       method: 'post',
@@ -69,7 +70,7 @@ async function signup(newUser: User, parents?: User[]): Promise<void> {
   }
 }
 
-async function signupWithGoogle(
+export async function signupWithGoogle(
   newUser?: User,
   parents?: User[]
 ): Promise<void> {

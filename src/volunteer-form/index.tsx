@@ -2,6 +2,7 @@ import React from 'react';
 
 import { MessageDescriptor, IntlShape, injectIntl } from 'react-intl';
 import { UserContextValue, UserContext } from '@tutorbook/account';
+import { signup } from '@tutorbook/account/signup';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
 import { Card } from '@rmwc/card';
@@ -139,7 +140,7 @@ class VolunteerForm extends React.Component<
 
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
-    const { signup, user } = this.context;
+    const { user } = this.context;
     const { aspect } = this.props;
     firebase.analytics().logEvent('sign_up', {
       method: aspect === 'mentoring' ? 'mentor_form' : 'tutor_form',
@@ -208,7 +209,7 @@ class VolunteerForm extends React.Component<
       } else {
         socials.push({ type, url });
       }
-      updateUser(new User({ ...user, socials }));
+      return updateUser(new User({ ...user, socials }));
     };
     const s = (type: SocialTypeAlias, placeholder: (v: string) => string) => ({
       ...sharedProps,
@@ -218,10 +219,12 @@ class VolunteerForm extends React.Component<
         const name: string = user.name
           ? user.name.replace(' ', '').toLowerCase()
           : 'yourname';
-        if (!hasSocial(type)) updateSocial(type, placeholder(name));
+        if (!hasSocial(type)) {
+          void updateSocial(type, placeholder(name));
+        }
       },
       onChange: (event: React.FormEvent<HTMLInputElement>) => {
-        updateSocial(type, event.currentTarget.value);
+        return updateSocial(type, event.currentTarget.value);
       },
     });
     return (
@@ -245,7 +248,7 @@ class VolunteerForm extends React.Component<
           label={msg(msgs.lang)}
           onChange={(newLangs: Option<string>[]) => {
             this.setState({ langs: newLangs });
-            updateUser(
+            return updateUser(
               new User({
                 ...user,
                 langs: newLangs.map((lang: Option<string>) => lang.value),
@@ -264,7 +267,7 @@ class VolunteerForm extends React.Component<
               placeholder={msg(msgs.expertisePlaceholder)}
               onChange={(subjects: Option<string>[]) => {
                 this.setState({ mentoringSubjects: subjects });
-                updateUser(
+                return updateUser(
                   new User({
                     ...user,
                     [aspect]: {
@@ -306,7 +309,7 @@ class VolunteerForm extends React.Component<
               placeholder={msg(msgs.subjectsPlaceholder)}
               onChange={(subjects: Option<string>[]) => {
                 this.setState({ tutoringSubjects: subjects });
-                updateUser(
+                return updateUser(
                   new User({
                     ...user,
                     [aspect]: {

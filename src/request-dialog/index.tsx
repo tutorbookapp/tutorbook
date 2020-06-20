@@ -15,6 +15,7 @@ import {
   Aspect,
   Option,
 } from '@tutorbook/model';
+import { signup, signupWithGoogle } from '@tutorbook/account/signup';
 import { UserContextValue, UserContext } from '@tutorbook/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
