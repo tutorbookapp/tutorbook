@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Aspect, User, UserJSON } from '@tutorbook/model';
 
-import axios from 'axios';
 import useSWR from 'swr';
 import { v4 as uuid } from 'uuid';
 
@@ -15,27 +14,25 @@ interface Props {
 }
 
 export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
-  const { data } = useSWR<User[]>(`/api/search?aspect=${aspect}`, async (url) =>
-    (await axios.get<UserJSON[]>(url)).data.map((user: UserJSON) =>
-      User.fromJSON(user)
-    )
-  );
+  const { data: users } = useSWR<UserJSON[]>(`/api/users?aspect=${aspect}`);
   return (
     <>
-      {data && (
+      {users && (
         <Carousel>
-          {data.map((user: User) => (
-            <UserCard
-              key={user.id || uuid()}
-              user={user}
-              onClick={() => onClick(user)}
-            />
-          ))}
+          {users
+            .map((u: UserJSON) => User.fromJSON(u))
+            .map((user: User) => (
+              <UserCard
+                key={user.id || uuid()}
+                user={user}
+                onClick={() => onClick(user)}
+              />
+            ))}
         </Carousel>
       )}
-      {!data && (
+      {!users && (
         <Carousel>
-          {Array(3)
+          {Array(6)
             .fill(null)
             .map(() => (
               <LoadingCard key={uuid()} />

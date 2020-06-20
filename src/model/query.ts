@@ -150,7 +150,7 @@ export class Query implements QueryInterface {
    * @example
    * // You can do this because the `QueryDepArray` will be unique for each
    * // different query.
-   * const { data: results } = useSWR(['/api/search', ...query.toDepArray]);
+   * const { data: results } = useSWR(['/api/users', ...query.toDepArray]);
    * @deprecated Currently unused because we haven't implemented SWR in the
    * search view yet... but it's coming soon.
    * @see {@link https://github.com/vercel/swr#multiple-arguments}
