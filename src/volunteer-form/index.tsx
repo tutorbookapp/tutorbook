@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { MessageDescriptor, IntlShape, injectIntl } from 'react-intl';
+import { UserContextValue, UserContext } from '@tutorbook/account';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
 import { Card } from '@rmwc/card';
@@ -22,7 +23,7 @@ import LangSelect from '@tutorbook/lang-select';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
 
-import firebase, { UserContextValue, UserContext } from '@tutorbook/firebase';
+import firebase from '@tutorbook/firebase';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';

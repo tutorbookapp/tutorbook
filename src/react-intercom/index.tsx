@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { IntlShape, useIntl } from 'react-intl';
-import { UserContext } from '@tutorbook/firebase';
+import { UserContext } from '@tutorbook/account';
 import { User } from '@tutorbook/model';
 
 const appID = 'faz7lcyb';

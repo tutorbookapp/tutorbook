@@ -2,9 +2,10 @@ import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 import { SWRConfig } from 'swr';
 import { ApiError } from '@tutorbook/model';
+import { UserProvider } from '@tutorbook/account';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import firebase, { UserProvider } from '@tutorbook/firebase';
+import firebase from '@tutorbook/firebase';
 import to from 'await-to-js';
 
 import React from 'react';

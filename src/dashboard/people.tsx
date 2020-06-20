@@ -16,7 +16,7 @@ import { TextField } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 
-import { useUser } from '@tutorbook/firebase';
+import { useUser } from '@tutorbook/account';
 import { User, UserJSON } from '@tutorbook/model';
 import { IntercomAPI } from '@tutorbook/react-intercom';
 

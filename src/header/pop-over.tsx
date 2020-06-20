@@ -5,7 +5,7 @@ import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { Link } from '@tutorbook/intl';
 import { Org, Account } from '@tutorbook/model';
-import { useAccount } from '@tutorbook/firebase';
+import { useAccount } from '@tutorbook/account';
 
 import styles from './pop-over.module.scss';
 

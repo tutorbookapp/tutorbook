@@ -16,7 +16,7 @@ import {
   DataTableCell,
 } from '@rmwc/data-table';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
-import { useAccount } from '@tutorbook/firebase';
+import { useUser } from '@tutorbook/account';
 import { ApiError, Check, User, Verification } from '@tutorbook/model';
 import { defMsg, useIntl, IntlShape, IntlHelper, Msg } from '@tutorbook/intl';
 import { socials } from '@tutorbook/intl/msgs';
@@ -55,7 +55,7 @@ export default function VerificationDialog({
   user,
   onClosed,
 }: VerificationDialogProps): JSX.Element {
-  const { account, token } = useAccount();
+  const { user } = useUser();
   const { id } = user;
 
   const [error, setError] = React.useState<string | undefined>();
@@ -64,7 +64,7 @@ export default function VerificationDialog({
   );
 
   const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message, vals) => intl.formatMessage(message, vals);
+  const msg: IntlHelper = (m: Msg, v: any) => intl.formatMessage(m, v);
 
   React.useEffect(() => {
     void (async function update() {
@@ -75,7 +75,7 @@ export default function VerificationDialog({
         axios({
           method: 'post',
           url: '/api/verify',
-          data: { token, verifications, id },
+          data: { verifications, id },
         })
       );
       if (err && err.response) {
@@ -96,7 +96,7 @@ export default function VerificationDialog({
         );
       }
     })();
-  }, [token, verifications, id]);
+  }, [verifications, id]);
 
   const getIndex = (check: Check) =>
     verifications.findIndex((v) => v.checks.indexOf(check) >= 0);
@@ -111,8 +111,8 @@ export default function VerificationDialog({
       copy.splice(getIndex(check), 1);
     } else {
       copy.push({
-        user: account.id,
-        org: account.id,
+        user: user.id,
+        org: user.id,
         checks: [check],
         notes: '',
         created: new Date(),
@@ -141,8 +141,8 @@ export default function VerificationDialog({
       ) as Check[]).filter((c) => checked.indexOf(c) < 0);
       stillNeedsToBeChecked.forEach((check: Check) =>
         copy.push({
-          user: account.id,
-          org: account.id,
+          user: user.id,
+          org: user.id,
           checks: [check],
           notes: '',
           created: new Date(),
@@ -163,8 +163,8 @@ export default function VerificationDialog({
       copy[getIndex(check)].notes = event.currentTarget.value;
     } else {
       copy.push({
-        user: account.id,
-        org: account.id,
+        user: user.id,
+        org: user.id,
         checks: [check],
         notes: event.currentTarget.value,
         created: new Date(),

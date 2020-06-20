@@ -5,7 +5,7 @@ import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
 import UserDialog from '@tutorbook/user-dialog';
 
-import firebase, { UserContextValue, UserContext } from '@tutorbook/firebase';
+import firebase from '@tutorbook/firebase';
 import {
   ApiError,
   User,
@@ -15,6 +15,7 @@ import {
   Aspect,
   Option,
 } from '@tutorbook/model';
+import { UserContextValue, UserContext } from '@tutorbook/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import {

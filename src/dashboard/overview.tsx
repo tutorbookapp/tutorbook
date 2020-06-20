@@ -1,4 +1,4 @@
-import { useUser } from '@tutorbook/firebase';
+import { useUser } from '@tutorbook/account';
 
 import React from 'react';
 import Utils from '@tutorbook/utils';
