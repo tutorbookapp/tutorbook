@@ -37,15 +37,13 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     })
   );
 
-  React.useEffect(
-    () =>
-      setQuery((oldQuery: Query) => {
-        if (aspect && aspect !== oldQuery.aspect)
-          return new Query({ ...oldQuery, aspect });
-        return oldQuery;
-      }),
-    [aspect]
-  );
+  React.useEffect(() => {
+    setQuery((oldQuery: Query) => {
+      if (aspect && aspect !== oldQuery.aspect)
+        return new Query({ ...oldQuery, aspect });
+      return oldQuery;
+    });
+  }, [aspect]);
 
   React.useEffect(() => {
     void Router.prefetch(
