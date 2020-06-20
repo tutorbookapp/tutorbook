@@ -22,10 +22,7 @@ import LangSelect from '@tutorbook/lang-select';
 import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
 
-import firebase, {
-  AccountContextValue,
-  AccountContext,
-} from '@tutorbook/firebase';
+import firebase, { UserContextValue, UserContext } from '@tutorbook/firebase';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
@@ -60,16 +57,16 @@ class VolunteerForm extends React.Component<
   VolunteerFormState
 > {
   public static readonly contextType: React.Context<
-    AccountContextValue
-  > = AccountContext;
+    UserContextValue
+  > = UserContext;
 
-  public readonly context: AccountContextValue;
+  public readonly context: UserContextValue;
 
   private readonly headerRef: React.RefObject<HTMLHeadingElement>;
 
   private readonly descRef: React.RefObject<HTMLParagraphElement>;
 
-  public constructor(props: VolunteerFormProps, context: AccountContextValue) {
+  public constructor(props: VolunteerFormProps, context: UserContextValue) {
     super(props);
 
     this.context = context;

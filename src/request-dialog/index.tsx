@@ -5,10 +5,7 @@ import TimeslotInput from '@tutorbook/timeslot-input';
 import SubjectSelect from '@tutorbook/subject-select';
 import UserDialog from '@tutorbook/user-dialog';
 
-import firebase, {
-  AccountContextValue,
-  AccountContext,
-} from '@tutorbook/firebase';
+import firebase, { UserContextValue, UserContext } from '@tutorbook/firebase';
 import {
   ApiError,
   User,
@@ -67,12 +64,12 @@ class RequestDialog extends React.Component<
   RequestDialogState
 > {
   public static readonly contextType: React.Context<
-    AccountContextValue
-  > = AccountContext;
+    UserContextValue
+  > = UserContext;
 
-  public readonly context: AccountContextValue;
+  public readonly context: UserContextValue;
 
-  public constructor(props: RequestDialogProps, context: AccountContextValue) {
+  public constructor(props: RequestDialogProps, context: UserContextValue) {
     super(props);
     this.context = context;
     this.state = {
@@ -105,13 +102,13 @@ class RequestDialog extends React.Component<
   private get appt(): Appt {
     const { aspect, user } = this.props;
     const { subjects, message, time } = this.state;
-    const { account } = this.context;
+    const { user: currentUser } = this.context;
     return new Appt({
       time,
       message,
       attendees: [
         {
-          id: account.id,
+          id: currentUser.id,
           roles: [aspect === 'tutoring' ? 'tutee' : 'mentee'],
         },
         {
@@ -184,24 +181,16 @@ class RequestDialog extends React.Component<
     });
     this.setState({ submitted: false, submitting: true });
     const { parentName, parentEmail } = this.state;
-    const { account, signup, signupWithGoogle } = this.context;
+    const { user: currentUser } = this.context;
     const parent: User = new User({ name: parentName, email: parentEmail });
-    if (!(account instanceof User))
-      return this.setState({
-        submitted: false,
-        submitting: false,
-        err:
-          'You must use a personal account when sending requests. Click on the ' +
-          'profile picture in the top-right and select a personal account.',
-      });
-    if (!account.id) {
+    if (!currentUser.id) {
       const [err] = await to(
         signupWithGoogle(
-          account,
-          !account.parents.length ? [parent] : undefined
+          currentUser,
+          !currentUser.parents.length ? [parent] : undefined
         )
       );
-      if (err || !account.id)
+      if (err || !currentUser.id)
         return this.setState({
           submitted: false,
           submitting: false,
@@ -209,9 +198,9 @@ class RequestDialog extends React.Component<
             'An error occurred while logging in with Google.' +
             `${err ? ` ${err.message}` : ''}`,
         });
-    } else if (!account.parents.length) {
-      const [err] = await to(signup(account, [parent]));
-      if (err || !account.parents.length)
+    } else if (!currentUser.parents.length) {
+      const [err] = await to(signup(currentUser, [parent]));
+      if (err || !currentUser.parents.length)
         return this.setState({
           submitted: false,
           submitting: false,
@@ -221,13 +210,13 @@ class RequestDialog extends React.Component<
         });
     }
     const [err, res] = await to<
-      AxiosResponse<{ request: ApptJSONInterface }>,
+      AxiosResponse<ApptJSONInterface>,
       AxiosError<ApiError>
     >(
       axios({
         method: 'post',
-        url: '/api/request',
-        data: { token: account.token as string, request: this.appt.toJSON() },
+        url: '/api/requests',
+        data: { request: this.appt.toJSON() },
       })
     );
     if (err && err.response) {
@@ -274,11 +263,11 @@ class RequestDialog extends React.Component<
         )} Please check your Internet connection and try again.`,
       });
     }
-    const { data } = res as AxiosResponse<{ request: ApptJSONInterface }>;
+    const { data: request } = res as AxiosResponse<ApptJSONInterface>;
     firebase.analytics().logEvent('purchase', {
-      transaction_id: data.request.id,
-      request: data.request,
+      request,
       items: this.items,
+      transaction_id: request.id,
     });
     return this.setState({ submitted: true, submitting: false });
   }
@@ -298,8 +287,8 @@ class RequestDialog extends React.Component<
       err,
     } = this.state;
     const { onClosed, user, aspect, intl } = this.props;
-    const { account } = this.context;
-    const msg: IntlHelper = (message, val) => intl.formatMessage(message, val);
+    const { user: currentUser } = this.context;
+    const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
     const labels: Record<string, Msg> = defMsg({
       parentName: {
         id: 'request-dialog.parent-name',
@@ -350,7 +339,7 @@ class RequestDialog extends React.Component<
       >
         <h6 className={styles.header}>Request</h6>
         <form className={styles.form} onSubmit={this.handleSubmit}>
-          {account instanceof User && !account.parents.length && (
+          {!currentUser.parents.length && (
             <>
               <TextField
                 outlined
@@ -404,26 +393,15 @@ class RequestDialog extends React.Component<
           <Button
             className={styles.button}
             label={
-              !account.id
+              !currentUser.id
                 ? msg(labels.signUpAndSubmit)
                 : msg(labels.submit, { name: user.firstName })
             }
-            disabled={!(account instanceof User) || submitting || submitted}
-            google={!account.id}
+            disabled={submitting || submitted}
+            google={!currentUser.id}
             raised
             arrow
           />
-          {!(account instanceof User) && !err && (
-            <TextFieldHelperText
-              persistent
-              validationMsg
-              className={styles.error}
-            >
-              You must use a personal account when sending requests. Click on
-              the profile picture in the top-right and select a personal
-              account.
-            </TextFieldHelperText>
-          )}
           {!!err && (
             <TextFieldHelperText
               persistent

@@ -11,7 +11,6 @@ import {
 } from '@tutorbook/intl';
 import { People } from '@tutorbook/dashboard';
 import { TabHeader } from '@tutorbook/header';
-import { useAccount } from '@tutorbook/firebase';
 import { Org, User } from '@tutorbook/model';
 
 import Intercom from '@tutorbook/react-intercom';

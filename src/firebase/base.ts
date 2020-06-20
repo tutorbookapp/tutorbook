@@ -1,9 +1,7 @@
 // See: https://github.com/zeit/next.js/tree/master/examples/with-firebase
 
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import 'firebase/analytics';
-import 'firebase/storage';
-import 'firebase/auth';
 
 const clientCredentials = {
   apiKey: process.env.FIREBASE_API_KEY,

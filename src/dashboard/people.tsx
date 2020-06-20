@@ -1,7 +1,5 @@
 import { v4 as uuid } from 'uuid';
 import useSWR from 'swr';
-import to from 'await-to-js';
-import axios, { AxiosResponse, AxiosError } from 'axios';
 
 import {
   DataTable,
@@ -18,8 +16,8 @@ import { TextField } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 
-import { useAccount } from '@tutorbook/firebase';
-import { ApiError, User, UserJSON } from '@tutorbook/model';
+import { useUser } from '@tutorbook/firebase';
+import { User, UserJSON } from '@tutorbook/model';
 import { IntercomAPI } from '@tutorbook/react-intercom';
 
 import React from 'react';
@@ -30,46 +28,21 @@ import PeopleRow from './people-row';
 
 import styles from './people.module.scss';
 
-async function fetchPeopleData(
-  url: string,
-  id: string,
-  token: string
-): Promise<User[]> {
-  console.log('[DEBUG] Fetching people data...', [url, id, token]);
-  const [err, res] = await to<AxiosResponse<UserJSON[]>, AxiosError<ApiError>>(
-    axios.get(url, {
-      params: { id },
-      headers: { Authorization: `Bearer ${token}` },
-    })
-  );
-  if (err && err.response) {
-    console.error(`[ERROR] ${err.response.data.msg}`);
-    throw new Error(err.response.data.msg);
-  } else if (err && err.request) {
-    console.error('[ERROR] Search REST API did not respond:', err.request);
-    throw new Error('Search REST API did not respond.');
-  } else if (err) {
-    console.error('[ERROR] While sending request:', err);
-    throw new Error(`While sending request: ${err.message}`);
-  } else {
-    return (res as AxiosResponse<UserJSON[]>).data.map((user: UserJSON) =>
-      User.fromJSON(user)
-    );
-  }
-}
-
 export default function People(): JSX.Element {
-  const {
-    account: { id, name },
-    token,
-  } = useAccount();
-  const { data } = useSWR(
-    () => (id && token ? ['/api/users', id, token] : null),
-    fetchPeopleData
+  const { user } = useUser();
+  const { data } = useSWR<UserJSON[]>('/api/users');
+  const [users, setUsers] = React.useState<User[]>(
+    (data || []).map((u: UserJSON) => User.fromJSON(u))
   );
-  const [users, setUsers] = React.useState<User[]>(data || []);
 
-  React.useEffect(() => setUsers((prev) => data || prev), [data]);
+  React.useEffect(
+    () =>
+      setUsers((prev: User[]) => {
+        if (data) data.map((u: UserJSON) => User.fromJSON(u));
+        return prev;
+      }),
+    [data]
+  );
 
   const [selected, setSelected] = React.useState<string[]>([]);
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
@@ -101,7 +74,7 @@ export default function People(): JSX.Element {
       )}
       <Title
         header='People'
-        body={`${name}'s tutors, mentors and students.`}
+        body={`${user.name}'s tutors, mentors and students.`}
         actions={[
           {
             label: 'Create user',
@@ -198,7 +171,7 @@ export default function People(): JSX.Element {
                         <PeopleRow
                           person={person}
                           selected={selected.indexOf(person.id) >= 0}
-                          setSelected={(event) => {
+                          setSelected={() => {
                             const idx = selected.indexOf(person.id);
                             if (idx < 0) {
                               setSelected([...selected, person.id]);

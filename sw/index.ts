@@ -24,9 +24,9 @@ firebase.initializeApp({
  */
 async function getIdToken(): Promise<string | void> {
   const user = firebase.auth().currentUser;
-  if (!user) return console.warn('[WARNING] No JWT.');
+  if (!user) return;
   const [err, token] = await to<string>(user.getIdToken());
-  if (err) return console.error('[ERROR] While fetching JWT:', err);
+  if (err) return;
   return token;
 }
 
@@ -54,7 +54,8 @@ self.addEventListener('fetch', (event: FetchEvent) => {
       self.location.origin === getOriginFromUrl(event.request.url);
     const secure: boolean =
       self.location.protocol === 'https:' ||
-      self.location.hostname === 'localhost';
+      self.location.hostname === 'localhost' ||
+      self.location.hostname === '0.0.0.0';
     if (sameOrigin && secure && token) {
       // Clone headers as request headers are immutable.
       const headers = new Headers();

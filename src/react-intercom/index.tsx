@@ -3,8 +3,8 @@
 import React from 'react';
 
 import { IntlShape, useIntl } from 'react-intl';
-import { AccountContext } from '@tutorbook/firebase';
-import { Account } from '@tutorbook/model';
+import { UserContext } from '@tutorbook/firebase';
+import { User } from '@tutorbook/model';
 
 const appID = 'faz7lcyb';
 const canUseDOM = !!(
@@ -28,7 +28,7 @@ interface IntercomSettings {
 
 interface IntercomProps {
   locale: string;
-  account: Account;
+  account: User;
 }
 
 declare global {
@@ -128,8 +128,8 @@ class Intercom extends React.Component<IntercomProps> {
 export default function IntercomHOC(): JSX.Element {
   const intl: IntlShape = useIntl();
   return (
-    <AccountContext.Consumer>
+    <UserContext.Consumer>
       {({ user }) => <Intercom account={user} locale={intl.locale} />}
-    </AccountContext.Consumer>
+    </UserContext.Consumer>
   );
 }

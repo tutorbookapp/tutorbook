@@ -7,7 +7,7 @@ import {
   Msg,
 } from '@tutorbook/intl';
 import { Query, Aspect, Callback } from '@tutorbook/model';
-import { useAccount } from '@tutorbook/firebase';
+import { useUser } from '@tutorbook/firebase';
 
 import React from 'react';
 import Avatar from '@tutorbook/avatar';
@@ -83,7 +83,7 @@ function Logo(): JSX.Element {
 }
 
 function MobileNav(): JSX.Element {
-  const { user } = useAccount();
+  const { user } = useUser();
   const [active, setActive] = React.useState<boolean>(false);
   const toggleMobileMenu = () => {
     const menuActive = !active;
@@ -127,7 +127,7 @@ function MobileNav(): JSX.Element {
 }
 
 function DesktopNav(): JSX.Element {
-  const { user } = useAccount();
+  const { user } = useUser();
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
