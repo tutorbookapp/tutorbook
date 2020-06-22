@@ -22,17 +22,23 @@ firebase.initializeApp({
  * @return {Promise<?string>} The promise that resolves with an ID token if
  * available. Otherwise, the promise resolves with null.
  */
-async function getIdToken(): Promise<string | void> {
-  const user = firebase.auth().currentUser;
-  if (!user) return;
-  const [err, token] = await to<string>(user.getIdToken());
-  if (err) return;
-  return token;
+async function getIdToken(): Promise<string | null> {
+  return new Promise((resolve) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      unsubscribe();
+      if (user) {
+        const [err, token] = await to<string>(user.getIdToken());
+        if (err) return resolve(null);
+        return resolve(token);
+      }
+      return resolve(null);
+    });
+  });
 }
 
 /**
  * @see {@link https://stackoverflow.com/q/1420881/10023158}
- * @param {string} url The URL whose origin is to be returned.
+ * @param {string} url - The URL whose origin is to be returned.
  * @return {string} The origin corresponding to given URL.
  */
 function getOriginFromUrl(url: string): string {
@@ -43,11 +49,28 @@ function getOriginFromUrl(url: string): string {
 }
 
 /**
+ * Gets underlying body content if available. Works for text and JSON bodies.
+ * @param {Request} req - The request to get the body from.
+ * @return {string} The underlying body content in string form.
+ */
+async function getBodyContent(req: Request): Promise<string | null> {
+  if (req.method !== 'GET') {
+    const type: string | null = req.headers.get('Content-Type');
+    if (type && type.indexOf('json') !== -1)
+      return req.json().then((json) => JSON.stringify(json));
+    return req.text();
+  }
+  return null;
+}
+
+/**
  * Intercepts fetch requests and appends the Firebase Authentication JWT if it's
  * a same origin request (i.e. it's calling our own API).
+ * @see {@link https://firebase.google.com/docs/auth/web/service-worker-sessions}
+ * @see {@link https://github.com/FirebaseExtended/firebase-auth-service-worker-sessions}
  */
 self.addEventListener('fetch', (event: FetchEvent) => {
-  function requestProcessor(token: string | void): Promise<Response> {
+  async function requestProcessor(token: string | null): Promise<Response> {
     let req = event.request;
     // For same origin https requests, append JWT to header.
     const sameOrigin: boolean =
@@ -63,10 +86,12 @@ self.addEventListener('fetch', (event: FetchEvent) => {
       // Add ID token to header. We can't add to Authentication header as it
       // will break HTTP basic authentication.
       headers.append('Authorization', `Bearer ${token}`);
+      // Get the underlying body (text or JSON) content if available.
+      const body: string | null = await getBodyContent(req);
       try {
         req = new Request(req.url, {
+          body,
           headers,
-          body: req.body,
           method: req.method,
           mode: 'same-origin',
           credentials: req.credentials,
@@ -83,4 +108,14 @@ self.addEventListener('fetch', (event: FetchEvent) => {
   }
   // Try to fetch the resource first after checking for the JWT.
   event.respondWith(getIdToken().then(requestProcessor));
+});
+
+/**
+ * When a service worker is initially registered, pages won't use it until they
+ * next load. The `clients.claim()` method (invoked below) causes those pages to
+ * be controlled immediately.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim}
+ */
+self.addEventListener('activate', (event: ExtendableEvent) => {
+  event.waitUntil(self.clients.claim());
 });
