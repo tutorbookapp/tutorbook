@@ -4,24 +4,29 @@ import Avatar from '@tutorbook/avatar';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { Link } from '@tutorbook/intl';
-import { Org, Account } from '@tutorbook/model';
-import { useAccount } from '@tutorbook/account';
+import { Account } from '@tutorbook/model';
 
 import styles from './pop-over.module.scss';
 
 interface PopOverLinkProps {
   href: string;
+  as?: string;
   children: string;
   icon?: string;
 }
 
-function PopOverLink({ href, children, icon }: PopOverLinkProps): JSX.Element {
+function PopOverLink({
+  href,
+  as,
+  children,
+  icon,
+}: PopOverLinkProps): JSX.Element {
   return (
     <Ripple>
       <div className={styles.item}>
-        <a className={styles.itemLink} href={href}>
-          {children}
-        </a>
+        <Link href={href} as={as}>
+          <a className={styles.itemLink}>{children}</a>
+        </Link>
         {icon && (
           <div className={styles.icon}>
             <Icon icon={icon} />
@@ -123,7 +128,6 @@ export default function PopOverMenu({
   onClose,
   children,
 }: PopOverMenuProps): JSX.Element {
-  const { signout } = useAccount();
   const menuRef: React.RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
@@ -185,7 +189,12 @@ export default function PopOverMenu({
               </svg>
             </div>
             <div className={styles.menu}>
-              <PopOverButton onClick={() => signout()}>Logout</PopOverButton>
+              <PopOverLink href='/signup'>Profile</PopOverLink>
+              <div className={styles.line} />
+              <PopOverLink href='/dashboard'>Dashboard</PopOverLink>
+              <PopOverLink href='/dashboard/people'>People</PopOverLink>
+              <div className={styles.line} />
+              <PopOverButton onClick={() => {}}>Logout</PopOverButton>
             </div>
           </div>
         </div>
