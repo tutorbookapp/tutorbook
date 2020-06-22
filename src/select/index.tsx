@@ -276,7 +276,7 @@ export default class Select<T> extends React.Component<
     suggestions.forEach((option: Option<T>) =>
       suggestionMenuItems.push(
         <ListItem
-          key={option.label}
+          key={option.value}
           onClick={(event: React.MouseEvent) =>
             this.updateSelected(option, event)
           }
@@ -305,7 +305,7 @@ export default class Select<T> extends React.Component<
     const { value } = this.props;
     return value.map((option: Option<T>) => (
       <Chip
-        key={option.label}
+        key={option.value}
         label={option.label}
         trailingIcon='close'
         onTrailingIconInteraction={() => this.updateSelected(option)}
