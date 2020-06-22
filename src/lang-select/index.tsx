@@ -23,39 +23,40 @@ type LangSelectProps = { values?: string[] } & Omit<
   'getSuggestions'
 >;
 
+const searchIndex: SearchIndex = client.initIndex('langs');
+
 export default function LangSelect({
+  value,
   values,
+  onChange,
   ...props
 }: LangSelectProps): JSX.Element {
-  const searchIndex: SearchIndex = client.initIndex('langs');
-  const intl: IntlShape = useIntl();
+  const { locale } = useIntl();
 
-  // TODO: Implement this using `react-async` or `swr`.
-  // See https://blog.logrocket.com/how-to-handle-async-side-effects-in-2019/
   React.useEffect(() => {
+    const updateSelected = async (vals: string[]) => {
+      const res: SearchResponse<LangHit> = await searchIndex.search('', {
+        filters: vals.map((val: string) => `objectID:${val}`).join(' OR '),
+      });
+      const selected: Option<string>[] = res.hits.map((lang: LangHit) => ({
+        label: lang[locale].name,
+        value: lang.objectID,
+      }));
+      onChange(selected);
+    };
     if (values && values.length) {
-      const valuesHaveLabels = values.every(
-        (value: string) =>
-          props.value.findIndex(
-            (valueWithLabel: Option<string>) => valueWithLabel.value === value
-          ) >= 0
+      // The `values` prop contains an array of locale codes. We must search the
+      // `langs` Algolia index to find their corresponding labels (e.g. `en` and
+      // `English`) and select them (by calling `props.onChange`).
+      const valuesAreSelected = values.every(
+        (val) =>
+          value.findIndex((option: Option<string>) => option.value === val) >= 0
       );
-      if (!valuesHaveLabels) updateValue(values);
-    } else if (!props.value.length) {
-      updateValue([intl.locale]);
+      if (!valuesAreSelected) void updateSelected(values);
+    } else if (!value.length) {
+      void updateSelected([locale]);
     }
   }, [values]);
-
-  const langHitToOption = (lang: LangHit) => ({
-    label: lang[intl.locale].name,
-    value: lang.objectID,
-  });
-  const updateValue = async (values: string[]) => {
-    const res: SearchResponse<LangHit> = await searchIndex.search('', {
-      filters: values.map((val: string) => `objectID:${val}`).join(' OR '),
-    });
-    props.onChange(res.hits.map(langHitToOption));
-  };
 
   /**
    * Updates the suggestions shown in the select below the langs input based
@@ -64,8 +65,18 @@ export default function LangSelect({
    */
   async function getSuggestions(query = ''): Promise<Option<string>[]> {
     const res: SearchResponse<LangHit> = await searchIndex.search(query);
-    return res.hits.map(langHitToOption);
+    return res.hits.map((lang: LangHit) => ({
+      label: lang[locale].name,
+      value: lang.objectID,
+    }));
   }
 
-  return <Select {...props} getSuggestions={getSuggestions} />;
+  return (
+    <Select
+      {...props}
+      value={value}
+      onChange={onChange}
+      getSuggestions={getSuggestions}
+    />
+  );
 }
