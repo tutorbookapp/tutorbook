@@ -14,7 +14,10 @@ export interface VerificationInterface extends SocialInterface {
   label: string;
 }
 
-export type UserWithRolesAndVerifications = UserWithRoles & {
+export type UserWithRolesAndVerifications = Omit<
+  UserWithRoles,
+  'verifications'
+> & {
   verifications: {
     [type in SocialTypeAlias | 'school']: VerificationInterface;
   };
