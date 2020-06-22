@@ -55,7 +55,7 @@ export default function VerificationDialog({
   user,
   onClosed,
 }: VerificationDialogProps): JSX.Element {
-  const { user } = useUser();
+  const { user: currentUser } = useUser();
   const { id } = user;
 
   const [error, setError] = React.useState<string | undefined>();
@@ -111,8 +111,8 @@ export default function VerificationDialog({
       copy.splice(getIndex(check), 1);
     } else {
       copy.push({
-        user: user.id,
-        org: user.id,
+        user: currentUser.id,
+        org: currentUser.id,
         checks: [check],
         notes: '',
         created: new Date(),
@@ -141,8 +141,8 @@ export default function VerificationDialog({
       ) as Check[]).filter((c) => checked.indexOf(c) < 0);
       stillNeedsToBeChecked.forEach((check: Check) =>
         copy.push({
-          user: user.id,
-          org: user.id,
+          user: currentUser.id,
+          org: currentUser.id,
           checks: [check],
           notes: '',
           created: new Date(),
@@ -163,8 +163,8 @@ export default function VerificationDialog({
       copy[getIndex(check)].notes = event.currentTarget.value;
     } else {
       copy.push({
-        user: user.id,
-        org: user.id,
+        user: currentUser.id,
+        org: currentUser.id,
         checks: [check],
         notes: event.currentTarget.value,
         created: new Date(),

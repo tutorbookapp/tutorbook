@@ -22,7 +22,6 @@ import { IntercomAPI } from '@tutorbook/react-intercom';
 
 import React from 'react';
 import CreateUserDialog from '@tutorbook/create-user-dialog';
-import VerificationDialog from '@tutorbook/verification-dialog';
 import Title from './title';
 import PeopleRow from './people-row';
 
@@ -49,16 +48,9 @@ export default function People(): JSX.Element {
   const [viewingCreateUserDialog, setViewingCreateUserDialog] = React.useState<
     boolean
   >(false);
-  const [viewing, setViewing] = React.useState<User | undefined>();
 
   return (
     <>
-      {viewing && (
-        <VerificationDialog
-          user={viewing}
-          onClosed={() => setViewing(undefined)}
-        />
-      )}
       {viewingCreateUserDialog && (
         <CreateUserDialog onClosed={() => setViewingCreateUserDialog(false)} />
       )}
