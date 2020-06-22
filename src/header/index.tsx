@@ -12,7 +12,6 @@ import { useUser } from '@tutorbook/account';
 import React from 'react';
 import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
-import PopOver from './pop-over';
 import Tabs, { TabsProps } from './tabs';
 
 import styles from './header.module.scss';
@@ -61,10 +60,10 @@ function DesktopTabLinks(): JSX.Element {
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
-      <Link href='/search?aspect=mentoring'>
+      <Link href='/search/[[...slug]]' as='/search?aspect=mentoring'>
         <a className={styles.desktopLink}>{msg(tabLabels.mentoring)}</a>
       </Link>
-      <Link href='/search?aspect=tutoring'>
+      <Link href='/search/[[...slug]]' as='/search?aspect=tutoring'>
         <a className={styles.desktopLink}>{msg(tabLabels.tutoring)}</a>
       </Link>
     </div>
@@ -73,11 +72,12 @@ function DesktopTabLinks(): JSX.Element {
 }
 
 function Logo(): JSX.Element {
+  const { user } = useUser();
   return (
-    <Link href='/'>
-      <div className={styles.logo}>
+    <Link href={user.id ? '/dashboard' : '/'}>
+      <a className={styles.logo}>
         <span>TB</span>
-      </div>
+      </a>
     </Link>
   );
 }
@@ -137,7 +137,7 @@ function DesktopNav(): JSX.Element {
         </Link>
       )}
       {!!user.id && (
-        <Link href='/dashboard/people'>
+        <Link href='/signup'>
           <a className={styles.avatar}>
             <Avatar src={user.photo} />
           </a>
