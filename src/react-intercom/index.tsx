@@ -43,7 +43,7 @@ declare global {
  * our use case anyways.
  * @see {@link https://github.com/nhagen/react-intercom#usage}
  */
-export function IntercomAPI(...args: [string, IntercomSettings?]): void {
+export function IntercomAPI(...args: any[]): void {
   if (canUseDOM && window.Intercom) {
     window.Intercom.apply(null, args);
   } else {
