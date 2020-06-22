@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { Icon } from '@rmwc/icon';
 import { Tooltip } from '@rmwc/tooltip';
 
 import styles from './avatar.module.scss';
