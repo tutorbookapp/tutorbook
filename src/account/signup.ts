@@ -19,6 +19,8 @@ type UserCredential = firebase.auth.UserCredential;
 
 const auth: Auth = firebase.auth();
 
+export const signout = auth.signOut.bind(auth);
+
 export async function signup(newUser: User, parents?: User[]): Promise<void> {
   const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
     axios({
