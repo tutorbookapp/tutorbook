@@ -3,7 +3,7 @@
 @use '@tutorbook/styles/typography';
 
 .wrapper {
-  min-height: calc(100vh - #{config.$nav-height} - 200px);
+  min-height: calc(100vh - #{config.$nav-height});
   display: flex;
   flex-direction: column;
   -moz-box-pack: center;
@@ -49,6 +49,8 @@
         color: map.get(config.$colors, 'error');
         font-weight: 450;
         margin-top: 16px;
+        width: $width;
+        position: absolute;
       }
     }
   }

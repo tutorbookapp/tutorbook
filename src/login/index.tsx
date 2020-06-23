@@ -10,6 +10,7 @@ import {
   IntlShape,
   IntlHelper,
 } from '@tutorbook/intl';
+import { useUser } from '@tutorbook/account';
 import { signupWithGoogle } from '@tutorbook/account/signup';
 import { TextFieldHelperText } from '@rmwc/textfield';
 
@@ -35,8 +36,15 @@ const msgs = defMsg({
 export default function Login(): JSX.Element {
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
+  const { user } = useUser();
   const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    if (user.id) {
+      void Router.push('/[locale]/dashboard', `/${intl.locale}/dashboard`);
+    }
+  }, [user, intl.locale]);
 
   React.useEffect(() => {
     void Router.prefetch('/[locale]/dashboard', `/${intl.locale}/dashboard`);
