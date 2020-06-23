@@ -54,7 +54,7 @@ module.exports = withBundleAnalyzer(withImages({
           //
           // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
           // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
-          source: `/:locale((?!${locales.join('|')}|favicon|api)[^/]+)(.*)`,
+          source: `/:locale((?!${locales.join('|')}|favicon|sw.js)[^/]+)(.*)`,
           destination: '/api/redirect',
         },
       ];
