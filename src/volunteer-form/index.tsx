@@ -398,7 +398,7 @@ class VolunteerForm extends React.Component<
           />
           <form className={styles.form} onSubmit={this.handleSubmit}>
             {this.renderInputs()}
-            {user instanceof User && (
+            {!user.id && (
               <Button
                 className={styles.formSubmitButton}
                 label={msg(user.id ? msgs.updateSubmit : label)}

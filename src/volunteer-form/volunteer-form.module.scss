@@ -79,22 +79,30 @@
   margin: 8px 0;
   width: 100% !important;
   display: inline-flex;
-}
 
-.formField :global(.mdc-select__anchor) {
-  width: 100%;
-}
+  &:first-child {
+    margin-top: 0;
+  }
 
-.formField textarea {
-  resize: vertical;
-}
+  &:last-child {
+    margin-bottom: 0;
+  }
 
-.form .formField:first-child {
-  margin-top: 0;
+  :global(.mdc-select__anchor) {
+    width: 100%;
+  }
+
+  &:not(:global(.mdc-menu-surface--anchor)) textarea {
+    min-height: 47px;
+  }
+
+  textarea {
+    resize: vertical;
+  }
 }
 
 .formSubmitButton {
-  margin-top: 8px;
+  margin-top: 16px;
   width: 100%;
 }
 
