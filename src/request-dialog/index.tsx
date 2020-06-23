@@ -9,13 +9,14 @@ import firebase from '@tutorbook/firebase';
 import {
   ApiError,
   User,
+  UserJSON,
   Timeslot,
   Appt,
-  ApptJSONInterface,
+  ApptJSON,
   Aspect,
   Option,
 } from '@tutorbook/model';
-import { signup, signupWithGoogle } from '@tutorbook/account/signup';
+import { signupWithGoogle } from '@tutorbook/account/signup';
 import { UserContextValue, UserContext } from '@tutorbook/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
@@ -192,34 +193,33 @@ class RequestDialog extends React.Component<
           !currentUser.parents.length ? [parent] : undefined
         )
       );
-      if (err || !currentUser.id)
+      if (err)
         return this.setState({
           submitted: false,
           submitting: false,
-          err:
-            'An error occurred while logging in with Google.' +
-            `${err ? ` ${err.message}` : ''}`,
+          err: `An error occurred while logging in with Google. ${err.message}`,
         });
     } else if (!currentUser.parents.length) {
-      const [err] = await to(signup(currentUser, [parent]));
-      if (err || !currentUser.parents.length)
+      const [err] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
+        axios.post(`/api/users/${currentUser.id}/parents`, parent.toJSON())
+      );
+      let msg: string | null = null;
+      if (err && err.response) {
+        msg = err.response.data.msg;
+      } else if (err && err.request) {
+        msg = 'Parent creation API did not respond.';
+      } else if (err) {
+        msg = err.message;
+      }
+      if (msg)
         return this.setState({
           submitted: false,
           submitting: false,
-          err:
-            "An error occurred while creating your parent's profile." +
-            `${err ? ` ${err.message}` : ''}`,
+          err: `An error occurred while creating your parent's profile. ${msg}`,
         });
     }
-    const [err, res] = await to<
-      AxiosResponse<ApptJSONInterface>,
-      AxiosError<ApiError>
-    >(
-      axios({
-        method: 'post',
-        url: '/api/requests',
-        data: { request: this.appt.toJSON() },
-      })
+    const [err, res] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
+      axios.post('/api/requests', this.appt.toJSON())
     );
     if (err && err.response) {
       console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
@@ -265,7 +265,7 @@ class RequestDialog extends React.Component<
         )} Please check your Internet connection and try again.`,
       });
     }
-    const { data: request } = res as AxiosResponse<ApptJSONInterface>;
+    const { data: request } = res as AxiosResponse<ApptJSON>;
     firebase.analytics().logEvent('purchase', {
       request,
       items: this.items,
