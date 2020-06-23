@@ -44,7 +44,7 @@ export interface ApptInterface {
   id?: string;
 }
 
-export interface ApptJSONInterface {
+export interface ApptJSON {
   subjects: string[];
   attendees: AttendeeInterface[];
   time?: TimeslotJSONInterface;
@@ -83,7 +83,7 @@ export class Appt implements ApptInterface {
     });
   }
 
-  public toJSON(): ApptJSONInterface {
+  public toJSON(): ApptJSON {
     const { time, ref, ...rest } = this;
     if (time) return { ...rest, time: time.toJSON() };
     return rest;
@@ -93,7 +93,7 @@ export class Appt implements ApptInterface {
    * Creates a new `Appt` object given the JSON representation of it.
    * @todo Convert Firestore document `path`s to `DocumentReference`s.
    */
-  public static fromJSON(json: ApptJSONInterface): Appt {
+  public static fromJSON(json: ApptJSON): Appt {
     const { time, ...rest } = json;
     if (time) return new Appt({ ...rest, time: Timeslot.fromJSON(time) });
     return new Appt(rest);
