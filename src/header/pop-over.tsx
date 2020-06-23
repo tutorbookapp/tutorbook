@@ -1,14 +1,20 @@
 /* eslint-disable spaced-comment */
 
 import React from 'react';
+import Router from 'next/router';
 //import Avatar from '@tutorbook/avatar';
 
+import firebase from '@tutorbook/firebase';
+import 'firebase/auth';
+
+import { mutate } from 'swr';
+import { useIntl } from '@tutorbook/intl';
+
+import { User } from '@tutorbook/model';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { Link } from '@tutorbook/intl';
 //import { Account } from '@tutorbook/model';
-
-import signout from '@tutorbook/account/signout';
 
 import styles from './pop-over.module.scss';
 
@@ -132,11 +138,13 @@ export default function PopOverMenu({
   onClose,
   children,
 }: PopOverMenuProps): JSX.Element {
+  const { locale } = useIntl();
   const menuRef: React.RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
   const [visible, setVisible] = React.useState<boolean>(open);
   const [closing, setClosing] = React.useState<boolean>(false);
+  const [loggingOut, setLoggingOut] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!menuRef.current) return () => {};
@@ -198,7 +206,16 @@ export default function PopOverMenu({
               <div className={styles.line} />
               <PopOverLink href='/'>Home</PopOverLink>
               <div className={styles.line} />
-              <PopOverButton onClick={signout}>Logout</PopOverButton>
+              <PopOverButton
+                onClick={async () => {
+                  setLoggingOut(true);
+                  await firebase.auth().signOut();
+                  await mutate('/api/account', new User().toJSON(), false);
+                  await Router.push('/[locale]/login', `/${locale}/login`);
+                }}
+              >
+                {loggingOut ? 'Logging out...' : 'Logout'}
+              </PopOverButton>
             </div>
           </div>
         </div>
