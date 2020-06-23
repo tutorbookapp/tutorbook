@@ -1,0 +1,76 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+@use '@tutorbook/styles/typography';
+
+.wrapper {
+  min-height: calc(100vh - #{config.$nav-height} - 200px);
+  display: flex;
+  flex-direction: column;
+  -moz-box-pack: center;
+  justify-content: center;
+  -moz-box-align: center;
+  align-items: center;
+
+  .content {
+    max-width: 900px;
+    position: relative;
+    justify-content: center;
+    -moz-box-pack: center;
+    flex-direction: column;
+    display: flex;
+    padding: 24px;
+    flex: 1 1 0%;
+
+    .title {
+      @include typography.typography('headline3');
+      text-align: center;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .buttons {
+      $width: 400px;
+
+      width: $width;
+      margin: 48px auto 0 auto;
+      max-width: 100%;
+      text-align: center;
+
+      button {
+        width: 100%;
+      }
+
+      @media (max-width: $width) {
+        width: 100%;
+      }
+
+      .error {
+        text-align: initial;
+        color: map.get(config.$colors, 'error');
+        font-weight: 450;
+        margin-top: 16px;
+      }
+    }
+  }
+
+  .signup {
+    width: 100%;
+    background: map.get(config.$colors, 'background');
+    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    color: map.get(config.$colors, 'foreground');
+    padding: 2em;
+    height: 100px;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+    -moz-box-pack: center;
+    justify-content: center;
+    box-sizing: border-box;
+
+    .link {
+      @include typography.typography('body1');
+      color: map.get(config.$colors, 'success');
+      text-decoration: none;
+    }
+  }
+}

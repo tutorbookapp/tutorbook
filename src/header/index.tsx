@@ -136,9 +136,16 @@ function DesktopNav(): JSX.Element {
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
       {!user.id && (
-        <Link href='/signup'>
-          <a className={`${styles.desktopLink} ${styles.signUpLink}`}>Signup</a>
-        </Link>
+        <>
+          <Link href='/login'>
+            <a className={`${styles.desktopLink} ${styles.loginLink}`}>Login</a>
+          </Link>
+          <Link href='/signup'>
+            <a className={`${styles.desktopLink} ${styles.signupLink}`}>
+              Signup
+            </a>
+          </Link>
+        </>
       )}
       {!!user.id && (
         <PopOver open={open} onClose={() => setOpen(false)}>
