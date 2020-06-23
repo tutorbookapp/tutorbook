@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use 'sass:color';
 @use '@tutorbook/styles/config';
 @use '@tutorbook/styles/typography';
 
@@ -10,14 +11,21 @@ $message-width: 800px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: map.get(config.$dark-colors, 'accents-1');
+  background: linear-gradient(
+    to right,
+    #{color.adjust(
+        map.get(config.$colors, 'primary'),
+        $hue: 10%,
+        $lightness: -10%
+      )} 9.38%,
+    #{color.adjust(map.get(config.$colors, 'primary'), $hue: -15%)} 88.54%
+  );
   transform-origin: top center;
-  border-bottom: 1px solid map.get(config.$dark-colors, 'accents-2');
   transition: transform 0.2s ease, height 0.3s ease;
   z-index: 102;
   font-size: 14px;
   text-align: center;
-  color: map.get(config.$dark-colors, 'foreground');
+  color: map.get(config.$colors, 'background');
 }
 
 .hidden {
@@ -42,7 +50,7 @@ $message-width: 800px;
 
 .close {
   display: inline-flex;
-  color: map.get(config.$dark-colors, 'accents-5');
+  color: map.get(config.$colors, 'accents-2');
   position: absolute;
   right: 20px;
   cursor: pointer;
