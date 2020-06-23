@@ -230,10 +230,16 @@ class VolunteerForm extends React.Component<
     return (
       <>
         <TextField {...shared('name')} value={user.name} required />
-        <TextField {...shared('email')} value={user.email} required />
+        <TextField
+          {...shared('email')}
+          value={user.email}
+          type='email'
+          required
+        />
         <TextField
           {...shared('phone')}
           value={user.phone ? user.phone : undefined}
+          type='tel'
         />
         <PhotoInput
           {...shared('photo')}
