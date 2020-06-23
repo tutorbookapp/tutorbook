@@ -49,12 +49,12 @@ module.exports = withBundleAnalyzer(withImages({
           // Don't redirect if there's a locale already in the requested URL. We
           // also don't redirect if the browser's just trying to fetch favicons.
           //
-          // Note that Next.js already excludes API endpoints from these
-          // rewrites.
+          // Note that Next.js should already exclude API endpoints from these
+          // rewrites (but we keep it here just in case).
           //
           // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
           // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
-          source: `/:locale((?!${locales.join('|')}|favicon|sw.js)[^/]+)(.*)`,
+          source: `/:locale((?!${locales.join('|')}|favicon|api|sw.js)[^/]+)(.*)`,
           destination: '/api/redirect',
         },
       ];
