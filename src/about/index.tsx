@@ -55,7 +55,7 @@ export default function About(): JSX.Element {
       </div>
       <div className={styles.howItWorks}>
         <SpotlightMsg
-          label={msg(msgs.stepZero)}
+          label={msg(msgs.stepOne)}
           headline={msg(msgs.tutorTitle)}
           body={msg(msgs.tutorBody)}
           img={TutorSignsUp}
@@ -66,7 +66,7 @@ export default function About(): JSX.Element {
           flipped
         />
         <SpotlightMsg
-          label={msg(msgs.stepOne)}
+          label={msg(msgs.stepTwo)}
           headline={msg(msgs.pupilTitle)}
           body={msg(msgs.pupilBody)}
           img={PupilSignsUp}
@@ -77,7 +77,7 @@ export default function About(): JSX.Element {
           gray
         />
         <SpotlightMsg
-          label={msg(msgs.stepTwo)}
+          label={msg(msgs.stepThree)}
           headline={msg(msgs.parentTitle)}
           body={msg(msgs.parentBody)}
           img={ParentApproves}
@@ -88,7 +88,7 @@ export default function About(): JSX.Element {
           flipped
         />
         <SpotlightMsg
-          label={msg(msgs.stepThree)}
+          label={msg(msgs.stepFour)}
           headline={msg(msgs.brambleTitle)}
           body={msg(msgs.brambleBody)}
           img={TutorJoinsBramble}

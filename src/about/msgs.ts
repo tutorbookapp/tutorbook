@@ -1,9 +1,9 @@
 import { defMsg } from '@tutorbook/intl';
 
 export default defMsg({
-  stepZero: {
-    id: 'about.how-it-works.step-zero',
-    defaultMessage: 'Step #0',
+  stepOne: {
+    id: 'about.how-it-works.step-one',
+    defaultMessage: 'Step #1',
   },
   tutorTitle: {
     id: 'about.how-it-works.tutor.title',
@@ -19,9 +19,9 @@ export default defMsg({
     defaultMessage: 'Become a volunteer',
     description: 'Label for the CTA link to the tutor sign-up page.',
   },
-  stepOne: {
-    id: 'about.how-it-works.step-one',
-    defaultMessage: 'Step #1',
+  stepTwo: {
+    id: 'about.how-it-works.step-two',
+    defaultMessage: 'Step #2',
   },
   pupilTitle: {
     id: 'about.how-it-works.pupil.title',
@@ -37,9 +37,9 @@ export default defMsg({
     defaultMessage: 'Search our volunteers',
     description: 'Label for the CTA link to the student sign-up page.',
   },
-  stepTwo: {
-    id: 'about.how-it-works.step-two',
-    defaultMessage: 'Step #2',
+  stepThree: {
+    id: 'about.how-it-works.step-three',
+    defaultMessage: 'Step #3',
   },
   parentTitle: {
     id: 'about.how-it-works.parent.title',
@@ -51,9 +51,9 @@ export default defMsg({
       'Each request must receive parental approval before the student can ' +
       'meet with their tutor or mentor.',
   },
-  stepThree: {
-    id: 'about.how-it-works.step-three',
-    defaultMessage: 'Step #3',
+  stepFour: {
+    id: 'about.how-it-works.step-four',
+    defaultMessage: 'Step #4',
   },
   brambleTitle: {
     id: 'about.how-it-works.bramble.title',
