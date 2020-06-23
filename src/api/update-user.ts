@@ -1,18 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Org, User, UserJSON } from '@tutorbook/model';
+import { User, UserJSON } from '@tutorbook/model';
 
 import to from 'await-to-js';
-import error from './error';
+import error from './helpers/error';
+import verify from './helpers/verify';
 
 import {
   db,
   auth,
   UserRecord,
   FirebaseError,
-  DecodedIdToken,
-  DocumentSnapshot,
   DocumentReference,
-} from './firebase';
+} from './helpers/firebase';
 
 /**
  * Don't let the user delete past known info (e.g. if the old `userRecord` has
@@ -118,32 +117,12 @@ export default async function updateUserEndpoint(
     error(res, 'You must provide a request body.');
   } else if (typeof req.body.id !== 'string') {
     error(res, 'Your request body must contain a valid user ID.');
-  } else if (!req.headers.authorization) {
-    error(res, 'You must provide a valid JWT Authorization header.', 401);
   } else {
-    const [err, token] = await to<DecodedIdToken>(
-      auth.verifyIdToken(req.headers.authorization.replace('Bearer ', ''), true)
-    );
-    if (err) {
-      error(res, `Your JWT is invalid: ${err.message}`, 401, err);
-    } else {
-      const { uid } = token as DecodedIdToken;
-      const user: User = User.fromJSON(req.body);
-      const orgs: Org[] = (
-        await db
-          .collection('orgs')
-          .where('members', 'array-contains', uid)
-          .get()
-      ).docs.map((org: DocumentSnapshot) => Org.fromFirestore(org));
-      if (user.id === uid) {
-        await updateUser(user);
-      } else if (orgs.every((org: Org) => user.orgs.indexOf(org.id) < 0)) {
-        error(res, `${user.toString()} is not part of your orgs.`, 401);
-      } else {
-        await updateUser(user);
-      }
+    const user: User = User.fromJSON(req.body);
+    await verify(req, res, user, async () => {
+      await updateUser(user);
       res.status(200).json(user.toJSON());
-    }
+    });
   }
   /* eslint-enable @typescript-eslint/no-unsafe-member-access */
 }

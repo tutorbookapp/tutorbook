@@ -1,19 +1,19 @@
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, UserWithRoles, Appt, ApptJSONInterface } from '@tutorbook/model';
+import { User, UserWithRoles, Appt, ApptJSON } from '@tutorbook/model';
 import { ApptEmail } from '@tutorbook/emails';
 
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
-import error from './error';
+import error from './helpers/error';
 
 import {
   firestore,
   DocumentSnapshot,
   DocumentReference,
   CollectionReference,
-} from './firebase';
+} from './helpers/firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -44,10 +44,10 @@ async function sendApptEmails(
   );
 }
 
-export type CreateApptRes = ApptJSONInterface;
+export type CreateApptRes = ApptJSON;
 
 /**
- * Takes an `ApptJSONInterface` object, an authentication token, and:
+ * Takes an `ApptJSON` object, an authentication token, and:
  * 1. Verifies the correct request body was sent (e.g. all parameters are there
  *    and are all of the correct types).
  * 2. Fetches the given pending request's data from our Firestore database.

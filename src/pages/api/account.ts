@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiError } from '@tutorbook/model';
-import { auth, DecodedIdToken } from '@tutorbook/api/firebase';
+import { auth, DecodedIdToken } from '@tutorbook/api/helpers/firebase';
 
 import to from 'await-to-js';
-import error from '@tutorbook/api/error';
+import error from '@tutorbook/api/helpers/error';
 
 /**
  * GET - Fetches the profile data of the user who own's the given JWT.

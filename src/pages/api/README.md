@@ -107,7 +107,7 @@ Upon request, the `/api/user` serverless API function:
 Responds with the created `User` document in JSON form (i.e. `UserJSON` that
 exactly matches what is now in our Firestore document-based NoSQL database).
 
-### `/api/users/[user]`
+### `/api/users/[id]`
 
 #### `GET`
 
@@ -161,6 +161,32 @@ As usual, this requires a JWT that belongs to either:
 1. The user whose profile document we're retrieving.
 2. A member of an organization who owns the profile document we're retrieving
    (i.e. the organization's ID is listed in the profile's `orgs` field).
+
+### `/api/users/[id]/parents`
+
+#### `POST`
+
+Creates a new parent profile and adds it to the user's `parents` field.
+
+If the parent profile already exists, this merely ensures that it is included in
+the user's `parents` field.
+
+##### Authentication
+
+As usual, this requires a JWT that belongs to either:
+
+1. The user whose parents we're creating (or updating).
+2. A member of an organization who owns the user whose parents we're creating or
+   updating (i.e. the organization's ID is listed in the user's `orgs` field).
+
+##### Data
+
+Accepts the same `User` object that the `/api/users` POST endpoint accepts
+(because this endpoint essentially just relays to that endpoint).
+
+##### Response
+
+Responds with the parent's profile data.
 
 ### `/api/requests`
 

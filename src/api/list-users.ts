@@ -12,7 +12,7 @@ import {
 
 import to from 'await-to-js';
 
-import { db, auth, DecodedIdToken, DocumentSnapshot } from './firebase';
+import { db, auth, DecodedIdToken, DocumentSnapshot } from './helpers/firebase';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;

@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Org, OrgJSON } from '@tutorbook/model';
 
 import to from 'await-to-js';
-import error from './error';
+import error from './helpers/error';
 
-import { db, auth, DocumentSnapshot, DecodedIdToken } from './firebase';
+import { db, auth, DocumentSnapshot, DecodedIdToken } from './helpers/firebase';
 
 export type FetchOrgRes = OrgJSON;
 

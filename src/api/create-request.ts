@@ -3,11 +3,11 @@ import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios, { AxiosResponse, AxiosPromise } from 'axios';
 import { PupilRequestEmail, ParentRequestEmail } from '@tutorbook/emails';
-import { User, UserWithRoles, Appt, ApptJSONInterface } from '@tutorbook/model';
+import { User, UserWithRoles, Appt, ApptJSON } from '@tutorbook/model';
 
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
-import error from './error';
+import error from './helpers/error';
 
 import {
   db,
@@ -15,7 +15,7 @@ import {
   DecodedIdToken,
   DocumentSnapshot,
   DocumentReference,
-} from './firebase';
+} from './helpers/firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -120,10 +120,10 @@ async function sendRequestEmails(
   );
 }
 
-export type CreateRequestRes = ApptJSONInterface;
+export type CreateRequestRes = ApptJSON;
 
 /**
- * Takes an `ApptJSONInterface` object, an authentication token, and:
+ * Takes an `ApptJSON` object, an authentication token, and:
  * 1. Performs the following verifications (sends a `400` error code and an
  *    accompanying human-readable error message if any of them fail):
  *    - Verifies the correct request body was sent (e.g. all parameters are there
@@ -147,13 +147,12 @@ export type CreateRequestRes = ApptJSONInterface;
  * 5. Sends an email to the pupil (the sender of the lesson request) telling
  *    them that we're awaiting parental approval.
  *
- * @param {string} token - A valid Firebase Authentication JWT `idToken` to
- * authorize the request. You're able to get this token by calling the `user`
- * REST API endpoint (an endpoint that will create a new user and give you a
- * `customToken` to sign-in with).
- * @param {ApptJSONInterface} request - The appointment to create a pending
- * request for. The given `idToken` **must** be from one of the appointment's
- * `attendees` (see the above description for more requirements).
+ * @param {ApptJSON} request - The appointment to create a pending request for.
+ * The given `idToken` **must** be from one of the appointment's `attendees`
+ * (see the above description for more requirements).
+ * @return {ApptJSON} The created request (typically this is exactly the same as
+ * the given `request` but it can be different if the server implements
+ * different validations than the client).
  */
 export default async function createRequest(
   req: NextApiRequest,
@@ -163,25 +162,20 @@ export default async function createRequest(
   // 1. Verify that the request body is valid.
   if (!req.body) {
     error(res, 'You must provide a request body.');
-  } else if (typeof req.body.request !== 'object') {
-    error(res, 'Your request body must contain a user field.');
-  } else if (!req.body.request.subjects || !req.body.request.subjects.length) {
+  } else if (!req.body.subjects || !req.body.subjects.length) {
     error(res, 'Your appointment must contain valid subjects.');
-  } else if (
-    !req.body.request.attendees ||
-    req.body.request.attendees.length < 2
-  ) {
+  } else if (!req.body.attendees || req.body.attendees.length < 2) {
     error(res, 'Your appointment must have >= 2 attendees.');
-  } else if (typeof req.body.request.time !== 'object') {
+  } else if (req.body.time && typeof req.body.time !== 'object') {
     error(res, 'Your appointment had an invalid time.');
   } else if (
-    req.body.request.time &&
-    new Date(req.body.request.time.from).toString() === 'Invalid Date'
+    req.body.time &&
+    new Date(req.body.time.from).toString() === 'Invalid Date'
   ) {
     error(res, 'Your appointment had an invalid start time.');
   } else if (
-    req.body.request.time &&
-    new Date(req.body.request.time.to).toString() === 'Invalid Date'
+    req.body.time &&
+    new Date(req.body.time.to).toString() === 'Invalid Date'
   ) {
     error(res, 'Your appointment had an invalid end time.');
   } else if (!req.headers.authorization) {
@@ -193,7 +187,7 @@ export default async function createRequest(
     if (err) {
       error(res, `Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
-      const request: Appt = Appt.fromJSON(req.body.request);
+      const request: Appt = Appt.fromJSON(req.body);
       const attendees: UserWithRoles[] = [];
       let attendeesIncludeAuthToken = false;
       let errored = false;
