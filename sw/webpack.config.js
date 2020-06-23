@@ -24,6 +24,10 @@ module.exports = {
   plugins: [
     new Dotenv({
       path: path.resolve(__dirname, '../.env'),
+      // When deploying to Vercel NOW, we use the system variables that are
+      // populated by Vercel. These variables trump whatever is in the local
+      // .env file (though it should be empty anyways).
+      systemvars: true,
     }),
   ],
   optimization: {
