@@ -12,6 +12,7 @@ import { useUser } from '@tutorbook/account';
 import React from 'react';
 import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
+import PopOver from './pop-over';
 import Tabs, { TabsProps } from './tabs';
 
 import styles from './header.module.scss';
@@ -128,6 +129,7 @@ function MobileNav(): JSX.Element {
 
 function DesktopNav(): JSX.Element {
   const { user } = useUser();
+  const [open, setOpen] = React.useState<boolean>(false);
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
@@ -137,11 +139,15 @@ function DesktopNav(): JSX.Element {
         </Link>
       )}
       {!!user.id && (
-        <Link href='/signup'>
-          <a className={styles.avatar}>
+        <PopOver open={open} onClose={() => setOpen(false)}>
+          <button
+            type='button'
+            className={styles.avatar}
+            onClick={() => setOpen(true)}
+          >
             <Avatar src={user.photo} />
-          </a>
-        </Link>
+          </button>
+        </PopOver>
       )}
     </div>
     /* eslint-enable jsx-a11y/anchor-is-valid */

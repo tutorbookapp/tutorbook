@@ -6,6 +6,8 @@ import { Ripple } from '@rmwc/ripple';
 import { Link } from '@tutorbook/intl';
 import { Account } from '@tutorbook/model';
 
+import signout from '@tutorbook/account/signout';
+
 import styles from './pop-over.module.scss';
 
 interface PopOverLinkProps {
@@ -194,7 +196,7 @@ export default function PopOverMenu({
               <PopOverLink href='/dashboard'>Dashboard</PopOverLink>
               <PopOverLink href='/dashboard/people'>People</PopOverLink>
               <div className={styles.line} />
-              <PopOverButton onClick={() => {}}>Logout</PopOverButton>
+              <PopOverButton onClick={signout}>Logout</PopOverButton>
             </div>
           </div>
         </div>
