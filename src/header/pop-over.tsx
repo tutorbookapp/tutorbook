@@ -194,9 +194,9 @@ export default function PopOverMenu({
             </div>
             <div className={styles.menu}>
               <PopOverLink href='/signup'>Profile</PopOverLink>
-              <div className={styles.line} />
               <PopOverLink href='/dashboard'>Dashboard</PopOverLink>
-              <PopOverLink href='/dashboard/people'>People</PopOverLink>
+              <div className={styles.line} />
+              <PopOverLink href='/'>Home</PopOverLink>
               <div className={styles.line} />
               <PopOverButton onClick={signout}>Logout</PopOverButton>
             </div>
