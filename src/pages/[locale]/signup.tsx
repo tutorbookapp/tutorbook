@@ -14,7 +14,6 @@ function SignupPage(): JSX.Element {
   const [aspect, setAspect] = React.useState<Aspect>('mentoring');
   return (
     <>
-      <Banner />
       <AspectHeader
         aspect={aspect}
         onChange={(newAspect: Aspect) => setAspect(newAspect)}
