@@ -3,7 +3,7 @@ import to from 'await-to-js';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { ParsedUrlQuery } from 'querystring';
 
-import { ApiError } from './api';
+import { ApiError } from './errors';
 import { User, UserJSON, Check, Aspect } from './user';
 import { Availability, AvailabilityJSONAlias } from './times';
 
@@ -70,8 +70,16 @@ export class Query implements QueryInterface {
   }
 
   public get url(): string {
+    return this.getURL('/search');
+  }
+
+  public get endpoint(): string {
+    return this.getURL('/api/users');
+  }
+
+  private getURL(pathname: string): string {
     return url.format({
-      pathname: '/search',
+      pathname,
       query: {
         aspect: encodeURIComponent(this.aspect),
         langs: encodeURIComponent(JSON.stringify(this.langs)),
@@ -83,30 +91,17 @@ export class Query implements QueryInterface {
     });
   }
 
-  public async search(endpoint = '/api/users'): Promise<ReadonlyArray<User>> {
+  public async search(pathname = '/api/users'): Promise<ReadonlyArray<User>> {
     const [err, res] = await to<
       AxiosResponse<UserJSON[]>,
       AxiosError<ApiError>
-    >(
-      axios({
-        url: endpoint,
-        method: 'get',
-        params: {
-          aspect: encodeURIComponent(this.aspect),
-          langs: encodeURIComponent(JSON.stringify(this.langs)),
-          subjects: encodeURIComponent(JSON.stringify(this.subjects)),
-          availability: this.availability.toURLParam(),
-          checks: encodeURIComponent(JSON.stringify(this.checks)),
-          orgs: encodeURIComponent(JSON.stringify(this.orgs)),
-        },
-      })
-    );
+    >(axios.get(this.getURL(pathname)));
     if (err && err.response) {
-      console.error(`[ERROR] ${err.response.data.msg}`);
+      console.error(`[ERROR] Search API responded: ${err.response.data.msg}`);
       throw new Error(err.response.data.msg);
     } else if (err && err.request) {
-      console.error('[ERROR] Search REST API did not respond:', err.request);
-      throw new Error('Search REST API did not respond.');
+      console.error('[ERROR] Search API did not respond.');
+      throw new Error('Search API did not respond.');
     } else if (err) {
       console.error('[ERROR] While sending request:', err);
       throw new Error(`While sending request: ${err.message}`);
