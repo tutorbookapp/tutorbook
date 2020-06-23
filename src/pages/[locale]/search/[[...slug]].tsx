@@ -103,10 +103,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const query: Query = Query.fromURLParams(context.query);
-  const url: string = new URL(
-    '/api/users',
-    `http:${context.req.headers.host as string}`
-  ).href;
+  const url = `http://${context.req.headers.host as string}/api/users`;
 
   return {
     props: {
