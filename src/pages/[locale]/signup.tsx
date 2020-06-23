@@ -5,7 +5,6 @@ import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 import { Aspect } from '@tutorbook/model';
 import { AspectHeader } from '@tutorbook/header';
 
-import Banner from '@tutorbook/banner';
 import Intercom from '@tutorbook/react-intercom';
 import Footer from '@tutorbook/footer';
 import VolunteerForm from '@tutorbook/volunteer-form';
