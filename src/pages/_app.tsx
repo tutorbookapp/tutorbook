@@ -15,7 +15,7 @@ import CovidHead from '@tutorbook/doc-head';
 
 import '@tutorbook/styles/global.scss';
 
-NProgress.configure({ trickleSpeed: 500, minimum: 0.2 });
+NProgress.configure({ trickleSpeed: 500, minimum: 0.2, showSpinner: false });
 
 async function fetcher<T>(url: string): Promise<T> {
   const [err, res] = await to<AxiosResponse<T>, AxiosError<ApiError>>(
