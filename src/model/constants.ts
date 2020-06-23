@@ -1,4 +1,4 @@
-// TODO: Remove this and support multiple languages.
+/* eslint-disable-next-line import/prefer-default-export */
 export const DAYS: Readonly<string[]> = [
   'Sunday',
   'Monday',

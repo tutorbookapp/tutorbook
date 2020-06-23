@@ -13,7 +13,7 @@ import updateUser, { UpdateUserRes } from '@tutorbook/api/update-user';
  */
 export default async function user(
   req: NextApiRequest,
-  res: NextApiResponse<FetchUserRes | UpdateUserRes | DeleteUserRes | ApiError>
+  res: NextApiResponse<FetchUserRes | UpdateUserRes | ApiError>
 ): Promise<void> {
   switch (req.method) {
     case 'GET': // Fetch the user's profile document.

@@ -30,10 +30,11 @@ function TabLink({ label, href, active }: TabLinkProps): JSX.Element {
   const className = styles.tab + (active ? ` ${styles.active}` : '');
   if (href.indexOf('http') < 0)
     return (
-      /* eslint-disable-next-line jsx-a11y/anchor-is-valid */
+      /* eslint-disable jsx-a11y/anchor-is-valid */
       <Link href={href}>
         <a className={className}>{label}</a>
       </Link>
+      /* eslint-enable jsx-a11y/anchor-is-valid */
     );
   return (
     <a href={href} className={className}>

@@ -5,7 +5,7 @@ import { ParsedUrlQuery } from 'querystring';
 
 import { ApiError } from './errors';
 import { User, UserJSON, Check, Aspect } from './user';
-import { Availability, AvailabilityJSONAlias } from './times';
+import { Availability, AvailabilityJSON } from './availability';
 
 /**
  * All the supported filters for the search view.
@@ -29,7 +29,7 @@ export interface QueryJSON {
   aspect: Aspect;
   langs: Option<string>[];
   subjects: Option<string>[];
-  availability: AvailabilityJSONAlias;
+  availability: AvailabilityJSON;
   checks: Option<Check>[];
   orgs: Option<string>[];
 }

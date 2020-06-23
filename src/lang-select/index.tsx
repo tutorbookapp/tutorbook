@@ -1,4 +1,4 @@
-import { useIntl, IntlShape } from '@tutorbook/intl';
+import { useIntl } from '@tutorbook/intl';
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import Select, { SelectProps } from '@tutorbook/select';

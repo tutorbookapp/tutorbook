@@ -7,13 +7,7 @@ import mail from '@sendgrid/mail';
 import error from './helpers/error';
 import createUser from './helpers/create-user';
 
-import {
-  db,
-  auth,
-  UserRecord,
-  FirebaseError,
-  DocumentReference,
-} from './helpers/firebase';
+import { auth, FirebaseError } from './helpers/firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 

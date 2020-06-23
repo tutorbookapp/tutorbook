@@ -22,8 +22,9 @@ export default function Result({ user, onClick, loading }: Props): JSX.Element {
   const bioRef = React.useRef<HTMLDivElement>(null);
   const truncateBio = async () => {
     if (loading || !canUseDOM) return;
-    const Dotdotdot = (await import('dotdotdot-js')).default;
-    if (bioRef.current) new Dotdotdot(bioRef.current, { watch: true });
+    const Dotdotdot = (await import('@tutorbook/dotdotdot-js')).default;
+    /* eslint-disable-next-line no-new */
+    if (bioRef.current) new Dotdotdot(bioRef.current, { watch: 'resize' });
   };
 
   React.useEffect(() => {

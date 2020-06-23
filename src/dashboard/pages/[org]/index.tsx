@@ -8,6 +8,7 @@ import {
   withIntl,
   IntlShape,
   IntlHelper,
+  Msg,
 } from '@tutorbook/intl';
 import { Overview } from '@tutorbook/dashboard';
 import { TabHeader } from '@tutorbook/header';

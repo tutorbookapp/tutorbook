@@ -99,7 +99,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       socials: user.socials,
       langs: user.langs,
       id: user.id,
-    };
+    } as UserJSON;
   }
 
   const query: Query = Query.fromURLParams(context.query);

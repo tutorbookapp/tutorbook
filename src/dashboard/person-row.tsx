@@ -10,7 +10,6 @@ import Utils from '@tutorbook/utils';
 import to from 'await-to-js';
 import useSWR, { mutate } from 'swr';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { v4 as uuid } from 'uuid';
 import styles from './people.module.scss';
 
 async function updateUserData(user: User): Promise<void> {

@@ -1,10 +1,12 @@
+/* eslint-disable spaced-comment */
+
 import React from 'react';
-import Avatar from '@tutorbook/avatar';
+//import Avatar from '@tutorbook/avatar';
 
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { Link } from '@tutorbook/intl';
-import { Account } from '@tutorbook/model';
+//import { Account } from '@tutorbook/model';
 
 import signout from '@tutorbook/account/signout';
 
@@ -64,60 +66,60 @@ function PopOverButton({
   );
 }
 
-interface PopOverAccountProps {
-  account: Account;
-  checked?: boolean;
-}
+//interface PopOverAccountProps {
+//account: Account;
+//checked?: boolean;
+//}
 
-function PopOverAccountButton({
-  account,
-  onClick,
-  checked,
-}: { onClick: () => void } & PopOverAccountProps): JSX.Element {
-  return (
-    <Ripple>
-      <button type='button' onClick={onClick} className={styles.item}>
-        <div className={styles.avatar}>
-          <Avatar src={account.photo} />
-        </div>
-        {account.name}
-        {checked && (
-          <div className={styles.icon}>
-            <Icon icon='account_circle' />
-          </div>
-        )}
-      </button>
-    </Ripple>
-  );
-}
+//function PopOverAccountButton({
+//account,
+//onClick,
+//checked,
+//}: { onClick: () => void } & PopOverAccountProps): JSX.Element {
+//return (
+//<Ripple>
+//<button type='button' onClick={onClick} className={styles.item}>
+//<div className={styles.avatar}>
+//<Avatar src={account.photo} />
+//</div>
+//{account.name}
+//{checked && (
+//<div className={styles.icon}>
+//<Icon icon='account_circle' />
+//</div>
+//)}
+//</button>
+//</Ripple>
+//);
+//}
 
-function PopOverAccountLink({
-  account,
-  href,
-  checked,
-}: { href: string } & PopOverAccountProps): JSX.Element {
-  return (
-    /* eslint-disable jsx-a11y/anchor-is-valid */
-    <Ripple>
-      <div className={styles.item}>
-        <Link href={href}>
-          <a className={styles.itemLink}>
-            <div className={styles.avatar}>
-              <Avatar src={account.photo} />
-            </div>
-            {account.name}
-            {checked && (
-              <div className={styles.icon}>
-                <Icon icon='account_circle' />
-              </div>
-            )}
-          </a>
-        </Link>
-      </div>
-    </Ripple>
-    /* eslint-enable jsx-a11y/anchor-is-valid */
-  );
-}
+//function PopOverAccountLink({
+//account,
+//href,
+//checked,
+//}: { href: string } & PopOverAccountProps): JSX.Element {
+//return (
+///* eslint-disable jsx-a11y/anchor-is-valid */
+//<Ripple>
+//<div className={styles.item}>
+//<Link href={href}>
+//<a className={styles.itemLink}>
+//<div className={styles.avatar}>
+//<Avatar src={account.photo} />
+//</div>
+//{account.name}
+//{checked && (
+//<div className={styles.icon}>
+//<Icon icon='account_circle' />
+//</div>
+//)}
+//</a>
+//</Link>
+//</div>
+//</Ripple>
+///* eslint-enable jsx-a11y/anchor-is-valid */
+//);
+//}
 
 interface PopOverMenuProps {
   open: boolean;

@@ -75,11 +75,13 @@ function DesktopTabLinks(): JSX.Element {
 function Logo(): JSX.Element {
   const { user } = useUser();
   return (
+    /* eslint-disable jsx-a11y/anchor-is-valid */
     <Link href={user.id ? '/dashboard' : '/'}>
       <a className={styles.logo}>
         <span>TB</span>
       </a>
     </Link>
+    /* eslint-enable jsx-a11y/anchor-is-valid */
   );
 }
 

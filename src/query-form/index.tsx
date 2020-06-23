@@ -1,6 +1,5 @@
 import { useIntl, IntlHelper, IntlShape, Msg } from '@tutorbook/intl';
 import { Query, QueryInterface, Callback } from '@tutorbook/model';
-import { Checkbox } from '@rmwc/checkbox';
 
 import React from 'react';
 import LangSelect from '@tutorbook/lang-select';

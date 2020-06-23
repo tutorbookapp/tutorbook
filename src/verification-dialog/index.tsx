@@ -1,10 +1,7 @@
 import React from 'react';
 import Utils from '@tutorbook/utils';
-import Button from '@tutorbook/button';
 import UserDialog from '@tutorbook/user-dialog';
 
-import { Switch } from '@rmwc/switch';
-import { Select } from '@rmwc/select';
 import { Checkbox } from '@rmwc/checkbox';
 import {
   DataTable,

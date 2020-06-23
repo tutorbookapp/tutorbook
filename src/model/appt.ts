@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as firebase from 'firebase/app';
-import { Timeslot, TimeslotJSONInterface } from './times';
+import { Timeslot, TimeslotJSON } from './timeslot';
 import 'firebase/firestore';
 
 /**
@@ -47,7 +47,7 @@ export interface ApptInterface {
 export interface ApptJSON {
   subjects: string[];
   attendees: AttendeeInterface[];
-  time?: TimeslotJSONInterface;
+  time?: TimeslotJSON;
   message?: string;
   id?: string;
 }
@@ -78,7 +78,8 @@ export class Appt implements ApptInterface {
    * default value if the types match.
    */
   public constructor(request: Partial<ApptInterface> = {}) {
-    Object.entries(request).map(([key, val]: [string, any]) => {
+    Object.entries(request).forEach(([key, val]: [string, any]) => {
+      /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
       if (val && key in this) (this as Record<string, any>)[key] = val;
     });
   }

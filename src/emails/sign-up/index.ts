@@ -31,7 +31,8 @@ export default class SignUpEmail implements Email {
     if (user.tutoring.subjects.length > 0) roles.push('tutor');
     if (user.mentoring.searches.length > 0) roles.push('mentee');
     if (user.mentoring.subjects.length > 0) roles.push('mentor');
-    (user as UserWithRoles).roles = roles;
-    this.html = SignUpEmail.render(addVerifications(user as UserWithRoles));
+    const userWithRoles = user as UserWithRoles;
+    userWithRoles.roles = roles;
+    this.html = SignUpEmail.render(addVerifications(userWithRoles));
   }
 }

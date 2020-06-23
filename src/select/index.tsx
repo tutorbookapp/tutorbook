@@ -276,7 +276,11 @@ export default class Select<T> extends React.Component<
     suggestions.forEach((option: Option<T>) =>
       suggestionMenuItems.push(
         <ListItem
-          key={option.value}
+          key={
+            typeof option.value === 'string' || typeof option.value === 'number'
+              ? option.value
+              : option.label
+          }
           onClick={(event: React.MouseEvent) =>
             this.updateSelected(option, event)
           }
@@ -305,7 +309,11 @@ export default class Select<T> extends React.Component<
     const { value } = this.props;
     return value.map((option: Option<T>) => (
       <Chip
-        key={option.value}
+        key={
+          typeof option.value === 'string' || typeof option.value === 'number'
+            ? option.value
+            : option.label
+        }
         label={option.label}
         trailingIcon='close'
         onTrailingIconInteraction={() => this.updateSelected(option)}

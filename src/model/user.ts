@@ -7,8 +7,8 @@ import { ObjectWithObjectID } from '@algolia/client-search';
 import {
   Availability,
   AvailabilitySearchHitAlias,
-  AvailabilityJSONAlias,
-} from './times';
+  AvailabilityJSON,
+} from './availability';
 import { Account, AccountInterface } from './account';
 import { RoleAlias } from './appt';
 
@@ -146,7 +146,7 @@ export interface SearchHit extends ObjectWithObjectID {
 export type UserWithRoles = User & { roles: RoleAlias[] };
 
 export type UserJSON = Omit<UserInterface, 'availability'> & {
-  availability: AvailabilityJSONAlias;
+  availability: AvailabilityJSON;
 };
 
 export function isUserJSON(json: any): json is UserJSON {
@@ -198,8 +198,8 @@ export class User extends Account implements UserInterface {
   public constructor(user: Partial<UserInterface> = {}) {
     super(user);
     Object.entries(user).forEach(([key, val]: [string, any]) => {
-      /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
       if (val && key in this && !(key in new Account()))
+        /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
         (this as Record<string, any>)[key] = val;
     });
     this.socials = this.socials.filter((s: SocialInterface) => !!s.url);

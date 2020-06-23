@@ -1,3 +1,5 @@
+export { default as TimeUtils } from './time';
+
 export default class Utils {
   /**
    * Ensures that the given string ends in a period.
