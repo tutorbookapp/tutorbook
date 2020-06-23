@@ -12,7 +12,7 @@ import ActionText from '@tutorbook/action-text';
 import Footer from '@tutorbook/footer';
 
 import { LinkHeader } from '@tutorbook/header';
-import { ApiError, Appt, ApptJSONInterface } from '@tutorbook/model';
+import { ApiError, Appt, ApptJSON } from '@tutorbook/model';
 import {
   getIntlProps,
   getIntlPaths,
@@ -97,7 +97,7 @@ class ApprovePage extends React.Component<ApprovePageProps, ApprovePageState> {
     console.log('[DEBUG] Approving request...', router.query);
     const { request, id } = router.query;
     const [err, res] = await to<
-      AxiosResponse<{ appt: ApptJSONInterface }>,
+      AxiosResponse<{ appt: ApptJSON }>,
       AxiosError<ApiError>
     >(
       axios({
