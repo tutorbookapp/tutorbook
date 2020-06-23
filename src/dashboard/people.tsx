@@ -8,7 +8,6 @@ import {
   DataTableHeadCell,
   DataTableBody,
   DataTableRow,
-  DataTableCell,
 } from '@rmwc/data-table';
 import { Snackbar } from '@rmwc/snackbar';
 import { Checkbox } from '@rmwc/checkbox';
@@ -23,31 +22,28 @@ import { IntercomAPI } from '@tutorbook/react-intercom';
 import React from 'react';
 import CreateUserDialog from '@tutorbook/create-user-dialog';
 import Title from './title';
-import PeopleRow from './people-row';
+import { LoadingRow, PersonRow } from './person-row';
 
 import styles from './people.module.scss';
 
 export default function People(): JSX.Element {
   const { user } = useUser();
-  const { data } = useSWR<UserJSON[]>('/api/users');
+  const { data, isValidating } = useSWR<UserJSON[]>('/api/users');
   const [users, setUsers] = React.useState<User[]>(
     (data || []).map((u: UserJSON) => User.fromJSON(u))
   );
-
-  React.useEffect(
-    () =>
-      setUsers((prev: User[]) => {
-        if (data) data.map((u: UserJSON) => User.fromJSON(u));
-        return prev;
-      }),
-    [data]
-  );
-
   const [selected, setSelected] = React.useState<string[]>([]);
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
   const [viewingCreateUserDialog, setViewingCreateUserDialog] = React.useState<
     boolean
   >(false);
+
+  React.useEffect(() => {
+    setUsers((prev: User[]) => {
+      if (data) return data.map((u: UserJSON) => User.fromJSON(u));
+      return prev;
+    });
+  }, [data]);
 
   return (
     <>
@@ -84,103 +80,91 @@ export default function People(): JSX.Element {
         ]}
       />
       <ul className={styles.results}>
-        {!data ||
-          (!!users.length && (
-            <>
-              <div className={styles.filters}>
-                <div className={styles.left}>
-                  <IconButton
-                    className={styles.filtersButton}
-                    icon='filter_list'
-                  />
-                  <ChipSet>
-                    <Chip label='Not yet vetted' checkmark selected />
-                    <Chip label='New users' checkmark />
-                    <Chip label='Mentors only' checkmark selected />
-                    <Chip label='Tutors only' checkmark />
-                  </ChipSet>
-                </div>
-                <div className={styles.right}>
-                  <TextField
-                    outlined
-                    placeholder='Search'
-                    className={styles.searchField}
-                  />
-                  <IconButton className={styles.menuButton} icon='more_vert' />
-                </div>
+        {(isValidating || !!users.length) && (
+          <>
+            <div className={styles.filters}>
+              <div className={styles.left}>
+                <IconButton
+                  className={styles.filtersButton}
+                  icon='filter_list'
+                />
+                <ChipSet>
+                  <Chip label='Not yet vetted' checkmark selected />
+                  <Chip label='New users' checkmark />
+                  <Chip label='Mentors only' checkmark selected />
+                  <Chip label='Tutors only' checkmark />
+                </ChipSet>
               </div>
-              <DataTable className={styles.table}>
-                <DataTableContent>
-                  <DataTableHead>
-                    <DataTableRow>
-                      <DataTableHeadCell hasFormControl>
-                        <Checkbox
-                          selected={selected.length === users.length}
-                          indeterminate={
-                            selected.length > 0 &&
-                            selected.length !== users.length
+              <div className={styles.right}>
+                <TextField
+                  outlined
+                  placeholder='Search'
+                  className={styles.searchField}
+                />
+                <IconButton className={styles.menuButton} icon='more_vert' />
+              </div>
+            </div>
+            <DataTable className={styles.table}>
+              <DataTableContent>
+                <DataTableHead>
+                  <DataTableRow>
+                    <DataTableHeadCell hasFormControl>
+                      <Checkbox
+                        selected={selected.length >= users.length}
+                        indeterminate={
+                          selected.length > 0 && selected.length < users.length
+                        }
+                        onChange={(
+                          event: React.FormEvent<HTMLInputElement>
+                        ) => {
+                          if (event.currentTarget.checked) {
+                            setSelected(users.map((u) => u.id));
+                          } else {
+                            setSelected([]);
                           }
-                          onChange={(
-                            event: React.FormEvent<HTMLInputElement>
-                          ) => {
-                            if (event.currentTarget.checked) {
-                              setSelected(users.map((u) => u.id));
-                            } else {
-                              setSelected([]);
-                            }
-                          }}
-                        />
-                      </DataTableHeadCell>
-                      <DataTableHeadCell className={styles.sticky}>
-                        Name
-                      </DataTableHeadCell>
-                      <DataTableHeadCell>Bio</DataTableHeadCell>
-                      <DataTableHeadCell>Email</DataTableHeadCell>
-                      <DataTableHeadCell>Phone</DataTableHeadCell>
-                      <DataTableHeadCell>Tutoring Subjects</DataTableHeadCell>
-                      <DataTableHeadCell>Mentoring Subjects</DataTableHeadCell>
-                      <DataTableHeadCell>Featured</DataTableHeadCell>
-                    </DataTableRow>
-                  </DataTableHead>
-                  <DataTableBody>
-                    {!users.length &&
-                      Array(5)
-                        .fill(null)
-                        .map(() => (
-                          <DataTableRow key={uuid()}>
-                            <DataTableCell hasFormControl>
-                              <Checkbox />
-                            </DataTableCell>
-                            {Array(7)
-                              .fill(null)
-                              .map(() => (
-                                <DataTableCell key={uuid()} />
-                              ))}
-                          </DataTableRow>
-                        ))}
-                    {!!users.length &&
-                      users.map((person: User) => (
-                        <PeopleRow
-                          person={person}
-                          selected={selected.indexOf(person.id) >= 0}
-                          setSelected={() => {
-                            const idx = selected.indexOf(person.id);
-                            if (idx < 0) {
-                              setSelected([...selected, person.id]);
-                            } else {
-                              const copy: string[] = Array.from(selected);
-                              copy.splice(idx, 1);
-                              setSelected(copy);
-                            }
-                          }}
-                        />
-                      ))}
-                  </DataTableBody>
-                </DataTableContent>
-              </DataTable>
-            </>
-          ))}
-        {!!data && !users.length && (
+                        }}
+                      />
+                    </DataTableHeadCell>
+                    <DataTableHeadCell className={styles.sticky}>
+                      Name
+                    </DataTableHeadCell>
+                    <DataTableHeadCell>Bio</DataTableHeadCell>
+                    <DataTableHeadCell>Email</DataTableHeadCell>
+                    <DataTableHeadCell>Phone</DataTableHeadCell>
+                    <DataTableHeadCell>Tutoring Subjects</DataTableHeadCell>
+                    <DataTableHeadCell>Mentoring Subjects</DataTableHeadCell>
+                    <DataTableHeadCell>Featured</DataTableHeadCell>
+                  </DataTableRow>
+                </DataTableHead>
+                <DataTableBody>
+                  {!users.length &&
+                    Array(10)
+                      .fill(null)
+                      .map(() => <LoadingRow key={uuid()} />)}
+                  {!!users.length &&
+                    users.map((person: User) => (
+                      <PersonRow
+                        key={person.id}
+                        person={person}
+                        selected={selected.indexOf(person.id) >= 0}
+                        setSelected={() => {
+                          const idx = selected.indexOf(person.id);
+                          if (idx < 0) {
+                            setSelected([...selected, person.id]);
+                          } else {
+                            const copy: string[] = Array.from(selected);
+                            copy.splice(idx, 1);
+                            setSelected(copy);
+                          }
+                        }}
+                      />
+                    ))}
+                </DataTableBody>
+              </DataTableContent>
+            </DataTable>
+          </>
+        )}
+        {!isValidating && !users.length && (
           <div className={styles.empty}>NO PEOPLE TO SHOW</div>
         )}
       </ul>

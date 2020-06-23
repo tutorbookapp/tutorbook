@@ -49,6 +49,11 @@ function OverviewDashboardPage(): JSX.Element {
             active: true,
             href: '/dashboard',
           },
+          {
+            label: msg(msgs.people),
+            active: false,
+            href: '/dashboard/people',
+          },
         ]}
       />
       <Overview />
