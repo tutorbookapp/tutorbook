@@ -78,7 +78,6 @@ export default function FilterForm({
             vertical
             subjects
             langs
-            checks
             availability={query.aspect === 'tutoring'}
           />
         </div>
