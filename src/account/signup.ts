@@ -1,5 +1,6 @@
 import { User, UserJSON, UserInterface, ApiError } from '@tutorbook/model';
 
+import { mutate } from 'swr';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
@@ -19,17 +20,11 @@ type UserCredential = firebase.auth.UserCredential;
 
 const auth: Auth = firebase.auth();
 
-export const signout = auth.signOut.bind(auth);
-
 export async function signup(newUser: User, parents?: User[]): Promise<void> {
   const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
-    axios({
-      method: 'post',
-      url: '/api/users',
-      data: {
-        user: newUser.toJSON(),
-        parents: (parents || []).map((parent: User) => parent.toJSON()),
-      },
+    axios.post('/api/users', {
+      user: newUser.toJSON(),
+      parents: (parents || []).map((parent: User) => parent.toJSON()),
     })
   );
   if (err && err.response) {
@@ -41,7 +36,11 @@ export async function signup(newUser: User, parents?: User[]): Promise<void> {
       user: newUser.toJSON(),
       fatal: true,
     });
-    throw new Error(err.response.data.msg);
+    if (err.response.data.msg.indexOf('already exists') >= 0) {
+      console.warn('[WARNING] User already existed.');
+    } else {
+      throw new Error(err.response.data.msg);
+    }
   } else if (err && err.request) {
     // The request was made but no response was received
     // `err.request` is an instance of XMLHttpRequest in the
@@ -68,6 +67,7 @@ export async function signup(newUser: User, parents?: User[]): Promise<void> {
       (res as AxiosResponse<UserJSON>).data
     );
     await auth.signInWithCustomToken(signedInUser.token as string);
+    await mutate('/api/account', signedInUser.toJSON());
     firebase.analytics().logEvent('login', { method: 'custom_token' });
   }
 }
@@ -89,12 +89,14 @@ export async function signupWithGoogle(
     throw new Error(err.message);
   } else if (cred && cred.user) {
     const firebaseUser: Partial<UserInterface> = {
+      id: cred.user.uid,
       name: cred.user.displayName as string,
       photo: cred.user.photoURL as string,
       email: cred.user.email as string,
       phone: cred.user.phoneNumber as string,
     };
     const signedInUser = new User({ ...newUser, ...firebaseUser });
+    await mutate('/api/account', signedInUser.toJSON());
     return signup(signedInUser, parents);
   } else {
     firebase.analytics().logEvent('exception', {
