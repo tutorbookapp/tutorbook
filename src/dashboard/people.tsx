@@ -21,8 +21,11 @@ import { IntercomAPI } from '@tutorbook/react-intercom';
 
 import React from 'react';
 import CreateUserDialog from '@tutorbook/create-user-dialog';
-import Title from './title';
+
 import { LoadingRow, PersonRow } from './person-row';
+
+import Title from './title';
+import Placeholder from './placeholder';
 
 import styles from './people.module.scss';
 
@@ -62,7 +65,7 @@ export default function People(): JSX.Element {
       )}
       <Title
         header='People'
-        body={`${user.name}'s tutors, mentors and students.`}
+        body={`${user.name}'s tutors, mentors and students`}
         actions={[
           {
             label: 'Create user',
@@ -165,7 +168,7 @@ export default function People(): JSX.Element {
           </>
         )}
         {!isValidating && !users.length && (
-          <div className={styles.empty}>NO PEOPLE TO SHOW</div>
+          <Placeholder>NO PEOPLE TO SHOW</Placeholder>
         )}
       </ul>
     </>

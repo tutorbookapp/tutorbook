@@ -1,4 +1,4 @@
-import { defMsg, Msg } from '@tutorbook/intl';
+import { defMsg } from '@tutorbook/intl';
 
 export default defMsg({
   overview: {
@@ -11,4 +11,4 @@ export default defMsg({
     defaultMessage: 'People',
     description: 'Label for the overview tab of the dashboard page.',
   },
-}) as Record<string, Msg>;
+});

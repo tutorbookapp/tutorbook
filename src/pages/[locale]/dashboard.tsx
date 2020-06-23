@@ -2,6 +2,7 @@ import React from 'react';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
 import {
+  defMsg,
   useIntl,
   getIntlProps,
   getIntlPaths,
@@ -10,13 +11,33 @@ import {
   IntlHelper,
   Msg,
 } from '@tutorbook/intl';
-import { Overview } from '@tutorbook/dashboard';
+import { useUser } from '@tutorbook/account';
+import { Title, Placeholder } from '@tutorbook/dashboard';
 import { TabHeader } from '@tutorbook/header';
 
 import Intercom from '@tutorbook/react-intercom';
 import Footer from '@tutorbook/footer';
 
-import msgs from '@tutorbook/dashboard/msgs';
+import tabs from '@tutorbook/dashboard/msgs';
+
+const msgs = defMsg({
+  title: {
+    id: 'dashboard.overview.title',
+    defaultMessage: 'Overview',
+  },
+  description: {
+    id: 'dashboard.overview.description',
+    defaultMessage: 'Analytics dashboard for {name}',
+  },
+  placeholder: {
+    id: 'dashboard.overview.placeholder',
+    defaultMessage: 'COMING SOON',
+  },
+  viewSearch: {
+    id: 'dashboard.overview.actions.view-search',
+    defaultMessage: 'View search',
+  },
+});
 
 /**
  * Ideally, we'd use Next.js's automatic static optimization to pre-render a
@@ -40,19 +61,33 @@ import msgs from '@tutorbook/dashboard/msgs';
  */
 function OverviewDashboardPage(): JSX.Element {
   const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
+  const {
+    user: { name },
+  } = useUser();
   return (
     <>
       <TabHeader
         tabs={[
           {
-            label: msg(msgs.overview),
+            label: msg(tabs.overview),
             active: true,
             href: '/dashboard',
           },
         ]}
       />
-      <Overview />
+      <Title
+        header={msg(msgs.title)}
+        body={msg(msgs.description, { name })}
+        actions={[
+          {
+            label: msg(msgs.viewSearch),
+            href: '/search/[[...slug]]',
+            as: '/search',
+          },
+        ]}
+      />
+      <Placeholder>{msg(msgs.placeholder)}</Placeholder>
       <Footer />
       <Intercom />
     </>
