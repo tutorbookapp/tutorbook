@@ -25,6 +25,7 @@ import Loader from '@tutorbook/loader';
 import Button from '@tutorbook/button';
 
 import firebase from '@tutorbook/firebase';
+import 'firebase/storage';
 
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
