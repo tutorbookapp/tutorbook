@@ -8,6 +8,7 @@ import {
   SearchHit,
   Query,
   Timeslot,
+  Option,
 } from '@tutorbook/model';
 
 import to from 'await-to-js';
@@ -21,6 +22,21 @@ const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 const index: SearchIndex = client.initIndex(
   process.env.NODE_ENV === 'development' ? 'test-users' : 'default-users'
 );
+
+function addFilters(
+  base: string,
+  filters: Option<string>[],
+  attr: string
+): string {
+  const addAND = base.length && !base.endsWith(' AND ') && filters.length;
+  let filterString = addAND ? `${base} AND ` : base;
+  for (let i = 0; i < filters.length; i += 1) {
+    filterString += i === 0 ? '(' : ' OR ';
+    filterString += `${attr}:"${filters[i].value}"`;
+    if (i === filters.length - 1) filterString += ')';
+  }
+  return filterString;
+}
 
 /**
  * Creates and returns the filter string to search our Algolia index based on
@@ -36,46 +52,20 @@ const index: SearchIndex = client.initIndex(
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-arrays/?language=javascript}
  */
 function getFilterStrings(query: Query): string[] {
-  let filterString = '';
-  for (let i = 0; i < query.subjects.length; i += 1) {
-    filterString += i === 0 ? '(' : ' OR ';
-    filterString += `${query.aspect}.subjects:"${query.subjects[i].value}"`;
-    if (i === query.subjects.length - 1) filterString += ')';
-  }
-  if (query.langs.length && query.subjects.length) filterString += ' AND ';
-  for (let i = 0; i < query.langs.length; i += 1) {
-    filterString += i === 0 ? '(' : ' OR ';
-    filterString += `langs:"${query.langs[i].value}"`;
-    if (i === query.langs.length - 1) filterString += ')';
-  }
-  if (
-    (query.checks.length && query.langs.length) ||
-    (query.checks.length && query.subjects.length)
-  )
-    filterString += ' AND ';
-  for (let i = 0; i < query.checks.length; i += 1) {
-    filterString += i === 0 ? '(' : ' AND ';
-    filterString += `verifications.checks:"${query.checks[i].value}"`;
-    if (i === query.checks.length - 1) filterString += ')';
-  }
-  if (
-    (query.orgs.length && query.langs.length) ||
-    (query.orgs.length && query.subjects.length) ||
-    (query.orgs.length && query.checks.length)
-  )
-    filterString += ' AND ';
-  for (let i = 0; i < query.orgs.length; i += 1) {
-    filterString += i === 0 ? '(' : ' OR ';
-    filterString += `orgs:"${query.orgs[i].value}"`;
-    if (i === query.orgs.length - 1) filterString += ')';
-  }
-  if (
-    (query.availability.length && query.langs.length) ||
-    (query.availability.length && query.subjects.length) ||
-    (query.availability.length && query.checks.length) ||
-    (query.availability.length && query.orgs.length)
-  )
-    filterString += ' AND ';
+  let filterString =
+    typeof query.visible === 'boolean'
+      ? `visible=${query.visible ? 1 : 0}`
+      : '';
+  filterString = addFilters(
+    filterString,
+    query.subjects,
+    `${query.aspect}.subjects`
+  );
+  filterString = addFilters(filterString, query.langs, 'langs');
+  filterString = addFilters(filterString, query.checks, 'verifications.checks');
+  filterString = addFilters(filterString, query.orgs, 'orgs');
+  filterString = addFilters(filterString, query.tags, '_tags');
+  if (query.availability.length) filterString += ' AND ';
   const filterStrings: string[] = [];
   query.availability.forEach((timeslot: Timeslot) =>
     filterStrings.push(
@@ -162,13 +152,17 @@ export type ListUsersRes = UserJSON[];
  * We send full data back to client if and only if that data is owned by the
  * client's organization (i.e. the JWT sent belongs to a user whose a member of
  * an organization listed in the result's `orgs` field).
+ *
+ * Clients can only view users whose visibility is `true` **unless** those users
+ * belong to the client's organization.
  */
 export default async function listUsers(
   req: NextApiRequest,
   res: NextApiResponse<ListUsersRes>
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
-  const users: User[] = await searchUsers(Query.fromURLParams(req.query));
+  const query: Query = Query.fromURLParams(req.query);
+  const users: User[] = await searchUsers(query);
   const orgs: Org[] = [];
   if (req.headers.authorization) {
     const [err, token] = await to<DecodedIdToken>(
@@ -185,22 +179,28 @@ export default async function listUsers(
       ).forEach((org: DocumentSnapshot) => orgs.push(Org.fromFirestore(org)));
     }
   }
-  const results: UserJSON[] = users.map((user: User) => {
-    const truncated: UserJSON = {
-      name: onlyFirstNameAndLastInitial(user.name),
-      photo: user.photo,
-      bio: user.bio,
-      orgs: user.orgs,
-      availability: user.availability.toJSON(),
-      mentoring: user.mentoring,
-      tutoring: user.tutoring,
-      socials: user.socials,
-      langs: user.langs,
-      id: user.id,
-    } as UserJSON;
-    if (orgs.every((org) => user.orgs.indexOf(org.id) < 0)) return truncated;
-    return user.toJSON();
-  });
+  console.log(`[DEBUG] Got ${users.length} users.`);
+  const results: UserJSON[] = users
+    .filter((user: User) => {
+      return user.visible || orgs.some(({ id }) => user.orgs.indexOf(id) >= 0);
+    })
+    .map((user: User) => {
+      const truncated: UserJSON = {
+        name: onlyFirstNameAndLastInitial(user.name),
+        photo: user.photo,
+        bio: user.bio,
+        orgs: user.orgs,
+        availability: user.availability.toJSON(),
+        mentoring: user.mentoring,
+        tutoring: user.tutoring,
+        socials: user.socials,
+        langs: user.langs,
+        id: user.id,
+      } as UserJSON;
+      if (orgs.some(({ id }) => user.orgs.indexOf(id) >= 0))
+        return user.toJSON();
+      return truncated;
+    });
   console.log(`[DEBUG] Got ${results.length} results.`);
   res.status(200).json(results);
 }
