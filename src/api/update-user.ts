@@ -60,46 +60,52 @@ function preventDataLoss(
 async function updateUser(updatedUser: User): Promise<User> {
   console.log('[DEBUG] Updating Firebase Authorization account...');
   const user: User = new User(updatedUser);
-  const userRecord: UserRecord = await auth.getUser(user.id);
-  const userNeedsToBeUpdated: boolean =
-    (!!user.name && userRecord.displayName !== user.name) ||
-    (!!user.photo && userRecord.photoURL !== user.photo) ||
-    (!!user.email && userRecord.displayName !== user.email) ||
-    (!!user.phone && userRecord.phoneNumber !== user.phone);
-  user.id = userRecord.uid;
-  if (userNeedsToBeUpdated) {
-    const [err, updatedRecord] = await to<UserRecord, FirebaseError>(
-      auth.updateUser(user.id, {
-        displayName: user.name,
-        photoURL: user.photo ? user.photo : undefined,
-        email: user.email ? user.email : undefined,
-        phoneNumber: user.phone ? user.phone : undefined,
-      })
-    );
-    if (err && err.code === 'auth/email-already-exists') {
+  const [err, userRecord] = await to<UserRecord>(auth.getUser(user.id));
+  if (err) {
+    console.warn(`[WARNING] ${err.name} fetching user: ${err.message}`);
+  } else {
+    const record: UserRecord = userRecord as UserRecord;
+    const userNeedsToBeUpdated: boolean =
+      (!!user.name && record.displayName !== user.name) ||
+      (!!user.photo && record.photoURL !== user.photo) ||
+      (!!user.email && record.displayName !== user.email) ||
+      (!!user.phone && record.phoneNumber !== user.phone);
+    user.id = record.uid;
+    if (userNeedsToBeUpdated) {
       /* eslint-disable-next-line no-shadow */
-      const updatedRecord = await auth.updateUser(user.id, {
-        displayName: user.name,
-        photoURL: user.photo ? user.photo : undefined,
-        phoneNumber: user.phone ? user.phone : undefined,
-      });
-      preventDataLoss(user, userRecord, updatedRecord);
-    } else if (err && err.code === 'auth/phone-number-already-exists') {
-      /* eslint-disable-next-line no-shadow */
-      const updatedRecord = await auth.updateUser(user.id, {
-        displayName: user.name,
-        photoURL: user.photo ? user.photo : undefined,
-        email: user.email ? user.email : undefined,
-      });
-      preventDataLoss(user, userRecord, updatedRecord);
-    } else if (err) {
-      const msg = `${err.name} updating ${user.toString()}: ${err.message}`;
-      throw new Error(msg);
-    } else {
-      preventDataLoss(user, userRecord, updatedRecord as UserRecord);
+      const [err, updatedRecord] = await to<UserRecord, FirebaseError>(
+        auth.updateUser(user.id, {
+          displayName: user.name,
+          photoURL: user.photo ? user.photo : undefined,
+          email: user.email ? user.email : undefined,
+          phoneNumber: user.phone ? user.phone : undefined,
+        })
+      );
+      if (err && err.code === 'auth/email-already-exists') {
+        /* eslint-disable-next-line no-shadow */
+        const updatedRecord = await auth.updateUser(user.id, {
+          displayName: user.name,
+          photoURL: user.photo ? user.photo : undefined,
+          phoneNumber: user.phone ? user.phone : undefined,
+        });
+        preventDataLoss(user, record, updatedRecord);
+      } else if (err && err.code === 'auth/phone-number-already-exists') {
+        /* eslint-disable-next-line no-shadow */
+        const updatedRecord = await auth.updateUser(user.id, {
+          displayName: user.name,
+          photoURL: user.photo ? user.photo : undefined,
+          email: user.email ? user.email : undefined,
+        });
+        preventDataLoss(user, record, updatedRecord);
+      } else if (err) {
+        const msg = `${err.name} updating ${user.toString()}: ${err.message}`;
+        throw new Error(msg);
+      } else {
+        preventDataLoss(user, record, updatedRecord as UserRecord);
+      }
     }
+    console.log('[DEBUG] Updated Firebase Authorization account.');
   }
-  console.log('[DEBUG] Updated Firebase Authorization account.');
   const userRef: DocumentReference = db.collection('users').doc(user.id);
   const userDoc: DocumentSnapshot = await userRef.get();
   console.log('[DEBUG] Updating profile document...');
