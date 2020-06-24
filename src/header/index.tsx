@@ -13,6 +13,7 @@ import React from 'react';
 import Avatar from '@tutorbook/avatar';
 import FilterForm from '@tutorbook/filter-form';
 import PopOver from './pop-over';
+import Switcher from './switcher';
 import Tabs, { TabsProps } from './tabs';
 
 import styles from './header.module.scss';
@@ -169,6 +170,7 @@ export function TabHeader(props: TabsProps): JSX.Element {
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
+          <Switcher />
           <Tabs {...props} />
         </div>
         <div className={styles.right}>

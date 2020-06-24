@@ -67,55 +67,61 @@ $offset: -2px;
     cursor: pointer;
   }
 
-  .item {
-    @include typography.typography('body1');
-    position: relative;
-    font-size: 14px;
-    color: map.get(config.$colors, 'accents-5');
-    line-height: 20px;
-    transition: color 0.1s ease 0s, background-color 0.1s ease 0s;
-    max-width: 100%;
-    padding: 8px 20px;
-    text-align: left;
-
-    > a {
-      color: currentcolor;
-      display: flex;
-      -moz-box-align: center;
-      align-items: center;
-      text-decoration: none;
-      margin: -8px -20px;
-      padding: 8px 20px;
-    }
-
-    &:hover {
-      color: map.get(config.$colors, 'foreground');
-    }
-
-    .icon {
-      position: absolute;
-      top: 0px;
-      bottom: 0px;
-      right: 20px;
-      pointer-events: none;
-      display: flex;
-      -moz-box-align: center;
-      align-items: center;
-
-      > i {
-        font-size: 20px !important;
-      }
-    }
-
-    .avatar {
-      width: 24px;
-      margin-right: 10px;
-    }
-  }
-
   .line {
     border-top: 1px solid map.get(config.$colors, 'accents-2');
     margin: 8px 0;
+  }
+}
+
+.item {
+  @include typography.typography('body1');
+  position: relative;
+  font-size: 14px;
+  color: map.get(config.$colors, 'accents-5');
+  line-height: 20px;
+  transition: color 0.1s ease 0s, background-color 0.1s ease 0s;
+  max-width: 100%;
+  padding: 8px 20px;
+  text-align: left;
+
+  > a {
+    color: currentcolor;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+    text-decoration: none;
+    margin: -8px -20px;
+    padding: 8px 20px;
+  }
+
+  &:hover {
+    color: map.get(config.$colors, 'foreground');
+  }
+
+  .icon {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right: 20px;
+    pointer-events: none;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+
+    > i {
+      font-size: 20px !important;
+    }
+  }
+
+  .avatar {
+    min-width: 24px;
+    margin-right: 10px;
+  }
+
+  .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

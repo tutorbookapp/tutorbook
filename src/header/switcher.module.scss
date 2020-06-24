@@ -1,0 +1,123 @@
+@use 'sass:map';
+@use '@tutorbook/styles/config';
+
+$background: #e0e0e0;
+$foreground: rgba(0, 0, 0, 0.87);
+
+.menu {
+  min-width: 100%;
+  width: auto;
+  max-height: calc(-140px + 100vh);
+  max-width: 300px;
+
+  .picker {
+    padding: 8px 0;
+    box-sizing: border-box;
+
+    .header {
+      width: 100%;
+      padding: 10px 15px;
+      text-transform: uppercase;
+      color: map.get(config.$colors, 'accents-5');
+      font-size: 12px;
+      font-family: map.get(config.$fonts, 'sans');
+      white-space: nowrap;
+      line-height: normal;
+      box-sizing: border-box;
+    }
+
+    .item {
+      position: relative;
+      font-size: 14px;
+      font-family: map.get(config.$fonts, 'sans');
+      color: map.get(config.$colors, 'accents-5');
+      line-height: 20px;
+      transition: color 0.1s ease 0s, background-color 0.1s ease 0s;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    .line {
+      border-top: 1px solid map.get(config.$colors, 'accents-2');
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+  }
+}
+
+.selector {
+  background-color: $background;
+  border-radius: 100px;
+  display: flex;
+  flex: 1 1 auto;
+  margin: 0 10px;
+  min-width: 0;
+  transition: background-color 0.1s ease;
+  z-index: 1;
+
+  .button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    outline: none;
+    cursor: pointer;
+
+    .wrapper {
+      box-sizing: border-box;
+      cursor: pointer;
+      display: inline-table;
+      position: relative;
+
+      .selected {
+        color: $foreground;
+        align-items: center;
+        border-bottom: 0 !important;
+        display: flex;
+        flex-shrink: 1;
+        font-size: 14px;
+        height: 36px !important;
+        max-width: initial;
+        padding: 0 12px;
+        position: relative;
+        vertical-align: middle;
+        width: auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        .selectedIcon {
+          color: $foreground;
+          vertical-align: middle;
+        }
+
+        .selectedText {
+          letter-spacing: -0.01125rem;
+          font-family: map.get(config.$fonts, 'sans');
+          margin-left: 8px;
+          max-width: 300px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .arrowWrapper {
+        display: table-cell;
+        vertical-align: middle;
+
+        .arrow {
+          color: $foreground;
+          margin: 2px 16px 0 0;
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 5px solid;
+        }
+      }
+    }
+  }
+}
