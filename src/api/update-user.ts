@@ -10,6 +10,7 @@ import {
   auth,
   UserRecord,
   FirebaseError,
+  DocumentSnapshot,
   DocumentReference,
 } from './helpers/firebase';
 
@@ -100,9 +101,22 @@ async function updateUser(updatedUser: User): Promise<User> {
   }
   console.log('[DEBUG] Updated Firebase Authorization account.');
   const userRef: DocumentReference = db.collection('users').doc(user.id);
+  const userDoc: DocumentSnapshot = await userRef.get();
   console.log('[DEBUG] Updating profile document...');
-  await userRef.update(user.toFirestore());
-  console.log(`[DEBUG] Updated ${user.name}'s profile document (${user.id}).`);
+  if (userDoc.exists) {
+    await userRef.update(user.toFirestore());
+    console.log(
+      `[DEBUG] Updated ${user.name}'s profile document (${user.id}).`
+    );
+  } else {
+    // Profile document did not already exist (as expected). Most likely this is
+    // because we accidentally deleted it while migrating old data. This is not
+    // an authentication bug however (as an error would have been thrown already
+    // if the actual Firebase Authentication account also didn't already exist).
+    console.warn('[WARNING] Profile document did not exist.');
+    await userRef.set(user.toFirestore());
+    console.log(`[DEBUG] Set ${user.name}'s profile document (${user.id}).`);
+  }
   return user;
 }
 
