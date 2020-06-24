@@ -1,12 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
-import {
-  useIntl,
-  getIntlProps,
-  getIntlPaths,
-  withIntl,
-  IntlShape,
-  IntlHelper,
-} from '@tutorbook/intl';
+import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
 import { LinkHeader } from '@tutorbook/header';
 
 import React from 'react';
@@ -15,8 +8,6 @@ import Footer from '@tutorbook/footer';
 import Intercom from '@tutorbook/react-intercom';
 
 function LoginPage(): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   return (
     <>
       <LinkHeader />
