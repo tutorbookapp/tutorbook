@@ -15,8 +15,7 @@ import { TextField } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 
-import { useUser } from '@tutorbook/account';
-import { User, UserJSON } from '@tutorbook/model';
+import { Query, Org, User, UserJSON } from '@tutorbook/model';
 import { IntercomAPI } from '@tutorbook/react-intercom';
 
 import React from 'react';
@@ -29,11 +28,16 @@ import Placeholder from './placeholder';
 
 import styles from './people.module.scss';
 
-export default function People(): JSX.Element {
-  const { user } = useUser();
-  const { data, isValidating } = useSWR<UserJSON[]>('/api/users');
+interface PeopleProps {
+  people: User[];
+  org: Org;
+}
+
+export default function People({ people, org }: PeopleProps): JSX.Element {
+  const query = new Query({ orgs: [{ label: org.name, value: org.id }] });
+  const { data, isValidating } = useSWR<UserJSON[]>(query.endpoint);
   const [users, setUsers] = React.useState<User[]>(
-    (data || []).map((u: UserJSON) => User.fromJSON(u))
+    data ? data.map((u: UserJSON) => User.fromJSON(u)) : people
   );
   const [selected, setSelected] = React.useState<string[]>([]);
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
@@ -65,7 +69,7 @@ export default function People(): JSX.Element {
       )}
       <Title
         header='People'
-        body={`${user.name}'s tutors, mentors and students`}
+        body={`${org.name}'s tutors, mentors and students`}
         actions={[
           {
             label: 'Create user',

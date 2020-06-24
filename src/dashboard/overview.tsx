@@ -1,17 +1,19 @@
-import { useUser } from '@tutorbook/account';
-
 import React from 'react';
 import Title from './title';
 import Placeholder from './placeholder';
 
-export default function Overview(): JSX.Element {
-  const { user } = useUser();
+import { Org } from '@tutorbook/model';
 
+interface OverviewProps {
+  org: Org;
+}
+
+export default function Overview({ org }: OverviewProps): JSX.Element {
   return (
     <>
       <Title
         header='Overview'
-        body={`Analytics dashboard for ${user.name}`}
+        body={`Analytics dashboard for ${org.name}`}
         actions={[
           {
             label: 'View search',

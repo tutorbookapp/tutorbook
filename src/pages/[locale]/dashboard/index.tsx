@@ -62,9 +62,8 @@ const msgs = defMsg({
 function OverviewDashboardPage(): JSX.Element {
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
-  const {
-    user: { name },
-  } = useUser();
+  // TODO: Redirect to the login page if there isn't a user signed-in.
+  const { user } = useUser();
   return (
     <>
       <TabHeader
@@ -78,7 +77,7 @@ function OverviewDashboardPage(): JSX.Element {
       />
       <Title
         header={msg(msgs.title)}
-        body={msg(msgs.description, { name })}
+        body={msg(msgs.description, { name: user.name })}
         actions={[
           {
             label: msg(msgs.viewSearch),
