@@ -17,6 +17,13 @@ interface Timeslot<T> {
 }
 
 /**
+ * All of the tags that are added to the users search index during indexing
+ * (i.e. when this function runs).
+ * @see src/model/user.ts
+ */
+const NOT_VETTED = 'not-vetted';
+
+/**
  * Convert the availability objects (i.e. the user's schedule and availability)
  * to arrays of Unix timestamp numbers that can then be queryed like:
  * > Show me all users whose availability contains a timeslot whose open time
@@ -40,8 +47,7 @@ function availabilityToDates(
  */
 function getTags(user: Record<string, unknown>): string[] {
   const tags: string[] = [];
-  if (!((user.verifications as unknown[]) || []).length)
-    tags.push('is_not_vetted');
+  if (!((user.verifications as unknown[]) || []).length) tags.push(NOT_VETTED);
   return tags;
 }
 
@@ -81,6 +87,8 @@ export default async function userUpdate(
     await index.saveObject(ob);
   }
   const settings = {
+    // Note that we don't have to add the `visible` property here (b/c Algolia
+    // automatically supports filtering by numeric and boolean values).
     attributesForFaceting: [
       'orgs',
       'availability',
