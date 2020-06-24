@@ -1,6 +1,13 @@
 /**
  * Class that contains some useful `Date` manipulation and creation utilities.
- * @todo Move this class to the `@tutorbook/utils` package.
+ *
+ * This is a Node.js copy of the class originally implemented in Typescript in
+ * `src/utils/time.ts`. This copy exists merely for convenience of being
+ * relatively executable (i.e. you can use this anywhere you have a Node.js
+ * runtime).
+ *
+ * For an authoritative copy, please refer to the original Typescript
+ * implementation in `src/utils/time.ts`.
  */
 module.exports = class TimeUtils {
   /**
