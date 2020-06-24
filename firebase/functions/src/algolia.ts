@@ -34,18 +34,6 @@ function availabilityToDates(
 }
 
 /**
- * For privacy reasons, we only add the user's first name and last initial to
- * our Algolia search index (and thus we **never** share the user's full name).
- * @example
- * assert(onlyFirstNameAndLastInitial('Nicholas Chiang') === 'Nicholas C.');
- * @todo Avoid code duplication from `/api/search` REST API endpoint.
- */
-function onlyFirstNameAndLastInitial(name: string): string {
-  const split: string[] = name.split(' ');
-  return `${split[0]} ${split[split.length - 1][0]}.`;
-}
-
-/**
  * We use Algolia's tagging feature to support some otherwise impossible
  * querying logic (i.e. the logic is run here, during indexing time, and then
  * can be queried later).
@@ -76,33 +64,13 @@ export default async function userUpdate(
   const uid: string = context.params.user as string;
   const indexId = `${context.params.partition as string}-users`;
   const index: SearchIndex = client.initIndex(indexId);
-  const adminIndexId = `${context.params.partition as string}-admin-users`;
-  const adminIndex: SearchIndex = client.initIndex(adminIndexId);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting user (${uid})...`);
     await index.deleteObject(uid);
-    await adminIndex.deleteObject(uid);
   } else {
     const user = change.after.data() as Record<string, unknown>;
     console.log(`[DEBUG] Updating ${user.name as string} (${uid})...`);
     const ob: Record<string, unknown> = {
-      name: onlyFirstNameAndLastInitial(user.name as string),
-      photo: user.photo,
-      bio: user.bio,
-      orgs: user.orgs,
-      availability: availabilityToDates(
-        user.availability as Timeslot<Timestamp>[]
-      ),
-      verifications: user.verifications,
-      mentoring: user.mentoring,
-      tutoring: user.tutoring,
-      socials: user.socials,
-      langs: user.langs,
-      objectID: uid,
-      featured: user.featured,
-    };
-    await index.saveObject(ob);
-    const adminOb: Record<string, unknown> = {
       ...user,
       availability: availabilityToDates(
         user.availability as Timeslot<Timestamp>[]
@@ -110,7 +78,7 @@ export default async function userUpdate(
       objectID: uid,
       _tags: getTags(user),
     };
-    await adminIndex.saveObject(adminOb);
+    await index.saveObject(ob);
   }
   const settings = {
     attributesForFaceting: [
@@ -126,5 +94,4 @@ export default async function userUpdate(
     ].map((attr: string) => `filterOnly(${attr})`),
   };
   await index.setSettings(settings);
-  await adminIndex.setSettings(settings);
 }
