@@ -59,18 +59,17 @@ $offset: -2px;
     border-radius: 5px;
   }
 
-  button.item {
-    background: inherit;
-    border: none;
-    width: 100%;
-    display: flex;
-    cursor: pointer;
-  }
-
   .line {
     border-top: 1px solid map.get(config.$colors, 'accents-2');
     margin: 8px 0;
   }
+}
+
+button.item {
+  background: inherit;
+  border: none;
+  cursor: pointer;
+  padding-right: 50px;
 }
 
 .item {

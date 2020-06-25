@@ -23,7 +23,7 @@ interface PopOverLinkProps {
   icon?: string;
 }
 
-function PopOverLink({
+export function PopOverLink({
   href,
   as,
   children,
@@ -32,14 +32,14 @@ function PopOverLink({
   return (
     <Ripple>
       <div className={styles.item}>
-        <Link href={href} as={as}>
-          <a className={styles.itemLink}>{children}</a>
-        </Link>
         {icon && (
           <div className={styles.icon}>
             <Icon icon={icon} />
           </div>
         )}
+        <Link href={href} as={as}>
+          <a className={styles.itemLink}>{children}</a>
+        </Link>
       </div>
     </Ripple>
   );
@@ -51,7 +51,7 @@ interface PopOverButtonProps {
   icon?: string;
 }
 
-function PopOverButton({
+export function PopOverButton({
   onClick,
   children,
   icon,
@@ -59,12 +59,12 @@ function PopOverButton({
   return (
     <Ripple>
       <button type='button' onClick={onClick} className={styles.item}>
-        <span className={styles.label}>{children}</span>
         {icon && (
           <div className={styles.icon}>
             <Icon icon={icon} />
           </div>
         )}
+        <span className={styles.label}>{children}</span>
       </button>
     </Ripple>
   );
@@ -83,15 +83,15 @@ export function PopOverAccountButton({
   return (
     <Ripple>
       <button type='button' onClick={onClick} className={styles.item}>
-        <div className={styles.avatar}>
-          <Avatar src={account.photo} />
-        </div>
-        <span className={styles.label}>{account.name}</span>
         {checked && (
           <div className={styles.icon}>
             <Icon icon='account_circle' />
           </div>
         )}
+        <div className={styles.avatar}>
+          <Avatar src={account.photo} />
+        </div>
+        <span className={styles.label}>{account.name}</span>
       </button>
     </Ripple>
   );
@@ -109,15 +109,15 @@ export function PopOverAccountLink({
       <div className={styles.item}>
         <Link href={href} as={as}>
           <a className={styles.itemLink}>
-            <div className={styles.avatar}>
-              <Avatar src={account.photo} />
-            </div>
-            <span className={styles.label}>{account.name}</span>
             {checked && (
               <div className={styles.icon}>
                 <Icon icon='account_circle' />
               </div>
             )}
+            <div className={styles.avatar}>
+              <Avatar src={account.photo} />
+            </div>
+            <span className={styles.label}>{account.name}</span>
           </a>
         </Link>
       </div>
