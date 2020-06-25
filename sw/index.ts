@@ -72,7 +72,6 @@ async function getBodyContent(req: Request): Promise<string | null> {
 self.addEventListener('fetch', (event: FetchEvent) => {
   async function requestProcessor(token: string | null): Promise<Response> {
     let req = event.request;
-    console.log(`[DEBUG] Processing request (${req.toString()})...`);
     // For same origin https requests, append JWT to header.
     const sameOrigin: boolean =
       self.location.origin === getOriginFromUrl(event.request.url);
@@ -81,7 +80,6 @@ self.addEventListener('fetch', (event: FetchEvent) => {
       self.location.hostname === 'localhost' ||
       self.location.hostname === '0.0.0.0';
     if (sameOrigin && secure && token) {
-      console.log(`[DEBUG] Appending JWT (${token.slice(0, 10)})...`);
       // Clone headers as request headers are immutable.
       const headers = new Headers();
       req.headers.forEach((val, key) => headers.append(key, val));
