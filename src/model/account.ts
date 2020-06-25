@@ -45,8 +45,9 @@ export class Account implements AccountInterface {
 
   public constructor(account: Partial<AccountInterface> = {}) {
     Object.entries(account).forEach(([key, val]: [string, any]) => {
+      const valid: boolean = typeof val === 'boolean' || !!val;
       /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-      if (val && key in this) (this as Record<string, any>)[key] = val;
+      if (valid && key in this) (this as Record<string, any>)[key] = val;
     });
     this.phone = phone(this.phone)[0] || '';
   }

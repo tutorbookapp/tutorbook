@@ -1,10 +1,9 @@
 import url from 'url';
 import to from 'await-to-js';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { ParsedUrlQuery } from 'querystring';
 
 import { ApiError } from './errors';
-import { User, UserJSON, Check, Aspect } from './user';
+import { User, UserJSON, Check, Tag, Aspect } from './user';
 import { Availability, AvailabilityJSON } from './availability';
 
 /**
@@ -15,6 +14,10 @@ import { Availability, AvailabilityJSON } from './availability';
  * @property availability - When the user is available; OR category.
  * @property checks - The checks the user has passed; AND category.
  * @property orgs - The organizations that the user belongs to; OR category.
+ * @property tags - Algolia search `__tags` (e.g. `NOT_YET_VETTED`).
+ * @property [visible] - Regular users can only ever see users where this is
+ * `true`. Organization admins, however, can see all their users (regardless of
+ * their visibility) which is why this property exists.
  */
 export interface QueryInterface {
   aspect: Aspect;
@@ -23,16 +26,13 @@ export interface QueryInterface {
   availability: Availability;
   checks: Option<Check>[];
   orgs: Option<string>[];
+  tags: Option<Tag>[];
+  visible?: boolean;
 }
 
-export interface QueryJSON {
-  aspect: Aspect;
-  langs: Option<string>[];
-  subjects: Option<string>[];
+export type QueryJSON = Omit<QueryInterface, 'availability'> & {
   availability: AvailabilityJSON;
-  checks: Option<Check>[];
-  orgs: Option<string>[];
-}
+};
 
 export interface Option<T> {
   label: string;
@@ -49,6 +49,8 @@ export type QueryDepArray = [
   Option<string>[]
 ];
 
+type QueryURL = { [key in keyof QueryInterface]?: string };
+
 export class Query implements QueryInterface {
   public aspect: Aspect = 'mentoring';
 
@@ -62,10 +64,15 @@ export class Query implements QueryInterface {
 
   public orgs: Option<string>[] = [];
 
+  public tags: Option<Tag>[] = [];
+
+  public visible?: boolean;
+
   public constructor(query: Partial<QueryInterface> = {}) {
     Object.entries(query).forEach(([key, val]: [string, any]) => {
+      const valid: boolean = typeof val === 'boolean' || !!val;
       /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-      if (val && key in this) (this as Record<string, any>)[key] = val;
+      if (valid && key in this) (this as Record<string, any>)[key] = val;
     });
   }
 
@@ -78,15 +85,21 @@ export class Query implements QueryInterface {
   }
 
   private getURL(pathname: string): string {
+    function encode(p?: Option<any>[]): string {
+      return encodeURIComponent(JSON.stringify(p));
+    }
+
     return url.format({
       pathname,
       query: {
         aspect: encodeURIComponent(this.aspect),
-        langs: encodeURIComponent(JSON.stringify(this.langs)),
-        subjects: encodeURIComponent(JSON.stringify(this.subjects)),
+        langs: encode(this.langs),
+        subjects: encode(this.subjects),
         availability: this.availability.toURLParam(),
-        checks: encodeURIComponent(JSON.stringify(this.checks)),
-        orgs: encodeURIComponent(JSON.stringify(this.orgs)),
+        checks: encode(this.checks),
+        orgs: encode(this.orgs),
+        tags: encode(this.tags),
+        visible: this.visible,
       },
     });
   }
@@ -112,30 +125,24 @@ export class Query implements QueryInterface {
     }
   }
 
-  public static fromURLParams(params: ParsedUrlQuery): Query {
-    const orgs: string = params.orgs as string;
-    const checks: string = params.checks as string;
-    const langs: string = params.langs as string;
-    const aspect: string = params.aspect as string;
-    const subjects: string = params.subjects as string;
-    const availability: string = params.availability as string;
+  public static fromURLParams(params: QueryURL): Query {
+    function decode<T = string>(p?: string): Option<T>[] {
+      return p ? (JSON.parse(decodeURIComponent(p)) as Option<T>[]) : [];
+    }
+
     return new Query({
-      orgs: orgs
-        ? (JSON.parse(decodeURIComponent(orgs)) as Option<string>[])
-        : [],
-      checks: checks
-        ? (JSON.parse(decodeURIComponent(checks)) as Option<Check>[])
-        : [],
-      langs: langs
-        ? (JSON.parse(decodeURIComponent(langs)) as Option<string>[])
-        : [],
-      subjects: subjects
-        ? (JSON.parse(decodeURIComponent(subjects)) as Option<string>[])
-        : [],
-      availability: availability
-        ? Availability.fromURLParam(availability)
+      orgs: decode<Check>(params.orgs),
+      checks: decode(params.checks),
+      langs: decode(params.langs),
+      subjects: decode(params.subjects),
+      availability: params.availability
+        ? Availability.fromURLParam(params.availability)
         : new Availability(),
-      aspect: aspect ? (decodeURIComponent(aspect) as Aspect) : 'mentoring',
+      aspect: params.aspect
+        ? (decodeURIComponent(params.aspect) as Aspect)
+        : 'mentoring',
+      tags: decode(params.tags),
+      visible: params.visible ? params.visible === 'true' : undefined,
     });
   }
 

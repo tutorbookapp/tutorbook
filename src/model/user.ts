@@ -86,6 +86,12 @@ interface Resource {
 }
 
 /**
+ * Various tags that are added to the Algolia users search during indexing (via
+ * the `firebase/functions/src/algolia.ts` GCP serverless function).
+ */
+export type Tag = 'not-vetted';
+
+/**
  * A verification is run by a non-profit organization (the `org`) by a member of
  * that organization (the `user`). The non-profit takes full responsibility for
  * their verification and liability for the user's actions.
@@ -112,6 +118,7 @@ export interface Verification extends Resource {
  * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property socials - An array of the user's socials (e.g. LinkedIn, Facebook).
+ * @property visible - Whether or not this user appears in search results.
  * @property token - The user's Firebase Authentication JWT `idToken`.
  */
 export interface UserInterface extends AccountInterface {
@@ -124,24 +131,17 @@ export interface UserInterface extends AccountInterface {
   parents: string[];
   socials: SocialInterface[];
   verifications: Verification[];
+  visible: boolean;
   token?: string;
 }
 
 /**
  * What results from searching our users Algolia index.
  */
-export interface SearchHit extends ObjectWithObjectID {
-  name: string;
-  photo: string;
-  bio: string;
-  owners: string[];
-  availability: AvailabilitySearchHitAlias;
-  mentoring: { subjects: string[]; searches: string[] };
-  tutoring: { subjects: string[]; searches: string[] };
-  langs: string[];
-  featured: Aspect[];
-  socials: SocialInterface[];
-}
+export type SearchHit = ObjectWithObjectID &
+  Omit<UserInterface, 'availability'> & {
+    availability: AvailabilitySearchHitAlias;
+  };
 
 export type UserWithRoles = User & { roles: RoleAlias[] };
 
@@ -182,6 +182,8 @@ export class User extends Account implements UserInterface {
 
   public verifications: Verification[] = [];
 
+  public visible = false;
+
   public token?: string;
 
   /**
@@ -198,7 +200,8 @@ export class User extends Account implements UserInterface {
   public constructor(user: Partial<UserInterface> = {}) {
     super(user);
     Object.entries(user).forEach(([key, val]: [string, any]) => {
-      if (val && key in this && !(key in new Account()))
+      const valid: boolean = typeof val === 'boolean' || !!val;
+      if (valid && key in this && !(key in new Account()))
         /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
         (this as Record<string, any>)[key] = val;
     });

@@ -44,7 +44,8 @@ export class Org extends Account implements OrgInterface {
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
     Object.entries(org).forEach(([key, val]: [string, any]) => {
-      if (val && key in this && !(key in new Account()))
+      const valid: boolean = typeof val === 'boolean' || !!val;
+      if (valid && key in this && !(key in new Account()))
         /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
         (this as Record<string, any>)[key] = val;
     });
