@@ -12,32 +12,13 @@ import {
   Msg,
 } from '@tutorbook/intl';
 import { useUser } from '@tutorbook/account';
-import { Title, Placeholder } from '@tutorbook/dashboard';
+import { Overview } from '@tutorbook/dashboard';
 import { TabHeader } from '@tutorbook/header';
 
 import Intercom from '@tutorbook/react-intercom';
 import Footer from '@tutorbook/footer';
 
 import tabs from '@tutorbook/dashboard/msgs';
-
-const msgs = defMsg({
-  title: {
-    id: 'dashboard.overview.title',
-    defaultMessage: 'Overview',
-  },
-  description: {
-    id: 'dashboard.overview.description',
-    defaultMessage: 'Analytics dashboard for {name}',
-  },
-  placeholder: {
-    id: 'dashboard.overview.placeholder',
-    defaultMessage: 'COMING SOON',
-  },
-  viewSearch: {
-    id: 'dashboard.overview.actions.view-search',
-    defaultMessage: 'View search',
-  },
-});
 
 /**
  * Ideally, we'd use Next.js's automatic static optimization to pre-render a
@@ -75,18 +56,7 @@ function OverviewDashboardPage(): JSX.Element {
           },
         ]}
       />
-      <Title
-        header={msg(msgs.title)}
-        body={msg(msgs.description, { name: user.name })}
-        actions={[
-          {
-            label: msg(msgs.viewSearch),
-            href: '/search/[[...slug]]',
-            as: '/search',
-          },
-        ]}
-      />
-      <Placeholder>{msg(msgs.placeholder)}</Placeholder>
+      <Overview account={user} />
       <Footer />
       <Intercom />
     </>

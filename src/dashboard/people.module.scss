@@ -37,8 +37,6 @@ $filters-height: 56px;
         :global(.mdc-notched-outline__notch),
         :global(.mdc-notched-outline__trailing) {
           border-color: rgba(0, 0, 0, 0.12);
-          transition: border-color 0.2s ease 0s;
-          will-change: border-color;
         }
       }
 
@@ -55,6 +53,7 @@ $filters-height: 56px;
 
 .table {
   width: 100%;
+  max-height: calc(100vh - #{config.$nav-height + 56px + 48px});
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 
@@ -64,17 +63,45 @@ $filters-height: 56px;
     background-color: rgba(0, 0, 0, 0.04);
   }
 
+  .header th {
+    position: sticky;
+    top: 0;
+    background-color: map.get(config.$colors, 'background');
+    box-shadow: 0 1px #e0e0e0;
+    z-index: 2;
+
+    &.sticky {
+      left: 0;
+      box-shadow: 1px 0 #e0e0e0, 0 1px #e0e0e0;
+      z-index: 3;
+    }
+  }
+
+  tbody tr:first-child {
+    border: none;
+  }
+
   .sticky {
     position: sticky;
     top: auto;
     left: 0;
     background-color: map.get(config.$colors, 'background');
-    box-shadow: 1px 0 rgba(0, 0, 0, 0.12), 0 -1px rgba(0, 0, 0, 0.12);
+    box-shadow: 1px 0 #e0e0e0;
     z-index: 1;
+
+    @-moz-document url-prefix() {
+      box-shadow: 1px 0 #e0e0e0, 0 -1px #e0e0e0;
+    }
+  }
+
+  .edit {
+    padding: 0 0 0 12px;
   }
 
   td {
     max-width: 500px;
+    padding-top: 0;
+    padding-bottom: 0;
 
     .field {
       vertical-align: middle;
@@ -83,7 +110,7 @@ $filters-height: 56px;
       border-radius: 0;
       display: block;
       min-width: 150px;
-      height: 52px;
+      height: 100%;
 
       :global(.mdc-line-ripple::before) {
         border-bottom-width: 0;
@@ -102,13 +129,18 @@ $filters-height: 56px;
       }
     }
 
+    .switch {
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
     .select :global(.mdc-select__selected-text) {
       //@include typography.typography('body2');
     }
   }
 }
 
-.results {
+.wrapper {
   list-style: none;
   padding: 0 24px;
   max-width: config.$default-width;
@@ -117,16 +149,11 @@ $filters-height: 56px;
 }
 
 .empty {
-  @include typography.typography('body1');
-  border: 1px dashed map.get(config.$colors, 'accents-2');
-  border-radius: 4px;
-  color: map.get(config.$colors, 'accents-3');
-  font-size: 14px;
-  margin: 45px 0;
-  padding: 180px 0;
-  position: relative;
-  text-align: center;
-  line-height: 24px;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 .snackbar {

@@ -1,28 +1,54 @@
 import React from 'react';
+
+import { defMsg, useMsg, IntlHelper } from '@tutorbook/intl';
+import { Account } from '@tutorbook/model';
+
 import Title from './title';
 import Placeholder from './placeholder';
 
-import { Org } from '@tutorbook/model';
+import styles from './overview.module.scss';
 
 interface OverviewProps {
-  org: Org;
+  account: Account;
 }
 
-export default function Overview({ org }: OverviewProps): JSX.Element {
+const msgs = defMsg({
+  title: {
+    id: 'dashboard.overview.title',
+    defaultMessage: 'Overview',
+  },
+  description: {
+    id: 'dashboard.overview.description',
+    defaultMessage: 'Analytics dashboard for {name}',
+  },
+  placeholder: {
+    id: 'dashboard.overview.placeholder',
+    defaultMessage: 'COMING SOON',
+  },
+  viewSearch: {
+    id: 'dashboard.overview.actions.view-search',
+    defaultMessage: 'View search',
+  },
+});
+
+export default function Overview({ account }: OverviewProps): JSX.Element {
+  const msg: IntlHelper = useMsg();
   return (
     <>
       <Title
-        header='Overview'
-        body={`Analytics dashboard for ${org.name}`}
+        header={msg(msgs.title)}
+        body={msg(msgs.description, { name: account.name })}
         actions={[
           {
-            label: 'View search',
+            label: msg(msgs.viewSearch),
             href: '/search/[[...slug]]',
             as: '/search',
           },
         ]}
       />
-      <Placeholder>COMING SOON</Placeholder>
+      <div className={styles.wrapper}>
+        <Placeholder>{msg(msgs.placeholder)}</Placeholder>
+      </div>
     </>
   );
 }

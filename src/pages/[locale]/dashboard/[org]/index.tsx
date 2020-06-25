@@ -135,7 +135,7 @@ function DashboardPage({
           },
         ]}
       />
-      <Overview org={Org.fromJSON(org)} />
+      <Overview account={Org.fromJSON(org)} />
       <Footer />
       <Intercom />
     </>

@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import useSWR from 'swr';
 
 import {
@@ -10,50 +9,78 @@ import {
   DataTableRow,
 } from '@rmwc/data-table';
 import { Snackbar } from '@rmwc/snackbar';
-import { Checkbox } from '@rmwc/checkbox';
 import { TextField } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
-
-import { Query, Org, User, UserJSON } from '@tutorbook/model';
+import { Option, Query, Org, User, UserJSON, Tag } from '@tutorbook/model';
 import { IntercomAPI } from '@tutorbook/react-intercom';
+import { defMsg, useMsg } from '@tutorbook/intl';
 
 import React from 'react';
 import CreateUserDialog from '@tutorbook/create-user-dialog';
-
-import { LoadingRow, PersonRow } from './person-row';
+import VerificationDialog from '@tutorbook/verification-dialog';
 
 import Title from './title';
+import UserRow from './user-row';
 import Placeholder from './placeholder';
 
 import styles from './people.module.scss';
 
+const msgs = defMsg({
+  createUser: {
+    id: 'people.actions.create-user',
+    defaultMessage: 'Create user',
+  },
+  importData: {
+    id: 'people.actions.import-data',
+    defaultMessage: 'Import data',
+  },
+  shareSignupLink: {
+    id: 'people.actions.share-signup-link',
+    defaultMessage: 'Share signup link',
+  },
+  notVetted: {
+    id: 'people.filters.not-vetted',
+    defaultMessage: 'Not yet vetted',
+  },
+  visible: {
+    id: 'people.filters.visible',
+    defaultMessage: 'Visible in search',
+  },
+});
+
 interface PeopleProps {
-  people: User[];
+  people: UserJSON[];
   org: Org;
 }
 
 export default function People({ people, org }: PeopleProps): JSX.Element {
-  const query = new Query({ orgs: [{ label: org.name, value: org.id }] });
-  const { data, isValidating } = useSWR<UserJSON[]>(query.endpoint);
-  const [users, setUsers] = React.useState<User[]>(
-    data ? data.map((u: UserJSON) => User.fromJSON(u)) : people
+  const msg = useMsg();
+  const [query, setQuery] = React.useState<Query>(
+    new Query({
+      orgs: [{ label: org.name, value: org.id }],
+    })
   );
+  const { data: users, mutate } = useSWR<UserJSON[]>(query.endpoint, {
+    initialData: people,
+  });
+
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [viewing, setViewing] = React.useState<User | undefined>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
   const [viewingCreateUserDialog, setViewingCreateUserDialog] = React.useState<
     boolean
   >(false);
 
-  React.useEffect(() => {
-    setUsers((prev: User[]) => {
-      if (data) return data.map((u: UserJSON) => User.fromJSON(u));
-      return prev;
-    });
-  }, [data]);
-
   return (
     <>
+      {viewing && (
+        <VerificationDialog
+          mutate={mutate}
+          user={viewing}
+          onClosed={() => setViewing(undefined)}
+        />
+      )}
       {viewingCreateUserDialog && (
         <CreateUserDialog onClosed={() => setViewingCreateUserDialog(false)} />
       )}
@@ -72,109 +99,114 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
         body={`${org.name}'s tutors, mentors and students`}
         actions={[
           {
-            label: 'Create user',
+            label: msg(msgs.createUser),
             onClick: () => setViewingCreateUserDialog(true),
           },
           {
-            label: 'Import data',
+            label: msg(msgs.importData),
             onClick: () =>
               IntercomAPI('showNewMessage', "I'd like to import data."),
           },
           {
-            label: 'Share sign-up link',
+            label: msg(msgs.shareSignupLink),
             onClick: () => setViewingSnackbar(true),
           },
         ]}
       />
-      <ul className={styles.results}>
-        {(isValidating || !!users.length) && (
-          <>
-            <div className={styles.filters}>
-              <div className={styles.left}>
-                <IconButton
-                  className={styles.filtersButton}
-                  icon='filter_list'
-                />
-                <ChipSet>
-                  <Chip label='Not yet vetted' checkmark selected />
-                  <Chip label='New users' checkmark />
-                  <Chip label='Mentors only' checkmark selected />
-                  <Chip label='Tutors only' checkmark />
-                </ChipSet>
-              </div>
-              <div className={styles.right}>
-                <TextField
-                  outlined
-                  placeholder='Search'
-                  className={styles.searchField}
-                />
-                <IconButton className={styles.menuButton} icon='more_vert' />
-              </div>
-            </div>
-            <DataTable className={styles.table}>
-              <DataTableContent>
-                <DataTableHead>
-                  <DataTableRow>
-                    <DataTableHeadCell hasFormControl>
-                      <Checkbox
-                        selected={selected.length >= users.length}
-                        indeterminate={
-                          selected.length > 0 && selected.length < users.length
-                        }
-                        onChange={(
-                          event: React.FormEvent<HTMLInputElement>
-                        ) => {
-                          if (event.currentTarget.checked) {
-                            setSelected(users.map((u) => u.id));
-                          } else {
-                            setSelected([]);
-                          }
-                        }}
-                      />
-                    </DataTableHeadCell>
-                    <DataTableHeadCell className={styles.sticky}>
-                      Name
-                    </DataTableHeadCell>
-                    <DataTableHeadCell>Bio</DataTableHeadCell>
-                    <DataTableHeadCell>Email</DataTableHeadCell>
-                    <DataTableHeadCell>Phone</DataTableHeadCell>
-                    <DataTableHeadCell>Tutoring Subjects</DataTableHeadCell>
-                    <DataTableHeadCell>Mentoring Subjects</DataTableHeadCell>
-                    <DataTableHeadCell>Featured</DataTableHeadCell>
-                  </DataTableRow>
-                </DataTableHead>
-                <DataTableBody>
-                  {!users.length &&
-                    Array(10)
-                      .fill(null)
-                      .map(() => <LoadingRow key={uuid()} />)}
-                  {!!users.length &&
-                    users.map((person: User) => (
-                      <PersonRow
-                        key={person.id}
-                        person={person}
-                        selected={selected.indexOf(person.id) >= 0}
-                        setSelected={() => {
-                          const idx = selected.indexOf(person.id);
-                          if (idx < 0) {
-                            setSelected([...selected, person.id]);
-                          } else {
-                            const copy: string[] = Array.from(selected);
-                            copy.splice(idx, 1);
-                            setSelected(copy);
-                          }
-                        }}
-                      />
-                    ))}
-                </DataTableBody>
-              </DataTableContent>
-            </DataTable>
-          </>
+      <div className={styles.wrapper}>
+        <div className={styles.filters}>
+          <div className={styles.left}>
+            <IconButton className={styles.filtersButton} icon='filter_list' />
+            <ChipSet>
+              <Chip
+                label={msg(msgs.notVetted)}
+                checkmark
+                onInteraction={() => {
+                  const tags: Option<Tag>[] = Array.from(query.tags);
+                  const idx = tags.findIndex(
+                    ({ value }) => value === 'not-vetted'
+                  );
+                  if (idx < 0) {
+                    tags.push({
+                      label: msg(msgs.notVetted),
+                      value: 'not-vetted',
+                    });
+                  } else {
+                    tags.splice(idx, 1);
+                  }
+                  setQuery(new Query({ ...query, tags }));
+                }}
+                selected={
+                  query.tags.findIndex(({ value }) => value === 'not-vetted') >=
+                  0
+                }
+              />
+              <Chip
+                label={msg(msgs.visible)}
+                checkmark
+                onInteraction={() =>
+                  setQuery(new Query({ ...query, visible: !query.visible }))
+                }
+                selected={query.visible}
+              />
+            </ChipSet>
+          </div>
+          <div className={styles.right}>
+            <TextField
+              outlined
+              placeholder='Search'
+              className={styles.searchField}
+            />
+            <IconButton className={styles.menuButton} icon='more_vert' />
+          </div>
+        </div>
+        {!!users && !!users.length && (
+          <DataTable className={styles.table}>
+            <DataTableContent>
+              <DataTableHead className={styles.header}>
+                <DataTableRow>
+                  <DataTableHeadCell />
+                  <DataTableHeadCell className={styles.sticky}>
+                    Name
+                  </DataTableHeadCell>
+                  <DataTableHeadCell>Bio</DataTableHeadCell>
+                  <DataTableHeadCell>Email</DataTableHeadCell>
+                  <DataTableHeadCell>Phone</DataTableHeadCell>
+                  <DataTableHeadCell>Tutoring Subjects</DataTableHeadCell>
+                  <DataTableHeadCell>Mentoring Subjects</DataTableHeadCell>
+                  <DataTableHeadCell>Visible</DataTableHeadCell>
+                </DataTableRow>
+              </DataTableHead>
+              <DataTableBody>
+                {users.map((user: UserJSON) => (
+                  <UserRow
+                    key={user.id}
+                    user={user}
+                    mutate={mutate}
+                    onClick={() => setViewing(User.fromJSON(user))}
+                    selected={selected.indexOf(user.id) >= 0}
+                    setSelected={() => {
+                      const idx = selected.indexOf(user.id);
+                      if (idx < 0) {
+                        setSelected([...selected, user.id]);
+                      } else {
+                        const copy: string[] = Array.from(selected);
+                        copy.splice(idx, 1);
+                        setSelected(copy);
+                      }
+                    }}
+                  />
+                ))}
+              </DataTableBody>
+            </DataTableContent>
+          </DataTable>
         )}
-        {!isValidating && !users.length && (
-          <Placeholder>NO PEOPLE TO SHOW</Placeholder>
+        {(!users || !users.length) && (
+          <div className={styles.empty}>
+            <Placeholder>NO PEOPLE TO SHOW</Placeholder>
+          </div>
         )}
-      </ul>
+      </div>
     </>
   );
 }

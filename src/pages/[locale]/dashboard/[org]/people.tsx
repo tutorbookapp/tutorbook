@@ -24,13 +24,11 @@ import {
   DocumentReference,
 } from '@tutorbook/api/helpers/firebase';
 import {
-  useIntl,
+  useMsg,
   getIntlProps,
   withIntl,
   IntlProps,
-  IntlShape,
   IntlHelper,
-  Msg,
 } from '@tutorbook/intl';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -110,7 +108,11 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        const query = new Query({ orgs: [{ label: org.name, value: org.id }] });
+        const query = new Query({
+          orgs: [{ label: org.name, value: org.id }],
+          visible: false,
+        });
+        console.log('[DEBUG] Query:', query.endpoint);
         const url = `http://${req.headers.host as string}${query.endpoint}`;
         const [error, response] = await to<
           AxiosResponse<UserJSON[]>,
@@ -155,8 +157,7 @@ function PeoplePage({
   org,
 }: PeoplePageProps): JSX.Element {
   const { query } = useRouter();
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const msg: IntlHelper = useMsg();
   if (errorCode || errorMessage)
     return <ErrorPage statusCode={errorCode} title={errorMessage} />;
   return (
