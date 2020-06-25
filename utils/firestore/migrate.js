@@ -118,6 +118,7 @@ const users = async () => {
           subjects: subjects,
           searches: updateSubjects(data.tutoring.searches, tutoringSubjects),
         },
+        visible: false,
       });
     })
   );
@@ -143,4 +144,4 @@ const appts = async () => {
   );
 };
 
-appts();
+users();
