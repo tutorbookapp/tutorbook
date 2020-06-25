@@ -1,5 +1,4 @@
 import React from 'react';
-import Utils from '@tutorbook/utils';
 import UserDialog from '@tutorbook/user-dialog';
 
 import { Checkbox } from '@rmwc/checkbox';
@@ -14,19 +13,21 @@ import {
 } from '@rmwc/data-table';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { useUser } from '@tutorbook/account';
-import { ApiError, Check, User, Verification } from '@tutorbook/model';
-import { defMsg, useIntl, IntlShape, IntlHelper, Msg } from '@tutorbook/intl';
+import {
+  ApiError,
+  Check,
+  User,
+  UserJSON,
+  Verification,
+} from '@tutorbook/model';
+import { defMsg, useMsg, IntlHelper, Msg } from '@tutorbook/intl';
 import { socials } from '@tutorbook/intl/msgs';
+import { responseInterface } from 'swr';
 
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import to from 'await-to-js';
 
 import styles from './verification-dialog.module.scss';
-
-interface VerificationDialogProps {
-  user: User;
-  onClosed: () => void;
-}
 
 const checks: Record<Check, Msg> = defMsg({
   dbs: {
@@ -48,52 +49,51 @@ const checks: Record<Check, Msg> = defMsg({
   ...socials,
 });
 
+interface VerificationDialogProps {
+  user: User;
+  onClosed: () => void;
+  mutate: responseInterface<UserJSON[], Error>['mutate'];
+}
+
 export default function VerificationDialog({
   user,
   onClosed,
+  mutate,
 }: VerificationDialogProps): JSX.Element {
   const { user: currentUser } = useUser();
-  const { id } = user;
 
   const [error, setError] = React.useState<string | undefined>();
   const [verifications, setVerifications] = React.useState<Verification[]>(
     user.verifications
   );
 
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (m: Msg, v: any) => intl.formatMessage(m, v);
+  const msg: IntlHelper = useMsg();
 
-  React.useEffect(() => {
-    void (async function update() {
-      const [err] = await to<
-        AxiosResponse<{ verifications: Verification[] }>,
-        AxiosError<ApiError>
-      >(
-        axios({
-          method: 'post',
-          url: '/api/verify',
-          data: { verifications, id },
-        })
+  const updateUser = async () => {
+    const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
+      axios.put<UserJSON>(`/api/users/${user.id}`, { ...user, verifications })
+    );
+    if (err && err.response) {
+      setError(
+        `An error occurred while updating ${user.name}: ${err.response.data.msg}`
       );
-      if (err && err.response) {
-        setError(
-          `An error occurred while creating your verification. ${Utils.period(
-            err.response.data.msg || err.message
-          )}`
-        );
-      } else if (err && err.request) {
-        setError(
-          'An error occurred while creating your verification. Please check your Internet connection and try again.'
-        );
-      } else if (err) {
-        setError(
-          `An error occurred while creating your verification. ${Utils.period(
-            err.message
-          )} Please check your Internet connection and try again.`
-        );
-      }
-    })();
-  }, [verifications, id]);
+    } else if (err && err.request) {
+      setError(
+        `An error occurred while updating ${user.name}. Please check your Internet connection and try again.`
+      );
+    } else if (err) {
+      setError(`An error occurred while updating ${user.name}: ${err.message}`);
+    } else {
+      const { data: updated } = res as AxiosResponse<UserJSON>;
+      /* eslint-disable-next-line @typescript-eslint/require-await */
+      await mutate(async (users: UserJSON[]) => {
+        if (!users) return users;
+        const idx: number = users.findIndex((u) => u.id === updated.id);
+        if (idx < 0) return users;
+        return [...users.slice(0, idx), updated, ...users.slice(idx + 1)];
+      }, false);
+    }
+  };
 
   const getIndex = (check: Check) =>
     verifications.findIndex((v) => v.checks.indexOf(check) >= 0);
@@ -198,6 +198,7 @@ export default function VerificationDialog({
                     onChange={(event: React.FormEvent<HTMLInputElement>) =>
                       setChecked(event, check as Check)
                     }
+                    onBlur={() => updateUser()}
                   />
                 </DataTableCell>
                 <DataTableCell>{msg(label)}</DataTableCell>
@@ -208,6 +209,7 @@ export default function VerificationDialog({
                       setValue(event, check as Check)
                     }
                     className={styles.textField}
+                    onBlur={() => updateUser()}
                   />
                 </DataTableCell>
               </DataTableRow>

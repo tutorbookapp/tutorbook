@@ -1,3 +1,4 @@
+@use '@tutorbook/styles/typography';
 @use '@tutorbook/user-dialog/user-dialog';
 
 .dialog :global(.mdc-dialog__surface) {
@@ -23,12 +24,27 @@
 .table {
   width: 100%;
 
-  .textField {
-    vertical-align: middle;
-    background-color: transparent;
-    margin: -0.75rem -1rem;
-    border-radius: 0;
-    display: block;
+  td {
+    padding-top: 0;
+    padding-bottom: 0;
+
+    .textField {
+      vertical-align: middle;
+      background-color: transparent;
+      margin: -0.75rem -1rem;
+      border-radius: 0;
+      display: block;
+      min-width: 150px;
+      height: 100%;
+
+      :global(.mdc-line-ripple::before) {
+        border-bottom-width: 0;
+      }
+
+      input {
+        @include typography.typography('body2');
+      }
+    }
   }
 }
 
