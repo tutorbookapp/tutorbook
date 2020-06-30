@@ -1,7 +1,7 @@
 import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
 import { Switch } from '@rmwc/switch';
-import { IconButton } from '@rmwc/icon-button';
+import { Checkbox } from '@rmwc/checkbox';
 import { User, UserJSON, ApiError } from 'lib/model';
 
 import React from 'react';
@@ -24,9 +24,6 @@ interface RowProps {
 function Row({ user, onBlur, onClick, onChange }: RowProps): JSX.Element {
   return (
     <DataTableRow>
-      <DataTableCell className={styles.edit}>
-        <IconButton icon='account_circle' onClick={onClick} />
-      </DataTableCell>
       <DataTableCell className={styles.sticky}>
         <TextField
           value={user.name}
@@ -70,6 +67,9 @@ function Row({ user, onBlur, onClick, onChange }: RowProps): JSX.Element {
           className={styles.switch}
           onChange={(evt) => onChange(evt, 'visible')}
         />
+      </DataTableCell>
+      <DataTableCell className={styles.edit}>
+        <Checkbox checked={!!user.verifications.length} onClick={onClick} />
       </DataTableCell>
     </DataTableRow>
   );

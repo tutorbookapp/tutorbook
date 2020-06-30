@@ -62,9 +62,7 @@ interface PeopleProps {
 export default function People({ people, org }: PeopleProps): JSX.Element {
   const msg = useMsg();
   const [query, setQuery] = React.useState<Query>(
-    new Query({
-      orgs: [{ label: org.name, value: org.id }],
-    })
+    new Query({ orgs: [{ label: org.name, value: org.id }] })
   );
   const { data: users, mutate, isValidating } = useSWR<UserJSON[]>(
     query.endpoint,
@@ -203,7 +201,6 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
             <DataTableContent>
               <DataTableHead className={styles.header}>
                 <DataTableRow>
-                  <DataTableHeadCell />
                   <DataTableHeadCell className={styles.sticky}>
                     Name
                   </DataTableHeadCell>
@@ -213,6 +210,7 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
                   <DataTableHeadCell>Tutoring Subjects</DataTableHeadCell>
                   <DataTableHeadCell>Mentoring Subjects</DataTableHeadCell>
                   <DataTableHeadCell>Visible</DataTableHeadCell>
+                  <DataTableHeadCell>Vetted</DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
