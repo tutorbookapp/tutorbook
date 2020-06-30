@@ -19,7 +19,12 @@ interface RowProps {
   onChange: (event: React.FormEvent<HTMLInputElement>, field: string) => void;
 }
 
-function Row({ user, onBlur, onClick, onChange }: RowProps): JSX.Element {
+const Row = React.memo(function Row({
+  user,
+  onBlur,
+  onClick,
+  onChange,
+}: RowProps): JSX.Element {
   return (
     <DataTableRow>
       <DataTableCell hasFormControl>
@@ -70,9 +75,9 @@ function Row({ user, onBlur, onClick, onChange }: RowProps): JSX.Element {
       <DataTableCell>{Utils.join(user.mentoring.subjects)}</DataTableCell>
     </DataTableRow>
   );
-}
+});
 
-export function LoadingRow(): JSX.Element {
+export const LoadingRow = React.memo(function LoadingRow(): JSX.Element {
   const [user, setUser] = React.useState<User>(new User());
   const [selected, setSelected] = React.useState<boolean>(false);
 
@@ -88,7 +93,7 @@ export function LoadingRow(): JSX.Element {
       }}
     />
   );
-}
+});
 
 interface UserRowProps {
   user: UserJSON;
@@ -106,7 +111,7 @@ interface UserRowProps {
  * to update it's data (i.e. perform a locale mutation and re-fetch) once the
  * change is enacted.
  */
-export default function UserRow({
+export default React.memo(function UserRow({
   user,
   onChange,
   onClick,
@@ -147,4 +152,4 @@ export default function UserRow({
       }}
     />
   );
-}
+});

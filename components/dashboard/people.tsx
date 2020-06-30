@@ -80,10 +80,7 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
   React.useEffect(() => {
     setQuery(
       (prev: Query) =>
-        new Query({
-          ...prev,
-          orgs: [{ label: org.name, value: org.id }],
-        })
+        new Query({ ...prev, orgs: [{ label: org.name, value: org.id }] })
     );
   }, [org]);
   React.useEffect(() => {
