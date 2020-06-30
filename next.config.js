@@ -3,7 +3,7 @@ const withImages = require('next-images');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
-const { locales } = require('./src/intl/config.json');
+const { locales } = require('./lib/intl/config.json');
 
 // prettier-ignore
 module.exports = withBundleAnalyzer(withImages({
