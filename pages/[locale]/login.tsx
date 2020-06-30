@@ -1,11 +1,11 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
-import { LinkHeader } from '@tutorbook/header';
+import { getIntlProps, getIntlPaths, withIntl } from 'lib/intl';
+import { LinkHeader } from 'components/header';
 
 import React from 'react';
-import Login from '@tutorbook/login';
-import Footer from '@tutorbook/footer';
-import Intercom from '@tutorbook/react-intercom';
+import Login from 'components/login';
+import Footer from 'components/footer';
+import Intercom from 'components/react-intercom';
 
 function LoginPage(): JSX.Element {
   return (

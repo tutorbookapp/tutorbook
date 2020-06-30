@@ -1,7 +1,7 @@
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import { Option, Aspect, GradeAlias } from '@tutorbook/model';
-import Select, { SelectProps } from '@tutorbook/select';
+import { Option, Aspect, GradeAlias } from 'lib/model';
+import Select, { SelectProps } from 'components/select';
 
 import React from 'react';
 

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from '@tutorbook/model';
-import listOrgs, { ListOrgsRes } from '@tutorbook/api/list-orgs';
+import { ApiError } from 'lib/model';
+import listOrgs, { ListOrgsRes } from 'lib/api/list-orgs';
 
 /**
  * GET - Lists the orgs that the given user is a member of.

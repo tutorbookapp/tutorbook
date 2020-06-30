@@ -1,14 +1,14 @@
 import React from 'react';
 /* import NextLink from 'next/link'; */
-import { socials } from '@tutorbook/intl/msgs';
+import { socials } from 'lib/intl/msgs';
 import {
   useIntl,
   IntlShape,
   defineMessages,
   MessageDescriptor,
 } from 'react-intl';
-/* import config from '@tutorbook/intl/config.json'; */
-import { Link } from '@tutorbook/intl';
+/* import config from 'intl/config.json'; */
+import { Link } from 'lib/intl';
 
 import styles from './footer.module.scss';
 

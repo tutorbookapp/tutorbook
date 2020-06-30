@@ -1,18 +1,18 @@
 import React from 'react';
 import Router from 'next/router';
-import Avatar from '@tutorbook/avatar';
+import Avatar from 'components/avatar';
 
-import firebase from '@tutorbook/firebase';
+import firebase from 'lib/firebase';
 import 'firebase/auth';
 
 import { mutate } from 'swr';
-import { useIntl } from '@tutorbook/intl';
+import { useIntl } from 'lib/intl';
 
-import { User } from '@tutorbook/model';
+import { User } from 'lib/model';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
-import { Link } from '@tutorbook/intl';
-import { Account } from '@tutorbook/model';
+import { Link } from 'lib/intl';
+import { Account } from 'lib/model';
 
 import styles from './pop-over.module.scss';
 

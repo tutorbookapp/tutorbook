@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from '@tutorbook/model';
-import createAppt, { CreateApptRes } from '@tutorbook/api/create-appt';
+import { ApiError } from 'lib/model';
+import createAppt, { CreateApptRes } from 'lib/api/create-appt';
 
 /**
  * POST - Creates a new appointment.

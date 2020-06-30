@@ -1,12 +1,12 @@
-import { useIntl } from '@tutorbook/intl';
+import { useIntl } from 'lib/intl';
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import Select, { SelectProps } from '@tutorbook/select';
-import { Option } from '@tutorbook/model';
+import Select, { SelectProps } from 'components/select';
+import { Option } from 'lib/model';
 
 import React from 'react';
 
-import * as config from '@tutorbook/intl/config.json';
+import * as config from 'lib/intl/config.json';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;

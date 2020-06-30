@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use 'sass:color';
-@use '@tutorbook/styles/config';
-@use '@tutorbook/styles/typography';
+@use 'styles/config';
+@use 'styles/typography';
 
 // Update: September 2016, after a lot of grumbling, decided to simplify this.
 // Cons: The color accuracy has gone down and mostly works on very dark or very

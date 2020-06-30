@@ -12,13 +12,13 @@ import { Snackbar } from '@rmwc/snackbar';
 import { TextField } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
-import { Option, Query, Org, User, UserJSON, Tag } from '@tutorbook/model';
-import { IntercomAPI } from '@tutorbook/react-intercom';
-import { defMsg, useMsg } from '@tutorbook/intl';
+import { Option, Query, Org, User, UserJSON, Tag } from 'lib/model';
+import { IntercomAPI } from 'components/react-intercom';
+import { defMsg, useMsg } from 'lib/intl';
 
 import React from 'react';
-import CreateUserDialog from '@tutorbook/create-user-dialog';
-import VerificationDialog from '@tutorbook/verification-dialog';
+import CreateUserDialog from 'components/create-user-dialog';
+import VerificationDialog from 'components/verification-dialog';
 
 import Title from './title';
 import UserRow from './user-row';

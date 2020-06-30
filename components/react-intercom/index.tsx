@@ -3,8 +3,8 @@
 import React from 'react';
 
 import { IntlShape, useIntl } from 'react-intl';
-import { UserContext } from '@tutorbook/account';
-import { User } from '@tutorbook/model';
+import { UserContext } from 'lib/account';
+import { User } from 'lib/model';
 
 const appID = 'faz7lcyb';
 const canUseDOM = !!(
@@ -14,7 +14,7 @@ const canUseDOM = !!(
 );
 
 /**
- * Duplicate definition from the `@tutorbook/model` package. These are all the
+ * Duplicate definition from the `lib/model` package. These are all the
  * valid datatypes for custom Intercom user attributes.
  * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
  */

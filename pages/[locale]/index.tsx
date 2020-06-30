@@ -1,15 +1,15 @@
 import React from 'react';
 
-import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
+import { getIntlProps, getIntlPaths, withIntl } from 'lib/intl';
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { Aspect } from '@tutorbook/model';
-import { AspectHeader } from '@tutorbook/header';
+import { Aspect } from 'lib/model';
+import { AspectHeader } from 'components/header';
 
-import Banner from '@tutorbook/banner';
-import Intercom from '@tutorbook/react-intercom';
-import Hero from '@tutorbook/hero';
-import About from '@tutorbook/about';
-import Footer from '@tutorbook/footer';
+import Banner from 'components/banner';
+import Intercom from 'components/react-intercom';
+import Hero from 'components/hero';
+import About from 'components/about';
+import Footer from 'components/footer';
 
 function IndexPage(): JSX.Element {
   const [aspect, setAspect] = React.useState<Aspect>('mentoring');

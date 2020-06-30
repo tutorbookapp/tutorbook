@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { locales, defaultLocale } from '@tutorbook/intl';
+import { locales, defaultLocale } from 'lib/intl';
 import parser from 'accept-language-parser';
 
 /**

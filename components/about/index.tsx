@@ -1,7 +1,7 @@
-import { useIntl, IntlShape, Msg, IntlHelper, Message } from '@tutorbook/intl';
+import { useIntl, IntlShape, Msg, IntlHelper, Message } from 'lib/intl';
 
 import React from 'react';
-import SpotlightMsg from '@tutorbook/spotlight-msg';
+import SpotlightMsg from 'components/spotlight-msg';
 
 import ParentApproves from './gifs/parent-approves.gif';
 import PupilSignsUp from './gifs/pupil-signs-up.gif';

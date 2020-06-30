@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Link } from '@tutorbook/intl';
+import { Link } from 'lib/intl';
 
 import styles from './title.module.scss';
 

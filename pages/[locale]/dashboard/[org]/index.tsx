@@ -1,13 +1,13 @@
 import React from 'react';
 import ErrorPage from 'next/error';
-import Intercom from '@tutorbook/react-intercom';
-import Footer from '@tutorbook/footer';
+import Intercom from 'components/react-intercom';
+import Footer from 'components/footer';
 
 import { useRouter } from 'next/router';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Overview } from '@tutorbook/dashboard';
-import { TabHeader } from '@tutorbook/header';
-import { Org, OrgJSON } from '@tutorbook/model';
+import { Overview } from 'components/dashboard';
+import { TabHeader } from 'components/header';
+import { Org, OrgJSON } from 'lib/model';
 import {
   db,
   auth,
@@ -15,7 +15,7 @@ import {
   DecodedIdToken,
   DocumentSnapshot,
   DocumentReference,
-} from '@tutorbook/api/helpers/firebase';
+} from 'lib/api/helpers/firebase';
 import {
   useIntl,
   getIntlProps,
@@ -24,10 +24,10 @@ import {
   IntlShape,
   IntlHelper,
   Msg,
-} from '@tutorbook/intl';
+} from 'lib/intl';
 
 import to from 'await-to-js';
-import msgs from '@tutorbook/dashboard/msgs';
+import msgs from 'components/dashboard/msgs';
 
 interface DashboardPageProps {
   org?: OrgJSON;

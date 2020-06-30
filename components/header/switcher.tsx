@@ -1,9 +1,9 @@
 import { Icon } from '@rmwc/icon';
 import { useRouter } from 'next/router';
-import { useUser } from '@tutorbook/account';
+import { useUser } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
-import { Org, OrgJSON } from '@tutorbook/model';
-import { IntercomAPI } from '@tutorbook/react-intercom';
+import { Org, OrgJSON } from 'lib/model';
+import { IntercomAPI } from 'components/react-intercom';
 
 import React from 'react';
 

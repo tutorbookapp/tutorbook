@@ -1,4 +1,4 @@
-import { defMsg } from '@tutorbook/intl';
+import { defMsg } from 'lib/intl';
 
 export default defMsg({
   stepOne: {

@@ -2,7 +2,7 @@ import { Typography } from '@rmwc/typography';
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
-import { Option, Callback } from '@tutorbook/model';
+import { Option, Callback } from 'lib/model';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';

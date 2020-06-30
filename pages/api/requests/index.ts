@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from '@tutorbook/model';
-import createRequest, { CreateRequestRes } from '@tutorbook/api/create-request';
+import { ApiError } from 'lib/model';
+import createRequest, { CreateRequestRes } from 'lib/api/create-request';
 
 /**
  * POST - Creates a new request.

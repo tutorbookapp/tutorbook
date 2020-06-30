@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { useIntl, defMsg, Msg, IntlShape, IntlHelper } from '@tutorbook/intl';
-import { Callback, Option, Timeslot, User, Query } from '@tutorbook/model';
+import { useIntl, defMsg, Msg, IntlShape, IntlHelper } from 'lib/intl';
+import { Callback, Option, Timeslot, User, Query } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
-import Carousel from '@tutorbook/carousel';
-import RequestDialog from '@tutorbook/request-dialog';
-import Utils from '@tutorbook/utils';
+import Carousel from 'components/carousel';
+import RequestDialog from 'components/request-dialog';
+import Utils from 'lib/utils';
 import Result from './result';
 import Form from './form';
 

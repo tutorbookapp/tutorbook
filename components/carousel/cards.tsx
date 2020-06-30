@@ -1,8 +1,8 @@
 import { Ripple } from '@rmwc/ripple';
-import { Callback, User } from '@tutorbook/model';
+import { Callback, User } from 'lib/model';
 
 import React from 'react';
-import Avatar from '@tutorbook/avatar';
+import Avatar from 'components/avatar';
 
 import styles from './cards.module.scss';
 

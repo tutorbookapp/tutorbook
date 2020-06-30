@@ -1,5 +1,5 @@
-@use '@tutorbook/styles/typography';
-@use '@tutorbook/user-dialog/user-dialog';
+@use 'styles/typography';
+@use 'components/user-dialog/user-dialog';
 
 .dialog :global(.mdc-dialog__surface) {
   max-width: 900px;

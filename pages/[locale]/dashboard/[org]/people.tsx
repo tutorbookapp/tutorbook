@@ -1,20 +1,13 @@
 import React from 'react';
 import ErrorPage from 'next/error';
-import Intercom from '@tutorbook/react-intercom';
-import Footer from '@tutorbook/footer';
+import Intercom from 'components/react-intercom';
+import Footer from 'components/footer';
 
 import { useRouter } from 'next/router';
-import { People } from '@tutorbook/dashboard';
-import { TabHeader } from '@tutorbook/header';
+import { People } from 'components/dashboard';
+import { TabHeader } from 'components/header';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import {
-  Org,
-  OrgJSON,
-  User,
-  UserJSON,
-  Query,
-  ApiError,
-} from '@tutorbook/model';
+import { Org, OrgJSON, User, UserJSON, Query, ApiError } from 'lib/model';
 import {
   db,
   auth,
@@ -22,19 +15,19 @@ import {
   DecodedIdToken,
   DocumentSnapshot,
   DocumentReference,
-} from '@tutorbook/api/helpers/firebase';
+} from 'lib/api/helpers/firebase';
 import {
   useMsg,
   getIntlProps,
   withIntl,
   IntlProps,
   IntlHelper,
-} from '@tutorbook/intl';
+} from 'lib/intl';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import to from 'await-to-js';
-import msgs from '@tutorbook/dashboard/msgs';
+import msgs from 'components/dashboard/msgs';
 
 interface PeoplePageProps {
   errorCode?: number;

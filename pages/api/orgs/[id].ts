@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from '@tutorbook/model';
-import fetchOrg, { FetchOrgRes } from '@tutorbook/api/fetch-org';
+import { ApiError } from 'lib/model';
+import fetchOrg, { FetchOrgRes } from 'lib/api/fetch-org';
 
 /**
  * GET - Fetches the org's profile document.

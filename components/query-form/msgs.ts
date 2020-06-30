@@ -1,4 +1,4 @@
-import { Msg, defMsg } from '@tutorbook/intl';
+import { Msg, defMsg } from 'lib/intl';
 
 export default defMsg({
   langs: {

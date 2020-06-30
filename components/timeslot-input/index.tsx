@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from '@rmwc/select';
-import { Availability, Timeslot } from '@tutorbook/model';
+import { Availability, Timeslot } from 'lib/model';
 
 /**
  * The `TimeslotInput` was designed to be as fluid as possible (which is why

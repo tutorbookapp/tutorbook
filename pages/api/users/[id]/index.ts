@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from '@tutorbook/model';
-import fetchUser, { FetchUserRes } from '@tutorbook/api/fetch-user';
-import updateUser, { UpdateUserRes } from '@tutorbook/api/update-user';
+import { ApiError } from 'lib/model';
+import fetchUser, { FetchUserRes } from 'lib/api/fetch-user';
+import updateUser, { UpdateUserRes } from 'lib/api/update-user';
 
 /**
  * GET - Fetches the user's profile document.

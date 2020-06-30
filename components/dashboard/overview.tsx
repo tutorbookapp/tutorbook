@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { defMsg, useMsg, IntlHelper } from '@tutorbook/intl';
-import { Account } from '@tutorbook/model';
+import { defMsg, useMsg, IntlHelper } from 'lib/intl';
+import { Account } from 'lib/model';
 
 import Title from './title';
 import Placeholder from './placeholder';

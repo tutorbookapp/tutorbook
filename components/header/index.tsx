@@ -1,17 +1,10 @@
-import {
-  useIntl,
-  defMsg,
-  Link,
-  IntlShape,
-  IntlHelper,
-  Msg,
-} from '@tutorbook/intl';
-import { Query, Aspect, Callback } from '@tutorbook/model';
-import { useUser } from '@tutorbook/account';
+import { useIntl, defMsg, Link, IntlShape, IntlHelper, Msg } from 'lib/intl';
+import { Query, Aspect, Callback } from 'lib/model';
+import { useUser } from 'lib/account';
 
 import React from 'react';
-import Avatar from '@tutorbook/avatar';
-import FilterForm from '@tutorbook/filter-form';
+import Avatar from 'components/avatar';
+import FilterForm from 'components/filter-form';
 import PopOver from './pop-over';
 import Switcher from './switcher';
 import Tabs, { TabsProps } from './tabs';

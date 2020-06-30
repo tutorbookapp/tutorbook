@@ -13,8 +13,8 @@ import {
   DataTableCell,
 } from '@rmwc/data-table';
 import { FormattedMessage, FormattedDate, FormattedTime } from 'react-intl';
-import { Callback, DayAlias, Timeslot, Availability } from '@tutorbook/model';
-import { TimeUtils } from '@tutorbook/utils';
+import { Callback, DayAlias, Timeslot, Availability } from 'lib/model';
+import { TimeUtils } from 'lib/utils';
 
 import { v4 as uuid } from 'uuid';
 

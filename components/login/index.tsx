@@ -1,17 +1,10 @@
 import React from 'react';
 import Router from 'next/router';
-import Button from '@tutorbook/button';
+import Button from 'components/button';
 
-import {
-  defMsg,
-  useIntl,
-  Msg,
-  Link,
-  IntlShape,
-  IntlHelper,
-} from '@tutorbook/intl';
-import { useUser } from '@tutorbook/account';
-import { signupWithGoogle } from '@tutorbook/account/signup';
+import { defMsg, useIntl, Msg, Link, IntlShape, IntlHelper } from 'lib/intl';
+import { useUser } from 'lib/account';
+import { signupWithGoogle } from 'lib/account/signup';
 import { TextFieldHelperText } from '@rmwc/textfield';
 
 import to from 'await-to-js';

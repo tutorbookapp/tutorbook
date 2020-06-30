@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use '@material/elevation';
-@use '@tutorbook/styles/config';
-@use '@tutorbook/styles/typography';
+@use 'styles/config';
+@use 'styles/typography';
 
 $triangle-height: 8px;
 $width: 225px;

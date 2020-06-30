@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use '@material/card/_index.scss' as card;
-@use '@tutorbook/styles/config';
+@use 'styles/config';
 @use '@material/elevation';
 
 .wrapper {

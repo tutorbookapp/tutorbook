@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Aspect, User, UserJSON } from '@tutorbook/model';
+import { Aspect, User, UserJSON } from 'lib/model';
 
 import useSWR from 'swr';
 import { v4 as uuid } from 'uuid';

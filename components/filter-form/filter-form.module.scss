@@ -1,7 +1,7 @@
 @use 'sass:map';
-@use '@tutorbook/styles/query-form';
-@use '@tutorbook/styles/typography';
-@use '@tutorbook/styles/config';
+@use 'styles/query-form';
+@use 'styles/typography';
+@use 'styles/config';
 @use '@material/elevation';
 
 .search {

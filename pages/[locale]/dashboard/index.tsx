@@ -10,15 +10,15 @@ import {
   IntlShape,
   IntlHelper,
   Msg,
-} from '@tutorbook/intl';
-import { useUser } from '@tutorbook/account';
-import { Overview } from '@tutorbook/dashboard';
-import { TabHeader } from '@tutorbook/header';
+} from 'lib/intl';
+import { useUser } from 'lib/account';
+import { Overview } from 'components/dashboard';
+import { TabHeader } from 'components/header';
 
-import Intercom from '@tutorbook/react-intercom';
-import Footer from '@tutorbook/footer';
+import Intercom from 'components/react-intercom';
+import Footer from 'components/footer';
 
-import tabs from '@tutorbook/dashboard/msgs';
+import tabs from 'components/dashboard/msgs';
 
 /**
  * Ideally, we'd use Next.js's automatic static optimization to pre-render a

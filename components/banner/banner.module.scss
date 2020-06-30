@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use 'sass:color';
-@use '@tutorbook/styles/config';
-@use '@tutorbook/styles/typography';
+@use 'styles/config';
+@use 'styles/typography';
 
 $message-width: 800px;
 

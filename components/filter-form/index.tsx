@@ -1,8 +1,8 @@
-import { Option, Query, Callback } from '@tutorbook/model';
+import { Option, Query, Callback } from 'lib/model';
 import { Ripple } from '@rmwc/ripple';
 
 import React from 'react';
-import QueryForm from '@tutorbook/query-form';
+import QueryForm from 'components/query-form';
 
 import styles from './filter-form.module.scss';
 

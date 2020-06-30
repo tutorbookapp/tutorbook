@@ -1,11 +1,11 @@
-import { useIntl, IntlHelper, IntlShape, Msg } from '@tutorbook/intl';
-import { Query, QueryInterface, Callback } from '@tutorbook/model';
+import { useIntl, IntlHelper, IntlShape, Msg } from 'lib/intl';
+import { Query, QueryInterface, Callback } from 'lib/model';
 
 import React from 'react';
-import LangSelect from '@tutorbook/lang-select';
-import CheckSelect from '@tutorbook/check-select';
-import ScheduleInput from '@tutorbook/schedule-input';
-import SubjectSelect from '@tutorbook/subject-select';
+import LangSelect from 'components/lang-select';
+import CheckSelect from 'components/check-select';
+import ScheduleInput from 'components/schedule-input';
+import SubjectSelect from 'components/subject-select';
 
 import msgs from './msgs';
 import styles from './query-form.module.scss';

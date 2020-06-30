@@ -1,7 +1,7 @@
 import React from 'react';
-import FilterForm from '@tutorbook/filter-form';
+import FilterForm from 'components/filter-form';
 
-import { Callback, Query } from '@tutorbook/model';
+import { Callback, Query } from 'lib/model';
 
 import styles from './form.module.scss';
 

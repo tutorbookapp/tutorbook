@@ -1,4 +1,4 @@
-@use '@tutorbook/user-dialog/user-dialog';
+@use 'components/user-dialog/user-dialog';
 
 .header {
   @include user-dialog.header;

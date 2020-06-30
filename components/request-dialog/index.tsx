@@ -1,11 +1,11 @@
 import React from 'react';
-import Utils from '@tutorbook/utils';
-import Button from '@tutorbook/button';
-import TimeslotInput from '@tutorbook/timeslot-input';
-import SubjectSelect from '@tutorbook/subject-select';
-import UserDialog from '@tutorbook/user-dialog';
+import Utils from 'lib/utils';
+import Button from 'components/button';
+import TimeslotInput from 'components/timeslot-input';
+import SubjectSelect from 'components/subject-select';
+import UserDialog from 'components/user-dialog';
 
-import firebase from '@tutorbook/firebase';
+import firebase from 'lib/firebase';
 import {
   ApiError,
   User,
@@ -15,18 +15,12 @@ import {
   ApptJSON,
   Aspect,
   Option,
-} from '@tutorbook/model';
-import { signupWithGoogle } from '@tutorbook/account/signup';
-import { UserContextValue, UserContext } from '@tutorbook/account';
+} from 'lib/model';
+import { signupWithGoogle } from 'lib/account/signup';
+import { UserContextValue, UserContext } from 'lib/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import {
-  injectIntl,
-  defMsg,
-  Msg,
-  IntlShape,
-  IntlHelper,
-} from '@tutorbook/intl';
+import { injectIntl, defMsg, Msg, IntlShape, IntlHelper } from 'lib/intl';
 
 import to from 'await-to-js';
 

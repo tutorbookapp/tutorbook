@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Checkmark from '@tutorbook/loader/checkmark';
+import Checkmark from 'components/loader/checkmark';
 
 import styles from './action-text.module.scss';
 

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from '@tutorbook/model';
-import listUsers, { ListUsersRes } from '@tutorbook/api/list-users';
-import createUser, { CreateUserRes } from '@tutorbook/api/create-user';
+import { ApiError } from 'lib/model';
+import listUsers, { ListUsersRes } from 'lib/api/list-users';
+import createUser, { CreateUserRes } from 'lib/api/create-user';
 
 /**
  * GET - Lists all of Tutorbook's users (applying the given filters).

@@ -1,6 +1,6 @@
 @use 'sass:map';
-@use '@tutorbook/styles/config';
-@use '@tutorbook/styles/typography';
+@use 'styles/config';
+@use 'styles/typography';
 
 .empty {
   @include typography.typography('body1');

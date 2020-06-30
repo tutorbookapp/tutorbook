@@ -1,10 +1,10 @@
-import { useIntl, defMsg, IntlHelper, IntlShape, Msg } from '@tutorbook/intl';
-import { Aspect, Query, Availability } from '@tutorbook/model';
+import { useIntl, defMsg, IntlHelper, IntlShape, Msg } from 'lib/intl';
+import { Aspect, Query, Availability } from 'lib/model';
 
 import React from 'react';
 import Router from 'next/router';
-import Button from '@tutorbook/button';
-import QueryForm from '@tutorbook/query-form';
+import Button from 'components/button';
+import QueryForm from 'components/query-form';
 
 import styles from './search-form.module.scss';
 

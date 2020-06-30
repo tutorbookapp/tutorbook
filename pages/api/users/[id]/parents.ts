@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from '@tutorbook/model';
-import createParent, { CreateParentRes } from '@tutorbook/api/create-parent';
+import { ApiError } from 'lib/model';
+import createParent, { CreateParentRes } from 'lib/api/create-parent';
 
 /**
  * POST - Creates a new parent profile and adds it to the user's `parents`.

@@ -3,21 +3,15 @@ import { v4 as uuid } from 'uuid';
 
 import React from 'react';
 import Router from 'next/router';
-import Intercom from '@tutorbook/react-intercom';
-import Footer from '@tutorbook/footer';
-import Search from '@tutorbook/search';
+import Intercom from 'components/react-intercom';
+import Footer from 'components/footer';
+import Search from 'components/search';
 
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import { QueryHeader } from '@tutorbook/header';
-import { useIntl, getIntlProps, withIntl } from '@tutorbook/intl';
-import {
-  User,
-  UserJSON,
-  Query,
-  QueryJSON,
-  Availability,
-} from '@tutorbook/model';
+import { QueryHeader } from 'components/header';
+import { useIntl, getIntlProps, withIntl } from 'lib/intl';
+import { User, UserJSON, Query, QueryJSON, Availability } from 'lib/model';
 
 type App = admin.app.App;
 type DocumentReference = admin.firestore.DocumentReference;

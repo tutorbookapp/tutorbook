@@ -1,4 +1,4 @@
-@use '@tutorbook/styles/query-form';
+@use 'styles/query-form';
 
 .form {
   @include query-form.form;

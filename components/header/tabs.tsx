@@ -1,4 +1,4 @@
-import { Link } from '@tutorbook/intl';
+import { Link } from 'lib/intl';
 
 import React from 'react';
 

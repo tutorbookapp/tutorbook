@@ -6,13 +6,13 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import to from 'await-to-js';
 
-import Utils from '@tutorbook/utils';
-import Intercom from '@tutorbook/react-intercom';
-import ActionText from '@tutorbook/action-text';
-import Footer from '@tutorbook/footer';
+import Utils from 'lib/utils';
+import Intercom from 'components/react-intercom';
+import ActionText from 'components/action-text';
+import Footer from 'components/footer';
 
-import { LinkHeader } from '@tutorbook/header';
-import { ApiError, Appt, ApptJSON } from '@tutorbook/model';
+import { LinkHeader } from 'components/header';
+import { ApiError, Appt, ApptJSON } from 'lib/model';
 import {
   getIntlProps,
   getIntlPaths,
@@ -22,7 +22,7 @@ import {
   Msg,
   IntlShape,
   IntlHelper,
-} from '@tutorbook/intl';
+} from 'lib/intl';
 
 const msgs: Record<string, Msg> = defMsg({
   approved: {

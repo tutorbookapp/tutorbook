@@ -2,10 +2,10 @@ import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
 import { Switch } from '@rmwc/switch';
 import { IconButton } from '@rmwc/icon-button';
-import { User, UserJSON, ApiError } from '@tutorbook/model';
+import { User, UserJSON, ApiError } from 'lib/model';
 
 import React from 'react';
-import Utils from '@tutorbook/utils';
+import Utils from 'lib/utils';
 
 import to from 'await-to-js';
 import { responseInterface } from 'swr';

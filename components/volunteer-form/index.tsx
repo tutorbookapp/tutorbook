@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { MessageDescriptor, IntlShape, injectIntl } from 'react-intl';
-import { UserContextValue, UserContext } from '@tutorbook/account';
-import { signup } from '@tutorbook/account/signup';
+import { UserContextValue, UserContext } from 'lib/account';
+import { signup } from 'lib/account/signup';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
 import { Card } from '@rmwc/card';
@@ -14,17 +14,17 @@ import {
   Aspect,
   SocialInterface,
   Option,
-} from '@tutorbook/model';
+} from 'lib/model';
 
-import Title from '@tutorbook/title';
-import PhotoInput from '@tutorbook/photo-input';
-import ScheduleInput from '@tutorbook/schedule-input';
-import SubjectSelect from '@tutorbook/subject-select';
-import LangSelect from '@tutorbook/lang-select';
-import Loader from '@tutorbook/loader';
-import Button from '@tutorbook/button';
+import Title from 'components/title';
+import PhotoInput from 'components/photo-input';
+import ScheduleInput from 'components/schedule-input';
+import SubjectSelect from 'components/subject-select';
+import LangSelect from 'components/lang-select';
+import Loader from 'components/loader';
+import Button from 'components/button';
 
-import firebase from '@tutorbook/firebase';
+import firebase from 'lib/firebase';
 import 'firebase/storage';
 
 import msgs from './msgs';

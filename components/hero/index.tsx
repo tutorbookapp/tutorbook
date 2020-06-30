@@ -1,11 +1,11 @@
-import { useIntl, defMsg, Msg, IntlShape } from '@tutorbook/intl';
-import { User, Aspect } from '@tutorbook/model';
+import { useIntl, defMsg, Msg, IntlShape } from 'lib/intl';
+import { User, Aspect } from 'lib/model';
 import { Card } from '@rmwc/card';
 
 import React from 'react';
-import RequestDialog from '@tutorbook/request-dialog';
-import Carousel from '@tutorbook/carousel';
-import Title from '@tutorbook/title';
+import RequestDialog from 'components/request-dialog';
+import Carousel from 'components/carousel';
+import Title from 'components/title';
 import SearchForm from './search-form';
 
 import styles from './hero.module.scss';

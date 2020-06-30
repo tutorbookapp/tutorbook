@@ -1,9 +1,9 @@
 import { Dialog } from '@rmwc/dialog';
-import { User } from '@tutorbook/model';
+import { User } from 'lib/model';
 
 import React from 'react';
-import Avatar from '@tutorbook/avatar';
-import Loader from '@tutorbook/loader';
+import Avatar from 'components/avatar';
+import Loader from 'components/loader';
 
 import styles from './user-dialog.module.scss';
 

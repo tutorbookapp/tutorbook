@@ -1,19 +1,19 @@
 import { AppProps } from 'next/app';
 import { RMWCProvider } from '@rmwc/provider';
 import { SWRConfig } from 'swr';
-import { ApiError } from '@tutorbook/model';
-import { UserProvider } from '@tutorbook/account';
+import { ApiError } from 'lib/model';
+import { UserProvider } from 'lib/account';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import firebase from '@tutorbook/firebase';
+import firebase from 'lib/firebase';
 import to from 'await-to-js';
 
 import React from 'react';
 import Router from 'next/router';
 import NProgress from 'nprogress';
-import CovidHead from '@tutorbook/doc-head';
+import CovidHead from 'components/doc-head';
 
-import '@tutorbook/styles/global.scss';
+import 'styles/global.scss';
 
 NProgress.configure({ trickleSpeed: 500, minimum: 0.2, showSpinner: false });
 

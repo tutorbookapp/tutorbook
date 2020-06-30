@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { getIntlProps, getIntlPaths, withIntl } from '@tutorbook/intl';
-import { Aspect } from '@tutorbook/model';
-import { AspectHeader } from '@tutorbook/header';
+import { getIntlProps, getIntlPaths, withIntl } from 'lib/intl';
+import { Aspect } from 'lib/model';
+import { AspectHeader } from 'components/header';
 
-import Intercom from '@tutorbook/react-intercom';
-import Footer from '@tutorbook/footer';
-import VolunteerForm from '@tutorbook/volunteer-form';
+import Intercom from 'components/react-intercom';
+import Footer from 'components/footer';
+import VolunteerForm from 'components/volunteer-form';
 
 function SignupPage(): JSX.Element {
   const [aspect, setAspect] = React.useState<Aspect>('mentoring');

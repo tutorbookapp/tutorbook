@@ -1,5 +1,5 @@
 import React from 'react';
-import UserDialog from '@tutorbook/user-dialog';
+import UserDialog from 'components/user-dialog';
 
 import { Checkbox } from '@rmwc/checkbox';
 import {
@@ -12,16 +12,10 @@ import {
   DataTableCell,
 } from '@rmwc/data-table';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
-import { useUser } from '@tutorbook/account';
-import {
-  ApiError,
-  Check,
-  User,
-  UserJSON,
-  Verification,
-} from '@tutorbook/model';
-import { defMsg, useMsg, IntlHelper, Msg } from '@tutorbook/intl';
-import { socials } from '@tutorbook/intl/msgs';
+import { useUser } from 'lib/account';
+import { ApiError, Check, User, UserJSON, Verification } from 'lib/model';
+import { defMsg, useMsg, IntlHelper, Msg } from 'lib/intl';
+import { socials } from 'lib/intl/msgs';
 import { responseInterface } from 'swr';
 
 import axios, { AxiosResponse, AxiosError } from 'axios';
