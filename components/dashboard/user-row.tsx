@@ -1,14 +1,12 @@
 import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
-import { Switch } from '@rmwc/switch';
 import { Checkbox } from '@rmwc/checkbox';
-import { User, UserJSON, ApiError } from 'lib/model';
+import { Callback, User, UserJSON, ApiError } from 'lib/model';
 
 import React from 'react';
 import Utils from 'lib/utils';
 
 import to from 'await-to-js';
-import { responseInterface } from 'swr';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import styles from './people.module.scss';
 
@@ -24,6 +22,16 @@ interface RowProps {
 function Row({ user, onBlur, onClick, onChange }: RowProps): JSX.Element {
   return (
     <DataTableRow>
+      <DataTableCell hasFormControl>
+        <Checkbox
+          onBlur={onBlur}
+          checked={user.visible}
+          onChange={(evt) => onChange(evt, 'visible')}
+        />
+      </DataTableCell>
+      <DataTableCell hasFormControl>
+        <Checkbox checked={!!user.verifications.length} onClick={onClick} />
+      </DataTableCell>
       <DataTableCell className={styles.sticky}>
         <TextField
           value={user.name}
@@ -60,17 +68,6 @@ function Row({ user, onBlur, onClick, onChange }: RowProps): JSX.Element {
       </DataTableCell>
       <DataTableCell>{Utils.join(user.tutoring.subjects)}</DataTableCell>
       <DataTableCell>{Utils.join(user.mentoring.subjects)}</DataTableCell>
-      <DataTableCell>
-        <Switch
-          onBlur={onBlur}
-          checked={user.visible}
-          className={styles.switch}
-          onChange={(evt) => onChange(evt, 'visible')}
-        />
-      </DataTableCell>
-      <DataTableCell className={styles.edit}>
-        <Checkbox checked={!!user.verifications.length} onClick={onClick} />
-      </DataTableCell>
     </DataTableRow>
   );
 }
@@ -98,7 +95,7 @@ interface UserRowProps {
   onClick: () => void;
   selected: boolean;
   setSelected: (event: React.FormEvent<HTMLInputElement>) => void;
-  mutate: responseInterface<UserJSON[], Error>['mutate'];
+  onChange: Callback<UserJSON>;
 }
 
 /**
@@ -111,20 +108,11 @@ interface UserRowProps {
  */
 export default function UserRow({
   user,
-  mutate,
+  onChange,
   onClick,
   selected,
   setSelected,
 }: UserRowProps): JSX.Element {
-  /* eslint-disable-next-line @typescript-eslint/require-await */
-  const update = (updated: UserJSON) =>
-    mutate(async (users: UserJSON[]) => {
-      if (!users) return users;
-      const idx: number = users.findIndex((u) => u.id === updated.id);
-      if (idx < 0) return users;
-      return [...users.slice(0, idx), updated, ...users.slice(idx + 1)];
-    }, false);
-
   return (
     <Row
       onClick={onClick}
@@ -147,7 +135,7 @@ export default function UserRow({
           throw new Error(`While updating user: ${err.message}`);
         } else {
           const { data: updated } = res as AxiosResponse<UserJSON>;
-          return update(updated);
+          return onChange(updated);
         }
       }}
       onChange={(event: React.FormEvent<HTMLInputElement>, field: string) => {
@@ -155,7 +143,7 @@ export default function UserRow({
           field === 'visible'
             ? !!event.currentTarget.checked
             : event.currentTarget.value;
-        return update({ ...user, [field]: value });
+        return onChange({ ...user, [field]: value });
       }}
     />
   );

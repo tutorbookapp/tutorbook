@@ -64,38 +64,50 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
   const [query, setQuery] = React.useState<Query>(
     new Query({ orgs: [{ label: org.name, value: org.id }] })
   );
+
   const { data: users, mutate, isValidating } = useSWR<UserJSON[]>(
     query.endpoint,
-    {
-      initialData: people,
-    }
+    { initialData: people }
   );
-
-  React.useEffect(
-    () =>
-      setQuery(
-        (prev: Query) =>
-          new Query({ ...prev, orgs: [{ label: org.name, value: org.id }] })
-      ),
-    [org]
-  );
-  React.useEffect(() => {
-    void mutateSWR(query.endpoint);
-  }, [query]);
 
   const [selected, setSelected] = React.useState<string[]>([]);
-  const [viewing, setViewing] = React.useState<User | undefined>();
+  const [viewing, setViewing] = React.useState<UserJSON | undefined>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
   const [viewingCreateUserDialog, setViewingCreateUserDialog] = React.useState<
     boolean
   >(false);
 
+  React.useEffect(() => {
+    setQuery(
+      (prev: Query) =>
+        new Query({
+          ...prev,
+          orgs: [{ label: org.name, value: org.id }],
+        })
+    );
+  }, [org]);
+  React.useEffect(() => {
+    void mutateSWR(query.endpoint);
+  }, [query]);
+
+  /* eslint-disable-next-line @typescript-eslint/require-await */
+  const update = (updated: UserJSON) =>
+    mutate(async (prev: UserJSON[]) => {
+      if (!prev) return prev;
+      const idx: number = prev.findIndex((u) => u.id === updated.id);
+      if (idx < 0) return prev;
+      return [...prev.slice(0, idx), updated, ...prev.slice(idx + 1)];
+    }, false);
+
   return (
     <>
       {viewing && (
         <VerificationDialog
-          mutate={mutate}
           user={viewing}
+          onChange={(updated: UserJSON) => {
+            setViewing(updated);
+            update(updated);
+          }}
           onClosed={() => setViewing(undefined)}
         />
       )}
@@ -201,6 +213,8 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
             <DataTableContent>
               <DataTableHead className={styles.header}>
                 <DataTableRow>
+                  <DataTableHeadCell hasFormControl>Visible</DataTableHeadCell>
+                  <DataTableHeadCell hasFormControl>Vetted</DataTableHeadCell>
                   <DataTableHeadCell className={styles.sticky}>
                     Name
                   </DataTableHeadCell>
@@ -209,8 +223,6 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
                   <DataTableHeadCell>Phone</DataTableHeadCell>
                   <DataTableHeadCell>Tutoring Subjects</DataTableHeadCell>
                   <DataTableHeadCell>Mentoring Subjects</DataTableHeadCell>
-                  <DataTableHeadCell>Visible</DataTableHeadCell>
-                  <DataTableHeadCell>Vetted</DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
@@ -220,8 +232,8 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
                     <UserRow
                       key={user.id}
                       user={user}
-                      mutate={mutate}
-                      onClick={() => setViewing(User.fromJSON(user))}
+                      onChange={update}
+                      onClick={() => setViewing(user)}
                       selected={selected.indexOf(user.id) >= 0}
                       setSelected={() => {
                         const idx = selected.indexOf(user.id);

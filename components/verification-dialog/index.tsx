@@ -13,10 +13,16 @@ import {
 } from '@rmwc/data-table';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { useUser } from 'lib/account';
-import { ApiError, Check, User, UserJSON, Verification } from 'lib/model';
+import {
+  Callback,
+  ApiError,
+  Check,
+  User,
+  UserJSON,
+  Verification,
+} from 'lib/model';
 import { defMsg, useMsg, IntlHelper, Msg } from 'lib/intl';
 import { socials } from 'lib/intl/msgs';
-import { responseInterface } from 'swr';
 
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import to from 'await-to-js';
@@ -44,28 +50,22 @@ const checks: Record<Check, Msg> = defMsg({
 });
 
 interface VerificationDialogProps {
-  user: User;
+  user: UserJSON;
   onClosed: () => void;
-  mutate: responseInterface<UserJSON[], Error>['mutate'];
+  onChange: Callback<UserJSON>;
 }
 
 export default function VerificationDialog({
   user,
   onClosed,
-  mutate,
+  onChange,
 }: VerificationDialogProps): JSX.Element {
   const { user: currentUser } = useUser();
-
   const [error, setError] = React.useState<string | undefined>();
-  const [verifications, setVerifications] = React.useState<Verification[]>(
-    user.verifications
-  );
-
   const msg: IntlHelper = useMsg();
-
   const updateUser = async () => {
     const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
-      axios.put<UserJSON>(`/api/users/${user.id}`, { ...user, verifications })
+      axios.put<UserJSON>(`/api/users/${user.id}`, user)
     );
     if (err && err.response) {
       setError(
@@ -79,29 +79,23 @@ export default function VerificationDialog({
       setError(`An error occurred while updating ${user.name}: ${err.message}`);
     } else {
       const { data: updated } = res as AxiosResponse<UserJSON>;
-      /* eslint-disable-next-line @typescript-eslint/require-await */
-      await mutate(async (users: UserJSON[]) => {
-        if (!users) return users;
-        const idx: number = users.findIndex((u) => u.id === updated.id);
-        if (idx < 0) return users;
-        return [...users.slice(0, idx), updated, ...users.slice(idx + 1)];
-      }, false);
+      return onChange(updated);
     }
   };
 
   const getIndex = (check: Check) =>
-    verifications.findIndex((v) => v.checks.indexOf(check) >= 0);
+    user.verifications.findIndex((v) => v.checks.indexOf(check) >= 0);
 
   const getChecked = (check: Check) => getIndex(check) >= 0;
   const setChecked = (
     event: React.FormEvent<HTMLInputElement>,
     check: Check
   ) => {
-    const copy: Verification[] = Array.from(verifications);
+    const verifications: Verification[] = Array.from(user.verifications);
     if (getIndex(check) >= 0 && !event.currentTarget.checked) {
-      copy.splice(getIndex(check), 1);
+      verifications.splice(getIndex(check), 1);
     } else {
-      copy.push({
+      verifications.push({
         user: currentUser.id,
         org: currentUser.id,
         checks: [check],
@@ -110,50 +104,48 @@ export default function VerificationDialog({
         updated: new Date(),
       });
     }
-    setVerifications(copy);
+    return onChange({ ...user, verifications });
   };
 
   const getSomeChecked = () =>
-    verifications.length > 0 &&
-    verifications.length < Object.keys(checks).length;
+    user.verifications.length > 0 &&
+    user.verifications.length < Object.keys(checks).length;
   const getAllChecked = () =>
     Object.keys(checks).every((c) => getChecked(c as Check));
   const setAllChecked = (event: React.FormEvent<HTMLInputElement>) => {
-    if (event.currentTarget.checked) {
-      const copy: Verification[] = Array.from(verifications);
-      const checked: Check[] = Object.values(verifications).reduce(
-        (acc, cur) => {
-          return acc.concat(cur.checks);
-        },
-        [] as Check[]
-      );
-      const stillNeedsToBeChecked: Check[] = (Object.keys(
-        checks
-      ) as Check[]).filter((c) => checked.indexOf(c) < 0);
-      stillNeedsToBeChecked.forEach((check: Check) =>
-        copy.push({
-          user: currentUser.id,
-          org: currentUser.id,
-          checks: [check],
-          notes: '',
-          created: new Date(),
-          updated: new Date(),
-        })
-      );
-      setVerifications(copy);
-    } else {
-      setVerifications([]);
-    }
+    if (!event.currentTarget.checked)
+      return onChange({ ...user, verifications: [] });
+    const verifications: Verification[] = Array.from(user.verifications);
+    const checked: Check[] = Object.values(user.verifications).reduce(
+      (acc, cur) => {
+        return acc.concat(cur.checks);
+      },
+      [] as Check[]
+    );
+    const stillNeedsToBeChecked: Check[] = (Object.keys(
+      checks
+    ) as Check[]).filter((c) => checked.indexOf(c) < 0);
+    stillNeedsToBeChecked.forEach((check: Check) =>
+      verifications.push({
+        user: currentUser.id,
+        org: currentUser.id,
+        checks: [check],
+        notes: '',
+        created: new Date(),
+        updated: new Date(),
+      })
+    );
+    return onChange({ ...user, verifications });
   };
 
   const getValue = (check: Check) =>
-    (verifications[getIndex(check)] || {}).notes || '';
+    (user.verifications[getIndex(check)] || {}).notes || '';
   const setValue = (event: React.FormEvent<HTMLInputElement>, check: Check) => {
-    const copy: Verification[] = Array.from(verifications);
+    const verifications: Verification[] = Array.from(user.verifications);
     if (getIndex(check) >= 0) {
-      copy[getIndex(check)].notes = event.currentTarget.value;
+      verifications[getIndex(check)].notes = event.currentTarget.value;
     } else {
-      copy.push({
+      verifications.push({
         user: currentUser.id,
         org: currentUser.id,
         checks: [check],
@@ -162,11 +154,15 @@ export default function VerificationDialog({
         updated: new Date(),
       });
     }
-    setVerifications(copy);
+    return onChange({ ...user, verifications });
   };
 
   return (
-    <UserDialog className={styles.dialog} onClosed={onClosed} user={user}>
+    <UserDialog
+      className={styles.dialog}
+      onClosed={onClosed}
+      user={User.fromJSON(user)}
+    >
       <h6 className={styles.header}>Verifications</h6>
       <DataTable className={styles.table}>
         <DataTableContent>
