@@ -4,10 +4,10 @@ import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 
 import { useRouter } from 'next/router';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Overview } from 'components/dashboard';
+import { People } from 'components/dashboard';
 import { TabHeader } from 'components/header';
-import { Org, OrgJSON } from 'lib/model';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { Org, OrgJSON, User, UserJSON, Query, ApiError } from 'lib/model';
 import {
   db,
   auth,
@@ -17,25 +17,26 @@ import {
   DocumentReference,
 } from 'lib/api/helpers/firebase';
 import {
-  useIntl,
+  useMsg,
   getIntlProps,
   withIntl,
   IntlProps,
-  IntlShape,
   IntlHelper,
-  Msg,
 } from 'lib/intl';
+
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import to from 'await-to-js';
 import msgs from 'components/dashboard/msgs';
 
-interface DashboardPageProps {
-  org?: OrgJSON;
+interface PeoplePageProps {
   errorCode?: number;
   errorMessage?: string;
+  users?: UserJSON[];
+  org?: OrgJSON[];
 }
 
-interface DashboardPageQuery {
+interface PeoplePageQuery {
   locale: string;
   org: string;
 }
@@ -60,13 +61,13 @@ interface DashboardPageQuery {
  * @see {@link https://github.com/vercel/next.js/issues/14200}
  */
 export const getServerSideProps: GetServerSideProps<
-  DashboardPageProps & IntlProps,
-  DashboardPageQuery
+  PeoplePageProps & IntlProps,
+  PeoplePageQuery
 > = async ({
   req,
   res,
   params,
-}: GetServerSidePropsContext<DashboardPageQuery>) => {
+}: GetServerSidePropsContext<PeoplePageQuery>) => {
   if (!req.headers.authorization) {
     res.statusCode = 302;
     res.setHeader('Location', `/${params.locale}/login`);
@@ -100,21 +101,53 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        props = { ...props, org: org.toJSON() };
+        const query = new Query({ orgs: [{ label: org.name, value: org.id }] });
+        console.log('[DEBUG] Query:', query.endpoint);
+        const url = `http://${req.headers.host as string}${query.endpoint}`;
+        const [error, response] = await to<
+          AxiosResponse<UserJSON[]>,
+          AxiosError<ApiError>
+        >(
+          axios.get<UserJSON[]>(url, {
+            headers: { authorization: req.headers.authorization },
+          })
+        );
+        if (error && error.response) {
+          props = {
+            ...props,
+            errorCode: error.response.status,
+            errorMessage: error.response.data.msg,
+          };
+        } else if (error && error.request) {
+          props = {
+            ...props,
+            errorCode: 500,
+            errorMessage: 'Users API did not respond.',
+          };
+        } else if (error) {
+          props = {
+            ...props,
+            errorCode: 500,
+            errorMessage: `${error.name} fetching users: ${error.message}`,
+          };
+        } else {
+          const { data: users } = response as AxiosResponse<UserJSON[]>;
+          props = { ...props, users, org: org.toJSON() };
+        }
       }
       return { props };
     }
   }
 };
 
-function DashboardPage({
+function PeoplePage({
   errorCode,
   errorMessage,
+  users,
   org,
-}: DashboardPageProps): JSX.Element {
+}: PeoplePageProps): JSX.Element {
   const { query } = useRouter();
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const msg: IntlHelper = useMsg();
   if (errorCode || errorMessage)
     return <ErrorPage statusCode={errorCode} title={errorMessage} />;
   return (
@@ -123,23 +156,26 @@ function DashboardPage({
         tabs={[
           {
             label: msg(msgs.overview),
-            active: true,
-            href: '/dashboard/[org]',
-            as: `/dashboard/${query.org as string}`,
+            active: false,
+            href: '/[org]/dashboard',
+            as: `/${query.org as string}/dashboard`,
           },
           {
             label: msg(msgs.people),
-            active: false,
-            href: '/dashboard/[org]/people',
-            as: `/dashboard/${query.org as string}/people`,
+            active: true,
+            href: '/[org]/dashboard/people',
+            as: `/${query.org as string}/dashboard/people`,
           },
         ]}
       />
-      <Overview account={Org.fromJSON(org)} />
+      <People
+        org={Org.fromJSON(org)}
+        people={users.map((user: UserJSON) => User.fromJSON(user))}
+      />
       <Footer />
       <Intercom />
     </>
   );
 }
 
-export default withIntl(DashboardPage);
+export default withIntl(PeoplePage);

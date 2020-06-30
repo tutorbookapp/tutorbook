@@ -33,6 +33,7 @@ import styles from './volunteer-form.module.scss';
 interface VolunteerFormProps {
   intl: IntlShape;
   aspect: Aspect;
+  org?: string;
 }
 
 type VolunteerFormState = {
@@ -101,6 +102,11 @@ class VolunteerForm extends React.Component<
       const newHeight: number = this.descRef.current.clientHeight;
       if (newHeight !== descHeight) this.setState({ descHeight: newHeight });
     }
+    void this.updateOrgs();
+  }
+
+  public componentDidUpdate(): void {
+    void this.updateOrgs();
   }
 
   private get submitting(): boolean {
@@ -137,6 +143,12 @@ class VolunteerForm extends React.Component<
         ? `translateY(-${height})`
         : `translateY(${height})`;
     return { transform };
+  }
+
+  private async updateOrgs(): Promise<void> {
+    const { org } = this.props;
+    const { updateUser, user } = this.context;
+    if (org) await updateUser(new User({ ...user, orgs: [org] }));
   }
 
   private async handleSubmit(event: React.FormEvent): Promise<void> {

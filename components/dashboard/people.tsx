@@ -15,7 +15,7 @@ import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { Option, Query, Org, User, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
-import { defMsg, useMsg } from 'lib/intl';
+import { defMsg, useMsg, useIntl, IntlHelper } from 'lib/intl';
 
 import React from 'react';
 import CreateUserDialog from 'components/create-user-dialog';
@@ -60,7 +60,8 @@ interface PeopleProps {
 }
 
 export default function People({ people, org }: PeopleProps): JSX.Element {
-  const msg = useMsg();
+  const { locale } = useIntl();
+  const msg: IntlHelper = useMsg();
   const [query, setQuery] = React.useState<Query>(
     new Query({ orgs: [{ label: org.name, value: org.id }] })
   );
@@ -73,9 +74,6 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
   const [selected, setSelected] = React.useState<string[]>([]);
   const [viewing, setViewing] = React.useState<UserJSON | undefined>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
-  const [viewingCreateUserDialog, setViewingCreateUserDialog] = React.useState<
-    boolean
-  >(false);
 
   React.useEffect(() => {
     setQuery(
@@ -103,13 +101,10 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
           user={viewing}
           onChange={(updated: UserJSON) => {
             setViewing(updated);
-            update(updated);
+            return update(updated);
           }}
           onClosed={() => setViewing(undefined)}
         />
-      )}
-      {viewingCreateUserDialog && (
-        <CreateUserDialog onClosed={() => setViewingCreateUserDialog(false)} />
       )}
       {viewingSnackbar && (
         <Snackbar
@@ -126,17 +121,44 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
         body={`${org.name}'s tutors, mentors and students`}
         actions={[
           {
-            label: msg(msgs.createUser),
-            onClick: () => setViewingCreateUserDialog(true),
-          },
-          {
             label: msg(msgs.importData),
             onClick: () =>
               IntercomAPI('showNewMessage', "I'd like to import data."),
           },
           {
             label: msg(msgs.shareSignupLink),
-            onClick: () => setViewingSnackbar(true),
+            onClick: async () => {
+              function fallbackCopyTextToClipboard(text: string): void {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+
+                // Avoid scrolling to bottom
+                textArea.style.top = '0';
+                textArea.style.left = '0';
+                textArea.style.position = 'fixed';
+
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                  document.execCommand('copy');
+                } catch (err) {
+                  console.error('Fallback: Oops, unable to copy', err);
+                }
+
+                document.body.removeChild(textArea);
+              }
+              async function copyTextToClipboard(text: string): Promise<void> {
+                if (!navigator.clipboard)
+                  return fallbackCopyTextToClipboard(text);
+                return navigator.clipboard.writeText(text);
+              }
+              await copyTextToClipboard(
+                `http://${window.location.host}/${locale}/${org.id}/signup`
+              );
+              setViewingSnackbar(true);
+            },
           },
         ]}
       />

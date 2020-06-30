@@ -39,13 +39,13 @@ export default function Switcher(): JSX.Element {
                   account={Org.fromJSON(org)}
                   href={
                     pathname.indexOf('people') >= 0
-                      ? '/dashboard/[org]/people'
-                      : '/dashboard/[org]'
+                      ? '/[org]/dashboard/people'
+                      : '/[org]/dashboard'
                   }
                   as={
                     pathname.indexOf('people') >= 0
-                      ? `/dashboard/${org.id}/people`
-                      : `/dashboard/${org.id}`
+                      ? `/${org.id}/dashboard/people`
+                      : `/${org.id}/dashboard`
                   }
                 />
               ))}
