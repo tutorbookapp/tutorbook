@@ -1,4 +1,5 @@
-import useSWR from 'swr';
+import { v4 as uuid } from 'uuid';
+import useSWR, { mutate as mutateSWR } from 'swr';
 
 import {
   DataTable,
@@ -21,7 +22,7 @@ import CreateUserDialog from 'components/create-user-dialog';
 import VerificationDialog from 'components/verification-dialog';
 
 import Title from './title';
-import UserRow from './user-row';
+import UserRow, { LoadingRow } from './user-row';
 import Placeholder from './placeholder';
 
 import styles from './people.module.scss';
@@ -47,6 +48,10 @@ const msgs = defMsg({
     id: 'people.filters.visible',
     defaultMessage: 'Visible in search',
   },
+  hidden: {
+    id: 'people.filters.hidden',
+    defaultMessage: 'Hidden from search',
+  },
 });
 
 interface PeopleProps {
@@ -61,9 +66,24 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
       orgs: [{ label: org.name, value: org.id }],
     })
   );
-  const { data: users, mutate } = useSWR<UserJSON[]>(query.endpoint, {
-    initialData: people,
-  });
+  const { data: users, mutate, isValidating } = useSWR<UserJSON[]>(
+    query.endpoint,
+    {
+      initialData: people,
+    }
+  );
+
+  React.useEffect(
+    () =>
+      setQuery(
+        (prev: Query) =>
+          new Query({ ...prev, orgs: [{ label: org.name, value: org.id }] })
+      ),
+    [org]
+  );
+  React.useEffect(() => {
+    void mutateSWR(query.endpoint);
+  }, [query]);
 
   const [selected, setSelected] = React.useState<string[]>([]);
   const [viewing, setViewing] = React.useState<User | undefined>();
@@ -145,9 +165,27 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
                 label={msg(msgs.visible)}
                 checkmark
                 onInteraction={() =>
-                  setQuery(new Query({ ...query, visible: !query.visible }))
+                  setQuery(
+                    new Query({
+                      ...query,
+                      visible: query.visible !== true ? true : undefined,
+                    })
+                  )
                 }
-                selected={query.visible}
+                selected={query.visible === true}
+              />
+              <Chip
+                label={msg(msgs.hidden)}
+                checkmark
+                onInteraction={() =>
+                  setQuery(
+                    new Query({
+                      ...query,
+                      visible: query.visible !== false ? false : undefined,
+                    })
+                  )
+                }
+                selected={query.visible === false}
               />
             </ChipSet>
           </div>
@@ -160,7 +198,7 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
             <IconButton className={styles.menuButton} icon='more_vert' />
           </div>
         </div>
-        {!!users && !!users.length && (
+        {(isValidating || !!(users || []).length) && (
           <DataTable className={styles.table}>
             <DataTableContent>
               <DataTableHead className={styles.header}>
@@ -178,30 +216,37 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
-                {users.map((user: UserJSON) => (
-                  <UserRow
-                    key={user.id}
-                    user={user}
-                    mutate={mutate}
-                    onClick={() => setViewing(User.fromJSON(user))}
-                    selected={selected.indexOf(user.id) >= 0}
-                    setSelected={() => {
-                      const idx = selected.indexOf(user.id);
-                      if (idx < 0) {
-                        setSelected([...selected, user.id]);
-                      } else {
-                        const copy: string[] = Array.from(selected);
-                        copy.splice(idx, 1);
-                        setSelected(copy);
-                      }
-                    }}
-                  />
-                ))}
+                {!!users &&
+                  !!users.length &&
+                  users.map((user: UserJSON) => (
+                    <UserRow
+                      key={user.id}
+                      user={user}
+                      mutate={mutate}
+                      onClick={() => setViewing(User.fromJSON(user))}
+                      selected={selected.indexOf(user.id) >= 0}
+                      setSelected={() => {
+                        const idx = selected.indexOf(user.id);
+                        if (idx < 0) {
+                          setSelected([...selected, user.id]);
+                        } else {
+                          const copy: string[] = Array.from(selected);
+                          copy.splice(idx, 1);
+                          setSelected(copy);
+                        }
+                      }}
+                    />
+                  ))}
+                {(!users || !users.length) &&
+                  isValidating &&
+                  Array(10)
+                    .fill(null)
+                    .map(() => <LoadingRow key={uuid()} />)}
               </DataTableBody>
             </DataTableContent>
           </DataTable>
         )}
-        {(!users || !users.length) && (
+        {!isValidating && !(users || []).length && (
           <div className={styles.empty}>
             <Placeholder>NO PEOPLE TO SHOW</Placeholder>
           </div>
