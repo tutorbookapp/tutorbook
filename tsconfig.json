@@ -19,8 +19,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "downlevelIteration": true,
-    "baseUrl": ".",
-    "paths": { "@tutorbook/*": ["src/*"] }
+    "baseUrl": "."
   },
   "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"]
