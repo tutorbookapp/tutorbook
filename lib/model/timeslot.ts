@@ -1,7 +1,7 @@
-import firebase from '@tutorbook/firebase';
+import firebase from 'lib/firebase';
 import 'firebase/firestore';
 
-import { TimeUtils } from '@tutorbook/utils';
+import { TimeUtils } from 'lib/utils';
 import { DAYS } from './constants';
 
 /**

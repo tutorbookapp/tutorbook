@@ -9,7 +9,7 @@ import {
   Query,
   Timeslot,
   Option,
-} from '@tutorbook/model';
+} from 'lib/model';
 
 import to from 'await-to-js';
 

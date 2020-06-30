@@ -1,4 +1,4 @@
-import { User } from '@tutorbook/model';
+import { User } from 'lib/model';
 
 import to from 'await-to-js';
 

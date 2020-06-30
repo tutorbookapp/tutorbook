@@ -1,4 +1,4 @@
-import { SocialTypeAlias } from '@tutorbook/model';
+import { SocialTypeAlias } from 'lib/model';
 
 import { defMsg, Msg } from './index';
 

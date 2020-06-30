@@ -2,8 +2,8 @@ import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios, { AxiosResponse, AxiosPromise } from 'axios';
-import { PupilRequestEmail, ParentRequestEmail } from '@tutorbook/emails';
-import { User, UserWithRoles, Appt, ApptJSON } from '@tutorbook/model';
+import { PupilRequestEmail, ParentRequestEmail } from 'lib/emails';
+import { User, UserWithRoles, Appt, ApptJSON } from 'lib/model';
 
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';

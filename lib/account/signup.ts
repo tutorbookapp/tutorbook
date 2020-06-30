@@ -1,10 +1,10 @@
-import { User, UserJSON, UserInterface, ApiError } from '@tutorbook/model';
+import { User, UserJSON, UserInterface, ApiError } from 'lib/model';
 
 import { mutate } from 'swr';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
-import firebase from '@tutorbook/firebase';
+import firebase from 'lib/firebase';
 import 'firebase/auth';
 
 /**

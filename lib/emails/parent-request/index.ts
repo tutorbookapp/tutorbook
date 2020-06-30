@@ -1,5 +1,5 @@
-import Utils from '@tutorbook/utils';
-import { Appt, User, UserWithRoles } from '@tutorbook/model';
+import Utils from 'lib/utils';
+import { Appt, User, UserWithRoles } from 'lib/model';
 
 import * as admin from 'firebase-admin';
 

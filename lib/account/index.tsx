@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { User, UserJSON } from '@tutorbook/model';
+import { User, UserJSON } from 'lib/model';
 
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';

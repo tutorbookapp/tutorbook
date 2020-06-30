@@ -1,4 +1,4 @@
-import { User, UserWithRoles, RoleAlias } from '@tutorbook/model';
+import { User, UserWithRoles, RoleAlias } from 'lib/model';
 
 import {
   Email,

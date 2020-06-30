@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Org, OrgJSON } from '@tutorbook/model';
+import { Org, OrgJSON } from 'lib/model';
 
 import to from 'await-to-js';
 

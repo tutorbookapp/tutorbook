@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, UserJSON } from '@tutorbook/model';
-import { SignUpEmail } from '@tutorbook/emails';
+import { User, UserJSON } from 'lib/model';
+import { SignUpEmail } from 'lib/emails';
 
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';

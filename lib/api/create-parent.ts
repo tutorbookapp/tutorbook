@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { UserJSON, User } from '@tutorbook/model';
+import { UserJSON, User } from 'lib/model';
 
 import to from 'await-to-js';
 import verify from './helpers/verify';

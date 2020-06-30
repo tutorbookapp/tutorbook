@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 
-import firebase from '@tutorbook/firebase';
+import firebase from 'lib/firebase';
 
 import { AccountInterface, Account } from './account';
 
@@ -16,7 +16,7 @@ type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 /**
- * Duplicate definition from the `@tutorbook/react-intercom` package. These are
+ * Duplicate definition from the `lib/react-intercom` package. These are
  * all the valid datatypes for custom Intercom user attributes.
  * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
  */

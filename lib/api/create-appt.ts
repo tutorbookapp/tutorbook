@@ -1,8 +1,8 @@
 import { ClientResponse } from '@sendgrid/client/src/response';
 import { ResponseError } from '@sendgrid/helpers/classes';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, UserWithRoles, Appt, ApptJSON } from '@tutorbook/model';
-import { ApptEmail } from '@tutorbook/emails';
+import { User, UserWithRoles, Appt, ApptJSON } from 'lib/model';
+import { ApptEmail } from 'lib/emails';
 
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';

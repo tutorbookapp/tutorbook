@@ -1,5 +1,5 @@
-import Utils from '@tutorbook/utils';
-import { Appt, AttendeeInterface, User, UserWithRoles } from '@tutorbook/model';
+import Utils from 'lib/utils';
+import { Appt, AttendeeInterface, User, UserWithRoles } from 'lib/model';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';

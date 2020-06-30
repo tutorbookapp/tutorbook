@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
-import Utils from '@tutorbook/utils';
+import Utils from 'lib/utils';
 
-import { RoleAlias } from '@tutorbook/model';
+import { RoleAlias } from 'lib/model';
 import Check from './shared/check.hbs';
 import Cross from './shared/cross.hbs';
 import Profile from './shared/profile.hbs';

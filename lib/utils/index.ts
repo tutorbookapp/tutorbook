@@ -35,7 +35,7 @@ export default class Utils {
    * Joins the array like the typicall `Array.join` function but adds the
    * `ending` concatenator between the last two items.
    * @example
-   * const Utils = require('@tutorbook/utils');
+   * const Utils = require('lib/utils');
    * const subjects = ['Chemistry', 'Chemistry H', 'Algebra 1'];
    * const str = Utils.join(subjects, 'or');
    * assert(str === 'Chemistry, Chemistry H, or Algebra 1');

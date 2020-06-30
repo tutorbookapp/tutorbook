@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, Org } from '@tutorbook/model';
+import { User, Org } from 'lib/model';
 
 import to from 'await-to-js';
 import error from './error';

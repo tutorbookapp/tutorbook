@@ -7,7 +7,7 @@ export type DayAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
  * Class that contains some useful `Date` manipulation and creation utilities.
- * @todo Move this class to the `@tutorbook/utils` package.
+ * @todo Move this class to the `lib/utils` package.
  */
 export default class TimeUtils {
   /**
@@ -76,7 +76,7 @@ export default class TimeUtils {
     now: Date = new Date()
   ): Date {
     const date = new Date(now.valueOf());
-    let count = 0; // TODO: Why did we add this counter in `@tutorbook/utils`?
+    let count = 0; // TODO: Why did we add this counter in `lib/utils`?
     while (date.getDay() !== day && count <= 256) {
       date.setDate(date.getDate() + 1);
       count += 1;

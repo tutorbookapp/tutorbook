@@ -1,5 +1,5 @@
-import Utils from '@tutorbook/utils';
-import { Appt, UserWithRoles } from '@tutorbook/model';
+import Utils from 'lib/utils';
+import { Appt, UserWithRoles } from 'lib/model';
 
 import {
   Email,

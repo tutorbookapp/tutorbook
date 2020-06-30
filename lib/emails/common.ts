@@ -1,10 +1,6 @@
 import { MailData } from '@sendgrid/helpers/classes/mail';
-import Utils from '@tutorbook/utils';
-import {
-  SocialTypeAlias,
-  SocialInterface,
-  UserWithRoles,
-} from '@tutorbook/model';
+import Utils from 'lib/utils';
+import { SocialTypeAlias, SocialInterface, UserWithRoles } from 'lib/model';
 
 export interface Email extends MailData {
   readonly html: string;
