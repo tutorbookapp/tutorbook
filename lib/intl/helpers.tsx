@@ -11,8 +11,8 @@ import localeConfig from './config.json';
 
 export const { locales, defaultLocale } = localeConfig;
 
-type IntlPaths = Array<{ params: { locale: string } }>;
-interface IntlProps {
+export type IntlPaths = Array<{ params: { locale: string } }>;
+export interface IntlProps {
   locale: string;
   messages: Record<string, string>;
 }
