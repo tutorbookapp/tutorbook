@@ -68,7 +68,9 @@ export const getServerSideProps: GetServerSideProps<
   res,
   params,
 }: GetServerSidePropsContext<DashboardPageQuery>) => {
-  if (!req.headers.authorization) {
+  if (!params) {
+    throw new Error('We must have query parameters while rendering.');
+  } else if (!req.headers.authorization) {
     res.statusCode = 302;
     res.setHeader('Location', `/${params.locale}/login`);
     res.end();
