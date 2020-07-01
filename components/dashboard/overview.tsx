@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { defMsg, useMsg, IntlHelper } from 'lib/intl';
-import { Account } from 'lib/model';
+import { Org, Account } from 'lib/model';
 
 import Title from './title';
 import Placeholder from './placeholder';
@@ -41,8 +41,10 @@ export default function Overview({ account }: OverviewProps): JSX.Element {
         actions={[
           {
             label: msg(msgs.viewSearch),
-            href: '/search/[[...slug]]',
-            as: '/search',
+            href: `${
+              account instanceof Org ? '/[org]' : ''
+            }/search/[[...slug]]`,
+            as: `${account instanceof Org ? `/${account.id}` : ''}/search`,
           },
         ]}
       />

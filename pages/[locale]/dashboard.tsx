@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import {
   useMsg,
@@ -17,7 +18,7 @@ import Footer from 'components/footer';
 
 import tabs from 'components/dashboard/msgs';
 
-interface DashboardPageQuery {
+interface DashboardPageQuery extends ParsedUrlQuery {
   locale: string;
 }
 
@@ -29,7 +30,9 @@ export const getServerSideProps: GetServerSideProps<
   res,
   params,
 }: GetServerSidePropsContext<DashboardPageQuery>) => {
-  if (!req.headers.authorization) {
+  if (!params) {
+    throw new Error('We must have query parameters while rendering.');
+  } else if (!req.headers.authorization) {
     res.statusCode = 302;
     res.setHeader('Location', `/${params.locale}/login`);
     res.end();

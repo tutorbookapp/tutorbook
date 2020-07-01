@@ -1,4 +1,3 @@
-import { Icon } from '@rmwc/icon';
 import { useRouter } from 'next/router';
 import { useUser } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
@@ -16,8 +15,16 @@ import styles from './switcher.module.scss';
 export default function Switcher(): JSX.Element {
   const [open, setOpen] = React.useState<boolean>(false);
   const { data: orgs } = useSWR<OrgJSON[]>('/api/orgs');
-  const { pathname } = useRouter();
+  const { pathname, query } = useRouter();
   const { user } = useUser();
+  const [selected, setSelected] = React.useState<string>('Account');
+
+  React.useEffect(() => {
+    if (!orgs) return setSelected('Account');
+    const idx: number = orgs.findIndex((o: OrgJSON) => o.id === query.org);
+    if (idx < 0) return setSelected('Account');
+    return setSelected(orgs[idx].name);
+  }, [orgs, query]);
 
   return (
     <MenuSurfaceAnchor>
@@ -76,8 +83,7 @@ export default function Switcher(): JSX.Element {
         >
           <div className={styles.wrapper}>
             <div className={styles.selected}>
-              <Icon className={styles.selectedIcon} icon='group' />
-              <span className={styles.selectedText}>Account</span>
+              <span className={styles.selectedText}>{selected}</span>
             </div>
             <div className={styles.arrowWrapper}>
               <div className={styles.arrow} />

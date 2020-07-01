@@ -10,7 +10,6 @@ import {
   DataTableRow,
 } from '@rmwc/data-table';
 import { Snackbar } from '@rmwc/snackbar';
-import { TextField } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { Option, Query, Org, UserJSON, Tag } from 'lib/model';

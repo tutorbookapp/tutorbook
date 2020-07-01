@@ -89,7 +89,9 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props = await getIntlProps({ params });
+      let props: DashboardPageProps & IntlProps = await getIntlProps({
+        params,
+      });
       if (!doc.exists) {
         props = {
           ...props,
@@ -119,7 +121,7 @@ function DashboardPage({
   const intl: IntlShape = useIntl();
   const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   if (errorCode || errorMessage)
-    return <ErrorPage statusCode={errorCode} title={errorMessage} />;
+    return <ErrorPage statusCode={errorCode || 400} title={errorMessage} />;
   return (
     <>
       <TabHeader
@@ -138,7 +140,7 @@ function DashboardPage({
           },
         ]}
       />
-      <Overview account={Org.fromJSON(org)} />
+      <Overview account={Org.fromJSON(org as OrgJSON)} />
       <Footer />
       <Intercom />
     </>

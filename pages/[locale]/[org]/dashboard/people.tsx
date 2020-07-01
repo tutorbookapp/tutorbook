@@ -6,7 +6,7 @@ import Footer from 'components/footer';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Org, OrgJSON, User, UserJSON, Query, ApiError } from 'lib/model';
+import { Org, OrgJSON, UserJSON, Query, ApiError } from 'lib/model';
 import { People } from 'components/dashboard';
 import { TabHeader } from 'components/header';
 import {
@@ -34,7 +34,7 @@ interface PeoplePageProps {
   errorCode?: number;
   errorMessage?: string;
   users?: UserJSON[];
-  org?: OrgJSON[];
+  org?: OrgJSON;
 }
 
 interface PeoplePageQuery extends ParsedUrlQuery {
@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props = await getIntlProps({ params });
+      let props: PeoplePageProps & IntlProps = await getIntlProps({ params });
       if (!doc.exists) {
         props = {
           ...props,
@@ -152,7 +152,7 @@ function PeoplePage({
   const { query } = useRouter();
   const msg: IntlHelper = useMsg();
   if (errorCode || errorMessage)
-    return <ErrorPage statusCode={errorCode} title={errorMessage} />;
+    return <ErrorPage statusCode={errorCode || 400} title={errorMessage} />;
   return (
     <>
       <TabHeader
@@ -171,10 +171,7 @@ function PeoplePage({
           },
         ]}
       />
-      <People
-        org={Org.fromJSON(org)}
-        people={users.map((user: UserJSON) => User.fromJSON(user))}
-      />
+      <People org={Org.fromJSON(org as OrgJSON)} people={users as UserJSON[]} />
       <Footer />
       <Intercom />
     </>

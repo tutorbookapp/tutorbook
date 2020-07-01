@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useRouter } from 'next/router';
+import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
 import { Aspect } from 'lib/model';
@@ -10,7 +11,7 @@ import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 import VolunteerForm from 'components/volunteer-form';
 
-interface SignupPageQuery {
+interface SignupPageQuery extends ParsedUrlQuery {
   org: string;
   locale: string;
 }
@@ -32,7 +33,7 @@ function SignupPage(): JSX.Element {
         onChange={(newAspect: Aspect) => setAspect(newAspect)}
         formWidth
       />
-      <VolunteerForm org={query.org} aspect={aspect} />
+      <VolunteerForm org={query.org as string} aspect={aspect} />
       <Footer formWidth />
       <Intercom />
     </>
