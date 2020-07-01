@@ -4,10 +4,11 @@ import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 
 import { useRouter } from 'next/router';
-import { People } from 'components/dashboard';
-import { TabHeader } from 'components/header';
+import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { Org, OrgJSON, User, UserJSON, Query, ApiError } from 'lib/model';
+import { People } from 'components/dashboard';
+import { TabHeader } from 'components/header';
 import {
   db,
   auth,
@@ -36,7 +37,7 @@ interface PeoplePageProps {
   org?: OrgJSON[];
 }
 
-interface PeoplePageQuery {
+interface PeoplePageQuery extends ParsedUrlQuery {
   locale: string;
   org: string;
 }

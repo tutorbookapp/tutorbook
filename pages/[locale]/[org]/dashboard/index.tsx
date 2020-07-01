@@ -4,6 +4,7 @@ import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 
 import { useRouter } from 'next/router';
+import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { Overview } from 'components/dashboard';
 import { TabHeader } from 'components/header';
@@ -35,7 +36,7 @@ interface DashboardPageProps {
   errorMessage?: string;
 }
 
-interface DashboardPageQuery {
+interface DashboardPageQuery extends ParsedUrlQuery {
   locale: string;
   org: string;
 }
