@@ -13,12 +13,11 @@ import { Snackbar } from '@rmwc/snackbar';
 import { TextField } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
-import { Option, Query, Org, User, UserJSON, Tag } from 'lib/model';
+import { Option, Query, Org, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 import { defMsg, useMsg, useIntl, IntlHelper } from 'lib/intl';
 
 import React from 'react';
-import CreateUserDialog from 'components/create-user-dialog';
 import VerificationDialog from 'components/verification-dialog';
 
 import Title from './title';
