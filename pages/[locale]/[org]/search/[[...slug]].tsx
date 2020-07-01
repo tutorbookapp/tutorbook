@@ -100,6 +100,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const query: Query = Query.fromURLParams(context.query);
   const url = `http://${context.req.headers.host as string}/api/users`;
 
+  query.visible = true;
   if (context.params && context.params.org)
     query.orgs = [{ label: '', value: context.params.org as string }];
 
@@ -165,6 +166,9 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
       });
     }
   }, [org, qry, locale]);
+  React.useEffect(() => {
+    if (qry.visible !== true) setQuery(new Query({ ...qry, visible: true }));
+  }, [qry]);
 
   return (
     <>
