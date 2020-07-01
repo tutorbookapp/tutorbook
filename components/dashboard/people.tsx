@@ -217,14 +217,6 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
               />
             </ChipSet>
           </div>
-          <div className={styles.right}>
-            <TextField
-              outlined
-              placeholder='Search'
-              className={styles.searchField}
-            />
-            <IconButton className={styles.menuButton} icon='more_vert' />
-          </div>
         </div>
         {(isValidating || !!(users || []).length) && (
           <DataTable className={styles.table}>
