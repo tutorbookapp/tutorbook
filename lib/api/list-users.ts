@@ -95,7 +95,10 @@ function getOptionalFilterStrings(query: Query): string[] {
  * Note that due to Algolia limitations, we must query for each availability
  * timeslot separately and then manually merge the results on the client side.
  */
-async function searchUsers(query: Query): Promise<User[]> {
+async function searchUsers(
+  query: Query
+): Promise<{ results: User[]; hits: number }> {
+  let hits = 0;
   const results: User[] = [];
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
@@ -117,10 +120,11 @@ async function searchUsers(query: Query): Promise<User[]> {
           if (results.findIndex((h) => h.id === hit.objectID) < 0)
             results.push(User.fromSearchHit(hit));
         });
+        hits += res.nbHits;
       }
     })
   );
-  return results;
+  return { results, hits };
 }
 
 /**
@@ -135,7 +139,10 @@ function onlyFirstNameAndLastInitial(name: string): string {
   return `${split[0]} ${split[split.length - 1][0]}.`;
 }
 
-export type ListUsersRes = UserJSON[];
+export interface ListUsersRes {
+  users: UserJSON[];
+  hits: number;
+}
 
 /**
  * Takes filter parameters (subjects and availability) and sends back an array
@@ -155,6 +162,13 @@ export type ListUsersRes = UserJSON[];
  *
  * Clients can only view users whose visibility is `true` **unless** those users
  * belong to the client's organization.
+ *
+ * @param {QueryJSON} query - A query parsed into URL query parameters.
+ * @return { users: UserJSON[]; hits: number } - The results and the number of
+ * total search hits (we don't send all the search hits; only the ones specified
+ * by the current `query` pagination). Note that we don't respond with
+ * `hitsPerPage` or even the current `page` because those were already passed by
+ * the client via the query.
  */
 export default async function listUsers(
   req: NextApiRequest,
@@ -162,7 +176,7 @@ export default async function listUsers(
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
   const query: Query = Query.fromURLParams(req.query);
-  const users: User[] = await searchUsers(query);
+  const { results, hits } = await searchUsers(query);
   const orgs: Org[] = [];
   if (req.headers.authorization) {
     const [err, token] = await to<DecodedIdToken>(
@@ -179,8 +193,8 @@ export default async function listUsers(
       ).forEach((org: DocumentSnapshot) => orgs.push(Org.fromFirestore(org)));
     }
   }
-  console.log(`[DEBUG] Got ${users.length} users.`);
-  const results: UserJSON[] = users
+  console.log(`[DEBUG] Got ${results.length} results.`);
+  const users: UserJSON[] = results
     .filter((user: User) => {
       return user.visible || orgs.some(({ id }) => user.orgs.indexOf(id) >= 0);
     })
@@ -201,6 +215,6 @@ export default async function listUsers(
         return user.toJSON();
       return truncated;
     });
-  console.log(`[DEBUG] Got ${results.length} results.`);
-  res.status(200).json(results);
+  console.log(`[DEBUG] Got ${users.length} users.`);
+  res.status(200).json({ users, hits });
 }
