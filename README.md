@@ -41,12 +41,14 @@ Here's what we're working on at a super high-level:
 
 Do the following (preferably in order):
 
-1. Join our [Slack workspace](https://tutorbookapp.slack.com).
-2. Check the `#development` channel pins for more information on how you can
+1. Join our [Slack workspace](https://join.slack.com/t/tutorbookapp/shared_invite/zt-ekmpvd9t-uzH_HuS6KbwVg480TAMa5g).
+2. Message `#introductions` with who you are and how you can help (and _what_
+   you'll find the most interesting to work on).
+3. Check the `#development` channel pins for more information on how you can
    help out.
-3. Read through the links included below to become familiar with our current tech
+4. Read through the links included below to become familiar with our current tech
    stack.
-4. Contribute:
+5. Contribute:
    - Choose [an
      issue](https://github.com/orgs/tutorbookapp/projects/2?fullscreen=true) (from
      the top of the **To Do** column; the most pressing issues are at the top).
