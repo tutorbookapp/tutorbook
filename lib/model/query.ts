@@ -28,6 +28,8 @@ export interface QueryInterface {
   orgs: Option<string>[];
   tags: Option<Tag>[];
   visible?: boolean;
+  hitsPerPage: number;
+  page: number;
 }
 
 export type QueryJSON = Omit<QueryInterface, 'availability'> & {
@@ -67,6 +69,13 @@ export class Query implements QueryInterface {
   public tags: Option<Tag>[] = [];
 
   public visible?: boolean;
+
+  // The number of hits per page (for pagination purposes).
+  // @see {@link https://www.algolia.com/doc/guides/building-search-ui/going-further/backend-search/how-to/pagination/}
+  // @see {@link https://www.algolia.com/doc/api-reference/api-parameters/hitsPerPage/}
+  public hitsPerPage = 20;
+
+  public page = 1;
 
   public constructor(query: Partial<QueryInterface> = {}) {
     Object.entries(query).forEach(([key, val]: [string, any]) => {
