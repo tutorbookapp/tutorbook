@@ -127,7 +127,6 @@ export class Timeslot implements TimeslotBase<Date> {
    * components will render their `Date`s properly for that locale).
    */
   public static fromString(timeslot: string): Timeslot {
-    /* eslint-disable no-new-wrappers */
     const split: string[] = timeslot.split(' ');
     if (split.length !== 7) throw new Error('Invalid time string.');
 
@@ -142,16 +141,16 @@ export class Timeslot implements TimeslotBase<Date> {
       : dayStr) as keyof typeof Day;
     const dayNum: DayAlias = Day[day];
 
-    let fromHr: number = new Number(fromStr.split(':')[0]).valueOf();
-    const fromMin: number = new Number(fromStr.split(':')[1]).valueOf();
+    let fromHr: number = Number(fromStr.split(':')[0]).valueOf();
+    const fromMin: number = Number(fromStr.split(':')[1]).valueOf();
     if (fromAMPM === 'PM') {
       fromHr += 12;
     } else if (fromAMPM !== 'AM') {
       throw new Error('Invalid AM/PM format for from time.');
     }
 
-    let toHr: number = new Number(toStr.split(':')[0]).valueOf();
-    const toMin: number = new Number(toStr.split(':')[1]).valueOf();
+    let toHr: number = Number(toStr.split(':')[0]).valueOf();
+    const toMin: number = Number(toStr.split(':')[1]).valueOf();
     if (toAMPM === 'PM' || toAMPM === 'PM.') {
       toHr += 12;
     } else if (toAMPM !== 'AM' && toAMPM !== 'AM.') {
@@ -162,7 +161,6 @@ export class Timeslot implements TimeslotBase<Date> {
       TimeUtils.getDate(dayNum, fromHr, fromMin),
       TimeUtils.getDate(dayNum, toHr, toMin)
     );
-    /* eslint-enable no-new-wrappers */
   }
 
   /**
