@@ -105,7 +105,10 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        const query = new Query({ orgs: [{ label: org.name, value: org.id }] });
+        const query = new Query({
+          orgs: [{ label: org.name, value: org.id }],
+          hitsPerPage: 10,
+        });
         console.log('[DEBUG] Query:', query.endpoint);
         const url = `http://${req.headers.host as string}${query.endpoint}`;
         const [error, response] = await to<

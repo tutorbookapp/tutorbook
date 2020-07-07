@@ -85,7 +85,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const { locale } = useIntl();
   const msg: IntlHelper = useMsg();
   const [query, setQuery] = React.useState<Query>(
-    new Query({ orgs: [{ label: org.name, value: org.id }] })
+    new Query({ orgs: [{ label: org.name, value: org.id }], hitsPerPage: 10 })
   );
 
   const mutateUser = React.useRef<(updated: UserJSON) => Promise<void>>(
