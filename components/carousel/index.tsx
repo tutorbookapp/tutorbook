@@ -1,8 +1,8 @@
 import React from 'react';
-
-import { Aspect, User, UserJSON } from 'lib/model';
-
 import useSWR from 'swr';
+
+import { ListUsersRes } from 'lib/api/list-users';
+import { Aspect, User, UserJSON } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from './carousel';
@@ -14,12 +14,12 @@ interface Props {
 }
 
 export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
-  const { data: users } = useSWR<UserJSON[]>(`/api/users?aspect=${aspect}`);
+  const { data } = useSWR<ListUsersRes>(`/api/users?aspect=${aspect}`);
   return (
     <>
-      {users && (
+      {data && (
         <Carousel>
-          {users
+          {data.users
             .map((u: UserJSON) => User.fromJSON(u))
             .map((user: User) => (
               <UserCard
@@ -30,7 +30,7 @@ export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
             ))}
         </Carousel>
       )}
-      {!users && (
+      {!data && (
         <Carousel>
           {Array(6)
             .fill(null)

@@ -2,6 +2,8 @@ import url from 'url';
 import to from 'await-to-js';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
+import { ListUsersRes } from 'lib/api/list-users';
+
 import { ApiError } from './errors';
 import { User, UserJSON, Check, Tag, Aspect } from './user';
 import { Availability, AvailabilityJSON } from './availability';
@@ -113,9 +115,11 @@ export class Query implements QueryInterface {
     });
   }
 
-  public async search(pathname = '/api/users'): Promise<ReadonlyArray<User>> {
+  public async search(
+    pathname = '/api/users'
+  ): Promise<{ users: User[]; hits: number }> {
     const [err, res] = await to<
-      AxiosResponse<UserJSON[]>,
+      AxiosResponse<ListUsersRes>,
       AxiosError<ApiError>
     >(axios.get(this.getURL(pathname)));
     if (err && err.response) {
@@ -128,9 +132,10 @@ export class Query implements QueryInterface {
       console.error('[ERROR] While sending request:', err);
       throw new Error(`While sending request: ${err.message}`);
     } else {
-      return (res as AxiosResponse<UserJSON[]>).data.map((user: UserJSON) =>
-        User.fromJSON(user)
-      );
+      const {
+        data: { users, hits },
+      } = res as AxiosResponse<ListUsersRes>;
+      return { hits, users: users.map((u: UserJSON) => User.fromJSON(u)) };
     }
   }
 

@@ -2,12 +2,12 @@ import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
 import React from 'react';
-import Router from 'next/router';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 import Search from 'components/search';
 
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
+
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { QueryHeader } from 'components/header';
@@ -20,7 +20,7 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 interface SearchPageProps {
   query: QueryJSON;
-  results: ReadonlyArray<UserJSON>;
+  results: UserJSON[];
   user?: UserJSON;
 }
 
@@ -108,7 +108,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       query: JSON.parse(JSON.stringify(query)) as QueryJSON,
       results: JSON.parse(
-        JSON.stringify(await query.search(url))
+        JSON.stringify((await query.search(url)).users)
       ) as UserJSON[],
       user: JSON.parse(
         JSON.stringify(await getUser(context.params))
@@ -140,7 +140,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
         : newQuery;
     setQuery(updatedQuery);
     setSearching(true);
-    setResults(await updatedQuery.search());
+    setResults((await updatedQuery.search()).users);
     setSearching(false);
   };
 
