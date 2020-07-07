@@ -12,32 +12,50 @@ import styles from './people.module.scss';
 
 interface RowProps {
   user: User;
+  index?: number;
+  style?: React.CSSProperties;
   onClick: () => void;
-  selected: boolean;
-  setSelected: (event: React.FormEvent<HTMLInputElement>) => void;
   onBlur: (event: React.FormEvent<HTMLInputElement>) => void;
   onChange: (event: React.FormEvent<HTMLInputElement>, field: string) => void;
 }
 
 const Row = React.memo(function Row({
   user,
+  index,
+  style,
   onBlur,
   onClick,
   onChange,
 }: RowProps): JSX.Element {
   return (
-    <DataTableRow>
-      <DataTableCell hasFormControl>
+    <DataTableRow
+      style={style}
+      tag='div'
+      role='row'
+      aria-rowindex={index}
+      className={styles.row}
+    >
+      <DataTableCell
+        hasFormControl
+        tag='div'
+        role='cell'
+        className={styles.visible}
+      >
         <Checkbox
           onBlur={onBlur}
           checked={user.visible}
           onChange={(evt) => onChange(evt, 'visible')}
         />
       </DataTableCell>
-      <DataTableCell hasFormControl>
+      <DataTableCell
+        hasFormControl
+        tag='div'
+        role='cell'
+        className={styles.vetted}
+      >
         <Checkbox checked={!!user.verifications.length} onClick={onClick} />
       </DataTableCell>
-      <DataTableCell className={styles.sticky}>
+      <DataTableCell tag='div' className={styles.name}>
         <TextField
           value={user.name}
           onBlur={onBlur}
@@ -45,7 +63,7 @@ const Row = React.memo(function Row({
           onChange={(evt) => onChange(evt, 'name')}
         />
       </DataTableCell>
-      <DataTableCell>
+      <DataTableCell tag='div' role='cell' className={styles.bio}>
         <TextField
           value={user.bio}
           onBlur={onBlur}
@@ -53,7 +71,7 @@ const Row = React.memo(function Row({
           onChange={(evt) => onChange(evt, 'bio')}
         />
       </DataTableCell>
-      <DataTableCell>
+      <DataTableCell tag='div' role='cell' className={styles.email}>
         <TextField
           value={user.email}
           onBlur={onBlur}
@@ -62,7 +80,7 @@ const Row = React.memo(function Row({
           type='email'
         />
       </DataTableCell>
-      <DataTableCell>
+      <DataTableCell tag='div' role='cell' className={styles.phone}>
         <TextField
           value={user.phone ? user.phone : undefined}
           onBlur={onBlur}
@@ -71,22 +89,23 @@ const Row = React.memo(function Row({
           type='tel'
         />
       </DataTableCell>
-      <DataTableCell>{Utils.join(user.tutoring.subjects)}</DataTableCell>
-      <DataTableCell>{Utils.join(user.mentoring.subjects)}</DataTableCell>
+      <DataTableCell tag='div' role='cell' className={styles.subjects}>
+        {Utils.join(user.tutoring.subjects)}
+      </DataTableCell>
+      <DataTableCell tag='div' role='cell' className={styles.subjects}>
+        {Utils.join(user.mentoring.subjects)}
+      </DataTableCell>
     </DataTableRow>
   );
 });
 
 export const LoadingRow = React.memo(function LoadingRow(): JSX.Element {
   const [user, setUser] = React.useState<User>(new User());
-  const [selected, setSelected] = React.useState<boolean>(false);
 
   return (
     <Row
       user={user}
       onClick={() => {}}
-      selected={selected}
-      setSelected={() => setSelected(!selected)}
       onBlur={() => {}}
       onChange={(event: React.FormEvent<HTMLInputElement>, field: string) => {
         setUser(new User({ ...user, [field]: event.currentTarget.value }));
@@ -97,9 +116,9 @@ export const LoadingRow = React.memo(function LoadingRow(): JSX.Element {
 
 interface UserRowProps {
   user: UserJSON;
+  index?: number;
+  style: React.CSSProperties;
   onClick: () => void;
-  selected: boolean;
-  setSelected: (event: React.FormEvent<HTMLInputElement>) => void;
   onChange: Callback<UserJSON>;
 }
 
@@ -113,17 +132,17 @@ interface UserRowProps {
  */
 export default React.memo(function UserRow({
   user,
-  onChange,
+  index,
+  style,
   onClick,
-  selected,
-  setSelected,
+  onChange,
 }: UserRowProps): JSX.Element {
   return (
     <Row
+      style={style}
+      index={index}
       onClick={onClick}
       user={user ? User.fromJSON(user) : user}
-      selected={selected}
-      setSelected={setSelected}
       onBlur={async () => {
         const [err, res] = await to<
           AxiosResponse<UserJSON>,

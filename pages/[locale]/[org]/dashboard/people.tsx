@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { Org, OrgJSON, UserJSON, Query, ApiError } from 'lib/model';
+import { ListUsersRes } from 'lib/api/list-users';
 import { People } from 'components/dashboard';
 import { TabHeader } from 'components/header';
 import {
@@ -33,7 +34,7 @@ import msgs from 'components/dashboard/msgs';
 interface PeoplePageProps {
   errorCode?: number;
   errorMessage?: string;
-  users?: UserJSON[];
+  result?: ListUsersRes;
   org?: OrgJSON;
 }
 
@@ -108,7 +109,7 @@ export const getServerSideProps: GetServerSideProps<
         console.log('[DEBUG] Query:', query.endpoint);
         const url = `http://${req.headers.host as string}${query.endpoint}`;
         const [error, response] = await to<
-          AxiosResponse<UserJSON[]>,
+          AxiosResponse<ListUsersRes>,
           AxiosError<ApiError>
         >(
           axios.get<UserJSON[]>(url, {
@@ -134,8 +135,8 @@ export const getServerSideProps: GetServerSideProps<
             errorMessage: `${error.name} fetching users: ${error.message}`,
           };
         } else {
-          const { data: users } = response as AxiosResponse<UserJSON[]>;
-          props = { ...props, users, org: org.toJSON() };
+          const { data: result } = response as AxiosResponse<ListUsersRes>;
+          props = { ...props, result, org: org.toJSON() };
         }
       }
       return { props };
@@ -146,7 +147,7 @@ export const getServerSideProps: GetServerSideProps<
 function PeoplePage({
   errorCode,
   errorMessage,
-  users,
+  result,
   org,
 }: PeoplePageProps): JSX.Element {
   const { query } = useRouter();
@@ -171,7 +172,10 @@ function PeoplePage({
           },
         ]}
       />
-      <People org={Org.fromJSON(org as OrgJSON)} people={users as UserJSON[]} />
+      <People
+        org={Org.fromJSON(org as OrgJSON)}
+        initialData={result as ListUsersRes}
+      />
       <Footer />
       <Intercom />
     </>

@@ -42,6 +42,7 @@
     "@types/phone": "^2.4.0",
     "@types/react": "^16.9.41",
     "@types/react-test-renderer": "^16.9.2",
+    "@types/react-window": "^1.8.2",
     "@types/uuid": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
     "@typescript-eslint/parser": "^3.5.0",
@@ -119,6 +120,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-intl": "^4.7.6",
+    "react-window": "^1.8.5",
     "swr": "^0.2.3",
     "url": "^0.11.0",
     "uuid": "^8.2.0"

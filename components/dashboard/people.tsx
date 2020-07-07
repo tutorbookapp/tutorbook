@@ -9,9 +9,12 @@ import {
   DataTableBody,
   DataTableRow,
 } from '@rmwc/data-table';
+import { FixedSizeList } from 'react-window';
 import { Snackbar } from '@rmwc/snackbar';
+import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
+import { ListUsersRes } from 'lib/api/list-users';
 import { Option, Query, Org, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 import { defMsg, useMsg, useIntl, IntlHelper } from 'lib/intl';
@@ -53,23 +56,21 @@ const msgs = defMsg({
 });
 
 interface PeopleProps {
-  people: UserJSON[];
+  initialData: ListUsersRes;
   org: Org;
 }
 
-export default function People({ people, org }: PeopleProps): JSX.Element {
+export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const { locale } = useIntl();
   const msg: IntlHelper = useMsg();
   const [query, setQuery] = React.useState<Query>(
     new Query({ orgs: [{ label: org.name, value: org.id }] })
   );
 
-  const { data: users, mutate, isValidating } = useSWR<UserJSON[]>(
-    query.endpoint,
-    { initialData: people }
-  );
+  const { data, mutate, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
+    initialData,
+  });
 
-  const [selected, setSelected] = React.useState<string[]>([]);
   const [viewing, setViewing] = React.useState<UserJSON | undefined>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
 
@@ -83,14 +84,19 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
     void mutateSWR(query.endpoint);
   }, [query]);
 
-  /* eslint-disable-next-line @typescript-eslint/require-await */
+  /* eslint-disable @typescript-eslint/require-await */
   const update = (updated: UserJSON) =>
-    mutate(async (prev: UserJSON[]) => {
+    mutate(async (prev: ListUsersRes) => {
       if (!prev) return prev;
-      const idx: number = prev.findIndex((u) => u.id === updated.id);
+      const { users } = prev;
+      const idx: number = users.findIndex((u) => u.id === updated.id);
       if (idx < 0) return prev;
-      return [...prev.slice(0, idx), updated, ...prev.slice(idx + 1)];
+      return {
+        ...prev,
+        users: [...users.slice(0, idx), updated, ...users.slice(idx + 1)],
+      };
     }, false);
+  /* eslint-enable @typescript-eslint/require-await */
 
   return (
     <>
@@ -217,46 +223,76 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
             </ChipSet>
           </div>
         </div>
-        {(isValidating || !!(users || []).length) && (
-          <DataTable className={styles.table}>
-            <DataTableContent>
-              <DataTableHead className={styles.header}>
-                <DataTableRow>
-                  <DataTableHeadCell hasFormControl>Visible</DataTableHeadCell>
-                  <DataTableHeadCell hasFormControl>Vetted</DataTableHeadCell>
-                  <DataTableHeadCell className={styles.sticky}>
+        {(isValidating || !!(data ? data.users : []).length) && (
+          <DataTable className={styles.table} tag='div'>
+            <DataTableContent
+              tag='div'
+              role='table'
+              aria-rowcount={data && data.users ? data.users.length + 1 : 10}
+            >
+              <DataTableHead
+                tag='div'
+                className={styles.header}
+                role='rowgroup'
+              >
+                <DataTableRow tag='div' className={styles.row} role='row'>
+                  <DataTableHeadCell
+                    hasFormControl
+                    tag='div'
+                    className={styles.visible}
+                  >
+                    Visible
+                  </DataTableHeadCell>
+                  <DataTableHeadCell
+                    hasFormControl
+                    tag='div'
+                    className={styles.vetted}
+                  >
+                    Vetted
+                  </DataTableHeadCell>
+                  <DataTableHeadCell tag='div' className={styles.name}>
                     Name
                   </DataTableHeadCell>
-                  <DataTableHeadCell>Bio</DataTableHeadCell>
-                  <DataTableHeadCell>Email</DataTableHeadCell>
-                  <DataTableHeadCell>Phone</DataTableHeadCell>
-                  <DataTableHeadCell>Tutoring Subjects</DataTableHeadCell>
-                  <DataTableHeadCell>Mentoring Subjects</DataTableHeadCell>
+                  <DataTableHeadCell tag='div' className={styles.bio}>
+                    Bio
+                  </DataTableHeadCell>
+                  <DataTableHeadCell tag='div' className={styles.email}>
+                    Email
+                  </DataTableHeadCell>
+                  <DataTableHeadCell tag='div' className={styles.phone}>
+                    Phone
+                  </DataTableHeadCell>
+                  <DataTableHeadCell tag='div' className={styles.subjects}>
+                    Tutoring Subjects
+                  </DataTableHeadCell>
+                  <DataTableHeadCell tag='div' className={styles.subjects}>
+                    Mentoring Subjects
+                  </DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
-              <DataTableBody>
-                {!!users &&
-                  !!users.length &&
-                  users.map((user: UserJSON) => (
-                    <UserRow
-                      key={user.id}
-                      user={user}
-                      onChange={update}
-                      onClick={() => setViewing(user)}
-                      selected={selected.indexOf(user.id) >= 0}
-                      setSelected={() => {
-                        const idx = selected.indexOf(user.id);
-                        if (idx < 0) {
-                          setSelected([...selected, user.id]);
-                        } else {
-                          const copy: string[] = Array.from(selected);
-                          copy.splice(idx, 1);
-                          setSelected(copy);
-                        }
-                      }}
-                    />
-                  ))}
-                {(!users || !users.length) &&
+              <DataTableBody tag='div' role='rowgroup'>
+                {!!data && !!data.users.length && (
+                  <FixedSizeList
+                    height={500}
+                    width='auto'
+                    itemCount={data.users.length}
+                    itemData={data.users}
+                    itemKey={(idx: number, users: UserJSON[]) => users[idx].id}
+                    itemSize={52}
+                  >
+                    {({ index, style }) => (
+                      <UserRow
+                        style={style}
+                        index={index}
+                        key={data.users[index].id}
+                        user={data.users[index]}
+                        onChange={update}
+                        onClick={() => setViewing(data.users[index])}
+                      />
+                    )}
+                  </FixedSizeList>
+                )}
+                {(!data || !data.users.length) &&
                   isValidating &&
                   Array(10)
                     .fill(null)
@@ -265,11 +301,36 @@ export default function People({ people, org }: PeopleProps): JSX.Element {
             </DataTableContent>
           </DataTable>
         )}
-        {!isValidating && !(users || []).length && (
+        {!isValidating && !(data ? data.users : []).length && (
           <div className={styles.empty}>
             <Placeholder>NO PEOPLE TO SHOW</Placeholder>
           </div>
         )}
+        <div className={styles.pagination}>
+          <div className={styles.left} />
+          <div className={styles.right}>
+            <div className={styles.hitsPerPage}>
+              Rows per page:
+              <Select
+                enhanced
+                value={`${query.hitsPerPage}`}
+                options={['10', '15', '20', '25', '30']}
+                onChange={(event: React.FormEvent<HTMLSelectElement>) =>
+                  setQuery(
+                    (prev: Query) =>
+                      new Query({
+                        ...prev,
+                        hitsPerPage: Number(event.currentTarget.value),
+                      })
+                  )
+                }
+              />
+            </div>
+            <div className={styles.pageNumber}>1-10 of 100</div>
+            <IconButton icon='chevron_left' />
+            <IconButton icon='chevron_right' />
+          </div>
+        </div>
       </div>
     </>
   );
