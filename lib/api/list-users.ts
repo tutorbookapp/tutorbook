@@ -103,12 +103,18 @@ async function searchUsers(
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
   const optionalFilters: string[] = getOptionalFilterStrings(query);
-  console.log('[DEBUG] Filtering by:', { filterStrings, optionalFilters });
+  const { page, hitsPerPage } = query;
+  console.log('[DEBUG] Filtering by:', {
+    page,
+    hitsPerPage,
+    optionalFilters,
+    filterStrings,
+  });
   await Promise.all(
     filterStrings.map(async (filterString) => {
       const options: SearchOptions | undefined = filterString
-        ? { optionalFilters, filters: filterString }
-        : { optionalFilters };
+        ? { page, hitsPerPage, optionalFilters, filters: filterString }
+        : { page, hitsPerPage, optionalFilters };
       const [err, res] = await to<SearchResponse<SearchHit>>(
         index.search('', options) as Promise<SearchResponse<SearchHit>>
       );

@@ -58,82 +58,73 @@ $filters-height: 56px;
 
   :global(.mdc-data-table__row:not(.mdc-data-table__row--selected):hover)
     .name
-    .field {
+    :global(.mdc-text-field) {
     background-color: rgba(0, 0, 0, 0.04);
   }
 
-  .row {
-    display: flex;
-    width: auto !important;
+  :global(.mdc-data-table__cell),
+  :global(.mdc-data-table__header-cell) {
+    padding: 0 16px;
 
-    > div {
-      display: flex;
-      align-items: center;
-      padding-top: 0;
-      padding-bottom: 0;
-      flex: 0 0 auto;
+    &.visible,
+    &.vetted {
+      padding-right: 0;
+    }
 
-      &.visible,
-      &.vetted {
-        width: 60px;
+    &.name {
+      min-width: 150px;
+      position: sticky;
+      top: auto;
+      left: 0;
+      background-color: map.get(config.$colors, 'background');
+      box-shadow: 1px 0 #e0e0e0;
+      z-index: 1;
+
+      @-moz-document url-prefix() {
+        box-shadow: 1px 0 #e0e0e0, 0 -1px #e0e0e0;
+      }
+    }
+
+    &.bio {
+      min-width: 400px;
+    }
+
+    &.email {
+      min-width: 200px;
+    }
+
+    &.phone {
+      min-width: 150px;
+    }
+
+    &.subjects {
+      max-width: 400px;
+    }
+
+    :global(.mdc-text-field) {
+      vertical-align: middle;
+      background-color: transparent;
+      margin: -12px -16px;
+      border-radius: 0;
+      display: block;
+      height: 100%;
+
+      :global(.mdc-line-ripple::before) {
+        border-bottom-width: 0;
       }
 
-      &.name {
-        width: 150px;
-        position: sticky;
-        top: auto;
-        left: 0;
-        background-color: map.get(config.$colors, 'background');
-        box-shadow: 1px 0 #e0e0e0;
-        z-index: 1;
-
-        @-moz-document url-prefix() {
-          box-shadow: 1px 0 #e0e0e0, 0 -1px #e0e0e0;
-        }
-      }
-
-      &.bio {
-        width: 400px;
-      }
-
-      &.email {
-        width: 200px;
-      }
-
-      &.phone {
-        width: 150px;
-      }
-
-      &.subjects {
-        width: 250px;
-      }
-
-      .field {
-        vertical-align: middle;
-        background-color: transparent;
-        margin: -12px -16px;
-        border-radius: 0;
-        display: block;
-        height: 100%;
-        width: calc(100% + 32px);
-
-        :global(.mdc-line-ripple::before) {
-          border-bottom-width: 0;
-        }
-
-        input {
-          @include typography.typography('body2');
-        }
-      }
-
-      .switch {
-        vertical-align: middle;
-        margin-left: 0.5rem;
-      }
-
-      .select :global(.mdc-select__selected-text) {
+      input {
         @include typography.typography('body2');
       }
+    }
+
+    :global(.mdc-switch) {
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
+    :global(.mdc-select .mdc-select__selected-text) {
+      @include typography.typography('body2');
     }
   }
 }

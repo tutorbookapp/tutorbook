@@ -77,7 +77,10 @@ export class Query implements QueryInterface {
   // @see {@link https://www.algolia.com/doc/api-reference/api-parameters/hitsPerPage/}
   public hitsPerPage = 20;
 
-  public page = 1;
+  // The current page number. For some CS-related reason, Algolia starts
+  // counting page numbers from 0 instead of 1.
+  // @see {@link https://www.algolia.com/doc/api-reference/api-parameters/page/}
+  public page = 0;
 
   public constructor(query: Partial<QueryInterface> = {}) {
     Object.entries(query).forEach(([key, val]: [string, any]) => {
@@ -93,6 +96,12 @@ export class Query implements QueryInterface {
 
   public get endpoint(): string {
     return this.getURL('/api/users');
+  }
+
+  public getPaginationString(hits: number): string {
+    const begin: number = this.hitsPerPage * this.page + 1;
+    const end: number = this.hitsPerPage * (this.page + 1);
+    return `${begin}-${end > hits ? hits : end} of ${hits}`;
   }
 
   private getURL(pathname: string): string {
@@ -111,6 +120,8 @@ export class Query implements QueryInterface {
         orgs: encode(this.orgs),
         tags: encode(this.tags),
         visible: this.visible,
+        page: this.page,
+        hitsPerPage: this.hitsPerPage,
       },
     });
   }
@@ -149,14 +160,18 @@ export class Query implements QueryInterface {
       checks: decode(params.checks),
       langs: decode(params.langs),
       subjects: decode(params.subjects),
+      tags: decode(params.tags),
+      visible: params.visible ? params.visible === 'true' : undefined,
       availability: params.availability
         ? Availability.fromURLParam(params.availability)
         : new Availability(),
       aspect: params.aspect
         ? (decodeURIComponent(params.aspect) as Aspect)
         : 'mentoring',
-      tags: decode(params.tags),
-      visible: params.visible ? params.visible === 'true' : undefined,
+      page: params.page ? Number(decodeURIComponent(params.page)) : 0,
+      hitsPerPage: params.hitsPerPage
+        ? Number(decodeURIComponent(params.hitsPerPage))
+        : 20,
     });
   }
 

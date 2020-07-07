@@ -224,74 +224,47 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           </div>
         </div>
         {(isValidating || !!(data ? data.users : []).length) && (
-          <DataTable className={styles.table} tag='div'>
-            <DataTableContent
-              tag='div'
-              role='table'
-              aria-rowcount={data && data.users ? data.users.length + 1 : 10}
-            >
-              <DataTableHead
-                tag='div'
-                className={styles.header}
-                role='rowgroup'
-              >
-                <DataTableRow tag='div' className={styles.row} role='row'>
-                  <DataTableHeadCell
-                    hasFormControl
-                    tag='div'
-                    className={styles.visible}
-                  >
+          <DataTable className={styles.table}>
+            <DataTableContent>
+              <DataTableHead className={styles.header}>
+                <DataTableRow>
+                  <DataTableHeadCell hasFormControl className={styles.visible}>
                     Visible
                   </DataTableHeadCell>
-                  <DataTableHeadCell
-                    hasFormControl
-                    tag='div'
-                    className={styles.vetted}
-                  >
+                  <DataTableHeadCell hasFormControl className={styles.vetted}>
                     Vetted
                   </DataTableHeadCell>
-                  <DataTableHeadCell tag='div' className={styles.name}>
+                  <DataTableHeadCell className={styles.name}>
                     Name
                   </DataTableHeadCell>
-                  <DataTableHeadCell tag='div' className={styles.bio}>
+                  <DataTableHeadCell className={styles.bio}>
                     Bio
                   </DataTableHeadCell>
-                  <DataTableHeadCell tag='div' className={styles.email}>
+                  <DataTableHeadCell className={styles.email}>
                     Email
                   </DataTableHeadCell>
-                  <DataTableHeadCell tag='div' className={styles.phone}>
+                  <DataTableHeadCell className={styles.phone}>
                     Phone
                   </DataTableHeadCell>
-                  <DataTableHeadCell tag='div' className={styles.subjects}>
+                  <DataTableHeadCell className={styles.subjects}>
                     Tutoring Subjects
                   </DataTableHeadCell>
-                  <DataTableHeadCell tag='div' className={styles.subjects}>
+                  <DataTableHeadCell className={styles.subjects}>
                     Mentoring Subjects
                   </DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
-              <DataTableBody tag='div' role='rowgroup'>
-                {!!data && !!data.users.length && (
-                  <FixedSizeList
-                    height={500}
-                    width='auto'
-                    itemCount={data.users.length}
-                    itemData={data.users}
-                    itemKey={(idx: number, users: UserJSON[]) => users[idx].id}
-                    itemSize={52}
-                  >
-                    {({ index, style }) => (
-                      <UserRow
-                        style={style}
-                        index={index}
-                        key={data.users[index].id}
-                        user={data.users[index]}
-                        onChange={update}
-                        onClick={() => setViewing(data.users[index])}
-                      />
-                    )}
-                  </FixedSizeList>
-                )}
+              <DataTableBody>
+                {!!data &&
+                  !!data.users.length &&
+                  data.users.map((user: UserJSON) => (
+                    <UserRow
+                      key={user.id}
+                      user={user}
+                      onChange={update}
+                      onClick={() => setViewing(user)}
+                    />
+                  ))}
                 {(!data || !data.users.length) &&
                   isValidating &&
                   Array(10)
@@ -314,7 +287,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               <Select
                 enhanced
                 value={`${query.hitsPerPage}`}
-                options={['10', '15', '20', '25', '30']}
+                options={['5', '10', '15', '20', '25', '30']}
                 onChange={(event: React.FormEvent<HTMLSelectElement>) =>
                   setQuery(
                     (prev: Query) =>
@@ -326,9 +299,29 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 }
               />
             </div>
-            <div className={styles.pageNumber}>1-10 of 100</div>
-            <IconButton icon='chevron_left' />
-            <IconButton icon='chevron_right' />
+            <div className={styles.pageNumber}>
+              {query.getPaginationString(data ? data.hits : 0)}
+            </div>
+            <IconButton
+              disabled={query.page <= 0}
+              icon='chevron_left'
+              onClick={() =>
+                setQuery(
+                  (prev: Query) => new Query({ ...prev, page: prev.page - 1 })
+                )
+              }
+            />
+            <IconButton
+              disabled={
+                query.page + 1 >= (data ? data.hits : 0) / query.hitsPerPage
+              }
+              icon='chevron_right'
+              onClick={() =>
+                setQuery(
+                  (prev: Query) => new Query({ ...prev, page: prev.page + 1 })
+                )
+              }
+            />
           </div>
         </div>
       </div>

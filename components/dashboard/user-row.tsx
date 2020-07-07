@@ -12,8 +12,6 @@ import styles from './people.module.scss';
 
 interface RowProps {
   user: User;
-  index?: number;
-  style?: React.CSSProperties;
   onClick: () => void;
   onBlur: (event: React.FormEvent<HTMLInputElement>) => void;
   onChange: (event: React.FormEvent<HTMLInputElement>, field: string) => void;
@@ -21,78 +19,56 @@ interface RowProps {
 
 const Row = React.memo(function Row({
   user,
-  index,
-  style,
   onBlur,
   onClick,
   onChange,
 }: RowProps): JSX.Element {
   return (
-    <DataTableRow
-      style={style}
-      tag='div'
-      role='row'
-      aria-rowindex={index}
-      className={styles.row}
-    >
-      <DataTableCell
-        hasFormControl
-        tag='div'
-        role='cell'
-        className={styles.visible}
-      >
+    <DataTableRow>
+      <DataTableCell hasFormControl className={styles.visible}>
         <Checkbox
           onBlur={onBlur}
           checked={user.visible}
           onChange={(evt) => onChange(evt, 'visible')}
         />
       </DataTableCell>
-      <DataTableCell
-        hasFormControl
-        tag='div'
-        role='cell'
-        className={styles.vetted}
-      >
+      <DataTableCell hasFormControl className={styles.vetted}>
         <Checkbox checked={!!user.verifications.length} onClick={onClick} />
       </DataTableCell>
-      <DataTableCell tag='div' className={styles.name}>
+      <DataTableCell className={styles.name}>
         <TextField
           value={user.name}
           onBlur={onBlur}
-          className={styles.field}
           onChange={(evt) => onChange(evt, 'name')}
         />
       </DataTableCell>
-      <DataTableCell tag='div' role='cell' className={styles.bio}>
+      <DataTableCell className={styles.bio}>
         <TextField
           value={user.bio}
           onBlur={onBlur}
-          className={`${styles.field} ${styles.bio}`}
           onChange={(evt) => onChange(evt, 'bio')}
         />
       </DataTableCell>
-      <DataTableCell tag='div' role='cell' className={styles.email}>
+      <DataTableCell className={styles.email}>
         <TextField
           value={user.email}
           onBlur={onBlur}
-          className={`${styles.field} ${styles.email}`}
           onChange={(evt) => onChange(evt, 'email')}
           type='email'
         />
       </DataTableCell>
-      <DataTableCell tag='div' role='cell' className={styles.phone}>
+      <DataTableCell className={styles.phone}>
         <TextField
           value={user.phone ? user.phone : undefined}
           onBlur={onBlur}
-          className={styles.field}
           onChange={(evt) => onChange(evt, 'phone')}
           type='tel'
         />
       </DataTableCell>
-      <DataTableCell tag='div' role='cell' className={styles.subjects}>
+      <DataTableCell className={styles.subjects}>
         {Utils.join(user.tutoring.subjects)}
       </DataTableCell>
-      <DataTableCell tag='div' role='cell' className={styles.subjects}>
+      <DataTableCell className={styles.subjects}>
         {Utils.join(user.mentoring.subjects)}
       </DataTableCell>
     </DataTableRow>
@@ -116,8 +92,6 @@ export const LoadingRow = React.memo(function LoadingRow(): JSX.Element {
 
 interface UserRowProps {
   user: UserJSON;
-  index?: number;
-  style: React.CSSProperties;
   onClick: () => void;
   onChange: Callback<UserJSON>;
 }
@@ -132,15 +106,11 @@ interface UserRowProps {
  */
 export default React.memo(function UserRow({
   user,
-  index,
-  style,
   onClick,
   onChange,
 }: UserRowProps): JSX.Element {
   return (
     <Row
-      style={style}
-      index={index}
       onClick={onClick}
       user={user ? User.fromJSON(user) : user}
       onBlur={async () => {
