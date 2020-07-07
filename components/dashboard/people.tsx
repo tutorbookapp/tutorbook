@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import useSWR, { mutate as mutateSWR } from 'swr';
+import useSWR, { mutate } from 'swr';
 
 import {
   DataTable,
@@ -60,6 +60,27 @@ interface PeopleProps {
   org: Org;
 }
 
+function getMutateUserCallback(
+  key: string
+): (updated: UserJSON) => Promise<void> {
+  /* eslint-disable-next-line @typescript-eslint/require-await */
+  return (updated: UserJSON) =>
+    mutate(
+      key,
+      async (prev: ListUsersRes) => {
+        if (!prev) return prev;
+        const { users } = prev;
+        const idx: number = users.findIndex((u) => u.id === updated.id);
+        if (idx < 0) return prev;
+        return {
+          ...prev,
+          users: [...users.slice(0, idx), updated, ...users.slice(idx + 1)],
+        };
+      },
+      false
+    );
+}
+
 export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const { locale } = useIntl();
   const msg: IntlHelper = useMsg();
@@ -67,7 +88,10 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     new Query({ orgs: [{ label: org.name, value: org.id }] })
   );
 
-  const { data, mutate, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
+  const mutateUser = React.useRef<(updated: UserJSON) => Promise<void>>(
+    getMutateUserCallback(query.endpoint)
+  );
+  const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
     initialData,
   });
 
@@ -81,22 +105,9 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     );
   }, [org]);
   React.useEffect(() => {
-    void mutateSWR(query.endpoint);
+    void mutate(query.endpoint);
+    mutateUser.current = getMutateUserCallback(query.endpoint);
   }, [query]);
-
-  /* eslint-disable @typescript-eslint/require-await */
-  const update = (updated: UserJSON) =>
-    mutate(async (prev: ListUsersRes) => {
-      if (!prev) return prev;
-      const { users } = prev;
-      const idx: number = users.findIndex((u) => u.id === updated.id);
-      if (idx < 0) return prev;
-      return {
-        ...prev,
-        users: [...users.slice(0, idx), updated, ...users.slice(idx + 1)],
-      };
-    }, false);
-  /* eslint-enable @typescript-eslint/require-await */
 
   return (
     <>
@@ -105,7 +116,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           user={viewing}
           onChange={(updated: UserJSON) => {
             setViewing(updated);
-            return update(updated);
+            return mutateUser.current(updated);
           }}
           onClosed={() => setViewing(undefined)}
         />
@@ -197,29 +208,19 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               <Chip
                 label={msg(msgs.visible)}
                 checkmark
-                onInteraction={() =>
-                  setQuery(
-                    (prev: Query) =>
-                      new Query({
-                        ...prev,
-                        visible: query.visible !== true ? true : undefined,
-                      })
-                  )
-                }
+                onInteraction={() => {
+                  const visible = query.visible !== true ? true : undefined;
+                  setQuery((prev: Query) => new Query({ ...prev, visible }));
+                }}
                 selected={query.visible === true}
               />
               <Chip
                 label={msg(msgs.hidden)}
                 checkmark
-                onInteraction={() =>
-                  setQuery(
-                    (prev: Query) =>
-                      new Query({
-                        ...prev,
-                        visible: query.visible !== false ? false : undefined,
-                      })
-                  )
-                }
+                onInteraction={() => {
+                  const visible = query.visible !== false ? false : undefined;
+                  setQuery((prev: Query) => new Query({ ...prev, visible }));
+                }}
                 selected={query.visible === false}
               />
             </ChipSet>
@@ -275,7 +276,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                     <UserRow
                       key={user.id}
                       user={user}
-                      onChange={update}
+                      onChange={mutateUser.current}
                       onClick={() => setViewing(user)}
                     />
                   ))}
@@ -302,15 +303,12 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 enhanced
                 value={`${query.hitsPerPage}`}
                 options={['5', '10', '15', '20', '25', '30']}
-                onChange={(event: React.FormEvent<HTMLSelectElement>) =>
+                onChange={(event: React.FormEvent<HTMLSelectElement>) => {
+                  const hitsPerPage = Number(event.currentTarget.value);
                   setQuery(
-                    (prev: Query) =>
-                      new Query({
-                        ...prev,
-                        hitsPerPage: Number(event.currentTarget.value),
-                      })
-                  )
-                }
+                    (prev: Query) => new Query({ ...prev, hitsPerPage })
+                  );
+                }}
               />
             </div>
             <div className={styles.pageNumber}>

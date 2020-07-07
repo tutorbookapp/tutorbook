@@ -7,6 +7,7 @@ import React from 'react';
 import Utils from 'lib/utils';
 
 import to from 'await-to-js';
+import equal from 'fast-deep-equal';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import styles from './people.module.scss';
 
@@ -17,7 +18,7 @@ interface RowProps {
   onChange: (event: React.FormEvent<HTMLInputElement>, field: string) => void;
 }
 
-const Row = React.memo(function Row({
+const Row = function Row({
   user,
   onBlur,
   onClick,
@@ -73,7 +74,7 @@ const Row = React.memo(function Row({
       </DataTableCell>
     </DataTableRow>
   );
-});
+};
 
 export const LoadingRow = React.memo(function LoadingRow(): JSX.Element {
   const [user, setUser] = React.useState<User>(new User());
@@ -104,41 +105,42 @@ interface UserRowProps {
  * to update it's data (i.e. perform a locale mutation and re-fetch) once the
  * change is enacted.
  */
-export default React.memo(function UserRow({
-  user,
-  onClick,
-  onChange,
-}: UserRowProps): JSX.Element {
-  return (
-    <Row
-      onClick={onClick}
-      user={user ? User.fromJSON(user) : user}
-      onBlur={async () => {
-        const [err, res] = await to<
-          AxiosResponse<UserJSON>,
-          AxiosError<ApiError>
-        >(axios.put<UserJSON>(`/api/users/${user.id}`, user));
-        if (err && err.response) {
-          console.error(`[ERROR] ${err.response.data.msg}`);
-          throw new Error(err.response.data.msg);
-        } else if (err && err.request) {
-          console.error('[ERROR] Users API did not respond:', err.request);
-          throw new Error('Users API did not respond.');
-        } else if (err) {
-          console.error('[ERROR] While updating user:', err);
-          throw new Error(`While updating user: ${err.message}`);
-        } else {
-          const { data: updated } = res as AxiosResponse<UserJSON>;
-          return onChange(updated);
-        }
-      }}
-      onChange={(event: React.FormEvent<HTMLInputElement>, field: string) => {
-        const value: string | boolean =
-          field === 'visible'
-            ? !!event.currentTarget.checked
-            : event.currentTarget.value;
-        return onChange({ ...user, [field]: value });
-      }}
-    />
-  );
-});
+export default React.memo(
+  function UserRow({ user, onClick, onChange }: UserRowProps): JSX.Element {
+    return (
+      <Row
+        onClick={onClick}
+        user={user ? User.fromJSON(user) : user}
+        onBlur={async () => {
+          const [err, res] = await to<
+            AxiosResponse<UserJSON>,
+            AxiosError<ApiError>
+          >(axios.put<UserJSON>(`/api/users/${user.id}`, user));
+          if (err && err.response) {
+            console.error(`[ERROR] ${err.response.data.msg}`);
+            throw new Error(err.response.data.msg);
+          } else if (err && err.request) {
+            console.error('[ERROR] Users API did not respond:', err.request);
+            throw new Error('Users API did not respond.');
+          } else if (err) {
+            console.error('[ERROR] While updating user:', err);
+            throw new Error(`While updating user: ${err.message}`);
+          } else {
+            const { data: updated } = res as AxiosResponse<UserJSON>;
+            return onChange(updated);
+          }
+        }}
+        onChange={(event: React.FormEvent<HTMLInputElement>, field: string) => {
+          const value: string | boolean =
+            field === 'visible'
+              ? !!event.currentTarget.checked
+              : event.currentTarget.value;
+          return onChange({ ...user, [field]: value });
+        }}
+      />
+    );
+  },
+  (prevProps: UserRowProps, nextProps: UserRowProps) => {
+    return equal(prevProps.user, nextProps.user);
+  }
+);
