@@ -9,7 +9,7 @@ import {
   DataTableBody,
   DataTableRow,
 } from '@rmwc/data-table';
-import { FixedSizeList } from 'react-window';
+import { TextField } from '@rmwc/textfield';
 import { Snackbar } from '@rmwc/snackbar';
 import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
@@ -187,7 +187,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                   } else {
                     tags.splice(idx, 1);
                   }
-                  setQuery(new Query({ ...query, tags }));
+                  setQuery((prev: Query) => new Query({ ...prev, tags }));
                 }}
                 selected={
                   query.tags.findIndex(({ value }) => value === 'not-vetted') >=
@@ -199,10 +199,11 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 checkmark
                 onInteraction={() =>
                   setQuery(
-                    new Query({
-                      ...query,
-                      visible: query.visible !== true ? true : undefined,
-                    })
+                    (prev: Query) =>
+                      new Query({
+                        ...prev,
+                        visible: query.visible !== true ? true : undefined,
+                      })
                   )
                 }
                 selected={query.visible === true}
@@ -212,15 +213,28 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 checkmark
                 onInteraction={() =>
                   setQuery(
-                    new Query({
-                      ...query,
-                      visible: query.visible !== false ? false : undefined,
-                    })
+                    (prev: Query) =>
+                      new Query({
+                        ...prev,
+                        visible: query.visible !== false ? false : undefined,
+                      })
                   )
                 }
                 selected={query.visible === false}
               />
             </ChipSet>
+          </div>
+          <div className={styles.right}>
+            <TextField
+              outlined
+              placeholder='Search'
+              className={styles.searchField}
+              value={query.query}
+              onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                const text: string = event.currentTarget.value;
+                setQuery((prev: Query) => new Query({ ...prev, query: text }));
+              }}
+            />
           </div>
         </div>
         {(isValidating || !!(data ? data.users : []).length) && (

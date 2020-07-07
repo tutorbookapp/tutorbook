@@ -3,6 +3,8 @@ import * as firebase from 'firebase/app';
 import { Timeslot, TimeslotJSON } from './timeslot';
 import 'firebase/firestore';
 
+import construct from './construct';
+
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
  * importing these directly from the `@firebase/firestore-types` or the
@@ -77,11 +79,8 @@ export class Appt implements ApptInterface {
    * matches the default value at `this[key]`'s type; and then only update the
    * default value if the types match.
    */
-  public constructor(request: Partial<ApptInterface> = {}) {
-    Object.entries(request).forEach(([key, val]: [string, any]) => {
-      /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-      if (val && key in this) (this as Record<string, any>)[key] = val;
-    });
+  public constructor(appt: Partial<ApptInterface> = {}) {
+    construct<ApptInterface>(this, appt);
   }
 
   public toJSON(): ApptJSON {

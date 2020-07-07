@@ -8,8 +8,11 @@ import { ApiError } from './errors';
 import { User, UserJSON, Check, Tag, Aspect } from './user';
 import { Availability, AvailabilityJSON } from './availability';
 
+import construct from './construct';
+
 /**
  * All the supported filters for the search view.
+ * @property query - The current string search query.
  * @property aspect - The currently filtered aspect (i.e. tutors or mentors).
  * @property langs - The languages that the user can speak; OR category.
  * @property subjects - The subjects the user can tutor/mentor for; OR category.
@@ -20,8 +23,11 @@ import { Availability, AvailabilityJSON } from './availability';
  * @property [visible] - Regular users can only ever see users where this is
  * `true`. Organization admins, however, can see all their users (regardless of
  * their visibility) which is why this property exists.
+ * @property hitsPerPage - The number of hits to display per page (pagination).
+ * @property page - The current page number (for pagination purposes).
  */
 export interface QueryInterface {
+  query: string;
   aspect: Aspect;
   langs: Option<string>[];
   subjects: Option<string>[];
@@ -56,6 +62,8 @@ export type QueryDepArray = [
 type QueryURL = { [key in keyof QueryInterface]?: string };
 
 export class Query implements QueryInterface {
+  public query = '';
+
   public aspect: Aspect = 'mentoring';
 
   public subjects: Option<string>[] = [];
@@ -83,11 +91,7 @@ export class Query implements QueryInterface {
   public page = 0;
 
   public constructor(query: Partial<QueryInterface> = {}) {
-    Object.entries(query).forEach(([key, val]: [string, any]) => {
-      const valid: boolean = typeof val === 'boolean' || !!val;
-      /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-      if (valid && key in this) (this as Record<string, any>)[key] = val;
-    });
+    construct<QueryInterface>(this, query);
   }
 
   public get url(): string {
@@ -112,6 +116,7 @@ export class Query implements QueryInterface {
     return url.format({
       pathname,
       query: {
+        query: encodeURIComponent(this.query),
         aspect: encodeURIComponent(this.aspect),
         langs: encode(this.langs),
         subjects: encode(this.subjects),
@@ -156,6 +161,7 @@ export class Query implements QueryInterface {
     }
 
     return new Query({
+      query: decodeURIComponent(params.query || ''),
       orgs: decode<Check>(params.orgs),
       checks: decode(params.checks),
       langs: decode(params.langs),
@@ -165,13 +171,9 @@ export class Query implements QueryInterface {
       availability: params.availability
         ? Availability.fromURLParam(params.availability)
         : new Availability(),
-      aspect: params.aspect
-        ? (decodeURIComponent(params.aspect) as Aspect)
-        : 'mentoring',
-      page: params.page ? Number(decodeURIComponent(params.page)) : 0,
-      hitsPerPage: params.hitsPerPage
-        ? Number(decodeURIComponent(params.hitsPerPage))
-        : 20,
+      aspect: decodeURIComponent(params.aspect || 'mentoring') as Aspect,
+      page: Number(decodeURIComponent(params.page || '0')),
+      hitsPerPage: Number(decodeURIComponent(params.hitsPerPage || '20')),
     });
   }
 

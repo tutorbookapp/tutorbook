@@ -29,8 +29,9 @@ $filters-height: 56px;
     align-items: center;
 
     .searchField {
-      height: $filters-height - 20px;
-      margin-right: 12px;
+      $margin: 10px;
+      height: $filters-height - $margin * 2;
+      margin-right: $margin;
 
       &:not(:global(.mdc-text-field--focused)) {
         :global(.mdc-notched-outline__leading),

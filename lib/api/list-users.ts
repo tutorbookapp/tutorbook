@@ -103,8 +103,9 @@ async function searchUsers(
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
   const optionalFilters: string[] = getOptionalFilterStrings(query);
-  const { page, hitsPerPage } = query;
+  const { page, hitsPerPage, query: text } = query;
   console.log('[DEBUG] Filtering by:', {
+    text,
     page,
     hitsPerPage,
     optionalFilters,
@@ -116,7 +117,7 @@ async function searchUsers(
         ? { page, hitsPerPage, optionalFilters, filters: filterString }
         : { page, hitsPerPage, optionalFilters };
       const [err, res] = await to<SearchResponse<SearchHit>>(
-        index.search('', options) as Promise<SearchResponse<SearchHit>>
+        index.search(text, options) as Promise<SearchResponse<SearchHit>>
       );
       if (err || !res) {
         /* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */

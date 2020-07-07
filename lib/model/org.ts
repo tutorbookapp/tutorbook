@@ -4,6 +4,8 @@ import firebase from 'lib/firebase';
 
 import { AccountInterface, Account } from './account';
 
+import construct from './construct';
+
 /**
  * Type aliases so that we don't have to type out the whole type. We could try
  * importing these directly from the `@firebase/firestore-types` or the
@@ -43,12 +45,7 @@ export class Org extends Account implements OrgInterface {
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
-    Object.entries(org).forEach(([key, val]: [string, any]) => {
-      const valid: boolean = typeof val === 'boolean' || !!val;
-      if (valid && key in this && !(key in new Account()))
-        /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-        (this as Record<string, any>)[key] = val;
-    });
+    construct<OrgInterface, AccountInterface>(this, org, new Account());
   }
 
   /**

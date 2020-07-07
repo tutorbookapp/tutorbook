@@ -12,6 +12,8 @@ import {
 import { Account, AccountInterface } from './account';
 import { RoleAlias } from './appt';
 
+import construct from './construct';
+
 export type Aspect = 'mentoring' | 'tutoring';
 
 /**
@@ -199,12 +201,7 @@ export class User extends Account implements UserInterface {
    */
   public constructor(user: Partial<UserInterface> = {}) {
     super(user);
-    Object.entries(user).forEach(([key, val]: [string, any]) => {
-      const valid: boolean = typeof val === 'boolean' || !!val;
-      if (valid && key in this && !(key in new Account()))
-        /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-        (this as Record<string, any>)[key] = val;
-    });
+    construct<UserInterface, AccountInterface>(this, user, new Account());
     this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
   }
 

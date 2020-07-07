@@ -3,6 +3,8 @@ import * as admin from 'firebase-admin';
 import firebase from 'lib/firebase';
 import phone from 'phone';
 
+import construct from './construct';
+
 type DocumentReference = firebase.firestore.DocumentReference;
 type AdminDocumentReference = admin.firestore.DocumentReference;
 
@@ -44,11 +46,7 @@ export class Account implements AccountInterface {
   public ref?: DocumentReference | AdminDocumentReference;
 
   public constructor(account: Partial<AccountInterface> = {}) {
-    Object.entries(account).forEach(([key, val]: [string, any]) => {
-      const valid: boolean = typeof val === 'boolean' || !!val;
-      /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-      if (valid && key in this) (this as Record<string, any>)[key] = val;
-    });
+    construct<AccountInterface>(this, account);
     this.phone = phone(this.phone)[0] || '';
   }
 
