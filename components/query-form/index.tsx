@@ -10,8 +10,7 @@ import SubjectSelect from 'components/subject-select';
 import msgs from './msgs';
 import styles from './query-form.module.scss';
 
-type FocusTarget = keyof QueryInterface;
-
+type FocusTarget = 'subjects' | 'availability' | 'langs' | 'checks';
 type QueryFormInputConfig = { [key in FocusTarget]?: boolean };
 
 interface QueryFormProps {
@@ -29,7 +28,6 @@ export default function QueryForm({
   subjects,
   availability,
   langs,
-  orgs,
   checks,
 }: QueryFormProps & QueryFormInputConfig): JSX.Element {
   const intl: IntlShape = useIntl();
