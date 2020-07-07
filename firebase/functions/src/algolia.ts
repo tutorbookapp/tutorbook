@@ -1,5 +1,6 @@
 import { config, Change, EventContext } from 'firebase-functions';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
+import to from 'await-to-js';
 
 import * as admin from 'firebase-admin';
 
@@ -67,12 +68,18 @@ export default async function userUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
+  const too = (p: any) => to((p as unknown) as Promise<unknown>);
   const uid: string = context.params.user as string;
   const indexId = `${context.params.partition as string}-users`;
   const index: SearchIndex = client.initIndex(indexId);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting user (${uid})...`);
-    await index.deleteObject(uid);
+    const [err] = await too(index.deleteObject(uid));
+    if (err) {
+      console.error(`[ERROR] ${err.name} while deleting:`, err);
+    } else {
+      console.log(`[DEBUG] Deleted user (${uid}).`);
+    }
   } else {
     const user = change.after.data() as Record<string, unknown>;
     console.log(`[DEBUG] Updating ${user.name as string} (${uid})...`);
@@ -84,8 +91,14 @@ export default async function userUpdate(
       objectID: uid,
       _tags: getTags(user),
     };
-    await index.saveObject(ob);
+    const [err] = await too(index.saveObject(ob));
+    if (err) {
+      console.error(`[ERROR] ${err.name} while updating:`, err);
+    } else {
+      console.log(`[DEBUG] Updated ${user.name as string} (${uid}).`);
+    }
   }
+  console.log(`[DEBUG] Updating search index (${indexId}) settings...`);
   const settings = {
     // Note that we don't have to add the `visible` property here (b/c Algolia
     // automatically supports filtering by numeric and boolean values).
@@ -101,5 +114,10 @@ export default async function userUpdate(
       'featured',
     ].map((attr: string) => `filterOnly(${attr})`),
   };
-  await index.setSettings(settings);
+  const [err] = await too(index.setSettings(settings));
+  if (err) {
+    console.error(`[ERROR] ${err.name} while updating:`, err);
+  } else {
+    console.log(`[DEBUG] Updated search index (${indexId}) settings.`);
+  }
 }
