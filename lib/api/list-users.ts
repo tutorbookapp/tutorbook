@@ -142,7 +142,8 @@ async function searchUsers(
  * @todo Avoid code duplication from `algoliaUserUpdate` Firebase Function.
  */
 function onlyFirstNameAndLastInitial(name: string): string {
-  const split: string[] = name.split(' ');
+  const split: string[] = name.trim().split(' ');
+  if (split.length === 1) return split[0];
   return `${split[0]} ${split[split.length - 1][0]}.`;
 }
 
