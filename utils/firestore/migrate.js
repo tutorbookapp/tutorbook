@@ -144,4 +144,25 @@ const appts = async () => {
   );
 };
 
-users();
+/**
+ * Helper function to trigger an update operation on all of our current `users`
+ * documents (which will then be synced with the Algolia search index via our
+ * GCP Function).
+ *
+ * This is useful for when the Algolia search index gets out of sync due to
+ * known errors with that GCP Function (e.g. when I forgot to update the Algolia
+ * API keys).
+ */
+const triggerUsersUpdate = async () => {
+  const users = (await db.collection('users').get()).docs;
+  await Promise.all(
+    users.map(async (user) => {
+      const original = user.data();
+      const updated = { ...original, bio: original.bio + ' ' };
+      await user.ref.update(updated);
+      await user.ref.update(original);
+    })
+  );
+};
+
+triggerUsersUpdate();
