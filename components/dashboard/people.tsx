@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import useSWR, { mutate } from 'swr';
+import axios from 'axios';
 
 import {
   DataTable,
@@ -60,43 +61,22 @@ interface PeopleProps {
   org: Org;
 }
 
-function getMutateUserCallback(
-  key: string
-): (updated: UserJSON) => Promise<void> {
-  /* eslint-disable-next-line @typescript-eslint/require-await */
-  return (updated: UserJSON) =>
-    mutate(
-      key,
-      async (prev: ListUsersRes) => {
-        if (!prev) return prev;
-        const { users } = prev;
-        const idx: number = users.findIndex((u) => u.id === updated.id);
-        if (idx < 0) return prev;
-        return {
-          ...prev,
-          users: [...users.slice(0, idx), updated, ...users.slice(idx + 1)],
-        };
-      },
-      false
-    );
-}
-
 export default function People({ initialData, org }: PeopleProps): JSX.Element {
-  const { locale } = useIntl();
   const msg: IntlHelper = useMsg();
+  const timeoutIds = React.useRef<
+    Record<string, ReturnType<typeof setTimeout>>
+  >({});
+
+  const [viewingIdx, setViewingIdx] = React.useState<number>();
+  const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<Query>(
     new Query({ orgs: [{ label: org.name, value: org.id }], hitsPerPage: 10 })
   );
 
-  const mutateUser = React.useRef<(updated: UserJSON) => Promise<void>>(
-    getMutateUserCallback(query.endpoint)
-  );
+  const { locale } = useIntl();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
     initialData,
   });
-
-  const [viewing, setViewing] = React.useState<UserJSON | undefined>();
-  const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setQuery(
@@ -106,19 +86,54 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   }, [org]);
   React.useEffect(() => {
     void mutate(query.endpoint);
-    mutateUser.current = getMutateUserCallback(query.endpoint);
   }, [query]);
+
+  async function mutateUser(user: UserJSON): Promise<void> {
+    if (timeoutIds.current[user.id]) {
+      clearTimeout(timeoutIds.current[user.id]);
+      delete timeoutIds.current[user.id];
+    }
+
+    /* eslint-disable @typescript-eslint/require-await */
+    const updateLocal = (updated: UserJSON) =>
+      mutate(
+        query.endpoint,
+        async (prev: ListUsersRes) => {
+          if (!prev) return prev;
+          const { users: old } = prev;
+          const idx: number = old.findIndex(
+            (u: UserJSON) => u.id === updated.id
+          );
+          if (idx < 0) return prev;
+          const users = [...old.slice(0, idx), updated, ...old.slice(idx + 1)];
+          return { ...prev, users };
+        },
+        false
+      );
+    /* eslint-enable @typescript-eslint/require-await */
+
+    const updateRemote = async (updated: UserJSON) => {
+      const url = `/api/users/${updated.id}`;
+      const { data: remoteUpdated } = await axios.put<UserJSON>(url, updated);
+      await updateLocal(remoteUpdated);
+    };
+
+    await updateLocal(user);
+
+    // Only update the user profile remotely after 5secs of no change.
+    // @see {@link https://github.com/vercel/swr/issues/482}
+    timeoutIds.current[user.id] = setTimeout(() => {
+      void updateRemote(user);
+    }, 5000);
+  }
 
   return (
     <>
-      {viewing && (
+      {data && viewingIdx !== undefined && (
         <VerificationDialog
-          user={viewing}
-          onChange={(updated: UserJSON) => {
-            setViewing(updated);
-            return mutateUser.current(updated);
-          }}
-          onClosed={() => setViewing(undefined)}
+          user={data.users[viewingIdx]}
+          onChange={mutateUser}
+          onClosed={() => setViewingIdx(undefined)}
         />
       )}
       {viewingSnackbar && (
@@ -181,7 +196,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         <div className={styles.filters}>
           <div className={styles.left}>
             <IconButton className={styles.filtersButton} icon='filter_list' />
-            <ChipSet>
+            <ChipSet className={styles.filterChips}>
               <Chip
                 label={msg(msgs.notVetted)}
                 checkmark
@@ -272,12 +287,12 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               <DataTableBody>
                 {!!data &&
                   !!data.users.length &&
-                  data.users.map((user: UserJSON) => (
+                  data.users.map((user: UserJSON, idx: number) => (
                     <UserRow
                       key={user.id}
                       user={user}
-                      onChange={mutateUser.current}
-                      onClick={() => setViewing(user)}
+                      onChange={mutateUser}
+                      onClick={() => setViewingIdx(idx)}
                     />
                   ))}
                 {(!data || !data.users.length) &&

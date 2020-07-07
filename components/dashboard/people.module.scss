@@ -22,6 +22,11 @@ $filters-height: 56px;
     .filtersButton {
       margin-left: 12px;
     }
+
+    .filterChips {
+      flex-wrap: nowrap;
+      overflow: auto;
+    }
   }
 
   .right {

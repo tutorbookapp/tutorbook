@@ -76,11 +76,11 @@ export interface SocialInterface {
  * - A DBS check on file.
  */
 export type Check =
-  | SocialTypeAlias
   | 'email'
-  | 'dbs'
+  | 'background-check'
   | 'academic-email'
-  | 'training';
+  | 'training'
+  | 'interview';
 
 interface Resource {
   created: Date;
