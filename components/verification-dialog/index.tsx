@@ -11,7 +11,7 @@ import {
   DataTableRow,
   DataTableCell,
 } from '@rmwc/data-table';
-import { TextField, TextFieldHelperText } from '@rmwc/textfield';
+import { TextField } from '@rmwc/textfield';
 import { useUser } from 'lib/account';
 import {
   Callback,
