@@ -13,18 +13,8 @@ import {
 } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
 import { useUser } from 'lib/account';
-import {
-  Callback,
-  ApiError,
-  Check,
-  User,
-  UserJSON,
-  Verification,
-} from 'lib/model';
+import { Callback, Check, User, UserJSON, Verification } from 'lib/model';
 import { defMsg, useMsg, IntlHelper, Msg } from 'lib/intl';
-
-import axios, { AxiosResponse, AxiosError } from 'axios';
-import to from 'await-to-js';
 
 import styles from './verification-dialog.module.scss';
 

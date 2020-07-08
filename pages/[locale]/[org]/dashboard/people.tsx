@@ -6,7 +6,7 @@ import Footer from 'components/footer';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Org, OrgJSON, UserJSON, Query, ApiError } from 'lib/model';
+import { Org, OrgJSON, Query, ApiError } from 'lib/model';
 import { ListUsersRes } from 'lib/api/list-users';
 import { People } from 'components/dashboard';
 import { TabHeader } from 'components/header';
@@ -115,7 +115,7 @@ export const getServerSideProps: GetServerSideProps<
           AxiosResponse<ListUsersRes>,
           AxiosError<ApiError>
         >(
-          axios.get<UserJSON[]>(url, {
+          axios.get<ListUsersRes>(url, {
             headers: { authorization: req.headers.authorization },
           })
         );
