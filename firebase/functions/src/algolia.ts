@@ -1,8 +1,7 @@
 import { config, Change, EventContext } from 'firebase-functions';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 import to from 'await-to-js';
-
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type Timestamp = admin.firestore.Timestamp;

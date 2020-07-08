@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "gcp-functions",
   "scripts": {
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "firebase-functions-test": "^0.1.6",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.6"
   },
   "private": true
 }
