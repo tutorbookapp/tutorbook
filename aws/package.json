@@ -1,18 +1,26 @@
 {
   "name": "aws-functions",
   "scripts": {
-    "build": "tsc",
-    "zip": "cd lib && zip ../function.zip index.js"
+    "build": "webpack",
+    "zip": "cd lib && zip ../function.zip index.js",
+    "deploy": "aws lambda update-function-code --function-name tutorbook-mail --zip-file fileb://function.zip --publish",
+    "all": "npm run build && npm run zip && npm run deploy"
   },
   "engines": {
     "node": "12"
   },
   "main": "lib/index.js",
   "devDependencies": {
-    "typescript": "^3.9.6"
+    "dotenv-webpack": "^1.8.0",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "aws-sdk": "^2.712.0"
+    "aws-sdk": "^2.712.0",
+    "await-to-js": "^2.1.1",
+    "firebase-admin": "^8.13.0"
   },
   "private": true
 }
