@@ -30,8 +30,6 @@ interface RequestDialogState {
   time?: Timeslot;
   message: string;
   subjects: Option<string>[];
-  parentName: string;
-  parentEmail: string;
   submitting: boolean;
   submitted: boolean;
   err?: string;
@@ -73,16 +71,12 @@ class RequestDialog extends React.Component<
       subjects: props.subjects,
       time: props.time,
       message: '',
-      parentName: '',
-      parentEmail: '',
       submitting: false,
       submitted: false,
     };
     this.handleSubjectsChange = this.handleSubjectsChange.bind(this);
     this.handleTimeslotChange = this.handleTimeslotChange.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
-    this.handleParentNameChange = this.handleParentNameChange.bind(this);
-    this.handleParentEmailChange = this.handleParentEmailChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -155,20 +149,6 @@ class RequestDialog extends React.Component<
     });
   }
 
-  private handleParentNameChange(
-    event: React.FormEvent<HTMLInputElement>
-  ): void {
-    const parentName: string = event.currentTarget.value;
-    this.setState({ parentName });
-  }
-
-  private handleParentEmailChange(
-    event: React.FormEvent<HTMLInputElement>
-  ): void {
-    const parentEmail: string = event.currentTarget.value;
-    this.setState({ parentEmail });
-  }
-
   private async handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     firebase.analytics().logEvent('checkout_progress', {
@@ -177,43 +157,18 @@ class RequestDialog extends React.Component<
       items: this.items,
     });
     this.setState({ submitted: false, submitting: true });
-    const { parentName, parentEmail } = this.state;
     const { user: currentUser } = this.context;
-    const parent: User = new User({ name: parentName, email: parentEmail });
     if (!currentUser.id) {
-      const [err] = await to(
-        signupWithGoogle(
-          currentUser,
-          !currentUser.parents.length ? [parent] : undefined
-        )
-      );
+      const [err] = await to(signupWithGoogle(currentUser));
       if (err)
         return this.setState({
           submitted: false,
           submitting: false,
           err: `An error occurred while logging in with Google. ${err.message}`,
         });
-    } else if (!currentUser.parents.length) {
-      const [err] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
-        axios.post(`/api/users/${currentUser.id}/parents`, parent.toJSON())
-      );
-      let msg: string | null = null;
-      if (err && err.response) {
-        msg = err.response.data.msg;
-      } else if (err && err.request) {
-        msg = 'Parent creation API did not respond.';
-      } else if (err) {
-        msg = err.message;
-      }
-      if (msg)
-        return this.setState({
-          submitted: false,
-          submitting: false,
-          err: `An error occurred while creating your parent's profile. ${msg}`,
-        });
     }
     const [err, res] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
-      axios.post('/api/requests', this.appt.toJSON())
+      axios.post('/api/appts', this.appt.toJSON())
     );
     if (err && err.response) {
       console.error(`[ERROR] ${err.response.data.msg}`, err.response.data);
@@ -272,28 +227,11 @@ class RequestDialog extends React.Component<
    * Renders the `RequestDialog` that shows profile info and enables booking.
    */
   public render(): JSX.Element {
-    const {
-      submitting,
-      submitted,
-      parentName,
-      parentEmail,
-      subjects,
-      message,
-      time,
-      err,
-    } = this.state;
+    const { submitting, submitted, subjects, message, time, err } = this.state;
     const { onClosed, user, aspect, intl } = this.props;
     const { user: currentUser } = this.context;
     const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
     const labels: Record<string, Msg> = defMsg({
-      parentName: {
-        id: 'request-dialog.parent-name',
-        defaultMessage: "Your parent's name",
-      },
-      parentEmail: {
-        id: 'request-dialog.parent-email',
-        defaultMessage: "Your parent's email address",
-      },
       subjects: {
         id: 'request-dialog.subjects',
         description: 'Label for the tutoring lesson subjects field.',
@@ -311,11 +249,10 @@ class RequestDialog extends React.Component<
           " isn't available during the selected times.",
         defaultMessage: '{name} is only available {availability}.',
       },
-      topic: {
-        id: 'request-dialog.topic',
-        description:
-          'Label for the tutoring lesson topic (previously message) field.',
-        defaultMessage: 'Topic',
+      message: {
+        id: 'request-dialog.message',
+        description: 'Label for the request message field.',
+        defaultMessage: 'Message',
       },
       submit: {
         id: 'request-dialog.submit',
@@ -335,27 +272,6 @@ class RequestDialog extends React.Component<
       >
         <h6 className={styles.header}>Request</h6>
         <form className={styles.form} onSubmit={this.handleSubmit}>
-          {!currentUser.parents.length && (
-            <>
-              <TextField
-                outlined
-                required
-                label={msg(labels.parentName)}
-                className={styles.field}
-                onChange={this.handleParentNameChange}
-                value={parentName}
-              />
-              <TextField
-                outlined
-                required
-                type='email'
-                label={msg(labels.parentEmail)}
-                className={styles.field}
-                onChange={this.handleParentEmailChange}
-                value={parentEmail}
-              />
-            </>
-          )}
           <SubjectSelect
             required
             autoOpenMenu
@@ -381,7 +297,7 @@ class RequestDialog extends React.Component<
             outlined
             textarea
             rows={4}
-            label={msg(labels.topic)}
+            label={msg(labels.message)}
             className={styles.field}
             onChange={this.handleMessageChange}
             value={message}

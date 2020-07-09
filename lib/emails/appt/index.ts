@@ -1,21 +1,29 @@
 import Utils from 'lib/utils';
-import { Appt, AttendeeInterface, User, UserWithRoles } from 'lib/model';
+import { Appt, User } from 'lib/model';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
 import Template from './template.hbs';
 
 interface Data {
-  attendees: UserWithRoles[];
-  recipient: UserWithRoles;
   appt: Appt;
+  creator: User;
 }
 
 /**
- * The email that is sent to all the appointment attendees once we receive
- * parental approval for a pending lesson request. This emails contains the link
- * to the Bramble room and instructions for how to make the most out of the
- * virtual tutoring session.
+ * Sends one appointment email to all of the attendees CC-ing the creator of the
+ * appointment.
+ *
+ * This appointment email contains:
+ * - The subjects requested.
+ * - The time (if any) requested.
+ * - The creator's request message (e.g. "I need help with my Trig HW.").
+ * - A prompt to reply-all in order to setup a meeting time and venue (we don't
+ * force users to use Bramble anymore; they use whatever works best for them).
+ *
+ * **Note:** We use the attendees's anonymous email addresses so that our AWS
+ * Lambda function can take care of the anonymizing and relay logic (so that
+ * each attendee can only ever see their own direct contact information).
  */
 export default class ApptEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
@@ -26,7 +34,9 @@ export default class ApptEmail implements Email {
 
   public readonly bcc: string = 'team@tutorbook.org';
 
-  public readonly to: string;
+  public readonly cc: string;
+
+  public readonly to: string[];
 
   public readonly subject: string;
 
@@ -34,38 +44,13 @@ export default class ApptEmail implements Email {
 
   public readonly text: string;
 
-  private addRoles(user: User): UserWithRoles {
-    const attendee: AttendeeInterface | undefined = this.appt.attendees.find(
-      (a: AttendeeInterface) => a.id === user.id
-    );
-    const userWithRoles: UserWithRoles = user as UserWithRoles;
-    userWithRoles.roles = attendee ? attendee.roles : [];
-    return userWithRoles;
-  }
-
-  private get attendeesWithRoles(): UserWithRoles[] {
-    return this.attendees.map((attendee: User) => this.addRoles(attendee));
-  }
-
-  private get recipientWithRoles(): UserWithRoles {
-    return this.addRoles(this.recipient);
-  }
-
-  public constructor(
-    private readonly recipient: User,
-    private readonly appt: Appt,
-    private readonly attendees: ReadonlyArray<User>
-  ) {
-    this.to = recipient.email;
-    this.subject = `You now have ${Utils.join(
-      appt.subjects
-    )} lessons on Tutorbook!`;
+  public constructor(appt: Appt, attendees: User[], creator: User) {
+    this.to = attendees
+      .filter((a: User) => a.id !== creator.id)
+      .map((a: User) => `${a.id}-${appt.id as string}@mail.tutorbook.org`);
+    this.cc = `${creator.id}-${appt.id as string}@mail.tutorbook.org`;
+    this.subject = `${Utils.join(appt.subjects)} appointment on Tutorbook.`;
     this.text = this.subject;
-    const data: Data = {
-      recipient: this.recipientWithRoles,
-      attendees: this.attendeesWithRoles,
-      appt: this.appt,
-    };
-    this.html = ApptEmail.render(data);
+    this.html = ApptEmail.render({ appt, creator });
   }
 }

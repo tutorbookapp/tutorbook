@@ -21,7 +21,19 @@ type AdminDocumentReference = admin.firestore.DocumentReference;
 export type ApptVenueTypeAlias = 'bramble';
 export type RoleAlias = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
-export interface AttendeeInterface {
+/**
+ * Represents an attendee to an appointment.
+ * @property id - The user's unique Firebase-assigned user ID (note that this
+ * contains both lowercase and capital letters which is why it can't be used as
+ * a unique anonymous email address handle).
+ * @property emailId - The user's all-lowercase anonymous email handle.
+ * @property roles - The user's roles at this appointment (e.g. tutor or pupil).
+ *
+ * @todo Add an `emailId` prop to this data model and use it instead of the
+ * `<uid>-<appt>@mail.tutorbook.org` email address formats in our AWS Lambda
+ * function.
+ */
+export interface Attendee {
   id: string;
   roles: RoleAlias[];
 }
@@ -31,16 +43,16 @@ export interface AttendeeInterface {
  * [Bramble]{@link https://about.bramble.io/api.html} integration.
  * @todo Add more supported venues like Zoom, Google Hangouts, or BigBlueButton.
  */
-export interface ApptVenueInterface extends Record<string, any> {
+export interface ApptVenue extends Record<string, any> {
   type: ApptVenueTypeAlias;
   url: string;
 }
 
 export interface ApptInterface {
   subjects: string[];
-  attendees: AttendeeInterface[];
+  attendees: Attendee[];
   time?: Timeslot;
-  venues: ApptVenueInterface[];
+  venues: ApptVenue[];
   message?: string;
   ref?: DocumentReference | AdminDocumentReference;
   id?: string;
@@ -48,7 +60,7 @@ export interface ApptInterface {
 
 export interface ApptJSON {
   subjects: string[];
-  attendees: AttendeeInterface[];
+  attendees: Attendee[];
   time?: TimeslotJSON;
   message?: string;
   id?: string;
@@ -59,9 +71,9 @@ export class Appt implements ApptInterface {
 
   public subjects: string[] = [];
 
-  public attendees: AttendeeInterface[] = [];
+  public attendees: Attendee[] = [];
 
-  public venues: ApptVenueInterface[] = [];
+  public venues: ApptVenue[] = [];
 
   public ref?: DocumentReference | AdminDocumentReference;
 
