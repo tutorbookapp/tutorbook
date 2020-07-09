@@ -18,9 +18,10 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "aws-sdk": "^2.712.0",
     "await-to-js": "^2.1.1",
-    "firebase-admin": "^8.13.0"
+    "aws-sdk": "^2.712.0",
+    "firebase-admin": "^8.13.0",
+    "uuid": "^8.2.0"
   },
   "private": true
 }
