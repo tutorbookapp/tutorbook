@@ -14,7 +14,7 @@ import {
   SESNotification,
   DocumentSnapshot,
   DocumentReference,
-  AttendeeInterface,
+  Attendee,
 } from './types';
 
 /**
@@ -59,6 +59,7 @@ const db: DocumentReference = firebase
   .firestore()
   .collection('partitions')
   .doc('default');
+const whitelist: RegExp[] = [/@tutorbook\.org$/];
 const bucketId = 'tutorbook-mail';
 
 /**
@@ -78,6 +79,7 @@ async function getAnonEmail(
   realEmail: string,
   appt: DocumentSnapshot
 ): Promise<string> {
+  if (whitelist.some((rgx: RegExp) => rgx.test(realEmail))) return realEmail;
   const [err, user] = await to<UserRecord, FirebaseError>(
     auth.getUserByEmail(realEmail)
   );
@@ -93,8 +95,8 @@ async function getAnonEmail(
       );
     } else {
       const id: string = (user as UserRecord).uid;
-      const attendee: AttendeeInterface = { id, roles: [] };
-      const attendees = (appt.data() || {}).attendees as AttendeeInterface[];
+      const attendee: Attendee = { id, roles: [] };
+      const attendees = (appt.data() || {}).attendees as Attendee[];
       await appt.ref.update({ attendees: [...attendees, attendee] });
       return `${id}-${appt.id}@mail.tutorbook.org`;
     }
