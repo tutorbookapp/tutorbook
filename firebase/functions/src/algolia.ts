@@ -1,4 +1,5 @@
 import { config, Change, EventContext } from 'firebase-functions';
+import { Settings } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 import to from 'await-to-js';
 import admin from 'firebase-admin';
@@ -52,22 +53,72 @@ function getTags(user: Record<string, unknown>): string[] {
 }
 
 /**
- * We only add non-sensitive information to our Algolia search index (because it
- * is publicly available via our `/api/search` REST API endpoint):
- * - User's first name and last initial
- * - User's bio (e.g. their education and experience)
- * - User's availability (for tutoring)
- * - User's subjects (what they can tutor)
- * - User's searches (what they need tutoring for)
- * - User's Firebase Authentication uID (as the Algolia `objectID`)
- * @todo Perhaps we should also include a `photoURL` here (to make our search
- * results look more appealing).
+ * Wrapper for the `await-to-js` function that enables use with Algolia's custom
+ * "pending request" objects.
  */
-export default async function userUpdate(
+function too<T, U = Error>(p: any): Promise<[U | null, T | undefined]> {
+  return to<T, U>((p as unknown) as Promise<T>);
+}
+
+/**
+ * Updates the settings on a given Algolia index and catches and logs any
+ * errors.
+ */
+async function updateSettings(
+  index: SearchIndex,
+  settings: Settings
+): Promise<void> {
+  console.log(`[DEBUG] Updating search index (${index.indexName}) settings...`);
+  const [err] = await too(index.setSettings(settings));
+  if (err) {
+    console.error(`[ERROR] ${err.name} while updating:`, err);
+  } else {
+    console.log(`[DEBUG] Updated search index (${index.indexName}) settings.`);
+  }
+}
+
+export async function apptUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
-  const too = (p: any) => to((p as unknown) as Promise<unknown>);
+  const id: string = context.params.appt as string;
+  const indexId = `${context.params.partition as string}-appts`;
+  const index: SearchIndex = client.initIndex(indexId);
+  if (!change.after.exists) {
+    console.log(`[DEBUG] Deleting appt (${id})...`);
+    const [err] = await too(index.deleteObject(id));
+    if (err) {
+      console.error(`[ERROR] ${err.name} while deleting:`, err);
+    } else {
+      console.log(`[DEBUG] Deleted appt (${id}).`);
+    }
+  } else {
+    const appt = change.after.data() as Record<string, unknown>;
+    console.log(`[DEBUG] Updating appt (${id})...`);
+    const ob: Record<string, unknown> = { ...appt, objectID: id };
+    const [err] = await too(index.saveObject(ob));
+    if (err) {
+      console.error(`[ERROR] ${err.name} while updating:`, err);
+    } else {
+      console.log(`[DEBUG] Updated appt (${id}).`);
+    }
+  }
+  const attributesForFaceting: string[] = ['filterOnly(attendees.handle)'];
+  await updateSettings(index, { attributesForFaceting });
+}
+
+/**
+ * We sync our Firestore database with Algolia in order to perform SQL-like
+ * search operations (and to easily enable full-text search OFC).
+ *
+ * @todo This GCP function is triggered every time a `users` document is
+ * updated. In the future, we should just combine this with the update user REST
+ * API endpoint.
+ */
+export async function userUpdate(
+  change: Change<DocumentSnapshot>,
+  context: EventContext
+): Promise<void> {
   const uid: string = context.params.user as string;
   const indexId = `${context.params.partition as string}-users`;
   const index: SearchIndex = client.initIndex(indexId);
@@ -97,26 +148,18 @@ export default async function userUpdate(
       console.log(`[DEBUG] Updated ${user.name as string} (${uid}).`);
     }
   }
-  console.log(`[DEBUG] Updating search index (${indexId}) settings...`);
-  const settings = {
-    // Note that we don't have to add the `visible` property here (b/c Algolia
-    // automatically supports filtering by numeric and boolean values).
-    attributesForFaceting: [
-      'orgs',
-      'availability',
-      'mentoring.subjects',
-      'mentoring.searches',
-      'tutoring.subjects',
-      'tutoring.searches',
-      'verifications.checks',
-      'langs',
-      'featured',
-    ].map((attr: string) => `filterOnly(${attr})`),
-  };
-  const [err] = await too(index.setSettings(settings));
-  if (err) {
-    console.error(`[ERROR] ${err.name} while updating:`, err);
-  } else {
-    console.log(`[DEBUG] Updated search index (${indexId}) settings.`);
-  }
+  // Note that we don't have to add the `visible` property here (b/c Algolia
+  // automatically supports filtering by numeric and boolean values).
+  const attributesForFaceting: string[] = [
+    'orgs',
+    'availability',
+    'mentoring.subjects',
+    'mentoring.searches',
+    'tutoring.subjects',
+    'tutoring.searches',
+    'verifications.checks',
+    'langs',
+    'featured',
+  ].map((attr: string) => `filterOnly(${attr})`);
+  await updateSettings(index, { attributesForFaceting });
 }
