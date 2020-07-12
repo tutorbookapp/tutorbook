@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions';
 import { apptUpdate, userUpdate } from './algolia';
 
 export const algoliaUserUpdate = functions.firestore
