@@ -2,7 +2,7 @@
 @use 'components/user-dialog/user-dialog';
 
 .dialog :global(.mdc-dialog__surface) {
-  max-width: 900px;
+  max-width: 900px !important;
 }
 
 .header {
