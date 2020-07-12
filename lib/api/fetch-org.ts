@@ -13,7 +13,7 @@ export default async function fetchOrg(
   res: NextApiResponse<FetchOrgRes>
 ): Promise<void> {
   if (typeof req.query.id !== 'string') {
-    error(res, 'You must provide a valid user ID in your URL.');
+    error(res, 'You must provide a valid org ID in your URL.');
   } else if (!req.headers.authorization) {
     error(res, 'You must provide a valid Firebase Auth JWT.', 401);
   } else {
