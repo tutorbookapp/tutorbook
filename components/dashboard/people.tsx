@@ -30,6 +30,10 @@ import Placeholder from './placeholder';
 import styles from './people.module.scss';
 
 const msgs = defMsg({
+  viewSearch: {
+    id: 'people.actions.view-search',
+    defaultMessage: 'View search',
+  },
   createUser: {
     id: 'people.actions.create-user',
     defaultMessage: 'Create user',
@@ -150,6 +154,11 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         header='People'
         body={`${org.name}'s tutors, mentors and students`}
         actions={[
+          {
+            label: msg(msgs.viewSearch),
+            href: '/[org]/search/[[...slug]]',
+            as: `/${org.id}/search`,
+          },
           {
             label: msg(msgs.importData),
             onClick: () =>
