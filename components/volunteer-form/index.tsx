@@ -147,8 +147,19 @@ class VolunteerForm extends React.Component<
 
   private async updateOrgs(): Promise<void> {
     const { org } = this.props;
-    const { updateUser, user } = this.context;
-    if (org) await updateUser(new User({ ...user, orgs: [org] }));
+    if (org) {
+      const {
+        updateUser,
+        user: { orgs, ...rest },
+      } = this.context;
+      const idx: number = orgs.indexOf(org);
+      if (idx < 0) {
+        await updateUser(new User({ ...rest, orgs: [...orgs, org] }));
+      } else {
+        const updated = [...orgs.slice(0, idx), org, ...orgs.slice(idx + 1)];
+        await updateUser(new User({ ...rest, orgs: updated }));
+      }
+    }
   }
 
   private async handleSubmit(event: React.FormEvent): Promise<void> {
