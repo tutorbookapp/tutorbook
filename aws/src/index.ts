@@ -61,14 +61,14 @@ const auth: FirebaseAuth = firebase.auth();
 const db: DocumentReference = firebase
   .firestore()
   .collection('partitions')
-  .doc('test');
+  .doc('default');
 const whitelist: RegExp[] = [/@tutorbook\.org$/];
 const bucketId = 'tutorbook-mail';
 const client: SearchClient = algoliasearch(
   process.env.ALGOLIA_SEARCH_ID as string,
   process.env.ALGOLIA_SEARCH_KEY as string
 );
-const index: SearchIndex = client.initIndex('test-appts');
+const index: SearchIndex = client.initIndex('default-appts');
 
 /**
  * Takes a user's actual email and returns their anonymized email (i.e. their
