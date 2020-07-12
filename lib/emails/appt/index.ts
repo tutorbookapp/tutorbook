@@ -1,5 +1,6 @@
 import Utils from 'lib/utils';
-import { Appt, User } from 'lib/model';
+import { Appt, User, Attendee } from 'lib/model';
+import { EmailData } from '@sendgrid/helpers/classes/email-address';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
@@ -8,6 +9,18 @@ import Template from './template.hbs';
 interface Data {
   appt: Appt;
   creator: User;
+  creatorEmail: string;
+}
+
+/**
+ * Gets the given user's unique all-lowercase anonymous email handle from a
+ * given appt.
+ */
+function getHandle(appt: Appt, id: string): string {
+  const match: Attendee[] = appt.attendees.filter((a: Attendee) => a.id === id);
+  if (match.length > 1) console.warn(`[WARNING] Duplicate attendees (${id}).`);
+  if (match.length < 1) throw new Error(`No attendee ${id} in appt.`);
+  return match[0].handle;
 }
 
 /**
@@ -30,13 +43,19 @@ export default class ApptEmail implements Email {
     Data
   > = Handlebars.compile(Template);
 
-  public readonly from: string = 'Tutorbook <team@tutorbook.org>';
+  public readonly from: EmailData = {
+    name: 'Tutorbook',
+    email: 'team@tutorbook.org',
+  };
 
-  public readonly bcc: string = 'team@tutorbook.org';
+  public readonly bcc: EmailData = {
+    name: 'Tutorbook',
+    email: 'team@tutorbook.org',
+  };
 
-  public readonly cc: string;
+  public readonly replyTo: EmailData;
 
-  public readonly to: string[];
+  public readonly to: EmailData[];
 
   public readonly subject: string;
 
@@ -46,11 +65,17 @@ export default class ApptEmail implements Email {
 
   public constructor(appt: Appt, attendees: User[], creator: User) {
     this.to = attendees
-      .filter((a: User) => a.id !== creator.id)
-      .map((a: User) => `${a.id}-${appt.id as string}@mail.tutorbook.org`);
-    this.cc = `${creator.id}-${appt.id as string}@mail.tutorbook.org`;
-    this.subject = `${Utils.join(appt.subjects)} appointment on Tutorbook.`;
+      .filter((attendee: User) => attendee.id !== creator.id)
+      .map((attendee: User) => ({
+        name: attendee.name,
+        email: `${getHandle(appt, attendee.id)}@mail.tutorbook.org`,
+      }));
+    this.subject = `New ${Utils.join(appt.subjects)} appointment on Tutorbook.`;
     this.text = this.subject;
-    this.html = ApptEmail.render({ appt, creator });
+
+    const creatorEmail = `${getHandle(appt, creator.id)}@mail.tutorbook.org`;
+
+    this.replyTo = { name: creator.name, email: creatorEmail };
+    this.html = ApptEmail.render({ appt, creator, creatorEmail });
   }
 }

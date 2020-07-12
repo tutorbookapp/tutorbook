@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import axios, { AxiosResponse, AxiosPromise } from 'axios';
 import { ApptEmail } from 'lib/emails';
 import { Attendee, User, UserWithRoles, Appt, ApptJSON } from 'lib/model';
 
@@ -16,28 +15,6 @@ import {
 } from './helpers/firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
-
-interface BrambleRes {
-  APImethod: string;
-  status: string;
-  result: string;
-}
-
-/**
- * Creates a new Bramble room using their REST API.
- * @see {@link https://about.bramble.io/api.html}
- */
-function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
-  return axios({
-    method: 'post',
-    url: 'https://api.bramble.io/createRoom',
-    headers: {
-      room: appt.id,
-      agency: 'tutorbook',
-      auth_token: process.env.BRAMBLE_API_KEY as string,
-    },
-  }) as AxiosPromise<BrambleRes>;
-}
 
 export type CreateApptRes = ApptJSON;
 
@@ -181,42 +158,20 @@ export default async function createAppt(
       } else if (!attendeesIncludeAuthToken) {
         error(res, `Creator (${creator.id}) must attend the appointment.`);
       } else {
-        // 2. Create a new Bramble room for the tutoring appointment.
         appt.id = db.collection('appts').doc().id;
-        console.log(`[DEBUG] Creating Bramble room (${appt.id})...`);
-        const [brambleErr, brambleRes] = await to<AxiosResponse<BrambleRes>>(
-          createBrambleRoom(appt)
+        console.log(`[DEBUG] Creating appointment (${appt.id})...`);
+        await db.collection('appts').doc(appt.id).set(appt.toFirestore());
+        // 4-5. Send out the appointment email.
+        console.log('[DEBUG] Sending appointment email...');
+        const [mailErr] = await to(
+          mail.send(new ApptEmail(appt, attendees, creator))
         );
-        if (brambleErr) {
-          const msg = `${brambleErr.name} using Bramble: ${brambleErr.message}`;
-          error(res, msg, 500, brambleErr);
+        if (mailErr) {
+          const msg = `${mailErr.name} sending email: ${mailErr.message}`;
+          error(res, msg, 500, mailErr);
         } else {
-          const brambleURL: string = (brambleRes as AxiosResponse<BrambleRes>)
-            .data.result;
-          appt.venues.push({
-            type: 'bramble',
-            url: brambleURL,
-            description:
-              `Join your tutoring lesson via <a href="${brambleURL}">this ` +
-              'Bramble room</a>. Your room will be reused weekly until your ' +
-              'tutoring lesson is cancelled. To learn more about Bramble, ' +
-              'head over to <a href="https://about.bramble.io/help/help-home' +
-              '.html">their help center</a>.',
-          });
-          console.log(`[DEBUG] Creating appointment (${appt.id})...`);
-          await db.collection('appts').doc(appt.id).set(appt.toFirestore());
-          // 4-5. Send out the appointment email.
-          console.log('[DEBUG] Sending appointment email...');
-          const [mailErr] = await to(
-            mail.send(new ApptEmail(appt, attendees, creator))
-          );
-          if (mailErr) {
-            const msg = `${mailErr.name} sending email: ${mailErr.message}`;
-            error(res, msg, 500, mailErr);
-          } else {
-            res.status(201).json(appt.toJSON());
-            console.log('[DEBUG] Created appointment and sent email.');
-          }
+          res.status(201).json(appt.toJSON());
+          console.log('[DEBUG] Created appointment and sent email.');
         }
       }
     }

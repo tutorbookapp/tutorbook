@@ -38,17 +38,13 @@
 
                       <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">{{creator.name}} wants to setup an appointment with you for {{join appt.subjects}}:</p>
 
-                      <blockqoute style="border-left:4px solid rgb(221,221,221);qoutes:none;display:block;padding:0 0 0 1em">
+                      <blockqoute style="border-left:4px solid rgb(221,221,221);display:block;qoutes:none;padding:0 0 0 1em">
                         <p style="color:rgb(119,119,119);font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">{{appt.message}}</p>
                       </blockqoute>
 
-                      <br>
-                      
                       <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">If you're interested, please get in touch with {{creator.name}} by replying to this email or using the following email address:</p>
                       
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px"><a href="mailto:{{creator.id}}-{{appt.id}}@mail.tutorbook.org" style="color:#067DF7!important;text-decoration:none;word-wrap:break-word">{{creator.id}}-{{appt.id}}@mail.tutorbook.org</a></p>
-
-                      <br>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px"><a href="mailto:{{creatorEmail}}" style="color:#067DF7!important;text-decoration:none;word-wrap:break-word">{{creatorEmail}}</a></p>
 
                       <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Thank you.</p>
 
