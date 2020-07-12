@@ -93,6 +93,12 @@ const users = async () => {
     return langs;
   };
 
+  const updateOrgs = (orgs) => {
+    if (!orgs || !(orgs instanceof Array)) return ['default'];
+    if (orgs.indexOf('default') < 0) return ['default', ...orgs];
+    return orgs;
+  };
+
   const users = (await db.collection('users').get()).docs;
   await Promise.all(
     users.map((user) => {
@@ -110,6 +116,8 @@ const users = async () => {
         availability: data.availability || [],
         parents: data.parents || [],
         socials: (data.socials || []).filter((s) => !!s.url),
+        verifications: data.verifications || [],
+        orgs: updateOrgs(data.orgs),
         mentoring: {
           subjects: updateSubjects(data.mentoring.subjects, mentoringSubjects),
           searches: updateSubjects(data.mentoring.searches, mentoringSubjects),
@@ -165,4 +173,4 @@ const triggerUsersUpdate = async () => {
   );
 };
 
-triggerUsersUpdate();
+users();
