@@ -20,6 +20,7 @@
 
 const INPUT = './default.json';
 const OUTPUT = './test.json';
+const BLACKLIST = ['uid'];
 
 const fs = require('fs');
 const path = require('path');
@@ -59,18 +60,21 @@ const replaceEmails = (users) =>
 
 /**
  * Iterates through an array of users and replaces each user's properties with
- * the values from another random user (in the same array).
+ * the values from another random user (in the same array) **if** those
+ * properties aren't blacklisted for anonymization (e.g. `uid`s).
  * @param {User[]} users - An array of user objects.
+ * @param {string[]} blacklist - An array of properties that should not be
+ * anonymized (e.g. `uid`s).
  * @return {User[]} The randomized user objects.
  */
-const anonymizeUsers = (users) =>
+const anonymizeUsers = (users, blacklist = BLACKLIST) =>
   users.map((user, idx) => {
     return Object.fromEntries(
       Object.entries(user).map(([key, val]) => {
-        let randIdx = idx;
-        while (randIdx === idx)
-          randIdx = Math.floor(Math.random() * users.length);
-        return [key, users[randIdx][key]];
+        if (blacklist.indexOf(key) >= 0) return [key, val];
+        let rand = idx;
+        while (rand === idx) rand = Math.floor(Math.random() * users.length);
+        return [key, users[rand][key]];
       })
     );
   });
@@ -144,9 +148,10 @@ const limitJSON = (input, output = input, lim = 10) => {
 
 /**
  * Limits the JSON to 100 users and anonymizes those users.
- * @param {string} input - The input file location.
+ * @param {string} input - The input file location (of a Firestore database
+ * backup starting from a partition: `npx firestore-export -b partitions/test`).
  * @param {string} [output=input] - The output file location (defaults to
- * replacing the input file.
+ * replacing the input file).
  */
 const main = (input, output = input) => {
   limitJSON(input, output, 100);
