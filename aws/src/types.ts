@@ -11,7 +11,12 @@ export type RoleAlias = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
 export interface Attendee {
   id: string;
+  handle: string;
   roles: RoleAlias[];
+}
+
+export interface ApptSearchHit {
+  objectID: string;
 }
 
 export interface Header {

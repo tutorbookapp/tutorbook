@@ -19,6 +19,8 @@
     "webpack-node-externals": "^2.3.0"
   },
   "dependencies": {
+    "@algolia/client-search": "^4.3.0",
+    "algoliasearch": "^4.3.0",
     "await-to-js": "^2.1.1",
     "aws-sdk": "^2.712.0",
     "firebase-admin": "^8.13.0",

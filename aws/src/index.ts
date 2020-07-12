@@ -4,6 +4,8 @@ import S3 from 'aws-sdk/clients/s3';
 import SES from 'aws-sdk/clients/ses';
 import admin from 'firebase-admin';
 import to from 'await-to-js';
+import { SearchResponse } from '@algolia/client-search';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 
 import {
   FirebaseApp,
@@ -14,6 +16,7 @@ import {
   SESNotification,
   DocumentSnapshot,
   DocumentReference,
+  ApptSearchHit,
   Attendee,
 } from './types';
 
@@ -58,9 +61,14 @@ const auth: FirebaseAuth = firebase.auth();
 const db: DocumentReference = firebase
   .firestore()
   .collection('partitions')
-  .doc('default');
+  .doc('test');
 const whitelist: RegExp[] = [/@tutorbook\.org$/];
 const bucketId = 'tutorbook-mail';
+const client: SearchClient = algoliasearch(
+  process.env.ALGOLIA_SEARCH_ID as string,
+  process.env.ALGOLIA_SEARCH_KEY as string
+);
+const index: SearchIndex = client.initIndex('test-appts');
 
 /**
  * Takes a user's actual email and returns their anonymized email (i.e. their
@@ -77,43 +85,50 @@ const bucketId = 'tutorbook-mail';
  */
 async function getAnonEmail(
   realEmail: string,
-  appt: DocumentSnapshot
+  apptDoc: DocumentSnapshot
 ): Promise<string> {
   if (whitelist.some((rgx: RegExp) => rgx.test(realEmail))) return realEmail;
-  const [err, user] = await to<UserRecord, FirebaseError>(
+  let [err, user] = await to<UserRecord, FirebaseError>(
     auth.getUserByEmail(realEmail)
   );
   if (err && err.code === 'auth/user-not-found') {
-    console.log(`[DEBUG] Creating new user (${realEmail})...`);
-    /* eslint-disable-next-line no-shadow */
-    const [err, user] = await to<UserRecord, FirebaseError>(
+    console.log(`Creating new user (${realEmail})...`);
+    [err, user] = await to<UserRecord, FirebaseError>(
       auth.createUser({ email: realEmail })
     );
-    if (err) {
-      throw new Error(
-        `${err.name} creating user (${realEmail}): ${err.message}`
-      );
-    } else {
-      const id: string = (user as UserRecord).uid;
-      const attendee: Attendee = { id, roles: [] };
-      const attendees = (appt.data() || {}).attendees as Attendee[];
-      await appt.ref.update({ attendees: [...attendees, attendee] });
-      return `${id}-${appt.id}@mail.tutorbook.org`;
-    }
+    if (err) throw new Error(`${err.name} creating user: ${err.message}`);
   } else if (err) {
     throw new Error(`${err.name} fetching user (${realEmail}): ${err.message}`);
-  } else {
-    return `${(user as UserRecord).uid}-${appt.id}@mail.tutorbook.org`;
   }
+  const id: string = (user as UserRecord).uid;
+  const handle: string = uuid();
+  const attendees = (apptDoc.data() || {}).attendees as Attendee[];
+  const idx: number = attendees.findIndex((a: Attendee) => a.handle === handle);
+  if (idx < 0) {
+    const attendee: Attendee = { id, handle, roles: [] };
+    await apptDoc.ref.update({ attendees: [...attendees, attendee] });
+  }
+  return `${handle}@mail.tutorbook.org`;
 }
 
 /**
- * Takes a user's anonymized email (i.e. their `<uid>-<appt>@mail.tutorbook.org`
+ * Takes a user's anonymized email (i.e. their `<handle>@mail.tutorbook.org`
  * email address) and returns their actual email.
+ *
+ * Each (all-lowercase) `handle` is defined when the appointment is created and
+ * is unique to that appointment (so we can look up the appointment based on the
+ * email handle).
  */
-async function getRealEmail(anonEmail: string): Promise<string> {
+async function getRealEmail(
+  anonEmail: string,
+  apptDoc: DocumentSnapshot
+): Promise<string> {
+  const handle: string = anonEmail.split('@')[0];
+  const attendees: Attendee[] = (apptDoc.data() || {}).attendees as Attendee[];
+  const idx: number = attendees.findIndex((a: Attendee) => a.handle === handle);
+  if (idx < 0) throw new Error(`No attendee with handle (${handle}).`);
   const [err, user] = await to<UserRecord, FirebaseError>(
-    auth.getUser(anonEmail.split('@')[0].split('-')[0])
+    auth.getUser(attendees[idx].id)
   );
   if (err) {
     throw new Error(`${err.name} fetching user (${anonEmail}): ${err.message}`);
@@ -155,14 +170,31 @@ async function replaceAsync(
  */
 async function replaceRealWithAnon(
   header: string,
-  appt: DocumentSnapshot
+  apptDoc: DocumentSnapshot
 ): Promise<string> {
   if (header.indexOf('mail.tutorbook.org') >= 0) return header;
   return replaceAsync(
     header,
     /<(.*)>/,
-    async (_, realEmail: string) => `<${await getAnonEmail(realEmail, appt)}>`
+    async (_, email: string) => `<${await getAnonEmail(email, apptDoc)}>`
   );
+}
+
+/**
+ * Get all possible appointments by filtering by user handle (each attendee is
+ * assigned an all-lowercase handle unique to each appt).
+ */
+async function getApptByHandles(handles: string[]): Promise<ApptSearchHit> {
+  const filters: string = handles
+    .map((handle: string) => `attendees.handle:${handle}`)
+    .join(' AND ');
+  const [err, res] = await to<SearchResponse<ApptSearchHit>>(
+    index.search('', { filters }) as Promise<SearchResponse<ApptSearchHit>>
+  );
+  if (err) throw new Error(`${err.name} searching index: ${err.message}`);
+  const { hits: appts } = res as SearchResponse<ApptSearchHit>;
+  if (appts.length !== 1) throw new Error(`Multiple (${filters}) appts.`);
+  return appts[0];
 }
 
 /**
@@ -173,12 +205,15 @@ async function replaceRealWithAnon(
  * email address (i.e. their `@mail.tutorbook.org` email address).
  * 3. Fetches the email content from AWS S3 and forwards it to the intended
  * recipient.
+ *
+ * @todo Catch errors and use the SES Node.js SDK to send the error mesage email
+ * to the original sender (e.g. "This appt no longer exists").
  */
 /* eslint-disable-next-line import/prefer-default-export */
 export function handler(event: MailEvent): void {
   const notification: SESNotification = event.Records[0].ses;
 
-  console.log('[DEBUG] Processing:', JSON.stringify(notification, null, 2));
+  console.log('Processing:', JSON.stringify(notification, null, 2));
 
   async function callback(
     err: AWSError,
@@ -189,21 +224,37 @@ export function handler(event: MailEvent): void {
     } else if (!data.Body) {
       throw new Error(`Email (${notification.mail.messageId}) was empty.`);
     } else {
-      // Update the recipients (convert the anonymized emails to actual emails).
-      // Anonymized emails are formatted as: `<uid>-<appt>@mail.tutorbook.org`
-      const recipients: Record<string, string> = {};
-      const apptIds: Set<string> = new Set();
-      await Promise.all(
-        notification.receipt.recipients.map(async (anonEmail: string) => {
-          recipients[anonEmail] = await getRealEmail(anonEmail);
-          apptIds.add(anonEmail.split('@')[0].split('-')[1]);
-        })
-      );
-
       // We reject the email if there are anonymous email address for multiple
       // appointments in the same email.
       // TODO: Use the SES SDK to reject the email with this error message.
-      if (apptIds.size !== 1) throw new Error('Multiple appointments.');
+      const handles: string[] = notification.receipt.recipients.map(
+        (anonEmail: string) => anonEmail.split('@')[0]
+      );
+      const appt: ApptSearchHit = await getApptByHandles(handles);
+
+      // Abort this operation if the Firestore document already exists (because
+      // AWS Lambda functions can be invoked multiple times; the queue is
+      // *eventually* consistent).
+      // @see {@link https://amzn.to/38IqQ8S}
+      const apptDoc: DocumentSnapshot = await db
+        .collection('appts')
+        .doc(appt.objectID)
+        .get();
+      if (!apptDoc.exists) throw new Error(`Appt ${apptDoc.id} doesn't exist.`);
+      const mailDoc: DocumentSnapshot = await apptDoc.ref
+        .collection('emails')
+        .doc(notification.mail.messageId)
+        .get();
+      if (mailDoc.exists) throw new Error(`Email (${mailDoc.id}) processed.`);
+
+      // Update the recipients (convert the anonymized emails to actual emails).
+      // Anonymized emails are formatted as: `<handle>@mail.tutorbook.org`
+      const recipients: Record<string, string> = {};
+      await Promise.all(
+        notification.receipt.recipients.map(async (anonEmail: string) => {
+          recipients[anonEmail] = await getRealEmail(anonEmail, apptDoc);
+        })
+      );
 
       // Split the email into it's `headers` and `body` parts.
       // @see {@link https://bit.ly/3iJx50F}
@@ -227,19 +278,7 @@ export function handler(event: MailEvent): void {
         ''
       );
 
-      // Abort this operation if the Firestore document already exists (because
-      // AWS Lambda functions can be invoked multiple times; the queue is
-      // *eventually* consistent).
-      // @see {@link https://amzn.to/38IqQ8S}
-      const doc: DocumentSnapshot = await db
-        .collection('appts')
-        .doc(apptIds.values().next().value)
-        .collection('emails')
-        .doc(notification.mail.messageId)
-        .get();
-      if (doc.exists) throw new Error('Email has already been processed.');
-
-      // Anonymize any real email addresses.
+      // Anonymize any (possibly) real email addresses.
       await Promise.all(
         [
           /^reply-to:[\t ]?(.*(?:\r?\n\s+.*)*)/gim,
@@ -248,34 +287,30 @@ export function handler(event: MailEvent): void {
           /^bcc:[\t ]?(.*(?:\r?\n\s+.*)*)/gim,
           /^to:[\t ]?(.*(?:\r?\n\s+.*)*)/gim,
         ].map(async (regex: RegExp) => {
-          const replacer = (header: string) => replaceRealWithAnon(header, doc);
+          const replacer = (h: string) => replaceRealWithAnon(h, apptDoc);
           headers = await replaceAsync(headers, regex, replacer);
         })
       );
 
-      // Store the email in the appointment's `emails` Firestore subcollection.
-      await doc.ref.set({ ...notification.mail, raw: `${headers}${body}` });
+      // Store the email (with all email addresses anonymized) in the appt's
+      // `emails` Firestore subcollection.
+      await mailDoc.ref.set({ ...notification.mail, raw: `${headers}${body}` });
 
       // For each anonymized recipient, replace their (anonymized) email address
       // (with their real one) and relay the updated message.
-      Object.entries(recipients).map(([anon, real]) =>
+      Object.entries(recipients).map(([anon, real]: string[]) =>
         ses.sendRawEmail(
           {
             Destinations: [real],
-            RawMessage: { Data: `${headers.replace(anon, real)}${body}` },
+            RawMessage: { Data: `${headers.split(anon).join(real)}${body}` },
           },
-          (error: AWSError, response: SES.Types.SendRawEmailResponse) => {
-            console.log(
-              '[DEBUG] Email:',
-              `${headers.replace(anon, real)}${body}`
-            );
+          (error: AWSError, res: SES.Types.SendRawEmailResponse) => {
+            console.log(`Replacing anonymous (${anon}) with real (${real})...`);
+            console.log('Raw:', `${headers.split(anon).join(real)}${body}`);
             if (error) {
               throw new Error(`${error.name} sending email: ${error.message}`);
             } else {
-              console.log(
-                '[DEBUG] Sent email:',
-                JSON.stringify(response, null, 2)
-              );
+              console.log('Sent email:', JSON.stringify(res, null, 2));
             }
           }
         )

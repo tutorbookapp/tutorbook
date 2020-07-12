@@ -26,15 +26,12 @@ export type RoleAlias = 'tutor' | 'tutee' | 'mentor' | 'mentee';
  * @property id - The user's unique Firebase-assigned user ID (note that this
  * contains both lowercase and capital letters which is why it can't be used as
  * a unique anonymous email address handle).
- * @property emailId - The user's all-lowercase anonymous email handle.
+ * @property handle - The user's all-lowercase anonymous email handle.
  * @property roles - The user's roles at this appointment (e.g. tutor or pupil).
- *
- * @todo Add an `emailId` prop to this data model and use it instead of the
- * `<uid>-<appt>@mail.tutorbook.org` email address formats in our AWS Lambda
- * function.
  */
 export interface Attendee {
   id: string;
+  handle: string;
   roles: RoleAlias[];
 }
 

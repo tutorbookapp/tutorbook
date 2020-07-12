@@ -9,7 +9,6 @@ import firebase from 'lib/firebase';
 import {
   ApiError,
   User,
-  UserJSON,
   Timeslot,
   Appt,
   ApptJSON,
@@ -21,6 +20,7 @@ import { UserContextValue, UserContext } from 'lib/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { injectIntl, defMsg, Msg, IntlShape, IntlHelper } from 'lib/intl';
+import { v4 as uuid } from 'uuid';
 
 import to from 'await-to-js';
 
@@ -101,10 +101,12 @@ class RequestDialog extends React.Component<
         {
           id: currentUser.id,
           roles: [aspect === 'tutoring' ? 'tutee' : 'mentee'],
+          handle: uuid(),
         },
         {
           id: user.id,
           roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
+          handle: uuid(),
         },
       ],
       subjects: subjects.map((s: Option<string>) => s.value),
