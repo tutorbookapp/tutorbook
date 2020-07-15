@@ -139,6 +139,7 @@ export async function userUpdate(
         user.availability as Timeslot<Timestamp>[]
       ),
       objectID: uid,
+      visible: !!user.visible, // Ensure that this filterable property is added.
       _tags: getTags(user),
     };
     const [err] = await too(index.saveObject(ob));
