@@ -222,7 +222,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                   } else {
                     tags.splice(idx, 1);
                   }
-                  setQuery((prev: Query) => new Query({ ...prev, tags }));
+                  setQuery((p: Query) => new Query({ ...p, tags, page: 0 }));
                 }}
                 selected={
                   query.tags.findIndex(({ value }) => value === 'not-vetted') >=
@@ -234,7 +234,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 checkmark
                 onInteraction={() => {
                   const visible = query.visible !== true ? true : undefined;
-                  setQuery((prev: Query) => new Query({ ...prev, visible }));
+                  setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
                 }}
                 selected={query.visible === true}
               />
@@ -243,7 +243,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 checkmark
                 onInteraction={() => {
                   const visible = query.visible !== false ? false : undefined;
-                  setQuery((prev: Query) => new Query({ ...prev, visible }));
+                  setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
                 }}
                 selected={query.visible === false}
               />
@@ -256,8 +256,8 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                const text: string = event.currentTarget.value;
-                setQuery((prev: Query) => new Query({ ...prev, query: text }));
+                const q: string = event.currentTarget.value;
+                setQuery((p: Query) => new Query({ ...p, query: q, page: 0 }));
               }}
             />
           </div>
@@ -294,9 +294,8 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
-                {!!data &&
-                  !!data.users.length &&
-                  data.users.map((user: UserJSON, idx: number) => (
+                {!isValidating &&
+                  (data ? data.users : []).map((user, idx) => (
                     <UserRow
                       key={user.id}
                       user={user}
@@ -304,8 +303,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                       onClick={() => setViewingIdx(idx)}
                     />
                   ))}
-                {(!data || !data.users.length) &&
-                  isValidating &&
+                {isValidating &&
                   Array(10)
                     .fill(null)
                     .map(() => <LoadingRow key={uuid()} />)}
