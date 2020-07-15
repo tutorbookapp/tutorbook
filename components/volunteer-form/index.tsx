@@ -13,7 +13,6 @@ import {
   User,
   Aspect,
   SocialInterface,
-  Option,
 } from 'lib/model';
 
 import Title from 'components/title';
@@ -43,9 +42,6 @@ type VolunteerFormState = {
   submittingTutor: boolean;
   submittedMentor: boolean;
   submittedTutor: boolean;
-  tutoringSubjects: Option<string>[];
-  mentoringSubjects: Option<string>[];
-  langs: Option<string>[];
 };
 
 /**
@@ -81,9 +77,6 @@ class VolunteerForm extends React.Component<
       submittingTutor: false,
       submittedMentor: false,
       submittedTutor: false,
-      tutoringSubjects: [],
-      mentoringSubjects: [],
-      langs: [],
     };
 
     this.headerRef = React.createRef();
@@ -200,7 +193,6 @@ class VolunteerForm extends React.Component<
   private renderInputs(): JSX.Element {
     const { intl, aspect } = this.props;
     const { updateUser, user } = this.context;
-    const { langs, mentoringSubjects, tutoringSubjects } = this.state;
     const msg = (message: MessageDescriptor) => intl.formatMessage(message);
     const sharedProps = {
       className: styles.formField,
@@ -273,40 +265,25 @@ class VolunteerForm extends React.Component<
         <ListDivider className={styles.divider} />
         <LangSelect
           {...sharedProps}
-          value={langs}
-          values={user.langs}
+          value={user.langs}
           label={msg(msgs.lang)}
-          onChange={(newLangs: Option<string>[]) => {
-            this.setState({ langs: newLangs });
-            return updateUser(
-              new User({
-                ...user,
-                langs: newLangs.map((lang: Option<string>) => lang.value),
-              })
-            );
-          }}
+          onChange={(langs: string[]) =>
+            updateUser(new User({ ...user, langs }))
+          }
           required
         />
         {aspect === 'mentoring' && (
           <>
             <SubjectSelect
               {...sharedProps}
-              value={mentoringSubjects}
-              values={user.mentoring.subjects}
+              value={user.mentoring.subjects}
               label={msg(msgs.expertise)}
               placeholder={msg(msgs.expertisePlaceholder)}
-              onChange={(subjects: Option<string>[]) => {
-                this.setState({ mentoringSubjects: subjects });
-                return updateUser(
-                  new User({
-                    ...user,
-                    [aspect]: {
-                      subjects: subjects.map((subject) => subject.value),
-                      searches: user[aspect].searches,
-                    },
-                  })
-                );
-              }}
+              onChange={(subjects: string[]) =>
+                updateUser(
+                  new User({ ...user, [aspect]: { ...user[aspect], subjects } })
+                )
+              }
               aspect={aspect}
               required
             />
@@ -333,22 +310,14 @@ class VolunteerForm extends React.Component<
           <>
             <SubjectSelect
               {...sharedProps}
-              value={tutoringSubjects}
-              values={user.tutoring.subjects}
+              value={user.tutoring.subjects}
               label={msg(msgs.subjects)}
               placeholder={msg(msgs.subjectsPlaceholder)}
-              onChange={(subjects: Option<string>[]) => {
-                this.setState({ tutoringSubjects: subjects });
-                return updateUser(
-                  new User({
-                    ...user,
-                    [aspect]: {
-                      subjects: subjects.map((subject) => subject.value),
-                      searches: user[aspect].searches,
-                    },
-                  })
-                );
-              }}
+              onChange={(subjects: string[]) =>
+                updateUser(
+                  new User({ ...user, [aspect]: { ...user[aspect], subjects } })
+                )
+              }
               aspect={aspect}
               required
             />
