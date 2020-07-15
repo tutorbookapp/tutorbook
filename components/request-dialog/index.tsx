@@ -29,14 +29,14 @@ import styles from './request-dialog.module.scss';
 interface RequestDialogState {
   time?: Timeslot;
   message: string;
-  subjects: Option<string>[];
+  subjects: string[];
   submitting: boolean;
   submitted: boolean;
   err?: string;
 }
 
 interface RequestDialogProps {
-  subjects: Option<string>[];
+  subjects: string[];
   time?: Timeslot;
   intl: IntlShape;
   user: User;
@@ -97,6 +97,7 @@ class RequestDialog extends React.Component<
     return new Appt({
       time,
       message,
+      subjects,
       attendees: [
         {
           id: currentUser.id,
@@ -109,7 +110,6 @@ class RequestDialog extends React.Component<
           handle: uuid(),
         },
       ],
-      subjects: subjects.map((s: Option<string>) => s.value),
     });
   }
 
@@ -123,7 +123,7 @@ class RequestDialog extends React.Component<
     ];
   }
 
-  private handleSubjectsChange(subjects: Option<string>[]): void {
+  private handleSubjectsChange(subjects: string[]): void {
     this.setState({ subjects });
     firebase.analytics().logEvent('checkout_progress', {
       checkout_step: 1,
