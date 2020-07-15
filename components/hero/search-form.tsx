@@ -1,4 +1,4 @@
-import { useIntl, useMsg, defMsg, IntlHelper, IntlShape, Msg } from 'lib/intl';
+import { useIntl, useMsg, defMsg, IntlHelper, Msg } from 'lib/intl';
 import { Aspect, Query, Availability } from 'lib/model';
 
 import React from 'react';
