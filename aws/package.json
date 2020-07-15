@@ -23,7 +23,7 @@
     "algoliasearch": "^4.3.0",
     "await-to-js": "^2.1.1",
     "aws-sdk": "^2.712.0",
-    "firebase-admin": "^8.13.0",
+    "firebase-admin": "^9.0.0",
     "uuid": "^8.2.0"
   },
   "private": true
