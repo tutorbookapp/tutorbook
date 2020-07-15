@@ -1,81 +1,122 @@
 import { useIntl } from 'lib/intl';
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
-import Select, { SelectProps } from 'components/select';
 import { Option } from 'lib/model';
 
-import React from 'react';
+import Select, { SelectControllerProps } from 'components/select';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 
-import * as config from 'lib/intl/config.json';
+import React from 'react';
+import equal from 'fast-deep-equal';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
-
-type LocaleCodeAlias = typeof config.locales[number];
-
-type LangHit = ObjectWithObjectID &
-  { [key in LocaleCodeAlias]: { name: string; synonyms: string[] } };
-
-type LangSelectProps = { values?: string[] } & Omit<
-  SelectProps<string>,
-  'getSuggestions'
->;
-
 const searchIndex: SearchIndex = client.initIndex('langs');
 
+type LangHit = ObjectWithObjectID & {
+  [key: string]: { name: string; synonyms: string[] };
+};
+
+/**
+ * The `LangSelect` is a `Select` controller which means that it:
+ * 1. Provides the `value` and `onChange` API surface on which to control the
+ * values currently selected (i.e. the selected locale codes).
+ * 2. Syncs those values with the internally stored `selectedOptions` state by
+ * querying our Algolia search index.
+ * 3. Also exposes (an optional) `selected` and `onSelectedChange` API surface
+ * that can be used to directly control the `selectedOptions`.
+ * 4. Implements a `getSuggestions` callback that searches the Algolia index for
+ * relevant subjects (based off the user's `Select`-inputted query).
+ */
 export default function LangSelect({
   value,
-  values,
   onChange,
+  selected,
+  onSelectedChange,
   ...props
-}: LangSelectProps): JSX.Element {
+}: SelectControllerProps<string>): JSX.Element {
+  // Directly control the `Select` component with this internal state.
+  const [selectedOptions, setSelectedOptions] = React.useState<
+    Option<string>[]
+  >(selected || []);
+  const onSelectedOptionsChange = React.useCallback(
+    (os: Option<string>[]) => {
+      setSelectedOptions(os);
+      if (onSelectedChange) onSelectedChange(os);
+      if (onChange) onChange(os.map(({ value: val }) => val));
+    },
+    [onSelectedChange, onChange]
+  );
+
+  // Convert a language search hit to an option (gets the label in the current
+  // locale/language).
   const { locale } = useIntl();
-
-  React.useEffect(() => {
-    const updateSelected = async (vals: string[]) => {
-      const res: SearchResponse<LangHit> = await searchIndex.search('', {
-        filters: vals.map((val: string) => `objectID:${val}`).join(' OR '),
-      });
-      const selected: Option<string>[] = res.hits.map((lang: LangHit) => ({
-        label: lang[locale].name,
-        value: lang.objectID,
-      }));
-      onChange(selected);
-    };
-    if (values && values.length) {
-      // The `values` prop contains an array of locale codes. We must search the
-      // `langs` Algolia index to find their corresponding labels (e.g. `en` and
-      // `English`) and select them (by calling `props.onChange`).
-      const valuesAreSelected = values.every(
-        (val) =>
-          value.findIndex((option: Option<string>) => option.value === val) >= 0
-      );
-      if (!valuesAreSelected) void updateSelected(values);
-    } else if (!value.length) {
-      void updateSelected([locale]);
-    }
-  }, [values]);
-
-  /**
-   * Updates the suggestions shown in the select below the langs input based
-   * on the results of the user's current input to an Algolia search query.
-   * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
-   */
-  async function getSuggestions(query = ''): Promise<Option<string>[]> {
-    const res: SearchResponse<LangHit> = await searchIndex.search(query);
-    return res.hits.map((lang: LangHit) => ({
+  const langHitToOption = React.useCallback(
+    (lang: LangHit) => ({
       label: lang[locale].name,
       value: lang.objectID,
-    }));
-  }
+    }),
+    [locale]
+  );
+
+  // Searches the Algolia search index based on the user's `textarea` input.
+  const getSuggestions = React.useCallback(
+    async (query = '') => {
+      const res: SearchResponse<LangHit> = await searchIndex.search(query);
+      return res.hits.map(langHitToOption);
+    },
+    [langHitToOption]
+  );
+
+  // Sync the controlled values (i.e. locale codes) with the internally stored
+  // `selectedOptions` state **only** if they don't already match.
+  React.useEffect(
+    () =>
+      setSelectedOptions((prev: Option<string>[]) => {
+        // If they already match, do nothing.
+        if (
+          !value ||
+          equal(
+            prev.map(({ value: val }) => val),
+            value
+          )
+        )
+          return prev;
+        // Otherwise, fetch the correct labels (for those locale codes) by
+        // searching our Algolia `langs` index.
+        const updateLabelsFromAlgolia = async () => {
+          const res: SearchResponse<LangHit> = await searchIndex.search('', {
+            filters: value.map((val) => `objectID:${val}`).join(' OR '),
+          });
+          setSelectedOptions(res.hits.map(langHitToOption));
+        };
+        void updateLabelsFromAlgolia();
+        // Then, temporarily update the options based on the locale codes.
+        return value.map((val: string) => {
+          const idx = prev.findIndex(({ value: v }) => v === val);
+          if (idx < 0) return { label: val, value: val };
+          return prev[idx];
+        });
+      }),
+    [value, langHitToOption]
+  );
+
+  // Expose API surface to directly control the `selectedOptions` state.
+  React.useEffect(
+    () =>
+      setSelectedOptions((prev: Option<string>[]) => {
+        if (!selected || equal(prev, selected)) return prev;
+        return selected;
+      }),
+    [selected]
+  );
 
   return (
     <Select
       {...props}
-      value={value}
-      onChange={onChange}
+      value={selectedOptions}
+      onChange={onSelectedOptionsChange}
       getSuggestions={getSuggestions}
     />
   );

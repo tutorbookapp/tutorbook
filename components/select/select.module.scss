@@ -1,3 +1,5 @@
+@use 'sass:map';
+@use 'styles/config';
 @use '@material/chips/_index.scss' as chips;
 
 .errMenu {
@@ -17,6 +19,7 @@
 }
 
 .textField textarea {
+  line-height: 30px !important;
   height: 30px !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -42,9 +45,10 @@
 }
 
 .ghost {
+  line-height: 30px;
   visibility: hidden;
   position: absolute;
-  font-family: Poppins, sans-serif;
+  font-family: map.get(config.$fonts, 'sans');
   font-size: 1rem;
   font-weight: 400;
   letter-spacing: 0.009375em;

@@ -1,80 +1,119 @@
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { Option, Aspect, GradeAlias } from 'lib/model';
-import Select, { SelectProps } from 'components/select';
+
+import Select, { SelectControllerProps } from 'components/select';
+import algoliasearch, { SearchClient } from 'algoliasearch/lite';
 
 import React from 'react';
+import equal from 'fast-deep-equal';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 
-interface UniqueSubjectSelectProps {
-  values?: string[];
-  options?: string[];
-  aspect: Aspect;
-  grade?: GradeAlias;
-}
-
-type SubjectSelectProps = Omit<
-  SelectProps<string>,
-  keyof UniqueSubjectSelectProps | 'getSuggestions'
-> &
-  UniqueSubjectSelectProps;
-
 interface SubjectHit extends ObjectWithObjectID {
   name: string;
 }
 
+interface SubjectSelectProps {
+  options?: string[];
+  grade?: GradeAlias;
+  aspect: Aspect;
+}
+
+/**
+ * The `SubjectSelect` is a `Select` controller which means that it:
+ * 1. Provides the `value` and `onChange` API surface on which to control the
+ * values currently selected (i.e. the selected locale codes).
+ * 2. Also exposes (an optional) `selected` and `onSelectedChange` API surface
+ * that can be used to directly control the `selectedOptions`.
+ * 3. Implements a `getSuggestions` callback that searches the `aspect` Algolia
+ * index for relevant subjects (while filtering by `options` and `grade`).
+ */
 export default function SubjectSelect({
-  values,
+  value,
+  onChange,
+  selected,
+  onSelectedChange,
   options,
   aspect,
   grade,
   ...props
-}: SubjectSelectProps): JSX.Element {
-  const searchIndex: SearchIndex = client.initIndex(aspect);
+}: SelectControllerProps<string> & SubjectSelectProps): JSX.Element {
+  // Directly control the `Select` component with this internal state.
+  const [selectedOptions, setSelectedOptions] = React.useState<
+    Option<string>[]
+  >(selected || []);
+  const onSelectedOptionsChange = React.useCallback(
+    (os: Option<string>[]) => {
+      setSelectedOptions(os);
+      if (onSelectedChange) onSelectedChange(os);
+      if (onChange) onChange(os.map(({ value: val }) => val));
+    },
+    [onSelectedChange, onChange]
+  );
 
-  // TODO: This will become an async update function that filters our Algolia
-  // search index to get the labels of the selected subjects (using their IDs).
-  // TODO: Debug issue with `react-hooks/exhaustive-deps`.
-  React.useEffect(() => {
-    if (!values) return;
-    const valuesHaveLabels = values.every(
-      (value: string) =>
-        props.value.findIndex(
-          (valueWithLabel: Option<string>) => valueWithLabel.value === value
-        ) >= 0
-    );
-    if (!valuesHaveLabels)
-      props.onChange(values.map((v) => ({ label: v, value: v })));
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [values]);
+  // Search the Algolia index (filtering by options and grade) to get select
+  // options/suggestions (for the drop-down menu).
+  const searchIndex = React.useMemo(() => client.initIndex(aspect), [aspect]);
+  const getSuggestions = React.useCallback(
+    async (query = '') => {
+      if (options && !options.length) return [];
+      const filters: string | undefined =
+        options !== undefined
+          ? options.map((subject: string) => `name:"${subject}"`).join(' OR ')
+          : undefined;
+      const optionalFilters: string[] | undefined =
+        grade !== undefined ? [`grades:${grade}`] : undefined;
+      const res: SearchResponse<SubjectHit> = await searchIndex.search(query, {
+        filters,
+        optionalFilters,
+      });
+      return res.hits.map(({ name }) => ({ label: name, value: name }));
+    },
+    [options, grade, searchIndex]
+  );
 
-  /**
-   * Updates the suggestions shown in the select below the subjects input based
-   * on the results of the user's current input to an Algolia search query.
-   * @see {@link https://www.algolia.com/doc/api-reference/api-methods/search/}
-   */
-  async function getSuggestions(query = ''): Promise<Option<string>[]> {
-    if (options && !options.length) return [];
-    const filters: string | undefined =
-      options !== undefined
-        ? options.map((subject: string) => `name:"${subject}"`).join(' OR ')
-        : undefined;
-    const optionalFilters: string[] | undefined =
-      grade !== undefined ? [`grades:${grade}`] : undefined;
-    const res: SearchResponse<SubjectHit> = await searchIndex.search(query, {
-      filters,
-      optionalFilters,
-    });
-    return res.hits.map((subject: SubjectHit) => ({
-      label: subject.name,
-      value: subject.name,
-    }));
-  }
+  // Sync the controlled values (i.e. subject codes) with the internally stored
+  // `selectedOptions` state **only** if they don't already match.
+  React.useEffect(
+    () =>
+      setSelectedOptions((prev: Option<string>[]) => {
+        // If they already match, do nothing.
+        if (
+          !value ||
+          equal(
+            prev.map(({ value: val }) => val),
+            value
+          )
+        )
+          return prev;
+        // Otherwise, update the options based on the subject codes.
+        return value.map((val: string) => ({ label: val, value: val }));
+        // TODO: Add i18n to subjects by including labels for all languages in that
+        // search index (and then fetching the correct labels for the given subject
+        // codes here by searching that index).
+      }),
+    [value]
+  );
 
-  /* eslint-disable-next-line react/jsx-props-no-spreading */
-  return <Select {...props} getSuggestions={getSuggestions} />;
+  // Expose API surface to directly control the `selectedOptions` state.
+  React.useEffect(
+    () =>
+      setSelectedOptions((prev: Option<string>[]) => {
+        if (!selected || equal(prev, selected)) return prev;
+        return selected;
+      }),
+    [selected]
+  );
+
+  return (
+    <Select
+      {...props}
+      value={selectedOptions}
+      onChange={onSelectedOptionsChange}
+      getSuggestions={getSuggestions}
+    />
+  );
 }

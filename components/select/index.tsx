@@ -13,7 +13,7 @@ import SelectHint from './select-hint';
 
 import styles from './select.module.scss';
 
-type TextFieldPropOverrides = 'textarea' | 'outlined' | 'onFocus' | 'onBlur';
+type TextFieldPropOverrides = 'textarea' | 'onFocus' | 'onBlur';
 
 interface SelectState<T> {
   suggestionsOpen: boolean;
@@ -29,6 +29,7 @@ interface UniqueSelectProps<T> {
   getSuggestions: (query: string) => Promise<Option<T>[]>;
   renderToPortal?: boolean;
   autoOpenMenu?: boolean;
+  singleLine?: boolean;
   focused?: boolean;
   onFocused?: () => any;
   onBlurred?: () => any;
@@ -42,6 +43,27 @@ type Overrides<T> =
 export type SelectProps<T> = Omit<TextFieldHTMLProps, Overrides<T>> &
   Omit<TextFieldProps, Overrides<T>> &
   UniqueSelectProps<T>;
+
+/**
+ * Each `Select` component provides a wrapper around the base `Select`
+ * component (defined in this file). Those wrappers:
+ * 1. Provide a surface on which to control the values selected.
+ * 2. Syncs those values with internally stored `Option[]` state by querying our
+ * Algolia search indices.
+ * 3. Also exposes that `Option[]` state if needed by the parent component.
+ */
+export interface SelectControls<T> {
+  value: T[];
+  onChange: (value: T[]) => void;
+  selected: Option<T>[];
+  onSelectedChange: (options: Option<T>[]) => void;
+}
+
+export type SelectControllerProps<T> = Omit<
+  SelectProps<T>,
+  keyof SelectControls<T> | 'getSuggestions'
+> &
+  Partial<SelectControls<T>>;
 
 export default class Select<T> extends React.Component<
   SelectProps<T>,
@@ -193,7 +215,13 @@ export default class Select<T> extends React.Component<
    * used (to which the value of `<textarea>` is then assigned).
    */
   private updateInputLine(event: React.FormEvent<HTMLInputElement>): void {
-    if (this.ghostElementRef.current) {
+    const { singleLine } = this.props;
+    if (singleLine && this.ghostElementRef.current && this.inputRef.current) {
+      this.ghostElementRef.current.innerText = event.currentTarget.value;
+      this.inputRef.current.style.width = `${Math.ceil(
+        this.ghostElementRef.current.clientWidth + 0.5
+      )}px`;
+    } else if (!singleLine && this.ghostElementRef.current) {
       this.ghostElementRef.current.innerText = event.currentTarget.value;
 
       if (
@@ -363,7 +391,6 @@ export default class Select<T> extends React.Component<
           <TextField
             {...textFieldProps}
             textarea
-            outlined
             inputRef={this.inputRef}
             value={inputValue}
             onFocus={() => {
