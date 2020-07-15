@@ -1,10 +1,10 @@
 import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
 import { Checkbox } from '@rmwc/checkbox';
-import { Callback, User, UserJSON } from 'lib/model';
+import { Aspect, Callback, User, UserJSON } from 'lib/model';
 
 import React from 'react';
-import Utils from 'lib/utils';
+import SubjectSelect from 'components/subject-select';
 
 import equal from 'fast-deep-equal';
 import styles from './people.module.scss';
@@ -13,9 +13,15 @@ interface RowProps {
   user: User;
   onClick: () => void;
   onChange: (event: React.FormEvent<HTMLInputElement>, field: string) => void;
+  onSubjectsChange: (subjects: string[], aspect: Aspect) => void;
 }
 
-const Row = function Row({ user, onClick, onChange }: RowProps): JSX.Element {
+const Row = function Row({
+  user,
+  onClick,
+  onChange,
+  onSubjectsChange,
+}: RowProps): JSX.Element {
   return (
     <DataTableRow>
       <DataTableCell hasFormControl className={styles.visible}>
@@ -51,26 +57,45 @@ const Row = function Row({ user, onClick, onChange }: RowProps): JSX.Element {
         />
       </DataTableCell>
       <DataTableCell className={styles.subjects}>
-        {Utils.join(user.tutoring.subjects)}
+        <SubjectSelect
+          aspect='tutoring'
+          value={user.tutoring.subjects}
+          onChange={(s: string[]) => onSubjectsChange(s, 'tutoring')}
+          renderToPortal
+          singleLine
+        />
       </DataTableCell>
       <DataTableCell className={styles.subjects}>
-        {Utils.join(user.mentoring.subjects)}
+        <SubjectSelect
+          aspect='mentoring'
+          value={user.mentoring.subjects}
+          onChange={(s: string[]) => onSubjectsChange(s, 'mentoring')}
+          renderToPortal
+          singleLine
+        />
       </DataTableCell>
     </DataTableRow>
   );
 };
 
 export const LoadingRow = React.memo(function LoadingRow(): JSX.Element {
-  const [user, setUser] = React.useState<User>(new User());
-
   return (
-    <Row
-      user={user}
-      onClick={() => {}}
-      onChange={(event: React.FormEvent<HTMLInputElement>, field: string) => {
-        setUser(new User({ ...user, [field]: event.currentTarget.value }));
-      }}
-    />
+    <DataTableRow>
+      <DataTableCell hasFormControl className={styles.visible}>
+        <Checkbox />
+      </DataTableCell>
+      <DataTableCell hasFormControl className={styles.vetted}>
+        <Checkbox />
+      </DataTableCell>
+      <DataTableCell className={styles.name}>
+        <TextField />
+      </DataTableCell>
+      <DataTableCell className={styles.bio} />
+      <DataTableCell className={styles.email} />
+      <DataTableCell className={styles.phone} />
+      <DataTableCell className={styles.subjects} />
+      <DataTableCell className={styles.subjects} />
+    </DataTableRow>
   );
 });
 
@@ -90,17 +115,30 @@ interface UserRowProps {
  */
 export default React.memo(
   function UserRow({ user, onClick, onChange }: UserRowProps): JSX.Element {
+    const onValueChange = React.useCallback(
+      (event: React.FormEvent<HTMLInputElement>, field: string) => {
+        const value: string | boolean =
+          field === 'visible'
+            ? !!event.currentTarget.checked
+            : event.currentTarget.value;
+        return onChange({ ...user, [field]: value });
+      },
+      [user, onChange]
+    );
+    const onSubjectsChange = React.useCallback(
+      (subjects: string[], aspect: Aspect) => {
+        if (equal(subjects, user[aspect].subjects)) return;
+        return onChange({ ...user, [aspect]: { ...user[aspect], subjects } });
+      },
+      [user, onChange]
+    );
+
     return (
       <Row
         onClick={onClick}
         user={user ? User.fromJSON(user) : user}
-        onChange={(event: React.FormEvent<HTMLInputElement>, field: string) => {
-          const value: string | boolean =
-            field === 'visible'
-              ? !!event.currentTarget.checked
-              : event.currentTarget.value;
-          return onChange({ ...user, [field]: value });
-        }}
+        onChange={onValueChange}
+        onSubjectsChange={onSubjectsChange}
       />
     );
   },
