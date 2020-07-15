@@ -71,10 +71,19 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     Record<string, ReturnType<typeof setTimeout>>
   >({});
 
+  const [searching, setSearching] = React.useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<Query>(
     new Query({ orgs: [{ label: org.name, value: org.id }], hitsPerPage: 10 })
+  );
+
+  const loadingRows: JSX.Element[] = React.useMemo(
+    () =>
+      Array(query.hitsPerPage)
+        .fill(null)
+        .map(() => <LoadingRow key={uuid()} />),
+    [query.hitsPerPage]
   );
 
   const { locale } = useIntl();
@@ -91,45 +100,55 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   React.useEffect(() => {
     void mutate(query.endpoint);
   }, [query]);
+  React.useEffect(() => {
+    setSearching((prev: boolean) => prev && isValidating);
+  }, [isValidating]);
 
-  async function mutateUser(user: UserJSON): Promise<void> {
-    if (timeoutIds.current[user.id]) {
-      clearTimeout(timeoutIds.current[user.id]);
-      delete timeoutIds.current[user.id];
-    }
+  const mutateUser = React.useCallback(
+    async (user: UserJSON) => {
+      if (timeoutIds.current[user.id]) {
+        clearTimeout(timeoutIds.current[user.id]);
+        delete timeoutIds.current[user.id];
+      }
 
-    /* eslint-disable @typescript-eslint/require-await */
-    const updateLocal = (updated: UserJSON) =>
-      mutate(
-        query.endpoint,
-        async (prev: ListUsersRes) => {
-          if (!prev) return prev;
-          const { users: old } = prev;
-          const idx: number = old.findIndex(
-            (u: UserJSON) => u.id === updated.id
-          );
-          if (idx < 0) return prev;
-          const users = [...old.slice(0, idx), updated, ...old.slice(idx + 1)];
-          return { ...prev, users };
-        },
-        false
-      );
-    /* eslint-enable @typescript-eslint/require-await */
+      /* eslint-disable @typescript-eslint/require-await */
+      const updateLocal = (updated: UserJSON) =>
+        mutate(
+          query.endpoint,
+          async (prev: ListUsersRes) => {
+            if (!prev) return prev;
+            const { users: old } = prev;
+            const idx: number = old.findIndex(
+              (u: UserJSON) => u.id === updated.id
+            );
+            if (idx < 0) return prev;
+            const users = [
+              ...old.slice(0, idx),
+              updated,
+              ...old.slice(idx + 1),
+            ];
+            return { ...prev, users };
+          },
+          false
+        );
+      /* eslint-enable @typescript-eslint/require-await */
 
-    const updateRemote = async (updated: UserJSON) => {
-      const url = `/api/users/${updated.id}`;
-      const { data: remoteUpdated } = await axios.put<UserJSON>(url, updated);
-      await updateLocal(remoteUpdated);
-    };
+      const updateRemote = async (updated: UserJSON) => {
+        const url = `/api/users/${updated.id}`;
+        const { data: remoteUpdated } = await axios.put<UserJSON>(url, updated);
+        await updateLocal(remoteUpdated);
+      };
 
-    await updateLocal(user);
+      await updateLocal(user);
 
-    // Only update the user profile remotely after 5secs of no change.
-    // @see {@link https://github.com/vercel/swr/issues/482}
-    timeoutIds.current[user.id] = setTimeout(() => {
-      void updateRemote(user);
-    }, 5000);
-  }
+      // Only update the user profile remotely after 5secs of no change.
+      // @see {@link https://github.com/vercel/swr/issues/482}
+      timeoutIds.current[user.id] = setTimeout(() => {
+        void updateRemote(user);
+      }, 5000);
+    },
+    [query.endpoint]
+  );
 
   return (
     <>
@@ -210,6 +229,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 label={msg(msgs.notVetted)}
                 checkmark
                 onInteraction={() => {
+                  setSearching(true);
                   const tags: Option<Tag>[] = Array.from(query.tags);
                   const idx = tags.findIndex(
                     ({ value }) => value === 'not-vetted'
@@ -233,6 +253,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 label={msg(msgs.visible)}
                 checkmark
                 onInteraction={() => {
+                  setSearching(true);
                   const visible = query.visible !== true ? true : undefined;
                   setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
                 }}
@@ -242,6 +263,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 label={msg(msgs.hidden)}
                 checkmark
                 onInteraction={() => {
+                  setSearching(true);
                   const visible = query.visible !== false ? false : undefined;
                   setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
                 }}
@@ -256,13 +278,14 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                setSearching(true);
                 const q: string = event.currentTarget.value;
                 setQuery((p: Query) => new Query({ ...p, query: q, page: 0 }));
               }}
             />
           </div>
         </div>
-        {(isValidating || !!(data ? data.users : []).length) && (
+        {(searching || !!(data ? data.users : []).length) && (
           <DataTable className={styles.table}>
             <DataTableContent>
               <DataTableHead className={styles.header}>
@@ -294,7 +317,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
-                {!isValidating &&
+                {!searching &&
                   (data ? data.users : []).map((user, idx) => (
                     <UserRow
                       key={user.id}
@@ -303,15 +326,12 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                       onClick={() => setViewingIdx(idx)}
                     />
                   ))}
-                {isValidating &&
-                  Array(10)
-                    .fill(null)
-                    .map(() => <LoadingRow key={uuid()} />)}
+                {searching && loadingRows}
               </DataTableBody>
             </DataTableContent>
           </DataTable>
         )}
-        {!isValidating && !(data ? data.users : []).length && (
+        {!searching && !(data ? data.users : []).length && (
           <div className={styles.empty}>
             <Placeholder>NO PEOPLE TO SHOW</Placeholder>
           </div>
@@ -326,10 +346,9 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 value={`${query.hitsPerPage}`}
                 options={['5', '10', '15', '20', '25', '30']}
                 onChange={(event: React.FormEvent<HTMLSelectElement>) => {
+                  setSearching(true);
                   const hitsPerPage = Number(event.currentTarget.value);
-                  setQuery(
-                    (prev: Query) => new Query({ ...prev, hitsPerPage })
-                  );
+                  setQuery((p: Query) => new Query({ ...p, hitsPerPage }));
                 }}
               />
             </div>
@@ -339,22 +358,20 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             <IconButton
               disabled={query.page <= 0}
               icon='chevron_left'
-              onClick={() =>
-                setQuery(
-                  (prev: Query) => new Query({ ...prev, page: prev.page - 1 })
-                )
-              }
+              onClick={() => {
+                setSearching(true);
+                setQuery((p: Query) => new Query({ ...p, page: p.page - 1 }));
+              }}
             />
             <IconButton
               disabled={
                 query.page + 1 >= (data ? data.hits : 0) / query.hitsPerPage
               }
               icon='chevron_right'
-              onClick={() =>
-                setQuery(
-                  (prev: Query) => new Query({ ...prev, page: prev.page + 1 })
-                )
-              }
+              onClick={() => {
+                setSearching(true);
+                setQuery((p: Query) => new Query({ ...p, page: p.page + 1 }));
+              }}
             />
           </div>
         </div>
