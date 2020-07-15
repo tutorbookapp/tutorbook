@@ -6,15 +6,7 @@ import SubjectSelect from 'components/subject-select';
 import UserDialog from 'components/user-dialog';
 
 import firebase from 'lib/firebase';
-import {
-  ApiError,
-  User,
-  Timeslot,
-  Appt,
-  ApptJSON,
-  Aspect,
-  Option,
-} from 'lib/model';
+import { ApiError, User, Timeslot, Appt, ApptJSON, Aspect } from 'lib/model';
 import { signupWithGoogle } from 'lib/account/signup';
 import { UserContextValue, UserContext } from 'lib/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
