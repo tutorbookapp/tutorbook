@@ -98,7 +98,7 @@ export default defineMessages({
   },
   subjectsPlaceholder: {
     id: 'tutor-form.subjects-placeholder',
-    defaultMessage: 'Ex. Algebra or Chemistry',
+    defaultMessage: 'Ex. Math or Science',
   },
   availability: {
     id: 'tutor-form.availability',
