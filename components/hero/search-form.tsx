@@ -1,4 +1,4 @@
-import { useIntl, defMsg, IntlHelper, IntlShape, Msg } from 'lib/intl';
+import { useIntl, useMsg, defMsg, IntlHelper, IntlShape, Msg } from 'lib/intl';
 import { Aspect, Query, Availability } from 'lib/model';
 
 import React from 'react';
@@ -24,8 +24,8 @@ const msgs: Record<string, Msg> = defMsg({
 });
 
 export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const { locale } = useIntl();
+  const msg: IntlHelper = useMsg();
 
   const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<Query>(
@@ -38,38 +38,39 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
   );
 
   React.useEffect(() => {
-    setQuery((oldQuery: Query) => {
-      if (aspect && aspect !== oldQuery.aspect)
-        return new Query({ ...oldQuery, aspect });
-      return oldQuery;
+    setQuery((prev: Query) => {
+      if (!aspect || aspect === prev.aspect) return prev;
+      return new Query({ ...prev, aspect });
     });
   }, [aspect]);
 
   React.useEffect(() => {
     void Router.prefetch(
       '/[locale]/search/[[...slug]]',
-      `/${intl.locale}${query.url}`
+      `/${locale}${query.url}`
     );
-  }, [query, intl.locale]);
+  }, [query, locale]);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setSubmitting(true);
-    // TODO: Show an intermediate loader above the top app bar as we redirect.
-    await Router.push(
-      '/[locale]/search/[[...slug]]',
-      `/${intl.locale}${query.url}`
-    );
-    return false;
-  };
+  const handleSubmit = React.useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setSubmitting(true);
+      await Router.push(
+        '/[locale]/search/[[...slug]]',
+        `/${locale}${query.url}`
+      );
+    },
+    [query, locale]
+  );
+  const onChange = React.useCallback((qry: Query) => setQuery(qry), []);
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <QueryForm
         subjects
         availability={query.aspect === 'tutoring'}
-        onChange={(newQuery: Query) => setQuery(newQuery)}
+        onChange={onChange}
         query={query}
       />
       <Button

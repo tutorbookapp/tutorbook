@@ -26,7 +26,7 @@ interface FilterFormProps {
   onChange: Callback<Query>;
 }
 
-type FocusTarget = 'subjects' | 'availability' | 'langs' | 'checks';
+type FocusTarget = 'subjects' | 'availability' | 'langs';
 
 export default function FilterForm({
   query,
