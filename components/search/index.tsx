@@ -67,10 +67,10 @@ export default function Search({
           user={viewing}
           aspect={query.aspect}
           onClosed={() => setViewing(undefined)}
-          subjects={Utils.intersection<Option<string>, string>(
-            query.subjects,
+          subjects={Utils.intersection<string, Option<string>>(
             viewing[query.aspect].subjects,
-            (a: Option<string>, b: string) => a.value === b
+            query.subjects,
+            (a: string, b: Option<string>) => a === b.value
           )}
           time={
             Utils.intersection<Timeslot, Timeslot>(
