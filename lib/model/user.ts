@@ -112,8 +112,7 @@ export interface Verification extends Resource {
 /**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
- * @property orgs - An array of the IDs of the orgs this user is a member of.
- * @property owners - An array of the IDs of the orgs this user belongs to.
+ * @property orgs - An array of the IDs of the orgs this user belongs to.
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property mentoring - The subjects that the user wants a and can mentor for.
  * @property tutoring - The subjects that the user wants a and can tutor for.
@@ -125,7 +124,6 @@ export interface Verification extends Resource {
  */
 export interface UserInterface extends AccountInterface {
   orgs: string[];
-  owners: string[];
   availability: Availability;
   mentoring: { subjects: string[]; searches: string[] };
   tutoring: { subjects: string[]; searches: string[] };
@@ -161,8 +159,6 @@ export function isUserJSON(json: any): json is UserJSON {
  */
 export class User extends Account implements UserInterface {
   public orgs: string[] = ['default'];
-
-  public owners: string[] = [];
 
   public availability: Availability = new Availability();
 
