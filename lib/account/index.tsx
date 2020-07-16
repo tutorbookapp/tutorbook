@@ -30,7 +30,6 @@ interface UserProviderProps {
  */
 async function installServiceWorker(): Promise<void> {
   if ('serviceWorker' in navigator) {
-    console.log('[DEBUG] Installing service worker...');
     await navigator.serviceWorker
       .register('/sw.js', { scope: '/' })
       .then((reg: ServiceWorkerRegistration) => {
@@ -38,14 +37,13 @@ async function installServiceWorker(): Promise<void> {
           const worker = reg.installing as ServiceWorker;
           worker.addEventListener('statechange', () => {
             if (worker.state === 'activated') {
-              console.log('[DEBUG] Service worker became active:', worker);
               void mutate('/api/account');
             }
           });
         });
       });
   } else {
-    console.warn('[WARNING] Service worker is disabled.');
+    throw new Error('Service workers are disabled.');
   }
 }
 
