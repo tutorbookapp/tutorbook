@@ -411,7 +411,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           <div className={styles.right}>
             <TextField
               outlined
-              invalid={!valid && query.query}
+              invalid={!valid && !!query.query}
               placeholder={msg(msgs.searchPlaceholder)}
               className={styles.searchField}
               value={query.query}
