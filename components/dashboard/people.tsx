@@ -228,11 +228,6 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         body={`${org.name}'s tutors, mentors and students`}
         actions={[
           {
-            label: msg(msgs.viewSearch),
-            href: '/[org]/search/[[...slug]]',
-            as: `/${org.id}/search`,
-          },
-          {
             label: msg(msgs.createUser),
             onClick: async () => {
               setValid(false); // Filters become invalid when creating users.
@@ -286,6 +281,11 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               );
               setViewingSnackbar(true);
             },
+          },
+          {
+            label: msg(msgs.viewSearch),
+            href: '/[org]/search/[[...slug]]',
+            as: `/${org.id}/search`,
           },
         ]}
       />
