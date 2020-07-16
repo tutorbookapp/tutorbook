@@ -10,6 +10,7 @@ import {
   DataTableBody,
   DataTableRow,
 } from '@rmwc/data-table';
+import { SimpleDialog, DialogOnCloseEventT } from '@rmwc/dialog';
 import { TextField } from '@rmwc/textfield';
 import { Snackbar } from '@rmwc/snackbar';
 import { Select } from '@rmwc/select';
@@ -84,6 +85,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   >({});
 
   const [valid, setValid] = React.useState<boolean>(true);
+  const [warningDialog, setWarningDialog] = React.useState<React.ReactNode>();
   const [searching, setSearching] = React.useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
@@ -100,10 +102,12 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   );
 
   const { locale } = useIntl();
+  // TODO: Control the re-validation using the `valid` state variable.
+  // See: https://github.com/vercel/swr/issues/529
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
     initialData,
-    revalidateOnFocus: valid,
-    revalidateOnReconnect: valid,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
   });
 
   React.useEffect(() => {
@@ -148,7 +152,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
       };
 
       const updateRemote = async (updated: UserJSON) => {
-        if (!updated.email) throw new Error('Cannot update user w/out email.');
+        if (!updated.email) return;
         if (updated.id.startsWith('temp')) {
           const url = '/api/users';
           const { data: remoteData } = await axios.post<UserJSON>(url, {
@@ -174,8 +178,34 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     [query]
   );
 
+  type ActionCallback = () => void;
+  const filterCallback = React.useCallback(
+    (action: ActionCallback) => {
+      const tempNoEmail = (u: UserJSON) => !u.email && u.id.startsWith('temp');
+      if (!valid && data && data.users.some(tempNoEmail)) {
+        setWarningDialog(
+          <SimpleDialog
+            title='Apply filters?'
+            body='Applying these filters will discard any users you have added without an email address. To save your changes, add an email address to each of those new users and then apply filters.'
+            acceptLabel='Apply Filters'
+            cancelLabel='Cancel'
+            onClose={(evt: DialogOnCloseEventT) => {
+              if (evt.detail.action === 'accept') action();
+            }}
+            onClosed={() => setWarningDialog(undefined)}
+            open
+          />
+        );
+      } else {
+        action();
+      }
+    },
+    [valid, data]
+  );
+
   return (
     <>
+      {warningDialog}
       {data && viewingIdx !== undefined && (
         <VerificationDialog
           user={data.users[viewingIdx]}
@@ -274,22 +304,24 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 }
                 label={msg(msgs.notVetted)}
                 checkmark
-                onInteraction={() => {
-                  setSearching(true);
-                  const tags: Option<Tag>[] = Array.from(query.tags);
-                  const idx = tags.findIndex(
-                    ({ value }) => value === 'not-vetted'
-                  );
-                  if (idx < 0) {
-                    tags.push({
-                      label: msg(msgs.notVetted),
-                      value: 'not-vetted',
-                    });
-                  } else if (valid) {
-                    tags.splice(idx, 1);
-                  }
-                  setQuery((p: Query) => new Query({ ...p, tags, page: 0 }));
-                }}
+                onInteraction={() =>
+                  filterCallback(() => {
+                    setSearching(true);
+                    const tags: Option<Tag>[] = Array.from(query.tags);
+                    const idx = tags.findIndex(
+                      ({ value }) => value === 'not-vetted'
+                    );
+                    if (idx < 0) {
+                      tags.push({
+                        label: msg(msgs.notVetted),
+                        value: 'not-vetted',
+                      });
+                    } else if (valid) {
+                      tags.splice(idx, 1);
+                    }
+                    setQuery((p: Query) => new Query({ ...p, tags, page: 0 }));
+                  })
+                }
                 selected={
                   query.tags.findIndex(({ value }) => value === 'not-vetted') >=
                   0
@@ -301,13 +333,17 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 }
                 label={msg(msgs.visible)}
                 checkmark
-                onInteraction={() => {
-                  setSearching(true);
-                  const { visible: prev } = query;
-                  const toggled = prev !== true ? true : undefined;
-                  const visible = !valid && prev === true ? true : toggled;
-                  setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
-                }}
+                onInteraction={() =>
+                  filterCallback(() => {
+                    setSearching(true);
+                    const { visible: prev } = query;
+                    const toggled = prev !== true ? true : undefined;
+                    const visible = !valid && prev === true ? true : toggled;
+                    setQuery(
+                      (p: Query) => new Query({ ...p, visible, page: 0 })
+                    );
+                  })
+                }
                 selected={query.visible === true}
               />
               <Chip
@@ -316,13 +352,17 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 }
                 label={msg(msgs.hidden)}
                 checkmark
-                onInteraction={() => {
-                  setSearching(true);
-                  const { visible: prev } = query;
-                  const toggled = prev !== false ? false : undefined;
-                  const visible = !valid && prev === false ? false : toggled;
-                  setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
-                }}
+                onInteraction={() =>
+                  filterCallback(() => {
+                    setSearching(true);
+                    const { visible: prev } = query;
+                    const toggled = prev !== false ? false : undefined;
+                    const visible = !valid && prev === false ? false : toggled;
+                    setQuery(
+                      (p: Query) => new Query({ ...p, visible, page: 0 })
+                    );
+                  })
+                }
                 selected={query.visible === false}
               />
             </ChipSet>
