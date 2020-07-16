@@ -268,6 +268,7 @@ class RequestDialog extends React.Component<
         <form className={styles.form} onSubmit={this.handleSubmit}>
           <SubjectSelect
             required
+            outlined
             autoOpenMenu
             renderToPortal
             label={msg(labels.subjects)}
