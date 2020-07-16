@@ -32,6 +32,22 @@ import Placeholder from './placeholder';
 import styles from './people.module.scss';
 
 const msgs = defMsg({
+  title: {
+    id: 'people.title',
+    defaultMessage: 'People',
+  },
+  subtitle: {
+    id: 'people.subtitle',
+    defaultMessage: "{name}'s tutors, mentors and students",
+  },
+  empty: {
+    id: 'people.empty',
+    defaultMessage: 'NO PEOPLE TO SHOW',
+  },
+  searchPlaceholder: {
+    id: 'people.filters.search-placeholder',
+    defaultMessage: 'Search people',
+  },
   viewSearch: {
     id: 'people.actions.view-search',
     defaultMessage: 'View search',
@@ -43,6 +59,10 @@ const msgs = defMsg({
   importData: {
     id: 'people.actions.import-data',
     defaultMessage: 'Import data',
+  },
+  importDataMsg: {
+    id: 'people.actions.import-data-msg',
+    defaultMessage: 'Could you help me import data?',
   },
   shareSignupLink: {
     id: 'people.actions.share-signup-link',
@@ -183,12 +203,33 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     (action: ActionCallback) => {
       const tempNoEmail = (u: UserJSON) => !u.email && u.id.startsWith('temp');
       if (!valid && data && data.users.some(tempNoEmail)) {
+        const dialogMsgs = defMsg({
+          title: {
+            id: 'people.warning-dialog.title',
+            defaultMessage: 'Apply filters?',
+          },
+          body: {
+            id: 'people.warning-dialog.body',
+            defaultMessage:
+              'Applying these filters will discard any users added without an' +
+              ' email address. To save your changes, add an email address to ' +
+              'each of those new users and then apply filters.',
+          },
+          accept: {
+            id: 'people.warning-dialog.accept',
+            defaultMessage: 'Apply Filters',
+          },
+          cancel: {
+            id: 'people.warning-dialog.cancel',
+            defaultMessage: 'Cancel',
+          },
+        });
         setWarningDialog(
           <SimpleDialog
-            title='Apply filters?'
-            body='Applying these filters will discard any users you have added without an email address. To save your changes, add an email address to each of those new users and then apply filters.'
-            acceptLabel='Apply Filters'
-            cancelLabel='Cancel'
+            title={msg(dialogMsgs.title)}
+            body={msg(dialogMsgs.body)}
+            acceptLabel={msg(dialogMsgs.accept)}
+            cancelLabel={msg(dialogMsgs.cancel)}
             onClose={(evt: DialogOnCloseEventT) => {
               if (evt.detail.action === 'accept') action();
             }}
@@ -200,7 +241,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         action();
       }
     },
-    [valid, data]
+    [valid, data, msg]
   );
 
   return (
@@ -224,8 +265,8 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         />
       )}
       <Title
-        header='People'
-        body={`${org.name}'s tutors, mentors and students`}
+        header={msg(msgs.title)}
+        body={msg(msgs.subtitle, { name: org.name })}
         actions={[
           {
             label: msg(msgs.createUser),
@@ -245,7 +286,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           {
             label: msg(msgs.importData),
             onClick: () =>
-              IntercomAPI('showNewMessage', "I'd like to import data."),
+              IntercomAPI('showNewMessage', msg(msgs.importDataMsg)),
           },
           {
             label: msg(msgs.shareSignupLink),
@@ -371,7 +412,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             <TextField
               outlined
               invalid={!valid && query.query}
-              placeholder='Search'
+              placeholder={msg(msgs.searchPlaceholder)}
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
@@ -430,7 +471,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         )}
         {!searching && !(data ? data.users : []).length && (
           <div className={styles.empty}>
-            <Placeholder>NO PEOPLE TO SHOW</Placeholder>
+            <Placeholder>{msg(msgs.empty)}</Placeholder>
           </div>
         )}
         <div className={styles.pagination}>
