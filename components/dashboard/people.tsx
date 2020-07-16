@@ -16,15 +16,16 @@ import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
-import { Option, Query, Org, UserJSON, Tag } from 'lib/model';
+import { Option, Query, Org, User, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 import { defMsg, useMsg, useIntl, IntlHelper } from 'lib/intl';
 
 import React from 'react';
 import VerificationDialog from 'components/verification-dialog';
 
+import { UserRow, LoadingRow } from './user-row';
+
 import Title from './title';
-import UserRow, { LoadingRow } from './user-row';
 import Placeholder from './placeholder';
 
 import styles from './people.module.scss';
@@ -65,12 +66,24 @@ interface PeopleProps {
   org: Org;
 }
 
+/**
+ * The "People" view is a heterogenous combination of live-updating filtered
+ * results and editability (similar to Google Sheets):
+ * - Data automatically re-validates when filters are valid.
+ * - Filters become invalid when data is edited or new users are being created.
+ * - Creating new users locally updates the SWR data and calls the `/api/users`
+ * API endpoint when the user has a valid email address.
+ * - Local edits are pushed to remote after 5secs of no change.
+ * @see {@link https://github.com/tutorbookapp/tutorbook/issues/87}
+ * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
+ */
 export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const msg: IntlHelper = useMsg();
   const timeoutIds = React.useRef<
     Record<string, ReturnType<typeof setTimeout>>
   >({});
 
+  const [valid, setValid] = React.useState<boolean>(true);
   const [searching, setSearching] = React.useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
@@ -89,13 +102,14 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const { locale } = useIntl();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
     initialData,
+    revalidateOnFocus: valid,
+    revalidateOnReconnect: valid,
   });
 
   React.useEffect(() => {
-    setQuery(
-      (prev: Query) =>
-        new Query({ ...prev, orgs: [{ label: org.name, value: org.id }] })
-    );
+    setQuery((prev: Query) => {
+      return new Query({ ...prev, orgs: [{ label: org.name, value: org.id }] });
+    });
   }, [org]);
   React.useEffect(() => {
     void mutate(query.endpoint);
@@ -103,6 +117,9 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   React.useEffect(() => {
     setSearching((prev: boolean) => prev && isValidating);
   }, [isValidating]);
+  React.useEffect(() => {
+    setValid((prev: boolean) => prev || searching);
+  }, [searching]);
 
   const mutateUser = React.useCallback(
     async (user: UserJSON) => {
@@ -111,16 +128,13 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         delete timeoutIds.current[user.id];
       }
 
-      /* eslint-disable @typescript-eslint/require-await */
-      const updateLocal = (updated: UserJSON) =>
-        mutate(
+      const updateLocal = async (updated: UserJSON, oldId?: string) => {
+        await mutate(
           query.endpoint,
-          async (prev: ListUsersRes) => {
+          (prev: ListUsersRes) => {
             if (!prev) return prev;
             const { users: old } = prev;
-            const idx: number = old.findIndex(
-              (u: UserJSON) => u.id === updated.id
-            );
+            const idx = old.findIndex((u) => u.id === (oldId || updated.id));
             if (idx < 0) return prev;
             const users = [
               ...old.slice(0, idx),
@@ -131,14 +145,24 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           },
           false
         );
-      /* eslint-enable @typescript-eslint/require-await */
-
-      const updateRemote = async (updated: UserJSON) => {
-        const url = `/api/users/${updated.id}`;
-        const { data: remoteUpdated } = await axios.put<UserJSON>(url, updated);
-        await updateLocal(remoteUpdated);
       };
 
+      const updateRemote = async (updated: UserJSON) => {
+        if (!updated.email) throw new Error('Cannot update user w/out email.');
+        if (updated.id.startsWith('temp')) {
+          const url = '/api/users';
+          const { data: remoteData } = await axios.post<UserJSON>(url, {
+            user: { ...updated, id: '' },
+          });
+          await updateLocal(remoteData, updated.id);
+        } else {
+          const url = `/api/users/${updated.id}`;
+          const { data: remoteData } = await axios.put<UserJSON>(url, updated);
+          await updateLocal(remoteData);
+        }
+      };
+
+      setValid(false); // Filters become invalid when data is updated.
       await updateLocal(user);
 
       // Only update the user profile remotely after 5secs of no change.
@@ -147,7 +171,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         void updateRemote(user);
       }, 5000);
     },
-    [query.endpoint]
+    [query]
   );
 
   return (
@@ -177,6 +201,21 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             label: msg(msgs.viewSearch),
             href: '/[org]/search/[[...slug]]',
             as: `/${org.id}/search`,
+          },
+          {
+            label: msg(msgs.createUser),
+            onClick: async () => {
+              setValid(false); // Filters become invalid when creating users.
+              const user = new User({ id: `temp-${uuid()}` }).toJSON();
+              await mutate(
+                query.endpoint,
+                (prev?: ListUsersRes) => ({
+                  hits: (prev ? prev.hits : 0) + 1,
+                  users: [user, ...(prev ? prev.users : [])],
+                }),
+                false
+              );
+            },
           },
           {
             label: msg(msgs.importData),
@@ -226,6 +265,13 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             <IconButton className={styles.filtersButton} icon='filter_list' />
             <ChipSet className={styles.filterChips}>
               <Chip
+                className={
+                  !valid &&
+                  query.tags.findIndex(({ value }) => value === 'not-vetted') >=
+                    0
+                    ? styles.invalid
+                    : ''
+                }
                 label={msg(msgs.notVetted)}
                 checkmark
                 onInteraction={() => {
@@ -239,7 +285,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                       label: msg(msgs.notVetted),
                       value: 'not-vetted',
                     });
-                  } else {
+                  } else if (valid) {
                     tags.splice(idx, 1);
                   }
                   setQuery((p: Query) => new Query({ ...p, tags, page: 0 }));
@@ -250,21 +296,31 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 }
               />
               <Chip
+                className={
+                  !valid && query.visible === true ? styles.invalid : ''
+                }
                 label={msg(msgs.visible)}
                 checkmark
                 onInteraction={() => {
                   setSearching(true);
-                  const visible = query.visible !== true ? true : undefined;
+                  const { visible: prev } = query;
+                  const toggled = prev !== true ? true : undefined;
+                  const visible = !valid && prev === true ? true : toggled;
                   setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
                 }}
                 selected={query.visible === true}
               />
               <Chip
+                className={
+                  !valid && query.visible === false ? styles.invalid : ''
+                }
                 label={msg(msgs.hidden)}
                 checkmark
                 onInteraction={() => {
                   setSearching(true);
-                  const visible = query.visible !== false ? false : undefined;
+                  const { visible: prev } = query;
+                  const toggled = prev !== false ? false : undefined;
+                  const visible = !valid && prev === false ? false : toggled;
                   setQuery((p: Query) => new Query({ ...p, visible, page: 0 }));
                 }}
                 selected={query.visible === false}
@@ -274,6 +330,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           <div className={styles.right}>
             <TextField
               outlined
+              invalid={!valid && query.query}
               placeholder='Search'
               className={styles.searchField}
               value={query.query}

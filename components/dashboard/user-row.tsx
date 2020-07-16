@@ -6,6 +6,7 @@ import { Aspect, Callback, User, UserJSON } from 'lib/model';
 import React from 'react';
 import SubjectSelect from 'components/subject-select';
 
+import axios from 'axios';
 import equal from 'fast-deep-equal';
 import styles from './people.module.scss';
 
@@ -14,6 +15,7 @@ interface RowProps {
   onClick: () => void;
   onChange: (event: React.FormEvent<HTMLInputElement>, field: string) => void;
   onSubjectsChange: (subjects: string[], aspect: Aspect) => void;
+  emailEditable?: boolean;
 }
 
 const Row = function Row({
@@ -21,6 +23,7 @@ const Row = function Row({
   onClick,
   onChange,
   onSubjectsChange,
+  emailEditable,
 }: RowProps): JSX.Element {
   return (
     <DataTableRow>
@@ -43,11 +46,14 @@ const Row = function Row({
         <TextField value={user.bio} onChange={(evt) => onChange(evt, 'bio')} />
       </DataTableCell>
       <DataTableCell className={styles.email}>
-        <TextField
-          value={user.email}
-          onChange={(evt) => onChange(evt, 'email')}
-          type='email'
-        />
+        {emailEditable && (
+          <TextField
+            value={user.email}
+            onChange={(evt) => onChange(evt, 'email')}
+            type='email'
+          />
+        )}
+        {!emailEditable && user.email}
       </DataTableCell>
       <DataTableCell className={styles.phone}>
         <TextField
@@ -113,7 +119,7 @@ interface UserRowProps {
  * to update it's data (i.e. perform a locale mutation and re-fetch) once the
  * change is enacted.
  */
-export default React.memo(
+export const UserRow = React.memo(
   function UserRow({ user, onClick, onChange }: UserRowProps): JSX.Element {
     const onValueChange = React.useCallback(
       (event: React.FormEvent<HTMLInputElement>, field: string) => {
@@ -121,20 +127,21 @@ export default React.memo(
           field === 'visible'
             ? !!event.currentTarget.checked
             : event.currentTarget.value;
-        return onChange({ ...user, [field]: value });
+        onChange({ ...user, [field]: value });
       },
       [user, onChange]
     );
     const onSubjectsChange = React.useCallback(
       (subjects: string[], aspect: Aspect) => {
         if (equal(subjects, user[aspect].subjects)) return;
-        return onChange({ ...user, [aspect]: { ...user[aspect], subjects } });
+        onChange({ ...user, [aspect]: { ...user[aspect], subjects } });
       },
       [user, onChange]
     );
 
     return (
       <Row
+        emailEditable={user.id.startsWith('temp')}
         onClick={onClick}
         user={user ? User.fromJSON(user) : user}
         onChange={onValueChange}
