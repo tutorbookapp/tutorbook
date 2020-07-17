@@ -6,6 +6,10 @@
 
 $filters-height: 56px;
 
+.dialog :global(.mdc-button__label) {
+  font-weight: 600;
+}
+
 .filters {
   height: $filters-height;
   border: 1px solid rgba(0, 0, 0, 0.12);

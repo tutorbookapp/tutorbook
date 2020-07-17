@@ -226,6 +226,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         });
         setWarningDialog(
           <SimpleDialog
+            className={styles.dialog}
             title={msg(dialogMsgs.title)}
             body={msg(dialogMsgs.body)}
             acceptLabel={msg(dialogMsgs.accept)}
