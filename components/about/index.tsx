@@ -72,7 +72,7 @@ export default function About(): JSX.Element {
           img={OrgVetsVolunteer}
           cta={{
             label: msg(msgs.learnMoreCTA),
-            href: 'https://intercom.help/tutorbook/',
+            href: 'https://github.com/tutorbookapp/tutorbook/issues/75',
           }}
           gray
         />
@@ -82,8 +82,8 @@ export default function About(): JSX.Element {
           body={msg(msgs.studentBody)}
           img={StudentRequests}
           cta={{
-            label: msg(msgs.learnMoreCTA),
-            href: 'https://intercom.help/tutorbook/',
+            label: msg(msgs.studentCTA),
+            href: '/search',
           }}
           flipped
         />
@@ -94,7 +94,7 @@ export default function About(): JSX.Element {
           img={VolunteerEmails}
           cta={{
             label: msg(msgs.learnMoreCTA),
-            href: 'https://intercom.help/tutorbook/',
+            href: 'https://github.com/tutorbookapp/tutorbook/issues/82',
           }}
           gray
         />

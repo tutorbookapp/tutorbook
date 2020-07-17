@@ -29,8 +29,7 @@ export default defMsg({
   orgBody: {
     id: 'about.how-it-works.org.body',
     defaultMessage:
-      'Nonprofits (e.g. Americorps) vet each volunteer before adding them to ' +
-      'search results.',
+      'Nonprofits and schools vet each volunteer before adding them to search results.',
   },
   stepThree: {
     id: 'about.how-it-works.step-three',
@@ -47,7 +46,7 @@ export default defMsg({
   },
   studentCTA: {
     id: 'about.how-it-works.student.cta',
-    defaultMessage: 'Search our volunteers',
+    defaultMessage: 'Search volunteers',
   },
   stepFour: {
     id: 'about.how-it-works.step-four',
@@ -55,12 +54,12 @@ export default defMsg({
   },
   emailTitle: {
     id: 'about.how-it-works.email.title',
-    defaultMessage: 'Virtual lessons setup via email',
+    defaultMessage: 'Virtual lessons setup via email relay',
   },
   emailBody: {
     id: 'about.how-it-works.email.body',
     defaultMessage:
-      'The student, parents and volunteer communicate via email relay to ' +
+      'The student and volunteer communicate via email relay to ' +
       'setup virtual lessons. No direct contact info is ever shared.',
   },
   learnMoreCTA: {
