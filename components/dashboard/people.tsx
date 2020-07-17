@@ -273,7 +273,10 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             label: msg(msgs.createUser),
             onClick: async () => {
               setValid(false); // Filters become invalid when creating users.
-              const user = new User({ id: `temp-${uuid()}` }).toJSON();
+              const user = new User({
+                id: `temp-${uuid()}`,
+                orgs: ['default', org.id],
+              }).toJSON();
               await mutate(
                 query.endpoint,
                 (prev?: ListUsersRes) => ({
