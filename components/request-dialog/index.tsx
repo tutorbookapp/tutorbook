@@ -225,7 +225,7 @@ class RequestDialog extends React.Component<
     const { onClosed, user, aspect, intl } = this.props;
     const { user: currentUser } = this.context;
     const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
-    const labels: Record<string, Msg> = defMsg({
+    const msgs: Record<string, Msg> = defMsg({
       subjects: {
         id: 'request-dialog.subjects',
         description: 'Label for the tutoring lesson subjects field.',
@@ -247,6 +247,12 @@ class RequestDialog extends React.Component<
         id: 'request-dialog.message',
         description: 'Label for the request message field.',
         defaultMessage: 'Message',
+      },
+      messagePlaceholder: {
+        id: 'request-dialog.message-placeholder',
+        description: 'Placeholder for the request message field.',
+        defaultMessage:
+          'I could really use your help with my {subject} project...',
       },
       submit: {
         id: 'request-dialog.submit',
@@ -271,7 +277,7 @@ class RequestDialog extends React.Component<
             outlined
             autoOpenMenu
             renderToPortal
-            label={msg(labels.subjects)}
+            label={msg(msgs.subjects)}
             className={styles.field}
             onChange={this.handleSubjectsChange}
             value={subjects}
@@ -281,7 +287,7 @@ class RequestDialog extends React.Component<
           {aspect === 'tutoring' && time && (
             <TimeslotInput
               required
-              label={msg(labels.time)}
+              label={msg(msgs.time)}
               className={styles.field}
               onChange={this.handleTimeslotChange}
               availability={user.availability}
@@ -292,7 +298,13 @@ class RequestDialog extends React.Component<
             outlined
             textarea
             rows={4}
-            label={msg(labels.message)}
+            required
+            characterCount
+            maxLength={500}
+            placeholder={msg(msgs.messagePlaceholder, {
+              subject: subjects[0] || 'Computer Science',
+            })}
+            label={msg(msgs.message)}
             className={styles.field}
             onChange={this.handleMessageChange}
             value={message}
@@ -301,8 +313,8 @@ class RequestDialog extends React.Component<
             className={styles.button}
             label={
               !currentUser.id
-                ? msg(labels.signUpAndSubmit)
-                : msg(labels.submit, { name: user.firstName })
+                ? msg(msgs.signUpAndSubmit)
+                : msg(msgs.submit, { name: user.firstName })
             }
             disabled={submitting || submitted}
             google={!currentUser.id}
