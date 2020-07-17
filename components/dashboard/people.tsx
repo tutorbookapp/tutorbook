@@ -417,9 +417,13 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                setSearching(true);
                 const q: string = event.currentTarget.value;
-                setQuery((p: Query) => new Query({ ...p, query: q, page: 0 }));
+                filterCallback(() => {
+                  setSearching(true);
+                  setQuery(
+                    (p: Query) => new Query({ ...p, query: q, page: 0 })
+                  );
+                });
               }}
             />
           </div>
