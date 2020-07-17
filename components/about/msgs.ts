@@ -5,70 +5,66 @@ export default defMsg({
     id: 'about.how-it-works.step-one',
     defaultMessage: 'Step #1',
   },
-  tutorTitle: {
-    id: 'about.how-it-works.tutor.title',
+  volunteerTitle: {
+    id: 'about.how-it-works.volunteer.title',
     defaultMessage: 'Volunteer registers',
   },
-  tutorBody: {
-    id: 'about.how-it-works.tutor.body',
+  volunteerBody: {
+    id: 'about.how-it-works.volunteer.body',
     defaultMessage:
       'The volunteer tutor or mentor signs up and creates their profile.',
   },
-  tutorCTA: {
-    id: 'about.how-it-works.tutor.cta',
+  volunteerCTA: {
+    id: 'about.how-it-works.volunteer.cta',
     defaultMessage: 'Become a volunteer',
-    description: 'Label for the CTA link to the tutor sign-up page.',
   },
   stepTwo: {
     id: 'about.how-it-works.step-two',
     defaultMessage: 'Step #2',
   },
-  pupilTitle: {
-    id: 'about.how-it-works.pupil.title',
-    defaultMessage: 'Student requests a volunteer',
+  orgTitle: {
+    id: 'about.how-it-works.org.title',
+    defaultMessage: 'Organization vets volunteers',
   },
-  pupilBody: {
-    id: 'about.how-it-works.pupil.body',
+  orgBody: {
+    id: 'about.how-it-works.org.body',
     defaultMessage:
-      'The student signs up, searches, and requests a tutor or mentor.',
-  },
-  pupilCTA: {
-    id: 'about.how-it-works.pupil.cta',
-    defaultMessage: 'Search our volunteers',
-    description: 'Label for the CTA link to the student sign-up page.',
+      'Nonprofits (e.g. Americorps) vet each volunteer before adding them to ' +
+      'search results.',
   },
   stepThree: {
     id: 'about.how-it-works.step-three',
     defaultMessage: 'Step #3',
   },
-  parentTitle: {
-    id: 'about.how-it-works.parent.title',
-    defaultMessage: 'Parent approves of the volunteer',
+  studentTitle: {
+    id: 'about.how-it-works.student.title',
+    defaultMessage: 'Student requests a volunteer',
   },
-  parentBody: {
-    id: 'about.how-it-works.parent.body',
+  studentBody: {
+    id: 'about.how-it-works.student.body',
     defaultMessage:
-      'Each request must receive parental approval before the student can ' +
-      'meet with their tutor or mentor.',
+      'The student searches, signs up and requests a tutor or mentor.',
+  },
+  studentCTA: {
+    id: 'about.how-it-works.student.cta',
+    defaultMessage: 'Search our volunteers',
   },
   stepFour: {
     id: 'about.how-it-works.step-four',
     defaultMessage: 'Step #4',
   },
-  brambleTitle: {
-    id: 'about.how-it-works.bramble.title',
-    defaultMessage: 'Virtual tutoring lessons via Bramble',
+  emailTitle: {
+    id: 'about.how-it-works.email.title',
+    defaultMessage: 'Virtual lessons setup via email',
   },
-  brambleBody: {
-    id: 'about.how-it-works.bramble.body',
+  emailBody: {
+    id: 'about.how-it-works.email.body',
     defaultMessage:
-      'After parental approval, the tutor and the student both receive a link' +
-      ' to their secure, private Bramble room. No direct contact information ' +
-      'is ever shared.',
+      'The student, parents and volunteer communicate via email relay to ' +
+      'setup virtual lessons. No direct contact info is ever shared.',
   },
-  learnMore: {
+  learnMoreCTA: {
     id: 'learn-more',
     defaultMessage: 'Learn more',
-    description: 'Label for the "Learn more" CTA links.',
   },
 });

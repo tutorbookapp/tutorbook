@@ -3,10 +3,10 @@ import { useIntl, IntlShape, Msg, IntlHelper, Message } from 'lib/intl';
 import React from 'react';
 import SpotlightMsg from 'components/spotlight-msg';
 
-import ParentApproves from './gifs/parent-approves.gif';
-import PupilSignsUp from './gifs/pupil-signs-up.gif';
-import TutorSignsUp from './gifs/tutor-signs-up.gif';
-import TutorJoinsBramble from './gifs/tutor-joins-bramble.gif';
+import VolunteerRegisters from './gifs/volunteer-registers.gif';
+import OrgVetsVolunteer from './gifs/org-vets-volunteer.gif';
+import StudentRequests from './gifs/student-requests.gif';
+import VolunteerEmails from './gifs/volunteer-emails.gif';
 
 import msgs from './msgs';
 import styles from './about.module.scss';
@@ -56,45 +56,45 @@ export default function About(): JSX.Element {
       <div className={styles.howItWorks}>
         <SpotlightMsg
           label={msg(msgs.stepOne)}
-          headline={msg(msgs.tutorTitle)}
-          body={msg(msgs.tutorBody)}
-          img={TutorSignsUp}
+          headline={msg(msgs.volunteerTitle)}
+          body={msg(msgs.volunteerBody)}
+          img={VolunteerRegisters}
           cta={{
-            label: msg(msgs.tutorCTA),
+            label: msg(msgs.volunteerCTA),
             href: '/signup',
           }}
           flipped
         />
         <SpotlightMsg
           label={msg(msgs.stepTwo)}
-          headline={msg(msgs.pupilTitle)}
-          body={msg(msgs.pupilBody)}
-          img={PupilSignsUp}
+          headline={msg(msgs.orgTitle)}
+          body={msg(msgs.orgBody)}
+          img={OrgVetsVolunteer}
           cta={{
-            label: msg(msgs.pupilCTA),
-            href: '/search',
+            label: msg(msgs.learnMoreCTA),
+            href: 'https://intercom.help/tutorbook/',
           }}
           gray
         />
         <SpotlightMsg
           label={msg(msgs.stepThree)}
-          headline={msg(msgs.parentTitle)}
-          body={msg(msgs.parentBody)}
-          img={ParentApproves}
+          headline={msg(msgs.studentTitle)}
+          body={msg(msgs.studentBody)}
+          img={StudentRequests}
           cta={{
-            label: msg(msgs.learnMore),
+            label: msg(msgs.learnMoreCTA),
             href: 'https://intercom.help/tutorbook/',
           }}
           flipped
         />
         <SpotlightMsg
           label={msg(msgs.stepFour)}
-          headline={msg(msgs.brambleTitle)}
-          body={msg(msgs.brambleBody)}
-          img={TutorJoinsBramble}
+          headline={msg(msgs.emailTitle)}
+          body={msg(msgs.emailBody)}
+          img={VolunteerEmails}
           cta={{
-            label: msg(msgs.learnMore),
-            href: 'https://about.bramble.io/',
+            label: msg(msgs.learnMoreCTA),
+            href: 'https://intercom.help/tutorbook/',
           }}
           gray
         />
