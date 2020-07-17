@@ -494,7 +494,9 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 onChange={(event: React.FormEvent<HTMLSelectElement>) => {
                   setSearching(true);
                   const hitsPerPage = Number(event.currentTarget.value);
-                  setQuery((p: Query) => new Query({ ...p, hitsPerPage }));
+                  setQuery(
+                    (p: Query) => new Query({ ...p, hitsPerPage, page: 0 })
+                  );
                 }}
               />
             </div>
