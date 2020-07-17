@@ -99,20 +99,21 @@
   margin-top: 20px;
 }
 
-// TODO: Add transition ease to `box-shadow`.
 .featureSpotlightMedia {
+  @include elevation.elevation(2);
+  transition: elevation.transition-value();
+  will-change: elevation.$property;
   text-align: center;
   grid-column: 2 / span 12;
-  border-radius: 8px;
+  border-radius: 4px;
   transition: 200ms box-shadow;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  @include elevation.elevation(2);
 }
 
 .featureSpotlightMedia:hover {
-  @include elevation.elevation(3);
+  @include elevation.elevation(8);
 }
 
 .featureSpotlightMediaImg {

@@ -1,4 +1,5 @@
 import React from 'react';
+import VanillaTilt from 'vanilla-tilt';
 
 import CTALink, { CTALinkProps } from 'components/cta-link';
 
@@ -23,7 +24,13 @@ export default function SpotlightMsg({
   img,
   cta,
 }: SpotlightMsgProps): JSX.Element {
+  const imgRef: React.RefObject<HTMLDivElement> = React.useRef(null);
   const colorClass: string = gray ? styles.featureSpotlightGray : '';
+
+  React.useEffect(() => {
+    if (imgRef.current) VanillaTilt.init(imgRef.current, { max: 10 });
+  }, [imgRef]);
+
   return (
     <div className={styles.spotlight}>
       <div className={`${styles.featureSpotlight} ${colorClass}`}>
@@ -53,6 +60,7 @@ export default function SpotlightMsg({
             </div>
           </div>
           <div
+            ref={imgRef}
             style={{ backgroundImage: `url(${img}` }}
             className={
               styles.featureSpotlightMedia +

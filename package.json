@@ -122,7 +122,8 @@
     "react-window": "^1.8.5",
     "swr": "^0.2.3",
     "url": "^0.11.0",
-    "uuid": "^8.2.0"
+    "uuid": "^8.2.0",
+    "vanilla-tilt": "^1.7.0"
   },
   "husky": {
     "hooks": {
