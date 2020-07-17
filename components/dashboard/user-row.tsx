@@ -6,7 +6,6 @@ import { Aspect, Callback, User, UserJSON } from 'lib/model';
 import React from 'react';
 import SubjectSelect from 'components/subject-select';
 
-import axios from 'axios';
 import equal from 'fast-deep-equal';
 import styles from './people.module.scss';
 
