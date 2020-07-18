@@ -1,4 +1,4 @@
-name,synonyms,category
+name,synonyms,categories
 Art,,
 Photography,,Art
 Filmmaking,Video Production,Art
@@ -11,6 +11,7 @@ Entrepreneurship,,Business
 Marketing,Advertising,Business
 Sales,,Business
 Economics,,Business
+Product Management,,Business
 ,,
 Computer Science,,
 Artificial Intelligence,"Machine Learning, ML, AI",Computer Science
@@ -27,6 +28,7 @@ Design,UI/UX Design,
 Graphic Design,,Design
 ,,
 Engineering,,
+Virtual Reality,"Augmented Reality, AR, VR","Engineering, Computer Science"
 ,,
 Chemistry,,
 ,,

@@ -21,7 +21,10 @@ const subjects = async (id) => {
     skip_empty_lines: true,
   })
     .map((subject) => {
-      subject.grades = (subject.grades || '').split(', ');
+      const { grades, synonyms, categories } = subject;
+      subject.grades = grades ? grades.split(', ') : [];
+      subject.synonyms = synonyms ? synonyms.split(', ') : [];
+      subject.categories = categories ? categories.split(', ') : [];
       return subject;
     })
     .filter((subject) => !!subject.name);
@@ -36,6 +39,7 @@ const subjects = async (id) => {
   }
 };
 
+subjects('tutoring');
 subjects('mentoring');
 
 const langs = async () => {
