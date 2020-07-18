@@ -492,11 +492,13 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 value={`${query.hitsPerPage}`}
                 options={['5', '10', '15', '20', '25', '30']}
                 onChange={(event: React.FormEvent<HTMLSelectElement>) => {
-                  setSearching(true);
                   const hitsPerPage = Number(event.currentTarget.value);
-                  setQuery(
-                    (p: Query) => new Query({ ...p, hitsPerPage, page: 0 })
-                  );
+                  filterCallback(() => {
+                    setSearching(true);
+                    setQuery(
+                      (p: Query) => new Query({ ...p, hitsPerPage, page: 0 })
+                    );
+                  });
                 }}
               />
             </div>
@@ -506,20 +508,24 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             <IconButton
               disabled={query.page <= 0}
               icon='chevron_left'
-              onClick={() => {
-                setSearching(true);
-                setQuery((p: Query) => new Query({ ...p, page: p.page - 1 }));
-              }}
+              onClick={() =>
+                filterCallback(() => {
+                  setSearching(true);
+                  setQuery((p: Query) => new Query({ ...p, page: p.page - 1 }));
+                })
+              }
             />
             <IconButton
               disabled={
                 query.page + 1 >= (data ? data.hits : 0) / query.hitsPerPage
               }
               icon='chevron_right'
-              onClick={() => {
-                setSearching(true);
-                setQuery((p: Query) => new Query({ ...p, page: p.page + 1 }));
-              }}
+              onClick={() =>
+                filterCallback(() => {
+                  setSearching(true);
+                  setQuery((p: Query) => new Query({ ...p, page: p.page + 1 }));
+                })
+              }
             />
           </div>
         </div>
