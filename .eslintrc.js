@@ -58,6 +58,14 @@ module.exports = {
     //   ...do async side effect stuff
     // }
     'no-void': ['error', { allowAsStatement: true }],
+    // Specify inferable types for function parameters. Otherwise, we get type
+    // errors when trying to do something like this:
+    // @example
+    // async function search(query: string = '') {
+    //   const { users } = await new Query({ query }).search();
+    //   return users.map(userToOption);
+    // }
+    '@typescript-eslint/no-inferrable-types': [1, { ignoreParameters: false }],
   },
   reportUnusedDisableDirectives: true,
   settings: {
