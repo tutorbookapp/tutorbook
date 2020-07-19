@@ -118,6 +118,7 @@ export class Query implements QueryInterface {
         subjects: encode(this.subjects),
         availability: this.availability.toURLParam(),
         checks: encode(this.checks),
+        parents: encode(this.parents),
         orgs: encode(this.orgs),
         tags: encode(this.tags),
         visible: this.visible,
@@ -158,6 +159,7 @@ export class Query implements QueryInterface {
 
     return new Query({
       query: decodeURIComponent(params.query || ''),
+      parents: decode<Check>(params.parents),
       orgs: decode<Check>(params.orgs),
       checks: decode(params.checks),
       langs: decode(params.langs),

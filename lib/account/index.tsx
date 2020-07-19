@@ -1,9 +1,17 @@
 import React from 'react';
 
-import { User, UserJSON } from 'lib/model';
+import { User, UserJSON, OrgJSON, ApiError } from 'lib/model';
 
-import useSWR, { mutate } from 'swr';
+import useSWR, { mutate, responseInterface } from 'swr';
 import axios from 'axios';
+
+export function useOrgs(): Omit<
+  responseInterface<OrgJSON[], ApiError>,
+  'data'
+> & { orgs: OrgJSON[] } {
+  const { data: orgs, ...rest } = useSWR<OrgJSON[]>('/api/orgs');
+  return { orgs: orgs || [], ...rest };
+}
 
 export interface UserContextValue {
   user: User;

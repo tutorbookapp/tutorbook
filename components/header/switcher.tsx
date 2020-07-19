@@ -1,22 +1,21 @@
 import { useRouter } from 'next/router';
-import { useUser } from 'lib/account';
+import { useUser, useOrgs } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { Org, OrgJSON } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
 import React from 'react';
 
-import useSWR from 'swr';
-
 import { PopOverButton, PopOverAccountLink } from './pop-over';
 
 import styles from './switcher.module.scss';
 
 export default function Switcher(): JSX.Element {
-  const [open, setOpen] = React.useState<boolean>(false);
-  const { data: orgs } = useSWR<OrgJSON[]>('/api/orgs');
   const { pathname, query } = useRouter();
+  const { orgs } = useOrgs();
   const { user } = useUser();
+
+  const [open, setOpen] = React.useState<boolean>(false);
   const [selected, setSelected] = React.useState<string>('Account');
 
   React.useEffect(() => {

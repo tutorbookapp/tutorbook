@@ -15,6 +15,7 @@ import UserSelect from 'components/user-select';
 import {
   ApiError,
   User,
+  OrgJSON,
   RoleAlias,
   Timeslot,
   Appt,
@@ -22,7 +23,7 @@ import {
   Aspect,
 } from 'lib/model';
 import { signupWithGoogle } from 'lib/account/signup';
-import { useUser } from 'lib/account';
+import { useUser, useOrgs } from 'lib/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { useMsg, IntlHelper } from 'lib/intl';
@@ -47,6 +48,7 @@ export default function RequestDialog({
   aspect,
   user,
 }: RequestDialogProps): JSX.Element {
+  const { orgs } = useOrgs();
   const { user: currentUser } = useUser();
 
   const [attendees, setAttendees] = useState<string[]>([
@@ -161,6 +163,8 @@ export default function RequestDialog({
           required
           outlined
           renderToPortal
+          parents={[currentUser.id]}
+          orgs={orgs.map((org: OrgJSON) => org.id)}
           label={msg(msgs.attendees)}
           className={styles.field}
           onChange={onAttendeesChange}

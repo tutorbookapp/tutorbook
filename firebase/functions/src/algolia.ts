@@ -153,6 +153,7 @@ export async function userUpdate(
   // automatically supports filtering by numeric and boolean values).
   const attributesForFaceting: string[] = [
     'orgs',
+    'parents',
     'availability',
     'mentoring.subjects',
     'mentoring.searches',

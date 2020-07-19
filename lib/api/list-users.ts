@@ -63,6 +63,7 @@ function getFilterStrings(query: Query): string[] {
   );
   filterString = addFilters(filterString, query.langs, 'langs');
   filterString = addFilters(filterString, query.checks, 'verifications.checks');
+  filterString = addFilters(filterString, query.parents, 'parents');
   filterString = addFilters(filterString, query.orgs, 'orgs');
   filterString = addFilters(filterString, query.tags, '_tags');
   if (query.availability.length) filterString += ' AND ';
