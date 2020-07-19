@@ -54,7 +54,7 @@ export default function RequestDialog({
 
   const [attendees, setAttendees] = useState<Option<string>[]>([
     { label: user.name, value: user.id },
-    { label: currentUser.name, value: currentUser.id },
+    { label: currentUser.name || 'You', value: currentUser.id },
   ]);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
   const [time, setTime] = useState<Timeslot | undefined>(initialTime);
@@ -77,25 +77,19 @@ export default function RequestDialog({
     setSubmitted((prev: boolean) => prev && !error);
   }, [error]);
 
-  const msg: IntlHelper = useMsg();
-  const appt: Appt = useMemo(
-    () =>
-      new Appt({
-        time,
-        message,
-        subjects,
-        attendees: attendees.map(({ value: id }) => {
-          const roles: RoleAlias[] = [];
-          if (id === user.id) {
-            roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
-          } else {
-            roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
-          }
-          return { id, roles, handle: uuid() };
-        }),
-      }),
-    [time, message, subjects, attendees, user.id, aspect]
-  );
+  useEffect(() => {
+    setAttendees((prev: Option<string>[]) => [
+      ...prev.slice(0, 1),
+      { label: currentUser.name || 'You', value: currentUser.id },
+      ...prev.slice(2),
+    ]);
+  }, [currentUser]);
+  useEffect(() => {
+    setAttendees((prev: Option<string>[]) => [
+      { label: user.name, value: user.id },
+      ...prev.slice(1),
+    ]);
+  }, [user]);
 
   const onAttendeesChange = useCallback(
     (selected: Option<string>[]) => {
@@ -105,7 +99,7 @@ export default function RequestDialog({
       if (temp.findIndex(({ value: id }) => id === currentUser.id) < 0)
         temp = [
           ...temp.slice(0, 1),
-          { label: currentUser.name, value: currentUser.id },
+          { label: currentUser.name || 'You', value: currentUser.id },
           ...temp.slice(1),
         ];
       setAttendees(temp);
@@ -133,6 +127,20 @@ export default function RequestDialog({
             `An error occurred while logging in with Google. ${err.message}`
           );
       }
+      const appt: Appt = new Appt({
+        time,
+        message,
+        subjects,
+        attendees: attendees.map(({ value: id }) => {
+          const roles: RoleAlias[] = [];
+          if (id === user.id) {
+            roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
+          } else {
+            roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
+          }
+          return { id, roles, handle: uuid() };
+        }),
+      });
       const [err] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
         axios.post('/api/appts', appt.toJSON())
       );
@@ -154,8 +162,10 @@ export default function RequestDialog({
         );
       return setSubmitted(true);
     },
-    [currentUser, appt]
+    [currentUser, user.id, time, message, subjects, attendees, aspect]
   );
+
+  const msg: IntlHelper = useMsg();
 
   return (
     <UserDialog
@@ -170,8 +180,8 @@ export default function RequestDialog({
           required
           outlined
           renderToPortal
-          parents={[currentUser.id]}
-          orgs={orgs.map((org: OrgJSON) => org.id)}
+          parents={currentUser.id ? [currentUser.id] : undefined}
+          orgs={orgs.length ? orgs.map((org: OrgJSON) => org.id) : undefined}
           label={msg(msgs.attendees)}
           className={styles.field}
           onSelectedChange={onAttendeesChange}

@@ -57,17 +57,24 @@ export default function UserSelect({
   }, []);
   const getSuggestions = React.useCallback(
     async (query: string = '') => {
-      const orgsPromise = new Query({
-        query,
-        orgs: (orgs || []).map((id) => ({ label: id, value: id })),
-      }).search();
-      const parentsPromise = new Query({
-        query,
-        parents: (parents || []).map((id) => ({ label: id, value: id })),
-      }).search();
+      const promises: Promise<{ users: User[] }>[] = [];
+      if (orgs && orgs.length)
+        promises.push(
+          new Query({
+            query,
+            orgs: orgs.map((id) => ({ label: id, value: id })),
+          }).search()
+        );
+      if (parents && parents.length)
+        promises.push(
+          new Query({
+            query,
+            parents: parents.map((id) => ({ label: id, value: id })),
+          }).search()
+        );
       const suggestions: Option<string>[] = [];
-      (await Promise.all([orgsPromise, parentsPromise])).forEach((data) => {
-        data.users.forEach((user: User) => {
+      (await Promise.all(promises)).forEach(({ users }) => {
+        users.forEach((user: User) => {
           if (suggestions.findIndex(({ value: id }) => id === user.id) < 0)
             suggestions.push(userToOption(user));
         });
