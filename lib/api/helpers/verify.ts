@@ -22,18 +22,20 @@ export default async function verify(
       error(res, `Your JWT is invalid: ${err.message}`, 401, err);
     } else {
       const { uid } = token as DecodedIdToken;
-      const orgs: Org[] = (
-        await db
-          .collection('orgs')
-          .where('members', 'array-contains', uid)
-          .get()
-      ).docs.map((org: DocumentSnapshot) => Org.fromFirestore(org));
       if (user.id === uid) {
         await action();
-      } else if (orgs.every((org: Org) => user.orgs.indexOf(org.id) < 0)) {
-        error(res, `${user.toString()} is not part of your orgs.`, 401);
       } else {
-        await action();
+        const orgs: Org[] = (
+          await db
+            .collection('orgs')
+            .where('members', 'array-contains', uid)
+            .get()
+        ).docs.map((org: DocumentSnapshot) => Org.fromFirestore(org));
+        if (orgs.every((org: Org) => user.orgs.indexOf(org.id) < 0)) {
+          error(res, `${user.toString()} is not part of your orgs.`, 401);
+        } else {
+          await action();
+        }
       }
     }
   }
