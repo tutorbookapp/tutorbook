@@ -18,6 +18,7 @@ import construct from './construct';
  * @property subjects - The subjects the user can tutor/mentor for; OR category.
  * @property availability - When the user is available; OR category.
  * @property checks - The checks the user has passed; AND category.
+ * @property parents - The parents that the user is a child to; OR category.
  * @property orgs - The organizations that the user belongs to; OR category.
  * @property tags - Algolia search `__tags` (e.g. `NOT_YET_VETTED`).
  * @property [visible] - Regular users can only ever see users where this is
@@ -33,6 +34,7 @@ export interface QueryInterface {
   subjects: Option<string>[];
   availability: Availability;
   checks: Option<Check>[];
+  parents: Option<string>[];
   orgs: Option<string>[];
   tags: Option<Tag>[];
   visible?: boolean;
@@ -51,14 +53,6 @@ export interface Option<T> {
 
 export type Callback<T> = (value: T) => void;
 
-// [aspect, subjects, availability, langs]
-export type QueryDepArray = [
-  Aspect,
-  Option<string>[],
-  Availability,
-  Option<string>[]
-];
-
 type QueryURL = { [key in keyof QueryInterface]?: string };
 
 export class Query implements QueryInterface {
@@ -73,6 +67,8 @@ export class Query implements QueryInterface {
   public langs: Option<string>[] = [];
 
   public checks: Option<Check>[] = [];
+
+  public parents: Option<string>[] = [];
 
   public orgs: Option<string>[] = [];
 
