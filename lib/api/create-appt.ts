@@ -31,8 +31,11 @@ export type CreateApptRes = ApptJSON;
  *    - Verifies that the requested `subjects` are included in each of the
  *      tutors' Firestore profile documents (where a tutor is defined as an
  *      `attendee` whose `roles` include `tutor`).
- *    - Verifies that the given `token` belongs to one of the `appt`'s
- *      `attendees`.
+ *    - Verifies that the given authentication JWT belongs to either an admin of
+ *      orgs that all the tutees and mentees are a part of or the parent of all
+ *      the tutees and mentees. In the future, teachers will also be able to
+ *      create appts on behalf of their students and students will be able to
+ *      add fellow students (i.e. students within the same org) to their appts.
  * 2. Creates [the Bramble tutoring lesson room]{@link https://about.bramble.io/api.html}
  *    (so that the parent can preview the venue that their child will be using
  *    to connect with their tutor).
@@ -56,6 +59,7 @@ export default async function createAppt(
 ): Promise<void> {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // 1. Verify that the request body is valid.
+  console.log('[DEBUG] Verifying request body and authentication JWT...');
   if (!req.body) {
     error(res, 'You must provide a request body.');
   } else if (!req.body.subjects || !req.body.subjects.length) {
@@ -85,7 +89,6 @@ export default async function createAppt(
     } else {
       const appt: Appt = Appt.fromJSON(req.body);
       const attendees: UserWithRoles[] = [];
-      let attendeesIncludeAuthToken = false;
       let errored = false;
       let creator = new User({
         id: (token as DecodedIdToken).uid,
@@ -114,10 +117,7 @@ export default async function createAppt(
           }
           const user: User = User.fromFirestore(attendeeDoc);
           // 1. Verify that the appointment creator is an attendee.
-          if (user.id === creator.id) {
-            attendeesIncludeAuthToken = true;
-            creator = new User({ ...creator, ...user });
-          }
+          if (user.id === creator.id) creator = new User({ ...user });
           // 1. Verify that the attendees are available (note that we don't throw
           // an error if it is the request sender who is unavailable).
           if (appt.time && !user.availability.contains(appt.time)) {
@@ -155,9 +155,39 @@ export default async function createAppt(
       );
       if (errored) {
         // Don't do anything b/c we already sent an error code to the client.
-      } else if (!attendeesIncludeAuthToken) {
+      } else if (!creator.name) {
         error(res, `Creator (${creator.id}) must attend the appointment.`);
       } else {
+        const orgIds: string[] = (
+          await db
+            .collection('orgs')
+            .where('members', 'array-contains', creator.id)
+            .get()
+        ).docs.map((org: DocumentSnapshot) => org.id);
+        // 1. Verify that all the tutees and mentees are either:
+        // - The creator of the appt (i.e. the owner of the JWT).
+        // - The children of the creator (i.e. the creator is their parent).
+        // - Part of an org that the creator is an admin of.
+        if (
+          !attendees.every((attendee: UserWithRoles) => {
+            if (
+              attendee.roles.every(
+                (role: string) => ['tutee', 'mentee'].indexOf(role) < 0
+              )
+            )
+              return true;
+            if (attendee.id === creator.id) return true;
+            if (attendee.parents.indexOf(creator.id) >= 0) return true;
+            if (attendee.orgs.some((id) => orgIds.indexOf(id) >= 0))
+              return true;
+            return false;
+          })
+        )
+          return error(
+            res,
+            `Creator (${creator.toString()}) cannot create appointments for these attendees.`,
+            401
+          );
         appt.id = db.collection('appts').doc().id;
         console.log(`[DEBUG] Creating appointment (${appt.id})...`);
         await db.collection('appts').doc(appt.id).set(appt.toFirestore());
