@@ -17,7 +17,7 @@ import construct from './construct';
  * @property langs - The languages that the user can speak; OR category.
  * @property subjects - The subjects the user can tutor/mentor for; OR category.
  * @property availability - When the user is available; OR category.
- * @property checks - The checks the user has passed; AND category.
+ * @property checks - The checks the user has passed; OR category.
  * @property parents - The parents that the user is a child to; OR category.
  * @property orgs - The organizations that the user belongs to; OR category.
  * @property tags - Algolia search `__tags` (e.g. `NOT_YET_VETTED`).
