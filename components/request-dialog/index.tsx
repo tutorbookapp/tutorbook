@@ -15,6 +15,7 @@ import UserSelect from 'components/user-select';
 import {
   ApiError,
   User,
+  Option,
   OrgJSON,
   RoleAlias,
   Timeslot,
@@ -51,9 +52,9 @@ export default function RequestDialog({
   const { orgs } = useOrgs();
   const { user: currentUser } = useUser();
 
-  const [attendees, setAttendees] = useState<string[]>([
-    user.id,
-    currentUser.id,
+  const [attendees, setAttendees] = useState<Option<string>[]>([
+    { label: user.name, value: user.id },
+    { label: currentUser.name, value: currentUser.id },
   ]);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
   const [time, setTime] = useState<Timeslot | undefined>(initialTime);
@@ -83,7 +84,7 @@ export default function RequestDialog({
         time,
         message,
         subjects,
-        attendees: attendees.map((id: string) => {
+        attendees: attendees.map(({ value: id }) => {
           const roles: RoleAlias[] = [];
           if (id === user.id) {
             roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
@@ -97,11 +98,17 @@ export default function RequestDialog({
   );
 
   const onAttendeesChange = useCallback(
-    (selected: string[]) => {
-      let a: string[] = Array.from(selected);
-      if (selected.indexOf(user.id) < 0) a = [user.id, ...selected];
-      if (a.length < 2) a = [...selected, currentUser.id];
-      setAttendees(a);
+    (selected: Option<string>[]) => {
+      let temp: Option<string>[] = Array.from(selected);
+      if (temp.findIndex(({ value: id }) => id === user.id) < 0)
+        temp = [{ label: user.name, value: user.id }, ...temp];
+      if (temp.findIndex(({ value: id }) => id === currentUser.id) < 0)
+        temp = [
+          ...temp.slice(0, 1),
+          { label: currentUser.name, value: currentUser.id },
+          ...temp.slice(1),
+        ];
+      setAttendees(temp);
     },
     [user, currentUser]
   );
@@ -167,8 +174,8 @@ export default function RequestDialog({
           orgs={orgs.map((org: OrgJSON) => org.id)}
           label={msg(msgs.attendees)}
           className={styles.field}
-          onChange={onAttendeesChange}
-          value={attendees}
+          onSelectedChange={onAttendeesChange}
+          selected={attendees}
         />
         <SubjectSelect
           required
