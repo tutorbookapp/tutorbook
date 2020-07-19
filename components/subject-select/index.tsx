@@ -81,8 +81,8 @@ export default function SubjectSelect({
     () =>
       setSelectedOptions((prev: Option<string>[]) => {
         // If they already match, do nothing.
+        if (!value) return prev;
         if (
-          !value ||
           equal(
             prev.map(({ value: val }) => val),
             value

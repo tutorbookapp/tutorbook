@@ -36,6 +36,9 @@ export default function LangSelect({
   onSelectedChange,
   ...props
 }: SelectControllerProps<string>): JSX.Element {
+  // Store a cache of labels fetched (i.e. a map of values and labels).
+  const cache = React.useRef<Record<string, LangHit>>({});
+
   // Directly control the `Select` component with this internal state.
   const [selectedOptions, setSelectedOptions] = React.useState<
     Option<string>[]
@@ -53,10 +56,10 @@ export default function LangSelect({
   // locale/language).
   const { locale } = useIntl();
   const langHitToOption = React.useCallback(
-    (lang: LangHit) => ({
-      label: lang[locale].name,
-      value: lang.objectID,
-    }),
+    (lang: LangHit) => {
+      cache.current[lang.objectID] = lang;
+      return { label: lang[locale].name, value: lang.objectID };
+    },
     [locale]
   );
 
@@ -75,8 +78,8 @@ export default function LangSelect({
     () =>
       setSelectedOptions((prev: Option<string>[]) => {
         // If they already match, do nothing.
+        if (!value) return prev;
         if (
-          !value ||
           equal(
             prev.map(({ value: val }) => val),
             value
@@ -92,11 +95,10 @@ export default function LangSelect({
           setSelectedOptions(res.hits.map(langHitToOption));
         };
         void updateLabelsFromAlgolia();
-        // Then, temporarily update the options based on the locale codes.
-        return value.map((val: string) => {
-          const idx = prev.findIndex(({ value: v }) => v === val);
-          if (idx < 0) return { label: val, value: val };
-          return prev[idx];
+        // Then, temporarily update the options based on locale codes and cache.
+        return value.map((id: string) => {
+          if (cache.current[id]) return langHitToOption(cache.current[id]);
+          return { label: id, value: id };
         });
       }),
     [value, langHitToOption]

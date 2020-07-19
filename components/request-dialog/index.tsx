@@ -4,9 +4,18 @@ import Button from 'components/button';
 import TimeslotInput from 'components/timeslot-input';
 import SubjectSelect from 'components/subject-select';
 import UserDialog from 'components/user-dialog';
+import UserSelect from 'components/user-select';
 
 import firebase from 'lib/firebase';
-import { ApiError, User, Timeslot, Appt, ApptJSON, Aspect } from 'lib/model';
+import {
+  ApiError,
+  User,
+  RoleAlias,
+  Timeslot,
+  Appt,
+  ApptJSON,
+  Aspect,
+} from 'lib/model';
 import { signupWithGoogle } from 'lib/account/signup';
 import { UserContextValue, UserContext } from 'lib/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
@@ -22,6 +31,7 @@ interface RequestDialogState {
   time?: Timeslot;
   message: string;
   subjects: string[];
+  attendees: string[];
   submitting: boolean;
   submitted: boolean;
   err?: string;
@@ -60,6 +70,7 @@ class RequestDialog extends React.Component<
     super(props);
     this.context = context;
     this.state = {
+      attendees: [props.user.id, context.user.id],
       subjects: props.subjects,
       time: props.time,
       message: '',
@@ -69,6 +80,7 @@ class RequestDialog extends React.Component<
     this.handleSubjectsChange = this.handleSubjectsChange.bind(this);
     this.handleTimeslotChange = this.handleTimeslotChange.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleAttendeesChange = this.handleAttendeesChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -84,24 +96,20 @@ class RequestDialog extends React.Component<
 
   private get appt(): Appt {
     const { aspect, user } = this.props;
-    const { subjects, message, time } = this.state;
-    const { user: currentUser } = this.context;
+    const { subjects, message, time, attendees } = this.state;
     return new Appt({
       time,
       message,
       subjects,
-      attendees: [
-        {
-          id: currentUser.id,
-          roles: [aspect === 'tutoring' ? 'tutee' : 'mentee'],
-          handle: uuid(),
-        },
-        {
-          id: user.id,
-          roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
-          handle: uuid(),
-        },
-      ],
+      attendees: attendees.map((id: string) => {
+        const roles: RoleAlias[] = [];
+        if (id === user.id) {
+          roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
+        } else {
+          roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
+        }
+        return { id, roles, handle: uuid() };
+      }),
     });
   }
 
@@ -113,6 +121,19 @@ class RequestDialog extends React.Component<
         item_name: user.name,
       },
     ];
+  }
+
+  private handleAttendeesChange(selected: string[]): void {
+    let attendees: string[] = Array.from(selected);
+    const {
+      user: { id: currentUserId },
+    } = this.context;
+    const {
+      user: { id },
+    } = this.props;
+    if (selected.indexOf(id) < 0) attendees = [id, ...attendees];
+    if (attendees.length < 2) attendees = [...attendees, currentUserId];
+    this.setState({ attendees });
   }
 
   private handleSubjectsChange(subjects: string[]): void {
@@ -221,11 +242,26 @@ class RequestDialog extends React.Component<
    * Renders the `RequestDialog` that shows profile info and enables booking.
    */
   public render(): JSX.Element {
-    const { submitting, submitted, subjects, message, time, err } = this.state;
+    const {
+      submitting,
+      submitted,
+      subjects,
+      message,
+      time,
+      attendees,
+      err,
+    } = this.state;
     const { onClosed, user, aspect, intl } = this.props;
     const { user: currentUser } = this.context;
     const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
     const msgs: Record<string, Msg> = defMsg({
+      attendees: {
+        id: 'request-dialog.attendees',
+        description:
+          'Label for the tutoring lesson attendees field used by orgs to ' +
+          'send requests on behalf of other users.',
+        defaultMessage: 'Attendees',
+      },
       subjects: {
         id: 'request-dialog.subjects',
         description: 'Label for the tutoring lesson subjects field.',
@@ -272,6 +308,15 @@ class RequestDialog extends React.Component<
       >
         <h6 className={styles.header}>Request</h6>
         <form className={styles.form} onSubmit={this.handleSubmit}>
+          <UserSelect
+            required
+            outlined
+            renderToPortal
+            label={msg(msgs.attendees)}
+            className={styles.field}
+            onChange={this.handleAttendeesChange}
+            value={attendees}
+          />
           <SubjectSelect
             required
             outlined
