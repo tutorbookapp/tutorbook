@@ -19,6 +19,11 @@ interface UserSelectProps {
  *
  * Other than those changes, this is implemented essentially the same way as the
  * `SubjectSelect` or the `LangSelect` (as a wrapper around a `Select`).
+ *
+ * @param [orgs] - The organizations that the search results should belong to.
+ * @param [parents] - The parents of the search results (note that this combines
+ * with the `orgs` parameter in an ` OR ` sequence... results will show up when
+ * either are `true`).
  */
 export default function UserSelect({
   value,
@@ -52,15 +57,22 @@ export default function UserSelect({
   }, []);
   const getSuggestions = React.useCallback(
     async (query: string = '') => {
-      const { users } = await new Query({
+      const orgsPromise = new Query({
         query,
-        orgs: (orgs || []).map((id: string) => ({ label: id, value: id })),
-        parents: (parents || []).map((id: string) => ({
-          label: id,
-          value: id,
-        })),
+        orgs: (orgs || []).map((id) => ({ label: id, value: id })),
       }).search();
-      return users.map(userToOption);
+      const parentsPromise = new Query({
+        query,
+        parents: (parents || []).map((id) => ({ label: id, value: id })),
+      }).search();
+      const suggestions: Option<string>[] = [];
+      (await Promise.all([orgsPromise, parentsPromise])).forEach((data) => {
+        data.users.forEach((user: User) => {
+          if (suggestions.findIndex(({ value: id }) => id === user.id) < 0)
+            suggestions.push(userToOption(user));
+        });
+      });
+      return suggestions;
     },
     [userToOption, orgs, parents]
   );
