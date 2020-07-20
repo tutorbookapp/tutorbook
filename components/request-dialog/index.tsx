@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  FormEvent,
-} from 'react';
+import React, { useState, useCallback, useEffect, FormEvent } from 'react';
 import Utils from 'lib/utils';
 import Button from 'components/button';
 import TimeslotInput from 'components/timeslot-input';
@@ -21,6 +15,7 @@ import {
   Timeslot,
   Appt,
   ApptJSON,
+  Attendee,
   Aspect,
 } from 'lib/model';
 import { signupWithGoogle } from 'lib/account/signup';
@@ -77,12 +72,14 @@ export default function RequestDialog({
     setSubmitted((prev: boolean) => prev && !error);
   }, [error]);
 
+  // Update the names displayed in the attendees select when context or props
+  // changes (i.e. when the user logs in, we change 'You' to their actual name).
   useEffect(() => {
-    setAttendees((prev: Option<string>[]) => [
-      ...prev.slice(0, 1),
-      { label: currentUser.name || 'You', value: currentUser.id },
-      ...prev.slice(2),
-    ]);
+    setAttendees((prev: Option<string>[]) =>
+      prev.length < 2
+        ? [...prev, { label: currentUser.name || 'You', value: currentUser.id }]
+        : prev
+    );
   }, [currentUser]);
   useEffect(() => {
     setAttendees((prev: Option<string>[]) => [
@@ -91,18 +88,16 @@ export default function RequestDialog({
     ]);
   }, [user]);
 
+  // Ensure there are at least 2 attendees and that they always contain the
+  // recipient of the request (i.e. the user being presented in this dialog).
   const onAttendeesChange = useCallback(
     (selected: Option<string>[]) => {
-      let temp: Option<string>[] = Array.from(selected);
-      if (temp.findIndex(({ value: id }) => id === user.id) < 0)
-        temp = [{ label: user.name, value: user.id }, ...temp];
-      if (temp.findIndex(({ value: id }) => id === currentUser.id) < 0)
-        temp = [
-          ...temp.slice(0, 1),
-          { label: currentUser.name || 'You', value: currentUser.id },
-          ...temp.slice(1),
-        ];
-      setAttendees(temp);
+      let a: Option<string>[] = Array.from(selected);
+      if (a.findIndex(({ value: id }) => id === user.id) < 0)
+        a = [{ label: user.name, value: user.id }, ...a];
+      if (a.length < 2)
+        a = [...a, { label: currentUser.name || 'You', value: currentUser.id }];
+      setAttendees(a);
     },
     [user, currentUser]
   );
@@ -127,18 +122,26 @@ export default function RequestDialog({
             `An error occurred while logging in with Google. ${err.message}`
           );
       }
+      const creator: Attendee = {
+        id: currentUser.id,
+        handle: uuid(),
+        roles: [],
+      };
       const appt: Appt = new Appt({
         time,
+        creator,
         message,
         subjects,
         attendees: attendees.map(({ value: id }) => {
           const roles: RoleAlias[] = [];
+          const handle: string = id === creator.id ? creator.handle : uuid();
           if (id === user.id) {
             roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
           } else {
             roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
           }
-          return { id, roles, handle: uuid() };
+          if (id === creator.id) creator.roles = Array.from(roles);
+          return { id, roles, handle };
         }),
       });
       const [err] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(

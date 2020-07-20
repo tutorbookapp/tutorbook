@@ -1,26 +1,49 @@
 import Utils from 'lib/utils';
-import { Appt, User, Attendee } from 'lib/model';
-import { EmailData } from '@sendgrid/helpers/classes/email-address';
+import { Appt, User, RoleAlias, UserWithRoles, Attendee } from 'lib/model';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
 import Template from './template.hbs';
 
+/**
+ * Data used to render the appointment email.
+ * @property appt - The appointment the email is about.
+ * @property creator - The creator of the `appt`.
+ * @property creatorEmail - The creator's email handle.
+ * @property withMessage - Either 'with you' or 'between you and [student.name]'
+ * if the student isn't the creator of the appointment (i.e. if the appointment
+ * was created by their parent or an org admin).
+ */
 interface Data {
   appt: Appt;
   creator: User;
   creatorEmail: string;
+  withMessage: string;
+}
+
+interface EmailData {
+  name: string;
+  email: string;
 }
 
 /**
  * Gets the given user's unique all-lowercase anonymous email handle from a
  * given appt.
  */
-function getHandle(appt: Appt, id: string): string {
+function getEmail(
+  appt: Appt,
+  id: string,
+  domain: string = 'mail.tutorbook.org'
+): string {
+  if (appt.creator.id === id) return `${appt.creator.handle}@${domain}`;
   const match: Attendee[] = appt.attendees.filter((a: Attendee) => a.id === id);
   if (match.length > 1) console.warn(`[WARNING] Duplicate attendees (${id}).`);
   if (match.length < 1) throw new Error(`No attendee ${id} in appt.`);
-  return match[0].handle;
+  return `${match[0].handle}@${domain}`;
+}
+
+function hasRoles(user: UserWithRoles, roles: RoleAlias[]): boolean {
+  return roles.some((role: RoleAlias) => user.roles.indexOf(role) >= 0);
 }
 
 /**
@@ -37,6 +60,28 @@ function getHandle(appt: Appt, id: string): string {
  * **Note:** We use the attendees's anonymous email addresses so that our AWS
  * Lambda function can take care of the anonymizing and relay logic (so that
  * each attendee can only ever see their own direct contact information).
+ *
+ * - From: team@tutorbook.org (**not** from the creator of the appointment).
+ * - To: the tutor and mentor attendees.
+ * - BCC: team@tutorbook.org (for analysis purposes).
+ * - Reply-To: the creator of the appointment (typically the student but it
+ *   could be their parent or an org admin).
+ * - Mail-Reply-To: the creator of the appointment.
+ * - Mail-Followup-To: the creator and all attendees of the appointment.
+ *
+ * > Hi there,
+ * >
+ * > [creator.name] wants to setup an appointment [with you][between you and
+ * > [student.name]] for [subjects]:
+ * >
+ * > > [message]
+ * >
+ * > If you're interested, please get in touch with [creator.name] by replying
+ * > to this email or using the following email address:
+ * >
+ * > [creator.handle]@mail.tutorbook.org
+ * >
+ * > Thank you.
  */
 export default class ApptEmail implements Email {
   private static readonly render: Handlebars.TemplateDelegate<
@@ -63,19 +108,51 @@ export default class ApptEmail implements Email {
 
   public readonly text: string;
 
-  public constructor(appt: Appt, attendees: User[], creator: User) {
-    this.to = attendees
-      .filter((attendee: User) => attendee.id !== creator.id)
-      .map((attendee: User) => ({
-        name: attendee.name,
-        email: `${getHandle(appt, attendee.id)}@mail.tutorbook.org`,
-      }));
-    this.subject = `New ${Utils.join(appt.subjects)} appointment on Tutorbook.`;
-    this.text = this.subject;
+  public readonly headers: Record<string, string>;
 
-    const creatorEmail = `${getHandle(appt, creator.id)}@mail.tutorbook.org`;
+  public constructor(appt: Appt, attendees: UserWithRoles[], creator: User) {
+    const tutors = attendees.filter(
+      (a) => a.id !== creator.id && hasRoles(a, ['mentor', 'tutor'])
+    );
+    const pupils = attendees.filter(
+      (a) => a.id !== creator.id && hasRoles(a, ['mentee', 'tutee'])
+    );
+    const withMessage =
+      attendees.findIndex(({ id }) => id === creator.id) >= 0
+        ? 'with you'
+        : `between you and ${Utils.join(pupils.map(({ name }) => name))}`;
+    const creatorEmail = getEmail(appt, creator.id);
 
+    this.to = tutors.map(({ name, id }) => ({
+      name,
+      email: getEmail(appt, id),
+    }));
     this.replyTo = { name: creator.name, email: creatorEmail };
-    this.html = ApptEmail.render({ appt, creator, creatorEmail });
+    this.headers = {
+      'Mail-Reply-To': `${creator.name} <${creatorEmail}>`,
+      'Mail-Followup-To': pupils
+        .map(({ name, id }) => `${name} <${getEmail(appt, id)}>`)
+        .join(', '),
+    };
+
+    this.subject = `New ${Utils.join(appt.subjects)} appointment on Tutorbook.`;
+    this.html = ApptEmail.render({ appt, creator, creatorEmail, withMessage });
+    this.text = `Hi there,
+
+      ${
+        creator.name
+      } wants to setup an appointment ${withMessage} for ${Utils.join(
+      appt.subjects
+    )}:
+
+      > ${appt.message}
+      
+      If you're interested, please get in touch with ${
+        creator.name
+      } by replying to this email or using the following email address:
+
+      ${creatorEmail}
+
+      Thank you.`;
   }
 }

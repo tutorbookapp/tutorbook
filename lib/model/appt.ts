@@ -1,7 +1,10 @@
 import * as admin from 'firebase-admin';
 import * as firebase from 'firebase/app';
-import { Timeslot, TimeslotJSON } from './timeslot';
 import 'firebase/firestore';
+
+import { v4 as uuid } from 'uuid';
+
+import { Timeslot, TimeslotJSON } from './timeslot';
 
 import construct from './construct';
 
@@ -45,23 +48,29 @@ export interface ApptVenue extends Record<string, any> {
   url: string;
 }
 
+/**
+ * Represents a tutoring lesson or mentoring appointment.
+ * @property subjects - Subjects the appointment will be about (e.g. CS).
+ * @property attendees - People who will be present during the appointment
+ * (i.e. students, their parents and their tutor).
+ * @property creator - Person who created the appointment (typically the student
+ * but it could be their parent or an org admin).
+ * @property venues - Links to access the appointment (e.g. Bramble, Zoom).
+ * @property [time] - Timeslot when the appointment will occur.
+ * @property [message] - Initial message sent by the `creator` to the tutor.
+ */
 export interface ApptInterface {
   subjects: string[];
   attendees: Attendee[];
-  time?: Timeslot;
+  creator: Attendee;
   venues: ApptVenue[];
+  time?: Timeslot;
   message?: string;
   ref?: DocumentReference | AdminDocumentReference;
   id?: string;
 }
 
-export interface ApptJSON {
-  subjects: string[];
-  attendees: Attendee[];
-  time?: TimeslotJSON;
-  message?: string;
-  id?: string;
-}
+export type ApptJSON = Omit<ApptInterface, 'time'> & { time?: TimeslotJSON };
 
 export class Appt implements ApptInterface {
   public message = '';
@@ -69,6 +78,8 @@ export class Appt implements ApptInterface {
   public subjects: string[] = [];
 
   public attendees: Attendee[] = [];
+
+  public creator: Attendee = { id: '', handle: uuid(), roles: [] };
 
   public venues: ApptVenue[] = [];
 

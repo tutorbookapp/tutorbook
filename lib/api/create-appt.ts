@@ -36,15 +36,31 @@ export type CreateApptRes = ApptJSON;
  *      the tutees and mentees. In the future, teachers will also be able to
  *      create appts on behalf of their students and students will be able to
  *      add fellow students (i.e. students within the same org) to their appts.
- * 2. Creates [the Bramble tutoring lesson room]{@link https://about.bramble.io/api.html}
- *    (so that the parent can preview the venue that their child will be using
- *    to connect with their tutor).
- * 3. Creates a new `request` document containing the given `appt`'s data in the
- *    pupil's (the owner of the given JWT `token`) Firestore sub-collections.
- * 4. Sends an email to the tutee's parent(s) asking for parental approval of
- *    the tutoring match.
- * 5. Sends an email to the pupil (the sender of the lesson request) telling
- *    them that we're awaiting parental approval.
+ * 2. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
+ *    it as a venue to the appointment.
+ * 3. Creates a new `appts` document.
+ * 4. Sends an email initializing communications btwn the creator and the tutor:
+ * - From: team@tutorbook.org (**not** from the creator of the appointment).
+ * - To: the tutor and mentor attendees.
+ * - BCC: team@tutorbook.org (for analysis purposes).
+ * - Reply-To: the creator of the appointment (typically the student but it
+ *   could be their parent or an org admin).
+ * - Mail-Reply-To: the creator of the appointment.
+ * - Mail-Followup-To: the creator and all attendees of the appointment.
+ *
+ * > Hi there,
+ * >
+ * > [creator.name] wants to setup an appointment [with you][between you and
+ * > [student.name]] for [subjects]:
+ * >
+ * > > [message]
+ * >
+ * > If you're interested, please get in touch with [creator.name] by replying
+ * > to this email or using the following email address:
+ * >
+ * > [creator.handle]@mail.tutorbook.org
+ * >
+ * > Thank you.
  *
  * @param {ApptJSON} request - The appointment to create a pending request for.
  * The given `idToken` **must** be from one of the appointment's `attendees`
@@ -96,112 +112,115 @@ export default async function createAppt(
         photo: (token as DecodedIdToken).picture,
         phone: (token as DecodedIdToken).phone_number,
       });
-      await Promise.all(
-        appt.attendees.map(async (attendee: Attendee) => {
-          if (errored) return;
-          // 1. Verify that the attendees have uIDs.
-          if (!attendee.id) {
-            error(res, 'All attendees must have valid uIDs.');
-            errored = true;
-            return;
-          }
-          const attendeeRef: DocumentReference = db
-            .collection('users')
-            .doc(attendee.id);
-          const attendeeDoc: DocumentSnapshot = await attendeeRef.get();
-          // 1. Verify that the attendees exist.
-          if (!attendeeDoc.exists) {
-            error(res, `Attendee (${attendee.id}) does not exist.`);
-            errored = true;
-            return;
-          }
-          const user: User = User.fromFirestore(attendeeDoc);
-          // 1. Verify that the appointment creator is an attendee.
-          if (user.id === creator.id) creator = new User({ ...user });
-          // 1. Verify that the attendees are available (note that we don't throw
-          // an error if it is the request sender who is unavailable).
-          if (appt.time && !user.availability.contains(appt.time)) {
-            const timeslot: string = appt.time.toString();
-            if (attendee.id === creator.id) {
-              console.warn(`[WARNING] Creator unavailable ${timeslot}.`);
-            } else {
-              error(res, `${user.toString()} unavailable ${timeslot}.`);
+      if (creator.id !== appt.creator.id) {
+        const msg =
+          `Creator (${creator.id}) did not match appt creator ` +
+          `(${appt.creator.id}).`;
+        error(res, msg, 401);
+      } else {
+        await Promise.all(
+          appt.attendees.map(async (attendee: Attendee) => {
+            if (errored) return;
+            // 1. Verify that the attendees have uIDs.
+            if (!attendee.id) {
+              error(res, 'All attendees must have valid uIDs.');
               errored = true;
               return;
             }
-          }
-          // 1. Verify the tutors can teach the requested subjects.
-          const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
-          const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
-          const canTutorSubject: (s: string) => boolean = (s: string) => {
-            return user.tutoring.subjects.includes(s);
-          };
-          const canMentorSubject: (s: string) => boolean = (s: string) => {
-            return user.mentoring.subjects.includes(s);
-          };
-          if (isTutor && !appt.subjects.every(canTutorSubject)) {
-            error(res, `${user.toString()} cannot tutor these subjects.`);
-            errored = true;
-            return;
-          }
-          if (isMentor && !appt.subjects.every(canMentorSubject)) {
-            error(res, `${user.toString()} cannot mentor these subjects.`);
-            errored = true;
-            return;
-          }
-          (user as UserWithRoles).roles = attendee.roles;
-          attendees.push(user as UserWithRoles);
-        })
-      );
-      if (errored) {
-        // Don't do anything b/c we already sent an error code to the client.
-      } else if (!creator.name) {
-        error(res, `Creator (${creator.id}) must attend the appointment.`);
-      } else {
-        const orgIds: string[] = (
-          await db
-            .collection('orgs')
-            .where('members', 'array-contains', creator.id)
-            .get()
-        ).docs.map((org: DocumentSnapshot) => org.id);
-        // 1. Verify that all the tutees and mentees are either:
-        // - The creator of the appt (i.e. the owner of the JWT).
-        // - The children of the creator (i.e. the creator is their parent).
-        // - Part of an org that the creator is an admin of.
-        if (
-          !attendees.every((attendee: UserWithRoles) => {
-            if (
-              attendee.roles.every(
-                (role: string) => ['tutee', 'mentee'].indexOf(role) < 0
-              )
-            )
-              return true;
-            if (attendee.id === creator.id) return true;
-            if (attendee.parents.indexOf(creator.id) >= 0) return true;
-            if (attendee.orgs.some((id) => orgIds.indexOf(id) >= 0))
-              return true;
-            return false;
+            const attendeeRef: DocumentReference = db
+              .collection('users')
+              .doc(attendee.id);
+            const attendeeDoc: DocumentSnapshot = await attendeeRef.get();
+            // 1. Verify that the attendees exist.
+            if (!attendeeDoc.exists) {
+              error(res, `Attendee (${attendee.id}) does not exist.`);
+              errored = true;
+              return;
+            }
+            const user: User = User.fromFirestore(attendeeDoc);
+            // 1. Verify that the appointment creator is an attendee.
+            if (user.id === creator.id) creator = new User({ ...user });
+            // 1. Verify that the attendees are available (note that we don't throw
+            // an error if it is the request sender who is unavailable).
+            if (appt.time && !user.availability.contains(appt.time)) {
+              const timeslot: string = appt.time.toString();
+              if (attendee.id === creator.id) {
+                console.warn(`[WARNING] Creator unavailable ${timeslot}.`);
+              } else {
+                error(res, `${user.toString()} unavailable ${timeslot}.`);
+                errored = true;
+                return;
+              }
+            }
+            // 1. Verify the tutors can teach the requested subjects.
+            const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
+            const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
+            const canTutorSubject: (s: string) => boolean = (s: string) => {
+              return user.tutoring.subjects.includes(s);
+            };
+            const canMentorSubject: (s: string) => boolean = (s: string) => {
+              return user.mentoring.subjects.includes(s);
+            };
+            if (isTutor && !appt.subjects.every(canTutorSubject)) {
+              error(res, `${user.toString()} cannot tutor these subjects.`);
+              errored = true;
+              return;
+            }
+            if (isMentor && !appt.subjects.every(canMentorSubject)) {
+              error(res, `${user.toString()} cannot mentor these subjects.`);
+              errored = true;
+              return;
+            }
+            (user as UserWithRoles).roles = attendee.roles;
+            attendees.push(user as UserWithRoles);
           })
-        )
-          return error(
-            res,
-            `Creator (${creator.toString()}) cannot create appointments for these attendees.`,
-            401
-          );
-        appt.id = db.collection('appts').doc().id;
-        console.log(`[DEBUG] Creating appointment (${appt.id})...`);
-        await db.collection('appts').doc(appt.id).set(appt.toFirestore());
-        // 4-5. Send out the appointment email.
-        console.log('[DEBUG] Sending appointment email...');
-        const [mailErr] = await to(
-          mail.send(new ApptEmail(appt, attendees, creator))
         );
-        if (mailErr) {
-          const msg = `${mailErr.name} sending email: ${mailErr.message}`;
-          error(res, msg, 500, mailErr);
-        } else {
-          res.status(201).json(appt.toJSON());
-          console.log('[DEBUG] Created appointment and sent email.');
+        if (!errored) {
+          if (!creator.name) {
+            const doc = await db.collection('users').doc(creator.id).get();
+            const msg = `Creator (${creator.id}) does not exist.`;
+            if (!doc.exists) return error(res, msg);
+            creator = User.fromFirestore(doc);
+          }
+          const orgIds: string[] = (
+            await db
+              .collection('orgs')
+              .where('members', 'array-contains', creator.id)
+              .get()
+          ).docs.map((org: DocumentSnapshot) => org.id);
+          // 1. Verify that all the tutees and mentees are either:
+          // - The creator of the appt (i.e. the owner of the JWT).
+          // - The children of the creator (i.e. the creator is their parent).
+          // - Part of an org that the creator is an admin of.
+          const errorMsg =
+            `Creator (${creator.toString()}) is not authorized to create ` +
+            `appointments for these attendees.`;
+          if (
+            !attendees.every((a: UserWithRoles) => {
+              if (a.roles.every((r) => ['tutee', 'mentee'].indexOf(r) < 0))
+                return true;
+              if (a.id === creator.id) return true;
+              if (a.parents.indexOf(creator.id) >= 0) return true;
+              if (a.orgs.some((id) => orgIds.indexOf(id) >= 0)) return true;
+              return false;
+            })
+          )
+            return error(res, errorMsg, 401);
+          appt.id = db.collection('appts').doc().id;
+          console.log(`[DEBUG] Creating appointment (${appt.id})...`);
+          await db.collection('appts').doc(appt.id).set(appt.toFirestore());
+          // 4-5. Send out the appointment email.
+          console.log('[DEBUG] Sending appointment email...');
+          const [mailErr] = await to(
+            mail.send(new ApptEmail(appt, attendees, creator))
+          );
+          if (mailErr) {
+            const msg = `${mailErr.name} sending email: ${mailErr.message}`;
+            error(res, msg, 500, mailErr);
+          } else {
+            res.status(201).json(appt.toJSON());
+            console.log('[DEBUG] Created appointment and sent email.');
+          }
         }
       }
     }
