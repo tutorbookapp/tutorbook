@@ -16,7 +16,9 @@ interface Props {
 export default function UserCarousel({ query, onClick }: Props): JSX.Element {
   const { data } = useSWR<ListUsersRes>(query.endpoint);
 
-  useEffect(() => mutate(query.endpoint), [query.endpoint]);
+  useEffect(() => {
+    void mutate(query.endpoint);
+  }, [query.endpoint]);
 
   return (
     <>
