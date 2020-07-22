@@ -106,7 +106,10 @@ export default function Search({
         <div className={styles.noResults}>
           <h3 className={styles.noResultsHeader}>{msg(msgs.noResultsTitle)}</h3>
           <p className={styles.noResultsBody}>{msg(msgs.noResultsBody)}</p>
-          <Carousel aspect={query.aspect} onClick={setViewing} />
+          <Carousel
+            query={new Query({ aspect: query.aspect })}
+            onClick={setViewing}
+          />
         </div>
       )}
     </div>
