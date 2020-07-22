@@ -113,6 +113,11 @@ export default class ScheduleInput extends React.Component<
     return value.equalTo(ScheduleInput.timeslots);
   }
 
+  private get someTimeslotsChecked(): boolean {
+    const { value } = this.props;
+    return !this.allTimeslotsChecked && !!value.length;
+  }
+
   /**
    * Returns whether or not a checkbox should be checked by seeing if the given
    * timeslot exists in `this.state.availability`. If it does, this function
@@ -224,6 +229,7 @@ export default class ScheduleInput extends React.Component<
                   <DataTableCell className={styles.selectAllCell}>
                     <FormField>
                       <Checkbox
+                        indeterminate={this.someTimeslotsChecked}
                         checked={this.allTimeslotsChecked}
                         onChange={this.toggleAllChecked}
                         id={checkboxId}
