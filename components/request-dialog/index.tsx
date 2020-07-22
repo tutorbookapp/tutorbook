@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, FormEvent } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  FormEvent,
+} from 'react';
 import Utils from 'lib/utils';
 import Button from 'components/button';
 import TimeslotInput from 'components/timeslot-input';
@@ -75,11 +81,13 @@ export default function RequestDialog({
   // Update the names displayed in the attendees select when context or props
   // changes (i.e. when the user logs in, we change 'You' to their actual name).
   useEffect(() => {
-    setAttendees((prev: Option<string>[]) =>
-      prev.length < 2
-        ? [...prev, { label: currentUser.name || 'You', value: currentUser.id }]
-        : prev
-    );
+    setAttendees((prev: Option<string>[]) => {
+      const opt = { label: currentUser.name || 'You', value: currentUser.id };
+      if (prev.length < 2) return [...prev, opt];
+      const idx = prev.findIndex(({ value: id }) => !id || id === opt.value);
+      if (idx < 0) return prev;
+      return [...prev.slice(0, idx), opt, ...prev.slice(idx + 1)];
+    });
   }, [currentUser]);
   useEffect(() => {
     setAttendees((prev: Option<string>[]) => [
@@ -110,6 +118,26 @@ export default function RequestDialog({
     setMessage(event.currentTarget.value);
   }, []);
 
+  const appt: Appt = useMemo(() => {
+    const creator: Attendee = { id: currentUser.id, handle: uuid(), roles: [] };
+    return new Appt({
+      time,
+      creator,
+      message,
+      subjects,
+      attendees: attendees.map(({ value: id }) => {
+        const roles: RoleAlias[] = [];
+        const handle: string = id === creator.id ? creator.handle : uuid();
+        if (id === user.id) {
+          roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
+        } else {
+          roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
+        }
+        if (id === creator.id) creator.roles = Array.from(roles);
+        return { id, roles, handle };
+      }),
+    });
+  }, [aspect, currentUser.id, user.id, time, message, subjects, attendees]);
   const onSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -122,28 +150,6 @@ export default function RequestDialog({
             `An error occurred while logging in with Google. ${err.message}`
           );
       }
-      const creator: Attendee = {
-        id: currentUser.id,
-        handle: uuid(),
-        roles: [],
-      };
-      const appt: Appt = new Appt({
-        time,
-        creator,
-        message,
-        subjects,
-        attendees: attendees.map(({ value: id }) => {
-          const roles: RoleAlias[] = [];
-          const handle: string = id === creator.id ? creator.handle : uuid();
-          if (id === user.id) {
-            roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
-          } else {
-            roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
-          }
-          if (id === creator.id) creator.roles = Array.from(roles);
-          return { id, roles, handle };
-        }),
-      });
       const [err] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
         axios.post('/api/appts', appt.toJSON())
       );
@@ -165,7 +171,7 @@ export default function RequestDialog({
         );
       return setSubmitted(true);
     },
-    [currentUser, user.id, time, message, subjects, attendees, aspect]
+    [currentUser, appt]
   );
 
   const msg: IntlHelper = useMsg();
@@ -179,17 +185,20 @@ export default function RequestDialog({
     >
       <h6 className={styles.header}>Request</h6>
       <form className={styles.form} onSubmit={onSubmit}>
-        <UserSelect
-          required
-          outlined
-          renderToPortal
-          parents={currentUser.id ? [currentUser.id] : undefined}
-          orgs={orgs.length ? orgs.map((org: OrgJSON) => org.id) : undefined}
-          label={msg(msgs.attendees)}
-          className={styles.field}
-          onSelectedChange={onAttendeesChange}
-          selected={attendees}
-        />
+        {false && (
+          <UserSelect
+            required
+            outlined
+            renderToPortal
+            disabled={!currentUser.id}
+            parents={currentUser.id ? [currentUser.id] : undefined}
+            orgs={orgs.length ? orgs.map((org: OrgJSON) => org.id) : undefined}
+            label={msg(msgs.attendees)}
+            className={styles.field}
+            onSelectedChange={onAttendeesChange}
+            selected={attendees}
+          />
+        )}
         <SubjectSelect
           required
           outlined
