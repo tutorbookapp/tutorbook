@@ -1,8 +1,8 @@
 import { useIntl, defMsg, Msg, IntlShape } from 'lib/intl';
-import { User, Aspect } from 'lib/model';
+import { Query, User, Aspect } from 'lib/model';
 import { Card } from '@rmwc/card';
 
-import React from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import RequestDialog from 'components/request-dialog';
 import Carousel from 'components/carousel';
 import Title from 'components/title';
@@ -23,17 +23,18 @@ const msgs: Record<string, Msg> = defMsg({
 
 export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
   const intl: IntlShape = useIntl();
-  const [viewing, setViewing] = React.useState<User | undefined>();
+  const [viewing, setViewing] = useState<User | undefined>();
+  const onClosed = useCallback(() => setViewing(undefined), []);
+  const subjects = useMemo(() => [], []);
   return (
     <div className={styles.hero}>
       <div className={styles.wrapper}>
-        {viewing && (
+        {!!viewing && (
           <RequestDialog
             user={viewing}
             aspect={aspect}
-            onClosed={() => setViewing(undefined)}
-            subjects={[]}
-            time={aspect === 'tutoring' ? viewing.availability[0] : undefined}
+            onClosed={onClosed}
+            subjects={subjects}
           />
         )}
         <div className={styles.title}>
@@ -42,7 +43,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
         <Card className={styles.card}>
           <SearchForm aspect={aspect} />
         </Card>
-        <Carousel aspect={aspect} onClick={setViewing} />
+        <Carousel query={new Query({ aspect })} onClick={setViewing} />
       </div>
     </div>
   );
