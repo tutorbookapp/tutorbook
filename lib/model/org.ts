@@ -2,6 +2,7 @@ import * as admin from 'firebase-admin';
 
 import firebase from 'lib/firebase';
 
+import { Aspect } from './user';
 import { AccountInterface, Account } from './account';
 
 import construct from './construct';
@@ -29,9 +30,15 @@ type IntercomCustomAttribute = string | boolean | number | Date;
  * to manage their virtual tutoring programs.
  * @typedef {Object} Org
  * @property members - An array of user UIDs that are members of this org.
+ * @property safeguarding - A description of the org's safeguarding policy (i.e.
+ * what they do to vet their volunteers before adding them to the search view).
+ * @property aspect - The default aspect of a given org (i.e. are they more
+ * focused on `tutoring` or `mentoring`).
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
+  safeguarding: string;
+  aspect: Aspect;
 }
 
 export type OrgJSON = OrgInterface;
@@ -42,6 +49,10 @@ export function isOrgJSON(json: any): json is OrgJSON {
 
 export class Org extends Account implements OrgInterface {
   public members: string[] = [];
+
+  public safeguarding: string = '';
+
+  public aspect: Aspect = 'mentoring';
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
