@@ -16,6 +16,31 @@ type AdminDocumentReference = admin.firestore.DocumentReference;
 type IntercomCustomAttribute = string | boolean | number | Date;
 
 /**
+ * Represents a user verification to provide social proof. Supported types are:
+ * - A background check or UK DBS on file
+ * - A verified academic email address (e.g. `ac.uk` or `stanford.edu`)
+ * - A verified social media account (i.e. LinkedIn, Twitter, FB, Insta)
+ * - A personal website (mostly just an easy way to link to a resume site)
+ *
+ * These "socials" are then shown directly beneath the user's name in the
+ * `UserDialog` making it easy for students (and/or their parents) to view and
+ * feel assured about a potential tutor's qualifications.
+ */
+export type SocialTypeAlias =
+  | 'website'
+  | 'linkedin'
+  | 'twitter'
+  | 'facebook'
+  | 'instagram'
+  | 'github'
+  | 'indiehackers';
+
+export interface SocialInterface {
+  type: SocialTypeAlias;
+  url: string;
+}
+
+/**
  * An `Account` object is the base object that is extended by the `Org` and
  * `User` objects. That way, we can have one `AccountProvider` for both orgs and
  * users.
@@ -27,6 +52,7 @@ export interface AccountInterface {
   email: string;
   phone: string;
   bio: string;
+  socials: SocialInterface[];
   ref?: DocumentReference | AdminDocumentReference;
 }
 
@@ -43,11 +69,14 @@ export class Account implements AccountInterface {
 
   public bio = '';
 
+  public socials: SocialInterface[] = [];
+
   public ref?: DocumentReference | AdminDocumentReference;
 
   public constructor(account: Partial<AccountInterface> = {}) {
     construct<AccountInterface>(this, account);
     this.phone = phone(this.phone)[0] || '';
+    this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
   }
 
   /**

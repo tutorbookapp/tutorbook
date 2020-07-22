@@ -43,31 +43,6 @@ type IntercomCustomAttribute = string | boolean | number | Date;
 export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 /**
- * Represents a user verification to provide social proof. Supported types are:
- * - A background check or UK DBS on file
- * - A verified academic email address (e.g. `ac.uk` or `stanford.edu`)
- * - A verified social media account (i.e. LinkedIn, Twitter, FB, Insta)
- * - A personal website (mostly just an easy way to link to a resume site)
- *
- * These "socials" are then shown directly beneath the user's name in the
- * `UserDialog` making it easy for students (and/or their parents) to view and
- * feel assured about a potential tutor's qualifications.
- */
-export type SocialTypeAlias =
-  | 'website'
-  | 'linkedin'
-  | 'twitter'
-  | 'facebook'
-  | 'instagram'
-  | 'github'
-  | 'indiehackers';
-
-export interface SocialInterface {
-  type: SocialTypeAlias;
-  url: string;
-}
-
-/**
  * A check is a single aspect of a verification.
  * @example
  * - A verified university email address (e.g. `@stanford.edu`).
@@ -118,7 +93,6 @@ export interface Verification extends Resource {
  * @property tutoring - The subjects that the user wants a and can tutor for.
  * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
- * @property socials - An array of the user's socials (e.g. LinkedIn, Facebook).
  * @property visible - Whether or not this user appears in search results.
  * @property token - The user's Firebase Authentication JWT `idToken`.
  */
@@ -129,7 +103,6 @@ export interface UserInterface extends AccountInterface {
   tutoring: { subjects: string[]; searches: string[] };
   langs: string[];
   parents: string[];
-  socials: SocialInterface[];
   verifications: Verification[];
   visible: boolean;
   token?: string;
@@ -176,8 +149,6 @@ export class User extends Account implements UserInterface {
 
   public parents: string[] = [];
 
-  public socials: SocialInterface[] = [];
-
   public verifications: Verification[] = [];
 
   public visible = false;
@@ -198,7 +169,6 @@ export class User extends Account implements UserInterface {
   public constructor(user: Partial<UserInterface> = {}) {
     super(user);
     construct<UserInterface, AccountInterface>(this, user, new Account());
-    this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
   }
 
   public get firstName(): string {
