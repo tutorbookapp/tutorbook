@@ -9,7 +9,7 @@ import { AspectHeader } from 'components/header';
 
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
-import VolunteerForm from 'components/volunteer-form';
+import VolunteerPage from 'components/volunteer-page';
 
 interface SignupPageQuery extends ParsedUrlQuery {
   org: string;
@@ -33,7 +33,7 @@ function SignupPage(): JSX.Element {
         onChange={(newAspect: Aspect) => setAspect(newAspect)}
         formWidth
       />
-      <VolunteerForm org={query.org as string} aspect={aspect} />
+      <VolunteerPage org={query.org as string} aspect={aspect} />
       <Footer formWidth />
       <Intercom />
     </>

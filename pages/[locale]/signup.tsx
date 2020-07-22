@@ -7,7 +7,7 @@ import { AspectHeader } from 'components/header';
 
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
-import VolunteerForm from 'components/volunteer-form';
+import VolunteerPage from 'components/volunteer-page';
 
 function SignupPage(): JSX.Element {
   const [aspect, setAspect] = React.useState<Aspect>('mentoring');
@@ -18,7 +18,7 @@ function SignupPage(): JSX.Element {
         onChange={(newAspect: Aspect) => setAspect(newAspect)}
         formWidth
       />
-      <VolunteerForm aspect={aspect} />
+      <VolunteerPage aspect={aspect} />
       <Footer formWidth />
       <Intercom />
     </>
