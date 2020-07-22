@@ -204,4 +204,32 @@ Runs `next build` which builds the application for production usage.
 
 #### `npm run start`
 
-Runs `next start` which starts a Next.js production server.
+Runs `next start` which starts a Next.js production server. We have no use for
+this right now because we're deploying to Vercel NOW which handles that for us.
+
+#### `npm run intl`
+
+Extracts all of the default messages (i.e. the English translations of our
+static message content) defined throughout our components using the
+`defineMessages` hook and puts it into the `lib/intl/locales/en.json` file.
+
+```commandline
+$ formatjs extract --out-file lib/intl/locales/en.json components/**/*.ts*
+```
+
+We use [`react-intl`](https://formatjs.io/docs/react-intl/api/#definemessagesdefinemessage)
+for our i18n, but we'll probably switch to a smaller solution (in terms of file
+size and boilerplate code) in the future (see
+[#35](https://github.com/tutorbookapp/tutorbook/issues/35)).
+
+#### `npm run analyze`
+
+Runs the build to generate a bundle size visualizer (uses
+`@next/bundle-analyzer`).
+
+#### `npm run lint`
+
+Runs all of ESLint tests. This should rarely be necessary because you should
+have ESLint integrated into your IDE (and thus it should run as you edit code)
+and we have Husky running `pretty-quick` before each commit (which should take
+care of the styling that ESLint enforces).

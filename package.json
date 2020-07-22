@@ -10,7 +10,8 @@
     "build": "cd sw && webpack && cd .. && node --icu-data-dir=node_modules/full-icu node_modules/.bin/next build",
     "start": "node --icu-data-dir=node_modules/full-icu node_modules/.bin/next start",
     "analyze": "ANALYZE=true node --icu-data-dir=node_modules/full-icu node_modules/.bin/next build",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src/"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "intl": "formatjs extract --out-file lib/intl/locales/en.json components/*/*.ts*"
   },
   "keywords": [
     "Tutorbook",
