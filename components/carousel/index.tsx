@@ -1,20 +1,23 @@
-import React from 'react';
-import useSWR from 'swr';
+import React, { useEffect } from 'react';
+import useSWR, { mutate } from 'swr';
 
 import { ListUsersRes } from 'lib/api/list-users';
-import { Aspect, User, UserJSON } from 'lib/model';
+import { Query, User, UserJSON } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from './carousel';
 import { UserCard, LoadingCard } from './cards';
 
 interface Props {
-  aspect: Aspect;
+  query: Query;
   onClick: (user: User) => void;
 }
 
-export default function UserCarousel({ aspect, onClick }: Props): JSX.Element {
-  const { data } = useSWR<ListUsersRes>(`/api/users?aspect=${aspect}`);
+export default function UserCarousel({ query, onClick }: Props): JSX.Element {
+  const { data } = useSWR<ListUsersRes>(query.endpoint);
+
+  useEffect(() => mutate(query.endpoint), [query.endpoint]);
+
   return (
     <>
       {data && (
