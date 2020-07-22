@@ -1,5 +1,5 @@
 import { Dialog } from '@rmwc/dialog';
-import { User } from 'lib/model';
+import { User, SocialInterface } from 'lib/model';
 
 import React from 'react';
 import Avatar from 'components/avatar';
@@ -45,7 +45,7 @@ export default function UserDialog({
           <h4 className={styles.name}>{user.name}</h4>
           {user.socials && !!user.socials.length && (
             <div className={styles.socials}>
-              {user.socials.map((social) => (
+              {user.socials.map((social: SocialInterface) => (
                 <a
                   key={social.type}
                   target='_blank'
