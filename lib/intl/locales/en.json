@@ -86,6 +86,70 @@
     "defaultMessage": "View search"
   },
   {
+    "id": "people.title",
+    "defaultMessage": "People"
+  },
+  {
+    "id": "people.subtitle",
+    "defaultMessage": "{name}'s tutors, mentors and students"
+  },
+  {
+    "id": "people.empty",
+    "defaultMessage": "NO PEOPLE TO SHOW"
+  },
+  {
+    "id": "people.filters.search-placeholder",
+    "defaultMessage": "Search people"
+  },
+  {
+    "id": "people.actions.view-search",
+    "defaultMessage": "View search"
+  },
+  {
+    "id": "people.actions.create-user",
+    "defaultMessage": "Create user"
+  },
+  {
+    "id": "people.actions.import-data",
+    "defaultMessage": "Import data"
+  },
+  {
+    "id": "people.actions.import-data-msg",
+    "defaultMessage": "Could you help me import data?"
+  },
+  {
+    "id": "people.actions.share-signup-link",
+    "defaultMessage": "Share signup link"
+  },
+  {
+    "id": "people.filters.not-vetted",
+    "defaultMessage": "Not yet vetted"
+  },
+  {
+    "id": "people.filters.visible",
+    "defaultMessage": "Visible in search"
+  },
+  {
+    "id": "people.filters.hidden",
+    "defaultMessage": "Hidden from search"
+  },
+  {
+    "id": "people.warning-dialog.title",
+    "defaultMessage": "Apply filters?"
+  },
+  {
+    "id": "people.warning-dialog.body",
+    "defaultMessage": "Applying these filters will discard any users added without an email address. To save your changes, add an email address to each of those new users and then apply filters."
+  },
+  {
+    "id": "people.warning-dialog.accept",
+    "defaultMessage": "Apply Filters"
+  },
+  {
+    "id": "people.warning-dialog.cancel",
+    "defaultMessage": "Cancel"
+  },
+  {
     "id": "socials.facebook",
     "defaultMessage": "Facebook"
   },
@@ -222,6 +286,30 @@
     "defaultMessage": "Interns4Good"
   },
   {
+    "id": "header.tabs.mentoring",
+    "defaultMessage": "Mentors"
+  },
+  {
+    "id": "header.tabs.tutoring",
+    "defaultMessage": "Tutors"
+  },
+  {
+    "id": "hero.mentoring.title",
+    "defaultMessage": "Learn from and work with an expert."
+  },
+  {
+    "id": "hero.tutoring.title",
+    "defaultMessage": "Free tutoring amidst COVID-19."
+  },
+  {
+    "id": "hero.search-form.mentoring.btn",
+    "defaultMessage": "Search mentors"
+  },
+  {
+    "id": "hero.search-form.tutoring.btn",
+    "defaultMessage": "Search tutors"
+  },
+  {
     "id": "login.title",
     "defaultMessage": "Login to Tutorbook"
   },
@@ -234,11 +322,11 @@
     "defaultMessage": "Don't have an account? Signup here."
   },
   {
-    "id": "search-form.mentoring.btn",
+    "id": "org-display.search-form.mentoring.btn",
     "defaultMessage": "Search {name} mentors"
   },
   {
-    "id": "search-form.tutoring.btn",
+    "id": "org-display.search-form.tutoring.btn",
     "defaultMessage": "Search {name} tutors"
   },
   {

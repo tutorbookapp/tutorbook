@@ -15,11 +15,11 @@ interface SearchFormProps {
 
 const msgs: Record<string, Msg> = defineMessages({
   mentoringBtn: {
-    id: 'search-form.mentoring.btn',
+    id: 'hero.search-form.mentoring.btn',
     defaultMessage: 'Search mentors',
   },
   tutoringBtn: {
-    id: 'search-form.tutoring.btn',
+    id: 'hero.search-form.tutoring.btn',
     defaultMessage: 'Search tutors',
   },
 });
