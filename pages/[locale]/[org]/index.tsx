@@ -6,6 +6,7 @@ import Footer from 'components/footer';
 
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
 import { LinkHeader } from 'components/header';
 import { Org, OrgJSON } from 'lib/model';
 import {
@@ -13,18 +14,6 @@ import {
   DocumentSnapshot,
   DocumentReference,
 } from 'lib/api/helpers/firebase';
-import {
-  useIntl,
-  getIntlProps,
-  withIntl,
-  IntlProps,
-  IntlShape,
-  IntlHelper,
-  Msg,
-} from 'lib/intl';
-
-import to from 'await-to-js';
-import msgs from 'components/dashboard/msgs';
 
 interface OrgPageProps {
   org?: OrgJSON;
@@ -81,8 +70,6 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 function OrgPage({ errorCode, errorMessage, org }: OrgPageProps): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
   if (errorCode || errorMessage)
     return <ErrorPage statusCode={errorCode || 400} title={errorMessage} />;
   return (
