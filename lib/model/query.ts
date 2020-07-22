@@ -175,28 +175,6 @@ export class Query implements QueryInterface {
     });
   }
 
-  /**
-   * Turns this `Query` object into an array of "stable" values that can be
-   * passed around and compared to uniquely identify this `Query`.
-   * @example
-   * // You can do this because the `QueryDepArray` will be unique for each
-   * // different query.
-   * const { data: results } = useSWR(['/api/users', ...query.toDepArray]);
-   * @deprecated Currently unused because we haven't implemented SWR in the
-   * search view yet... but it's coming soon.
-   * @see {@link https://github.com/vercel/swr#multiple-arguments}
-   * @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#but-i-cant-put-this-function-inside-an-effect}
-   */
-  public toDepArray(): QueryDepArray {
-    const { aspect, subjects, availability, langs } = this;
-    return [aspect, subjects, availability, langs];
-  }
-
-  public static fromDepArray(arr: QueryDepArray): Query {
-    const [aspect, subjects, availability, langs] = arr;
-    return new Query({ aspect, subjects, availability, langs });
-  }
-
   public static fromJSON(json: QueryJSON): Query {
     const { availability, ...rest } = json;
     return new Query({
