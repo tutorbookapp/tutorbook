@@ -10,7 +10,6 @@ import { LinkHeader } from 'components/header';
 import { Org, OrgJSON } from 'lib/model';
 import {
   db,
-  FirebaseError,
   DocumentSnapshot,
   DocumentReference,
 } from 'lib/api/helpers/firebase';
