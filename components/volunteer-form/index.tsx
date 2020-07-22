@@ -1,7 +1,5 @@
-import React from 'react';
-
-import { MessageDescriptor, IntlShape, injectIntl } from 'react-intl';
-import { UserContextValue, UserContext } from 'lib/account';
+import { useMsg, Msg, IntlHelper } from 'lib/intl';
+import { useUser } from 'lib/account';
 import { signup } from 'lib/account/signup';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
@@ -15,7 +13,13 @@ import {
   SocialInterface,
 } from 'lib/model';
 
-import Title from 'components/title';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  FormEvent,
+} from 'react';
 import PhotoInput from 'components/photo-input';
 import ScheduleInput from 'components/schedule-input';
 import SubjectSelect from 'components/subject-select';
@@ -23,191 +27,72 @@ import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
 import Button from 'components/button';
 
-import firebase from 'lib/firebase';
-import 'firebase/storage';
-
 import msgs from './msgs';
 import styles from './volunteer-form.module.scss';
 
 interface VolunteerFormProps {
-  intl: IntlShape;
   aspect: Aspect;
   org?: string;
 }
 
-type VolunteerFormState = {
-  headerHeight: number;
-  descHeight: number;
-  submittingMentor: boolean;
-  submittingTutor: boolean;
-  submittedMentor: boolean;
-  submittedTutor: boolean;
-};
+export default function VolunteerForm({
+  aspect,
+  org,
+}: VolunteerFormProps): JSX.Element {
+  const msg: IntlHelper = useMsg();
+  const { user, updateUser } = useUser();
 
-/**
- * Wrapper for the two distinct volunteer sign-up forms:
- * 0. The mentor sign-up form where experts (e.g. grad students, professionals)
- * tell us what they're working on so we can match them up with students who are
- * interested in working on the same thing.
- * 1. The volunteer tutor sign-up form where altruistic individuals can sign-up
- * to help tutor somebody affected by COVID-19.
- */
-class VolunteerForm extends React.Component<
-  VolunteerFormProps,
-  VolunteerFormState
-> {
-  public static readonly contextType: React.Context<
-    UserContextValue
-  > = UserContext;
+  const [submittingMentor, setSubmittingMentor] = useState<boolean>(false);
+  const [submittingTutor, setSubmittingTutor] = useState<boolean>(false);
+  const [submittedMentor, setSubmittedMentor] = useState<boolean>(false);
+  const [submittedTutor, setSubmittedTutor] = useState<boolean>(false);
 
-  public readonly context: UserContextValue;
+  const submitting = useMemo(
+    () => (aspect === 'mentoring' ? submittingMentor : submittingTutor),
+    [aspect, submittingMentor, submittingTutor]
+  );
+  const submitted = useMemo(
+    () => (aspect === 'mentoring' ? submittedMentor : submittedTutor),
+    [aspect, submittedMentor, submittedTutor]
+  );
 
-  private readonly headerRef: React.RefObject<HTMLHeadingElement>;
+  const handleSubmit = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
+      setSubmittingMentor((prev) => aspect === 'mentoring' || prev);
+      setSubmittingTutor((prev) => aspect === 'tutoring' || prev);
+      await signup(user);
+      setSubmittedMentor((prev) => aspect === 'mentoring' || prev);
+      setSubmittedTutor((prev) => aspect === 'tutoring' || prev);
+      setSubmittingMentor((prev) => aspect === 'mentoring' && !prev);
+      setSubmittingTutor((prev) => aspect === 'tutoring' && !prev);
+      setTimeout(() => {
+        setSubmittedMentor((prev) => aspect === 'mentoring' && !prev);
+        setSubmittedTutor((prev) => aspect === 'tutoring' && !prev);
+      }, 2000);
+    },
+    [aspect, user]
+  );
 
-  private readonly descRef: React.RefObject<HTMLParagraphElement>;
-
-  public constructor(props: VolunteerFormProps, context: UserContextValue) {
-    super(props);
-
-    this.context = context;
-    this.state = {
-      headerHeight: 0,
-      descHeight: 0,
-      submittingMentor: false,
-      submittingTutor: false,
-      submittedMentor: false,
-      submittedTutor: false,
-    };
-
-    this.headerRef = React.createRef();
-    this.descRef = React.createRef();
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  public componentDidMount(): void {
-    const { headerHeight, descHeight } = this.state;
-    if (this.headerRef.current) {
-      const newHeight: number = this.headerRef.current.clientHeight;
-      if (newHeight !== headerHeight)
-        this.setState({ headerHeight: newHeight });
+  useEffect(() => {
+    if (!org) return;
+    const { orgs, ...rest } = user;
+    const idx: number = orgs.indexOf(org);
+    if (idx < 0) {
+      void updateUser(new User({ ...rest, orgs: [...orgs, org] }));
+    } else {
+      const updated = [...orgs.slice(0, idx), org, ...orgs.slice(idx + 1)];
+      void updateUser(new User({ ...rest, orgs: updated }));
     }
-    if (this.descRef.current) {
-      const newHeight: number = this.descRef.current.clientHeight;
-      if (newHeight !== descHeight) this.setState({ descHeight: newHeight });
-    }
-    void this.updateOrgs();
-  }
+  }, [org, user, updateUser]);
 
-  public componentDidUpdate(): void {
-    void this.updateOrgs();
-  }
-
-  private get submitting(): boolean {
-    const { aspect } = this.props;
-    const { submittingMentor, submittingTutor } = this.state;
-    return aspect === 'mentoring' ? submittingMentor : submittingTutor;
-  }
-
-  private get submitted(): boolean {
-    const { aspect } = this.props;
-    const { submittedMentor, submittedTutor } = this.state;
-    return aspect === 'mentoring' ? submittedMentor : submittedTutor;
-  }
-
-  private getHeaderStyle(a: Aspect): Record<string, string> {
-    const { aspect } = this.props;
-    const { headerHeight } = this.state;
-    if (aspect === a) return {};
-    const height: string = headerHeight ? `${headerHeight}px` : '125px';
-    const transform: string =
-      aspect === 'mentoring'
-        ? `translateY(-${height})`
-        : `translateY(${height})`;
-    return { transform };
-  }
-
-  private getDescStyle(a: Aspect): Record<string, string> {
-    const { aspect } = this.props;
-    const { descHeight } = this.state;
-    if (aspect === a) return {};
-    const height: string = descHeight ? `${descHeight}px` : '84px';
-    const transform: string =
-      aspect === 'mentoring'
-        ? `translateY(-${height})`
-        : `translateY(${height})`;
-    return { transform };
-  }
-
-  private async updateOrgs(): Promise<void> {
-    const { org } = this.props;
-    if (org) {
-      const {
-        updateUser,
-        user: { orgs, ...rest },
-      } = this.context;
-      const idx: number = orgs.indexOf(org);
-      if (idx < 0) {
-        await updateUser(new User({ ...rest, orgs: [...orgs, org] }));
-      } else {
-        const updated = [...orgs.slice(0, idx), org, ...orgs.slice(idx + 1)];
-        await updateUser(new User({ ...rest, orgs: updated }));
-      }
-    }
-  }
-
-  private async handleSubmit(event: React.FormEvent): Promise<void> {
-    event.preventDefault();
-    const { user } = this.context;
-    const { aspect } = this.props;
-    firebase.analytics().logEvent('sign_up', {
-      method: aspect === 'mentoring' ? 'mentor_form' : 'tutor_form',
-    });
-    this.setState(({ submittingMentor, submittingTutor }) => ({
-      submittingMentor: aspect === 'mentoring' || submittingMentor,
-      submittingTutor: aspect === 'tutoring' || submittingTutor,
-    }));
-    await signup(user);
-    this.setState(
-      ({
-        submittedMentor,
-        submittedTutor,
-        submittingMentor,
-        submittingTutor,
-      }) => ({
-        submittedMentor: aspect === 'mentoring' || submittedMentor,
-        submittedTutor: aspect === 'tutoring' || submittedTutor,
-        submittingMentor: aspect === 'mentoring' && !submittingMentor,
-        submittingTutor: aspect === 'tutoring' && !submittingTutor,
-      })
-    );
-    setTimeout(
-      () =>
-        this.setState(({ submittedMentor, submittedTutor }) => ({
-          submittedMentor: aspect === 'mentoring' && !submittedMentor,
-          submittedTutor: aspect === 'tutoring' && !submittedTutor,
-        })),
-      2000
-    );
-  }
-
-  private renderInputs(): JSX.Element {
-    const { intl, aspect } = this.props;
-    const { updateUser, user } = this.context;
-    const msg = (message: MessageDescriptor) => intl.formatMessage(message);
-    const sharedProps = {
-      className: styles.formField,
-      outlined: true,
-    };
+  const inputs: JSX.Element = useMemo(() => {
+    const sharedProps = { className: styles.formField, outlined: true };
     const shared = (key: Extract<keyof UserInterface, keyof typeof msgs>) => ({
       ...sharedProps,
       label: msg(msgs[key]),
       onChange: (event: React.FormEvent<HTMLInputElement>) =>
-        updateUser(
-          new User({
-            ...user,
-            [key]: event.currentTarget.value,
-          })
-        ),
+        updateUser(new User({ ...user, [key]: event.currentTarget.value })),
     });
     const getSocialIndex = (type: string) => {
       return user.socials.findIndex((s: SocialInterface) => s.type === type);
@@ -365,52 +250,28 @@ class VolunteerForm extends React.Component<
         />
       </>
     );
-  }
+  }, [aspect, user, updateUser, msg]);
 
-  public render(): JSX.Element {
-    const { user } = this.context;
-    const { intl, aspect } = this.props;
-    const label = aspect === 'mentoring' ? msgs.mentorSubmit : msgs.tutorSubmit;
-    const msg = (message: MessageDescriptor) => intl.formatMessage(message);
-    return (
-      <div className={styles.wrapper}>
-        <div className={styles.header} ref={this.headerRef}>
-          <span style={this.getHeaderStyle('mentoring')}>
-            <Title>{msg(msgs.mentorHeader)}</Title>
-          </span>
-          <span style={this.getHeaderStyle('tutoring')}>
-            <Title>{msg(msgs.tutorHeader)}</Title>
-          </span>
-        </div>
-        <div className={styles.description} ref={this.descRef}>
-          <span style={this.getDescStyle('mentoring')}>
-            {msg(msgs.mentorDesc)}
-          </span>
-          <span style={this.getDescStyle('tutoring')}>
-            {msg(msgs.tutorDesc)}
-          </span>
-        </div>
-        <Card className={styles.formCard}>
-          <Loader
-            active={this.submitting || this.submitted}
-            checked={this.submitted}
+  const label: Msg = useMemo(
+    () => (aspect === 'mentoring' ? msgs.mentorSubmit : msgs.tutorSubmit),
+    [aspect]
+  );
+
+  return (
+    <Card className={styles.formCard}>
+      <Loader active={submitting || submitted} checked={submitted} />
+      <form className={styles.form} onSubmit={handleSubmit}>
+        {inputs}
+        {!user.id && (
+          <Button
+            className={styles.formSubmitButton}
+            label={msg(user.id ? msgs.updateSubmit : label)}
+            disabled={submitting || submitted}
+            raised
+            arrow
           />
-          <form className={styles.form} onSubmit={this.handleSubmit}>
-            {this.renderInputs()}
-            {!user.id && (
-              <Button
-                className={styles.formSubmitButton}
-                label={msg(user.id ? msgs.updateSubmit : label)}
-                disabled={this.submitting || this.submitted}
-                raised
-                arrow
-              />
-            )}
-          </form>
-        </Card>
-      </div>
-    );
-  }
+        )}
+      </form>
+    </Card>
+  );
 }
-
-export default injectIntl(VolunteerForm);
