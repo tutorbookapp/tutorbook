@@ -1,6 +1,6 @@
-import { defMsg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
 
-export default defMsg({
+export default defineMessages({
   updateSubmit: {
     id: 'form.update-submit',
     defaultMessage: 'Update profile',

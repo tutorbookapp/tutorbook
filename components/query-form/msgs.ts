@@ -1,6 +1,7 @@
-import { Msg, defMsg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
+import { Msg } from 'lib/intl';
 
-export default defMsg({
+export default defineMessages({
   langs: {
     id: 'query-form.langs-label',
     defaultMessage: 'What languages do you speak?',
@@ -11,7 +12,7 @@ export default defMsg({
   },
   tutoringSubjectsPlaceholder: {
     id: 'query-form.tutoring.subjects-placeholder',
-    defaultMessage: 'Ex. Algebra or Chemistry',
+    defaultMessage: 'Ex. Math or Science',
   },
   mentoringSubjectsPlaceholder: {
     id: 'query-form.mentoring.subjects-placeholder',

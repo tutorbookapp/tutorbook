@@ -1,19 +1,45 @@
 import React from 'react';
 /* import NextLink from 'next/link'; */
-import { socials } from 'lib/intl/msgs';
-import {
-  useIntl,
-  IntlShape,
-  defineMessages,
-  MessageDescriptor,
-} from 'react-intl';
 /* import config from 'intl/config.json'; */
-import { Link } from 'lib/intl';
+import { defineMessages } from 'react-intl';
+import { useMsg, IntlHelper, Link, Msg } from 'lib/intl';
+import { SocialTypeAlias } from 'lib/model';
 
 import styles from './footer.module.scss';
 
+const socials: Record<SocialTypeAlias, Msg> = defineMessages({
+  facebook: {
+    id: 'socials.facebook',
+    defaultMessage: 'Facebook',
+  },
+  instagram: {
+    id: 'socials.instagram',
+    defaultMessage: 'Instagram',
+  },
+  twitter: {
+    id: 'socials.twitter',
+    defaultMessage: 'Twitter',
+  },
+  linkedin: {
+    id: 'socials.linkedin',
+    defaultMessage: 'LinkedIn',
+  },
+  github: {
+    id: 'socials.github',
+    defaultMessage: 'GitHub',
+  },
+  website: {
+    id: 'socials.website',
+    defaultMessage: 'Website',
+  },
+  indiehackers: {
+    id: 'socials.indiehackers',
+    defaultMessage: 'IndieHackers',
+  },
+});
+
 /*
- *const locales: Record<string, MessageDescriptor> = defineMessages({
+ *const locales: Record<string, Msg> = defineMessages({
  *  en: {
  *    id: 'footer.lang.english',
  *    defaultMessage: 'English',
@@ -47,14 +73,14 @@ import styles from './footer.module.scss';
  *      >
  *        🌎{' '}
  *      </span>
- *      {intl.formatMessage(labels.lang)}
+ *      {msg(labels.lang)}
  *    </h3>
  *    <ul className={styles.langLinksList}>
  *      {config.locales.map((locale: string, index: number) => (
  *        <LangLink
  *          key={index}
  *          href={`/${locale}`}
- *          label={intl.formatMessage(locales[locale])}
+ *          label={msg(locales[locale])}
  *        />
  *      ))}
  *    </ul>
@@ -62,7 +88,7 @@ import styles from './footer.module.scss';
  *</ul>
  */
 
-const labels: Record<string, MessageDescriptor> = defineMessages({
+const labels: Record<string, Msg> = defineMessages({
   lang: {
     id: 'footer.lang.choose',
     defaultMessage: 'Choose your language',
@@ -241,7 +267,7 @@ export default function Footer({
 }: {
   formWidth?: boolean;
 }): JSX.Element {
-  const intl: IntlShape = useIntl();
+  const msg: IntlHelper = useMsg();
   return (
     <footer
       className={styles.footer + (formWidth ? ` ${styles.formWidth}` : '')}
@@ -252,122 +278,122 @@ export default function Footer({
       <nav className={styles.contentWrapper} aria-labelledby='sitemap'>
         <ul className={styles.primaryLinks}>
           <LinkGroup
-            header={intl.formatMessage(labels.usefulLinks)}
+            header={msg(labels.usefulLinks)}
             links={[
               {
                 href: '/signup',
-                label: intl.formatMessage(labels.signup),
+                label: msg(labels.signup),
               },
               {
                 href: '/search',
-                label: intl.formatMessage(labels.search),
+                label: msg(labels.search),
               },
               {
                 href:
                   'https://github.com/tutorbookapp/tutorbook/issues/new/choose',
-                label: intl.formatMessage(labels.issue),
+                label: msg(labels.issue),
               },
             ]}
           />
           <LinkGroup
-            header={intl.formatMessage(labels.resources)}
+            header={msg(labels.resources)}
             links={[
               {
                 href: 'https://intercom.help/tutorbook',
-                label: intl.formatMessage(labels.help),
+                label: msg(labels.help),
               },
               {
                 href:
                   'https://intercom.help/tutorbook/articles/4048870-how-it-works',
-                label: intl.formatMessage(labels.howItWorks),
+                label: msg(labels.howItWorks),
               },
               {
                 href: 'https://github.com/orgs/tutorbookapp',
-                label: intl.formatMessage(labels.openSource),
+                label: msg(labels.openSource),
               },
               {
                 href: 'https://github.com/tutorbookapp/tutorbook#readme',
-                label: intl.formatMessage(labels.docs),
+                label: msg(labels.docs),
               },
             ]}
           />
           <LinkGroup
-            header={intl.formatMessage(labels.partners)}
+            header={msg(labels.partners)}
             links={[
               {
                 href: 'https://projectaccess.org/',
-                label: intl.formatMessage(labels.projectAccess),
+                label: msg(labels.projectAccess),
               },
               {
                 href: 'https://schoolclosures.org/',
-                label: intl.formatMessage(labels.schoolClosures),
+                label: msg(labels.schoolClosures),
               },
               {
                 href: 'http://learnpanion.com/',
-                label: intl.formatMessage(labels.learnpanion),
+                label: msg(labels.learnpanion),
               },
               {
                 href: 'https://studyroom.at/',
-                label: intl.formatMessage(labels.studyRoom),
+                label: msg(labels.studyRoom),
               },
               {
                 href: 'https://interns4good.org/',
-                label: intl.formatMessage(labels.interns4Good),
+                label: msg(labels.interns4Good),
               },
             ]}
           />
           <LinkGroup
-            header={intl.formatMessage(labels.socials)}
+            header={msg(labels.socials)}
             links={[
               {
                 href: 'https://facebook.com/tutorbookapp',
-                label: intl.formatMessage(socials.facebook),
+                label: msg(socials.facebook),
               },
               {
                 href: 'https://instagram.com/tutorbookapp',
-                label: intl.formatMessage(socials.instagram),
+                label: msg(socials.instagram),
               },
               {
                 href: 'https://twitter.com/tutorbookapp',
-                label: intl.formatMessage(socials.twitter),
+                label: msg(socials.twitter),
               },
               {
                 href: 'https://github.com/orgs/tutorbookapp',
-                label: intl.formatMessage(socials.github),
+                label: msg(socials.github),
               },
               {
                 href: 'https://helpwithcovid.com/projects/782-tutorbook',
-                label: intl.formatMessage(labels.helpWithCOVID),
+                label: msg(labels.helpWithCOVID),
               },
               {
                 href: 'https://www.indiehackers.com/product/tutorbook',
-                label: intl.formatMessage(labels.indieHackers),
+                label: msg(labels.indieHackers),
               },
             ]}
           />
           <LinkGroup
-            header={intl.formatMessage(labels.team)}
+            header={msg(labels.team)}
             links={[
               {
                 href: 'https://tutorbook.atlassian.net/wiki/spaces/TB/overview',
-                label: intl.formatMessage(labels.home),
+                label: msg(labels.home),
               },
               {
                 href: 'https://tutorbook.atlassian.net/people',
-                label: intl.formatMessage(labels.directory),
+                label: msg(labels.directory),
               },
               {
                 href:
                   'https://join.slack.com/t/tutorbookapp/shared_invite/zt-ekmpvd9t-uzH_HuS6KbwVg480TAMa5g',
-                label: intl.formatMessage(labels.slack),
+                label: msg(labels.slack),
               },
               {
                 href: 'https://helpwithcovid.com/projects/782-tutorbook',
-                label: intl.formatMessage(labels.join),
+                label: msg(labels.join),
               },
               {
                 href: 'mailto:team@tutorbook.org',
-                label: intl.formatMessage(labels.contact),
+                label: msg(labels.contact),
               },
             ]}
           />

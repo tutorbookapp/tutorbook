@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { defMsg, useMsg, IntlHelper } from 'lib/intl';
+import { defineMessages } from 'react-intl';
+import { useMsg, IntlHelper } from 'lib/intl';
 import { Org, Account } from 'lib/model';
 
 import Title from './title';
@@ -12,7 +13,7 @@ interface OverviewProps {
   account: Account;
 }
 
-const msgs = defMsg({
+const msgs = defineMessages({
   title: {
     id: 'dashboard.overview.title',
     defaultMessage: 'Overview',

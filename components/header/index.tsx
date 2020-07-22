@@ -1,5 +1,6 @@
-import { useIntl, defMsg, Link, IntlShape, IntlHelper, Msg } from 'lib/intl';
+import { useIntl, Link, IntlShape, IntlHelper, Msg } from 'lib/intl';
 import { Query, Aspect, Callback } from 'lib/model';
+import { defineMessages } from 'react-intl';
 import { useUser } from 'lib/account';
 
 import React from 'react';
@@ -11,7 +12,7 @@ import Tabs, { TabsProps } from './tabs';
 
 import styles from './header.module.scss';
 
-const tabLabels: Record<Aspect, Msg> = defMsg({
+const tabLabels: Record<Aspect, Msg> = defineMessages({
   mentoring: {
     id: 'header.tabs.mentoring',
     defaultMessage: 'Mentors',

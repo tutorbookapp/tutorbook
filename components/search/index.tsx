@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { useIntl, defMsg, Msg, IntlShape, IntlHelper } from 'lib/intl';
+import { useIntl, Msg, IntlShape, IntlHelper } from 'lib/intl';
 import { Callback, Option, Timeslot, User, Query } from 'lib/model';
+import { defineMessages } from 'react-intl';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from 'components/carousel';
@@ -20,7 +21,7 @@ interface SearchProps {
   readonly user?: User;
 }
 
-const msgs: Record<string, Msg> = defMsg({
+const msgs: Record<string, Msg> = defineMessages({
   noResultsTitle: {
     id: 'search.no-results.title',
     defaultMessage: 'No Results',

@@ -14,11 +14,12 @@ import {
 import { TextField } from '@rmwc/textfield';
 import { useUser } from 'lib/account';
 import { Callback, Check, User, UserJSON, Verification } from 'lib/model';
-import { defMsg, useMsg, IntlHelper, Msg } from 'lib/intl';
+import { useMsg, IntlHelper, Msg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
 
 import styles from './verification-dialog.module.scss';
 
-const checks: Record<Check, Msg> = defMsg({
+const checks: Record<Check, Msg> = defineMessages({
   'background-check': {
     id: 'checks.background-check',
     defaultMessage: 'Background check',

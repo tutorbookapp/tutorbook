@@ -1,6 +1,6 @@
-import { defMsg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
 
-export default defMsg({
+export default defineMessages({
   mentorHeader: {
     id: 'mentor-form.header',
     defaultMessage: 'Guide the next generation.',

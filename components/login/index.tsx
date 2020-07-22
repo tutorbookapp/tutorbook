@@ -2,7 +2,8 @@ import React from 'react';
 import Router from 'next/router';
 import Button from 'components/button';
 
-import { defMsg, useIntl, Msg, Link, IntlShape, IntlHelper } from 'lib/intl';
+import { defineMessages } from 'react-intl';
+import { useIntl, Msg, Link, IntlShape, IntlHelper } from 'lib/intl';
 import { useUser } from 'lib/account';
 import { signupWithGoogle } from 'lib/account/signup';
 import { TextFieldHelperText } from '@rmwc/textfield';
@@ -11,7 +12,7 @@ import to from 'await-to-js';
 
 import styles from './login.module.scss';
 
-const msgs = defMsg({
+const msgs = defineMessages({
   title: {
     id: 'login.title',
     defaultMessage: 'Login to Tutorbook',

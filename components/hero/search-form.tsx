@@ -1,4 +1,5 @@
-import { useIntl, useMsg, defMsg, IntlHelper, Msg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
+import { useIntl, useMsg, IntlHelper, Msg } from 'lib/intl';
 import { Aspect, Query, Availability } from 'lib/model';
 
 import React from 'react';
@@ -12,7 +13,7 @@ interface SearchFormProps {
   aspect: Aspect;
 }
 
-const msgs: Record<string, Msg> = defMsg({
+const msgs: Record<string, Msg> = defineMessages({
   mentoringBtn: {
     id: 'search-form.mentoring.btn',
     defaultMessage: 'Search mentors',

@@ -1,4 +1,5 @@
-import { useIntl, defMsg, Msg, IntlShape } from 'lib/intl';
+import { defineMessages } from 'react-intl';
+import { useIntl, Msg, IntlShape } from 'lib/intl';
 import { Query, User, Aspect } from 'lib/model';
 import { Card } from '@rmwc/card';
 
@@ -10,7 +11,7 @@ import SearchForm from './search-form';
 
 import styles from './hero.module.scss';
 
-const msgs: Record<string, Msg> = defMsg({
+const msgs: Record<string, Msg> = defineMessages({
   mentoring: {
     id: 'hero.mentoring.title',
     defaultMessage: 'Learn from and work with an expert.',

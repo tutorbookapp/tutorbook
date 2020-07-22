@@ -1,5 +1,6 @@
-import { useIntl, useMsg, defMsg, IntlHelper, Msg } from 'lib/intl';
+import { useIntl, useMsg, IntlHelper, Msg } from 'lib/intl';
 import { Aspect, Query, Availability, OrgJSON } from 'lib/model';
+import { defineMessages } from 'react-intl';
 
 import React from 'react';
 import Router from 'next/router';
@@ -13,7 +14,7 @@ interface SearchFormProps {
   org: OrgJSON;
 }
 
-const msgs: Record<string, Msg> = defMsg({
+const msgs: Record<string, Msg> = defineMessages({
   mentoringBtn: {
     id: 'search-form.mentoring.btn',
     defaultMessage: 'Search {name} mentors',

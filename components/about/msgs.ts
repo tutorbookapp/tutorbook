@@ -1,6 +1,6 @@
-import { defMsg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
 
-export default defMsg({
+export default defineMessages({
   stepOne: {
     id: 'about.how-it-works.step-one',
     defaultMessage: 'Step #1',

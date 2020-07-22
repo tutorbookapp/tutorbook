@@ -19,7 +19,8 @@ import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
 import { Option, Query, Org, User, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
-import { defMsg, useMsg, useIntl, IntlHelper } from 'lib/intl';
+import { useMsg, useIntl, IntlHelper } from 'lib/intl';
+import { defineMessages } from 'react-intl';
 
 import React from 'react';
 import VerificationDialog from 'components/verification-dialog';
@@ -31,7 +32,7 @@ import Placeholder from './placeholder';
 
 import styles from './people.module.scss';
 
-const msgs = defMsg({
+const msgs = defineMessages({
   title: {
     id: 'people.title',
     defaultMessage: 'People',
@@ -203,7 +204,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     (action: ActionCallback) => {
       const tempNoEmail = (u: UserJSON) => !u.email && u.id.startsWith('temp');
       if (!valid && data && data.users.some(tempNoEmail)) {
-        const dialogMsgs = defMsg({
+        const dialogMsgs = defineMessages({
           title: {
             id: 'people.warning-dialog.title',
             defaultMessage: 'Apply filters?',

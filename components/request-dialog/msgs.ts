@@ -1,6 +1,6 @@
-import { defMsg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
 
-export default defMsg({
+export default defineMessages({
   attendees: {
     id: 'request-dialog.attendees',
     description:
