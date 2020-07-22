@@ -5,6 +5,7 @@ import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { v4 as uuid } from 'uuid';
 
 import firebase from 'lib/firebase';
+import 'firebase/storage';
 
 import styles from './photo-input.module.scss';
 
