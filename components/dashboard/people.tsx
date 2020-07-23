@@ -455,6 +455,12 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                   <DataTableHeadCell className={styles.phone}>
                     Phone
                   </DataTableHeadCell>
+                  <DataTableHeadCell className={styles.parents}>
+                    Parents
+                  </DataTableHeadCell>
+                  <DataTableHeadCell className={styles.availability}>
+                    Availability
+                  </DataTableHeadCell>
                   <DataTableHeadCell className={styles.subjects}>
                     Tutoring Subjects
                   </DataTableHeadCell>

@@ -1,3 +1,4 @@
+import { useUser, useOrgs } from 'lib/account';
 import { User, UserJSON, Option, Query } from 'lib/model';
 
 import Select, { SelectControllerProps } from 'components/select';
@@ -5,11 +6,6 @@ import Select, { SelectControllerProps } from 'components/select';
 import React from 'react';
 import axios from 'axios';
 import equal from 'fast-deep-equal';
-
-interface UserSelectProps {
-  orgs?: string[];
-  parents?: string[];
-}
 
 /**
  * Each `Option` object's label is the user's name and value is the user's uID.
@@ -19,21 +15,20 @@ interface UserSelectProps {
  *
  * Other than those changes, this is implemented essentially the same way as the
  * `SubjectSelect` or the `LangSelect` (as a wrapper around a `Select`).
- *
- * @param [orgs] - The organizations that the search results should belong to.
- * @param [parents] - The parents of the search results (note that this combines
- * with the `orgs` parameter in an ` OR ` sequence... results will show up when
- * either are `true`).
  */
 export default function UserSelect({
   value,
   onChange,
   selected,
   onSelectedChange,
-  orgs,
-  parents,
   ...props
-}: SelectControllerProps<string> & UserSelectProps): JSX.Element {
+}: SelectControllerProps<string>): JSX.Element {
+  // Only show users that are either:
+  // a) Within one of the orgs that the current user is an admin of.
+  // b) A child of the current user.
+  const { user } = useUser();
+  const { orgs } = useOrgs();
+
   // Store a cache of labels fetched (i.e. a map of values and labels).
   const cache = React.useRef<Record<string, string>>({});
 
@@ -51,37 +46,37 @@ export default function UserSelect({
   );
 
   // Call the `/api/users` API endpoint to get suggestions.
-  const userToOption = React.useCallback((user: User | UserJSON) => {
-    cache.current[user.id] = user.name;
-    return { label: user.name, value: user.id };
+  const userToOption = React.useCallback((u: User | UserJSON) => {
+    cache.current[u.id] = u.name;
+    return { label: u.name, value: u.id };
   }, []);
   const getSuggestions = React.useCallback(
     async (query: string = '') => {
       const promises: Promise<{ users: User[] }>[] = [];
-      if (orgs && orgs.length)
+      if (orgs.length)
         promises.push(
           new Query({
             query,
-            orgs: orgs.map((id) => ({ label: id, value: id })),
+            orgs: orgs.map(({ id, name }) => ({ label: name, value: id })),
           }).search()
         );
-      if (parents && parents.length)
+      if (user.id)
         promises.push(
           new Query({
             query,
-            parents: parents.map((id) => ({ label: id, value: id })),
+            parents: [{ label: user.name, value: user.id }],
           }).search()
         );
       const suggestions: Option<string>[] = [];
       (await Promise.all(promises)).forEach(({ users }) => {
-        users.forEach((user: User) => {
-          if (suggestions.findIndex(({ value: id }) => id === user.id) < 0)
-            suggestions.push(userToOption(user));
+        users.forEach((u: User) => {
+          if (suggestions.findIndex(({ value: id }) => id === u.id) < 0)
+            suggestions.push(userToOption(u));
         });
       });
       return suggestions;
     },
-    [userToOption, orgs, parents]
+    [userToOption, orgs, user]
   );
 
   // Sync the controlled values (i.e. subject codes) with the internally stored
@@ -103,10 +98,8 @@ export default function UserSelect({
         const updateLabels = async () => {
           const users: UserJSON[] = await Promise.all(
             value.map(async (id) => {
-              const { data: user } = await axios.get<UserJSON>(
-                `/api/users/${id}`
-              );
-              return user;
+              const { data } = await axios.get<UserJSON>(`/api/users/${id}`);
+              return data;
             })
           );
           setSelectedOptions(users.map(userToOption));

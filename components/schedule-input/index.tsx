@@ -24,12 +24,7 @@ interface ScheduleInputState {
   menuOpen: boolean;
 }
 
-type OverriddenProps =
-  | 'textarea'
-  | 'outlined'
-  | 'readOnly'
-  | 'onFocus'
-  | 'onBlur';
+type OverriddenProps = 'textarea' | 'readOnly' | 'onFocus' | 'onBlur';
 
 interface UniqueScheduleInputProps {
   value: Availability;
@@ -315,7 +310,6 @@ export default class ScheduleInput extends React.Component<
         <TextField
           {...textFieldProps}
           readOnly
-          outlined
           textarea={false}
           inputRef={this.inputRef}
           value={value.toString()}

@@ -51,7 +51,6 @@ export default function RequestDialog({
   aspect,
   user,
 }: RequestDialogProps): JSX.Element {
-  const { orgs } = useOrgs();
   const { user: currentUser } = useUser();
 
   const [attendees, setAttendees] = useState<Option<string>[]>([
@@ -203,10 +202,6 @@ export default function RequestDialog({
               outlined
               renderToPortal
               disabled={!currentUser.id}
-              parents={currentUser.id ? [currentUser.id] : undefined}
-              orgs={
-                orgs.length ? orgs.map((org: OrgJSON) => org.id) : undefined
-              }
               label={msg(msgs.attendees)}
               className={styles.field}
               onSelectedChange={onAttendeesChange}
