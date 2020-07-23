@@ -124,11 +124,13 @@ async function getRealEmail(
   apptDoc: DocumentSnapshot
 ): Promise<string> {
   const handle: string = anonEmail.split('@')[0];
+  const creator: Attendee = (apptDoc.data() || {}).creator as Attendee;
   const attendees: Attendee[] = (apptDoc.data() || {}).attendees as Attendee[];
   const idx: number = attendees.findIndex((a: Attendee) => a.handle === handle);
-  if (idx < 0) throw new Error(`No attendee with handle (${handle}).`);
+  const msg = `No attendee or creator with handle (${handle}).`;
+  if (idx < 0 && creator.handle !== handle) throw new Error(msg);
   const [err, user] = await to<UserRecord, FirebaseError>(
-    auth.getUser(attendees[idx].id)
+    auth.getUser(creator.handle === handle ? creator.id : attendees[idx].id)
   );
   if (err) {
     throw new Error(`${err.name} fetching user (${anonEmail}): ${err.message}`);
@@ -185,15 +187,14 @@ async function replaceRealWithAnon(
  * assigned an all-lowercase handle unique to each appt).
  */
 async function getApptByHandles(handles: string[]): Promise<ApptSearchHit> {
-  const filters: string = handles
-    .map((handle: string) => `attendees.handle:${handle}`)
-    .join(' AND ');
+  const filters = handles.map((handle) => `handles:${handle}`).join(' AND ');
   const [err, res] = await to<SearchResponse<ApptSearchHit>>(
     index.search('', { filters }) as Promise<SearchResponse<ApptSearchHit>>
   );
   if (err) throw new Error(`${err.name} searching index: ${err.message}`);
   const { hits: appts } = res as SearchResponse<ApptSearchHit>;
-  if (appts.length !== 1) throw new Error(`Multiple (${filters}) appts.`);
+  const msg = `Multiple (${filters}) appts: ${JSON.stringify(appts, null, 2)}`;
+  if (appts.length !== 1) throw new Error(msg);
   return appts[0];
 }
 

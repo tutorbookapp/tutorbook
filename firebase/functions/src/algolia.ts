@@ -77,6 +77,14 @@ async function updateSettings(
   }
 }
 
+function getHandles(appt: Record<string, unknown>): string[] {
+  const creatorHandle = (appt.creator as { handle: string }).handle;
+  const attendeeHandles = (appt.attendees as { handle: string }[]).map(
+    ({ handle }) => handle
+  );
+  return [creatorHandle, ...attendeeHandles];
+}
+
 export async function apptUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
@@ -95,7 +103,8 @@ export async function apptUpdate(
   } else {
     const appt = change.after.data() as Record<string, unknown>;
     console.log(`[DEBUG] Updating appt (${id})...`);
-    const ob: Record<string, unknown> = { ...appt, objectID: id };
+    const handles: string[] = getHandles(appt);
+    const ob: Record<string, unknown> = { ...appt, handles, objectID: id };
     const [err] = await too(index.saveObject(ob));
     if (err) {
       console.error(`[ERROR] ${err.name} while updating:`, err);
@@ -103,7 +112,7 @@ export async function apptUpdate(
       console.log(`[DEBUG] Updated appt (${id}).`);
     }
   }
-  const attributesForFaceting: string[] = ['filterOnly(attendees.handle)'];
+  const attributesForFaceting: string[] = ['filterOnly(handles)'];
   await updateSettings(index, { attributesForFaceting });
 }
 
