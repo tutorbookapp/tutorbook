@@ -22,7 +22,7 @@ type SnapshotOptions = firebase.firestore.SnapshotOptions;
 type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
 type AdminDocumentReference = admin.firestore.DocumentReference;
 
-export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee';
+export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
 export type UserWithRoles = User & { roles: Role[] };
 

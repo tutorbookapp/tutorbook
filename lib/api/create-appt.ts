@@ -1,7 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApptEmail } from 'lib/emails';
-import { Attendee, User, UserWithRoles, Appt, ApptJSON } from 'lib/model';
+import {
+  Venue,
+  Role,
+  Attendee,
+  User,
+  UserWithRoles,
+  Appt,
+  ApptJSON,
+} from 'lib/model';
+import { v4 as uuid } from 'uuid';
 
+import axios, { AxiosResponse } from 'axios';
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
 import error from './helpers/error';
@@ -17,6 +27,32 @@ import {
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 export type CreateApptRes = ApptJSON;
+
+interface BrambleRes {
+  APImethod: string;
+  status: string;
+  result: string;
+}
+
+async function getBramble(apptId: string): Promise<Venue> {
+  const [err, res] = await to<AxiosResponse<BrambleRes>>(
+    axios({
+      method: 'post',
+      url: 'https://api.bramble.io/createRoom',
+      headers: {
+        room: apptId,
+        agency: 'tutorbook',
+        auth_token: process.env.BRAMBLE_API_KEY as string,
+      },
+    })
+  );
+  if (err) throw new Error(`${err.name} creating Bramble room: ${err.message}`);
+  return { url: (res as AxiosResponse<BrambleRes>).data.result };
+}
+
+async function getJitsi(apptId: string): Promise<Venue> {
+  return { url: `https://meet.jit.si/${apptId}` };
+}
 
 /**
  * Takes an `ApptJSON` object, an authentication token, and:
@@ -36,31 +72,11 @@ export type CreateApptRes = ApptJSON;
  *      the tutees and mentees. In the future, teachers will also be able to
  *      create appts on behalf of their students and students will be able to
  *      add fellow students (i.e. students within the same org) to their appts.
- * 2. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
+ * 2. Adds all the tutee and mentee parents as attendees.
+ * 3. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
  *    it as a venue to the appointment.
- * 3. Creates a new `appts` document.
- * 4. Sends an email initializing communications btwn the creator and the tutor:
- * - From: team@tutorbook.org (**not** from the creator of the appointment).
- * - To: the tutor and mentor attendees.
- * - BCC: team@tutorbook.org (for analysis purposes).
- * - Reply-To: the creator of the appointment (typically the student but it
- *   could be their parent or an org admin).
- * - Mail-Reply-To: the creator of the appointment.
- * - Mail-Followup-To: the creator and all attendees of the appointment.
- *
- * > Hi there,
- * >
- * > [creator.name] wants to setup an appointment [with you][between you and
- * > [student.name]] for [subjects]:
- * >
- * > > [message]
- * >
- * > If you're interested, please get in touch with [creator.name] by replying
- * > to this email or using the following email address:
- * >
- * > [creator.handle]@mail.tutorbook.org
- * >
- * > Thank you.
+ * 4. Creates a new `appts` document.
+ * 5. Sends an email initializing communications btwn the creator and the tutor.
  *
  * @param {ApptJSON} request - The appointment to create a pending request for.
  * The given `idToken` **must** be from one of the appointment's `attendees`
@@ -105,6 +121,7 @@ export default async function createAppt(
     } else {
       const appt: Appt = Appt.fromJSON(req.body);
       const attendees: UserWithRoles[] = [];
+      const parents: User[] = [];
       let errored = false;
       let creator = new User({
         id: (token as DecodedIdToken).uid,
@@ -173,8 +190,25 @@ export default async function createAppt(
             }
             (user as UserWithRoles).roles = attendee.roles;
             attendees.push(user as UserWithRoles);
+            // 2. Add all mentee and tutee parents as attendees.
+            if (!isTutor && !isMentor)
+              await Promise.all(
+                user.parents.map(async (id) => {
+                  const doc = await db.collection('users').doc(id).get();
+                  const warningMsg = `[WARNING] Parent (${id}) doesn't exist.`;
+                  if (!doc.exists) console.warn(warningMsg);
+                  parents.push(User.fromFirestore(doc));
+                })
+              );
           })
         );
+        parents.forEach((parent: User) => {
+          const roles: Role[] = ['parent'];
+          appt.attendees.push({ roles, id: parent.id, handle: uuid() });
+          const parentWithRoles = parent as UserWithRoles;
+          parentWithRoles.roles = roles;
+          attendees.push(parentWithRoles);
+        });
         if (!errored) {
           if (!creator.name) {
             const doc = await db.collection('users').doc(creator.id).get();
@@ -207,6 +241,17 @@ export default async function createAppt(
           )
             return error(res, errorMsg, 401);
           appt.id = db.collection('appts').doc().id;
+          if (appt.aspect === 'tutoring') {
+            console.log('[DEBUG] Creating Bramble room...');
+            const [errr, venue] = await to(getBramble(appt.id));
+            if (errr) return error(res, errr.message, 500, errr);
+            appt.bramble = venue;
+          } else {
+            console.log('[DEBUG] Creating Jitsi room...');
+            const [errr, venue] = await to(getJitsi(appt.id));
+            if (errr) return error(res, errr.message, 500, errr);
+            appt.jitsi = venue;
+          }
           console.log(`[DEBUG] Creating appointment (${appt.id})...`);
           await db.collection('appts').doc(appt.id).set(appt.toFirestore());
           // 4-5. Send out the appointment email.
