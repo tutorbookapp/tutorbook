@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
 import Utils from 'lib/utils';
 
-import { RoleAlias } from 'lib/model';
+import { Role } from 'lib/model';
 import Check from './shared/check.hbs';
 import Cross from './shared/cross.hbs';
 import Profile from './shared/profile.hbs';
@@ -17,7 +17,7 @@ Handlebars.registerPartial('profile', Profile);
  * mentor."
  */
 /* eslint-disable-next-line consistent-return */
-Handlebars.registerHelper('role', function role(array: RoleAlias[]): RoleAlias {
+Handlebars.registerHelper('role', function role(array: Role[]): Role {
   /* eslint-disable default-case */
   switch (array[0]) {
     case 'mentor':

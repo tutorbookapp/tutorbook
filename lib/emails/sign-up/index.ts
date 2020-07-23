@@ -1,4 +1,4 @@
-import { User, UserWithRoles, RoleAlias } from 'lib/model';
+import { User, UserWithRoles, Role } from 'lib/model';
 
 import {
   Email,
@@ -26,7 +26,7 @@ export default class SignUpEmail implements Email {
   public constructor(user: User) {
     this.subject = `${user.toString()} just signed up on Tutorbook!`;
     this.text = this.subject;
-    const roles: RoleAlias[] = [];
+    const roles: Role[] = [];
     if (user.tutoring.searches.length > 0) roles.push('tutee');
     if (user.tutoring.subjects.length > 0) roles.push('tutor');
     if (user.mentoring.searches.length > 0) roles.push('mentee');

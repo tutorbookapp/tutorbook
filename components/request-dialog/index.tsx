@@ -17,7 +17,7 @@ import {
   User,
   Option,
   OrgJSON,
-  RoleAlias,
+  Role,
   Timeslot,
   Appt,
   ApptJSON,
@@ -90,7 +90,7 @@ export default function RequestDialog({
       message,
       subjects,
       attendees: attendees.map(({ value: id }) => {
-        const roles: RoleAlias[] = [];
+        const roles: Role[] = [];
         const handle: string = id === creator.id ? creator.handle : uuid();
         if (id === user.id) {
           roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');

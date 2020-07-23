@@ -10,7 +10,6 @@ import {
   AvailabilityJSON,
 } from './availability';
 import { Account, AccountInterface } from './account';
-import { RoleAlias } from './appt';
 
 import construct from './construct';
 
@@ -115,8 +114,6 @@ export type SearchHit = ObjectWithObjectID &
   Omit<UserInterface, 'availability'> & {
     availability: AvailabilitySearchHitAlias;
   };
-
-export type UserWithRoles = User & { roles: RoleAlias[] };
 
 export type UserJSON = Omit<UserInterface, 'availability'> & {
   availability: AvailabilityJSON;

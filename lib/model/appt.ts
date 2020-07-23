@@ -4,6 +4,7 @@ import 'firebase/firestore';
 
 import { v4 as uuid } from 'uuid';
 
+import { User, Aspect } from './user';
 import { Timeslot, TimeslotJSON } from './timeslot';
 
 import construct from './construct';
@@ -21,8 +22,9 @@ type SnapshotOptions = firebase.firestore.SnapshotOptions;
 type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
 type AdminDocumentReference = admin.firestore.DocumentReference;
 
-export type ApptVenueTypeAlias = 'bramble';
-export type RoleAlias = 'tutor' | 'tutee' | 'mentor' | 'mentee';
+export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee';
+
+export type UserWithRoles = User & { roles: Role[] };
 
 /**
  * Represents an attendee to an appointment.
@@ -35,16 +37,10 @@ export type RoleAlias = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 export interface Attendee {
   id: string;
   handle: string;
-  roles: RoleAlias[];
+  roles: Role[];
 }
 
-/**
- * Right now, we only support one `ApptVenueType` via our
- * [Bramble]{@link https://about.bramble.io/api.html} integration.
- * @todo Add more supported venues like Zoom, Google Hangouts, or BigBlueButton.
- */
-export interface ApptVenue extends Record<string, any> {
-  type: ApptVenueTypeAlias;
+export interface Venue {
   url: string;
 }
 
@@ -55,17 +51,21 @@ export interface ApptVenue extends Record<string, any> {
  * (i.e. students, their parents and their tutor).
  * @property creator - Person who created the appointment (typically the student
  * but it could be their parent or an org admin).
- * @property venues - Links to access the appointment (e.g. Bramble, Zoom).
+ * @property message - Initial message sent by the appt creator.
  * @property [time] - Timeslot when the appointment will occur.
- * @property [message] - Initial message sent by the `creator` to the tutor.
+ * @property [bramble] - The URL to the Bramble virtual tutoring room (only
+ * populated when the appt is for tutoring).
+ * @property [jitsi] - The URL to the Jitsi video conferencing room (only
+ * populated when the appt is for mentoring).
  */
 export interface ApptInterface {
   subjects: string[];
   attendees: Attendee[];
   creator: Attendee;
-  venues: ApptVenue[];
+  message: string;
   time?: Timeslot;
-  message?: string;
+  bramble?: Venue;
+  jitsi?: Venue;
   ref?: DocumentReference | AdminDocumentReference;
   id?: string;
 }
@@ -73,15 +73,17 @@ export interface ApptInterface {
 export type ApptJSON = Omit<ApptInterface, 'time'> & { time?: TimeslotJSON };
 
 export class Appt implements ApptInterface {
-  public message = '';
-
   public subjects: string[] = [];
 
   public attendees: Attendee[] = [];
 
   public creator: Attendee = { id: '', handle: uuid(), roles: [] };
 
-  public venues: ApptVenue[] = [];
+  public message = '';
+
+  public bramble?: Venue;
+
+  public jitsi?: Venue;
 
   public ref?: DocumentReference | AdminDocumentReference;
 
@@ -101,6 +103,13 @@ export class Appt implements ApptInterface {
    */
   public constructor(appt: Partial<ApptInterface> = {}) {
     construct<ApptInterface>(this, appt);
+  }
+
+  public get aspect(): Aspect {
+    const isTutor = (a: Attendee) => a.roles.indexOf('tutor') >= 0;
+    const isTutee = (a: Attendee) => a.roles.indexOf('tutee') >= 0;
+    if (this.attendees.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
+    return 'mentoring';
   }
 
   public toJSON(): ApptJSON {

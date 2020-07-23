@@ -7,12 +7,12 @@ export type UserRecord = admin.auth.UserRecord;
 export type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 export type DocumentReference = admin.firestore.DocumentReference;
 
-export type RoleAlias = 'tutor' | 'tutee' | 'mentor' | 'mentee';
+export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
 export interface Attendee {
   id: string;
   handle: string;
-  roles: RoleAlias[];
+  roles: Role[];
 }
 
 export interface ApptSearchHit {
