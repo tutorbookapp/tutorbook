@@ -2,7 +2,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
-  useMemo,
+  useRef,
   FormEvent,
 } from 'react';
 import Utils from 'lib/utils';
@@ -24,6 +24,7 @@ import {
   Attendee,
   Aspect,
 } from 'lib/model';
+import { Tooltip } from '@rmwc/tooltip';
 import { signupWithGoogle } from 'lib/account/signup';
 import { useUser, useOrgs } from 'lib/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
@@ -78,6 +79,30 @@ export default function RequestDialog({
     setSubmitted((prev: boolean) => prev && !error);
   }, [error]);
 
+  // We have to use React refs in order to access updated state information in
+  // a callback that was called (and thus was also defined) before the update.
+  const appt = useRef<Appt>(new Appt());
+  useEffect(() => {
+    const creator: Attendee = { id: currentUser.id, handle: uuid(), roles: [] };
+    appt.current = new Appt({
+      time,
+      creator,
+      message,
+      subjects,
+      attendees: attendees.map(({ value: id }) => {
+        const roles: RoleAlias[] = [];
+        const handle: string = id === creator.id ? creator.handle : uuid();
+        if (id === user.id) {
+          roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
+        } else {
+          roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
+        }
+        if (id === creator.id) creator.roles = Array.from(roles);
+        return { id, roles, handle };
+      }),
+    });
+  }, [currentUser.id, user.id, aspect, time, message, subjects, attendees]);
+
   // Update the names displayed in the attendees select when context or props
   // changes (i.e. when the user logs in, we change 'You' to their actual name).
   useEffect(() => {
@@ -111,33 +136,13 @@ export default function RequestDialog({
   );
 
   const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
-
   const onTimeChange = useCallback((t: Timeslot) => setTime(t), []);
-
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setMessage(event.currentTarget.value);
   }, []);
 
-  const appt: Appt = useMemo(() => {
-    const creator: Attendee = { id: currentUser.id, handle: uuid(), roles: [] };
-    return new Appt({
-      time,
-      creator,
-      message,
-      subjects,
-      attendees: attendees.map(({ value: id }) => {
-        const roles: RoleAlias[] = [];
-        const handle: string = id === creator.id ? creator.handle : uuid();
-        if (id === user.id) {
-          roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
-        } else {
-          roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
-        }
-        if (id === creator.id) creator.roles = Array.from(roles);
-        return { id, roles, handle };
-      }),
-    });
-  }, [aspect, currentUser.id, user.id, time, message, subjects, attendees]);
+  // Signup the user via a Google Popup window if they aren't current logged in
+  // **before** sending the request (this will trigger an update app-wide).
   const onSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -151,7 +156,7 @@ export default function RequestDialog({
           );
       }
       const [err] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
-        axios.post('/api/appts', appt.toJSON())
+        axios.post('/api/appts', appt.current.toJSON())
       );
       if (err && err.response)
         return setError(
@@ -161,7 +166,8 @@ export default function RequestDialog({
         );
       if (err && err.request)
         return setError(
-          'An error occurred while sending your request. Please check your Internet connection and try again.'
+          'An error occurred while sending your request. Please check your ' +
+            'Internet connection and try again.'
         );
       if (err)
         return setError(
@@ -171,7 +177,7 @@ export default function RequestDialog({
         );
       return setSubmitted(true);
     },
-    [currentUser, appt]
+    [currentUser]
   );
 
   const msg: IntlHelper = useMsg();
@@ -185,20 +191,29 @@ export default function RequestDialog({
     >
       <h6 className={styles.header}>Request</h6>
       <form className={styles.form} onSubmit={onSubmit}>
-        {false && (
-          <UserSelect
-            required
-            outlined
-            renderToPortal
-            disabled={!currentUser.id}
-            parents={currentUser.id ? [currentUser.id] : undefined}
-            orgs={orgs.length ? orgs.map((org: OrgJSON) => org.id) : undefined}
-            label={msg(msgs.attendees)}
-            className={styles.field}
-            onSelectedChange={onAttendeesChange}
-            selected={attendees}
-          />
-        )}
+        <Tooltip
+          content='You must be logged in to send requests for others'
+          open={!currentUser.id ? undefined : false}
+          activateOn='hover'
+          align='topRight'
+        >
+          <div className={styles.field}>
+            <UserSelect
+              required
+              outlined
+              renderToPortal
+              disabled={!currentUser.id}
+              parents={currentUser.id ? [currentUser.id] : undefined}
+              orgs={
+                orgs.length ? orgs.map((org: OrgJSON) => org.id) : undefined
+              }
+              label={msg(msgs.attendees)}
+              className={styles.field}
+              onSelectedChange={onAttendeesChange}
+              selected={attendees}
+            />
+          </div>
+        </Tooltip>
         <SubjectSelect
           required
           outlined
