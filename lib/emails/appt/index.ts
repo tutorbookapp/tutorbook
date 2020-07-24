@@ -201,7 +201,7 @@ Tutorbook - tutorbook.org`;
 
 You have a new tutoring lesson for ${Utils.join(appt.subjects)} (${rolesDescription}).
 
-Please reply to this email with when you're available to join your first lesson. If you're a parent, no action is necessary (unless your student needs your help to find a time).
+Please reply to this email stating when you're available to join your first lesson. If you're a parent, no action is necessary (unless your student needs your help to find a time).
 
 Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to open:
 
@@ -234,7 +234,7 @@ Tutorbook - tutorbook.org`;
 
 You have a new mentoring match for ${Utils.join(appt.subjects)} (${rolesDescription}).
 
-Please reply to this email with when you're available to join your first video call.
+Please reply to this email stating when you're available to join your first video call.
 
 Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to join the video call:
 
