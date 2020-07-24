@@ -93,6 +93,7 @@ export default function QueryForm({
           onBlurred={focusNothing}
           className={className}
           renderToPortal
+          outlined
           onChange={onAvailabilityChange}
           value={query.availability}
         />
