@@ -16,7 +16,6 @@ import {
   ApiError,
   User,
   Option,
-  OrgJSON,
   Role,
   Timeslot,
   Appt,
@@ -26,7 +25,7 @@ import {
 } from 'lib/model';
 import { Tooltip } from '@rmwc/tooltip';
 import { signupWithGoogle } from 'lib/account/signup';
-import { useUser, useOrgs } from 'lib/account';
+import { useUser } from 'lib/account';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { useMsg, IntlHelper } from 'lib/intl';
