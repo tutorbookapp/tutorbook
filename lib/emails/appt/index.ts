@@ -173,17 +173,19 @@ export default class ApptEmail implements Email {
       this.html = generic({ appt, creator, creatorEmail, roles });
       /* prettier-ignore */
       this.text = 
-        `Hi there,
+`Hi there,
 
-        ${creator.name} wants you as a ${Utils.join(roles)} for ${Utils.join(appt.subjects)}:
+${creator.name} wants you as a ${Utils.join(roles)} for ${Utils.join(appt.subjects)}:
 
-        > ${appt.message}
-        
-        If you're interested, please get in touch with ${creator.name} by replying to this email or using the following email address:
+> ${appt.message}
 
-        ${creatorEmail}
+If you're interested, please get in touch with ${creator.name} by replying to this email or using the following email address:
 
-        Thank you.`;
+${creatorEmail}
+
+Thank you.
+
+Tutorbook - tutorbook.org`;
     } else if (appt.aspect === 'tutoring') {
       this.html = tutoring({
         appt,
@@ -195,26 +197,28 @@ export default class ApptEmail implements Email {
       });
       /* prettier-ignore */
       this.text =
-        `Hi ${Utils.join(attendeeNames)},
+`Hi ${Utils.join(attendeeNames)},
 
-        You have a new tutoring lesson for ${Utils.join(appt.subjects)} (${rolesDescription}).
+You have a new tutoring lesson for ${Utils.join(appt.subjects)} (${rolesDescription}).
 
-        Please reply to this email with when you're available to join your first lesson. If you're a parent, no action is necessary (unless your student needs your help to find a time).
+Please reply to this email with when you're available to join your first lesson. If you're a parent, no action is necessary (unless your student needs your help to find a time).
 
-        Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to open:
+Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to open:
 
-        ${(appt.bramble as Venue).url}
+${(appt.bramble as Venue).url}
 
-        ${creator.name} from ${org.name} set up this lesson:
+${creator.name} from ${org.name} set up this lesson:
 
-        > ${appt.message}
-        > —${creator.name} from ${org.name} 
+> ${appt.message}
+> —${creator.name} from ${org.name} 
 
-        If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:
+If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:
 
-        ${creatorEmail}
+${creatorEmail}
 
-        Thank you.`;
+Thank you.
+
+Tutorbook - tutorbook.org`;
     } else {
       this.html = mentoring({
         appt,
@@ -226,26 +230,28 @@ export default class ApptEmail implements Email {
       });
       /* prettier-ignore */
       this.text =
-        `Hi ${Utils.join(attendeeNames)},
+`Hi ${Utils.join(attendeeNames)},
 
-        You have a new mentoring match for ${Utils.join(appt.subjects)} (${rolesDescription}).
+You have a new mentoring match for ${Utils.join(appt.subjects)} (${rolesDescription}).
 
-        Please reply to this email with when you're available to join your first video call.
+Please reply to this email with when you're available to join your first video call.
 
-        Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to join the video call:
+Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to join the video call:
 
-        ${(appt.jitsi as Venue).url}
+${(appt.jitsi as Venue).url}
 
-        ${creator.name} from ${org.name} set up this lesson:
+${creator.name} from ${org.name} set up this lesson:
 
-        > ${appt.message}
-        > —${creator.name} from ${org.name} 
+> ${appt.message}
+> —${creator.name} from ${org.name} 
 
-        If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:
+If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:
 
-        ${creatorEmail}
+${creatorEmail}
 
-        Thank you.`;
+Thank you.
+
+Tutorbook - tutorbook.org`;
     }
   }
 }
