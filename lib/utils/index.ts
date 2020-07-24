@@ -39,7 +39,7 @@ export default class Utils {
    * const subjects = ['Chemistry', 'Chemistry H', 'Algebra 1'];
    * const str = Utils.join(subjects, 'or');
    * assert(str === 'Chemistry, Chemistry H, or Algebra 1');
-   * @param {any[]} arr - The array of (typically) strings to concatenate.
+   * @param {any[]} array - The array of (typically) strings to concatenate.
    * @param {string} [ending='and'] - The concatenator to insert between the last
    * two items in the given `arr`.
    * @param {bool} [oxfordComma=false] - Whether or not to have the Oxford
@@ -48,11 +48,12 @@ export default class Utils {
    * `ending` between the last two items in the given `arr`).
    */
   public static join<T = any>(
-    arr: Array<T>,
+    array: Array<T>,
     ending = 'and',
     oxfordComma = false
   ): string {
     /* eslint-disable @typescript-eslint/restrict-template-expressions */
+    const arr: Array<T> = Array.from(array);
     if (arr.length === 0) return '';
     if (arr.length === 1) return `${arr[0]}`;
     const lastItem: T | undefined = arr.pop();
