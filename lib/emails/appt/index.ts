@@ -148,7 +148,7 @@ export default class ApptEmail implements Email {
     const contacts: Contact[] = recipients.map(({ name, id }) => ({
       name,
       email: getEmail(appt, id),
-      url: encodeURIComponent(`mailto:"${name}"<${getEmail(appt, id)}>`),
+      url: `mailto:${encodeURIComponent(`"${name}"<${getEmail(appt, id)}>`)}`,
     }));
     const rolesDescription = `with ${Utils.join(
       attendees.map(({ name, roles }) => `${name} as the ${Utils.join(roles)}`)
