@@ -1,5 +1,5 @@
 import { useIntl, useMsg, IntlHelper, Msg } from 'lib/intl';
-import { Aspect, Query, Availability, OrgJSON } from 'lib/model';
+import { Aspect, UsersQuery, Availability, OrgJSON } from 'lib/model';
 import { defineMessages } from 'react-intl';
 
 import React from 'react';
@@ -34,7 +34,7 @@ export default function SearchForm({
 
   const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<Query>(
-    new Query({
+    new UsersQuery({
       aspect: aspect || 'mentoring',
       langs: [], // TODO: Pre-fill with current locale language.
       subjects: [],
@@ -43,9 +43,9 @@ export default function SearchForm({
   );
 
   React.useEffect(() => {
-    setQuery((prev: Query) => {
+    setQuery((prev: UsersQuery) => {
       if (!aspect || aspect === prev.aspect) return prev;
-      return new Query({ ...prev, aspect });
+      return new UsersQuery({ ...prev, aspect });
     });
   }, [aspect]);
 
@@ -68,7 +68,7 @@ export default function SearchForm({
     },
     [query, locale]
   );
-  const onChange = React.useCallback((qry: Query) => setQuery(qry), []);
+  const onChange = React.useCallback((qry: UsersQuery) => setQuery(qry), []);
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>

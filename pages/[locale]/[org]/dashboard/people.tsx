@@ -6,7 +6,7 @@ import Footer from 'components/footer';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Org, OrgJSON, Query, ApiError } from 'lib/model';
+import { Org, OrgJSON, UsersQuery, ApiError } from 'lib/model';
 import { ListUsersRes } from 'lib/api/list-users';
 import { People } from 'components/dashboard';
 import { TabHeader } from 'components/header';
@@ -105,11 +105,10 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        const query = new Query({
+        const query = new UsersQuery({
           orgs: [{ label: org.name, value: org.id }],
           hitsPerPage: 10,
         });
-        console.log('[DEBUG] Query:', query.endpoint);
         const url = `http://${req.headers.host as string}${query.endpoint}`;
         const [error, response] = await to<
           AxiosResponse<ListUsersRes>,

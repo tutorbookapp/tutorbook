@@ -5,7 +5,7 @@ import VolunteerForm from 'components/volunteer-form';
 import RequestDialog from 'components/request-dialog';
 
 import { Card } from '@rmwc/card';
-import { User, OrgJSON, Query, SocialInterface } from 'lib/model';
+import { User, OrgJSON, UsersQuery, SocialInterface } from 'lib/model';
 
 import SearchForm from './search-form';
 
@@ -16,8 +16,8 @@ interface OrgDisplayProps {
 }
 
 export default function OrgDisplay({ org }: OrgDisplayProps): JSX.Element {
-  const query: Query = useMemo(() => {
-    return new Query({
+  const query: UsersQuery = useMemo(() => {
+    return new UsersQuery({
       orgs: [{ value: org.id, label: org.name }],
       aspect: org.aspect,
     });

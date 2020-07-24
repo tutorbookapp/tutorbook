@@ -1,5 +1,5 @@
 import { useIntl, IntlHelper, IntlShape, Msg } from 'lib/intl';
-import { Option, Availability, Query, Callback } from 'lib/model';
+import { Option, Availability, UsersQuery, Callback } from 'lib/model';
 
 import React from 'react';
 import LangSelect from 'components/lang-select';
@@ -13,7 +13,7 @@ type FocusTarget = 'subjects' | 'availability' | 'langs';
 type QueryFormInputConfig = { [key in FocusTarget]?: boolean };
 
 interface QueryFormProps {
-  query: Query;
+  query: UsersQuery;
   onChange: Callback<Query>;
   vertical?: boolean;
   focusTarget?: FocusTarget;
@@ -36,19 +36,19 @@ export default function QueryForm({
 
   const onSubjectsChange = React.useCallback(
     (s: Option<string>[]) => {
-      onChange(new Query({ ...query, subjects: s }));
+      onChange(new UsersQuery({ ...query, subjects: s }));
     },
     [onChange, query]
   );
   const onLangsChange = React.useCallback(
     (l: Option<string>[]) => {
-      onChange(new Query({ ...query, langs: l }));
+      onChange(new UsersQuery({ ...query, langs: l }));
     },
     [onChange, query]
   );
   const onAvailabilityChange = React.useCallback(
     (a: Availability) => {
-      onChange(new Query({ ...query, availability: a }));
+      onChange(new UsersQuery({ ...query, availability: a }));
     },
     [onChange, query]
   );

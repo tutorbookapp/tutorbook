@@ -12,7 +12,13 @@ import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { QueryHeader } from 'components/header';
 import { useIntl, getIntlProps, withIntl } from 'lib/intl';
-import { User, UserJSON, Query, QueryJSON, Availability } from 'lib/model';
+import {
+  User,
+  UserJSON,
+  UsersQuery,
+  UsersQueryJSON,
+  Availability,
+} from 'lib/model';
 
 type App = admin.app.App;
 type Firestore = admin.firestore.Firestore;
@@ -20,7 +26,7 @@ type DocumentReference = admin.firestore.DocumentReference;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 interface SearchPageProps {
-  query: QueryJSON;
+  query: UsersQueryJSON;
   results: UserJSON[];
   user?: UserJSON;
 }
@@ -101,7 +107,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     } as UserJSON;
   }
 
-  const query: Query = Query.fromURLParams(context.query);
+  const query: UsersQuery = UsersQuery.fromURLParams(context.query);
   const url = `http://${context.req.headers.host as string}/api/users`;
 
   query.visible = true;
@@ -110,7 +116,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      query: JSON.parse(JSON.stringify(query)) as QueryJSON,
+      query: JSON.parse(JSON.stringify(query)) as UsersQueryJSON,
       results: JSON.parse(
         JSON.stringify((await query.search(url)).users)
       ) as UserJSON[],
@@ -134,13 +140,13 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     query: { org },
   } = useRouter();
 
-  const handleChange = async (newQuery: Query) => {
+  const handleChange = async (newQuery: UsersQuery) => {
     // TODO: Store the availability filters in the tutoring aspect and then
     // re-fill them when we go back to that aspect. Or, just keep them in the
     // query and ignore them when searching for mentors (i.e. in `api/users`).
-    const updatedQuery: Query =
+    const updatedQuery: UsersQuery =
       newQuery.aspect === 'mentoring'
-        ? new Query({ ...newQuery, availability: new Availability() })
+        ? new UsersQuery({ ...newQuery, availability: new Availability() })
         : newQuery;
     setQuery(updatedQuery);
     setSearching(true);
@@ -151,8 +157,8 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   React.useEffect(() => {
     if (typeof org === 'string')
       setQuery(
-        (prev: Query) =>
-          new Query({ ...prev, orgs: [{ label: '', value: org }] })
+        (prev: UsersQuery) =>
+          new UsersQuery({ ...prev, orgs: [{ label: '', value: org }] })
       );
   }, [org]);
   React.useEffect(() => {
@@ -171,7 +177,8 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     }
   }, [org, qry, locale]);
   React.useEffect(() => {
-    if (qry.visible !== true) setQuery(new Query({ ...qry, visible: true }));
+    if (qry.visible !== true)
+      setQuery(new UsersQuery({ ...qry, visible: true }));
   }, [qry]);
 
   return (

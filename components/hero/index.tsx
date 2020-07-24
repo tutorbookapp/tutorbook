@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 import { useIntl, Msg, IntlShape } from 'lib/intl';
-import { Query, User, Aspect } from 'lib/model';
+import { UsersQuery, User, Aspect } from 'lib/model';
 import { Card } from '@rmwc/card';
 
 import React, { useMemo, useState, useCallback } from 'react';
@@ -44,7 +44,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
         <Card className={styles.card}>
           <SearchForm aspect={aspect} />
         </Card>
-        <Carousel query={new Query({ aspect })} onClick={setViewing} />
+        <Carousel query={new UsersQuery({ aspect })} onClick={setViewing} />
       </div>
     </div>
   );

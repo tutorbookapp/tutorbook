@@ -6,7 +6,7 @@ import {
   User,
   UserJSON,
   SearchHit,
-  Query,
+  UsersQuery,
   Timeslot,
   Option,
 } from 'lib/model';
@@ -51,7 +51,7 @@ function addFilters(
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/in-depth/combining-boolean-operators/#combining-ands-and-ors}
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-arrays/?language=javascript}
  */
-function getFilterStrings(query: Query): string[] {
+function getFilterStrings(query: UsersQuery): string[] {
   let filterString =
     typeof query.visible === 'boolean'
       ? `visible=${query.visible ? 1 : 0}`
@@ -84,7 +84,7 @@ function getFilterStrings(query: Query): string[] {
  * @todo Show verified results first.
  * @see {@link https://www.algolia.com/doc/guides/managing-results/rules/merchandising-and-promoting/how-to/how-to-promote-with-optional-filters/}
  */
-function getOptionalFilterStrings(query: Query): string[] {
+function getOptionalFilterStrings(query: UsersQuery): string[] {
   return [`featured:${query.aspect}`];
 }
 
@@ -97,7 +97,7 @@ function getOptionalFilterStrings(query: Query): string[] {
  * timeslot separately and then manually merge the results on the client side.
  */
 async function searchUsers(
-  query: Query
+  query: UsersQuery
 ): Promise<{ results: User[]; hits: number }> {
   let hits = 0;
   const results: User[] = [];
@@ -184,7 +184,7 @@ export default async function listUsers(
   res: NextApiResponse<ListUsersRes>
 ): Promise<void> {
   console.log('[DEBUG] Getting search results...');
-  const query: Query = Query.fromURLParams(req.query);
+  const query: UsersQuery = UsersQuery.fromURLParams(req.query);
   const { results, hits } = await searchUsers(query);
   const orgs: Org[] = [];
   if (req.headers.authorization) {

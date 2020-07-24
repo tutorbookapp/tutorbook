@@ -1,5 +1,5 @@
 import { useUser, useOrgs } from 'lib/account';
-import { User, UserJSON, Option, Query } from 'lib/model';
+import { User, UserJSON, Option, UsersQuery } from 'lib/model';
 
 import Select, { SelectControllerProps } from 'components/select';
 
@@ -55,14 +55,14 @@ export default function UserSelect({
       const promises: Promise<{ users: User[] }>[] = [];
       if (orgs.length)
         promises.push(
-          new Query({
+          new UsersQuery({
             query,
             orgs: orgs.map(({ id, name }) => ({ label: name, value: id })),
           }).search()
         );
       if (user.id)
         promises.push(
-          new Query({
+          new UsersQuery({
             query,
             parents: [{ label: user.name, value: user.id }],
           }).search()

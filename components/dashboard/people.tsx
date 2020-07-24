@@ -17,7 +17,7 @@ import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
-import { Option, Query, Org, User, UserJSON, Tag } from 'lib/model';
+import { Option, UsersQuery, Org, User, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 import { useMsg, useIntl, IntlHelper } from 'lib/intl';
 import { defineMessages } from 'react-intl';
@@ -111,7 +111,10 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<Query>(
-    new Query({ orgs: [{ label: org.name, value: org.id }], hitsPerPage: 10 })
+    new UsersQuery({
+      orgs: [{ label: org.name, value: org.id }],
+      hitsPerPage: 10,
+    })
   );
 
   const loadingRows: JSX.Element[] = React.useMemo(
@@ -132,8 +135,11 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   });
 
   React.useEffect(() => {
-    setQuery((prev: Query) => {
-      return new Query({ ...prev, orgs: [{ label: org.name, value: org.id }] });
+    setQuery((prev: UsersQuery) => {
+      return new UsersQuery({
+        ...prev,
+        orgs: [{ label: org.name, value: org.id }],
+      });
     });
   }, [org]);
   React.useEffect(() => {
@@ -365,7 +371,9 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                     } else if (valid) {
                       tags.splice(idx, 1);
                     }
-                    setQuery((p: Query) => new Query({ ...p, tags, page: 0 }));
+                    setQuery(
+                      (p: UsersQuery) => new UsersQuery({ ...p, tags, page: 0 })
+                    );
                   })
                 }
                 selected={
@@ -386,7 +394,8 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                     const toggled = prev !== true ? true : undefined;
                     const visible = !valid && prev === true ? true : toggled;
                     setQuery(
-                      (p: Query) => new Query({ ...p, visible, page: 0 })
+                      (p: UsersQuery) =>
+                        new UsersQuery({ ...p, visible, page: 0 })
                     );
                   })
                 }
@@ -405,7 +414,8 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                     const toggled = prev !== false ? false : undefined;
                     const visible = !valid && prev === false ? false : toggled;
                     setQuery(
-                      (p: Query) => new Query({ ...p, visible, page: 0 })
+                      (p: UsersQuery) =>
+                        new UsersQuery({ ...p, visible, page: 0 })
                     );
                   })
                 }
@@ -425,7 +435,8 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 filterCallback(() => {
                   setSearching(true);
                   setQuery(
-                    (p: Query) => new Query({ ...p, query: q, page: 0 })
+                    (p: UsersQuery) =>
+                      new UsersQuery({ ...p, query: q, page: 0 })
                   );
                 });
               }}
@@ -503,7 +514,8 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                   filterCallback(() => {
                     setSearching(true);
                     setQuery(
-                      (p: Query) => new Query({ ...p, hitsPerPage, page: 0 })
+                      (p: UsersQuery) =>
+                        new UsersQuery({ ...p, hitsPerPage, page: 0 })
                     );
                   });
                 }}
@@ -518,7 +530,10 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               onClick={() =>
                 filterCallback(() => {
                   setSearching(true);
-                  setQuery((p: Query) => new Query({ ...p, page: p.page - 1 }));
+                  setQuery(
+                    (p: UsersQuery) =>
+                      new UsersQuery({ ...p, page: p.page - 1 })
+                  );
                 })
               }
             />
@@ -530,7 +545,10 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               onClick={() =>
                 filterCallback(() => {
                   setSearching(true);
-                  setQuery((p: Query) => new Query({ ...p, page: p.page + 1 }));
+                  setQuery(
+                    (p: UsersQuery) =>
+                      new UsersQuery({ ...p, page: p.page + 1 })
+                  );
                 })
               }
             />

@@ -1,7 +1,7 @@
 import React from 'react';
 import FilterForm from 'components/filter-form';
 
-import { Callback, Query } from 'lib/model';
+import { Callback, UsersQuery } from 'lib/model';
 
 import styles from './form.module.scss';
 
@@ -9,7 +9,7 @@ export default function Form({
   query,
   onChange,
 }: {
-  query: Query;
+  query: UsersQuery;
   onChange: Callback<Query>;
 }): JSX.Element {
   const [elevated, setElevated] = React.useState<boolean>(false);

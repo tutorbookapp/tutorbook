@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useIntl, Msg, IntlShape, IntlHelper } from 'lib/intl';
-import { Callback, Option, Timeslot, User, Query } from 'lib/model';
+import { Callback, Option, Timeslot, User, UsersQuery } from 'lib/model';
 import { defineMessages } from 'react-intl';
 import { v4 as uuid } from 'uuid';
 
@@ -14,11 +14,11 @@ import Form from './form';
 import styles from './search.module.scss';
 
 interface SearchProps {
-  readonly onChange: Callback<Query>;
-  readonly results: ReadonlyArray<User>;
-  readonly searching: boolean;
-  readonly query: Query;
-  readonly user?: User;
+  onChange: Callback<Query>;
+  results: ReadonlyArray<User>;
+  searching: boolean;
+  query: UsersQuery;
+  user?: User;
 }
 
 const msgs: Record<string, Msg> = defineMessages({
@@ -108,7 +108,7 @@ export default function Search({
           <h3 className={styles.noResultsHeader}>{msg(msgs.noResultsTitle)}</h3>
           <p className={styles.noResultsBody}>{msg(msgs.noResultsBody)}</p>
           <Carousel
-            query={new Query({ aspect: query.aspect })}
+            query={new UsersQuery({ aspect: query.aspect })}
             onClick={setViewing}
           />
         </div>

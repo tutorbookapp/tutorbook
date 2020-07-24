@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
 
 import { ListUsersRes } from 'lib/api/list-users';
-import { Query, User, UserJSON } from 'lib/model';
+import { UsersQuery, User, UserJSON } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from './carousel';
 import { UserCard, LoadingCard } from './cards';
 
 interface Props {
-  query: Query;
+  query: UsersQuery;
   onClick: (user: User) => void;
 }
 

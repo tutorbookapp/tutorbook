@@ -1,5 +1,5 @@
 import { useIntl, Link, IntlShape, IntlHelper, Msg } from 'lib/intl';
-import { Query, Aspect, Callback } from 'lib/model';
+import { UsersQuery, Aspect, Callback } from 'lib/model';
 import { defineMessages } from 'react-intl';
 import { useUser } from 'lib/account';
 
@@ -224,7 +224,7 @@ export function AspectHeader({
 }
 
 interface QueryHeaderProps extends LinkHeaderProps {
-  query: Query;
+  query: UsersQuery;
   onChange: Callback<Query>;
 }
 
@@ -241,7 +241,7 @@ export function QueryHeader({
           <DesktopTabs
             aspect={query.aspect}
             onChange={(aspect: Aspect) =>
-              onChange(new Query({ ...query, aspect }))
+              onChange(new UsersQuery({ ...query, aspect }))
             }
           />
         </div>

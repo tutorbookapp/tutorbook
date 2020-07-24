@@ -1,4 +1,4 @@
-import { Option, Query, Callback } from 'lib/model';
+import { Option, UsersQuery, Callback } from 'lib/model';
 import { Ripple } from '@rmwc/ripple';
 
 import React from 'react';
@@ -22,7 +22,7 @@ function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
 }
 
 interface FilterFormProps {
-  query: Query;
+  query: UsersQuery;
   onChange: Callback<Query>;
 }
 
