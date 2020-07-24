@@ -133,7 +133,9 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   const [res, setResults] = React.useState<ReadonlyArray<User>>(
     results.map((result: UserJSON) => User.fromJSON(result))
   );
-  const [qry, setQuery] = React.useState<Query>(Query.fromJSON(query));
+  const [qry, setQuery] = React.useState<UsersQuery>(
+    UsersQuery.fromJSON(query)
+  );
 
   const { locale } = useIntl();
   const {
