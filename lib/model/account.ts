@@ -56,7 +56,7 @@ export interface AccountInterface {
   ref?: DocumentReference | AdminDocumentReference;
 }
 
-export class Account implements AccountInterface {
+export abstract class Account implements AccountInterface {
   public id = '';
 
   public name = '';
