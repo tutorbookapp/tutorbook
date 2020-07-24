@@ -2,8 +2,8 @@ import {
   Timeslot,
   TimeslotJSON,
   TimeslotInterface,
-  TimeslotFirestoreInterface,
-  TimeslotSearchHitInterface,
+  TimeslotFirestore,
+  TimeslotSearchHit,
 } from './timeslot';
 
 /**
@@ -20,8 +20,8 @@ export type ScheduleAlias = TimeslotInterface[];
  */
 export type AvailabilityAlias = TimeslotInterface[];
 export type AvailabilityJSON = TimeslotJSON[];
-export type AvailabilityFirestoreAlias = TimeslotFirestoreInterface[];
-export type AvailabilitySearchHitAlias = TimeslotSearchHitInterface[];
+export type AvailabilityFirestore = TimeslotFirestore[];
+export type AvailabilitySearchHit = TimeslotSearchHit[];
 
 /**
  * Class that contains a bunch of time slots or openings that represents a
@@ -155,7 +155,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return availability;
   }
 
-  public static fromSearchHit(hit: AvailabilitySearchHitAlias): Availability {
+  public static fromSearchHit(hit: AvailabilitySearchHit): Availability {
     const availability: Availability = new Availability();
     hit.forEach((t) => availability.push(Timeslot.fromSearchHit(t)));
     return availability;

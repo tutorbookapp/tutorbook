@@ -6,9 +6,9 @@ import Footer from 'components/footer';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Org, OrgJSON, UsersQuery, ApiError } from 'lib/model';
-import { ListUsersRes } from 'lib/api/list-users';
-import { People } from 'components/dashboard';
+import { Org, OrgJSON, ApptsQuery, ApiError } from 'lib/model';
+import { ListApptsRes } from 'lib/api/list-appts';
+import { Appts } from 'components/dashboard';
 import { TabHeader } from 'components/header';
 import {
   db,
@@ -31,14 +31,14 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 import msgs from 'components/dashboard/msgs';
 
-interface PeoplePageProps {
+interface ApptsPageProps {
   errorCode?: number;
   errorMessage?: string;
-  result?: ListUsersRes;
+  result?: ListApptsRes;
   org?: OrgJSON;
 }
 
-interface PeoplePageQuery extends ParsedUrlQuery {
+interface ApptsPageQuery extends ParsedUrlQuery {
   locale: string;
   org: string;
 }
@@ -63,13 +63,9 @@ interface PeoplePageQuery extends ParsedUrlQuery {
  * @see {@link https://github.com/vercel/next.js/issues/14200}
  */
 export const getServerSideProps: GetServerSideProps<
-  PeoplePageProps & IntlProps,
-  PeoplePageQuery
-> = async ({
-  req,
-  res,
-  params,
-}: GetServerSidePropsContext<PeoplePageQuery>) => {
+  ApptsPageProps & IntlProps,
+  ApptsPageQuery
+> = async ({ req, res, params }: GetServerSidePropsContext<ApptsPageQuery>) => {
   if (!params) {
     throw new Error('We must have query parameters while rendering.');
   } else if (!req.headers.authorization) {
@@ -91,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props: PeoplePageProps & IntlProps = await getIntlProps({ params });
+      let props: ApptsPageProps & IntlProps = await getIntlProps({ params });
       if (!doc.exists) {
         props = {
           ...props,
@@ -105,16 +101,16 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        const query = new UsersQuery({
+        const query = new ApptsQuery({
           orgs: [{ label: org.name, value: org.id }],
           hitsPerPage: 10,
         });
         const url = `http://${req.headers.host as string}${query.endpoint}`;
         const [error, response] = await to<
-          AxiosResponse<ListUsersRes>,
+          AxiosResponse<ListApptsRes>,
           AxiosError<ApiError>
         >(
-          axios.get<ListUsersRes>(url, {
+          axios.get<ListApptsRes>(url, {
             headers: { authorization: req.headers.authorization },
           })
         );
@@ -137,7 +133,7 @@ export const getServerSideProps: GetServerSideProps<
             errorMessage: `${error.name} fetching users: ${error.message}`,
           };
         } else {
-          const { data: result } = response as AxiosResponse<ListUsersRes>;
+          const { data: result } = response as AxiosResponse<ListApptsRes>;
           props = { ...props, result, org: org.toJSON() };
         }
       }
@@ -146,12 +142,12 @@ export const getServerSideProps: GetServerSideProps<
   }
 };
 
-function PeoplePage({
+function ApptsPage({
   errorCode,
   errorMessage,
   result,
   org,
-}: PeoplePageProps): JSX.Element {
+}: ApptsPageProps): JSX.Element {
   const { query } = useRouter();
   const msg: IntlHelper = useMsg();
   if (errorCode || errorMessage)
@@ -168,21 +164,21 @@ function PeoplePage({
           },
           {
             label: msg(msgs.people),
-            active: true,
+            active: false,
             href: '/[org]/dashboard/people',
             as: `/${query.org as string}/dashboard/people`,
           },
           {
             label: msg(msgs.appts),
-            active: false,
+            active: true,
             href: '/[org]/dashboard/appts',
             as: `/${query.org as string}/dashboard/appts`,
           },
         ]}
       />
-      <People
+      <Appts
         org={Org.fromJSON(org as OrgJSON)}
-        initialData={result as ListUsersRes}
+        initialData={result as ListApptsRes}
       />
       <Footer />
       <Intercom />
@@ -190,4 +186,4 @@ function PeoplePage({
   );
 }
 
-export default withIntl(PeoplePage);
+export default withIntl(ApptsPage);

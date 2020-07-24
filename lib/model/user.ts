@@ -6,7 +6,7 @@ import url from 'url';
 import { ObjectWithObjectID } from '@algolia/client-search';
 import {
   Availability,
-  AvailabilitySearchHitAlias,
+  AvailabilitySearchHit,
   AvailabilityJSON,
 } from './availability';
 import { Account, AccountInterface } from './account';
@@ -110,9 +110,9 @@ export interface UserInterface extends AccountInterface {
 /**
  * What results from searching our users Algolia index.
  */
-export type SearchHit = ObjectWithObjectID &
+export type UserSearchHit = ObjectWithObjectID &
   Omit<UserInterface, 'availability'> & {
-    availability: AvailabilitySearchHitAlias;
+    availability: AvailabilitySearchHit;
   };
 
 export type UserJSON = Omit<UserInterface, 'availability'> & {
@@ -215,7 +215,7 @@ export class User extends Account implements UserInterface {
     return { ...intercomValues, ...super.toIntercom() };
   }
 
-  public static fromSearchHit(hit: SearchHit): User {
+  public static fromSearchHit(hit: UserSearchHit): User {
     const { availability, objectID, ...rest } = hit;
     const user: Partial<UserInterface> = {
       ...rest,

@@ -4,6 +4,7 @@ import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 import to from 'await-to-js';
 import admin from 'firebase-admin';
 
+type DocumentReference = admin.firestore.DocumentReference;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type Timestamp = admin.firestore.Timestamp;
 
@@ -33,12 +34,11 @@ const NOT_VETTED = 'not-vetted';
  * @see {@link https://firebase.google.com/docs/reference/node/firebase.firestore.Timestamp#tomillis}
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-by-date/?language=javascript#after}
  */
-function availabilityToDates(
-  availability: Timeslot<Timestamp>[]
-): Timeslot<number>[] {
-  return availability.map((timeslot: Timeslot<Timestamp>) => {
-    return { from: timeslot.from.toMillis(), to: timeslot.to.toMillis() };
-  });
+function timeslot(time: Timeslot<Timestamp>): Timeslot<number> {
+  return { from: time.from.toMillis(), to: time.to.toMillis() };
+}
+function availability(times: Timeslot<Timestamp>[]): Timeslot<number>[] {
+  return times.map(timeslot);
 }
 
 /**
@@ -46,10 +46,10 @@ function availabilityToDates(
  * querying logic (i.e. the logic is run here, during indexing time, and then
  * can be queried later).
  */
-function getTags(user: Record<string, unknown>): string[] {
-  const tags: string[] = [];
-  if (!((user.verifications as unknown[]) || []).length) tags.push(NOT_VETTED);
-  return tags;
+function tags(user: Record<string, unknown>): string[] {
+  const tgs: string[] = [];
+  if (!((user.verifications as unknown[]) || []).length) tgs.push(NOT_VETTED);
+  return tgs;
 }
 
 /**
@@ -77,7 +77,15 @@ async function updateSettings(
   }
 }
 
-function getHandles(appt: Record<string, unknown>): string[] {
+async function updateFilterableAttributes(
+  index: SearchIndex,
+  attributes: string[]
+): Promise<void> {
+  const attributesForFaceting = attributes.map((attr) => `filterOnly(${attr})`);
+  return updateSettings(index, { attributesForFaceting });
+}
+
+function handles(appt: Record<string, unknown>): string[] {
   const creatorHandle = (appt.creator as { handle: string }).handle;
   const attendeeHandles = (appt.attendees as { handle: string }[]).map(
     ({ handle }) => handle
@@ -89,6 +97,32 @@ export async function apptUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
+  const db: DocumentReference = admin
+    .firestore()
+    .collection('partitions')
+    .doc(context.params.partition);
+
+  /**
+   * Gets the orgs for a given appointment. We add all of the orgs that each
+   * appointment attendee is a part of during indexing. This allows us to filter
+   * by org at search time (i.e. when we want to populate an org admin dashboard).
+   * @param appt - The appointment to fetch orgs for.
+   * @return A list of org IDs that the `appt` attendees are a part of.
+   */
+  async function orgs(appt: Record<string, unknown>): Promise<string[]> {
+    const orgIds: string[] = [];
+    await Promise.all(
+      (appt.attendees as { id: string }[]).map(async ({ id }) => {
+        const doc = await db.collection('users').doc(id).get();
+        if (!doc.exists)
+          console.warn(`[WARNING] Attendee (${id}) doesn't exist.`);
+        (doc.data() as { orgs: string[] }).orgs.forEach((o) => orgIds.push(o));
+      })
+    );
+    console.log(`[DEBUG] Got orgs for appt (${appt.id as string}):`, orgIds);
+    return orgIds;
+  }
+
   const id: string = context.params.appt as string;
   const indexId = `${context.params.partition as string}-appts`;
   const index: SearchIndex = client.initIndex(indexId);
@@ -103,8 +137,13 @@ export async function apptUpdate(
   } else {
     const appt = change.after.data() as Record<string, unknown>;
     console.log(`[DEBUG] Updating appt (${id})...`);
-    const handles: string[] = getHandles(appt);
-    const ob: Record<string, unknown> = { ...appt, handles, objectID: id };
+    const ob: Record<string, unknown> = {
+      ...appt,
+      time: timeslot(appt.time as Timeslot<Timestamp>),
+      handles: handles(appt),
+      orgs: await orgs(appt),
+      objectID: id,
+    };
     const [err] = await too(index.saveObject(ob));
     if (err) {
       console.error(`[ERROR] ${err.name} while updating:`, err);
@@ -112,8 +151,7 @@ export async function apptUpdate(
       console.log(`[DEBUG] Updated appt (${id}).`);
     }
   }
-  const attributesForFaceting: string[] = ['filterOnly(handles)'];
-  await updateSettings(index, { attributesForFaceting });
+  await updateFilterableAttributes(index, ['handles', 'orgs']);
 }
 
 /**
@@ -144,12 +182,10 @@ export async function userUpdate(
     console.log(`[DEBUG] Updating ${user.name as string} (${uid})...`);
     const ob: Record<string, unknown> = {
       ...user,
-      availability: availabilityToDates(
-        user.availability as Timeslot<Timestamp>[]
-      ),
+      availability: availability(user.availability as Timeslot<Timestamp>[]),
+      visible: !!user.visible,
+      _tags: tags(user),
       objectID: uid,
-      visible: !!user.visible, // Ensure that this filterable property is added.
-      _tags: getTags(user),
     };
     const [err] = await too(index.saveObject(ob));
     if (err) {
@@ -160,7 +196,7 @@ export async function userUpdate(
   }
   // Note that we don't have to add the `visible` property here (b/c Algolia
   // automatically supports filtering by numeric and boolean values).
-  const attributesForFaceting: string[] = [
+  await updateFilterableAttributes(index, [
     'orgs',
     'parents',
     'availability',
@@ -171,6 +207,5 @@ export async function userUpdate(
     'verifications.checks',
     'langs',
     'featured',
-  ].map((attr: string) => `filterOnly(${attr})`);
-  await updateSettings(index, { attributesForFaceting });
+  ]);
 }

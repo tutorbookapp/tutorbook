@@ -54,7 +54,7 @@ export type TimeslotInterface = TimeslotBase<Date>;
  * Interface that represents how `Timeslot`s are stored in our Firestore
  * database; with `Timestamp`s instead of `Date`s (b/c they're more accurate).
  */
-export type TimeslotFirestoreInterface = TimeslotBase<Timestamp>;
+export type TimeslotFirestore = TimeslotBase<Timestamp>;
 
 /**
  * Interface that results from serializing the `Timeslot` object as JSON (i.e.
@@ -62,7 +62,7 @@ export type TimeslotFirestoreInterface = TimeslotBase<Timestamp>;
  * fields are both ISO strings.
  */
 export type TimeslotJSON = TimeslotBase<string>;
-export type TimeslotSearchHitInterface = TimeslotBase<number>;
+export type TimeslotSearchHit = TimeslotBase<number>;
 
 /**
  * Class that represents a time opening or slot where tutoring can take place
@@ -190,8 +190,8 @@ export class Timeslot implements TimeslotBase<Date> {
   }
 
   /**
-   * Converts this object into a `TimeslotFirestoreInterface` (i.e. instead of
-   * `Date`s we use `Timestamp`s).
+   * Converts this object into a `TimeslotFirestoreI` (i.e. instead of `Date`s
+   * we use `Timestamp`s).
    * @todo Right now, this isn't really doing anything besides some sketchy
    * type assertions b/c the Firebase Admin Node.js SDK `Timestamp` type doesn't
    * match the client-side `firebase/app` library `Timestamp` type. We want to
@@ -199,7 +199,7 @@ export class Timeslot implements TimeslotBase<Date> {
    * figure out how to do this, so I'm just returning `Date`s which are
    * converted into the *correct* `Timestamp` type by the Firebase SDK itself).
    */
-  public toFirestore(): TimeslotFirestoreInterface {
+  public toFirestore(): TimeslotFirestore {
     return {
       from: (this.from as unknown) as Timestamp,
       to: (this.to as unknown) as Timestamp,
@@ -209,7 +209,7 @@ export class Timeslot implements TimeslotBase<Date> {
   /**
    * Takes in a Firestore timeslot record and returns a new `Timeslot` object.
    */
-  public static fromFirestore(data: TimeslotFirestoreInterface): Timeslot {
+  public static fromFirestore(data: TimeslotFirestore): Timeslot {
     return new Timeslot(data.from.toDate(), data.to.toDate());
   }
 
@@ -221,7 +221,7 @@ export class Timeslot implements TimeslotBase<Date> {
     return new Timeslot(new Date(json.from), new Date(json.to));
   }
 
-  public static fromSearchHit(hit: TimeslotSearchHitInterface): Timeslot {
+  public static fromSearchHit(hit: TimeslotSearchHit): Timeslot {
     return new Timeslot(new Date(hit.from), new Date(hit.to));
   }
 

@@ -4,8 +4,9 @@ import 'firebase/firestore';
 
 import { v4 as uuid } from 'uuid';
 
+import { ObjectWithObjectID } from '@algolia/client-search';
 import { User, Aspect } from './user';
-import { Timeslot, TimeslotJSON } from './timeslot';
+import { Timeslot, TimeslotJSON, TimeslotSearchHit } from './timeslot';
 
 import construct from './construct';
 
@@ -67,10 +68,13 @@ export interface ApptInterface {
   bramble?: Venue;
   jitsi?: Venue;
   ref?: DocumentReference | AdminDocumentReference;
-  id?: string;
+  id: string;
 }
 
 export type ApptJSON = Omit<ApptInterface, 'time'> & { time?: TimeslotJSON };
+
+export type ApptSearchHit = ObjectWithObjectID &
+  Omit<ApptInterface, 'time'> & { time?: TimeslotSearchHit };
 
 export class Appt implements ApptInterface {
   public subjects: string[] = [];
@@ -89,7 +93,7 @@ export class Appt implements ApptInterface {
 
   public time?: Timeslot;
 
-  public id?: string;
+  public id: string = '';
 
   /**
    * Wrap your boring `Record`s with this class to ensure that they have all of
@@ -153,5 +157,14 @@ export class Appt implements ApptInterface {
         'non-existent Firestore document.'
     );
     return new Appt();
+  }
+
+  public static fromSearchHit(hit: ApptSearchHit): Appt {
+    const { time, objectID, ...rest } = hit;
+    return new Appt({
+      ...rest,
+      time: typeof time === 'undefined' ? time : Timeslot.fromSearchHit(time),
+      id: objectID,
+    });
   }
 }

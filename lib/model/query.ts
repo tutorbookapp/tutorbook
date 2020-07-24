@@ -16,18 +16,20 @@ import construct from './construct';
  * The base object just supports pagination, text-based search, and tag filters.
  * @abstract
  * @property query - The current string search query.
+ * @property orgs - The organizations that the resource belongs to.
  * @property tags - Algolia search `__tags` (e.g. `NOT_YET_VETTED`).
  * @property hitsPerPage - The number of hits to display per page (pagination).
  * @property page - The current page number (for pagination purposes).
  */
-interface QueryInterface {
+export interface QueryInterface {
   query: string;
+  orgs: Option<string>[];
   tags: Option<Tag>[];
   hitsPerPage: number;
   page: number;
 }
-type QueryJSON = QueryInterface;
-type QueryURL = { [key in keyof QueryInterface]?: string };
+export type QueryJSON = QueryInterface;
+export type QueryURL = { [key in keyof QueryInterface]?: string };
 
 export type ApptsQueryInterface = QueryInterface;
 export type ApptsQueryJSON = QueryJSON;
@@ -42,7 +44,6 @@ export type ApptsQueryURL = QueryURL;
  * @property availability - When the user is available; OR category.
  * @property checks - The checks the user has passed; OR category.
  * @property parents - The parents that the user is a child to; OR category.
- * @property orgs - The organizations that the user belongs to; OR category.
  * @property [visible] - Regular users can only ever see users where this is
  * `true`. Organization admins, however, can see all their users (regardless of
  * their visibility) which is why this property exists.
@@ -54,7 +55,6 @@ export interface UsersQueryInterface extends QueryInterface {
   availability: Availability;
   checks: Option<Check>[];
   parents: Option<string>[];
-  orgs: Option<string>[];
   visible?: boolean;
 }
 export type UsersQueryJSON = Omit<UsersQueryInterface, 'availability'> & {
@@ -69,8 +69,10 @@ export interface Option<T> {
 
 export type Callback<T> = (value: T) => void;
 
-abstract class Query implements QueryInterface {
+export abstract class Query implements QueryInterface {
   public query = '';
+
+  public orgs: Option<string>[] = [];
 
   public tags: Option<Tag>[] = [];
 
@@ -99,6 +101,7 @@ abstract class Query implements QueryInterface {
       pathname,
       query: {
         query: encodeURIComponent(this.query),
+        orgs: encode(this.orgs),
         tags: encode(this.tags),
         page: this.page,
         hitsPerPage: this.hitsPerPage,
@@ -113,6 +116,7 @@ abstract class Query implements QueryInterface {
 
     return {
       query: decodeURIComponent(params.query || ''),
+      orgs: decode<Check>(params.orgs),
       tags: decode(params.tags),
       page: Number(decodeURIComponent(params.page || '0')),
       hitsPerPage: Number(decodeURIComponent(params.hitsPerPage || '20')),
@@ -130,13 +134,21 @@ abstract class Query implements QueryInterface {
   }
 }
 
-export class ApptsQuery extends Query {
+export class ApptsQuery extends Query implements ApptsQueryInterface {
   public get endpoint(): string {
     return this.getURL('/api/appts');
   }
+
+  public static fromURLParams(params: ApptsQueryURL): ApptsQuery {
+    return new ApptsQuery(super.fromURLParams(params));
+  }
+
+  public static fromJSON(json: ApptsQueryJSON): ApptsQuery {
+    return new ApptsQuery(super.fromJSON(json));
+  }
 }
 
-export class UsersQuery extends Query {
+export class UsersQuery extends Query implements UsersQueryInterface {
   public aspect: Aspect = 'mentoring';
 
   public subjects: Option<string>[] = [];
@@ -148,8 +160,6 @@ export class UsersQuery extends Query {
   public checks: Option<Check>[] = [];
 
   public parents: Option<string>[] = [];
-
-  public orgs: Option<string>[] = [];
 
   public visible?: boolean;
 
@@ -175,6 +185,7 @@ export class UsersQuery extends Query {
       pathname,
       query: {
         query: encodeURIComponent(this.query),
+        orgs: encode(this.orgs),
         tags: encode(this.tags),
         page: this.page,
         hitsPerPage: this.hitsPerPage,
@@ -184,7 +195,6 @@ export class UsersQuery extends Query {
         availability: this.availability.toURLParam(),
         checks: encode(this.checks),
         parents: encode(this.parents),
-        orgs: encode(this.orgs),
         visible: this.visible,
       },
     });
@@ -198,7 +208,6 @@ export class UsersQuery extends Query {
     return new UsersQuery({
       ...super.fromURLParams(params),
       parents: decode<Check>(params.parents),
-      orgs: decode<Check>(params.orgs),
       checks: decode(params.checks),
       langs: decode(params.langs),
       subjects: decode(params.subjects),

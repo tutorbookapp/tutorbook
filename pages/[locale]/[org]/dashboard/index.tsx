@@ -138,6 +138,12 @@ function DashboardPage({
             href: '/[org]/dashboard/people',
             as: `/${query.org as string}/dashboard/people`,
           },
+          {
+            label: msg(msgs.appts),
+            active: false,
+            href: '/[org]/dashboard/appts',
+            as: `/${query.org as string}/dashboard/appts`,
+          },
         ]}
       />
       <Overview account={Org.fromJSON(org as OrgJSON)} />

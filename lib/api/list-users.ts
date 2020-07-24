@@ -5,14 +5,14 @@ import {
   Org,
   User,
   UserJSON,
-  SearchHit,
+  UserSearchHit,
   UsersQuery,
   Timeslot,
-  Option,
 } from 'lib/model';
 
 import to from 'await-to-js';
 
+import { addFilters, getFilterString } from './helpers/search';
 import { db, auth, DecodedIdToken, DocumentSnapshot } from './helpers/firebase';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
@@ -22,21 +22,6 @@ const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 const index: SearchIndex = client.initIndex(
   process.env.NODE_ENV === 'development' ? 'test-users' : 'default-users'
 );
-
-function addFilters(
-  base: string,
-  filters: Option<string>[],
-  attr: string
-): string {
-  const addAND = base.length && !base.endsWith(' AND ') && filters.length;
-  let filterString = addAND ? `${base} AND ` : base;
-  for (let i = 0; i < filters.length; i += 1) {
-    filterString += i === 0 ? '(' : ' OR ';
-    filterString += `${attr}:"${filters[i].value}"`;
-    if (i === filters.length - 1) filterString += ')';
-  }
-  return filterString;
-}
 
 /**
  * Creates and returns the filter string to search our Algolia index based on
@@ -52,10 +37,9 @@ function addFilters(
  * @see {@link https://www.algolia.com/doc/guides/managing-results/refine-results/filtering/how-to/filter-arrays/?language=javascript}
  */
 function getFilterStrings(query: UsersQuery): string[] {
-  let filterString =
-    typeof query.visible === 'boolean'
-      ? `visible=${query.visible ? 1 : 0}`
-      : '';
+  let filterString: string = getFilterString(query);
+  if (typeof query.visible === 'boolean')
+    filterString += ` AND visible=${query.visible ? 1 : 0}`;
   filterString = addFilters(
     filterString,
     query.subjects,
@@ -64,8 +48,6 @@ function getFilterStrings(query: UsersQuery): string[] {
   filterString = addFilters(filterString, query.langs, 'langs');
   filterString = addFilters(filterString, query.checks, 'verifications.checks');
   filterString = addFilters(filterString, query.parents, 'parents');
-  filterString = addFilters(filterString, query.orgs, 'orgs');
-  filterString = addFilters(filterString, query.tags, '_tags');
   if (query.availability.length) filterString += ' AND ';
   const filterStrings: string[] = [];
   query.availability.forEach((timeslot: Timeslot) =>
@@ -105,7 +87,7 @@ async function searchUsers(
   if (!filterStrings.length) filterStrings = [undefined];
   const optionalFilters: string[] = getOptionalFilterStrings(query);
   const { page, hitsPerPage, query: text } = query;
-  console.log('[DEBUG] Filtering by:', {
+  console.log('[DEBUG] Searching users by:', {
     text,
     page,
     hitsPerPage,
@@ -117,14 +99,14 @@ async function searchUsers(
       const options: SearchOptions | undefined = filterString
         ? { page, hitsPerPage, optionalFilters, filters: filterString }
         : { page, hitsPerPage, optionalFilters };
-      const [err, res] = await to<SearchResponse<SearchHit>>(
-        index.search(text, options) as Promise<SearchResponse<SearchHit>>
+      const [err, res] = await to<SearchResponse<UserSearchHit>>(
+        index.search(text, options) as Promise<SearchResponse<UserSearchHit>>
       );
       if (err || !res) {
         /* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */
         console.error(`[ERROR] While searching ${filterString}:`, err);
       } else {
-        res.hits.forEach((hit: SearchHit) => {
+        res.hits.forEach((hit: UserSearchHit) => {
           if (results.findIndex((h) => h.id === hit.objectID) < 0)
             results.push(User.fromSearchHit(hit));
         });
@@ -172,7 +154,7 @@ export interface ListUsersRes {
  * Clients can only view users whose visibility is `true` **unless** those users
  * belong to the client's organization.
  *
- * @param {QueryJSON} query - A query parsed into URL query parameters.
+ * @param {UserQueryJSON} query - A query parsed into URL query parameters.
  * @return { users: UserJSON[]; hits: number } - The results and the number of
  * total search hits (we don't send all the search hits; only the ones specified
  * by the current `query` pagination). Note that we don't respond with
