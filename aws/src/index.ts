@@ -214,7 +214,7 @@ async function getApptByHandles(handles: string[]): Promise<ApptSearchHit> {
 export function handler(event: MailEvent): void {
   const notification: SESNotification = event.Records[0].ses;
 
-  console.log('Processing:', JSON.stringify(notification, null, 2));
+  console.log('Processing event:', JSON.stringify(notification, null, 2));
 
   async function callback(
     err: AWSError,
@@ -225,6 +225,8 @@ export function handler(event: MailEvent): void {
     } else if (!data.Body) {
       throw new Error(`Email (${notification.mail.messageId}) was empty.`);
     } else {
+      console.log('Processing email body:', data.Body.toString());
+
       // We reject the email if there are anonymous email address for multiple
       // appointments in the same email.
       // TODO: Use the SES SDK to reject the email with this error message.
