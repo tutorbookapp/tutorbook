@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 
-import { useIntl, Msg, IntlShape, IntlHelper } from 'lib/intl';
+import { useMsg } from 'lib/intl';
 import { Callback, Option, Timeslot, User, UsersQuery } from 'lib/model';
 import { defineMessages } from 'react-intl';
 import { v4 as uuid } from 'uuid';
@@ -14,14 +14,14 @@ import Form from './form';
 import styles from './search.module.scss';
 
 interface SearchProps {
-  onChange: Callback<Query>;
+  onChange: Callback<UsersQuery>;
   results: ReadonlyArray<User>;
   searching: boolean;
   query: UsersQuery;
   user?: User;
 }
 
-const msgs: Record<string, Msg> = defineMessages({
+const msgs = defineMessages({
   noResultsTitle: {
     id: 'search.no-results.title',
     defaultMessage: 'No Results',
@@ -41,14 +41,16 @@ export default function Search({
   searching,
   onChange,
 }: SearchProps): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const [viewing, setViewing] = useState<User | undefined>(user);
+  const [elevated, setElevated] = useState<boolean>(false);
 
-  const [viewing, setViewing] = React.useState<User | undefined>(user);
-  const [elevated, setElevated] = React.useState<boolean>(false);
-  const formRef: React.RefObject<HTMLDivElement> = React.createRef();
+  const msg = useMsg();
+  const formRef = useRef<HTMLDivElement | null>();
+  const noResultsQuery = useMemo(() => {
+    return new UsersQuery({ aspect: query.aspect, visible: true });
+  }, [query.aspect]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const listener = () => {
       if (!formRef.current) return;
       const viewportOffset = formRef.current.getBoundingClientRect();
@@ -107,10 +109,7 @@ export default function Search({
         <div className={styles.noResults}>
           <h3 className={styles.noResultsHeader}>{msg(msgs.noResultsTitle)}</h3>
           <p className={styles.noResultsBody}>{msg(msgs.noResultsBody)}</p>
-          <Carousel
-            query={new UsersQuery({ aspect: query.aspect })}
-            onClick={setViewing}
-          />
+          <Carousel query={noResultsQuery} onClick={setViewing} />
         </div>
       )}
     </div>

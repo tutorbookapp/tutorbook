@@ -27,6 +27,9 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
   const [viewing, setViewing] = useState<User | undefined>();
   const onClosed = useCallback(() => setViewing(undefined), []);
   const subjects = useMemo(() => [], []);
+  const query = useMemo(() => {
+    return new UsersQuery({ aspect, visible: true });
+  }, [aspect]);
   return (
     <div className={styles.hero}>
       <div className={styles.wrapper}>
@@ -44,7 +47,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
         <Card className={styles.card}>
           <SearchForm aspect={aspect} />
         </Card>
-        <Carousel query={new UsersQuery({ aspect })} onClick={setViewing} />
+        <Carousel query={query} onClick={setViewing} />
       </div>
     </div>
   );
