@@ -1,7 +1,6 @@
 import Handlebars from 'handlebars';
 import Utils from 'lib/utils';
 
-import { Role } from 'lib/model';
 import Check from './shared/check.hbs';
 import Cross from './shared/cross.hbs';
 import Profile from './shared/profile.hbs';
@@ -9,28 +8,6 @@ import Profile from './shared/profile.hbs';
 Handlebars.registerPartial('check', Check);
 Handlebars.registerPartial('cross', Cross);
 Handlebars.registerPartial('profile', Profile);
-
-/**
- * Custom handlebars helper that returns the roles that a user is not.
- * @example
- * "Once they approve, you'll receive instructions for how to connect with your
- * mentor."
- */
-/* eslint-disable-next-line consistent-return */
-Handlebars.registerHelper('role', function role(array: Role[]): Role {
-  /* eslint-disable default-case */
-  switch (array[0]) {
-    case 'mentor':
-      return 'mentee';
-    case 'tutor':
-      return 'tutee';
-    case 'mentee':
-      return 'mentor';
-    case 'tutee':
-      return 'tutor';
-  }
-  /* eslint-enable default-case */
-});
 
 /**
  * Custom handlebars helper that joins a list together using 'and'.
