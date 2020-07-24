@@ -57,3 +57,5 @@ export const db: DocumentReference =
   process.env.NODE_ENV === 'development'
     ? firestore.collection('partitions').doc('test')
     : firestore.collection('partitions').doc('default');
+
+firestore.settings({ ignoreUndefinedProperties: true });

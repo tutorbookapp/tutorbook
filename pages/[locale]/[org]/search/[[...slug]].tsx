@@ -15,6 +15,7 @@ import { useIntl, getIntlProps, withIntl } from 'lib/intl';
 import { User, UserJSON, Query, QueryJSON, Availability } from 'lib/model';
 
 type App = admin.app.App;
+type Firestore = admin.firestore.Firestore;
 type DocumentReference = admin.firestore.DocumentReference;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
@@ -73,10 +74,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
       uuid()
     );
+    const firestore: Firestore = firebase.firestore();
     const db: DocumentReference =
       process.env.NODE_ENV === 'development'
-        ? firebase.firestore().collection('partitions').doc('test')
-        : firebase.firestore().collection('partitions').doc('default');
+        ? firestore.collection('partitions').doc('test')
+        : firestore.collection('partitions').doc('default');
+
+    firestore.settings({ ignoreUndefinedProperties: true });
 
     const userDoc: DocumentSnapshot = await db
       .collection('users')
