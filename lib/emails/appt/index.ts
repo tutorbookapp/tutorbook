@@ -144,17 +144,17 @@ export default class ApptEmail implements Email {
   public constructor(appt: Appt, attendees: UserWithRoles[], creator: User) {
     const recipients = attendees.filter((a) => a.id !== creator.id);
     const creatorEmail = getEmail(appt, creator.id);
-    const attendeeNames: string[] = recipients.map(({ name }) => name);
-    const contacts: Contact[] = [...recipients, creator].map((a) => ({
-      name: a.name,
-      email: getEmail(appt, a.id),
-      url: `mailto:${encodeURIComponent(`"${name}"<${getEmail(appt, a.id)}>`)}`,
+    const attendeeNames = recipients.map(({ name }) => name);
+    const contacts = [...recipients, creator].map(({ name, id }) => ({
+      name,
+      email: getEmail(appt, id),
+      url: `mailto:${encodeURIComponent(`"${name}"<${getEmail(appt, id)}>`)}`,
     }));
     const rolesDescription = `with ${Utils.join(
       attendees.map(({ name, roles }) => `${name} as the ${Utils.join(roles)}`)
     )}`;
     const org: Org = new Org({ name: 'Tutorbook' });
-    const { roles } = recipients[0];
+    const { roles: recipientRoles, name: recipientName } = recipients[0];
 
     this.to = recipients.map(({ name, id }) => ({
       name,
@@ -170,14 +170,21 @@ export default class ApptEmail implements Email {
     this.subject = `New ${Utils.join(appt.subjects)} appointment on Tutorbook.`;
 
     if (recipients.length === 1) {
-      this.html = generic({ appt, creator, creatorEmail, roles });
+      this.html = generic({
+        appt,
+        creator,
+        creatorEmail,
+        recipientName,
+        recipientRoles,
+      });
       /* prettier-ignore */
       this.text = 
-`Hi there,
+`Hi ${recipientName},
 
-${creator.name} wants you as a ${Utils.join(roles)} for ${Utils.join(appt.subjects)}:
+${creator.name} wants you as a ${Utils.join(recipientRoles)} for ${Utils.join(appt.subjects)}:
 
-> ${appt.message}
+> "${appt.message}"
+> —${creator.name} 
 
 If you're interested, please get in touch with ${creator.name} by replying to this email or using the following email address:
 
@@ -209,7 +216,7 @@ ${(appt.bramble as Venue).url}
 
 ${creator.name} from ${org.name} set up this lesson:
 
-> ${appt.message}
+> "${appt.message}"
 > —${creator.name} from ${org.name} 
 
 If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:
@@ -242,7 +249,7 @@ ${(appt.jitsi as Venue).url}
 
 ${creator.name} from ${org.name} set up this lesson:
 
-> ${appt.message}
+> "${appt.message}"
 > —${creator.name} from ${org.name} 
 
 If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:
