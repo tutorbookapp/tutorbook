@@ -12,7 +12,6 @@ import styles from './dashboard.module.scss';
 
 interface ApptRowProps {
   appt: ApptJSON;
-  onClick: () => void;
   onChange: Callback<ApptJSON>;
 }
 
