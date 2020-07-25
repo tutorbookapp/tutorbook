@@ -11,13 +11,21 @@
 }
 
 .hero {
-  padding: 60px 0;
+  padding: 72px 0;
+
+  @media (max-width: 800px) {
+    padding: 48px 0;
+  }
 }
 
 .title {
   text-align: initial;
   max-width: 600px;
-  padding-bottom: 40px;
+  padding-bottom: 48px;
+
+  @media (max-width: 800px) {
+    padding-bottom: 24px;
+  }
 }
 
 .card {

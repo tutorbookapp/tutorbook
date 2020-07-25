@@ -1,16 +1,18 @@
 @use 'sass:map';
 @use 'styles/config';
+@use 'styles/common';
 @use 'styles/typography';
 
 .wrapper {
-  max-width: config.$default-width;
-  margin: 0 auto;
-  padding: 0 24px;
-  box-sizing: border-box;
+  @include common.wrapper;
 }
 
 .summary {
-  padding: 60px 0 100px;
+  padding: 48px 0 72px;
+
+  @media (max-width: 800px) {
+    padding: 24px 0 48px;
+  }
 }
 
 .summary {
@@ -25,6 +27,10 @@
 
 .subheader {
   @include typography.typography('headline3');
+
+  @media (max-width: 800px) {
+    @include typography.typography('headline4');
+  }
 }
 
 .body {

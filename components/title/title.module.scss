@@ -57,4 +57,8 @@
   padding-bottom: 5px; // Otherwise, words with 'g' and 'y' get cut off.
   border: 1px solid #fff; // Otherwise, the background peeks out on mobile.
   margin: -1px;
+
+  @media (max-width: 800px) {
+    @include typography.typography('headline3');
+  }
 }
