@@ -4,7 +4,7 @@ import { Option, Aspect, GradeAlias } from 'lib/model';
 import Select, { SelectControllerProps } from 'components/select';
 import algoliasearch, { SearchClient } from 'algoliasearch/lite';
 
-import React from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import equal from 'fast-deep-equal';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
@@ -19,7 +19,7 @@ interface SubjectHit extends ObjectWithObjectID {
 interface SubjectSelectProps {
   options?: string[];
   grade?: GradeAlias;
-  aspect: Aspect;
+  aspect?: Aspect;
 }
 
 /**
@@ -42,10 +42,10 @@ export default function SubjectSelect({
   ...props
 }: SelectControllerProps<string> & SubjectSelectProps): JSX.Element {
   // Directly control the `Select` component with this internal state.
-  const [selectedOptions, setSelectedOptions] = React.useState<
-    Option<string>[]
-  >(selected || []);
-  const onSelectedOptionsChange = React.useCallback(
+  const [selectedOptions, setSelectedOptions] = useState<Option<string>[]>(
+    selected || []
+  );
+  const onSelectedOptionsChange = useCallback(
     (os: Option<string>[]) => {
       setSelectedOptions(os);
       if (onSelectedChange) onSelectedChange(os);
@@ -56,8 +56,11 @@ export default function SubjectSelect({
 
   // Search the Algolia index (filtering by options and grade) to get select
   // options/suggestions (for the drop-down menu).
-  const searchIndex = React.useMemo(() => client.initIndex(aspect), [aspect]);
-  const getSuggestions = React.useCallback(
+  const searchIndexes = useMemo(() => {
+    if (aspect) return [client.initIndex(aspect)];
+    return [client.initIndex('tutoring'), client.initIndex('mentoring')];
+  }, [aspect]);
+  const getSuggestions = useCallback(
     async (query = '') => {
       if (options && !options.length) return [];
       const filters: string | undefined =
@@ -66,47 +69,49 @@ export default function SubjectSelect({
           : undefined;
       const optionalFilters: string[] | undefined =
         grade !== undefined ? [`grades:${grade}`] : undefined;
-      const res: SearchResponse<SubjectHit> = await searchIndex.search(query, {
-        filters,
-        optionalFilters,
-      });
-      return res.hits.map(({ name }) => ({ label: name, value: name }));
+      const suggestions: Set<string> = new Set();
+      await Promise.all(
+        searchIndexes.map(async (index) => {
+          const res: SearchResponse<SubjectHit> = await index.search(query, {
+            filters,
+            optionalFilters,
+          });
+          res.hits.forEach(({ name }) => suggestions.add(name));
+        })
+      );
+      return Array.from(suggestions).map((label) => ({ label, value: label }));
     },
-    [options, grade, searchIndex]
+    [options, grade, searchIndexes]
   );
 
   // Sync the controlled values (i.e. subject codes) with the internally stored
   // `selectedOptions` state **only** if they don't already match.
-  React.useEffect(
-    () =>
-      setSelectedOptions((prev: Option<string>[]) => {
-        // If they already match, do nothing.
-        if (!value) return prev;
-        if (
-          equal(
-            prev.map(({ value: val }) => val),
-            value
-          )
+  useEffect(() => {
+    setSelectedOptions((prev: Option<string>[]) => {
+      // If they already match, do nothing.
+      if (!value) return prev;
+      if (
+        equal(
+          prev.map(({ value: val }) => val),
+          value
         )
-          return prev;
-        // Otherwise, update the options based on the subject codes.
-        return value.map((val: string) => ({ label: val, value: val }));
-        // TODO: Add i18n to subjects by including labels for all languages in that
-        // search index (and then fetching the correct labels for the given subject
-        // codes here by searching that index).
-      }),
-    [value]
-  );
+      )
+        return prev;
+      // Otherwise, update the options based on the subject codes.
+      return value.map((val: string) => ({ label: val, value: val }));
+      // TODO: Add i18n to subjects by including labels for all languages in that
+      // search index (and then fetching the correct labels for the given subject
+      // codes here by searching that index).
+    });
+  }, [value]);
 
   // Expose API surface to directly control the `selectedOptions` state.
-  React.useEffect(
-    () =>
-      setSelectedOptions((prev: Option<string>[]) => {
-        if (!selected || equal(prev, selected)) return prev;
-        return selected;
-      }),
-    [selected]
-  );
+  useEffect(() => {
+    setSelectedOptions((prev: Option<string>[]) => {
+      if (!selected || equal(prev, selected)) return prev;
+      return selected;
+    });
+  }, [selected]);
 
   return (
     <Select
