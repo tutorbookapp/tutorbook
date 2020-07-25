@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 
 import Router from 'next/router';
 import Avatar from 'components/avatar';
-import firebase from 'lib/firebase';
-import 'firebase/auth';
 
 import { mutate } from 'swr';
 import { useMsg, useIntl, Link } from 'lib/intl';
@@ -250,6 +248,8 @@ export default function PopOverMenu({
           <PopOverButton
             onClick={async () => {
               setLoggingOut(true);
+              const { default: firebase } = await import('lib/firebase');
+              await import('firebase/auth');
               await firebase.auth().signOut();
               await mutate('/api/account', new User().toJSON(), false);
               await Router.push('/[locale]/login', `/${locale}/login`);

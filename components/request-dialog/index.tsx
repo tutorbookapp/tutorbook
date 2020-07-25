@@ -23,17 +23,22 @@ import {
   Attendee,
   Aspect,
 } from 'lib/model';
-import { Tooltip } from '@rmwc/tooltip';
 import { signupWithGoogle } from 'lib/account/signup';
 import { useUser } from 'lib/account';
+import { TooltipProps } from '@rmwc/tooltip';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { useMsg, IntlHelper } from 'lib/intl';
 import { v4 as uuid } from 'uuid';
 
+import dynamic from 'next/dynamic';
 import to from 'await-to-js';
 import msgs from './msgs';
 import styles from './request-dialog.module.scss';
+
+const Tooltip = dynamic<TooltipProps>(async () =>
+  import('@rmwc/tooltip').then((mod) => mod.Tooltip)
+);
 
 interface RequestDialogProps {
   onClosed: () => void;

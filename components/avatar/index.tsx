@@ -1,8 +1,12 @@
 import React from 'react';
-
-import { Tooltip } from '@rmwc/tooltip';
+import dynamic from 'next/dynamic';
+import { TooltipProps } from '@rmwc/tooltip';
 
 import styles from './avatar.module.scss';
+
+const Tooltip = dynamic<TooltipProps>(async () =>
+  import('@rmwc/tooltip').then((mod) => mod.Tooltip)
+);
 
 interface AvatarProps {
   src?: string;

@@ -4,12 +4,7 @@ import { Callback } from 'lib/model';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { v4 as uuid } from 'uuid';
 
-import firebase from 'lib/firebase';
-import 'firebase/storage';
-
 import styles from './photo-input.module.scss';
-
-type Reference = firebase.storage.Reference;
 
 type TextFieldPropOverrides = 'helpText' | 'inputRef' | 'invalid';
 
@@ -50,7 +45,7 @@ export default function PhotoInput({
     event.stopPropagation();
     if (inputRef.current) inputRef.current.click();
   };
-  const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
+  const handleChange = async (event: React.FormEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -65,9 +60,13 @@ export default function PhotoInput({
     const pathname = `${
       process.env.NODE_ENV === 'development' ? 'test' : 'default'
     }/temp/${uuid()}.${extension}`;
-    const ref: Reference = firebase.storage().ref(pathname);
 
     setHelperValue(`Uploading ${filename}.${extension}...`);
+
+    const { default: firebase } = await import('lib/firebase');
+    await import('firebase/storage');
+
+    const ref = firebase.storage().ref(pathname);
 
     ref.put(file).on(firebase.storage.TaskEvent.STATE_CHANGED, {
       next() {}, // See https://github.com/firebase/firebase-js-sdk/issues/3158

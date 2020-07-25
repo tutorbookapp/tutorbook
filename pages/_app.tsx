@@ -5,10 +5,9 @@ import { ApiError } from 'lib/model';
 import { UserProvider } from 'lib/account';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import firebase from 'lib/firebase';
 import to from 'await-to-js';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 import CovidHead from 'components/doc-head';
@@ -21,9 +20,7 @@ async function fetcher<T>(url: string): Promise<T> {
   const [err, res] = await to<AxiosResponse<T>, AxiosError<ApiError>>(
     axios.get<T>(url)
   );
-  const error: (description: string) => void = (description: string) => {
-    console.error(`[ERROR] ${description}`);
-    firebase.analytics().logEvent('exception', { description });
+  const error: (description: string) => never = (description: string) => {
     throw new Error(description);
   };
   if (err && err.response) {
@@ -37,7 +34,12 @@ async function fetcher<T>(url: string): Promise<T> {
 }
 
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
-  const timeoutId = React.useRef<ReturnType<typeof setTimeout>>();
+  const timeoutId = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    const initFirebaseAndAnalytics = () => import('lib/firebase');
+    void initFirebaseAndAnalytics();
+  }, []);
 
   Object.entries({
     routeChangeStart: () => {

@@ -1,7 +1,12 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Typography } from '@rmwc/typography';
-import { Tooltip } from '@rmwc/tooltip';
+import dynamic from 'next/dynamic';
+import { TooltipProps } from '@rmwc/tooltip';
+import { useMsg } from 'lib/intl';
+import { defineMessages } from 'react-intl';
+
+const Tooltip = dynamic<TooltipProps>(async () =>
+  import('@rmwc/tooltip').then((mod) => mod.Tooltip)
+);
 
 interface SelectHintProps {
   readonly children: JSX.Element;
@@ -12,20 +17,17 @@ export default function SelectHint({
   children,
   open,
 }: SelectHintProps): JSX.Element {
+  const msg = useMsg();
+  const msgs = defineMessages({
+    hint: {
+      id: 'subject-select.select-hint',
+      description:
+        'The tooltip text prompting the user to shift-select subjects.',
+      defaultMessage: "Use 'SHIFT + click' for multiple select",
+    },
+  });
   return (
-    <Tooltip
-      content={
-        <Typography use='caption'>
-          <FormattedMessage
-            id='subject-select.select-hint'
-            description='The tooltip text prompting the user to shift-select subjects.'
-            defaultMessage="Use 'SHIFT + click' for multiple select"
-          />
-        </Typography>
-      }
-      align='topRight'
-      open={open}
-    >
+    <Tooltip content={msg(msgs.hint)} align='topRight' open={open}>
       {children}
     </Tooltip>
   );
