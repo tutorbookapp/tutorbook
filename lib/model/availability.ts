@@ -123,7 +123,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return !!this.filter((t) => t.equalTo(timeslot)).length;
   }
 
-  public toFirestore(): AvailabilityFirestoreAlias {
+  public toFirestore(): AvailabilityFirestore {
     return Array.from(this.map((timeslot: Timeslot) => timeslot.toFirestore()));
   }
 
@@ -132,7 +132,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * objects in the `from` and `to` fields instead of `Date` objects) and
    * returns an `Availability` object.
    */
-  public static fromFirestore(data: AvailabilityFirestoreAlias): Availability {
+  public static fromFirestore(data: AvailabilityFirestore): Availability {
     const availability: Availability = new Availability();
     data.forEach((t) => availability.push(Timeslot.fromFirestore(t)));
     return availability;
