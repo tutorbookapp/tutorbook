@@ -117,19 +117,19 @@ export async function apptUpdate(
    * @return A list of org IDs that the `appt` attendees are a part of.
    */
   async function orgs(appt: Record<string, unknown>): Promise<string[]> {
-    const ids: string[] = [];
+    const ids: Set<string> = new Set();
     await Promise.all(
       (appt.attendees as { id: string }[]).map(async ({ id }) => {
         const doc = await db.collection('users').doc(id).get();
         if (!doc.exists) {
           console.warn(`[WARNING] Attendee (${id}) doesn't exist.`);
         } else {
-          (doc.data() as { orgs: string[] }).orgs.forEach((o) => ids.push(o));
+          (doc.data() as { orgs: string[] }).orgs.forEach((o) => ids.add(o));
         }
       })
     );
     console.log(`[DEBUG] Got orgs for appt (${appt.id as string}):`, ids);
-    return ids;
+    return Array.from(ids);
   }
 
   const id: string = context.params.appt as string;
@@ -148,7 +148,7 @@ export async function apptUpdate(
     console.log(`[DEBUG] Updating appt (${id})...`);
     const ob: Record<string, unknown> = {
       ...appt,
-      time: timeslot(appt.time as Timeslot<Timestamp>),
+      time: appt.time ? timeslot(appt.time as Timeslot<Timestamp>) : undefined,
       handles: handles(appt),
       orgs: await orgs(appt),
       objectID: id,
