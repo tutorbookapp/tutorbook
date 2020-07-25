@@ -8,7 +8,7 @@ import React from 'react';
 
 import { PopOverButton, PopOverAccountLink } from './pop-over';
 
-import styles from './switcher.module.scss';
+import styles from './pop-over.module.scss';
 
 export default function Switcher(): JSX.Element {
   const { pathname, query } = useRouter();
