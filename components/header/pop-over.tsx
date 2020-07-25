@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 
 import Router from 'next/router';
 import Avatar from 'components/avatar';
@@ -9,7 +9,7 @@ import { mutate } from 'swr';
 import { useMsg, useIntl, Link } from 'lib/intl';
 import { useUser, useOrgs } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
-import { Org, OrgJSON, User, Account } from 'lib/model';
+import { OrgJSON, User, Account } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 import { defineMessages } from 'react-intl';
 import { Ripple } from '@rmwc/ripple';
