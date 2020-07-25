@@ -10,14 +10,14 @@
   visibility: hidden;
   display: none;
   position: sticky;
-  z-index: 4;
+  z-index: 3;
   top: config.$nav-height + 12px;
   margin-bottom: 24px;
   width: 100%;
 }
 
 .elevated {
-  @include elevation.elevation(4);
+  @include elevation.elevation(8);
   width: calc(100% + 24px);
   margin-left: -12px;
 }
