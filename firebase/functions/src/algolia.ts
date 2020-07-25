@@ -117,17 +117,19 @@ export async function apptUpdate(
    * @return A list of org IDs that the `appt` attendees are a part of.
    */
   async function orgs(appt: Record<string, unknown>): Promise<string[]> {
-    const orgIds: string[] = [];
+    const ids: string[] = [];
     await Promise.all(
       (appt.attendees as { id: string }[]).map(async ({ id }) => {
         const doc = await db.collection('users').doc(id).get();
-        if (!doc.exists)
+        if (!doc.exists) {
           console.warn(`[WARNING] Attendee (${id}) doesn't exist.`);
-        (doc.data() as { orgs: string[] }).orgs.forEach((o) => orgIds.push(o));
+        } else {
+          (doc.data() as { orgs: string[] }).orgs.forEach((o) => ids.push(o));
+        }
       })
     );
-    console.log(`[DEBUG] Got orgs for appt (${appt.id as string}):`, orgIds);
-    return orgIds;
+    console.log(`[DEBUG] Got orgs for appt (${appt.id as string}):`, ids);
+    return ids;
   }
 
   const id: string = context.params.appt as string;
