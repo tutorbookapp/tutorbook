@@ -12,7 +12,7 @@ import {
 
 import to from 'await-to-js';
 
-import { addFilters, getFilterString } from './helpers/search';
+import { addFilter, addFilters, getFilterString } from './helpers/search';
 import { db, auth, DecodedIdToken, DocumentSnapshot } from './helpers/firebase';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
@@ -39,7 +39,7 @@ const index: SearchIndex = client.initIndex(
 function getFilterStrings(query: UsersQuery): string[] {
   let filterString: string = getFilterString(query);
   if (typeof query.visible === 'boolean')
-    filterString += ` AND visible=${query.visible ? 1 : 0}`;
+    filterString = addFilter(filterString, `visible=${query.visible ? 1 : 0}`);
   filterString = addFilters(
     filterString,
     query.subjects,
