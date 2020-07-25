@@ -21,14 +21,16 @@ import MentoringTemplate from './mentoring.hbs';
  * @property appt - The appointment the email is about.
  * @property creator - The creator of the `appt`.
  * @property creatorEmail - The creator's email handle.
- * @property roles - The roles of the recipient of the email (i.e. the attendee
- * who isn't the creator).
+ * @property recipientName - The name of the recipient of the email.
+ * @property recipientRoles - The roles of the recipient of the email (i.e. the
+ * roles of the attendee who isn't the creator).
  */
 interface GenericData {
   appt: Appt;
   creator: User;
   creatorEmail: string;
-  roles: Role[];
+  recipientName: string;
+  recipientRoles: Role[];
 }
 
 /**
