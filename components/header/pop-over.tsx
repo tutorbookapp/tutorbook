@@ -181,6 +181,10 @@ export default function PopOverMenu({
       id: 'pop-over.links.appts',
       defaultMessage: 'Appointments',
     },
+    search: {
+      id: 'pop-over.links.search',
+      defaultMessage: 'Search',
+    },
     home: {
       id: 'pop-over.links.home',
       defaultMessage: 'Home',
@@ -207,13 +211,20 @@ export default function PopOverMenu({
       <MenuSurface open={open} onClose={onClose}>
         <div className={styles.picker}>
           <PopOverAccountHeader account={user} />
+          <PopOverLink href='/'>{msg(msgs.home)}</PopOverLink>
+          <PopOverLink href='/search'>{msg(msgs.search)}</PopOverLink>
           <PopOverLink href='/signup'>{msg(msgs.profile)}</PopOverLink>
           <PopOverLink href='/dashboard'>{msg(msgs.dashboard)}</PopOverLink>
-          <PopOverLink href='/'>{msg(msgs.home)}</PopOverLink>
           {orgs.map((org: OrgJSON) => (
             <>
               <div className={styles.line} />
               <PopOverAccountHeader account={org} />
+              <PopOverLink href='/[org]' as={`/${org.id}`}>
+                {msg(msgs.home)}
+              </PopOverLink>
+              <PopOverLink href='/[org]/search' as={`/${org.id}/search`}>
+                {msg(msgs.search)}
+              </PopOverLink>
               <PopOverLink
                 href='/[org]/dashboard/people'
                 as={`/${org.id}/dashboard/people`}
@@ -225,9 +236,6 @@ export default function PopOverMenu({
                 as={`/${org.id}/dashboard/appts`}
               >
                 {msg(msgs.appts)}
-              </PopOverLink>
-              <PopOverLink href='/[org]' as={`/${org.id}`}>
-                {msg(msgs.home)}
               </PopOverLink>
             </>
           ))}
