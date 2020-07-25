@@ -225,7 +225,7 @@ export function AspectHeader({
 
 interface QueryHeaderProps extends LinkHeaderProps {
   query: UsersQuery;
-  onChange: Callback<Query>;
+  onChange: Callback<UsersQuery>;
 }
 
 export function QueryHeader({

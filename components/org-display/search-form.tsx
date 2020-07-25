@@ -33,7 +33,7 @@ export default function SearchForm({
   const msg: IntlHelper = useMsg();
 
   const [submitting, setSubmitting] = React.useState<boolean>(false);
-  const [query, setQuery] = React.useState<Query>(
+  const [query, setQuery] = React.useState<UsersQuery>(
     new UsersQuery({
       aspect: aspect || 'mentoring',
       langs: [], // TODO: Pre-fill with current locale language.

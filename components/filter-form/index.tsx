@@ -23,7 +23,7 @@ function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
 
 interface FilterFormProps {
   query: UsersQuery;
-  onChange: Callback<Query>;
+  onChange: Callback<UsersQuery>;
 }
 
 type FocusTarget = 'subjects' | 'availability' | 'langs';

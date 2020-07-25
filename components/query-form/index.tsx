@@ -14,7 +14,7 @@ type QueryFormInputConfig = { [key in FocusTarget]?: boolean };
 
 interface QueryFormProps {
   query: UsersQuery;
-  onChange: Callback<Query>;
+  onChange: Callback<UsersQuery>;
   vertical?: boolean;
   focusTarget?: FocusTarget;
 }

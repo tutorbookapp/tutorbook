@@ -110,7 +110,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const [searching, setSearching] = React.useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
-  const [query, setQuery] = React.useState<Query>(
+  const [query, setQuery] = React.useState<UsersQuery>(
     new UsersQuery({
       orgs: [{ label: org.name, value: org.id }],
       hitsPerPage: 10,

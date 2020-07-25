@@ -10,7 +10,7 @@ export default function Form({
   onChange,
 }: {
   query: UsersQuery;
-  onChange: Callback<Query>;
+  onChange: Callback<UsersQuery>;
 }): JSX.Element {
   const [elevated, setElevated] = React.useState<boolean>(false);
   const formRef: React.RefObject<HTMLDivElement> = React.createRef();
