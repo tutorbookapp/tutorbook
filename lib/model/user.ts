@@ -1,6 +1,5 @@
 import * as admin from 'firebase-admin';
 
-import firebase from 'lib/firebase';
 import url from 'url';
 
 import { ObjectWithObjectID } from '@algolia/client-search';
@@ -15,16 +14,8 @@ import construct from './construct';
 
 export type Aspect = 'mentoring' | 'tutoring';
 
-/**
- * Type aliases so that we don't have to type out the whole type. We could try
- * importing these directly from the `@firebase/firestore-types` or the
- * `@google-cloud/firestore` packages, but that's not recommended.
- * @todo Perhaps figure out a way to **only** import the type defs we need.
- */
-type DocumentData = firebase.firestore.DocumentData;
-type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-type SnapshotOptions = firebase.firestore.SnapshotOptions;
-type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
+type DocumentData = admin.firestore.DocumentData;
+type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 /**
  * Duplicate definition from the `lib/react-intercom` package. These are
@@ -225,11 +216,8 @@ export class User extends Account implements UserInterface {
     return new User(user);
   }
 
-  public static fromFirestore(
-    snapshot: DocumentSnapshot | AdminDocumentSnapshot,
-    options?: SnapshotOptions
-  ): User {
-    const userData: DocumentData | undefined = snapshot.data(options);
+  public static fromFirestore(snapshot: DocumentSnapshot): User {
+    const userData: DocumentData | undefined = snapshot.data();
     if (userData) {
       const { availability, ...rest } = userData;
       return new User({

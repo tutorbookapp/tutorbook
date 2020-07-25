@@ -1,6 +1,4 @@
 import * as admin from 'firebase-admin';
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
 
 import { v4 as uuid } from 'uuid';
 
@@ -16,12 +14,9 @@ import construct from './construct';
  * `@google-cloud/firestore` packages, but that's not recommended.
  * @todo Perhaps figure out a way to **only** import the type defs we need.
  */
-type DocumentData = firebase.firestore.DocumentData;
-type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-type DocumentReference = firebase.firestore.DocumentReference;
-type SnapshotOptions = firebase.firestore.SnapshotOptions;
-type AdminDocumentSnapshot = admin.firestore.DocumentSnapshot;
-type AdminDocumentReference = admin.firestore.DocumentReference;
+type DocumentData = admin.firestore.DocumentData;
+type DocumentSnapshot = admin.firestore.DocumentSnapshot;
+type DocumentReference = admin.firestore.DocumentReference;
 
 export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
@@ -67,7 +62,7 @@ export interface ApptInterface {
   time?: Timeslot;
   bramble?: Venue;
   jitsi?: Venue;
-  ref?: DocumentReference | AdminDocumentReference;
+  ref?: DocumentReference;
   id: string;
 }
 
@@ -89,7 +84,7 @@ export class Appt implements ApptInterface {
 
   public jitsi?: Venue;
 
-  public ref?: DocumentReference | AdminDocumentReference;
+  public ref?: DocumentReference;
 
   public time?: Timeslot;
 
@@ -138,11 +133,8 @@ export class Appt implements ApptInterface {
     return rest;
   }
 
-  public static fromFirestore(
-    snapshot: DocumentSnapshot | AdminDocumentSnapshot,
-    options?: SnapshotOptions
-  ): Appt {
-    const apptData: DocumentData | undefined = snapshot.data(options);
+  public static fromFirestore(snapshot: DocumentSnapshot): Appt {
+    const apptData: DocumentData | undefined = snapshot.data();
     if (apptData) {
       const { time, ...rest } = apptData;
       return new Appt({

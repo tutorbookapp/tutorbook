@@ -1,5 +1,4 @@
-import firebase from 'lib/firebase';
-import 'firebase/firestore';
+import * as admin from 'firebase-admin';
 
 import { TimeUtils } from 'lib/utils';
 import { DAYS } from './constants';
@@ -36,8 +35,7 @@ export enum Day {
  * incompatible.
  * @see {@link https://stackoverflow.com/a/57984831/10023158}
  */
-const { Timestamp } = firebase.firestore;
-type Timestamp = firebase.firestore.Timestamp;
+type Timestamp = admin.firestore.Timestamp;
 
 export interface TimeslotBase<T> {
   from: T;

@@ -1,12 +1,10 @@
 import * as admin from 'firebase-admin';
 
-import firebase from 'lib/firebase';
 import phone from 'phone';
 
 import construct from './construct';
 
-type DocumentReference = firebase.firestore.DocumentReference;
-type AdminDocumentReference = admin.firestore.DocumentReference;
+type DocumentReference = admin.firestore.DocumentReference;
 
 /**
  * Duplicate definition from the `lib/react-intercom` package. These are
@@ -53,7 +51,7 @@ export interface AccountInterface {
   phone: string;
   bio: string;
   socials: SocialInterface[];
-  ref?: DocumentReference | AdminDocumentReference;
+  ref?: DocumentReference;
 }
 
 export class Account implements AccountInterface {
@@ -71,7 +69,7 @@ export class Account implements AccountInterface {
 
   public socials: SocialInterface[] = [];
 
-  public ref?: DocumentReference | AdminDocumentReference;
+  public ref?: DocumentReference;
 
   public constructor(account: Partial<AccountInterface> = {}) {
     construct<AccountInterface>(this, account);
