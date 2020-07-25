@@ -9,7 +9,7 @@ import { mutate } from 'swr';
 import { useMsg, useIntl, Link } from 'lib/intl';
 import { useUser, useOrgs } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
-import { OrgJSON, User, Account } from 'lib/model';
+import { OrgJSON, User, AccountInterface } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 import { defineMessages } from 'react-intl';
 import { Ripple } from '@rmwc/ripple';
@@ -74,7 +74,7 @@ export function PopOverButton({
 }
 
 interface PopOverAccountProps {
-  account: Account;
+  account: AccountInterface;
   checked?: boolean;
 }
 
@@ -157,14 +157,6 @@ export default function PopOverMenu({
 }: PopOverMenuProps): JSX.Element {
   const msg = useMsg();
   const msgs = defineMessages({
-    personalHeader: {
-      id: 'pop-over.personal-header',
-      defaultMessage: 'Personal Account',
-    },
-    orgsHeader: {
-      id: 'pop-over.orgs-header',
-      defaultMessage: 'Organizations',
-    },
     logoutLabel: {
       id: 'pop-over.logout.label',
       defaultMessage: 'Logout',
@@ -181,6 +173,26 @@ export default function PopOverMenu({
       id: 'pop-over.create-org.label',
       defaultMessage: 'Create an Organization',
     },
+    people: {
+      id: 'pop-over.links.people',
+      defaultMessage: 'People',
+    },
+    appts: {
+      id: 'pop-over.links.appts',
+      defaultMessage: 'Appointments',
+    },
+    home: {
+      id: 'pop-over.links.home',
+      defaultMessage: 'Home',
+    },
+    dashboard: {
+      id: 'pop-over.links.dashboard',
+      defaultMessage: 'Dashboard',
+    },
+    profile: {
+      id: 'pop-over.links.profile',
+      defaultMessage: 'Profile',
+    },
   });
 
   const { orgs } = useOrgs();
@@ -195,9 +207,9 @@ export default function PopOverMenu({
       <MenuSurface open={open} onClose={onClose}>
         <div className={styles.picker}>
           <PopOverAccountHeader account={user} />
-          <PopOverLink href='/signup'>Profile</PopOverLink>
-          <PopOverLink href='/dashboard'>Dashboard</PopOverLink>
-          <PopOverLink href='/'>Home</PopOverLink>
+          <PopOverLink href='/signup'>{msg(msgs.profile)}</PopOverLink>
+          <PopOverLink href='/dashboard'>{msg(msgs.dashboard)}</PopOverLink>
+          <PopOverLink href='/'>{msg(msgs.home)}</PopOverLink>
           {orgs.map((org: OrgJSON) => (
             <>
               <div className={styles.line} />
@@ -206,16 +218,16 @@ export default function PopOverMenu({
                 href='/[org]/dashboard/people'
                 as={`/${org.id}/dashboard/people`}
               >
-                People
+                {msg(msgs.people)}
               </PopOverLink>
               <PopOverLink
                 href='/[org]/dashboard/appts'
                 as={`/${org.id}/dashboard/appts`}
               >
-                Appointments
+                {msg(msgs.appts)}
               </PopOverLink>
               <PopOverLink href='/[org]' as={`/${org.id}`}>
-                Home
+                {msg(msgs.home)}
               </PopOverLink>
             </>
           ))}
