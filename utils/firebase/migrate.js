@@ -173,4 +173,16 @@ const triggerUsersUpdate = async () => {
   );
 };
 
-users();
+const triggerApptsUpdate = async () => {
+  const appts = (await db.collection('appts').get()).docs;
+  await Promise.all(
+    appts.map(async (appt) => {
+      const original = appt.data();
+      const updated = { ...original, message: original.message + ' ' };
+      await appt.ref.update(updated);
+      await appt.ref.update(original);
+    })
+  );
+};
+
+triggerApptsUpdate();
