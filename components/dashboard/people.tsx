@@ -30,7 +30,7 @@ import { UserRow, LoadingRow } from './user-row';
 import Title from './title';
 import Placeholder from './placeholder';
 
-import styles from './people.module.scss';
+import styles from './dashboard.module.scss';
 
 const msgs = defineMessages({
   title: {

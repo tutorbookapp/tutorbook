@@ -9,7 +9,7 @@ import ScheduleInput from 'components/schedule-input';
 import SubjectSelect from 'components/subject-select';
 
 import equal from 'fast-deep-equal';
-import styles from './people.module.scss';
+import styles from './dashboard.module.scss';
 
 interface RowProps {
   user: User;

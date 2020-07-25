@@ -26,7 +26,7 @@ import { ApptRow, LoadingRow } from './appt-row';
 import Title from './title';
 import Placeholder from './placeholder';
 
-import styles from './people.module.scss';
+import styles from './dashboard.module.scss';
 
 const msgs = defineMessages({
   title: {
@@ -179,9 +179,7 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
       />
       <div className={styles.wrapper}>
         <div className={styles.filters}>
-          <div className={styles.left}>
-            <IconButton className={styles.filtersButton} icon='filter_list' />
-          </div>
+          <div className={styles.left} />
           <div className={styles.right}>
             <TextField
               outlined
@@ -202,6 +200,12 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
             <DataTableContent>
               <DataTableHead className={styles.header}>
                 <DataTableRow>
+                  <DataTableHeadCell className={styles.message}>
+                    Message
+                  </DataTableHeadCell>
+                  <DataTableHeadCell className={styles.subjects}>
+                    Subjects
+                  </DataTableHeadCell>
                   <DataTableHeadCell className={styles.tutors}>
                     Tutors
                   </DataTableHeadCell>
@@ -216,12 +220,6 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.parents}>
                     Parents
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.subjects}>
-                    Subjects
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.message}>
-                    Message
                   </DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
