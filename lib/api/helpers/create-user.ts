@@ -28,6 +28,7 @@ export default async function createUser(
 ): Promise<void> {
   /* eslint-disable no-param-reassign, no-shadow */
   console.log(`[DEBUG] Creating user ${user.toString()}...`);
+  await user.validatePhone();
   const [err, userRecord] = await to<UserRecord, FirebaseError>(
     auth.createUser({
       disabled: false,

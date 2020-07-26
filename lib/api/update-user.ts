@@ -64,6 +64,7 @@ async function updateUser(updatedUser: User): Promise<User> {
   if (err) {
     console.warn(`[WARNING] ${err.name} fetching user: ${err.message}`);
   } else {
+    await user.validatePhone();
     const record: UserRecord = userRecord as UserRecord;
     const userNeedsToBeUpdated: boolean =
       (!!user.name && record.displayName !== user.name) ||

@@ -1,7 +1,5 @@
 import * as admin from 'firebase-admin';
 
-import phone from 'phone';
-
 import construct from './construct';
 
 type DocumentReference = admin.firestore.DocumentReference;
@@ -73,8 +71,13 @@ export class Account implements AccountInterface {
 
   public constructor(account: Partial<AccountInterface> = {}) {
     construct<AccountInterface>(this, account);
-    this.phone = phone(this.phone)[0] || '';
     this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
+    void this.validatePhone();
+  }
+
+  public async validatePhone(): Promise<void> {
+    const { default: phone } = await import('phone');
+    this.phone = phone(this.phone)[0] || '';
   }
 
   /**
