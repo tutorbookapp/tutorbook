@@ -19,7 +19,7 @@ function LoginPage(): JSX.Element {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => ({
-  props: await getIntlProps(context),
+  props: await getIntlProps(context, ['common', 'login']),
 });
 
 /* eslint-disable-next-line @typescript-eslint/require-await */

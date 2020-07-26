@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { getIntlProps, getIntlPaths, withIntl } from 'lib/intl';
 import { GetStaticProps, GetStaticPaths } from 'next';
@@ -12,7 +12,7 @@ import About from 'components/about';
 import Footer from 'components/footer';
 
 function IndexPage(): JSX.Element {
-  const [aspect, setAspect] = React.useState<Aspect>('mentoring');
+  const [aspect, setAspect] = useState<Aspect>('mentoring');
   return (
     <>
       <Banner />
@@ -32,7 +32,7 @@ function IndexPage(): JSX.Element {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => ({
-  props: await getIntlProps(context),
+  props: await getIntlProps(context, ['common', 'home']),
 });
 
 /* eslint-disable-next-line @typescript-eslint/require-await */

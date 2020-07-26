@@ -55,7 +55,10 @@ export const getServerSideProps: GetServerSideProps<
     const ref: DocumentReference = db.collection('orgs').doc(params.org);
     const doc: DocumentSnapshot = await ref.get();
     const org: Org = Org.fromFirestore(doc);
-    let props: OrgPageProps & IntlProps = await getIntlProps({ params });
+    let props: OrgPageProps & IntlProps = await getIntlProps({ params }, [
+      'common',
+      'dashboard',
+    ]);
     if (!doc.exists) {
       props = {
         ...props,

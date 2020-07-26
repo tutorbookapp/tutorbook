@@ -17,18 +17,10 @@ import {
   DocumentSnapshot,
   DocumentReference,
 } from 'lib/api/helpers/firebase';
-import {
-  useIntl,
-  getIntlProps,
-  withIntl,
-  IntlProps,
-  IntlShape,
-  IntlHelper,
-  Msg,
-} from 'lib/intl';
+import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
 
 import to from 'await-to-js';
-import msgs from 'components/dashboard/msgs';
+import useTranslation from 'next-translate/useTranslation';
 
 interface DashboardPageProps {
   org?: OrgJSON;
@@ -89,9 +81,10 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props: DashboardPageProps & IntlProps = await getIntlProps({
-        params,
-      });
+      let props: DashboardPageProps & IntlProps = await getIntlProps(
+        { params },
+        ['common', 'dashboard']
+      );
       if (!doc.exists) {
         props = {
           ...props,
@@ -118,8 +111,7 @@ function DashboardPage({
   org,
 }: DashboardPageProps): JSX.Element {
   const { query } = useRouter();
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const { t } = useTranslation();
   if (errorCode || errorMessage)
     return <ErrorPage statusCode={errorCode || 400} title={errorMessage} />;
   return (
@@ -127,19 +119,19 @@ function DashboardPage({
       <TabHeader
         tabs={[
           {
-            label: msg(msgs.overview),
+            label: t('dashboard:overview'),
             active: true,
             href: '/[org]/dashboard',
             as: `/${query.org as string}/dashboard`,
           },
           {
-            label: msg(msgs.people),
+            label: t('dashboard:people'),
             active: false,
             href: '/[org]/dashboard/people',
             as: `/${query.org as string}/dashboard/people`,
           },
           {
-            label: msg(msgs.appts),
+            label: t('dashboard:appts'),
             active: false,
             href: '/[org]/dashboard/appts',
             as: `/${query.org as string}/dashboard/appts`,

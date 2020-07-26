@@ -7,11 +7,12 @@ import Footer from 'components/footer';
 import Search from 'components/search';
 
 import Router, { useRouter } from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
 
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { QueryHeader } from 'components/header';
-import { useIntl, getIntlProps, withIntl } from 'lib/intl';
+import { getIntlProps, withIntl } from 'lib/intl';
 import {
   User,
   UserJSON,
@@ -123,7 +124,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       user: JSON.parse(
         JSON.stringify(await getUser(context.params))
       ) as UserJSON | null,
-      ...(await getIntlProps(context)),
+      ...(await getIntlProps(context, ['common', 'search'])),
     },
   };
 };
@@ -137,7 +138,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     UsersQuery.fromJSON(query)
   );
 
-  const { locale } = useIntl();
+  const { lang: locale } = useTranslation();
   const {
     query: { org },
   } = useRouter();

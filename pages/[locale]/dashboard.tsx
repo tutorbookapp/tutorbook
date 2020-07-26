@@ -1,22 +1,15 @@
 import React from 'react';
-
-import { ParsedUrlQuery } from 'querystring';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import {
-  useMsg,
-  getIntlProps,
-  withIntl,
-  IntlHelper,
-  IntlProps,
-} from 'lib/intl';
-import { useUser } from 'lib/account';
-import { Overview } from 'components/dashboard';
-import { TabHeader } from 'components/header';
-
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 
-import tabs from 'components/dashboard/msgs';
+import useTranslation from 'next-translate/useTranslation';
+
+import { ParsedUrlQuery } from 'querystring';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
+import { useUser } from 'lib/account';
+import { Overview } from 'components/dashboard';
+import { TabHeader } from 'components/header';
 
 interface DashboardPageQuery extends ParsedUrlQuery {
   locale: string;
@@ -38,19 +31,19 @@ export const getServerSideProps: GetServerSideProps<
     res.end();
     throw new Error('You must be logged in to access this page.');
   } else {
-    return { props: await getIntlProps({ params }) };
+    return { props: await getIntlProps({ params }, ['common', 'dashboard']) };
   }
 };
 
 function DashboardPage(): JSX.Element {
-  const msg: IntlHelper = useMsg();
+  const { t } = useTranslation();
   const { user } = useUser();
   return (
     <>
       <TabHeader
         tabs={[
           {
-            label: msg(tabs.overview),
+            label: t('dashboard:overview'),
             active: true,
             href: '/dashboard',
           },

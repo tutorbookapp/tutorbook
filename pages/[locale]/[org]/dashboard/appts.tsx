@@ -18,18 +18,12 @@ import {
   DocumentSnapshot,
   DocumentReference,
 } from 'lib/api/helpers/firebase';
-import {
-  useMsg,
-  getIntlProps,
-  withIntl,
-  IntlProps,
-  IntlHelper,
-} from 'lib/intl';
+import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import to from 'await-to-js';
-import msgs from 'components/dashboard/msgs';
+import useTranslation from 'next-translate/useTranslation';
 
 interface ApptsPageProps {
   errorCode?: number;
@@ -87,7 +81,11 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props: ApptsPageProps & IntlProps = await getIntlProps({ params });
+      let props: ApptsPageProps & IntlProps = await getIntlProps({ params }, [
+        'common',
+        'dashboard',
+        'appts',
+      ]);
       if (!doc.exists) {
         props = {
           ...props,
@@ -149,7 +147,7 @@ function ApptsPage({
   org,
 }: ApptsPageProps): JSX.Element {
   const { query } = useRouter();
-  const msg: IntlHelper = useMsg();
+  const { t } = useTranslation();
   if (errorCode || errorMessage)
     return <ErrorPage statusCode={errorCode || 400} title={errorMessage} />;
   return (
@@ -157,19 +155,19 @@ function ApptsPage({
       <TabHeader
         tabs={[
           {
-            label: msg(msgs.overview),
+            label: t('dashboard:overview'),
             active: false,
             href: '/[org]/dashboard',
             as: `/${query.org as string}/dashboard`,
           },
           {
-            label: msg(msgs.people),
+            label: t('dashboard:people'),
             active: false,
             href: '/[org]/dashboard/people',
             as: `/${query.org as string}/dashboard/people`,
           },
           {
-            label: msg(msgs.appts),
+            label: t('dashboard:appts'),
             active: true,
             href: '/[org]/dashboard/appts',
             as: `/${query.org as string}/dashboard/appts`,
