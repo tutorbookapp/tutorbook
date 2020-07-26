@@ -60,14 +60,43 @@
     "defaultMessage": "Learn more"
   },
   {
+    "id": "appts.title",
+    "defaultMessage": "Appointments"
+  },
+  {
+    "id": "appts.subtitle",
+    "defaultMessage": "{name}'s upcoming appointments"
+  },
+  {
+    "id": "appts.empty",
+    "defaultMessage": "NO APPOINTMENTS TO SHOW"
+  },
+  {
+    "id": "appts.filters.search-placeholder",
+    "defaultMessage": "Search appointments"
+  },
+  {
+    "id": "appts.actions.import-data",
+    "defaultMessage": "Import data"
+  },
+  {
+    "id": "appts.actions.import-data-msg",
+    "defaultMessage": "Could you help me import appointment data?"
+  },
+  {
     "id": "dashboard.tabs.overview",
-    "description": "Label for the overview tab of the dashboard page.",
+    "description": "Label for the overview tab of the admin dashboard page.",
     "defaultMessage": "Overview"
   },
   {
     "id": "dashboard.tabs.people",
-    "description": "Label for the overview tab of the dashboard page.",
+    "description": "Label for the people tab of the admin dashboard page.",
     "defaultMessage": "People"
+  },
+  {
+    "id": "dashboard.tabs.appts",
+    "description": "Label for the appointments tab of the admin dashboard page.",
+    "defaultMessage": "Appointments"
   },
   {
     "id": "dashboard.overview.title",
@@ -292,6 +321,46 @@
   {
     "id": "header.tabs.tutoring",
     "defaultMessage": "Tutors"
+  },
+  {
+    "id": "pop-over.logout.label",
+    "defaultMessage": "Logout"
+  },
+  {
+    "id": "pop-over.logout.logging-out",
+    "defaultMessage": "Logging out..."
+  },
+  {
+    "id": "pop-over.create-org.message",
+    "defaultMessage": "I'd like to create a new organization."
+  },
+  {
+    "id": "pop-over.create-org.label",
+    "defaultMessage": "Create an Organization"
+  },
+  {
+    "id": "pop-over.links.people",
+    "defaultMessage": "People"
+  },
+  {
+    "id": "pop-over.links.appts",
+    "defaultMessage": "Appointments"
+  },
+  {
+    "id": "pop-over.links.search",
+    "defaultMessage": "Search"
+  },
+  {
+    "id": "pop-over.links.home",
+    "defaultMessage": "Home"
+  },
+  {
+    "id": "pop-over.links.dashboard",
+    "defaultMessage": "Dashboard"
+  },
+  {
+    "id": "pop-over.links.profile",
+    "defaultMessage": "Profile"
   },
   {
     "id": "hero.mentoring.title",
