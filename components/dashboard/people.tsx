@@ -329,7 +329,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 return navigator.clipboard.writeText(text);
               }
               await copyTextToClipboard(
-                `http://${window.location.host}/${locale}/${org.id}/signup`
+                `http://${window.location.host}/${locale}/${org.id}`
               );
               setViewingSnackbar(true);
             },
