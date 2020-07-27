@@ -4,26 +4,35 @@ import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { Org, OrgJSON } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+
+import useTranslation from 'next-translate/useTranslation';
 
 import { PopOverButton, PopOverAccountLink } from './pop-over';
 
 import styles from './pop-over.module.scss';
 
 export default function Switcher(): JSX.Element {
+  const { t } = useTranslation();
   const { pathname, query } = useRouter();
   const { orgs } = useOrgs();
   const { user } = useUser();
 
-  const [open, setOpen] = React.useState<boolean>(false);
-  const [selected, setSelected] = React.useState<string>('Account');
+  const [open, setOpen] = useState<boolean>(false);
+  const [selected, setSelected] = useState<string>('Account');
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!orgs) return setSelected('Account');
     const idx: number = orgs.findIndex((o: OrgJSON) => o.id === query.org);
     if (idx < 0) return setSelected('Account');
     return setSelected(orgs[idx].name);
   }, [orgs, query]);
+
+  const destination = useMemo(() => {
+    if (pathname.indexOf('people') >= 0) return 'people';
+    if (pathname.indexOf('appts') >= 0) return 'appts';
+    return 'dashboard';
+  }, [pathname]);
 
   return (
     <MenuSurfaceAnchor>
@@ -33,26 +42,18 @@ export default function Switcher(): JSX.Element {
         onClose={() => setOpen(false)}
       >
         <div className={styles.picker}>
-          <div className={styles.header}>Personal Account</div>
+          <div className={styles.header}>{t('common:personal-account')}</div>
           <PopOverAccountLink account={user} href='/dashboard' />
           {orgs && !!orgs.length && (
             <>
               <div className={styles.line} />
-              <div className={styles.header}>Organizations</div>
+              <div className={styles.header}>{t('common:organizations')}</div>
               {orgs.map((org: OrgJSON) => (
                 <PopOverAccountLink
                   key={org.id}
                   account={Org.fromJSON(org)}
-                  href={
-                    pathname.indexOf('people') >= 0
-                      ? '/[org]/dashboard/people'
-                      : '/[org]/dashboard'
-                  }
-                  as={
-                    pathname.indexOf('people') >= 0
-                      ? `/${org.id}/dashboard/people`
-                      : `/${org.id}/dashboard`
-                  }
+                  href={`/[org]/${destination}`}
+                  as={`/${org.id}/${destination}`}
                 />
               ))}
             </>
@@ -61,13 +62,10 @@ export default function Switcher(): JSX.Element {
           <PopOverButton
             icon='add'
             onClick={() =>
-              IntercomAPI(
-                'showNewMessage',
-                "I'd like to create a new organization."
-              )
+              IntercomAPI('showNewMessage', t('common:new-org-msg'))
             }
           >
-            Create an Organization
+            {t('common:new-org-btn')}
           </PopOverButton>
         </div>
       </MenuSurface>

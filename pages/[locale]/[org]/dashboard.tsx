@@ -6,10 +6,9 @@ import Footer from 'components/footer';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Org, OrgJSON, ApptsQuery, ApiError } from 'lib/model';
-import { ListApptsRes } from 'lib/api/list-appts';
-import { Appts } from 'components/dashboard';
+import { Overview } from 'components/dashboard';
 import { TabHeader } from 'components/header';
+import { Org, OrgJSON } from 'lib/model';
 import {
   db,
   auth,
@@ -20,19 +19,16 @@ import {
 } from 'lib/api/helpers/firebase';
 import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
 
-import axios, { AxiosError, AxiosResponse } from 'axios';
-
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
-interface ApptsPageProps {
+interface DashboardPageProps {
+  org?: OrgJSON;
   errorCode?: number;
   errorMessage?: string;
-  result?: ListApptsRes;
-  org?: OrgJSON;
 }
 
-interface ApptsPageQuery extends ParsedUrlQuery {
+interface DashboardPageQuery extends ParsedUrlQuery {
   locale: string;
   org: string;
 }
@@ -57,9 +53,13 @@ interface ApptsPageQuery extends ParsedUrlQuery {
  * @see {@link https://github.com/vercel/next.js/issues/14200}
  */
 export const getServerSideProps: GetServerSideProps<
-  ApptsPageProps & IntlProps,
-  ApptsPageQuery
-> = async ({ req, res, params }: GetServerSidePropsContext<ApptsPageQuery>) => {
+  DashboardPageProps & IntlProps,
+  DashboardPageQuery
+> = async ({
+  req,
+  res,
+  params,
+}: GetServerSidePropsContext<DashboardPageQuery>) => {
   if (!params) {
     throw new Error('We must have query parameters while rendering.');
   } else if (!req.headers.authorization) {
@@ -81,10 +81,10 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props: ApptsPageProps & IntlProps = await getIntlProps({ params }, [
-        'common',
-        'appts',
-      ]);
+      let props: DashboardPageProps & IntlProps = await getIntlProps(
+        { params },
+        ['common', 'overview']
+      );
       if (!doc.exists) {
         props = {
           ...props,
@@ -98,53 +98,18 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        const query = new ApptsQuery({
-          orgs: [{ label: org.name, value: org.id }],
-          hitsPerPage: 10,
-        });
-        const url = `http://${req.headers.host as string}${query.endpoint}`;
-        const [error, response] = await to<
-          AxiosResponse<ListApptsRes>,
-          AxiosError<ApiError>
-        >(
-          axios.get<ListApptsRes>(url, {
-            headers: { authorization: req.headers.authorization },
-          })
-        );
-        if (error && error.response) {
-          props = {
-            ...props,
-            errorCode: error.response.status,
-            errorMessage: error.response.data.msg,
-          };
-        } else if (error && error.request) {
-          props = {
-            ...props,
-            errorCode: 500,
-            errorMessage: 'Users API did not respond.',
-          };
-        } else if (error) {
-          props = {
-            ...props,
-            errorCode: 500,
-            errorMessage: `${error.name} fetching users: ${error.message}`,
-          };
-        } else {
-          const { data: result } = response as AxiosResponse<ListApptsRes>;
-          props = { ...props, result, org: org.toJSON() };
-        }
+        props = { ...props, org: org.toJSON() };
       }
       return { props };
     }
   }
 };
 
-function ApptsPage({
+function DashboardPage({
   errorCode,
   errorMessage,
-  result,
   org,
-}: ApptsPageProps): JSX.Element {
+}: DashboardPageProps): JSX.Element {
   const { query } = useRouter();
   const { t } = useTranslation();
   if (errorCode || errorMessage)
@@ -155,32 +120,29 @@ function ApptsPage({
         tabs={[
           {
             label: t('common:overview'),
-            active: false,
+            active: true,
             href: '/[org]/dashboard',
             as: `/${query.org as string}/dashboard`,
           },
           {
             label: t('common:people'),
             active: false,
-            href: '/[org]/dashboard/people',
-            as: `/${query.org as string}/dashboard/people`,
+            href: '/[org]/people',
+            as: `/${query.org as string}/people`,
           },
           {
             label: t('common:appts'),
-            active: true,
-            href: '/[org]/dashboard/appts',
-            as: `/${query.org as string}/dashboard/appts`,
+            active: false,
+            href: '/[org]/appts',
+            as: `/${query.org as string}/appts`,
           },
         ]}
       />
-      <Appts
-        org={Org.fromJSON(org as OrgJSON)}
-        initialData={result as ListApptsRes}
-      />
+      <Overview account={Org.fromJSON(org as OrgJSON)} />
       <Footer />
       <Intercom />
     </>
   );
 }
 
-export default withIntl(ApptsPage);
+export default withIntl(DashboardPage);

@@ -179,16 +179,10 @@ export default function PopOverMenu({
               <PopOverLink href='/[org]/search' as={`/${org.id}/search`}>
                 {t('common:search')}
               </PopOverLink>
-              <PopOverLink
-                href='/[org]/dashboard/people'
-                as={`/${org.id}/dashboard/people`}
-              >
+              <PopOverLink href='/[org]/people' as={`/${org.id}/people`}>
                 {t('common:people')}
               </PopOverLink>
-              <PopOverLink
-                href='/[org]/dashboard/appts'
-                as={`/${org.id}/dashboard/appts`}
-              >
+              <PopOverLink href='/[org]/appts' as={`/${org.id}/appts`}>
                 {t('common:appts')}
               </PopOverLink>
             </>
