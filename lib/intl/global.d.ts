@@ -1,23 +1,18 @@
 /* eslint-disable no-underscore-dangle, @typescript-eslint/ban-types, @typescript-eslint/naming-convention */
 
+interface I18nProps {
+  t: (key: string, query?: { [name: string]: string | number }) => string;
+  lang: string;
+}
+
 declare module 'next-translate/withTranslation' {
   export default function withTranslation<P extends Record<string, any>>(
-    Component: React.ComponentType<P>
-  ): React.FunctionComponent<
-    P & {
-      i18n: {
-        t: (key: string, query?: { [name: string]: string | number }) => string;
-        lang: string;
-      };
-    }
-  >;
+    Component: React.ComponentType<P & { i18n: I18nProps }>
+  ): React.FunctionComponent<P>;
 }
 
 declare module 'next-translate/useTranslation' {
-  export default function useTranslation(): {
-    t: (key: string, query?: { [name: string]: string | number }) => string;
-    lang: string;
-  };
+  export default function useTranslation(): I18nProps;
 }
 
 declare module 'next-translate/appWithI18n' {
