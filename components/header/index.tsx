@@ -4,7 +4,7 @@ import { useUser } from 'lib/account';
 import useTranslation from 'next-translate/useTranslation';
 
 import React, { useState, useCallback } from 'react';
-import Link from 'next-translate/Link';
+import Link from 'lib/intl/link';
 import Avatar from 'components/avatar';
 import FilterForm from 'components/filter-form';
 import PopOver from './pop-over';

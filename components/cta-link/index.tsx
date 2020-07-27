@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next-translate/Link';
+import Link from 'lib/intl/link';
 
 import styles from './cta-link.module.scss';
 

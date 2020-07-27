@@ -1,7 +1,7 @@
 import React from 'react';
 /* import NextLink from 'next/link'; */
 /* import config from 'intl/config.json'; */
-import Link from 'next-translate/Link';
+import Link from 'lib/intl/link';
 import useTranslation from 'next-translate/useTranslation';
 
 import styles from './footer.module.scss';

@@ -1,4 +1,4 @@
-import Link from 'next-translate/Link';
+import Link from 'lib/intl/link';
 import Router from 'next/router';
 import Avatar from 'components/avatar';
 

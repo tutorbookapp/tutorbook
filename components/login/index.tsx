@@ -1,4 +1,4 @@
-import Link from 'next-translate/Link';
+import Link from 'lib/intl/link';
 import Router from 'next/router';
 import Button from 'components/button';
 import React, { useState, useEffect, useCallback } from 'react';
