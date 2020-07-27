@@ -1,5 +1,18 @@
 /* eslint-disable no-underscore-dangle, @typescript-eslint/ban-types, @typescript-eslint/naming-convention */
 
+declare module 'next-translate/withTranslation' {
+  export default function withTranslation<P extends Record<string, any>>(
+    Component: React.ComponentType<P>
+  ): React.FunctionComponent<
+    P & {
+      i18n: {
+        t: (key: string, query?: { [name: string]: string | number }) => string;
+        lang: string;
+      };
+    }
+  >;
+}
+
 declare module 'next-translate/useTranslation' {
   export default function useTranslation(): {
     t: (key: string, query?: { [name: string]: string | number }) => string;

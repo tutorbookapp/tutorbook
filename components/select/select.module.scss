@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'styles/config';
+@use 'styles/typography';
 @use '@material/chips/_index.scss' as chips;
 
 .errMenu {
@@ -8,6 +9,7 @@
 }
 
 .noResults {
+  @include typography.typography('body1');
   text-align: center;
   padding: 50px 0;
 }

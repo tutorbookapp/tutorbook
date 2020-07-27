@@ -1,4 +1,3 @@
-import { Typography } from '@rmwc/typography';
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
@@ -9,6 +8,8 @@ import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 
 import React from 'react';
 import to from 'await-to-js';
+import withTranslation from 'next-translate/withTranslation';
+
 import SelectHint from './select-hint';
 
 import styles from './select.module.scss';
@@ -24,6 +25,9 @@ interface SelectState<T> {
 }
 
 interface UniqueSelectProps<T> {
+  i18n: {
+    t: (key: string, query?: { [name: string]: string | number }) => string;
+  };
   value: Option<T>[];
   onChange: Callback<Option<T>[]>;
   getSuggestions: (query: string) => Promise<Option<T>[]>;
@@ -65,10 +69,7 @@ export type SelectControllerProps<T> = Omit<
 > &
   Partial<SelectControls<T>>;
 
-export default class Select<T> extends React.Component<
-  SelectProps<T>,
-  SelectState<T>
-> {
+class Select<T> extends React.Component<SelectProps<T>, SelectState<T>> {
   private suggestionsTimeoutID?: ReturnType<typeof setTimeout>;
 
   private foundationRef: React.RefObject<MDCMenuSurfaceFoundation>;
@@ -294,11 +295,14 @@ export default class Select<T> extends React.Component<
 
   private renderSuggestionMenuItems(): JSX.Element[] | JSX.Element {
     const { errored, suggestions } = this.state;
-    const { value } = this.props;
+    const {
+      value,
+      i18n: { t },
+    } = this.props;
     const noResults: JSX.Element = (
-      <Typography use='body1' className={styles.noResults}>
-        {errored ? 'Errored, try again' : 'No results'}
-      </Typography>
+      <div className={styles.noResults}>
+        {errored ? t('common:errored-try-again') : t('common:no-results')}
+      </div>
     );
     const suggestionMenuItems: JSX.Element[] = [];
     suggestions.forEach((option: Option<T>) =>
@@ -413,3 +417,5 @@ export default class Select<T> extends React.Component<
     );
   }
 }
+
+export default withTranslation(Select);
