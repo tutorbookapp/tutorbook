@@ -8,7 +8,6 @@ import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 
 import React from 'react';
 import to from 'await-to-js';
-import withTranslation from 'next-translate/withTranslation';
 
 import SelectHint from './select-hint';
 
@@ -25,9 +24,6 @@ interface SelectState<T> {
 }
 
 interface UniqueSelectProps<T> {
-  i18n: {
-    t: (key: string, query?: { [name: string]: string | number }) => string;
-  };
   value: Option<T>[];
   onChange: Callback<Option<T>[]>;
   getSuggestions: (query: string) => Promise<Option<T>[]>;
@@ -69,7 +65,10 @@ export type SelectControllerProps<T> = Omit<
 > &
   Partial<SelectControls<T>>;
 
-class Select<T> extends React.Component<SelectProps<T>, SelectState<T>> {
+export default class Select<T> extends React.Component<
+  SelectProps<T>,
+  SelectState<T>
+> {
   private suggestionsTimeoutID?: ReturnType<typeof setTimeout>;
 
   private foundationRef: React.RefObject<MDCMenuSurfaceFoundation>;
@@ -295,13 +294,10 @@ class Select<T> extends React.Component<SelectProps<T>, SelectState<T>> {
 
   private renderSuggestionMenuItems(): JSX.Element[] | JSX.Element {
     const { errored, suggestions } = this.state;
-    const {
-      value,
-      i18n: { t },
-    } = this.props;
+    const { value } = this.props;
     const noResults: JSX.Element = (
       <div className={styles.noResults}>
-        {errored ? t('common:errored-try-again') : t('common:no-results')}
+        {errored ? 'Errored, try again' : 'No results'}
       </div>
     );
     const suggestionMenuItems: JSX.Element[] = [];
@@ -417,5 +413,3 @@ class Select<T> extends React.Component<SelectProps<T>, SelectState<T>> {
     );
   }
 }
-
-export default withTranslation(Select);
