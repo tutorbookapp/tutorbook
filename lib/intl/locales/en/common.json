@@ -12,7 +12,7 @@
   "subjects": "Subjects",
   "time": "Time",
   "message": "Message",
-  "message-placeholder": "I could really use your help with my {{subject}} project",
+  "message-placeholder": "I could really use your help with my {{subject}} project...",
   "send-request": "Send Request",
   "signup-and-send": "Signup and Send",
   "signup": "Signup",
