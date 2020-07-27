@@ -1,12 +1,8 @@
 const path = require('path');
 const withImages = require('next-images');
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
 const { locales } = require('./lib/intl/config.json');
 
-// prettier-ignore
-module.exports = withBundleAnalyzer(withImages({
+module.exports = withImages({
   sassOptions: {
     includePaths: [
       path.resolve(__dirname, 'node_modules'),
@@ -54,13 +50,27 @@ module.exports = withBundleAnalyzer(withImages({
           //
           // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
           // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
-          source: `/:locale((?!${locales.join('|')}|favicon|api|sw.js)[^/]+)(.*)`,
+          source: `/:locale((?!${locales.join(
+            '|'
+          )}|favicon|api|sw.js)[^/]+)(.*)`,
           destination: '/api/redirect',
         },
       ];
     },
   },
-  webpack(config) {
+  webpack(config, { isServer }) {
+    if (!isServer && process.env.ANALYZE === 'true') {
+      // Only run the bundle analyzer for the client-side chunks.
+      // @see {@link https://github.com/vercel/next.js/issues/15481}
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          reportFilename: './analyze/client.html',
+          generateStatsFile: true,
+        })
+      );
+    }
     config.module.rules.push({
       test: /\.hbs$/,
       use: 'raw-loader',
@@ -83,4 +93,4 @@ module.exports = withBundleAnalyzer(withImages({
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     BRAMBLE_API_KEY: process.env.BRAMBLE_API_KEY,
   },
-}));
+});

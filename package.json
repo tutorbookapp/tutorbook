@@ -34,7 +34,6 @@
     "url": "https://github.com/tutorbookapp/tutorbook/issues"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^9.4.4",
     "@types/accept-language-parser": "^1.5.1",
     "@types/jest": "^25.2.3",
     "@types/node": "^14.0.26",
@@ -75,6 +74,7 @@
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.7",
     "webpack": "^4.44.0",
+    "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
