@@ -59,6 +59,7 @@ export const getServerSideProps: GetServerSideProps<
       'common',
       'signup',
       'query',
+      'org',
     ]);
     if (!doc.exists) {
       props = {
