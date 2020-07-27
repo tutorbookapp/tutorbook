@@ -1,50 +1,34 @@
-import React from 'react';
+import Link from 'next-translate/Link';
 import Router from 'next/router';
 import Button from 'components/button';
+import React, { useState, useEffect, useCallback } from 'react';
 
-import { defineMessages } from 'react-intl';
-import { useIntl, Msg, Link, IntlShape, IntlHelper } from 'lib/intl';
 import { useUser } from 'lib/account';
 import { signupWithGoogle } from 'lib/account/signup';
 import { TextFieldHelperText } from '@rmwc/textfield';
 
+import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
 
 import styles from './login.module.scss';
 
-const msgs = defineMessages({
-  title: {
-    id: 'login.title',
-    defaultMessage: 'Login to Tutorbook',
-  },
-  google: {
-    id: 'login.buttons.google',
-    defaultMessage: 'Continue with Google',
-  },
-  signup: {
-    id: 'login.signup',
-    defaultMessage: "Don't have an account? Signup here.",
-  },
-});
-
 export default function Login(): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (m: Msg, v?: any) => intl.formatMessage(m, v);
   const { user } = useUser();
-  const [submitting, setSubmitting] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | undefined>();
+  const { t, lang: locale } = useTranslation();
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user.id) {
-      void Router.push('/[locale]/dashboard', `/${intl.locale}/dashboard`);
+      void Router.push('/[locale]/dashboard', `/${locale}/dashboard`);
     }
-  }, [user, intl.locale]);
+  }, [user, locale]);
 
-  React.useEffect(() => {
-    void Router.prefetch('/[locale]/dashboard', `/${intl.locale}/dashboard`);
-  }, [intl.locale]);
+  useEffect(() => {
+    void Router.prefetch('/[locale]/dashboard', `/${locale}/dashboard`);
+  }, [locale]);
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     setSubmitting(true);
     const [err] = await to(signupWithGoogle());
     if (err) {
@@ -53,20 +37,20 @@ export default function Login(): JSX.Element {
         `An error occurred while logging in with Google. ${err.message}`
       );
     } else {
-      await Router.push('/[locale]/dashboard', `/${intl.locale}/dashboard`);
+      await Router.push('/[locale]/dashboard', `/${locale}/dashboard`);
       setSubmitting(false);
     }
-  };
+  }, [locale]);
 
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.wrapper}>
       <div className={styles.content}>
-        <h1 className={styles.title}>{msg(msgs.title)}</h1>
+        <h1 className={styles.title}>{t('login:title')}</h1>
         <div className={styles.buttons}>
           <Button
             onClick={handleClick}
-            label={msg(msgs.google)}
+            label={t('login:google')}
             disabled={submitting}
             google
             raised
@@ -85,7 +69,7 @@ export default function Login(): JSX.Element {
       </div>
       <div className={styles.signup}>
         <Link href='/signup'>
-          <a className={styles.link}>{msg(msgs.signup)}</a>
+          <a className={styles.link}>{t('login:signup')}</a>
         </Link>
       </div>
     </div>

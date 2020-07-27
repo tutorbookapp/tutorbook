@@ -1,99 +1,70 @@
-import { useIntl, IntlShape, Msg, IntlHelper, Message } from 'lib/intl';
-
 import React from 'react';
 import SpotlightMsg from 'components/spotlight-msg';
+
+import useTranslation from 'next-translate/useTranslation';
 
 import VolunteerRegisters from './gifs/volunteer-registers.gif';
 import OrgVetsVolunteer from './gifs/org-vets-volunteer.gif';
 import StudentRequests from './gifs/student-requests.gif';
 import VolunteerEmails from './gifs/volunteer-emails.gif';
 
-import msgs from './msgs';
 import styles from './about.module.scss';
 
 export default function About(): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const { t } = useTranslation();
   return (
     <>
       <div className={styles.summary}>
         <div className={styles.wrapper}>
-          <h2 className={styles.subheader}>What is Tutorbook?</h2>
+          <h2 className={styles.subheader}>{t('about:what-title')}</h2>
           <p className={styles.body}>
-            <b className={styles.bold}>
-              <Message
-                id='hero-about.first-paragraph'
-                defaultMessage={
-                  'Tutorbook is a free, online platform that connects students ' +
-                  'with expert mentors and volunteer tutors.'
-                }
-              />
-            </b>
+            <b className={styles.bold}>{t('about:what-first')}</b>
           </p>
-          <p className={styles.body}>
-            <Message
-              id='hero-about.second-paragraph'
-              defaultMessage={
-                "We're connecting 9-12 students with expert mentors to " +
-                "collaborate on projects they're both " +
-                'passionate about (e.g. writing a research paper or releasing ' +
-                'a music album together).'
-              }
-            />
-          </p>
-          <p className={styles.body}>
-            <Message
-              id='hero-about.third-paragraph'
-              defaultMessage={
-                "We're also connecting K-12 students with free, " +
-                'volunteer tutors to make sure that no one loses out on ' +
-                'education amidst COVID-19.'
-              }
-            />
-          </p>
+          <p className={styles.body}>{t('about:what-second')}</p>
+          <p className={styles.body}>{t('about:what-third')}</p>
         </div>
       </div>
       <div className={styles.howItWorks}>
         <SpotlightMsg
-          label={msg(msgs.stepOne)}
-          headline={msg(msgs.volunteerTitle)}
-          body={msg(msgs.volunteerBody)}
+          label={t('about:step-one-label')}
+          headline={t('about:step-one-title')}
+          body={t('about:step-one-body')}
           img={VolunteerRegisters}
           cta={{
-            label: msg(msgs.volunteerCTA),
+            label: t('about:step-one-cta'),
             href: '/signup',
           }}
           flipped
         />
         <SpotlightMsg
-          label={msg(msgs.stepTwo)}
-          headline={msg(msgs.orgTitle)}
-          body={msg(msgs.orgBody)}
+          label={t('about:step-two-label')}
+          headline={t('about:step-two-title')}
+          body={t('about:step-two-body')}
           img={OrgVetsVolunteer}
           cta={{
-            label: msg(msgs.learnMoreCTA),
+            label: t('about:learn-more'),
             href: 'https://github.com/tutorbookapp/tutorbook/issues/75',
           }}
           gray
         />
         <SpotlightMsg
-          label={msg(msgs.stepThree)}
-          headline={msg(msgs.studentTitle)}
-          body={msg(msgs.studentBody)}
+          label={t('about:step-three-label')}
+          headline={t('about:step-three-title')}
+          body={t('about:step-three-body')}
           img={StudentRequests}
           cta={{
-            label: msg(msgs.studentCTA),
+            label: t('about:step-three-cta'),
             href: '/search',
           }}
           flipped
         />
         <SpotlightMsg
-          label={msg(msgs.stepFour)}
-          headline={msg(msgs.emailTitle)}
-          body={msg(msgs.emailBody)}
+          label={t('about:step-four-label')}
+          headline={t('about:step-four-title')}
+          body={t('about:step-four-body')}
           img={VolunteerEmails}
           cta={{
-            label: msg(msgs.learnMoreCTA),
+            label: t('about:learn-more'),
             href: 'https://github.com/tutorbookapp/tutorbook/issues/82',
           }}
           gray

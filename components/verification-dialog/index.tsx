@@ -14,33 +14,17 @@ import {
 import { TextField } from '@rmwc/textfield';
 import { useUser } from 'lib/account';
 import { Callback, Check, User, UserJSON, Verification } from 'lib/model';
-import { useMsg, IntlHelper, Msg } from 'lib/intl';
-import { defineMessages } from 'react-intl';
 
+import useTranslation from 'next-translate/useTranslation';
 import styles from './verification-dialog.module.scss';
 
-const checks: Record<Check, Msg> = defineMessages({
-  'background-check': {
-    id: 'checks.background-check',
-    defaultMessage: 'Background check',
-  },
-  email: {
-    id: 'checks.email',
-    defaultMessage: 'Verified email address',
-  },
-  'academic-email': {
-    id: 'check.academic-email',
-    defaultMessage: 'University email address',
-  },
-  training: {
-    id: 'checks.training',
-    defaultMessage: 'Safeguarding training',
-  },
-  interview: {
-    id: 'checks.interview',
-    defaultMessage: 'Face-to-face interview',
-  },
-});
+const checks: Check[] = [
+  'background-check',
+  'email',
+  'academic-email',
+  'training',
+  'interview',
+];
 
 interface VerificationDialogProps {
   user: UserJSON;
@@ -54,7 +38,7 @@ export default function VerificationDialog({
   onChange,
 }: VerificationDialogProps): JSX.Element {
   const { user: currentUser } = useUser();
-  const msg: IntlHelper = useMsg();
+  const { t } = useTranslation();
 
   // Deep copy the array of `Verification` objects.
   // @see {@link https://stackoverflow.com/a/40283265/10023158}
@@ -84,10 +68,8 @@ export default function VerificationDialog({
   };
 
   const getSomeChecked = () =>
-    user.verifications.length > 0 &&
-    user.verifications.length < Object.keys(checks).length;
-  const getAllChecked = () =>
-    Object.keys(checks).every((c) => getChecked(c as Check));
+    user.verifications.length > 0 && user.verifications.length < checks.length;
+  const getAllChecked = () => checks.every((c) => getChecked(c));
   const setAllChecked = (event: React.FormEvent<HTMLInputElement>) => {
     if (!event.currentTarget.checked)
       return onChange({ ...user, verifications: [] });
@@ -98,9 +80,9 @@ export default function VerificationDialog({
       },
       [] as Check[]
     );
-    const stillNeedsToBeChecked: Check[] = (Object.keys(
-      checks
-    ) as Check[]).filter((c) => checked.indexOf(c) < 0);
+    const stillNeedsToBeChecked: Check[] = checks.filter(
+      (c) => checked.indexOf(c) < 0
+    );
     stillNeedsToBeChecked.forEach((check: Check) =>
       verifications.push({
         user: currentUser.id,
@@ -139,7 +121,7 @@ export default function VerificationDialog({
       onClosed={onClosed}
       user={User.fromJSON(user)}
     >
-      <h6 className={styles.header}>Verifications</h6>
+      <h6 className={styles.header}>{t('verifications:title')}</h6>
       <DataTable className={styles.table}>
         <DataTableContent>
           <DataTableHead>
@@ -151,27 +133,29 @@ export default function VerificationDialog({
                   onChange={setAllChecked}
                 />
               </DataTableHeadCell>
-              <DataTableHeadCell>Description</DataTableHeadCell>
-              <DataTableHeadCell>Notes</DataTableHeadCell>
+              <DataTableHeadCell>
+                {t('verifications:description')}
+              </DataTableHeadCell>
+              <DataTableHeadCell>{t('verifications:notes')}</DataTableHeadCell>
             </DataTableRow>
           </DataTableHead>
           <DataTableBody>
-            {Object.entries(checks).map(([check, label]: [string, Msg]) => (
+            {checks.map((check: Check) => (
               <DataTableRow key={check}>
                 <DataTableCell hasFormControl>
                   <Checkbox
-                    checked={getChecked(check as Check)}
+                    checked={getChecked(check)}
                     onChange={(event: React.FormEvent<HTMLInputElement>) =>
-                      setChecked(event, check as Check)
+                      setChecked(event, check)
                     }
                   />
                 </DataTableCell>
-                <DataTableCell>{msg(label)}</DataTableCell>
+                <DataTableCell>{t(`verifications:${check}`)}</DataTableCell>
                 <DataTableCell>
                   <TextField
-                    value={getValue(check as Check)}
+                    value={getValue(check)}
                     onChange={(event: React.FormEvent<HTMLInputElement>) =>
-                      setValue(event, check as Check)
+                      setValue(event, check)
                     }
                     className={styles.textField}
                   />

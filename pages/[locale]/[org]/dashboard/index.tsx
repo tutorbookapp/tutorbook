@@ -83,7 +83,7 @@ export const getServerSideProps: GetServerSideProps<
       const org: Org = Org.fromFirestore(doc);
       let props: DashboardPageProps & IntlProps = await getIntlProps(
         { params },
-        ['common', 'dashboard']
+        ['common', 'overview']
       );
       if (!doc.exists) {
         props = {
@@ -119,19 +119,19 @@ function DashboardPage({
       <TabHeader
         tabs={[
           {
-            label: t('dashboard:overview'),
+            label: t('common:overview'),
             active: true,
             href: '/[org]/dashboard',
             as: `/${query.org as string}/dashboard`,
           },
           {
-            label: t('dashboard:people'),
+            label: t('common:people'),
             active: false,
             href: '/[org]/dashboard/people',
             as: `/${query.org as string}/dashboard/people`,
           },
           {
-            label: t('dashboard:appts'),
+            label: t('common:appts'),
             active: false,
             href: '/[org]/dashboard/appts',
             as: `/${query.org as string}/dashboard/appts`,

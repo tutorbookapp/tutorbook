@@ -32,7 +32,7 @@ function IndexPage(): JSX.Element {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => ({
-  props: await getIntlProps(context, ['common', 'home']),
+  props: await getIntlProps(context, ['common', 'about', 'query']),
 });
 
 /* eslint-disable-next-line @typescript-eslint/require-await */

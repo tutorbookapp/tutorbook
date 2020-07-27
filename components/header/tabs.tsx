@@ -1,6 +1,5 @@
-import { Link } from 'lib/intl';
-
 import React from 'react';
+import Link from 'next-translate/Link';
 
 import styles from './tabs.module.scss';
 

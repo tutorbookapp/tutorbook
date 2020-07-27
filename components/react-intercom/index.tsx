@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
 import React from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
-import { IntlShape, useIntl } from 'react-intl';
 import { UserContext } from 'lib/account';
 import { User } from 'lib/model';
 
@@ -126,10 +126,10 @@ class Intercom extends React.Component<IntercomProps> {
 }
 
 export default function IntercomHOC(): JSX.Element {
-  const intl: IntlShape = useIntl();
+  const { lang: locale } = useTranslation();
   return (
     <UserContext.Consumer>
-      {({ user }) => <Intercom account={user} locale={intl.locale} />}
+      {({ user }) => <Intercom account={user} locale={locale} />}
     </UserContext.Consumer>
   );
 }

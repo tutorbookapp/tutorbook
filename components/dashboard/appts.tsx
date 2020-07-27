@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import useSWR, { mutate } from 'swr';
+import useTranslation from 'next-translate/useTranslation';
 import axios from 'axios';
 
 import {
@@ -16,8 +17,6 @@ import { IconButton } from '@rmwc/icon-button';
 import { ListApptsRes } from 'lib/api/list-appts';
 import { ApptsQuery, Org, ApptJSON } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
-import { useMsg, IntlHelper } from 'lib/intl';
-import { defineMessages } from 'react-intl';
 
 import React from 'react';
 
@@ -27,33 +26,6 @@ import Title from './title';
 import Placeholder from './placeholder';
 
 import styles from './dashboard.module.scss';
-
-const msgs = defineMessages({
-  title: {
-    id: 'appts.title',
-    defaultMessage: 'Appointments',
-  },
-  subtitle: {
-    id: 'appts.subtitle',
-    defaultMessage: "{name}'s upcoming appointments",
-  },
-  empty: {
-    id: 'appts.empty',
-    defaultMessage: 'NO APPOINTMENTS TO SHOW',
-  },
-  searchPlaceholder: {
-    id: 'appts.filters.search-placeholder',
-    defaultMessage: 'Search appointments',
-  },
-  importData: {
-    id: 'appts.actions.import-data',
-    defaultMessage: 'Import data',
-  },
-  importDataMsg: {
-    id: 'appts.actions.import-data-msg',
-    defaultMessage: 'Could you help me import appointment data?',
-  },
-});
 
 interface ApptsProps {
   initialData: ListApptsRes;
@@ -72,7 +44,6 @@ interface ApptsProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
-  const msg: IntlHelper = useMsg();
   const timeoutIds = React.useRef<
     Record<string, ReturnType<typeof setTimeout>>
   >({});
@@ -94,6 +65,7 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
     [query.hitsPerPage]
   );
 
+  const { t } = useTranslation();
   // TODO: Control the re-validation using the `valid` state variable.
   // See: https://github.com/vercel/swr/issues/529
   const { data, isValidating } = useSWR<ListApptsRes>(query.endpoint, {
@@ -167,13 +139,13 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
   return (
     <>
       <Title
-        header={msg(msgs.title)}
-        body={msg(msgs.subtitle, { name: org.name })}
+        header={t('common:appts')}
+        body={t('appts:subtitle', { name: org.name })}
         actions={[
           {
-            label: msg(msgs.importData),
+            label: t('appts:import-data-btn'),
             onClick: () =>
-              IntercomAPI('showNewMessage', msg(msgs.importDataMsg)),
+              IntercomAPI('showNewMessage', t('appts:import-data-msg')),
           },
         ]}
       />
@@ -184,7 +156,7 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
             <TextField
               outlined
               invalid={!valid && !!query.query}
-              placeholder={msg(msgs.searchPlaceholder)}
+              placeholder={t('appts:search-placeholder')}
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
@@ -201,25 +173,25 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
               <DataTableHead className={styles.header}>
                 <DataTableRow>
                   <DataTableHeadCell className={styles.message}>
-                    Message
+                    {t('common:message')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.subjects}>
-                    Subjects
+                    {t('common:subjects')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.tutors}>
-                    Tutors
+                    {t('common:tutors')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.tutees}>
-                    Tutees
+                    {t('common:tutees')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.mentors}>
-                    Mentors
+                    {t('common:mentors')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.mentees}>
-                    Mentees
+                    {t('common:mentees')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.parents}>
-                    Parents
+                    {t('common:parents')}
                   </DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
@@ -235,14 +207,14 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
         )}
         {!searching && !(data ? data.appts : []).length && (
           <div className={styles.empty}>
-            <Placeholder>{msg(msgs.empty)}</Placeholder>
+            <Placeholder>{t('appts:empty')}</Placeholder>
           </div>
         )}
         <div className={styles.pagination}>
           <div className={styles.left} />
           <div className={styles.right}>
             <div className={styles.hitsPerPage}>
-              Rows per page:
+              {t('common:rows-per-page')}
               <Select
                 enhanced
                 value={`${query.hitsPerPage}`}

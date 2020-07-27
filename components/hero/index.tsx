@@ -1,7 +1,7 @@
-import { defineMessages } from 'react-intl';
-import { useIntl, Msg, IntlShape } from 'lib/intl';
 import { UsersQuery, User, Aspect } from 'lib/model';
 import { Card } from '@rmwc/card';
+
+import useTranslation from 'next-translate/useTranslation';
 
 import React, { useMemo, useState, useCallback } from 'react';
 import RequestDialog from 'components/request-dialog';
@@ -11,19 +11,8 @@ import SearchForm from './search-form';
 
 import styles from './hero.module.scss';
 
-const msgs: Record<string, Msg> = defineMessages({
-  mentoring: {
-    id: 'hero.mentoring.title',
-    defaultMessage: 'Learn from and work with an expert.',
-  },
-  tutoring: {
-    id: 'hero.tutoring.title',
-    defaultMessage: 'Free tutoring amidst COVID-19.',
-  },
-});
-
 export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
-  const intl: IntlShape = useIntl();
+  const { t } = useTranslation();
   const [viewing, setViewing] = useState<User | undefined>();
   const onClosed = useCallback(() => setViewing(undefined), []);
   const subjects = useMemo(() => [], []);
@@ -42,7 +31,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
           />
         )}
         <div className={styles.title}>
-          <Title>{intl.formatMessage(msgs[aspect])}</Title>
+          <Title>{t(`about:hero-${aspect}-title`)}</Title>
         </div>
         <Card className={styles.card}>
           <SearchForm aspect={aspect} />

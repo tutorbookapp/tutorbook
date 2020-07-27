@@ -1,0 +1,7 @@
+{
+  "subtitle": "{{name}}'s upcoming appointments",
+  "empty": "NO APPOINTMENTS TO SHOW",
+  "search-placeholder": "Search appointments",
+  "import-data-btn": "Import data",
+  "import-data-msg": "Could you help me import appointment data?"
+}

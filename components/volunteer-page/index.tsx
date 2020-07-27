@@ -1,5 +1,4 @@
 import { ResizeObserver } from '@juggle/resize-observer';
-import { useMsg, IntlHelper } from 'lib/intl';
 import { Aspect } from 'lib/model';
 
 import React, { useMemo } from 'react';
@@ -7,8 +6,8 @@ import Title from 'components/title';
 import VolunteerForm from 'components/volunteer-form';
 
 import useMeasure from 'react-use-measure';
+import useTranslation from 'next-translate/useTranslation';
 
-import msgs from './msgs';
 import styles from './volunteer-page.module.scss';
 
 interface VolunteerPageProps {
@@ -35,7 +34,6 @@ export default function VolunteerPage({
     polyfill: ResizeObserver,
   });
 
-  const msg: IntlHelper = useMsg();
   const headerStyle: Record<string, string> = useMemo(() => {
     const height: string = headerHeight ? `${headerHeight}px` : '125px';
     const transform: string =
@@ -53,22 +51,24 @@ export default function VolunteerPage({
     return { transform };
   }, [aspect, descHeight]);
 
+  const { t } = useTranslation();
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header} ref={headerRef}>
         <span style={aspect === 'mentoring' ? {} : headerStyle}>
-          <Title>{msg(msgs.mentorHeader)}</Title>
+          <Title>{t('signup-page:mentoring-header')}</Title>
         </span>
         <span style={aspect === 'tutoring' ? {} : headerStyle}>
-          <Title>{msg(msgs.tutorHeader)}</Title>
+          <Title>{t('signup-page:tutoring-header')}</Title>
         </span>
       </div>
       <div className={styles.description} ref={descRef}>
         <span style={aspect === 'mentoring' ? {} : descStyle}>
-          {msg(msgs.mentorDesc)}
+          {t('signup-page:mentoring-body')}
         </span>
         <span style={aspect === 'tutoring' ? {} : descStyle}>
-          {msg(msgs.tutorDesc)}
+          {t('signup-page:tutoring-body')}
         </span>
       </div>
       <VolunteerForm aspect={aspect} org={org} />

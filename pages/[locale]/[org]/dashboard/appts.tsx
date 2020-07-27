@@ -155,19 +155,19 @@ function ApptsPage({
       <TabHeader
         tabs={[
           {
-            label: t('dashboard:overview'),
+            label: t('common:overview'),
             active: false,
             href: '/[org]/dashboard',
             as: `/${query.org as string}/dashboard`,
           },
           {
-            label: t('dashboard:people'),
+            label: t('common:people'),
             active: false,
             href: '/[org]/dashboard/people',
             as: `/${query.org as string}/dashboard/people`,
           },
           {
-            label: t('dashboard:appts'),
+            label: t('common:appts'),
             active: true,
             href: '/[org]/dashboard/appts',
             as: `/${query.org as string}/dashboard/appts`,

@@ -1,4 +1,3 @@
-import { useIntl } from 'lib/intl';
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import { Option } from 'lib/model';
 
@@ -7,6 +6,7 @@ import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 
 import React from 'react';
 import equal from 'fast-deep-equal';
+import useTranslation from 'next-translate/useTranslation';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
@@ -54,7 +54,7 @@ export default function LangSelect({
 
   // Convert a language search hit to an option (gets the label in the current
   // locale/language).
-  const { locale } = useIntl();
+  const { lang: locale } = useTranslation();
   const langHitToOption = React.useCallback(
     (lang: LangHit) => {
       cache.current[lang.objectID] = lang;

@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps<
     res.end();
     throw new Error('You must be logged in to access this page.');
   } else {
-    return { props: await getIntlProps({ params }, ['common', 'dashboard']) };
+    return { props: await getIntlProps({ params }, ['common', 'overview']) };
   }
 };
 
@@ -43,7 +43,7 @@ function DashboardPage(): JSX.Element {
       <TabHeader
         tabs={[
           {
-            label: t('dashboard:overview'),
+            label: t('common:overview'),
             active: true,
             href: '/dashboard',
           },

@@ -26,7 +26,12 @@ function SignupPage(): JSX.Element {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => ({
-  props: await getIntlProps(context, ['common', 'signup']),
+  props: await getIntlProps(context, [
+    'common',
+    'signup',
+    'signup-page',
+    'query',
+  ]),
 });
 
 /* eslint-disable-next-line @typescript-eslint/require-await */

@@ -1,35 +1,22 @@
-import { defineMessages } from 'react-intl';
-import { useIntl, useMsg, IntlHelper, Msg } from 'lib/intl';
 import { Aspect, UsersQuery, Availability } from 'lib/model';
 
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Router from 'next/router';
 import Button from 'components/button';
 import QueryForm from 'components/query-form';
 
+import useTranslation from 'next-translate/useTranslation';
 import styles from './search-form.module.scss';
 
 interface SearchFormProps {
   aspect: Aspect;
 }
 
-const msgs: Record<string, Msg> = defineMessages({
-  mentoringBtn: {
-    id: 'hero.search-form.mentoring.btn',
-    defaultMessage: 'Search mentors',
-  },
-  tutoringBtn: {
-    id: 'hero.search-form.tutoring.btn',
-    defaultMessage: 'Search tutors',
-  },
-});
-
 export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
-  const { locale } = useIntl();
-  const msg: IntlHelper = useMsg();
+  const { t, lang: locale } = useTranslation();
 
-  const [submitting, setSubmitting] = React.useState<boolean>(false);
-  const [query, setQuery] = React.useState<UsersQuery>(
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
       aspect: aspect || 'mentoring',
       langs: [], // TODO: Pre-fill with current locale language.
@@ -38,21 +25,21 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     })
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setQuery((prev: UsersQuery) => {
       if (!aspect || aspect === prev.aspect) return prev;
       return new UsersQuery({ ...prev, aspect });
     });
   }, [aspect]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     void Router.prefetch(
       '/[locale]/search/[[...slug]]',
       `/${locale}${query.url}`
     );
   }, [query, locale]);
 
-  const handleSubmit = React.useCallback(
+  const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       event.stopPropagation();
@@ -64,7 +51,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     },
     [query, locale]
   );
-  const onChange = React.useCallback((qry: UsersQuery) => setQuery(qry), []);
+  const onChange = useCallback((qry: UsersQuery) => setQuery(qry), []);
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
@@ -76,7 +63,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       />
       <Button
         className={styles.button}
-        label={msg(msgs[`${query.aspect}Btn`])}
+        label={t(`about:search-${query.aspect}-btn`)}
         disabled={submitting}
         raised
         arrow

@@ -124,7 +124,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       user: JSON.parse(
         JSON.stringify(await getUser(context.params))
       ) as UserJSON | null,
-      ...(await getIntlProps(context, ['common', 'search'])),
+      ...(await getIntlProps(context, ['common', 'search', 'query'])),
     },
   };
 };

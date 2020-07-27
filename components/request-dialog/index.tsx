@@ -28,12 +28,11 @@ import { useUser } from 'lib/account';
 import { TooltipProps } from '@rmwc/tooltip';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { useMsg, IntlHelper } from 'lib/intl';
 import { v4 as uuid } from 'uuid';
 
+import useTranslation from 'next-translate/useTranslation';
 import dynamic from 'next/dynamic';
 import to from 'await-to-js';
-import msgs from './msgs';
 import styles from './request-dialog.module.scss';
 
 const Tooltip = dynamic<TooltipProps>(async () =>
@@ -55,6 +54,7 @@ export default function RequestDialog({
   aspect,
   user,
 }: RequestDialogProps): JSX.Element {
+  const { t } = useTranslation();
   const { user: currentUser } = useUser();
 
   const [attendees, setAttendees] = useState<Option<string>[]>([
@@ -183,8 +183,6 @@ export default function RequestDialog({
     [currentUser]
   );
 
-  const msg: IntlHelper = useMsg();
-
   return (
     <UserDialog
       onClosed={onClosed}
@@ -192,10 +190,10 @@ export default function RequestDialog({
       submitted={submitted}
       user={user}
     >
-      <h6 className={styles.header}>Request</h6>
+      <h6 className={styles.header}>{t('common:request')}</h6>
       <form className={styles.form} onSubmit={onSubmit}>
         <Tooltip
-          content='You must be logged in to send requests for others'
+          content={t('common:login-to-proxy-request')}
           open={!currentUser.id ? undefined : false}
           activateOn='hover'
           align='topRight'
@@ -206,7 +204,7 @@ export default function RequestDialog({
               outlined
               renderToPortal
               disabled={!currentUser.id}
-              label={msg(msgs.attendees)}
+              label={t('common:attendees')}
               className={styles.field}
               onSelectedChange={onAttendeesChange}
               selected={attendees}
@@ -218,7 +216,7 @@ export default function RequestDialog({
           outlined
           autoOpenMenu
           renderToPortal
-          label={msg(msgs.subjects)}
+          label={t('common:subjects')}
           className={styles.field}
           onChange={onSubjectsChange}
           value={subjects}
@@ -228,7 +226,7 @@ export default function RequestDialog({
         {aspect === 'tutoring' && time && (
           <TimeslotInput
             required
-            label={msg(msgs.time)}
+            label={t('common:time')}
             className={styles.field}
             onChange={onTimeChange}
             availability={user.availability}
@@ -242,10 +240,10 @@ export default function RequestDialog({
           required
           characterCount
           maxLength={500}
-          placeholder={msg(msgs.messagePlaceholder, {
+          placeholder={t('common:message-placeholder', {
             subject: subjects[0] || 'Computer Science',
           })}
-          label={msg(msgs.message)}
+          label={t('common:message')}
           className={styles.field}
           onChange={onMessageChange}
           value={message}
@@ -254,8 +252,8 @@ export default function RequestDialog({
           className={styles.button}
           label={
             !currentUser.id
-              ? msg(msgs.signUpAndSubmit)
-              : msg(msgs.submit, { name: user.firstName })
+              ? t('common:signup-and-send')
+              : t('common:send-request')
           }
           disabled={submitting || submitted}
           google={!currentUser.id}

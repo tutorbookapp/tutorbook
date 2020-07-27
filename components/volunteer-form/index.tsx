@@ -1,4 +1,3 @@
-import { useMsg, Msg, IntlHelper } from 'lib/intl';
 import { useUser } from 'lib/account';
 import { signup } from 'lib/account/signup';
 import { TextField } from '@rmwc/textfield';
@@ -27,7 +26,8 @@ import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
 import Button from 'components/button';
 
-import msgs from './msgs';
+import useTranslation from 'next-translate/useTranslation';
+
 import styles from './volunteer-form.module.scss';
 
 interface VolunteerFormProps {
@@ -39,7 +39,7 @@ export default function VolunteerForm({
   aspect,
   org,
 }: VolunteerFormProps): JSX.Element {
-  const msg: IntlHelper = useMsg();
+  const { t } = useTranslation();
   const { user, updateUser } = useUser();
 
   const [submittingMentor, setSubmittingMentor] = useState<boolean>(false);
@@ -88,9 +88,9 @@ export default function VolunteerForm({
 
   const inputs: JSX.Element = useMemo(() => {
     const sharedProps = { className: styles.formField, outlined: true };
-    const shared = (key: Extract<keyof UserInterface, keyof typeof msgs>) => ({
+    const shared = (key: keyof UserInterface) => ({
       ...sharedProps,
-      label: msg(msgs[key]),
+      label: t(`signup:${key}`),
       onChange: (event: React.FormEvent<HTMLInputElement>) =>
         updateUser(new User({ ...user, [key]: event.currentTarget.value })),
     });
@@ -115,7 +115,7 @@ export default function VolunteerForm({
     const s = (type: SocialTypeAlias, placeholder: (v: string) => string) => ({
       ...sharedProps,
       value: getSocial(type),
-      label: msg(msgs[type]),
+      label: t(`signup:${type}`),
       onFocus: () => {
         const name: string = user.name
           ? user.name.replace(' ', '').toLowerCase()
@@ -151,7 +151,7 @@ export default function VolunteerForm({
         <LangSelect
           {...sharedProps}
           value={user.langs}
-          label={msg(msgs.lang)}
+          label={t('query:langs')}
           onChange={(langs: string[]) =>
             updateUser(new User({ ...user, langs }))
           }
@@ -162,8 +162,8 @@ export default function VolunteerForm({
             <SubjectSelect
               {...sharedProps}
               value={user.mentoring.subjects}
-              label={msg(msgs.expertise)}
-              placeholder={msg(msgs.expertisePlaceholder)}
+              label={t('signup:mentoring-subjects')}
+              placeholder={t('query:subjects-mentoring-placeholder')}
               onChange={(subjects: string[]) =>
                 updateUser(
                   new User({ ...user, [aspect]: { ...user[aspect], subjects } })
@@ -183,8 +183,8 @@ export default function VolunteerForm({
                 )
               }
               value={user.bio}
-              label={msg(msgs.project)}
-              placeholder={msg(msgs.projectPlaceholder)}
+              label={t('signup:mentoring-bio')}
+              placeholder={t('signup:bio-placeholder')}
               required
               rows={4}
               textarea
@@ -196,8 +196,8 @@ export default function VolunteerForm({
             <SubjectSelect
               {...sharedProps}
               value={user.tutoring.subjects}
-              label={msg(msgs.subjects)}
-              placeholder={msg(msgs.subjectsPlaceholder)}
+              label={t('signup:tutoring-subjects')}
+              placeholder={t('query:subjects-tutoring-placeholder')}
               onChange={(subjects: string[]) =>
                 updateUser(
                   new User({ ...user, [aspect]: { ...user[aspect], subjects } })
@@ -230,8 +230,8 @@ export default function VolunteerForm({
                 )
               }
               value={user.bio}
-              label={msg(msgs.experience)}
-              placeholder={msg(msgs.experiencePlaceholder)}
+              label={t('signup:tutoring-bio')}
+              placeholder={t('signup:bio-placeholder')}
               required
               rows={4}
               textarea
@@ -250,12 +250,7 @@ export default function VolunteerForm({
         />
       </>
     );
-  }, [aspect, user, updateUser, msg]);
-
-  const label: Msg = useMemo(
-    () => (aspect === 'mentoring' ? msgs.mentorSubmit : msgs.tutorSubmit),
-    [aspect]
-  );
+  }, [aspect, user, updateUser, t]);
 
   return (
     <Card className={styles.formCard}>
@@ -265,7 +260,11 @@ export default function VolunteerForm({
         {!user.id && (
           <Button
             className={styles.formSubmitButton}
-            label={msg(user.id ? msgs.updateSubmit : label)}
+            label={t(
+              user.id
+                ? 'signup:submit-update-btn'
+                : `signup:submit-${aspect}-btn`
+            )}
             disabled={submitting || submitted}
             raised
             arrow

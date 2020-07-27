@@ -1,6 +1,5 @@
 import React from 'react';
-
-import { Link } from 'lib/intl';
+import Link from 'next-translate/Link';
 
 import styles from './title.module.scss';
 

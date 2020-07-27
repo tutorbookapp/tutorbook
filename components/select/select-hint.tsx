@@ -1,8 +1,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
+import useTranslation from 'next-translate/useTranslation';
 import { TooltipProps } from '@rmwc/tooltip';
-import { useMsg } from 'lib/intl';
-import { defineMessages } from 'react-intl';
 
 const Tooltip = dynamic<TooltipProps>(async () =>
   import('@rmwc/tooltip').then((mod) => mod.Tooltip)
@@ -17,17 +16,9 @@ export default function SelectHint({
   children,
   open,
 }: SelectHintProps): JSX.Element {
-  const msg = useMsg();
-  const msgs = defineMessages({
-    hint: {
-      id: 'subject-select.select-hint',
-      description:
-        'The tooltip text prompting the user to shift-select subjects.',
-      defaultMessage: "Use 'SHIFT + click' for multiple select",
-    },
-  });
+  const { t } = useTranslation();
   return (
-    <Tooltip content={msg(msgs.hint)} align='topRight' open={open}>
+    <Tooltip content={t('common:shift-click')} align='topRight' open={open}>
       {children}
     </Tooltip>
   );

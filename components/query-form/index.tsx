@@ -1,4 +1,3 @@
-import { useIntl, IntlHelper, IntlShape, Msg } from 'lib/intl';
 import { Option, Availability, UsersQuery, Callback } from 'lib/model';
 
 import React from 'react';
@@ -6,7 +5,7 @@ import LangSelect from 'components/lang-select';
 import ScheduleInput from 'components/schedule-input';
 import SubjectSelect from 'components/subject-select';
 
-import msgs from './msgs';
+import useTranslation from 'next-translate/useTranslation';
 import styles from './query-form.module.scss';
 
 type FocusTarget = 'subjects' | 'availability' | 'langs';
@@ -28,8 +27,7 @@ export default function QueryForm({
   availability,
   langs,
 }: QueryFormProps & QueryFormInputConfig): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const { t } = useTranslation();
   const [focused, setFocused] = React.useState<FocusTarget | undefined>(
     focusTarget
   );
@@ -73,7 +71,7 @@ export default function QueryForm({
       {subjects && (
         <SubjectSelect
           focused={focused === 'subjects'}
-          label={msg(msgs.subjects)}
+          label={t('query:subjects')}
           onFocused={focusSubjects}
           onBlurred={focusNothing}
           className={className}
@@ -81,14 +79,14 @@ export default function QueryForm({
           outlined
           onSelectedChange={onSubjectsChange}
           selected={query.subjects}
-          placeholder={msg(msgs[`${query.aspect}SubjectsPlaceholder`])}
+          placeholder={t(`query:subjects-${query.aspect}-placeholder`)}
           aspect={query.aspect}
         />
       )}
       {availability && (
         <ScheduleInput
           focused={focused === 'availability'}
-          label={msg(msgs.availability)}
+          label={t('query:availability')}
           onFocused={focusAvailability}
           onBlurred={focusNothing}
           className={className}
@@ -101,7 +99,7 @@ export default function QueryForm({
       {langs && (
         <LangSelect
           focused={focused === 'langs'}
-          label={msg(msgs.langs)}
+          label={t('query:langs')}
           onFocused={focusLangs}
           onBlurred={focusNothing}
           className={className}

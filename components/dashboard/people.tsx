@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import useSWR, { mutate } from 'swr';
+import useTranslation from 'next-translate/useTranslation';
 import axios from 'axios';
 
 import {
@@ -19,8 +20,6 @@ import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
 import { Option, UsersQuery, Org, User, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
-import { useMsg, useIntl, IntlHelper } from 'lib/intl';
-import { defineMessages } from 'react-intl';
 
 import React from 'react';
 import VerificationDialog from 'components/verification-dialog';
@@ -31,57 +30,6 @@ import Title from './title';
 import Placeholder from './placeholder';
 
 import styles from './dashboard.module.scss';
-
-const msgs = defineMessages({
-  title: {
-    id: 'people.title',
-    defaultMessage: 'People',
-  },
-  subtitle: {
-    id: 'people.subtitle',
-    defaultMessage: "{name}'s tutors, mentors and students",
-  },
-  empty: {
-    id: 'people.empty',
-    defaultMessage: 'NO PEOPLE TO SHOW',
-  },
-  searchPlaceholder: {
-    id: 'people.filters.search-placeholder',
-    defaultMessage: 'Search people',
-  },
-  viewSearch: {
-    id: 'people.actions.view-search',
-    defaultMessage: 'View search',
-  },
-  createUser: {
-    id: 'people.actions.create-user',
-    defaultMessage: 'Create user',
-  },
-  importData: {
-    id: 'people.actions.import-data',
-    defaultMessage: 'Import data',
-  },
-  importDataMsg: {
-    id: 'people.actions.import-data-msg',
-    defaultMessage: 'Could you help me import data?',
-  },
-  shareSignupLink: {
-    id: 'people.actions.share-signup-link',
-    defaultMessage: 'Share signup link',
-  },
-  notVetted: {
-    id: 'people.filters.not-vetted',
-    defaultMessage: 'Not yet vetted',
-  },
-  visible: {
-    id: 'people.filters.visible',
-    defaultMessage: 'Visible in search',
-  },
-  hidden: {
-    id: 'people.filters.hidden',
-    defaultMessage: 'Hidden from search',
-  },
-});
 
 interface PeopleProps {
   initialData: ListUsersRes;
@@ -100,7 +48,6 @@ interface PeopleProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function People({ initialData, org }: PeopleProps): JSX.Element {
-  const msg: IntlHelper = useMsg();
   const timeoutIds = React.useRef<
     Record<string, ReturnType<typeof setTimeout>>
   >({});
@@ -125,7 +72,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     [query.hitsPerPage]
   );
 
-  const { locale } = useIntl();
+  const { t, lang: locale } = useTranslation();
   // TODO: Control the re-validation using the `valid` state variable.
   // See: https://github.com/vercel/swr/issues/529
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
@@ -210,34 +157,13 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
     (action: ActionCallback) => {
       const tempNoEmail = (u: UserJSON) => !u.email && u.id.startsWith('temp');
       if (!valid && data && data.users.some(tempNoEmail)) {
-        const dialogMsgs = defineMessages({
-          title: {
-            id: 'people.warning-dialog.title',
-            defaultMessage: 'Apply filters?',
-          },
-          body: {
-            id: 'people.warning-dialog.body',
-            defaultMessage:
-              'Applying these filters will discard any users added without an' +
-              ' email address. To save your changes, add an email address to ' +
-              'each of those new users and then apply filters.',
-          },
-          accept: {
-            id: 'people.warning-dialog.accept',
-            defaultMessage: 'Apply Filters',
-          },
-          cancel: {
-            id: 'people.warning-dialog.cancel',
-            defaultMessage: 'Cancel',
-          },
-        });
         setWarningDialog(
           <SimpleDialog
             className={styles.dialog}
-            title={msg(dialogMsgs.title)}
-            body={msg(dialogMsgs.body)}
-            acceptLabel={msg(dialogMsgs.accept)}
-            cancelLabel={msg(dialogMsgs.cancel)}
+            title={t('people:dialog-title')}
+            body={t('people:dialog-body')}
+            acceptLabel={t('people:dialog-accept-btn')}
+            cancelLabel={t('people:dialog-cancel-btn')}
             onClose={(evt: DialogOnCloseEventT) => {
               if (evt.detail.action === 'accept') action();
             }}
@@ -249,7 +175,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         action();
       }
     },
-    [valid, data, msg]
+    [valid, data, t]
   );
 
   return (
@@ -267,17 +193,17 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           open={viewingSnackbar}
           className={styles.snackbar}
           onClose={() => setViewingSnackbar(false)}
-          message='Link copied to clipboard.'
+          message={t('people:link-copied')}
           dismissIcon
           leading
         />
       )}
       <Title
-        header={msg(msgs.title)}
-        body={msg(msgs.subtitle, { name: org.name })}
+        header={t('common:people')}
+        body={t('people:subtitle', { name: org.name })}
         actions={[
           {
-            label: msg(msgs.createUser),
+            label: t('people:create-user'),
             onClick: async () => {
               setValid(false); // Filters become invalid when creating users.
               const user = new User({
@@ -295,12 +221,12 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             },
           },
           {
-            label: msg(msgs.importData),
+            label: t('people:import-data-btn'),
             onClick: () =>
-              IntercomAPI('showNewMessage', msg(msgs.importDataMsg)),
+              IntercomAPI('showNewMessage', t('people:import-data-msg')),
           },
           {
-            label: msg(msgs.shareSignupLink),
+            label: t('people:share-signup-link'),
             onClick: async () => {
               function fallbackCopyTextToClipboard(text: string): void {
                 const textArea = document.createElement('textarea');
@@ -335,7 +261,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             },
           },
           {
-            label: msg(msgs.viewSearch),
+            label: t('people:view-search'),
             href: '/[org]/search/[[...slug]]',
             as: `/${org.id}/search`,
           },
@@ -354,7 +280,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                     ? styles.invalid
                     : ''
                 }
-                label={msg(msgs.notVetted)}
+                label={t('people:filters-not-vetted')}
                 checkmark
                 onInteraction={() =>
                   filterCallback(() => {
@@ -365,7 +291,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                     );
                     if (idx < 0) {
                       tags.push({
-                        label: msg(msgs.notVetted),
+                        label: t('people:filters-not-vetted'),
                         value: 'not-vetted',
                       });
                     } else if (valid) {
@@ -385,7 +311,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 className={
                   !valid && query.visible === true ? styles.invalid : ''
                 }
-                label={msg(msgs.visible)}
+                label={t('people:filters-visible')}
                 checkmark
                 onInteraction={() =>
                   filterCallback(() => {
@@ -405,7 +331,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
                 className={
                   !valid && query.visible === false ? styles.invalid : ''
                 }
-                label={msg(msgs.hidden)}
+                label={t('people:filters-hidden')}
                 checkmark
                 onInteraction={() =>
                   filterCallback(() => {
@@ -427,7 +353,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
             <TextField
               outlined
               invalid={!valid && !!query.query}
-              placeholder={msg(msgs.searchPlaceholder)}
+              placeholder={t('people:search-placeholder')}
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
@@ -449,34 +375,34 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
               <DataTableHead className={styles.header}>
                 <DataTableRow>
                   <DataTableHeadCell hasFormControl className={styles.visible}>
-                    Visible
+                    {t('people:visible')}
                   </DataTableHeadCell>
                   <DataTableHeadCell hasFormControl className={styles.vetted}>
-                    Vetted
+                    {t('people:vetted')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.name}>
-                    Name
+                    {t('people:name')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.bio}>
-                    Bio
+                    {t('people:bio')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.email}>
-                    Email
+                    {t('people:email')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.phone}>
-                    Phone
+                    {t('people:phone')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.parents}>
-                    Parents
+                    {t('people:parents')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.availability}>
-                    Availability
+                    {t('people:availability')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.subjects}>
-                    Tutoring Subjects
+                    {t('people:tutoring-subjects')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.subjects}>
-                    Mentoring Subjects
+                    {t('people:mentoring-subjects')}
                   </DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
@@ -497,14 +423,14 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
         )}
         {!searching && !(data ? data.users : []).length && (
           <div className={styles.empty}>
-            <Placeholder>{msg(msgs.empty)}</Placeholder>
+            <Placeholder>{t('people:empty')}</Placeholder>
           </div>
         )}
         <div className={styles.pagination}>
           <div className={styles.left} />
           <div className={styles.right}>
             <div className={styles.hitsPerPage}>
-              Rows per page:
+              {t('common:rows-per-page')}
               <Select
                 enhanced
                 value={`${query.hitsPerPage}`}

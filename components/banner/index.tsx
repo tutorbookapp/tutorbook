@@ -1,19 +1,18 @@
 import React from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
 import styles from './banner.module.scss';
 
 export default function Banner(): JSX.Element {
+  const { t } = useTranslation();
   const [hidden, setHidden] = React.useState<boolean>(false);
   return (
     <div className={styles.wrapper + (hidden ? ` ${styles.hidden}` : '')}>
       <div className={styles.content}>
         <span className={styles.desktopTitle}>
-          We stand with the black community. Make our nation #BetterThanBefore
-          by mentoring black youth.
+          {t('common:banner-desktop')}
         </span>
-        <span className={styles.mobileTitle}>
-          We stand with the black community.
-        </span>
+        <span className={styles.mobileTitle}>{t('common:banner-mobile')}</span>
       </div>
       <span
         className={styles.close}

@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-
+import Link from 'next-translate/Link';
 import Router from 'next/router';
 import Avatar from 'components/avatar';
 
+import React, { useState } from 'react';
+import useTranslation from 'next-translate/useTranslation';
+
 import { mutate } from 'swr';
-import { useMsg, useIntl, Link } from 'lib/intl';
 import { useUser, useOrgs } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { OrgJSON, User, AccountInterface } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
-import { defineMessages } from 'react-intl';
 import { Ripple } from '@rmwc/ripple';
 import { Icon } from '@rmwc/icon';
 
@@ -153,53 +153,9 @@ export default function PopOverMenu({
   onClose,
   children,
 }: PopOverMenuProps): JSX.Element {
-  const msg = useMsg();
-  const msgs = defineMessages({
-    logoutLabel: {
-      id: 'pop-over.logout.label',
-      defaultMessage: 'Logout',
-    },
-    loggingOutLabel: {
-      id: 'pop-over.logout.logging-out',
-      defaultMessage: 'Logging out...',
-    },
-    newOrgMsg: {
-      id: 'pop-over.create-org.message',
-      defaultMessage: "I'd like to create a new organization.",
-    },
-    newOrgLabel: {
-      id: 'pop-over.create-org.label',
-      defaultMessage: 'Create an Organization',
-    },
-    people: {
-      id: 'pop-over.links.people',
-      defaultMessage: 'People',
-    },
-    appts: {
-      id: 'pop-over.links.appts',
-      defaultMessage: 'Appointments',
-    },
-    search: {
-      id: 'pop-over.links.search',
-      defaultMessage: 'Search',
-    },
-    home: {
-      id: 'pop-over.links.home',
-      defaultMessage: 'Home',
-    },
-    dashboard: {
-      id: 'pop-over.links.dashboard',
-      defaultMessage: 'Dashboard',
-    },
-    profile: {
-      id: 'pop-over.links.profile',
-      defaultMessage: 'Profile',
-    },
-  });
-
+  const { t, lang: locale } = useTranslation();
   const { orgs } = useOrgs();
   const { user } = useUser();
-  const { locale } = useIntl();
 
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
 
@@ -209,40 +165,42 @@ export default function PopOverMenu({
       <MenuSurface open={open} onClose={onClose}>
         <div className={styles.picker}>
           <PopOverAccountHeader account={user} />
-          <PopOverLink href='/'>{msg(msgs.home)}</PopOverLink>
-          <PopOverLink href='/search'>{msg(msgs.search)}</PopOverLink>
-          <PopOverLink href='/signup'>{msg(msgs.profile)}</PopOverLink>
-          <PopOverLink href='/dashboard'>{msg(msgs.dashboard)}</PopOverLink>
+          <PopOverLink href='/'>{t('common:home')}</PopOverLink>
+          <PopOverLink href='/search'>{t('common:search')}</PopOverLink>
+          <PopOverLink href='/signup'>{t('common:profile')}</PopOverLink>
+          <PopOverLink href='/dashboard'>{t('common:dashboard')}</PopOverLink>
           {orgs.map((org: OrgJSON) => (
             <>
               <div className={styles.line} />
               <PopOverAccountHeader account={org} />
               <PopOverLink href='/[org]' as={`/${org.id}`}>
-                {msg(msgs.home)}
+                {t('common:home')}
               </PopOverLink>
               <PopOverLink href='/[org]/search' as={`/${org.id}/search`}>
-                {msg(msgs.search)}
+                {t('common:search')}
               </PopOverLink>
               <PopOverLink
                 href='/[org]/dashboard/people'
                 as={`/${org.id}/dashboard/people`}
               >
-                {msg(msgs.people)}
+                {t('common:people')}
               </PopOverLink>
               <PopOverLink
                 href='/[org]/dashboard/appts'
                 as={`/${org.id}/dashboard/appts`}
               >
-                {msg(msgs.appts)}
+                {t('common:appts')}
               </PopOverLink>
             </>
           ))}
           <div className={styles.line} />
           <PopOverButton
             icon='add'
-            onClick={() => IntercomAPI('showNewMessage', msg(msgs.newOrgMsg))}
+            onClick={() =>
+              IntercomAPI('showNewMessage', t('common:new-org-msg'))
+            }
           >
-            {msg(msgs.newOrgLabel)}
+            {t('common:new-org-btn')}
           </PopOverButton>
           <div className={styles.line} />
           <PopOverButton
@@ -255,7 +213,7 @@ export default function PopOverMenu({
               await Router.push('/[locale]/login', `/${locale}/login`);
             }}
           >
-            {msg(loggingOut ? msgs.loggingOutLabel : msgs.logoutLabel)}
+            {t(loggingOut ? 'common:logging-out' : 'common:logout')}
           </PopOverButton>
         </div>
       </MenuSurface>

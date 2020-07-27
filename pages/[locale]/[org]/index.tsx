@@ -57,7 +57,8 @@ export const getServerSideProps: GetServerSideProps<
     const org: Org = Org.fromFirestore(doc);
     let props: OrgPageProps & IntlProps = await getIntlProps({ params }, [
       'common',
-      'dashboard',
+      'signup',
+      'query',
     ]);
     if (!doc.exists) {
       props = {

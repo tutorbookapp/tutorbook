@@ -1,9 +1,10 @@
-import { useIntl, Link, IntlShape, IntlHelper, Msg } from 'lib/intl';
 import { UsersQuery, Aspect, Callback } from 'lib/model';
-import { defineMessages } from 'react-intl';
 import { useUser } from 'lib/account';
 
-import React from 'react';
+import useTranslation from 'next-translate/useTranslation';
+
+import React, { useState, useCallback } from 'react';
+import Link from 'next-translate/Link';
 import Avatar from 'components/avatar';
 import FilterForm from 'components/filter-form';
 import PopOver from './pop-over';
@@ -12,17 +13,6 @@ import Tabs, { TabsProps } from './tabs';
 
 import styles from './header.module.scss';
 
-const tabLabels: Record<Aspect, Msg> = defineMessages({
-  mentoring: {
-    id: 'header.tabs.mentoring',
-    defaultMessage: 'Mentors',
-  },
-  tutoring: {
-    id: 'header.tabs.tutoring',
-    defaultMessage: 'Tutors',
-  },
-});
-
 function DesktopTabs({
   aspect,
   onChange,
@@ -30,18 +20,17 @@ function DesktopTabs({
   aspect: Aspect;
   onChange: Callback<Aspect>;
 }): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const { t } = useTranslation();
   return (
     <Tabs
       tabs={[
         {
-          label: msg(tabLabels.mentoring),
+          label: t('common:mentors'),
           active: aspect === 'mentoring',
           onClick: () => onChange('mentoring'),
         },
         {
-          label: msg(tabLabels.tutoring),
+          label: t('common:tutors'),
           active: aspect === 'tutoring',
           onClick: () => onChange('tutoring'),
         },
@@ -51,16 +40,15 @@ function DesktopTabs({
 }
 
 function DesktopTabLinks(): JSX.Element {
-  const intl: IntlShape = useIntl();
-  const msg: IntlHelper = (message: Msg) => intl.formatMessage(message);
+  const { t } = useTranslation();
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
       <Link href='/search/[[...slug]]' as='/search?aspect=mentoring'>
-        <a className={styles.desktopLink}>{msg(tabLabels.mentoring)}</a>
+        <a className={styles.desktopLink}>{t('common:mentors')}</a>
       </Link>
       <Link href='/search/[[...slug]]' as='/search?aspect=tutoring'>
-        <a className={styles.desktopLink}>{msg(tabLabels.tutoring)}</a>
+        <a className={styles.desktopLink}>{t('common:tutors')}</a>
       </Link>
     </div>
     /* eslint-enable jsx-a11y/anchor-is-valid */
@@ -82,16 +70,19 @@ function Logo(): JSX.Element {
 
 function MobileNav(): JSX.Element {
   const { user } = useUser();
-  const [active, setActive] = React.useState<boolean>(false);
-  const toggleMobileMenu = () => {
-    const menuActive = !active;
-    if (menuActive) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    setActive(menuActive);
-  };
+  const { t } = useTranslation();
+  const [active, setActive] = useState<boolean>(false);
+  const toggleMobileMenu = useCallback(() => {
+    setActive((prev: boolean) => {
+      const menuActive = !prev;
+      if (menuActive) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+      return menuActive;
+    });
+  }, []);
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <>
@@ -113,7 +104,7 @@ function MobileNav(): JSX.Element {
           <Link href='/signup'>
             <a className={styles.mobileLink}>
               <li className={styles.mobileLinkItem}>
-                {user.id ? 'Profile' : 'Signup'}
+                {user.id ? t('common:profile') : t('common:signup')}
               </li>
             </a>
           </Link>
@@ -126,6 +117,7 @@ function MobileNav(): JSX.Element {
 
 function DesktopNav(): JSX.Element {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState<boolean>(false);
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
@@ -133,11 +125,13 @@ function DesktopNav(): JSX.Element {
       {!user.id && (
         <>
           <Link href='/login'>
-            <a className={`${styles.desktopLink} ${styles.loginLink}`}>Login</a>
+            <a className={`${styles.desktopLink} ${styles.loginLink}`}>
+              {t('common:login')}
+            </a>
           </Link>
           <Link href='/signup'>
             <a className={`${styles.desktopLink} ${styles.signupLink}`}>
-              Signup
+              {t('common:signup')}
             </a>
           </Link>
         </>

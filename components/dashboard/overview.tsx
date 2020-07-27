@@ -1,7 +1,6 @@
 import React from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
-import { defineMessages } from 'react-intl';
-import { useMsg, IntlHelper } from 'lib/intl';
 import { Org, Account } from 'lib/model';
 
 import Title from './title';
@@ -13,35 +12,16 @@ interface OverviewProps {
   account: Account;
 }
 
-const msgs = defineMessages({
-  title: {
-    id: 'dashboard.overview.title',
-    defaultMessage: 'Overview',
-  },
-  description: {
-    id: 'dashboard.overview.description',
-    defaultMessage: 'Analytics dashboard for {name}',
-  },
-  placeholder: {
-    id: 'dashboard.overview.placeholder',
-    defaultMessage: 'COMING SOON',
-  },
-  viewSearch: {
-    id: 'dashboard.overview.actions.view-search',
-    defaultMessage: 'View search',
-  },
-});
-
 export default function Overview({ account }: OverviewProps): JSX.Element {
-  const msg: IntlHelper = useMsg();
+  const { t } = useTranslation();
   return (
     <>
       <Title
-        header={msg(msgs.title)}
-        body={msg(msgs.description, { name: account.name })}
+        header={t('common:overview')}
+        body={t('overview:subtitle', { name: account.name })}
         actions={[
           {
-            label: msg(msgs.viewSearch),
+            label: t('overview:view-search'),
             href: `${
               account instanceof Org ? '/[org]' : ''
             }/search/[[...slug]]`,
@@ -50,7 +30,7 @@ export default function Overview({ account }: OverviewProps): JSX.Element {
         ]}
       />
       <div className={styles.wrapper}>
-        <Placeholder>{msg(msgs.placeholder)}</Placeholder>
+        <Placeholder>{t('overview:placeholder')}</Placeholder>
       </div>
     </>
   );
