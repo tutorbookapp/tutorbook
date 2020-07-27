@@ -103,7 +103,7 @@ export default function ScheduleInput({
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const { t, lang: locale } = useTranslation();
   const checkboxId = useMemo(() => uuid(), []);
-  const menuTimeoutId = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutId = useRef<ReturnType<typeof setTimeout>>();
   const inputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
@@ -119,14 +119,14 @@ export default function ScheduleInput({
    * @see {@link https://bit.ly/2x9eM27}
    */
   const openMenu = useCallback(() => {
-    if (menuTimeoutId.current) {
-      clearTimeout(menuTimeoutId.current);
-      menuTimeoutId.current = undefined;
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+      timeoutId.current = undefined;
     }
     setMenuOpen(true);
   }, []);
   const closeMenu = useCallback(() => {
-    menuTimeoutId.current = setTimeout(() => setMenuOpen(false));
+    timeoutId.current = setTimeout(() => setMenuOpen(false), 0);
   }, []);
 
   /**
