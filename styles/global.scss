@@ -32,7 +32,6 @@
 
 @use '@rmwc/tooltip/tooltip';
 
-@include typography.core-styles;
 @import url('https://fonts.googleapis.com/css?family=Inter:100,200,300,400,500,600,700,800,900');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import 'fonts';
@@ -54,11 +53,11 @@ p + h6 {
   margin-bottom: 0.5em;
 }
 
-ul {
-  @include typography.typography('body1');
-}
-
 ::selection {
   background-color: map.get(config.$colors, 'selection');
   color: map.get(config.$colors, 'foreground');
+}
+
+.rmwc-tooltip-inner {
+  @include typography.typography('caption');
 }
