@@ -363,6 +363,7 @@ export default class Select<T> extends React.Component<
       getSuggestions,
       renderToPortal,
       autoOpenMenu,
+      singleLine,
       className,
       focused,
       onFocused,
