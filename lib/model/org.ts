@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 
-import { Aspect } from './user';
+import { User, UserInterface, Aspect } from './user';
 import { AccountInterface, Account } from './account';
 
 import construct from './construct';
@@ -16,6 +16,23 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type IntercomCustomAttribute = string | boolean | number | Date;
 
 /**
+ * Organizational settings.
+ * @property aspects - The aspects offered by (available through) the org (e.g.
+ * some orgs only use one aspect and thus we don't have to use screen real
+ * estate to add aspect tabs).
+ * @property profiles - Profile properties that members can or cannot edit. The
+ * default is that members can edit all their profile properties.
+ * @property notifications - Whether or not to send email notifications to the
+ * members of this org (this is useful when an org admin just wants to play
+ * around with the app w/out sending any emails).
+ */
+export interface OrgSettings {
+  aspects: Aspect[];
+  profiles: Record<keyof UserInterface, boolean>;
+  notifications: boolean;
+}
+
+/**
  * An `Org` object represents a non-profit organization that is using Tutorbook
  * to manage their virtual tutoring programs.
  * @typedef {Object} Org
@@ -24,11 +41,13 @@ type IntercomCustomAttribute = string | boolean | number | Date;
  * what they do to vet their volunteers before adding them to the search view).
  * @property aspect - The default aspect of a given org (i.e. are they more
  * focused on `tutoring` or `mentoring`).
+ * @property settings - Org settings.
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
   safeguarding: string;
   aspect: Aspect;
+  settings: OrgSettings;
 }
 
 export type OrgJSON = OrgInterface;
@@ -43,6 +62,15 @@ export class Org extends Account implements OrgInterface {
   public safeguarding: string = '';
 
   public aspect: Aspect = 'mentoring';
+
+  public settings: OrgSettings = {
+    aspects: ['mentoring', 'tutoring'],
+    profiles: Object.keys(new User()).reduce(
+      (o: Record<string, boolean>, k: string) => ({ ...o, [k]: true }),
+      {}
+    ) as Record<keyof UserInterface, boolean>,
+    notifications: true,
+  };
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);

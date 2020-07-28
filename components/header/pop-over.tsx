@@ -185,6 +185,9 @@ export default function PopOverMenu({
               <PopOverLink href='/[org]/appts' as={`/${org.id}/appts`}>
                 {t('common:appts')}
               </PopOverLink>
+              <PopOverLink href='/[org]/settings' as={`/${org.id}/settings`}>
+                {t('common:settings')}
+              </PopOverLink>
             </>
           ))}
           <div className={styles.line} />

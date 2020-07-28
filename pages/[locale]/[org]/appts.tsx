@@ -171,6 +171,12 @@ function ApptsPage({
             href: '/[org]/appts',
             as: `/${query.org as string}/appts`,
           },
+          {
+            label: t('common:settings'),
+            active: false,
+            href: '/[org]/settings',
+            as: `/${query.org as string}/settings`,
+          },
         ]}
       />
       <Appts

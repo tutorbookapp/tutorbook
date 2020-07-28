@@ -6,7 +6,7 @@ import Footer from 'components/footer';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Overview } from 'components/dashboard';
+import { Settings } from 'components/dashboard';
 import { TabHeader } from 'components/header';
 import { Org, OrgJSON } from 'lib/model';
 import {
@@ -83,7 +83,7 @@ export const getServerSideProps: GetServerSideProps<
       const org: Org = Org.fromFirestore(doc);
       let props: DashboardPageProps & IntlProps = await getIntlProps(
         { params },
-        ['common', 'overview']
+        ['common', 'settings']
       );
       if (!doc.exists) {
         props = {
@@ -120,7 +120,7 @@ function DashboardPage({
         tabs={[
           {
             label: t('common:overview'),
-            active: true,
+            active: false,
             href: '/[org]/dashboard',
             as: `/${query.org as string}/dashboard`,
           },
@@ -138,13 +138,13 @@ function DashboardPage({
           },
           {
             label: t('common:settings'),
-            active: false,
+            active: true,
             href: '/[org]/settings',
             as: `/${query.org as string}/settings`,
           },
         ]}
       />
-      <Overview account={Org.fromJSON(org as OrgJSON)} />
+      <Settings account={Org.fromJSON(org as OrgJSON)} />
       <Footer />
       <Intercom />
     </>
