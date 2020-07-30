@@ -1,4 +1,4 @@
-import { ResizeObserver } from '@juggle/resize-observer';
+import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import { Aspect } from 'lib/model';
 
 import React, { useMemo } from 'react';
@@ -27,12 +27,8 @@ export default function VolunteerPage({
   aspect,
   org,
 }: VolunteerPageProps): JSX.Element {
-  const [headerRef, { height: headerHeight }] = useMeasure({
-    polyfill: ResizeObserver,
-  });
-  const [descRef, { height: descHeight }] = useMeasure({
-    polyfill: ResizeObserver,
-  });
+  const [headerRef, { height: headerHeight }] = useMeasure({ polyfill });
+  const [descRef, { height: descHeight }] = useMeasure({ polyfill });
 
   const headerStyle: Record<string, string> = useMemo(() => {
     const height: string = headerHeight ? `${headerHeight}px` : '125px';
