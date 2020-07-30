@@ -4,9 +4,9 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { ResizeDirection } from 're-resizable';
 import { Rnd, DraggableData, ResizableDelta, Position } from 'react-rnd';
-import { Timeslot, DayAlias, Callback } from 'lib/model';
-import { TimeUtils } from 'lib/utils';
+import { Timeslot, Callback } from 'lib/model';
 
+import { getPosition, getHeight, getTimeslot } from './utils';
 import styles from './timeslot-rnd.module.scss';
 
 interface TimeslotRndProps {
@@ -34,45 +34,18 @@ export default function TimeslotRnd({
   // @see {@link https://github.com/bokuweb/react-rnd/issues/457}
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
-  const position = useMemo<Position>(() => {
-    const { from: start } = value;
-    const minsFromMidnight = start.getHours() * 60 + start.getMinutes();
-    return { x: start.getDay() * width, y: (minsFromMidnight / 15) * 12 };
-  }, [value, width]);
-  const height = useMemo<number>(() => {
-    const { from: start, to: end } = value;
-    const minsDuration = (end.valueOf() - start.valueOf()) / 60000;
-    return (minsDuration / 15) * 12;
-  }, [value]);
+  const position = useMemo(() => getPosition(value, width), [value, width]);
+  const height = useMemo(() => getHeight(value), [value]);
 
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
-      // Each column is 82px wide, so we merely divide to figure out which column
-      // the `TimeslotRnd` is located (e.g. 0 = Sunday, 1 = Monday, etc).
-      const weekday: DayAlias = (newPosition.x / width) as DayAlias;
-
-      // This RND can represent timeslots not on 15min intervals (e.g. 8:37am to
-      // 9:13am), but we snap back to 15min intervals when the RND is moved.
-      const snappedPositionY = Math.round(newPosition.y / 12);
-      const snappedHeight = Math.round(newHeight / 12);
-
-      // The `TimeslotRnd` is set to snap every 12px which represents 15min
-      // intervals. Midnight is shown at the top of the grid.
-      const minsFromMidnight = snappedPositionY * 15;
-      const minsDuration = snappedHeight * 15;
-
-      const hours = Math.floor(minsFromMidnight / 60);
-      const mins = minsFromMidnight % 60;
-      const start = TimeUtils.getDate(weekday, hours, mins);
-      const end = new Date(start.valueOf() + minsDuration * 60000);
-
-      onChange(new Timeslot(start, end));
+      onChange(getTimeslot(newHeight, newPosition, width));
     },
     [onChange, width]
   );
 
-  const onResizeStop = useCallback(() => setOffset({ x: 0, y: 0}), []);
-
+  const onClick = useCallback((e: React.MouseEvent) => e.stopPropagation(), []);
+  const onResizeStop = useCallback(() => setOffset({ x: 0, y: 0 }), []);
   const onResize = useCallback(
     (
       e: MouseEvent | TouchEvent,
@@ -81,8 +54,8 @@ export default function TimeslotRnd({
       delta: ResizableDelta
     ) => {
       // We use `offset` to ensure we don't duplicate position updates. This
-      // callback can be called multiple times for the same resize delta. Thus, 
-      // we only want to update `position` to reflect the **difference** btwn 
+      // callback can be called multiple times for the same resize delta. Thus,
+      // we only want to update `position` to reflect the **difference** btwn
       // the last `delta` and the current `delta`.
       update(Number(ref.style.height.replace('px', '')), {
         x: position.x - (dir === 'left' ? delta.width - offset.x : 0),
@@ -95,13 +68,12 @@ export default function TimeslotRnd({
     },
     [update, position, offset]
   );
-
   const onDrag = useCallback(
     (
       e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent,
       data: DraggableData
     ) => {
-      // We don't have to use the `lastY` workaround b/c `react-draggable` snaps 
+      // We don't have to use the `lastY` workaround b/c `react-draggable` snaps
       // correctly for the `onDrag` callback.
       // @see {@link https://github.com/STRML/react-draggable/issues/413}
       // @see {@link https://github.com/bokuweb/react-rnd/issues/453}
@@ -117,6 +89,7 @@ export default function TimeslotRnd({
       size={{ width: width - 12, height }}
       onResizeStop={onResizeStop}
       onResize={onResize}
+      onClick={onClick}
       onDrag={onDrag}
       bounds='parent'
       resizeGrid={[0, 12]}

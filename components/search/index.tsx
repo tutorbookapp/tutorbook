@@ -1,8 +1,21 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, Option, Timeslot, User, UsersQuery } from 'lib/model';
+import {
+  Callback,
+  Option,
+  Availability,
+  Timeslot,
+  User,
+  UsersQuery,
+} from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from 'components/carousel';
@@ -50,25 +63,42 @@ export default function Search({
     return () => window.removeEventListener('scroll', listener);
   });
 
+  const onClosed = useCallback(() => setViewing(undefined), []);
+
+  const subjects = useMemo(() => {
+    if (!viewing) return [];
+    return Utils.intersection<string, Option<string>>(
+      viewing[query.aspect].subjects,
+      query.subjects,
+      (a: string, b: Option<string>) => a === b.value
+    );
+  }, [viewing, query.aspect, query.subjects]);
+
+  const times = useMemo(() => {
+    if (!viewing) return new Availability();
+    const possible = Utils.intersection<Timeslot, Timeslot>(
+      query.availability,
+      viewing.availability,
+      (a: Timeslot, b: Timeslot) => a.equalTo(b)
+    );
+    if (!possible.length) return new Availability();
+    const start = possible[0].from;
+    let end = possible[0].to;
+    if (end.valueOf() - start.valueOf() >= 3600000) {
+      end = new Date(start.valueOf() + 3600000);
+    }
+    return new Availability(new Timeslot(start, end));
+  }, [viewing, query.availability]);
+
   return (
     <div className={styles.wrapper}>
       {viewing && (
         <RequestDialog
           user={viewing}
           aspect={query.aspect}
-          onClosed={() => setViewing(undefined)}
-          subjects={Utils.intersection<string, Option<string>>(
-            viewing[query.aspect].subjects,
-            query.subjects,
-            (a: string, b: Option<string>) => a === b.value
-          )}
-          time={
-            Utils.intersection<Timeslot, Timeslot>(
-              query.availability,
-              viewing.availability,
-              (a: Timeslot, b: Timeslot) => a.equalTo(b)
-            )[0]
-          }
+          onClosed={onClosed}
+          subjects={subjects}
+          times={times}
         />
       )}
       <Form query={query} onChange={onChange} />

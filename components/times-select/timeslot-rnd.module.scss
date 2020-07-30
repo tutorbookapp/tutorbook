@@ -7,6 +7,8 @@
   @include elevation.elevation(4);
   @include typography.typography('body2');
   background: map.get(config.$colors, 'primary');
+  border-radius: 2px;
+  padding: 4px;
   font-weight: 500;
   font-size: 12px;
   color: white;

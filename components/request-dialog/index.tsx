@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import Utils from 'lib/utils';
 import Button from 'components/button';
-import TimeslotSelect from 'components/timeslot-select';
+import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 import UserDialog from 'components/user-dialog';
 import UserSelect from 'components/user-select';
@@ -17,7 +17,7 @@ import {
   User,
   Option,
   Role,
-  Timeslot,
+  Availability,
   Appt,
   ApptJSON,
   Attendee,
@@ -42,14 +42,14 @@ const Tooltip = dynamic<TooltipProps>(async () =>
 interface RequestDialogProps {
   onClosed: () => void;
   subjects: string[];
-  time?: Timeslot;
+  times?: Availability;
   aspect: Aspect;
   user: User;
 }
 
 export default function RequestDialog({
   subjects: initialSubjects,
-  time: initialTime,
+  times: initialTimes,
   onClosed,
   aspect,
   user,
@@ -62,7 +62,7 @@ export default function RequestDialog({
     { label: currentUser.name || 'You', value: currentUser.id },
   ]);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
-  const [time, setTime] = useState<Timeslot | undefined>(initialTime);
+  const [times, setTimes] = useState<Availability | undefined>(initialTimes);
   const [message, setMessage] = useState<string>('');
 
   const [error, setError] = useState<string | undefined>();
@@ -88,7 +88,7 @@ export default function RequestDialog({
   useEffect(() => {
     const creator: Attendee = { id: currentUser.id, handle: uuid(), roles: [] };
     appt.current = new Appt({
-      time,
+      times,
       creator,
       message,
       subjects,
@@ -104,7 +104,7 @@ export default function RequestDialog({
         return { id, roles, handle };
       }),
     });
-  }, [currentUser.id, user.id, aspect, time, message, subjects, attendees]);
+  }, [currentUser.id, user.id, aspect, times, message, subjects, attendees]);
 
   // Update the names displayed in the attendees select when context or props
   // changes (i.e. when the user logs in, we change 'You' to their actual name).
@@ -139,7 +139,7 @@ export default function RequestDialog({
   );
 
   const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
-  const onTimeChange = useCallback((t: Timeslot) => setTime(t), []);
+  const onTimesChange = useCallback((a: Availability) => setTimes(a), []);
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setMessage(event.currentTarget.value);
   }, []);
@@ -223,15 +223,16 @@ export default function RequestDialog({
           options={user[aspect].subjects}
           aspect={aspect}
         />
-        {aspect === 'tutoring' && time && (
-          <TimeslotSelect
+        {aspect === 'tutoring' && times && (
+          <TimesSelect
             required
             outlined
             renderToPortal
             label={t('common:time')}
             className={styles.field}
-            onChange={onTimeChange}
-            value={time}
+            onChange={onTimesChange}
+            options={user.availability}
+            value={times}
           />
         )}
         <TextField

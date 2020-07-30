@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use 'sass:color';
 @use 'styles/config';
 
 .textField {
@@ -145,8 +146,8 @@
     }
 
     &::after {
-      background-image: linear-gradient(to left,white,rgba(255,255,255,0));
-      content: "";
+      background-image: linear-gradient(to left, white, rgba(255, 255, 255, 0));
+      content: '';
       height: 2px;
       position: absolute;
       right: 16px;
@@ -170,8 +171,12 @@
       }
 
       &::before {
-        background-image: linear-gradient(to right,white,rgba(255,255,255,0));
-        content: "";
+        background-image: linear-gradient(
+          to right,
+          white,
+          rgba(255, 255, 255, 0)
+        );
+        content: '';
         height: 2px;
         position: absolute;
         width: 80px;
@@ -252,6 +257,15 @@
           flex: 1 1 auto;
           box-sizing: border-box;
           position: relative;
+          $dark-strip: color.adjust(#dadce0, $lightness: 5%);
+          $light-strip: color.adjust($dark-strip, $lightness: 5%);
+          background: repeating-linear-gradient(
+            45deg,
+            $light-strip,
+            $light-strip 10px,
+            $dark-strip 10px,
+            $dark-strip 20px
+          );
 
           .cell {
             width: 81px;

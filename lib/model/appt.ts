@@ -4,7 +4,11 @@ import { v4 as uuid } from 'uuid';
 
 import { ObjectWithObjectID } from '@algolia/client-search';
 import { User, Aspect } from './user';
-import { Timeslot, TimeslotJSON, TimeslotSearchHit } from './timeslot';
+import {
+  Availability,
+  AvailabilityJSON,
+  AvailabilitySearchHit,
+} from './availability';
 
 import construct from './construct';
 
@@ -48,7 +52,8 @@ export interface Venue {
  * @property creator - Person who created the appointment (typically the student
  * but it could be their parent or an org admin).
  * @property message - Initial message sent by the appt creator.
- * @property [time] - Timeslot when the appointment will occur.
+ * @property [times] - Timeslots when the appointment will occur. For now, each
+ * of these timeslots has the default weekly recurrance.
  * @property [bramble] - The URL to the Bramble virtual tutoring room (only
  * populated when the appt is for tutoring).
  * @property [jitsi] - The URL to the Jitsi video conferencing room (only
@@ -59,17 +64,19 @@ export interface ApptInterface {
   attendees: Attendee[];
   creator: Attendee;
   message: string;
-  time?: Timeslot;
+  times?: Availability;
   bramble?: Venue;
   jitsi?: Venue;
   ref?: DocumentReference;
   id: string;
 }
 
-export type ApptJSON = Omit<ApptInterface, 'time'> & { time?: TimeslotJSON };
+export type ApptJSON = Omit<ApptInterface, 'times'> & {
+  times?: AvailabilityJSON;
+};
 
 export type ApptSearchHit = ObjectWithObjectID &
-  Omit<ApptInterface, 'time'> & { time?: TimeslotSearchHit };
+  Omit<ApptInterface, 'times'> & { times?: AvailabilitySearchHit };
 
 export class Appt implements ApptInterface {
   public subjects: string[] = [];
@@ -86,7 +93,7 @@ export class Appt implements ApptInterface {
 
   public ref?: DocumentReference;
 
-  public time?: Timeslot;
+  public times?: Availability;
 
   public id: string = '';
 
@@ -112,8 +119,8 @@ export class Appt implements ApptInterface {
   }
 
   public toJSON(): ApptJSON {
-    const { time, ref, ...rest } = this;
-    if (time) return { ...rest, time: time.toJSON() };
+    const { times, ref, ...rest } = this;
+    if (times) return { ...rest, times: times.toJSON() };
     return rest;
   }
 
@@ -122,24 +129,25 @@ export class Appt implements ApptInterface {
    * @todo Convert Firestore document `path`s to `DocumentReference`s.
    */
   public static fromJSON(json: ApptJSON): Appt {
-    const { time, ...rest } = json;
-    if (time) return new Appt({ ...rest, time: Timeslot.fromJSON(time) });
+    const { times, ...rest } = json;
+    if (times)
+      return new Appt({ ...rest, times: Availability.fromJSON(times) });
     return new Appt(rest);
   }
 
   public toFirestore(): DocumentData {
-    const { time, ref, id, ...rest } = this;
-    if (time) return { ...rest, time: time.toFirestore() };
+    const { times, ref, id, ...rest } = this;
+    if (times) return { ...rest, times: times.toFirestore() };
     return rest;
   }
 
   public static fromFirestore(snapshot: DocumentSnapshot): Appt {
     const apptData: DocumentData | undefined = snapshot.data();
     if (apptData) {
-      const { time, ...rest } = apptData;
+      const { times, ...rest } = apptData;
       return new Appt({
         ...rest,
-        time: time ? Timeslot.fromFirestore(time) : undefined,
+        times: times ? Availability.fromFirestore(times) : undefined,
         ref: snapshot.ref,
         id: snapshot.id,
       });
@@ -152,10 +160,10 @@ export class Appt implements ApptInterface {
   }
 
   public static fromSearchHit(hit: ApptSearchHit): Appt {
-    const { time, objectID, ...rest } = hit;
+    const { times, objectID, ...rest } = hit;
     return new Appt({
       ...rest,
-      time: typeof time === 'undefined' ? time : Timeslot.fromSearchHit(time),
+      times: times ? Availability.fromSearchHit(times) : undefined,
       id: objectID,
     });
   }
