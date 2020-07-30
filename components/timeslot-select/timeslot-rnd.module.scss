@@ -1,0 +1,14 @@
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/typography';
+@use '@material/elevation';
+
+.timeslot {
+  @include elevation.elevation(4);
+  @include typography.typography('body2');
+  background: map.get(config.$colors, 'primary');
+  font-weight: 500;
+  font-size: 12px;
+  color: white;
+  z-index: 4;
+}

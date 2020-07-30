@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import Utils from 'lib/utils';
 import Button from 'components/button';
-import TimeslotInput from 'components/timeslot-input';
+import TimeslotSelect from 'components/timeslot-select';
 import SubjectSelect from 'components/subject-select';
 import UserDialog from 'components/user-dialog';
 import UserSelect from 'components/user-select';
@@ -224,12 +224,13 @@ export default function RequestDialog({
           aspect={aspect}
         />
         {aspect === 'tutoring' && time && (
-          <TimeslotInput
+          <TimeslotSelect
             required
+            outlined
+            renderToPortal
             label={t('common:time')}
             className={styles.field}
             onChange={onTimeChange}
-            availability={user.availability}
             value={time}
           />
         )}
