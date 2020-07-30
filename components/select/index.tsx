@@ -383,7 +383,6 @@ export default class Select<T> extends React.Component<
             event.preventDefault();
             event.stopPropagation();
             if (this.inputRef.current) this.inputRef.current.focus();
-            return false;
           }}
           anchorCorner='bottomStart'
           renderToPortal={renderToPortal ? '#portal' : false}
