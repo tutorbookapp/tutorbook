@@ -161,7 +161,10 @@ export default class Select<T> extends React.Component<
    */
   private openSuggestions(): void {
     const { suggestionsOpen } = this.state;
-    if (this.suggestionsTimeoutID) clearTimeout(this.suggestionsTimeoutID);
+    if (this.suggestionsTimeoutID) {
+      clearTimeout(this.suggestionsTimeoutID);
+      this.suggestionsTimeoutID = undefined;
+    }
     if (!suggestionsOpen) {
       this.hasOpenedSuggestions = true;
       this.setState({ suggestionsOpen: true });
