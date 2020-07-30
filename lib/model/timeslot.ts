@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 
+import { RRule } from 'rrule';
 import { TimeUtils } from 'lib/utils';
 import { DAYS } from './constants';
 
@@ -37,9 +38,22 @@ export enum Day {
  */
 type Timestamp = admin.firestore.Timestamp;
 
+/**
+ * A timeslot is a window of time and provides all the necessary scheduling data
+ * for any scenario.
+ * @property from - The start time and date of this timeslot (typically
+ * represented by a `Date`, `Timestamp`, or UTC date string).
+ * @property to - The end time and date of this timeslot (represented in the
+ * same format as the `from` property).
+ * @property [recur] - The recurrance of this timeslot as specified in
+ * [RFC 5545]{@link https://tools.ietf.org/html/rfc5545#section-3.8.5}. The
+ * DTSTART is ignored as it should always be the `from` value. Default value is
+ * always weekly.
+ */
 export interface TimeslotBase<T> {
   from: T;
   to: T;
+  recur: string;
 }
 
 /**
@@ -69,11 +83,15 @@ export type TimeslotSearchHit = TimeslotBase<number>;
  * than `[Object object]`.
  */
 export class Timeslot implements TimeslotBase<Date> {
+  public recur: string = new RRule({ freq: RRule.WEEKLY }).toString();
+
   /**
    * Constructor that takes advantage of Typescript's shorthand assignment.
    * @see {@link https://bit.ly/2XjNmB5}
    */
-  public constructor(public from: Date, public to: Date) {}
+  public constructor(public from: Date, public to: Date, recur?: string) {
+    if (recur) this.recur = recur;
+  }
 
   /**
    * Returns if this timeslot contains another timeslot (i.e. the starting time
