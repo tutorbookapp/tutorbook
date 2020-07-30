@@ -20,7 +20,6 @@
 .headers {
   flex: none;
   display: flex;
-  height: 84px;
   overflow: hidden;
 
   .space {
@@ -37,7 +36,6 @@
     display: flex;
 
     .headerContent {
-      font-weight: 400;
       margin: 0;
       text-align: center;
       width: 100%;
@@ -46,9 +44,9 @@
         line-height: 32px;
         position: relative;
         z-index: 2;
-        color: #70757a;
+        color: map.get(config.$colors, 'accents-5');
         font-size: 11px;
-        font-weight: 500;
+        font-weight: 600;
         font-family: map.get(config.$fonts, 'sans');
         letter-spacing: 0.8px;
         margin-left: 0;
@@ -69,6 +67,7 @@
         -moz-border-radius: 100%;
         border-radius: 100%;
         color: #3c4043;
+        font-weight: 400;
         font-family: map.get(config.$fonts, 'sans');
         line-height: 46px;
         height: 46px;
@@ -145,13 +144,39 @@
       z-index: 505;
     }
 
+    &::after {
+      background-image: linear-gradient(to left,white,rgba(255,255,255,0));
+      content: "";
+      height: 2px;
+      position: absolute;
+      right: 16px;
+      width: 80px;
+      z-index: 505;
+    }
+
     .timesWrapper {
-      overflow-y: hidden;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      -ms-scrollbar-width: none;
+      scrollbar-width: none;
       flex: none;
       display: flex;
       align-items: flex-start;
       min-width: 40px;
       height: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      &::before {
+        background-image: linear-gradient(to right,white,rgba(255,255,255,0));
+        content: "";
+        height: 2px;
+        position: absolute;
+        width: 80px;
+        z-index: 505;
+      }
 
       .times {
         position: relative;
@@ -169,17 +194,21 @@
             display: block;
             position: relative;
             top: -6px;
-            color: #70757a;
+            color: map.get(config.$colors, 'accents-5');
             font-size: 10px;
             font-family: map.get(config.$fonts, 'sans');
+          }
+
+          &:first-child .timeLabel {
+            display: none;
           }
         }
       }
     }
 
     .rowsWrapper {
-      overflow-x: auto;
       overflow-y: scroll;
+      overflow-x: auto;
       display: flex;
       align-items: flex-start;
       flex: 1 1 auto;
@@ -205,6 +234,10 @@
               margin-top: -1px;
               z-index: 3;
               pointer-events: none;
+            }
+
+            &:first-child::after {
+              content: none;
             }
           }
         }

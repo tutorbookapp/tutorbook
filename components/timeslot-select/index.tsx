@@ -1,9 +1,12 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useLayoutEffect, useEffect, useRef, useCallback } from 'react';
 
 import { TimeUtils } from 'lib/utils';
-import { Callback, Timeslot } from 'lib/model';
+import { Callback, Timeslot, DayAlias } from 'lib/model';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
+import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
+
+import useTranslation from 'next-translate/useTranslation';
 
 import TimeslotRnd from './timeslot-rnd';
 
@@ -43,12 +46,30 @@ export default function TimeslotSelect({
   renderToPortal,
   ...textFieldProps
 }: TimeslotSelectProps): JSX.Element {
-  const inputRef = useRef<HTMLInputElement>();
+  const { lang: locale } = useTranslation();
+  
+  const rowsRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
+  
+  const [scrolled, setScrolled] = useState<boolean>(false);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [timeslot, setTimeslot] = useState<Timeslot>(
-    new Timeslot(TimeUtils.getDate(3, 1), TimeUtils.getDate(3, 2, 15))
-  );
+
+  const onScroll = useCallback(() => setScrolled(true), []);
+
+  useLayoutEffect(() => {
+    // Scroll to 8:30am by default (assumes 48px per hour).
+    if (rowsRef.current && !scrolled) rowsRef.current.scrollTop = 48 * 8 + 24;
+  }, [scrolled, menuOpen]);
+
+  useEffect(() => {
+    if (rowsRef.current) {
+      const rowsEl = rowsRef.current;
+      rowsEl.addEventListener('scroll', onScroll);
+      return () => rowsEl.removeEventListener('scroll', onScroll);
+    }
+    return () => {};
+  });
 
   /**
    * We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
@@ -84,11 +105,14 @@ export default function TimeslotSelect({
           <div className={styles.space} />
           {Array(7)
             .fill(null)
-            .map(() => (
+            .map((_: null, weekday: number) => (
               <div className={styles.headerWrapper}>
                 <h2 className={styles.headerContent}>
-                  <div className={styles.day}>MON</div>
-                  <div className={styles.num}>28</div>
+                  <div className={styles.day}>
+                    {TimeUtils.getNextDateWithDay(
+                      weekday as DayAlias
+                    ).toLocaleString(locale, { weekday: 'long' }).substr(0, 3)}
+                  </div>
                 </h2>
               </div>
             ))}
@@ -96,47 +120,45 @@ export default function TimeslotSelect({
         </div>
         <div className={styles.headerCells}>
           <div className={styles.space} />
-          {Array(7)
-            .fill(null)
-            .map(() => (
-              <div className={styles.headerCell} />
-            ))}
+          {Array(7).fill(null).map(() => <div className={styles.headerCell} />)}
           <div className={styles.scroller} />
         </div>
         <div className={styles.gridWrapper}>
-          <div className={styles.grid}>
-            <div className={styles.timesWrapper}>
-              <div className={styles.times}>
-                {Array(24)
-                  .fill(null)
-                  .map(() => (
-                    <div className={styles.timeWrapper}>
-                      <span className={styles.timeLabel}>12 PM</span>
+          <ScrollSync>
+            <div className={styles.grid}>
+              <ScrollSyncPane>
+                <div className={styles.timesWrapper}>
+                  <div className={styles.times}>
+                    {Array(24).fill(null).map((_: null, hour: number) => (
+                      <div className={styles.timeWrapper}>
+                        <span className={styles.timeLabel}>
+                          {TimeUtils.getDateWithTime(hour).toLocaleString(locale, { hour: '2-digit' })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ScrollSyncPane>
+              <ScrollSyncPane>
+                <div className={styles.rowsWrapper} ref={rowsRef}>
+                  <div className={styles.rows}>
+                    <div className={styles.lines}>
+                      {Array(24).fill(null).map(() => (
+                        <div className={styles.line} />
+                      ))}
                     </div>
-                  ))}
-              </div>
-            </div>
-            <div className={styles.rowsWrapper}>
-              <div className={styles.rows}>
-                <div className={styles.lines}>
-                  {Array(24)
-                    .fill(null)
-                    .map(() => (
-                      <div className={styles.line} />
-                    ))}
+                    <div className={styles.space} />
+                    <div className={styles.cells}>
+                      <TimeslotRnd value={value} onChange={onChange} />
+                      {Array(7).fill(null).map(() => (
+                        <div className={styles.cell} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className={styles.space} />
-                <div className={styles.cells}>
-                  <TimeslotRnd value={timeslot} onChange={setTimeslot} />
-                  {Array(7)
-                    .fill(null)
-                    .map(() => (
-                      <div className={styles.cell} />
-                    ))}
-                </div>
-              </div>
+              </ScrollSyncPane>
             </div>
-          </div>
+          </ScrollSync>
         </div>
       </MenuSurface>
       <TextField

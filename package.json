@@ -121,6 +121,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-rnd": "^10.2.1",
+    "react-scroll-sync": "^0.8.0",
     "react-use-measure": "^2.0.1",
     "react-window": "^1.8.5",
     "rrule": "^2.6.4",
