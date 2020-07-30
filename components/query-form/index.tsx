@@ -75,12 +75,11 @@ export default function QueryForm({
           onFocused={focusSubjects}
           onBlurred={focusNothing}
           className={className}
-          renderToPortal
-          outlined
           onSelectedChange={onSubjectsChange}
           selected={query.subjects}
           placeholder={t(`query:subjects-${query.aspect}-placeholder`)}
           aspect={query.aspect}
+          outlined
         />
       )}
       {availability && (
@@ -90,10 +89,9 @@ export default function QueryForm({
           onFocused={focusAvailability}
           onBlurred={focusNothing}
           className={className}
-          renderToPortal
-          outlined
           onChange={onAvailabilityChange}
           value={query.availability}
+          outlined
         />
       )}
       {langs && (
@@ -103,10 +101,9 @@ export default function QueryForm({
           onFocused={focusLangs}
           onBlurred={focusNothing}
           className={className}
-          renderToPortal
-          outlined
           onSelectedChange={onLangsChange}
           selected={query.langs}
+          outlined
         />
       )}
     </>
