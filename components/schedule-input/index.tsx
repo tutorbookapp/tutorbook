@@ -26,7 +26,14 @@ import { v4 as uuid } from 'uuid';
 import useTranslation from 'next-translate/useTranslation';
 import styles from './schedule-input.module.scss';
 
-type OverriddenProps = 'textarea' | 'readOnly' | 'onFocus' | 'onBlur';
+type OverriddenProps =
+  | 'readOnly'
+  | 'textarea'
+  | 'inputRef'
+  | 'value'
+  | 'className'
+  | 'onFocus'
+  | 'onBlur';
 
 interface UniqueScheduleInputProps {
   value: Availability;
@@ -35,6 +42,7 @@ interface UniqueScheduleInputProps {
   focused?: boolean;
   onFocused?: () => any;
   onBlurred?: () => any;
+  className?: string;
 }
 
 export type ScheduleInputProps = Omit<
@@ -172,6 +180,7 @@ export default function ScheduleInput({
   return (
     <MenuSurfaceAnchor className={className}>
       <MenuSurface
+        tabIndex={-1}
         open={menuOpen}
         onFocus={openMenu}
         onBlur={closeMenu}
