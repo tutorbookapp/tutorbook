@@ -72,12 +72,12 @@ export default class TimeUtils {
    * @todo Why do we have a counter (originally from `@tutorboook/utils`)?
    */
   public static getNextDateWithDay(
-    day: DayAlias,
+    weekday: DayAlias,
     now: Date = new Date()
   ): Date {
     const date = new Date(now.valueOf());
     let count = 0; // TODO: Why did we add this counter in `lib/utils`?
-    while (date.getDay() !== day && count <= 256) {
+    while (date.getDay() !== weekday && count <= 256) {
       date.setDate(date.getDate() + 1);
       count += 1;
     }
@@ -90,7 +90,7 @@ export default class TimeUtils {
    * timestamp (i.e. the first occurance of the desired time as a Unix time).
    */
   public static getDate(
-    day: DayAlias,
+    weekday: DayAlias,
     hours: number,
     minutes = 0,
     seconds = 0,
@@ -102,6 +102,6 @@ export default class TimeUtils {
       seconds,
       milliseconds
     );
-    return TimeUtils.getNextDateWithDay(day, time);
+    return TimeUtils.getNextDateWithDay(weekday, time);
   }
 }
