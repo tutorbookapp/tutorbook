@@ -6,7 +6,7 @@ interface Position {
   y: number;
 }
 
-export function getPosition(value: Timeslot, width?: number = 82): Position {
+export function getPosition(value: Timeslot, width: number = 82): Position {
   const { from: start } = value;
   const minsFromMidnight = start.getHours() * 60 + start.getMinutes();
   return { x: start.getDay() * width, y: (minsFromMidnight / 15) * 12 };
