@@ -84,9 +84,8 @@ trying to contribute; it'll save your reputation and a lot of time):
 
 #### Tooling
 
-- [Lerna](https://lerna.js.org/) - To manage and re-use React components across
-  repositories; mostly just to migrate code from this project back into
-  [Tutorbook](https://tutorbook.app/docs/) when we get the chance.
+- [Yarn](https://yarnpkg.com) - To manage dependencies much faster than NPM (and
+  for better community support, advanced features, etc).
 - [ESLint](https://github.com/eslint/eslint) - For code linting to avoid
   common mistakes and to enforce styling. Follow [these
   instructions](https://eslint.org/docs/user-guide/integrations) to install it
@@ -116,18 +115,18 @@ $ command -v nvm
 2. (Optional) If you use [Vim](https://vim.org) as your preferred text editor,
    follow [these instructions](https://freshman.tech/vim-javascript/) on setting
    up [Vim](https://vim.org) for editing JavaScript.
-3. Run the following command to install Node.js v12.16.1 (our current version):
+3. Run the following command to install Node.js v14.7.0 (our current version):
 
 ```
-$ nvm i 12.16.1
+$ nvm i 14.7.0
 ```
 
-4. (Optional) Run the following command to set Node.js v12.16.1 as your default
+4. (Optional) Run the following command to set Node.js v14.7.0 as your default
    Node.js version (useful if you have multiple Node.js versions installed and
-   don't want to have to remember to switch to v12.16.1):
+   don't want to have to remember to switch to v14.7.0):
 
 ```
-$ nvm alias default 12.16.1
+$ nvm alias default 14.7.0
 ```
 
 5. Ensure that you have recent versions of Node.js and it's package manager
@@ -135,41 +134,48 @@ $ nvm alias default 12.16.1
 
 ```
 $ node -v
-12.16.1
+14.7.0
 $ npm -v
-6.13.4
+6.14.7
 ```
 
 6. Clone and `cd` into this repository locally by running:
 
 ```
-$ git clone https://github.com/tutorbookapp/covid-tutoring.git && cd covid-tutoring/
+$ git clone https://github.com/tutorbookapp/tutorbook.git && cd tutorbook/
 ```
 
-7. Then, install of our project's dependencies with the following command:
+7. Follow [these instructions](https://yarnpkg.com/getting-started/install) to
+   install `yarn` (our dependency manager for a number of reasons):
 
 ```
-$ npm i
+$ npm i -g yarn
 ```
 
-8. Follow the instructions included below (see "Available Scripts") to start a
+8. Then, install of our project's dependencies with the following command:
+
+```
+$ yarn install
+```
+
+9. Follow the instructions included below (see "Available Scripts") to start a
    [Next.js](https://nextjs.org) development server (to see your updates affect
    the app live):
 
 ```
-$ npm run dev
+$ yarn run dev
 ```
 
-9. Message me (DM **@nicholaschiang** on
-   [Slack](https://tutorbookapp.slack.com)) once (not if) you get the following
-   error (I have to give you some Firebase API keys to put in the `.env` file):
+10. Message me (DM **@nicholaschiang** on
+    [Slack](https://tutorbookapp.slack.com)) once (not if) you get the following
+    error (I have to give you some Firebase API keys to put in the `.env` file):
 
 ```
 Error [FirebaseError]: projectId must be a string in FirebaseApp.options
 ```
 
-10. Finally, `cd` into your desired package (included in `src/`), make your
-    changes, commit them to a branch off of `develop`, push it to a [fork of our
+11. Finally, `cd` into your desired component or lib utility, make your changes,
+    commit them to a branch off of `develop`, push it to a [fork of our
     repository](https://github.com/tutorbookapp/covid-tutoring/fork), and open a
     PR on GitHub.
 
@@ -188,7 +194,7 @@ All of the below scripts come directly from
 [Next.js](https://nextjs.org/docs/getting-started). In the project directory,
 you can run:
 
-#### `npm run dev`
+#### `yarn run dev`
 
 Runs `next dev` using `full-icu` and with the Node.js `--inspect` flag on
 (useful for `debugger;` statements) which starts Next.js in development mode.
@@ -198,36 +204,20 @@ Open [http://0.0.0.0:3000](http://0.0.0.0:3000) to view the app in the browser
 support](https://bit.ly/3cAWfLv). The page will hot-reload if you make edits.
 You will also see any lint errors in the console.
 
-#### `npm run build`
+#### `yarn run build`
 
 Runs `next build` which builds the application for production usage.
 
-#### `npm run start`
+#### `yarn run start`
 
 Runs `next start` which starts a Next.js production server. We have no use for
 this right now because we're deploying to Vercel NOW which handles that for us.
 
-#### `npm run intl`
+#### `yarn run analyze`
 
-Extracts all of the default messages (i.e. the English translations of our
-static message content) defined throughout our components using the
-`defineMessages` hook and puts it into the `lib/intl/locales/en.json` file.
+Runs the build to generate a bundle size visualizer.
 
-```commandline
-$ formatjs extract --out-file lib/intl/locales/en.json components/**/*.ts*
-```
-
-We use [`react-intl`](https://formatjs.io/docs/react-intl/api/#definemessagesdefinemessage)
-for our i18n, but we'll probably switch to a smaller solution (in terms of file
-size and boilerplate code) in the future (see
-[#35](https://github.com/tutorbookapp/tutorbook/issues/35)).
-
-#### `npm run analyze`
-
-Runs the build to generate a bundle size visualizer (uses
-`@next/bundle-analyzer`).
-
-#### `npm run lint`
+#### `yarn run lint`
 
 Runs all of ESLint tests. This should rarely be necessary because you should
 have ESLint integrated into your IDE (and thus it should run as you edit code)
