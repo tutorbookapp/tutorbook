@@ -2,8 +2,12 @@
 
 # Dependencies
 node_modules
-/.pnp
-.pnp.js
+.yarn/*
+!.yarn/cache
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
 
 # Testing
 /coverage
