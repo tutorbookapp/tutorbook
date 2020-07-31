@@ -3,6 +3,7 @@ import { ApptEmail } from 'lib/emails';
 import {
   Venue,
   Role,
+  Timeslot,
   Attendee,
   User,
   UserWithRoles,
@@ -159,8 +160,14 @@ export default async function createAppt(
             if (user.id === creator.id) creator = new User({ ...user });
             // 1. Verify that the attendees are available (note that we don't throw
             // an error if it is the request sender who is unavailable).
-            if (appt.time && !user.availability.contains(appt.time)) {
-              const timeslot: string = appt.time.toString();
+            let timeslot: string = 'during appointment time';
+            if (
+              appt.times &&
+              !appt.times.every((time: Timeslot) => {
+                timeslot = time.toString();
+                return user.availability.contains(time);
+              })
+            ) {
               if (attendee.id === creator.id) {
                 console.warn(`[WARNING] Creator unavailable ${timeslot}.`);
               } else {
