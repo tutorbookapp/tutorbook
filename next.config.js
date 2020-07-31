@@ -3,60 +3,35 @@ const withImages = require('next-images');
 const { locales } = require('./lib/intl/config.json');
 
 module.exports = withImages({
+  reactStrictMode: true,
   sassOptions: {
     includePaths: [
       path.resolve(__dirname, 'node_modules'),
       path.resolve(__dirname, 'src/*/node_modules'),
     ],
   },
-  experimental: {
-    optionalCatchAll: true,
-    redirects() {
-      // Not exactly sure why this is happening, but going to `/[locale]/` with
-      // a trailing slash seems to break Next.js's routing. Here, we just always
-      // redirect to the page without the trailing slash.
-      // @see {@link https://github.com/zeit/next.js/issues/9081#issuecomment-623786364}
-      //
-      // Also note that these aren't permanent in development mode (so that our
-      // browser doesn't cache them while we're working).
-      return [
-        {
-          source: '/:locale/',
-          destination: '/:locale',
-          permanent: process.env.NODE_ENV !== 'development',
-        },
-        {
-          source: '/:locale/:path/',
-          destination: '/:locale/:path',
-          permanent: process.env.NODE_ENV !== 'development',
-        },
-      ];
-    },
-    rewrites() {
-      return [
-        {
-          // We redirect the user to their appropriate locale directory based on
-          // their browser request cookies (via the `/api/redirect` endpoint).
-          // @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/35}
-          source: '/',
-          destination: '/api/redirect',
-        },
-        {
-          // Don't redirect if there's a locale already in the requested URL. We
-          // also don't redirect if the browser's just trying to fetch favicons.
-          //
-          // Note that Next.js should already exclude API endpoints from these
-          // rewrites (but we keep it here just in case).
-          //
-          // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
-          // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
-          source: `/:locale((?!${locales.join(
-            '|'
-          )}|favicon|api|sw.js)[^/]+)(.*)`,
-          destination: '/api/redirect',
-        },
-      ];
-    },
+  async rewrites() {
+    return [
+      {
+        // We redirect the user to their appropriate locale directory based on
+        // their browser request cookies (via the `/api/redirect` endpoint).
+        // @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/35}
+        source: '/',
+        destination: '/api/redirect',
+      },
+      {
+        // Don't redirect if there's a locale already in the requested URL. We
+        // also don't redirect if the browser's just trying to fetch favicons.
+        //
+        // Note that Next.js should already exclude API endpoints from these
+        // rewrites (but we keep it here just in case).
+        //
+        // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
+        // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
+        source: `/:locale((?!${locales.join('|')}|favicon|api|sw.js)[^/]+)(.*)`,
+        destination: '/api/redirect',
+      },
+    ];
   },
   webpack(config, { isServer }) {
     if (!isServer && process.env.ANALYZE === 'true') {

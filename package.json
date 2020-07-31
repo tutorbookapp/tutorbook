@@ -113,7 +113,7 @@
     "firebase": "^7.17.1",
     "firebase-admin": "^9.0.0",
     "handlebars": "^4.7.6",
-    "next": "^9.4.4",
+    "next": "^9.5.1",
     "next-translate": "^0.17.1",
     "nprogress": "^0.2.0",
     "phone": "^2.4.13",
