@@ -132,8 +132,5 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
-  },
-  "resolutions": {
-    "webpack": "^5.0.0-beta.22"
   }
 }

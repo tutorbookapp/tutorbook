@@ -115,18 +115,18 @@ $ command -v nvm
 2. (Optional) If you use [Vim](https://vim.org) as your preferred text editor,
    follow [these instructions](https://freshman.tech/vim-javascript/) on setting
    up [Vim](https://vim.org) for editing JavaScript.
-3. Run the following command to install Node.js v14.7.0 (our current version):
+3. Run the following command to install Node.js v12.18.3 (our current version):
 
 ```
-$ nvm i 14.7.0
+$ nvm i 12.18.3
 ```
 
-4. (Optional) Run the following command to set Node.js v14.7.0 as your default
+4. (Optional) Run the following command to set Node.js v12.18.3 as your default
    Node.js version (useful if you have multiple Node.js versions installed and
-   don't want to have to remember to switch to v14.7.0):
+   don't want to have to remember to switch to v12.18.3):
 
 ```
-$ nvm alias default 14.7.0
+$ nvm alias default 12.18.3
 ```
 
 5. Ensure that you have recent versions of Node.js and it's package manager
@@ -134,7 +134,7 @@ $ nvm alias default 14.7.0
 
 ```
 $ node -v
-14.7.0
+12.18.3
 $ npm -v
 6.14.7
 ```
