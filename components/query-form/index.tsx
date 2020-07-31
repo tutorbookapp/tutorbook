@@ -2,7 +2,7 @@ import { Option, Availability, UsersQuery, Callback } from 'lib/model';
 
 import React from 'react';
 import LangSelect from 'components/lang-select';
-import ScheduleInput from 'components/schedule-input';
+import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 
 import useTranslation from 'next-translate/useTranslation';
@@ -83,7 +83,7 @@ export default function QueryForm({
         />
       )}
       {availability && (
-        <ScheduleInput
+        <TimesSelect
           focused={focused === 'availability'}
           label={t('query:availability')}
           onFocused={focusAvailability}

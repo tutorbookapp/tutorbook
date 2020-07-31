@@ -5,7 +5,7 @@ import { Availability, Aspect, Callback, User, UserJSON } from 'lib/model';
 
 import React from 'react';
 import UserSelect from 'components/user-select';
-import ScheduleInput from 'components/schedule-input';
+import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 
 import equal from 'fast-deep-equal';
@@ -80,7 +80,7 @@ const Row = function Row({
         />
       </DataTableCell>
       <DataTableCell className={styles.availability}>
-        <ScheduleInput
+        <TimesSelect
           value={user.availability}
           onChange={(a: Availability) => onValueChange(a, 'availability')}
           renderToPortal

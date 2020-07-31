@@ -20,7 +20,7 @@ import React, {
   FormEvent,
 } from 'react';
 import PhotoInput from 'components/photo-input';
-import ScheduleInput from 'components/schedule-input';
+import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
@@ -206,7 +206,7 @@ export default function VolunteerForm({
               aspect={aspect}
               required
             />
-            <ScheduleInput
+            <TimesSelect
               {...shared('availability')}
               value={user.availability}
               onChange={(availability: Availability) =>

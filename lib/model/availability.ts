@@ -1,4 +1,6 @@
+import { TimeUtils } from 'lib/utils';
 import {
+  DayAlias,
   Timeslot,
   TimeslotJSON,
   TimeslotInterface,
@@ -31,6 +33,27 @@ export type AvailabilitySearchHit = TimeslotSearchHit[];
  * `[Object object]`.
  */
 export class Availability extends Array<Timeslot> implements AvailabilityAlias {
+  /**
+   * Returns a "full" availability (everyday, from 12am to 11pm). This is the
+   * default for new tutors and when sending requests. This ignores the date
+   * information and is only useful operating on times and weekdays.
+   */
+  public static full(): Availability {
+    const full = new Availability();
+    Array(7)
+      .fill(null)
+      .forEach((_: null, day: number) => {
+        const start = TimeUtils.getDate(day as DayAlias, 0);
+        const weekday = (day === 6 ? 0 : day + 1) as DayAlias;
+        let end = TimeUtils.getDate(weekday, 0);
+        while (start.valueOf() > end.valueOf()) {
+          end = new Date(end.valueOf() + 86400000 * 7);
+        }
+        full.push(new Timeslot(start, end));
+      });
+    return full;
+  }
+
   /**
    * Note that this method (`Availability.prototype.contains`) is **very**
    * different from the `Availability.prototype.hasTimeslot` method; this method

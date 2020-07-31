@@ -26,8 +26,11 @@ type OverridenProps =
 interface Props {
   value: Availability;
   onChange: Callback<Availability>;
-  options: Availability;
+  options?: Availability;
   renderToPortal?: boolean;
+  focused?: boolean;
+  onFocused?: () => any;
+  onBlurred?: () => any;
   className?: string;
 }
 
@@ -47,9 +50,12 @@ export type TimesSelectProps = Omit<
 export default function TimesSelect({
   value,
   onChange,
-  options,
-  className,
+  options = Availability.full(),
   renderToPortal,
+  focused,
+  onFocused,
+  onBlurred,
+  className,
   ...textFieldProps
 }: TimesSelectProps): JSX.Element {
   const { lang: locale } = useTranslation();
@@ -61,6 +67,10 @@ export default function TimesSelect({
   const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+  useLayoutEffect(() => {
+    if (focused && inputRef.current) inputRef.current.focus();
+  }, [focused]);
 
   useLayoutEffect(() => {
     // Scroll to 8:30am by default (assumes 48px per hour).
@@ -206,8 +216,14 @@ export default function TimesSelect({
         inputRef={inputRef}
         value={value.toString()}
         className={styles.textField}
-        onFocus={openMenu}
-        onBlur={closeMenu}
+        onFocus={() => {
+          if (onFocused) onFocused();
+          openMenu();
+        }}
+        onBlur={() => {
+          if (onBlurred) onBlurred();
+          closeMenu();
+        }}
       />
     </MenuSurfaceAnchor>
   );
