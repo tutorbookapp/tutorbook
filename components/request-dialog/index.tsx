@@ -228,7 +228,6 @@ export default function RequestDialog({
         />
         {aspect === 'tutoring' && times && (
           <TimesSelect
-            required
             outlined
             renderToPortal
             label={t('common:time')}
