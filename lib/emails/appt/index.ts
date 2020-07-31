@@ -84,6 +84,10 @@ const mentoring: Handlebars.TemplateDelegate<OrgsData> = Handlebars.compile(
 /**
  * Gets the given user's unique all-lowercase anonymous email handle from a
  * given appt.
+ * @todo Add unit and integration tests for the anonymous email relay such that
+ * we can go back to using this. For now, our email relay is inconsistent and
+ * thus we're temporarily disabling it and just using the people's actual
+ * email addresses.
  */
 function getEmail(
   appt: Appt,
@@ -141,16 +145,14 @@ export default class ApptEmail implements Email {
 
   public readonly text: string;
 
-  public readonly headers: Record<string, string>;
-
   public constructor(appt: Appt, attendees: UserWithRoles[], creator: User) {
     const recipients = attendees.filter((a) => a.id !== creator.id);
-    const creatorEmail = getEmail(appt, creator.id);
+    const creatorEmail = creator.email;
     const attendeeNames = recipients.map(({ name }) => name);
-    const contacts = [...recipients, creator].map(({ name, id }) => ({
+    const contacts = [...recipients, creator].map(({ name, email }) => ({
       name,
-      email: getEmail(appt, id),
-      url: `mailto:${encodeURIComponent(`"${name}"<${getEmail(appt, id)}>`)}`,
+      email,
+      url: `mailto:${encodeURIComponent(`"${name}"<${email}>`)}`,
     }));
     const rolesDescription = `with ${Utils.join(
       attendees.map(({ name, roles }) => `${name} as the ${Utils.join(roles)}`)
@@ -158,17 +160,8 @@ export default class ApptEmail implements Email {
     const org: Org = new Org({ name: 'Tutorbook' });
     const { roles: recipientRoles, name: recipientName } = recipients[0];
 
-    this.to = recipients.map(({ name, id }) => ({
-      name,
-      email: getEmail(appt, id),
-    }));
+    this.to = recipients.map(({ name, email }) => ({ name, email }));
     this.replyTo = { name: creator.name, email: creatorEmail };
-    this.headers = {
-      'Mail-Reply-To': `${creator.name} <${creatorEmail}>`,
-      'Mail-Followup-To': recipients
-        .map(({ name, id }) => `${name} <${getEmail(appt, id)}>`)
-        .join(', '),
-    };
     this.subject = `New ${Utils.join(appt.subjects)} appointment on Tutorbook.`;
 
     if (recipients.length === 1) {
