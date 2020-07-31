@@ -1,13 +1,5 @@
 import Utils from 'lib/utils';
-import {
-  Venue,
-  Appt,
-  Org,
-  User,
-  Role,
-  UserWithRoles,
-  Attendee,
-} from 'lib/model';
+import { Venue, Appt, Org, User, Role, UserWithRoles } from 'lib/model';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
@@ -89,17 +81,17 @@ const mentoring: Handlebars.TemplateDelegate<OrgsData> = Handlebars.compile(
  * thus we're temporarily disabling it and just using the people's actual
  * email addresses.
  */
-function getEmail(
-  appt: Appt,
-  id: string,
-  domain: string = 'mail.tutorbook.org'
-): string {
-  if (appt.creator.id === id) return `${appt.creator.handle}@${domain}`;
-  const match: Attendee[] = appt.attendees.filter((a: Attendee) => a.id === id);
-  if (match.length > 1) console.warn(`[WARNING] Duplicate attendees (${id}).`);
-  if (match.length < 1) throw new Error(`No attendee ${id} in appt.`);
-  return `${match[0].handle}@${domain}`;
-}
+//function getEmail(
+//appt: Appt,
+//id: string,
+//domain: string = 'mail.tutorbook.org'
+//): string {
+//if (appt.creator.id === id) return `${appt.creator.handle}@${domain}`;
+//const match: Attendee[] = appt.attendees.filter((a: Attendee) => a.id === id);
+//if (match.length > 1) console.warn(`[WARNING] Duplicate attendees (${id}).`);
+//if (match.length < 1) throw new Error(`No attendee ${id} in appt.`);
+//return `${match[0].handle}@${domain}`;
+//}
 
 /**
  * Sends one appointment email to all of the attendees CC-ing the creator of the
