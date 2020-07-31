@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import Utils from 'lib/utils';
 import Button from 'components/button';
-import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 import UserDialog from 'components/user-dialog';
 import UserSelect from 'components/user-select';
@@ -26,6 +25,7 @@ import {
 import { signupWithGoogle } from 'lib/account/signup';
 import { useUser } from 'lib/account';
 import { TooltipProps } from '@rmwc/tooltip';
+import { TimesSelectProps } from 'components/times-select';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { v4 as uuid } from 'uuid';
@@ -35,6 +35,9 @@ import dynamic from 'next/dynamic';
 import to from 'await-to-js';
 import styles from './request-dialog.module.scss';
 
+const TimesSelect = dynamic<TimesSelectProps>(async () =>
+  import('components/times-select')
+);
 const Tooltip = dynamic<TooltipProps>(async () =>
   import('@rmwc/tooltip').then((mod) => mod.Tooltip)
 );

@@ -1,12 +1,17 @@
 import { Option, Availability, UsersQuery, Callback } from 'lib/model';
+import { TimesSelectProps } from 'components/times-select';
 
 import React from 'react';
 import LangSelect from 'components/lang-select';
-import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 
+import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 import styles from './query-form.module.scss';
+
+const TimesSelect = dynamic<TimesSelectProps>(async () =>
+  import('components/times-select')
+);
 
 type FocusTarget = 'subjects' | 'availability' | 'langs';
 type QueryFormInputConfig = { [key in FocusTarget]?: boolean };

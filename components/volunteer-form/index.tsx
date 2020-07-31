@@ -3,6 +3,7 @@ import { signup } from 'lib/account/signup';
 import { TextField } from '@rmwc/textfield';
 import { ListDivider } from '@rmwc/list';
 import { Card } from '@rmwc/card';
+import { TimesSelectProps } from 'components/times-select';
 import {
   Availability,
   UserInterface,
@@ -20,15 +21,19 @@ import React, {
   FormEvent,
 } from 'react';
 import PhotoInput from 'components/photo-input';
-import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
 import Button from 'components/button';
 
+import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
 import styles from './volunteer-form.module.scss';
+
+const TimesSelect = dynamic<TimesSelectProps>(() =>
+  import('components/times-select')
+);
 
 interface VolunteerFormProps {
   aspect: Aspect;

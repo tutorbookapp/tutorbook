@@ -1,15 +1,20 @@
 import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
 import { Checkbox } from '@rmwc/checkbox';
+import { TimesSelectProps } from 'components/times-select';
 import { Availability, Aspect, Callback, User, UserJSON } from 'lib/model';
 
 import React from 'react';
 import UserSelect from 'components/user-select';
-import TimesSelect from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 
+import dynamic from 'next/dynamic';
 import equal from 'fast-deep-equal';
 import styles from './dashboard.module.scss';
+
+const TimesSelect = dynamic<TimesSelectProps>(() =>
+  import('components/times-select')
+);
 
 interface RowProps {
   user: User;
