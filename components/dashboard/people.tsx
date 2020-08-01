@@ -22,6 +22,7 @@ import { Option, UsersQuery, Org, User, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
 import React from 'react';
+import CreateUserDialog from 'components/create-user-dialog';
 import VerificationDialog from 'components/verification-dialog';
 
 import { UserRow, LoadingRow } from './user-row';
@@ -55,6 +56,7 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   const [valid, setValid] = React.useState<boolean>(true);
   const [warningDialog, setWarningDialog] = React.useState<React.ReactNode>();
   const [searching, setSearching] = React.useState<boolean>(false);
+  const [creating, setCreating] = React.useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<UsersQuery>(
@@ -181,6 +183,13 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   return (
     <>
       {warningDialog}
+      {creating && (
+        <CreateUserDialog
+          id={data.users[0].id}
+          initialData={data.users[0]}
+          onClosed={() => setCreating(false)}
+        />
+      )}
       {data && viewingIdx !== undefined && (
         <VerificationDialog
           user={data.users[viewingIdx]}
@@ -205,19 +214,20 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
           {
             label: t('people:create-user'),
             onClick: async () => {
-              setValid(false); // Filters become invalid when creating users.
-              const user = new User({
-                id: `temp-${uuid()}`,
-                orgs: ['default', org.id],
-              }).toJSON();
-              await mutate(
-                query.endpoint,
-                (prev?: ListUsersRes) => ({
-                  hits: (prev ? prev.hits : 0) + 1,
-                  users: [user, ...(prev ? prev.users : [])],
-                }),
-                false
-              );
+              setCreating(true);
+              //setValid(false); // Filters become invalid when creating users.
+              //const user = new User({
+              //id: `temp-${uuid()}`,
+              //orgs: ['default', org.id],
+              //}).toJSON();
+              //await mutate(
+              //query.endpoint,
+              //(prev?: ListUsersRes) => ({
+              //hits: (prev ? prev.hits : 0) + 1,
+              //users: [user, ...(prev ? prev.users : [])],
+              //}),
+              //false
+              //);
             },
           },
           {

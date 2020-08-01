@@ -1,0 +1,64 @@
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/typography';
+
+@mixin core-styles() {
+  .socialLink {
+    @include typography.typography('subtitle1');
+    margin-right: 10px;
+    font-size: 0;
+
+    &:before {
+      font-size: 24px;
+      font-family: 'FontAwesome';
+      color: map.get(config.$colors, 'accents-5');
+      text-decoration: none;
+      -webkit-text-stroke: 1px transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    &:hover:before {
+      color: transparent;
+      -webkit-text-stroke: 1px map.get(config.$colors, 'accents-5');
+    }
+  }
+
+  .youtube:before {
+    content: '\f16a';
+  }
+
+  .website:before {
+    content: '\f0ac';
+  }
+
+  .email:before {
+    content: '\f0e0';
+  }
+
+  .github:before {
+    content: '\f09b';
+  }
+
+  .linkedin:before {
+    content: '\f08c';
+  }
+
+  .twitter:before {
+    content: '\f099';
+  }
+
+  .facebook:before {
+    content: '\f09a';
+  }
+
+  .instagram:before {
+    content: '\f16d';
+  }
+
+  .indiehackers:before {
+    content: 'IH';
+    font-weight: 800;
+    font-family: map.get(config.$fonts, 'sans');
+  }
+}

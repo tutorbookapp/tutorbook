@@ -21,42 +21,7 @@
   @include elevation.elevation(8);
 }
 
-.formField {
-  margin: 8px 0;
-  width: 100% !important;
-  display: inline-flex;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  :global(.mdc-select__anchor) {
-    width: 100%;
-  }
-
-  &:not(:global(.mdc-menu-surface--anchor)) textarea {
-    min-height: 47px;
-  }
-
-  textarea {
-    resize: vertical;
-  }
-}
-
 .formSubmitButton {
   margin-top: 16px;
   width: 100%;
-}
-
-.toggle {
-  height: 4.8rem;
-}
-
-.divider {
-  list-style: none;
-  margin: 8px 0;
 }

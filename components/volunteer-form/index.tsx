@@ -1,17 +1,7 @@
 import { useUser } from 'lib/account';
 import { signup } from 'lib/account/signup';
-import { TextField } from '@rmwc/textfield';
-import { ListDivider } from '@rmwc/list';
 import { Card } from '@rmwc/card';
-import { TimesSelectProps } from 'components/times-select';
-import {
-  Availability,
-  UserInterface,
-  SocialTypeAlias,
-  User,
-  Aspect,
-  SocialInterface,
-} from 'lib/model';
+import { User, UserJSON, Aspect } from 'lib/model';
 
 import React, {
   useState,
@@ -20,20 +10,13 @@ import React, {
   useEffect,
   FormEvent,
 } from 'react';
-import PhotoInput from 'components/photo-input';
-import SubjectSelect from 'components/subject-select';
-import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
 import Button from 'components/button';
 
-import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
+import Inputs from './inputs';
 import styles from './volunteer-form.module.scss';
-
-const TimesSelect = dynamic<TimesSelectProps>(() =>
-  import('components/times-select')
-);
 
 interface VolunteerFormProps {
   aspect: Aspect;
@@ -91,177 +74,15 @@ export default function VolunteerForm({
     }
   }, [org, user, updateUser]);
 
-  const inputs: JSX.Element = useMemo(() => {
-    const sharedProps = { className: styles.formField, outlined: true };
-    const shared = (key: keyof UserInterface) => ({
-      ...sharedProps,
-      label: t(`signup:${key}`),
-      onChange: (event: React.FormEvent<HTMLInputElement>) =>
-        updateUser(new User({ ...user, [key]: event.currentTarget.value })),
-    });
-    const getSocialIndex = (type: string) => {
-      return user.socials.findIndex((s: SocialInterface) => s.type === type);
-    };
-    const getSocial = (type: SocialTypeAlias) => {
-      const index: number = getSocialIndex(type);
-      return index >= 0 ? user.socials[index].url : '';
-    };
-    const hasSocial = (type: SocialTypeAlias) => getSocialIndex(type) >= 0;
-    const updateSocial = (type: SocialTypeAlias, url: string) => {
-      const index: number = getSocialIndex(type);
-      const socials: SocialInterface[] = Array.from(user.socials);
-      if (index >= 0) {
-        socials[index] = { type, url };
-      } else {
-        socials.push({ type, url });
-      }
-      return updateUser(new User({ ...user, socials }));
-    };
-    const s = (type: SocialTypeAlias, placeholder: (v: string) => string) => ({
-      ...sharedProps,
-      value: getSocial(type),
-      label: t(`signup:${type}`),
-      onFocus: () => {
-        const name: string = user.name
-          ? user.name.replace(' ', '').toLowerCase()
-          : 'yourname';
-        if (!hasSocial(type)) {
-          void updateSocial(type, placeholder(name));
-        }
-      },
-      onChange: (event: React.FormEvent<HTMLInputElement>) => {
-        return updateSocial(type, event.currentTarget.value);
-      },
-    });
-    return (
-      <>
-        <TextField {...shared('name')} value={user.name} required />
-        <TextField
-          {...shared('email')}
-          value={user.email}
-          type='email'
-          required
-        />
-        <TextField
-          {...shared('phone')}
-          value={user.phone ? user.phone : undefined}
-          type='tel'
-        />
-        <PhotoInput
-          {...shared('photo')}
-          value={user.photo}
-          onChange={(photo: string) => updateUser(new User({ ...user, photo }))}
-        />
-        <ListDivider className={styles.divider} />
-        <LangSelect
-          {...sharedProps}
-          value={user.langs}
-          label={t('query:langs')}
-          onChange={(langs: string[]) =>
-            updateUser(new User({ ...user, langs }))
-          }
-          required
-        />
-        {aspect === 'mentoring' && (
-          <>
-            <SubjectSelect
-              {...sharedProps}
-              value={user.mentoring.subjects}
-              label={t('signup:mentoring-subjects')}
-              placeholder={t('query:subjects-mentoring-placeholder')}
-              onChange={(subjects: string[]) =>
-                updateUser(
-                  new User({ ...user, [aspect]: { ...user[aspect], subjects } })
-                )
-              }
-              aspect={aspect}
-              required
-            />
-            <TextField
-              {...sharedProps}
-              onChange={(event) =>
-                updateUser(
-                  new User({
-                    ...user,
-                    bio: event.currentTarget.value,
-                  })
-                )
-              }
-              value={user.bio}
-              label={t('signup:mentoring-bio')}
-              placeholder={t('signup:bio-placeholder')}
-              required
-              rows={4}
-              textarea
-            />
-          </>
-        )}
-        {aspect === 'tutoring' && (
-          <>
-            <SubjectSelect
-              {...sharedProps}
-              value={user.tutoring.subjects}
-              label={t('signup:tutoring-subjects')}
-              placeholder={t('query:subjects-tutoring-placeholder')}
-              onChange={(subjects: string[]) =>
-                updateUser(
-                  new User({ ...user, [aspect]: { ...user[aspect], subjects } })
-                )
-              }
-              aspect={aspect}
-              required
-            />
-            <TimesSelect
-              {...shared('availability')}
-              value={user.availability}
-              onChange={(availability: Availability) =>
-                updateUser(
-                  new User({
-                    ...user,
-                    availability,
-                  })
-                )
-              }
-              required
-            />
-            <TextField
-              {...sharedProps}
-              onChange={(event) =>
-                updateUser(
-                  new User({
-                    ...user,
-                    bio: event.currentTarget.value,
-                  })
-                )
-              }
-              value={user.bio}
-              label={t('signup:tutoring-bio')}
-              placeholder={t('signup:bio-placeholder')}
-              required
-              rows={4}
-              textarea
-            />
-          </>
-        )}
-        <ListDivider className={styles.divider} />
-        <TextField {...s('website', (v) => `https://${v}.com`)} />
-        <TextField {...s('linkedin', (v) => `https://linkedin.com/in/${v}`)} />
-        <TextField {...s('twitter', (v) => `https://twitter.com/${v}`)} />
-        <TextField {...s('facebook', (v) => `https://facebook.com/${v}`)} />
-        <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
-        <TextField {...s('github', (v) => `https://github.com/${v}`)} />
-        <TextField
-          {...s('indiehackers', (v) => `https://indiehackers.com/${v}`)}
-        />
-      </>
-    );
-  }, [aspect, user, updateUser, t]);
-
   return (
     <Card className={styles.formCard}>
       <Loader active={submitting || submitted} checked={submitted} />
       <form className={styles.form} onSubmit={handleSubmit}>
-        {inputs}
+        <Inputs
+          aspect={aspect}
+          value={user.toJSON()}
+          onChange={(json: UserJSON) => updateUser(User.fromJSON(json))}
+        />
         {!user.id && (
           <Button
             className={styles.formSubmitButton}
