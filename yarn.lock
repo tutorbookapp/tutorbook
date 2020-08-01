@@ -1438,7 +1438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
   version: 7.11.0
   resolution: "@babel/runtime@npm:7.11.0"
   dependencies:
@@ -2191,30 +2191,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/animation@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/animation@npm:6.0.0"
-  dependencies:
-    tslib: ^1.9.3
-  checksum: acf1f6eeb96a74f1d0a55a6090804830714df4ae877ebc90f576c2c6490d6e20e563af3dbff40c4e3d499e1d620891bf744fb0a1395187afa60011b35525ece6
-  languageName: node
-  linkType: hard
-
 "@material/base@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/base@npm:5.1.0"
   dependencies:
     tslib: ^1.9.3
   checksum: 4a495d841d4c119357ea80e4b2060f2cfd01ef05bec182d453d4e495a14fd42d25377fcf9a87fa7b466f90f771dffeea22006a9df009c1dd6f6299a143667b67
-  languageName: node
-  linkType: hard
-
-"@material/base@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/base@npm:6.0.0"
-  dependencies:
-    tslib: ^1.9.3
-  checksum: 55dd09ee8a7803d82a509367c13aabacf60106be23f3cbc254ec6e8c017e479fd270f5cee51d7b7d701a7db870220508b9a2e00276a15723795da911b0234379
   languageName: node
   linkType: hard
 
@@ -2357,29 +2339,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/elevation@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/elevation@npm:6.0.0"
-  dependencies:
-    "@material/animation": ^6.0.0
-    "@material/base": ^6.0.0
-    "@material/feature-targeting": ^6.0.0
-    "@material/theme": ^6.0.0
-  checksum: 0fbc1f3a1cadadaea804fc29295af6654240e4363d00430c2b50436e5ee79b7a01b2e11e70822a40d449a87b51b5d3bfb0005bd92c1d00ff5ed4c1af098cc275
-  languageName: node
-  linkType: hard
-
 "@material/feature-targeting@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/feature-targeting@npm:5.1.0"
   checksum: c3a7f2178b91bef0ff0aa49602f8bfa1da8b464505e0bf965a5c6be92af0674b75b26e9969ed9617d8c4349f40ad1710bfd51ee30253fba90ee41afc99c29aa5
-  languageName: node
-  linkType: hard
-
-"@material/feature-targeting@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/feature-targeting@npm:6.0.0"
-  checksum: a6076796c7bffbf555286df2392ee6c6eec7f32a8ff0921bf535fb8fafe1badf178dfc8ca6d99b99bf165bb571ab2098f40ca32983958f1316470957317781cb
   languageName: node
   linkType: hard
 
@@ -2482,22 +2445,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/menu-surface@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/menu-surface@npm:6.0.0"
-  dependencies:
-    "@material/animation": ^6.0.0
-    "@material/base": ^6.0.0
-    "@material/elevation": ^6.0.0
-    "@material/feature-targeting": ^6.0.0
-    "@material/rtl": ^6.0.0
-    "@material/shape": ^6.0.0
-    "@material/theme": ^6.0.0
-    tslib: ^1.9.3
-  checksum: 3bbfad63ab80f5e37daf10d712c94792d1efb2d1f580e8b946546fbd81c4f6aab3b5369028d3b3388a93c65f9ad982a7f08504a8d0c127e1fd66e9ada362ced5
-  languageName: node
-  linkType: hard
-
 "@material/menu@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/menu@npm:5.1.0"
@@ -2552,13 +2499,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/rtl@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/rtl@npm:6.0.0"
-  checksum: 024608dc7ab9d60cd0ab38ee52b0bba130e34a07e8d84e4db2002fb0b85e02f9fc80e49ff945cd75e4fdab9198462153fd4a770bc3c46aac3eba9dbf41b67a60
-  languageName: node
-  linkType: hard
-
 "@material/select@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/select@npm:5.1.0"
@@ -2587,16 +2527,6 @@ __metadata:
     "@material/feature-targeting": ^5.1.0
     "@material/rtl": ^5.1.0
   checksum: dc04dd87d4c336c5d07f1f9d57d66479ac03dd70ad3511d995a654182378f5c7ed47af415c63828d6ab317316625c2fb09da7ca8c9b4c0c324f71329f1ec04a1
-  languageName: node
-  linkType: hard
-
-"@material/shape@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/shape@npm:6.0.0"
-  dependencies:
-    "@material/feature-targeting": ^6.0.0
-    "@material/rtl": ^6.0.0
-  checksum: 2bbdc4b1a11e49482e4ec943cf71b1797dbdb9d0a589b18979ae8a07b092f1d4dd199aff93d69de540557e07c9033b96f65fdc16b72a01fa2e44926043985ca8
   languageName: node
   linkType: hard
 
@@ -2725,15 +2655,6 @@ __metadata:
   dependencies:
     "@material/feature-targeting": ^5.1.0
   checksum: 77a145c6bd2a6c57489941a081a57578fc510e691a7f64028b8ceebd6dc40d9747642658bd5afedc077f6087989c700461023983b4897da476aa40659a87e900
-  languageName: node
-  linkType: hard
-
-"@material/theme@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@material/theme@npm:6.0.0"
-  dependencies:
-    "@material/feature-targeting": ^6.0.0
-  checksum: c2d6d7e5c137a831caa472d941e7134a269e545e2055cfae736d1e7deaae4ff90a868c691fdc8ab0f9b26660d57bfe47d6dda37dcf4dcbf371693a597b38f12f
   languageName: node
   linkType: hard
 
@@ -10271,13 +10192,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"memoize-one@npm:>=3.1.1 <6":
-  version: 5.1.1
-  resolution: "memoize-one@npm:5.1.1"
-  checksum: e7c4a9cceca71334bf09c38818c375a280dc6e8ec03a92701c16199763269ce756b7b0b370f4b464c071045349fb7b3e4a3cc7460a3f46a277f394d8634a6eb5
-  languageName: node
-  linkType: hard
-
 "memory-fs@npm:^0.4.1":
   version: 0.4.1
   resolution: "memory-fs@npm:0.4.1"
@@ -12639,19 +12553,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-window@npm:^1.8.5":
-  version: 1.8.5
-  resolution: "react-window@npm:1.8.5"
-  dependencies:
-    "@babel/runtime": ^7.0.0
-    memoize-one: ">=3.1.1 <6"
-  peerDependencies:
-    react: ^15.0.0 || ^16.0.0
-    react-dom: ^15.0.0 || ^16.0.0
-  checksum: b0bee0c769109337557dc4c1488d20e4e957f27082418b22d6dd28b62946623e31ad34936c8d836eb8c61734f2d2b0ff5c71ab2dbc40e71060c1124607e2a986
-  languageName: node
-  linkType: hard
-
 "react@npm:^16.13.1":
   version: 16.13.1
   resolution: "react@npm:16.13.1"
@@ -14621,8 +14522,7 @@ fsevents@^1.2.7:
   dependencies:
     "@algolia/client-search": ^4.3.1
     "@juggle/resize-observer": ^3.2.0
-    "@material/animation": ^5.1.0
-    "@material/menu-surface": ^6.0.0
+    "@material/menu-surface": ^5.1.0
     "@rmwc/button": ^6.1.3
     "@rmwc/card": ^6.1.3
     "@rmwc/checkbox": ^6.1.3
@@ -14699,7 +14599,6 @@ fsevents@^1.2.7:
     react-scroll-sync: ^0.8.0
     react-test-renderer: ^16.13.1
     react-use-measure: ^2.0.1
-    react-window: ^1.8.5
     rrule: ^2.6.4
     sass: ^1.26.10
     svg-url-loader: ^6.0.0

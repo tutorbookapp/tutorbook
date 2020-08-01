@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { memo, useState, useEffect, useCallback } from 'react';
 import Inputs from 'components/volunteer-form/inputs';
 import Button from 'components/button';
+import { responseInterface } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { UserJSON, Callback } from 'lib/model';
+import { UserJSON } from 'lib/model';
 
 import styles from './edit-page.module.scss';
 
@@ -13,13 +14,13 @@ function sleep(ms: number) {
 
 export interface EditPageProps {
   value: UserJSON;
-  onChange: Callback<UserJSON>;
   openDisplay: () => void;
+  mutate: responseInterface<UserJSON, Error>['mutate'];
 }
 
-export default function EditPage({
+export default memo(function EditPage({
   value,
-  onChange,
+  mutate,
   openDisplay,
 }: EditPageProps): JSX.Element {
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -46,7 +47,7 @@ export default function EditPage({
 
   return (
     <form className={styles.form} onSubmit={onSubmit}>
-      <Inputs value={value} onChange={onChange} />
+      <Inputs value={value} onChange={mutate} />
       <Button
         onClick={openDisplay}
         className={styles.formSubmitButton}
@@ -57,4 +58,4 @@ export default function EditPage({
       />
     </form>
   );
-}
+});

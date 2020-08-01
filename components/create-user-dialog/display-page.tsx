@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Avatar from 'components/avatar';
 import { Chip, ChipSet } from '@rmwc/chip';
 import { UserJSON, SocialInterface } from 'lib/model';
@@ -12,7 +12,7 @@ export interface DisplayPageProps {
   openMatch: () => void;
 }
 
-export default function DisplayPage({
+export default memo(function DisplayPage({
   value,
   openEdit,
   openRequest,
@@ -62,4 +62,4 @@ export default function DisplayPage({
       </div>
     </div>
   );
-}
+});
