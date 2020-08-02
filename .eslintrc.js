@@ -66,6 +66,14 @@ module.exports = {
     //   return users.map(userToOption);
     // }
     '@typescript-eslint/no-inferrable-types': [1, { ignoreParameters: false }],
+    // Allow for skipping code paths by returning undefined values or callbacks.
+    // @example
+    // function doSomething(val: string) {
+    //   if (val === 'do-nothing') return;
+    //   if (val === 'do-this-thing') return doThisThing():
+    //   doSomethingElse();
+    // }
+    'consistent-return': ['warning', { treatUndefinedAsUnspecified: true }],
   },
   reportUnusedDisableDirectives: true,
   settings: {

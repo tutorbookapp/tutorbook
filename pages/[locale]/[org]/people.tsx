@@ -89,6 +89,7 @@ export const getServerSideProps: GetServerSideProps<
         'common',
         'people',
         'verifications',
+        'signup',
       ]);
       if (!doc.exists) {
         props = {

@@ -1,41 +1,23 @@
 .dialog :global(.mdc-dialog__surface) {
   width: calc(100vw - 32px);
   max-width: 750px;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  overflow: hidden;
 
-  .scroller {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    visibility: hidden;
-    flex: none;
-  }
-
-  .pages {
-    display: grid;
-    flex: 1 1 auto;
+  .page {
+    // We use grid display to be able to position each page on top of one
+    // another yet still retain their sizing to size the dialog surface.
+    // @see {@link https://stackoverflow.com/a/51949049/10023158}
+    grid-column: 1;
+    max-height: calc(100vh - 32px);
     overflow: hidden;
+    grid-row: 1;
+    opacity: 0;
+    z-index: 1;
 
-    .page {
-      // We use grid display to be able to position each page on top of one
-      // another yet still retain their sizing to size the dialog surface.
-      // @see {@link https://stackoverflow.com/a/51949049/10023158}
-      grid-column: 1;
-      max-height: calc(100vh - 32px);
-      overflow: hidden;
-      grid-row: 1;
-      opacity: 0;
-      z-index: 1;
-
-      &.active {
-        opacity: 1;
-        z-index: 4;
-      }
-
-      &.scrollable {
-        overflow-x: hidden;
-        overflow-y: auto;
-      }
+    &.active {
+      opacity: 1;
+      z-index: 4;
     }
   }
 }

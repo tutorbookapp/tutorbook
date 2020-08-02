@@ -185,9 +185,9 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
       {warningDialog}
       {creating && (
         <CreateUserDialog
-          id={data.users[0].id}
-          initialData={data.users[0]}
           onClosed={() => setCreating(false)}
+          initialData={data.users[0]}
+          initialPage='edit'
         />
       )}
       {data && viewingIdx !== undefined && (

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import Avatar from 'components/avatar';
 import { Chip, ChipSet } from '@rmwc/chip';
 import { UserJSON, SocialInterface } from 'lib/model';
@@ -7,9 +7,9 @@ import styles from './display-page.module.scss';
 
 export interface DisplayPageProps {
   value: UserJSON;
-  openEdit: () => void;
-  openRequest: () => void;
-  openMatch: () => void;
+  openEdit: () => Promise<void>;
+  openRequest: () => Promise<void>;
+  openMatch: () => Promise<void>;
 }
 
 export default memo(function DisplayPage({
@@ -18,6 +18,10 @@ export default memo(function DisplayPage({
   openRequest,
   openMatch,
 }: DisplayPageProps): JSX.Element {
+  const email = useCallback(() => {
+    open(`mailto:${encodeURIComponent(`"${value.name}"<${value.email}>`)}`);
+  }, []);
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.left}>
@@ -50,13 +54,10 @@ export default memo(function DisplayPage({
       <div className={styles.right}>
         <h6 className={styles.header}>About</h6>
         <p className={styles.content}>{value.bio}</p>
-        <h6 className={styles.header}>Contact</h6>
-        <p className={styles.content}>{value.bio}</p>
-        <h6 className={styles.header}>Subjects</h6>
-        <p className={styles.content}>{value.bio}</p>
         <ChipSet className={styles.chips}>
           <Chip icon='edit' label='Edit profile' onClick={openEdit} />
-          <Chip icon='send' label='Request tutor' onClick={openRequest} />
+          <Chip icon='send' label='Send request' onClick={openRequest} />
+          <Chip icon='email' label='Send email' onClick={email} />
           <Chip icon='people' label='Match student' onClick={openMatch} />
         </ChipSet>
       </div>

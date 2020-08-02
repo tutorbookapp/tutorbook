@@ -11,16 +11,16 @@ interface UserDialogProps {
   user: User;
   onClosed: () => void;
   children?: JSX.Element | JSX.Element[];
-  submitting?: boolean;
-  submitted?: boolean;
+  loading?: boolean;
+  checked?: boolean;
   className?: string;
 }
 
 export default function UserDialog({
   children,
   className,
-  submitting,
-  submitted,
+  loading,
+  checked,
   onClosed,
   user,
 }: UserDialogProps): JSX.Element {
@@ -31,7 +31,7 @@ export default function UserDialog({
       className={styles.dialog + (className ? ` ${className}` : '')}
     >
       <div className={styles.wrapper}>
-        <Loader active={submitting || submitted || false} checked={submitted} />
+        <Loader active={loading} checked={checked} />
         <div className={styles.left}>
           <a
             className={styles.img}

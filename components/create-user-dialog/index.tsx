@@ -1,5 +1,4 @@
 import React, {
-  useMemo,
   useRef,
   useState,
   useLayoutEffect,
@@ -7,8 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import useWebAnimations from '@wellyshen/use-web-animations';
-import useMeasure from 'react-use-measure';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import cn from 'classnames';
 
 import { Dialog } from '@rmwc/dialog';
@@ -26,8 +24,8 @@ type Page = 'edit' | 'display' | 'request';
 export interface UserDialogProps {
   id?: string;
   initialData?: UserJSON;
+  initialPage?: Page;
   onClosed: () => void;
-  page?: Page;
 }
 
 function usePrevious<T>(value: T): T {
@@ -91,50 +89,35 @@ const outgoingFadeOut = {
 // children. The default visible page is the `DisplayPage` but that can be
 // configured via the `page` prop.
 export default function UserDialog({
-  id,
   onClosed,
   initialData = new User().toJSON(),
-  page = 'display',
+  initialPage = 'display',
 }: UserDialogProps): JSX.Element {
   // Temporary ID that is used to locally mutate SWR data (without calling API).
+  // We have to use a stateful variable for our ID to support user creation.
   // @see {@link https://github.com/vercel/swr/issues/576}
-  const tempId = useMemo(() => uuid(), []);
-  const { data, mutate } = useSWR<UserJSON>(id ? `/api/users/${id}` : tempId, {
-    initialData,
-  });
+  if (!initialData.id) initialData.id = `temp-${uuid()}`;
+  const [id, setId] = useState<string>(initialData.id);
+  const { data } = useSWR<UserJSON>(`/api/users/${id}`, { initialData });
   const user = data as UserJSON;
 
-  const [pagesMeasureRef, { height: pagesHeight }] = useMeasure();
-  const [displayMeasureRef, { height: displayHeight }] = useMeasure();
-  const [editMeasureRef, { height: editHeight }] = useMeasure();
-  const [requestMeasureRef, { height: requestHeight }] = useMeasure();
+  const onChange = useCallback(async (updated: UserJSON) => {
+    setId(updated.id);
+    await mutate(`/api/users/${updated.id}`, updated, false);
+  }, []);
 
-  const { ref: displayAnimRef, animate: animateDisplay } = useWebAnimations();
-  const { ref: editAnimRef, animate: animateEdit } = useWebAnimations();
-  const { ref: requestAnimRef, animate: animateRequest } = useWebAnimations();
+  const { ref: displayRef, animate: animateDisplay } = useWebAnimations();
+  const { ref: editRef, animate: animateEdit } = useWebAnimations();
+  const { ref: requestRef, animate: animateRequest } = useWebAnimations();
 
-  const [active, setActive] = useState<Page>(page);
+  const [active, setActive] = useState<Page>(initialPage);
   const prevActive = usePrevious<Page>(active);
 
-  // Prevents jumping based on page overflow. Some pages don't need a scroller
-  // (while some do). When the current page doesn't have a scroller itself, we
-  // add an invisible "scroller" which ensures that the dialog content area
-  // isn't resized when transitioning to a page that **does** have a scroller.
-  const [scroller, setScroller] = useState<boolean>(true);
-
   useLayoutEffect(() => {
-    let updated = true;
-    if (active === 'display') updated = displayHeight < pagesHeight;
-    if (active === 'edit') updated = editHeight < pagesHeight;
-    if (active === 'request') updated = requestHeight < pagesHeight;
-    setScroller((prev: boolean) => {
-      if (!prev && updated) return updated;
-      setTimeout(() => setScroller(updated), duration);
-      return prev;
-    });
-  }, [active, displayHeight, editHeight, requestHeight, pagesHeight]);
-
-  useLayoutEffect(() => {
+    // Don't animate the initial page (we only want to animate when the user is
+    // performing navigations **within** this dialog... not when opening it).
+    if (!prevActive) return;
+    // TODO: Why is this being called multiple times for each page transition?
     switch (active) {
       case 'edit':
         animateEdit(incomingFadeIn);
@@ -146,60 +129,54 @@ export default function UserDialog({
         break;
       default:
         animateDisplay(incomingFadeOut);
-        (prevActive === 'edit' ? animateEdit : animateRequest)(outgoingFadeOut);
+        if (prevActive === 'edit') animateEdit(outgoingFadeOut);
+        if (prevActive === 'request') animateRequest(outgoingFadeOut);
         break;
     }
   }, [active, prevActive, animateDisplay, animateEdit, animateRequest]);
 
-  const openEdit = useCallback(() => setActive('edit'), []);
-  const openRequest = useCallback(() => setActive('request'), []);
-  const openDisplay = useCallback(() => setActive('display'), []);
-  const openMatch = useCallback(() => console.log('TODO'), []);
+  const openEdit = useCallback(() => {
+    setActive('edit');
+    return new Promise<void>((resolve) => setTimeout(resolve, duration));
+  }, []);
+  const openRequest = useCallback(() => {
+    setActive('request');
+    return new Promise<void>((resolve) => setTimeout(resolve, duration));
+  }, []);
+  const openDisplay = useCallback(() => {
+    setActive('display');
+    return new Promise<void>((resolve) => setTimeout(resolve, duration));
+  }, []);
+  const openMatch = useCallback(() => {
+    console.log('TODO');
+    return new Promise<void>((resolve) => setTimeout(resolve, duration));
+  }, []);
 
   return (
     <Dialog open onClosed={onClosed} className={styles.dialog}>
-      <div className={styles.scroller} />
-      <div className={styles.pages} ref={pagesMeasureRef}>
-        <div
-          className={cn(styles.page, {
-            [styles.scrollable]: !scroller && active === 'display',
-            [styles.active]: active === 'display',
-          })}
-          ref={displayAnimRef as React.RefObject<HTMLDivElement>}
-        >
-          <div ref={displayMeasureRef}>
-            <DisplayPage
-              value={user}
-              openEdit={openEdit}
-              openRequest={openRequest}
-              openMatch={openMatch}
-            />
-          </div>
-        </div>
-        <div
-          className={cn(styles.page, {
-            [styles.scrollable]: !scroller && active === 'edit',
-            [styles.active]: active === 'edit',
-          })}
-          ref={editAnimRef as React.RefObject<HTMLDivElement>}
-        >
-          <div ref={editMeasureRef}>
-            <EditPage value={user} mutate={mutate} openDisplay={openDisplay} />
-          </div>
-        </div>
-        <div
-          className={cn(styles.page, {
-            [styles.scrollable]: !scroller && active === 'request',
-            [styles.active]: active === 'request',
-          })}
-          ref={requestAnimRef as React.RefObject<HTMLDivElement>}
-        >
-          <div ref={requestMeasureRef}>
-            <RequestPage value={user} openDisplay={openDisplay} />
-          </div>
-        </div>
+      <div
+        className={cn(styles.page, { [styles.active]: active === 'display' })}
+        ref={displayRef as React.RefObject<HTMLDivElement>}
+      >
+        <DisplayPage
+          value={user}
+          openEdit={openEdit}
+          openRequest={openRequest}
+          openMatch={openMatch}
+        />
       </div>
-      {scroller && <div className={styles.scroller} />}
+      <div
+        className={cn(styles.page, { [styles.active]: active === 'edit' })}
+        ref={editRef as React.RefObject<HTMLDivElement>}
+      >
+        <EditPage value={user} onChange={onChange} openDisplay={openDisplay} />
+      </div>
+      <div
+        className={cn(styles.page, { [styles.active]: active === 'request' })}
+        ref={requestRef as React.RefObject<HTMLDivElement>}
+      >
+        <RequestPage value={user} openDisplay={openDisplay} />
+      </div>
     </Dialog>
   );
 }
