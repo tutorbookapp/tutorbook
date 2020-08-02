@@ -1,12 +1,12 @@
 import { AppProps } from 'next/app';
-import { SWRConfig } from 'swr';
-import { ApiError } from 'lib/model';
-import { UserProvider } from 'lib/account';
+import { User, UserJSON, ApiError } from 'lib/model';
+import { UpdateUserParam, UserContext } from 'lib/account';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import useSWR, { mutate, SWRConfig } from 'swr';
 import to from 'await-to-js';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo, useCallback } from 'react';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 import CovidHead from 'components/doc-head';
@@ -32,38 +32,102 @@ async function fetcher<T>(url: string): Promise<T> {
   return (res as AxiosResponse<T>).data;
 }
 
-export default function App({ Component, pageProps }: AppProps): JSX.Element {
-  const timeoutId = useRef<ReturnType<typeof setTimeout>>();
+// Installs a service worker and triggers an `/api/account` re-validation once
+// the service worker has been activated and is control of this page (i.e. once
+// the service worker can intercept our fetch requests and append the auth JWT).
+// @see {@link https://bit.ly/3gnChWt}
+async function installServiceWorker(): Promise<void> {
+  if ('serviceWorker' in navigator) {
+    await navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .then((reg: ServiceWorkerRegistration) => {
+        reg.addEventListener('updatefound', () => {
+          const worker = reg.installing as ServiceWorker;
+          worker.addEventListener('statechange', () => {
+            if (worker.state === 'activated') {
+              void mutate('/api/account');
+            }
+          });
+        });
+      });
+  } else {
+    throw new Error('Service workers are disabled.');
+  }
+}
 
+async function updateUserRemote(user: User): Promise<void> {
+  const url = `/api/users/${user.id}`;
+  const { data: updatedUser } = await axios.put<UserJSON>(url, user.toJSON());
+  await mutate('/api/account', updatedUser, false);
+}
+
+export default function App({ Component, pageProps }: AppProps): JSX.Element {
+  // The user account state must be defined as a hook here. Otherwise, it gets
+  // reset during client-side page navigation.
+  const { data } = useSWR<UserJSON>('/api/account', fetcher);
+  const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);
+  const updateUserTimeoutId = useRef<ReturnType<typeof setTimeout>>();
+  const updateUser = useCallback(
+    async (param: UpdateUserParam) => {
+      if (updateUserTimeoutId.current) {
+        clearTimeout(updateUserTimeoutId.current);
+        updateUserTimeoutId.current = undefined;
+      }
+      let updatedUser: User = new User();
+      if (typeof param === 'object') updatedUser = new User(param);
+      if (typeof param === 'function') updatedUser = new User(param(user));
+      // Re-validate if we haven't gotten any account data yet. This fixes
+      // an issue where the profile view would locally update to an empty
+      // `User()` *before* our `/api/account` endpoint could respond. SWR
+      // cancelled the `/api/account` mutation in favor of the empty one.
+      await mutate('/api/account', updatedUser, !user);
+      // Only update the user profile remotely after 5secs of no change.
+      // @see {@link https://github.com/vercel/swr/issues/482}
+      updateUserTimeoutId.current = setTimeout(() => {
+        if (updatedUser.id) void updateUserRemote(updatedUser);
+      }, 5000);
+    },
+    [user]
+  );
+
+  // This service worker appends the Firebase Authentication JWT to all of our
+  // same-origin fetch requests. In the future, it'll handle caching as well.
+  useEffect(() => {
+    void installServiceWorker();
+  }, []);
+
+  // Dynamically import our Firebase SDK initialization (because it's so big) to
+  // connect Google Analytics with our Firebase project automatically.
   useEffect(() => {
     const initFirebaseAndAnalytics = () => import('lib/firebase');
     void initFirebaseAndAnalytics();
   }, []);
 
+  const loaderTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   Object.entries({
     routeChangeStart: () => {
       // Only show loader if page transition takes longer than 0.5sec.
-      timeoutId.current = setTimeout(() => NProgress.start(), 500);
+      loaderTimeoutId.current = setTimeout(() => NProgress.start(), 500);
     },
     routeChangeComplete: () => NProgress.done(),
     routeChangeError: () => NProgress.done(),
-  }).forEach(([event, action]) =>
+  }).forEach(([event, action]) => {
     Router.events.on(event, () => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
-        timeoutId.current = undefined;
+      if (loaderTimeoutId.current) {
+        clearTimeout(loaderTimeoutId.current);
+        loaderTimeoutId.current = undefined;
       }
       action();
-    })
-  );
+    });
+  });
 
   return (
     <SWRConfig value={{ fetcher }}>
-      <UserProvider>
+      <UserContext.Provider value={{ user, updateUser }}>
         <div id='portal' />
         <CovidHead />
         <Component {...pageProps} />
-      </UserProvider>
+      </UserContext.Provider>
     </SWRConfig>
   );
 }
