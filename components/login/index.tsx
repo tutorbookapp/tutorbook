@@ -20,12 +20,12 @@ export default function Login(): JSX.Element {
 
   useEffect(() => {
     if (user.id) {
-      void Router.push('/[locale]/dashboard', `/${locale}/dashboard`);
+      void Router.push('/dashboard');
     }
   }, [user, locale]);
 
   useEffect(() => {
-    void Router.prefetch('/[locale]/dashboard', `/${locale}/dashboard`);
+    void Router.prefetch('/dashboard');
   }, [locale]);
 
   const handleClick = useCallback(async () => {
@@ -37,7 +37,7 @@ export default function Login(): JSX.Element {
         `An error occurred while logging in with Google. ${err.message}`
       );
     } else {
-      await Router.push('/[locale]/dashboard', `/${locale}/dashboard`);
+      await Router.push('/dashboard');
       setSubmitting(false);
     }
   }, [locale]);

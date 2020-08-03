@@ -153,7 +153,7 @@ export default function PopOverMenu({
   onClose,
   children,
 }: PopOverMenuProps): JSX.Element {
-  const { t, lang: locale } = useTranslation();
+  const { t } = useTranslation();
   const { user, orgs } = useUser();
 
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
@@ -203,7 +203,7 @@ export default function PopOverMenu({
               await import('firebase/auth');
               await firebase.auth().signOut();
               await mutate('/api/account', new User().toJSON(), false);
-              await Router.push('/[locale]/login', `/${locale}/login`);
+              await Router.push('/login');
             }}
           >
             {t(loggingOut ? 'common:logging-out' : 'common:logout')}

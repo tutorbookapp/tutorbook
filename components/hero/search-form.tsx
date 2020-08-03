@@ -33,10 +33,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
   }, [aspect]);
 
   useEffect(() => {
-    void Router.prefetch(
-      '/[locale]/search/[[...slug]]',
-      `/${locale}${query.url}`
-    );
+    void Router.prefetch('/search/[[...slug]]', query.url);
   }, [query, locale]);
 
   const handleSubmit = useCallback(
@@ -44,10 +41,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       event.preventDefault();
       event.stopPropagation();
       setSubmitting(true);
-      await Router.push(
-        '/[locale]/search/[[...slug]]',
-        `/${locale}${query.url}`
-      );
+      await Router.push('/search/[[...slug]]', query.url);
     },
     [query, locale]
   );
