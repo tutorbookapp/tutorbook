@@ -93,8 +93,8 @@ export default function People({ org }: PeopleProps): JSX.Element {
     void mutate(query.endpoint);
   }, [query]);
   React.useEffect(() => {
-    setSearching((prev: boolean) => prev && isValidating);
-  }, [isValidating]);
+    setSearching((prev: boolean) => prev && (isValidating || !data));
+  }, [isValidating, data]);
   React.useEffect(() => {
     setValid((prev: boolean) => prev || searching);
   }, [searching]);
