@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { getIntlProps, getIntlPaths, withIntl } from 'lib/intl';
+import { withI18n } from 'lib/intl';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { Aspect } from 'lib/model';
 import { AspectHeader } from 'components/header';
@@ -10,6 +10,10 @@ import Intercom from 'components/react-intercom';
 import Hero from 'components/hero';
 import About from 'components/about';
 import Footer from 'components/footer';
+
+import common from 'locales/en/common.json';
+import about from 'locales/en/about.json';
+import query from 'locales/en/query.json';
 
 function IndexPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');
@@ -31,14 +35,4 @@ function IndexPage(): JSX.Element {
   );
 }
 
-export const getStaticProps: GetStaticProps = async (context) => ({
-  props: await getIntlProps(context, ['common', 'about', 'query']),
-});
-
-/* eslint-disable-next-line @typescript-eslint/require-await */
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: getIntlPaths(),
-  fallback: false,
-});
-
-export default withIntl(IndexPage);
+export default withI18n(IndexPage, { common, about, query });

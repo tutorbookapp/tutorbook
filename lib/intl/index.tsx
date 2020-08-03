@@ -20,7 +20,7 @@ async function importNamespaces(
 ): Promise<Namespaces> {
   const pageNamespaces = await Promise.all(
     namespacesToFetch.map((ns) =>
-      import(`./locales/${locale}/${ns}.json`).then(
+      import(`locales/${locale}/${ns}.json`).then(
         (mod: { default: Record<string, string> }) => mod.default
       )
     )
@@ -80,4 +80,23 @@ export function withIntl<P extends Record<string, any>>(
   }
 
   return WithIntl;
+}
+
+/**
+ * Temporary helper function to add a wrapper around pages that already import
+ * their static i18n locale files (to re-enable static optimization).
+ */
+export function withI18n<P extends Record<string, any>>(
+  Component: React.ComponentType<P>,
+  namespaces: Namespaces
+): React.FunctionComponent<P> {
+  function WithI18n(props: P): JSX.Element {
+    return (
+      <I18nProvider lang='en' namespaces={namespaces}>
+        <Component {...props} />
+      </I18nProvider>
+    );
+  }
+
+  return WithI18n;
 }

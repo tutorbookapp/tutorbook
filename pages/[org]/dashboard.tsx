@@ -6,10 +6,9 @@ import Footer from 'components/footer';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Org, OrgJSON, UsersQuery, ApiError } from 'lib/model';
-import { ListUsersRes } from 'lib/api/list-users';
-import { People } from 'components/dashboard';
+import { Overview } from 'components/dashboard';
 import { TabHeader } from 'components/header';
+import { Org, OrgJSON } from 'lib/model';
 import {
   db,
   auth,
@@ -18,21 +17,21 @@ import {
   DocumentSnapshot,
   DocumentReference,
 } from 'lib/api/helpers/firebase';
-import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
-
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { withI18n } from 'lib/intl';
 
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
-interface PeoplePageProps {
+import common from 'locales/en/common.json';
+import overview from 'locales/en/overview.json';
+
+interface DashboardPageProps {
+  org?: OrgJSON;
   errorCode?: number;
   errorMessage?: string;
-  result?: ListUsersRes;
-  org?: OrgJSON;
 }
 
-interface PeoplePageQuery extends ParsedUrlQuery {
+interface DashboardPageQuery extends ParsedUrlQuery {
   locale: string;
   org: string;
 }
@@ -57,13 +56,13 @@ interface PeoplePageQuery extends ParsedUrlQuery {
  * @see {@link https://github.com/vercel/next.js/issues/14200}
  */
 export const getServerSideProps: GetServerSideProps<
-  PeoplePageProps & IntlProps,
-  PeoplePageQuery
+  DashboardPageProps,
+  DashboardPageQuery
 > = async ({
   req,
   res,
   params,
-}: GetServerSidePropsContext<PeoplePageQuery>) => {
+}: GetServerSidePropsContext<DashboardPageQuery>) => {
   if (!params) {
     throw new Error('We must have query parameters while rendering.');
   } else if (!req.headers.authorization) {
@@ -85,12 +84,7 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props: PeoplePageProps & IntlProps = await getIntlProps({ params }, [
-        'common',
-        'people',
-        'verifications',
-        'signup',
-      ]);
+      let props: DashboardPageProps = {};
       if (!doc.exists) {
         props = {
           ...props,
@@ -104,53 +98,18 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        const query = new UsersQuery({
-          orgs: [{ label: org.name, value: org.id }],
-          hitsPerPage: 10,
-        });
-        const url = `http://${req.headers.host as string}${query.endpoint}`;
-        const [error, response] = await to<
-          AxiosResponse<ListUsersRes>,
-          AxiosError<ApiError>
-        >(
-          axios.get<ListUsersRes>(url, {
-            headers: { authorization: req.headers.authorization },
-          })
-        );
-        if (error && error.response) {
-          props = {
-            ...props,
-            errorCode: error.response.status,
-            errorMessage: error.response.data.msg,
-          };
-        } else if (error && error.request) {
-          props = {
-            ...props,
-            errorCode: 500,
-            errorMessage: 'Users API did not respond.',
-          };
-        } else if (error) {
-          props = {
-            ...props,
-            errorCode: 500,
-            errorMessage: `${error.name} fetching users: ${error.message}`,
-          };
-        } else {
-          const { data: result } = response as AxiosResponse<ListUsersRes>;
-          props = { ...props, result, org: org.toJSON() };
-        }
+        props = { ...props, org: org.toJSON() };
       }
       return { props };
     }
   }
 };
 
-function PeoplePage({
+function DashboardPage({
   errorCode,
   errorMessage,
-  result,
   org,
-}: PeoplePageProps): JSX.Element {
+}: DashboardPageProps): JSX.Element {
   const { query } = useRouter();
   const { t } = useTranslation();
   if (errorCode || errorMessage)
@@ -161,13 +120,13 @@ function PeoplePage({
         tabs={[
           {
             label: t('common:overview'),
-            active: false,
+            active: true,
             href: '/[org]/dashboard',
             as: `/${query.org as string}/dashboard`,
           },
           {
             label: t('common:people'),
-            active: true,
+            active: false,
             href: '/[org]/people',
             as: `/${query.org as string}/people`,
           },
@@ -179,14 +138,11 @@ function PeoplePage({
           },
         ]}
       />
-      <People
-        org={Org.fromJSON(org as OrgJSON)}
-        initialData={result as ListUsersRes}
-      />
+      <Overview account={Org.fromJSON(org as OrgJSON)} />
       <Footer />
       <Intercom />
     </>
   );
 }
 
-export default withIntl(PeoplePage);
+export default withI18n(DashboardPage, { common, overview });

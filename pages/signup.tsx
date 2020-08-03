@@ -5,9 +5,14 @@ import VolunteerPage from 'components/volunteer-page';
 import React, { useState } from 'react';
 
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { getIntlProps, getIntlPaths, withIntl } from 'lib/intl';
+import { withI18n } from 'lib/intl';
 import { Aspect } from 'lib/model';
 import { AspectHeader } from 'components/header';
+
+import common from 'locales/en/common.json';
+import signup from 'locales/en/signup.json';
+import signupPage from 'locales/en/signup-page.json';
+import query from 'locales/en/query.json';
 
 function SignupPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');
@@ -25,19 +30,9 @@ function SignupPage(): JSX.Element {
   );
 }
 
-export const getStaticProps: GetStaticProps = async (context) => ({
-  props: await getIntlProps(context, [
-    'common',
-    'signup',
-    'signup-page',
-    'query',
-  ]),
+export default withI18n(SignupPage, {
+  common,
+  signup,
+  query,
+  'signup-page': signupPage,
 });
-
-/* eslint-disable-next-line @typescript-eslint/require-await */
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: getIntlPaths(),
-  fallback: false,
-});
-
-export default withIntl(SignupPage);

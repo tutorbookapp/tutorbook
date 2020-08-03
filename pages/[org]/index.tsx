@@ -4,9 +4,9 @@ import Intercom from 'components/react-intercom';
 import OrgDisplay from 'components/org-display';
 import Footer from 'components/footer';
 
+import { withI18n } from 'lib/intl';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
 import { LinkHeader } from 'components/header';
 import { Org, OrgJSON } from 'lib/model';
 import {
@@ -14,6 +14,11 @@ import {
   DocumentSnapshot,
   DocumentReference,
 } from 'lib/api/helpers/firebase';
+
+import common from 'locales/en/common.json';
+import signup from 'locales/en/signup.json';
+import query from 'locales/en/query.json';
+import org from 'locales/en/org.json';
 
 interface OrgPageProps {
   org?: OrgJSON;
@@ -46,7 +51,7 @@ interface OrgPageQuery extends ParsedUrlQuery {
  * @see {@link https://github.com/vercel/next.js/issues/14200}
  */
 export const getServerSideProps: GetServerSideProps<
-  OrgPageProps & IntlProps,
+  OrgPageProps,
   OrgPageQuery
 > = async ({ req, res, params }: GetServerSidePropsContext<OrgPageQuery>) => {
   if (!params) {
@@ -55,12 +60,7 @@ export const getServerSideProps: GetServerSideProps<
     const ref: DocumentReference = db.collection('orgs').doc(params.org);
     const doc: DocumentSnapshot = await ref.get();
     const org: Org = Org.fromFirestore(doc);
-    let props: OrgPageProps & IntlProps = await getIntlProps({ params }, [
-      'common',
-      'signup',
-      'query',
-      'org',
-    ]);
+    let props: OrgPageProps = {};
     if (!doc.exists) {
       props = {
         ...props,
@@ -87,4 +87,4 @@ function OrgPage({ errorCode, errorMessage, org }: OrgPageProps): JSX.Element {
   );
 }
 
-export default withIntl(OrgPage);
+export default withI18n(OrgPage, { common, query, signup, org });

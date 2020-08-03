@@ -9,10 +9,10 @@ import Search from 'components/search';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
+import { withI18n } from 'lib/intl';
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { QueryHeader } from 'components/header';
-import { getIntlProps, withIntl } from 'lib/intl';
 import {
   User,
   UserJSON,
@@ -20,6 +20,10 @@ import {
   UsersQueryJSON,
   Availability,
 } from 'lib/model';
+
+import common from 'locales/en/common.json';
+import search from 'locales/en/search.json';
+import query from 'locales/en/query.json';
 
 type App = admin.app.App;
 type Firestore = admin.firestore.Firestore;
@@ -124,7 +128,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       user: JSON.parse(
         JSON.stringify(await getUser(context.params))
       ) as UserJSON | null,
-      ...(await getIntlProps(context, ['common', 'search', 'query'])),
     },
   };
 };
@@ -200,4 +203,4 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   );
 }
 
-export default withIntl<SearchPageProps>(SearchPage);
+export default withI18n(SearchPage, { common, search, query });

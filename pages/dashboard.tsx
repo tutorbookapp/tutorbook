@@ -6,17 +6,20 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
+import { withI18n } from 'lib/intl';
 import { useUser } from 'lib/account';
 import { Overview } from 'components/dashboard';
 import { TabHeader } from 'components/header';
+
+import common from 'locales/en/common.json';
+import overview from 'locales/en/overview.json';
 
 interface DashboardPageQuery extends ParsedUrlQuery {
   locale: string;
 }
 
 export const getServerSideProps: GetServerSideProps<
-  IntlProps,
+  Record<string, unknown>,
   DashboardPageQuery
 > = async ({
   req,
@@ -31,7 +34,7 @@ export const getServerSideProps: GetServerSideProps<
     res.end();
     throw new Error('You must be logged in to access this page.');
   } else {
-    return { props: await getIntlProps({ params }, ['common', 'overview']) };
+    return { props: {} };
   }
 };
 
@@ -56,4 +59,4 @@ function DashboardPage(): JSX.Element {
   );
 }
 
-export default withIntl(DashboardPage);
+export default withI18n(DashboardPage, { common, overview });

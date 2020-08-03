@@ -5,10 +5,11 @@ import Footer from 'components/footer';
 
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
+import { withI18n } from 'lib/intl';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Org, OrgJSON, ApptsQuery, ApiError } from 'lib/model';
-import { ListApptsRes } from 'lib/api/list-appts';
-import { Appts } from 'components/dashboard';
+import { Org, OrgJSON, UsersQuery, ApiError } from 'lib/model';
+import { ListUsersRes } from 'lib/api/list-users';
+import { People } from 'components/dashboard';
 import { TabHeader } from 'components/header';
 import {
   db,
@@ -18,21 +19,25 @@ import {
   DocumentSnapshot,
   DocumentReference,
 } from 'lib/api/helpers/firebase';
-import { getIntlProps, withIntl, IntlProps } from 'lib/intl';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
-interface ApptsPageProps {
+import common from 'locales/en/common.json';
+import people from 'locales/en/people.json';
+import verifications from 'locales/en/verifications.json';
+import signup from 'locales/en/signup.json';
+
+interface PeoplePageProps {
   errorCode?: number;
   errorMessage?: string;
-  result?: ListApptsRes;
+  result?: ListUsersRes;
   org?: OrgJSON;
 }
 
-interface ApptsPageQuery extends ParsedUrlQuery {
+interface PeoplePageQuery extends ParsedUrlQuery {
   locale: string;
   org: string;
 }
@@ -57,9 +62,13 @@ interface ApptsPageQuery extends ParsedUrlQuery {
  * @see {@link https://github.com/vercel/next.js/issues/14200}
  */
 export const getServerSideProps: GetServerSideProps<
-  ApptsPageProps & IntlProps,
-  ApptsPageQuery
-> = async ({ req, res, params }: GetServerSidePropsContext<ApptsPageQuery>) => {
+  PeoplePageProps,
+  PeoplePageQuery
+> = async ({
+  req,
+  res,
+  params,
+}: GetServerSidePropsContext<PeoplePageQuery>) => {
   if (!params) {
     throw new Error('We must have query parameters while rendering.');
   } else if (!req.headers.authorization) {
@@ -81,10 +90,7 @@ export const getServerSideProps: GetServerSideProps<
       const ref: DocumentReference = db.collection('orgs').doc(params.org);
       const doc: DocumentSnapshot = await ref.get();
       const org: Org = Org.fromFirestore(doc);
-      let props: ApptsPageProps & IntlProps = await getIntlProps({ params }, [
-        'common',
-        'appts',
-      ]);
+      let props: PeoplePageProps = {};
       if (!doc.exists) {
         props = {
           ...props,
@@ -98,16 +104,16 @@ export const getServerSideProps: GetServerSideProps<
           errorMessage: 'You are not a member of this organization',
         };
       } else {
-        const query = new ApptsQuery({
+        const query = new UsersQuery({
           orgs: [{ label: org.name, value: org.id }],
           hitsPerPage: 10,
         });
         const url = `http://${req.headers.host as string}${query.endpoint}`;
         const [error, response] = await to<
-          AxiosResponse<ListApptsRes>,
+          AxiosResponse<ListUsersRes>,
           AxiosError<ApiError>
         >(
-          axios.get<ListApptsRes>(url, {
+          axios.get<ListUsersRes>(url, {
             headers: { authorization: req.headers.authorization },
           })
         );
@@ -130,7 +136,7 @@ export const getServerSideProps: GetServerSideProps<
             errorMessage: `${error.name} fetching users: ${error.message}`,
           };
         } else {
-          const { data: result } = response as AxiosResponse<ListApptsRes>;
+          const { data: result } = response as AxiosResponse<ListUsersRes>;
           props = { ...props, result, org: org.toJSON() };
         }
       }
@@ -139,12 +145,12 @@ export const getServerSideProps: GetServerSideProps<
   }
 };
 
-function ApptsPage({
+function PeoplePage({
   errorCode,
   errorMessage,
   result,
   org,
-}: ApptsPageProps): JSX.Element {
+}: PeoplePageProps): JSX.Element {
   const { query } = useRouter();
   const { t } = useTranslation();
   if (errorCode || errorMessage)
@@ -161,21 +167,21 @@ function ApptsPage({
           },
           {
             label: t('common:people'),
-            active: false,
+            active: true,
             href: '/[org]/people',
             as: `/${query.org as string}/people`,
           },
           {
             label: t('common:appts'),
-            active: true,
+            active: false,
             href: '/[org]/appts',
             as: `/${query.org as string}/appts`,
           },
         ]}
       />
-      <Appts
+      <People
         org={Org.fromJSON(org as OrgJSON)}
-        initialData={result as ListApptsRes}
+        initialData={result as ListUsersRes}
       />
       <Footer />
       <Intercom />
@@ -183,4 +189,4 @@ function ApptsPage({
   );
 }
 
-export default withIntl(ApptsPage);
+export default withI18n(PeoplePage, { common, people, verifications, signup });
