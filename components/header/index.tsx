@@ -116,13 +116,13 @@ function MobileNav(): JSX.Element {
 }
 
 function DesktopNav(): JSX.Element {
-  const { user } = useUser();
+  const { user, loggedIn } = useUser();
   const { t } = useTranslation();
   const [open, setOpen] = React.useState<boolean>(false);
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
-      {!user.id && (
+      {loggedIn === false && (
         <>
           <Link href='/login'>
             <a className={`${styles.desktopLink} ${styles.loginLink}`}>
@@ -136,7 +136,12 @@ function DesktopNav(): JSX.Element {
           </Link>
         </>
       )}
-      {!!user.id && (
+      {loggedIn === undefined && (
+        <div className={styles.avatar}>
+          <Avatar loading />
+        </div>
+      )}
+      {loggedIn === true && (
         <PopOver open={open} onClose={() => setOpen(false)}>
           <button
             type='button'

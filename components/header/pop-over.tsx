@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import { mutate } from 'swr';
-import { useUser, useOrgs } from 'lib/account';
+import { useUser } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { OrgJSON, User, AccountInterface } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
@@ -154,8 +154,7 @@ export default function PopOverMenu({
   children,
 }: PopOverMenuProps): JSX.Element {
   const { t, lang: locale } = useTranslation();
-  const { orgs } = useOrgs();
-  const { user } = useUser();
+  const { user, orgs } = useUser();
 
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
 

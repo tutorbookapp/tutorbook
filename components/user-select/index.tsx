@@ -1,4 +1,4 @@
-import { useUser, useOrgs } from 'lib/account';
+import { useUser } from 'lib/account';
 import { User, UserJSON, Option, UsersQuery } from 'lib/model';
 
 import Select, { SelectControllerProps } from 'components/select';
@@ -26,8 +26,7 @@ export default function UserSelect({
   // Only show users that are either:
   // a) Within one of the orgs that the current user is an admin of.
   // b) A child of the current user.
-  const { user } = useUser();
-  const { orgs } = useOrgs();
+  const { user, orgs } = useUser();
 
   // Store a cache of labels fetched (i.e. a map of values and labels).
   const cache = useRef<Record<string, string>>({});

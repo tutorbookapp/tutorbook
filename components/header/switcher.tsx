@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useUser, useOrgs } from 'lib/account';
+import { useUser } from 'lib/account';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { Org, OrgJSON } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
@@ -15,8 +15,7 @@ import styles from './pop-over.module.scss';
 export default function Switcher(): JSX.Element {
   const { t } = useTranslation();
   const { pathname, query } = useRouter();
-  const { orgs } = useOrgs();
-  const { user } = useUser();
+  const { user, orgs } = useUser();
 
   const [open, setOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>('Account');
