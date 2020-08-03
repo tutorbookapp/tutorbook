@@ -1,20 +1,17 @@
 import { v4 as uuid } from 'uuid';
 import useSWR, { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
-import axios from 'axios';
 
-import { Fab } from '@rmwc/fab';
-import { SimpleDialog, DialogOnCloseEventT } from '@rmwc/dialog';
 import { TextField } from '@rmwc/textfield';
 import { Snackbar } from '@rmwc/snackbar';
 import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
-import { Option, UsersQuery, Org, UserJSON, Tag } from 'lib/model';
+import { Option, UsersQuery, Org, User, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
-import React from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import Result from 'components/search/result';
 import CreateUserDialog from 'components/create-user-dialog';
 import FilterDialog from 'components/filter-dialog';
@@ -40,25 +37,19 @@ interface PeopleProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function People({ org }: PeopleProps): JSX.Element {
-  const timeoutIds = React.useRef<
-    Record<string, ReturnType<typeof setTimeout>>
-  >({});
-
-  const [valid, setValid] = React.useState<boolean>(true);
-  const [warningDialog, setWarningDialog] = React.useState<React.ReactNode>();
-  const [searching, setSearching] = React.useState<boolean>(true);
-  const [filtering, setFiltering] = React.useState<boolean>(false);
-  const [creating, setCreating] = React.useState<boolean>(false);
-  const [viewingIdx, setViewingIdx] = React.useState<number>();
-  const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
-  const [query, setQuery] = React.useState<UsersQuery>(
+  const [searching, setSearching] = useState<boolean>(true);
+  const [filtering, setFiltering] = useState<boolean>(false);
+  const [creating, setCreating] = useState<boolean>(false);
+  const [viewingIdx, setViewingIdx] = useState<number>();
+  const [viewingSnackbar, setViewingSnackbar] = useState<boolean>(false);
+  const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
       orgs: [{ label: org.name, value: org.id }],
       hitsPerPage: 10,
     })
   );
 
-  const loadingRows: JSX.Element[] = React.useMemo(
+  const loadingRows: JSX.Element[] = useMemo(
     () =>
       Array(query.hitsPerPage)
         .fill(null)
@@ -66,15 +57,10 @@ export default function People({ org }: PeopleProps): JSX.Element {
     [query.hitsPerPage]
   );
 
-  const { t, lang: locale } = useTranslation();
-  // TODO: Control the re-validation using the `valid` state variable.
-  // See: https://github.com/vercel/swr/issues/529
-  const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
+  const { t } = useTranslation();
+  const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setQuery((prev: UsersQuery) => {
       return new UsersQuery({
         ...prev,
@@ -82,102 +68,22 @@ export default function People({ org }: PeopleProps): JSX.Element {
       });
     });
   }, [org]);
-  React.useEffect(() => {
+  useEffect(() => {
     void mutate(query.endpoint);
   }, [query]);
-  React.useEffect(() => {
+  useEffect(() => {
     setSearching((prev: boolean) => prev && (isValidating || !data));
   }, [isValidating, data]);
-  React.useEffect(() => {
-    setValid((prev: boolean) => prev || searching);
-  }, [searching]);
-
-  const mutateUser = React.useCallback(
-    async (user: UserJSON) => {
-      if (timeoutIds.current[user.id]) {
-        clearTimeout(timeoutIds.current[user.id]);
-        delete timeoutIds.current[user.id];
-      }
-
-      const updateLocal = async (updated: UserJSON, oldId?: string) => {
-        await mutate(
-          query.endpoint,
-          (prev: ListUsersRes) => {
-            if (!prev) return prev;
-            const { users: old } = prev;
-            const idx = old.findIndex((u) => u.id === (oldId || updated.id));
-            if (idx < 0) return prev;
-            const users = [
-              ...old.slice(0, idx),
-              updated,
-              ...old.slice(idx + 1),
-            ];
-            return { ...prev, users };
-          },
-          false
-        );
-      };
-
-      const updateRemote = async (updated: UserJSON) => {
-        if (!updated.email) return;
-        if (updated.id.startsWith('temp')) {
-          const url = '/api/users';
-          const { data: remoteData } = await axios.post<UserJSON>(url, {
-            user: { ...updated, id: '' },
-          });
-          await updateLocal(remoteData, updated.id);
-        } else {
-          const url = `/api/users/${updated.id}`;
-          const { data: remoteData } = await axios.put<UserJSON>(url, updated);
-          await updateLocal(remoteData);
-        }
-      };
-
-      setValid(false); // Filters become invalid when data is updated.
-      await updateLocal(user);
-
-      // Only update the user profile remotely after 5secs of no change.
-      // @see {@link https://github.com/vercel/swr/issues/482}
-      timeoutIds.current[user.id] = setTimeout(() => {
-        void updateRemote(user);
-      }, 5000);
-    },
-    [query]
-  );
-
-  type ActionCallback = () => void;
-  const filterCallback = React.useCallback(
-    (action: ActionCallback) => {
-      const tempNoEmail = (u: UserJSON) => !u.email && u.id.startsWith('temp');
-      if (!valid && data && data.users.some(tempNoEmail)) {
-        setWarningDialog(
-          <SimpleDialog
-            className={styles.dialog}
-            title={t('people:dialog-title')}
-            body={t('people:dialog-body')}
-            acceptLabel={t('people:dialog-accept-btn')}
-            cancelLabel={t('people:dialog-cancel-btn')}
-            onClose={(evt: DialogOnCloseEventT) => {
-              if (evt.detail.action === 'accept') action();
-            }}
-            onClosed={() => setWarningDialog(undefined)}
-            open
-          />
-        );
-      } else {
-        action();
-      }
-    },
-    [valid, data, t]
-  );
 
   return (
     <>
-      {warningDialog}
       {filtering && (
         <FilterDialog
           onClosed={() => setFiltering(false)}
-          onChange={(updated: UsersQuery) => setQuery(updated)}
+          onChange={(updated: UsersQuery) => {
+            setSearching(true);
+            setQuery(updated);
+          }}
           value={query}
         />
       )}
@@ -210,22 +116,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
         actions={[
           {
             label: t('people:create-user'),
-            onClick: async () => {
-              setCreating(true);
-              //setValid(false); // Filters become invalid when creating users.
-              //const user = new User({
-              //id: `temp-${uuid()}`,
-              //orgs: ['default', org.id],
-              //}).toJSON();
-              //await mutate(
-              //query.endpoint,
-              //(prev?: ListUsersRes) => ({
-              //hits: (prev ? prev.hits : 0) + 1,
-              //users: [user, ...(prev ? prev.users : [])],
-              //}),
-              //false
-              //);
-            },
+            onClick: async () => setCreating(true),
           },
           {
             label: t('people:share-signup-link'),
@@ -257,7 +148,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 return navigator.clipboard.writeText(text);
               }
               await copyTextToClipboard(
-                `http://${window.location.host}/${locale}/${org.id}`
+                `${location.protocol}//${location.host}/${org.id}`
               );
               setViewingSnackbar(true);
             },
@@ -279,78 +170,46 @@ export default function People({ org }: PeopleProps): JSX.Element {
             />
             <ChipSet className={styles.filterChips}>
               <Chip
-                className={
-                  !valid &&
-                  query.tags.findIndex(({ value }) => value === 'not-vetted') >=
-                    0
-                    ? styles.invalid
-                    : ''
-                }
                 label={t('people:filters-not-vetted')}
                 checkmark
-                onInteraction={() =>
-                  filterCallback(() => {
-                    setSearching(true);
-                    const tags: Option<Tag>[] = Array.from(query.tags);
-                    const idx = tags.findIndex(
-                      ({ value }) => value === 'not-vetted'
-                    );
-                    if (idx < 0) {
-                      tags.push({
-                        label: t('people:filters-not-vetted'),
-                        value: 'not-vetted',
-                      });
-                    } else if (valid) {
-                      tags.splice(idx, 1);
-                    }
-                    setQuery(
-                      (p: UsersQuery) => new UsersQuery({ ...p, tags, page: 0 })
-                    );
-                  })
-                }
+                onInteraction={() => {
+                  setSearching(true);
+                  const tags: Option<Tag>[] = Array.from(query.tags);
+                  const idx = tags.findIndex((t) => t.value === 'not-vetted');
+                  if (idx < 0) {
+                    tags.push({
+                      label: t('people:filters-not-vetted'),
+                      value: 'not-vetted',
+                    });
+                  } else {
+                    tags.splice(idx, 1);
+                  }
+                  setQuery((p) => new UsersQuery({ ...p, tags, page: 0 }));
+                }}
                 selected={
-                  query.tags.findIndex(({ value }) => value === 'not-vetted') >=
-                  0
+                  query.tags.findIndex((t) => t.value === 'not-vetted') >= 0
                 }
               />
               <Chip
-                className={
-                  !valid && query.visible === true ? styles.invalid : ''
-                }
                 label={t('people:filters-visible')}
                 checkmark
-                onInteraction={() =>
-                  filterCallback(() => {
-                    setSearching(true);
-                    const { visible: prev } = query;
-                    const toggled = prev !== true ? true : undefined;
-                    const visible = !valid && prev === true ? true : toggled;
-                    setQuery(
-                      (p: UsersQuery) =>
-                        new UsersQuery({ ...p, visible, page: 0 })
-                    );
-                  })
-                }
+                onInteraction={() => {
+                  setSearching(true);
+                  const { visible: prev } = query;
+                  const visible = prev !== true ? true : undefined;
+                  setQuery((p) => new UsersQuery({ ...p, visible, page: 0 }));
+                }}
                 selected={query.visible === true}
               />
               <Chip
-                className={
-                  !valid && query.visible === false ? styles.invalid : ''
-                }
                 label={t('people:filters-hidden')}
                 checkmark
-                onInteraction={() =>
-                  filterCallback(() => {
-                    setSearching(true);
-                    const { visible: prev } = query;
-                    const toggled = prev !== false ? false : undefined;
-                    const visible = !valid && prev === false ? false : toggled;
-                    setQuery(
-                      (p: UsersQuery) =>
-                        new UsersQuery({ ...p, visible, page: 0 })
-                    );
-                  })
-                }
+                onInteraction={() => {
+                  setSearching(true);
+                  const { visible: prev } = query;
+                  const visible = prev !== false ? false : undefined;
+                  setQuery((p) => new UsersQuery({ ...p, visible, page: 0 }));
+                }}
                 selected={query.visible === false}
               />
             </ChipSet>
@@ -358,19 +217,13 @@ export default function People({ org }: PeopleProps): JSX.Element {
           <div className={styles.right}>
             <TextField
               outlined
-              invalid={!valid && !!query.query}
               placeholder={t('people:search-placeholder')}
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                setSearching(true);
                 const q: string = event.currentTarget.value;
-                filterCallback(() => {
-                  setSearching(true);
-                  setQuery(
-                    (p: UsersQuery) =>
-                      new UsersQuery({ ...p, query: q, page: 0 })
-                  );
-                });
+                setQuery((p) => new UsersQuery({ ...p, query: q, page: 0 }));
               }}
             />
           </div>
@@ -378,7 +231,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
         {!searching &&
           (data ? data.users : []).map((user, idx) => (
             <Result
-              user={user}
+              user={User.fromJSON(user)}
               key={user.id}
               onClick={() => setViewingIdx(idx)}
             />
@@ -399,14 +252,11 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 value={`${query.hitsPerPage}`}
                 options={['5', '10', '15', '20', '25', '30']}
                 onChange={(event: React.FormEvent<HTMLSelectElement>) => {
+                  setSearching(true);
                   const hitsPerPage = Number(event.currentTarget.value);
-                  filterCallback(() => {
-                    setSearching(true);
-                    setQuery(
-                      (p: UsersQuery) =>
-                        new UsersQuery({ ...p, hitsPerPage, page: 0 })
-                    );
-                  });
+                  setQuery(
+                    (p) => new UsersQuery({ ...p, hitsPerPage, page: 0 })
+                  );
                 }}
               />
             </div>
@@ -416,30 +266,20 @@ export default function People({ org }: PeopleProps): JSX.Element {
             <IconButton
               disabled={query.page <= 0}
               icon='chevron_left'
-              onClick={() =>
-                filterCallback(() => {
-                  setSearching(true);
-                  setQuery(
-                    (p: UsersQuery) =>
-                      new UsersQuery({ ...p, page: p.page - 1 })
-                  );
-                })
-              }
+              onClick={() => {
+                setSearching(true);
+                setQuery((p) => new UsersQuery({ ...p, page: p.page - 1 }));
+              }}
             />
             <IconButton
               disabled={
                 query.page + 1 >= (data ? data.hits : 0) / query.hitsPerPage
               }
               icon='chevron_right'
-              onClick={() =>
-                filterCallback(() => {
-                  setSearching(true);
-                  setQuery(
-                    (p: UsersQuery) =>
-                      new UsersQuery({ ...p, page: p.page + 1 })
-                  );
-                })
-              }
+              onClick={() => {
+                setSearching(true);
+                setQuery((p) => new UsersQuery({ ...p, page: p.page + 1 }));
+              }}
             />
           </div>
         </div>
