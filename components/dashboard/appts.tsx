@@ -28,7 +28,6 @@ import Placeholder from './placeholder';
 import styles from './dashboard.module.scss';
 
 interface ApptsProps {
-  initialData: ListApptsRes;
   org: Org;
 }
 
@@ -43,13 +42,13 @@ interface ApptsProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/87}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
-export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
+export default function Appts({ org }: ApptsProps): JSX.Element {
   const timeoutIds = React.useRef<
     Record<string, ReturnType<typeof setTimeout>>
   >({});
 
   const [valid, setValid] = React.useState<boolean>(true);
-  const [searching, setSearching] = React.useState<boolean>(false);
+  const [searching, setSearching] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<ApptsQuery>(
     new ApptsQuery({
       orgs: [{ label: org.name, value: org.id }],
@@ -69,7 +68,6 @@ export default function Appts({ initialData, org }: ApptsProps): JSX.Element {
   // TODO: Control the re-validation using the `valid` state variable.
   // See: https://github.com/vercel/swr/issues/529
   const { data, isValidating } = useSWR<ListApptsRes>(query.endpoint, {
-    initialData,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });

@@ -1,28 +1,22 @@
-import React from 'react';
+import { createContext, useContext } from 'react';
 
-import { User, UserInterface, OrgJSON, ApiError } from 'lib/model';
-
-import useSWR, { responseInterface } from 'swr';
-
-export function useOrgs(): Omit<
-  responseInterface<OrgJSON[], ApiError>,
-  'data'
-> & { orgs: OrgJSON[] } {
-  const { data: orgs, ...rest } = useSWR<OrgJSON[]>('/api/orgs');
-  return { orgs: orgs || [], ...rest };
-}
+import { User, UserInterface, Org } from 'lib/model';
 
 export type UpdateUserParam = UserInterface | ((prev: User) => UserInterface);
 
 export interface UserContextValue {
   user: User;
+  orgs: Org[];
   updateUser: (user: UpdateUserParam) => Promise<void>;
+  loggedIn?: boolean;
 }
 
-export const UserContext = React.createContext({
+export const UserContext = createContext<UserContextValue>({
   user: new User(),
+  orgs: [],
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   updateUser: async (user: UpdateUserParam) => {},
+  loggedIn: undefined,
 });
 
-export const useUser = () => React.useContext(UserContext);
+export const useUser = () => useContext<UserContextValue>(UserContext);

@@ -1,5 +1,5 @@
 import { AppProps } from 'next/app';
-import { User, UserJSON, ApiError } from 'lib/model';
+import { User, UserJSON, Org, OrgJSON, ApiError } from 'lib/model';
 import { UpdateUserParam, UserContext } from 'lib/account';
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -64,8 +64,13 @@ async function updateUserRemote(user: User): Promise<void> {
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
-  const { data } = useSWR<UserJSON>('/api/account', fetcher);
+  const { data, isValidating } = useSWR<UserJSON>('/api/account', fetcher);
   const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);
+  const loggedIn = useMemo(() => {
+    if (user.id) return true;
+    if (isValidating) return undefined;
+    return false;
+  }, [user, isValidating]);
   const updateUserTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const updateUser = useCallback(
     async (param: UpdateUserParam) => {
@@ -89,6 +94,11 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     },
     [user]
   );
+
+  const { data: orgsData } = useSWR<OrgJSON[]>('/api/orgs', fetcher);
+  const orgs = useMemo(() => {
+    return orgsData ? orgsData.map((o: OrgJSON) => Org.fromJSON(o)) : [];
+  }, [orgsData]);
 
   // This service worker appends the Firebase Authentication JWT to all of our
   // same-origin fetch requests. In the future, it'll handle caching as well.
@@ -123,7 +133,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
 
   return (
     <SWRConfig value={{ fetcher }}>
-      <UserContext.Provider value={{ user, updateUser }}>
+      <UserContext.Provider value={{ user, orgs, updateUser, loggedIn }}>
         <div id='portal' />
         <CovidHead />
         <Component {...pageProps} />

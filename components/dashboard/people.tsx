@@ -33,7 +33,6 @@ import Placeholder from './placeholder';
 import styles from './dashboard.module.scss';
 
 interface PeopleProps {
-  initialData: ListUsersRes;
   org: Org;
 }
 
@@ -48,14 +47,14 @@ interface PeopleProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/87}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
-export default function People({ initialData, org }: PeopleProps): JSX.Element {
+export default function People({ org }: PeopleProps): JSX.Element {
   const timeoutIds = React.useRef<
     Record<string, ReturnType<typeof setTimeout>>
   >({});
 
   const [valid, setValid] = React.useState<boolean>(true);
   const [warningDialog, setWarningDialog] = React.useState<React.ReactNode>();
-  const [searching, setSearching] = React.useState<boolean>(false);
+  const [searching, setSearching] = React.useState<boolean>(true);
   const [creating, setCreating] = React.useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
@@ -78,7 +77,6 @@ export default function People({ initialData, org }: PeopleProps): JSX.Element {
   // TODO: Control the re-validation using the `valid` state variable.
   // See: https://github.com/vercel/swr/issues/529
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint, {
-    initialData,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
