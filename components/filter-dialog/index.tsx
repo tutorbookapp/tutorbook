@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import QueryForm from 'components/query-form';
 import Button from 'components/button';
 
@@ -18,32 +18,31 @@ export interface FilterDialogProps {
 
 export default function FilterDialog({
   value,
-  onChange: onFinalChange,
+  onChange,
   onClosed,
 }: FilterDialogProps): JSX.Element {
-  const [query, setQuery] = useState<UsersQuery>(value);
-  const onChange = useCallback((updated: UsersQuery) => setQuery(updated), []);
+  const [open, setOpen] = useState<boolean>(true);
+  const onClick = useCallback(() => setOpen(false), []);
   const onSubmit = useCallback(
     (event: React.FormEvent) => {
       event.preventDefault();
-      onFinalChange(query);
       onClosed();
     },
-    [onClosed, onChange]
+    [onClosed]
   );
 
   const { t } = useTranslation();
 
   return (
-    <Dialog open onClosed={onClosed} className={styles.dialog}>
+    <Dialog open={open} onClosed={onClosed} className={styles.dialog}>
       <div className={styles.wrapper}>
         <div className={styles.nav}>
-          <IconButton className={styles.btn} icon='close' onClick={onClosed} />
+          <IconButton className={styles.btn} icon='close' onClick={onClick} />
         </div>
         <div className={styles.content}>
           <form className={styles.form} onSubmit={onSubmit}>
             <QueryForm
-              query={query}
+              query={value}
               onChange={onChange}
               renderToPortal
               vertical
