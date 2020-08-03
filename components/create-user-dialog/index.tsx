@@ -5,12 +5,15 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
+import Router from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
 import useWebAnimations from '@wellyshen/use-web-animations';
 import useSWR, { mutate } from 'swr';
 import cn from 'classnames';
 
 import { Dialog } from '@rmwc/dialog';
 import { User, UserJSON } from 'lib/model';
+import { useUser } from 'lib/account';
 import { v4 as uuid } from 'uuid';
 
 import DisplayPage from './display-page';
@@ -147,13 +150,18 @@ export default function UserDialog({
     setActive('display');
     return new Promise<void>((resolve) => setTimeout(resolve, duration));
   }, []);
-  const openMatch = useCallback(() => {
-    console.log('TODO');
-    return new Promise<void>((resolve) => setTimeout(resolve, duration));
+
+  const { updateUser } = useUser();
+  const openMatch = useCallback(async () => {
+    updateUser((prev) => ({ ...prev, matching: [...prev.matching, user.id] }));
+    //await Router.push('/[locale]/search', `/${locale}/search`);
   }, []);
 
+  const [open, setOpen] = useState<boolean>(true);
+  const onDisplayClosed = useCallback(() => setOpen(false), []);
+
   return (
-    <Dialog open onClosed={onClosed} className={styles.dialog}>
+    <Dialog open={open} onClosed={onClosed} className={styles.dialog}>
       <div
         className={cn(styles.page, { [styles.active]: active === 'display' })}
         ref={displayRef as React.RefObject<HTMLDivElement>}
@@ -163,6 +171,7 @@ export default function UserDialog({
           openEdit={openEdit}
           openRequest={openRequest}
           openMatch={openMatch}
+          onClosed={onDisplayClosed}
         />
       </div>
       <div

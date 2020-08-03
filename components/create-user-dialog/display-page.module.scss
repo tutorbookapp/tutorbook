@@ -5,72 +5,110 @@
 
 @include social-icons.core-styles;
 
+$cutoff: 570px;
 $padding: 40px;
 $margin: 24px;
 
 .wrapper {
-  display: flex;
-  padding: $padding;
+  max-height: calc(100vh - 32px);
   position: relative;
-}
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
-.left {
-  flex-grow: 1;
-  flex-basis: 0;
-  max-width: 260px;
-}
+  .nav {
+    padding: 16px;
+    border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+    flex: none;
 
-.right {
-  flex-grow: 1.5;
-  flex-basis: 0;
-  margin-left: $padding;
-}
-
-.chips {
-  padding: 0;
-  margin: 16px -4px;
-}
-
-@media (max-width: 570px) {
-  .wrapper {
-    flex-direction: column;
-    padding: $margin;
+    .btn {
+      font-size: 18px;
+      padding: 9px;
+      width: 36px;
+      height: 36px;
+    }
   }
 
-  .left {
-    margin-bottom: $margin;
-    max-width: none;
+  .actions {
+    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    overflow: auto;
+    display: flex;
+    justify-content: flex-end;
+    flex: none;
+
+    .chips {
+      padding: 16px 0;
+      flex-wrap: nowrap;
+      display: inline-flex;
+
+      :global(.mdc-chip:first-child) {
+        margin-left: 16px;
+      }
+
+      :global(.mdc-chip:last-child) {
+        margin-right: 16px;
+      }
+    }
   }
 
-  .right {
-    margin-left: 0;
+  .content {
+    display: flex;
+    padding: $padding;
+    position: relative;
+    flex: 1 1 auto;
+
+    @media (max-width: $cutoff) {
+      flex-direction: column;
+      padding: $margin;
+    }
+
+    .left {
+      flex-grow: 1;
+      flex-basis: 0;
+      max-width: 260px;
+
+      @media (max-width: $cutoff) {
+        margin-bottom: $margin;
+        max-width: none;
+      }
+
+      .img {
+        display: block;
+        width: 100%;
+      }
+
+      .name {
+        @include typography.typography('headline4');
+        color: map.get(config.$colors, 'foreground');
+        margin: 12px 0 8px;
+      }
+    }
+
+    .right {
+      flex-grow: 1.5;
+      flex-basis: 0;
+      margin-left: $padding;
+
+      @media (max-width: $cutoff) {
+        margin-left: 0;
+      }
+
+      .header {
+        @include typography.typography('headline6');
+        color: map.get(config.$colors, 'foreground');
+        font-weight: 600;
+        margin: 16px 0 0;
+
+        &:first-child {
+          margin: 0;
+        }
+      }
+
+      .text {
+        @include typography.typography('body1');
+        color: map.get(config.$colors, 'accents-5');
+        margin: 0;
+      }
+    }
   }
-}
-
-.img {
-  display: block;
-  width: 100%;
-}
-
-.name {
-  @include typography.typography('headline4');
-  color: map.get(config.$colors, 'foreground');
-  margin: 12px 0 8px;
-}
-
-.header {
-  @include typography.typography('headline6');
-  color: map.get(config.$colors, 'foreground');
-  font-weight: 600;
-  margin: 16px 0 0;
-
-  &:first-child {
-    margin: 0;
-  }
-}
-
-.content {
-  @include typography.typography('body1');
-  color: map.get(config.$colors, 'accents-5');
-  margin: 0;
 }
