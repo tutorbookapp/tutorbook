@@ -1,0 +1,244 @@
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/common';
+@use 'styles/typography';
+@use '@material/snackbar/_index.scss' as snackbar;
+@use '@material/textfield/_index.scss' as textfield;
+
+$filters-height: 56px;
+
+.dialog :global(.mdc-button__label) {
+  font-weight: 600;
+}
+
+.filters {
+  height: $filters-height;
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+
+  .left {
+    display: flex;
+    align-items: center;
+
+    .filtersButton {
+      margin-left: 12px;
+    }
+
+    .filterChips {
+      flex-wrap: nowrap;
+      overflow: auto;
+
+      .invalid {
+        background-color: map.get(config.$colors, 'error-darker');
+        color: white;
+
+        svg path {
+          stroke: white;
+        }
+      }
+    }
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+
+    .searchField {
+      $margin: 10px;
+      height: $filters-height - $margin * 2;
+      margin-right: $margin;
+
+      &:not(:global(.mdc-text-field--focused)):not(:global(.mdc-text-field--invalid)) {
+        :global(.mdc-notched-outline__leading),
+        :global(.mdc-notched-outline__notch),
+        :global(.mdc-notched-outline__trailing) {
+          border-color: map.get(config.$colors, 'accents-2');
+        }
+      }
+
+      input {
+        @include typography.typography('body2');
+      }
+    }
+
+    .menuButton {
+      margin-right: 12px;
+    }
+  }
+}
+
+.table {
+  width: 100%;
+  border-radius: 0;
+
+  :global(.mdc-data-table__row:not(.mdc-data-table__row--selected):hover)
+    .name
+    :global(.mdc-text-field) {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  :global(.mdc-data-table__cell),
+  :global(.mdc-data-table__header-cell) {
+    padding: 0 16px;
+
+    > :global(.mdc-menu-surface--anchor) {
+      margin: -12px -16px;
+      height: 100%;
+
+      :global(.mdc-text-field) {
+        background-color: transparent;
+        padding: 10.5px 16px;
+        border-radius: 0;
+        flex-wrap: nowrap;
+        height: 100%;
+
+        :global(.mdc-text-field__ripple::before),
+        :global(.mdc-text-field__ripple::after) {
+          content: '';
+        }
+
+        :global(.mdc-line-ripple::before) {
+          border-bottom-width: 0;
+        }
+
+        span,
+        input,
+        textarea {
+          @include typography.typography('body2');
+        }
+      }
+    }
+
+    > :global(.mdc-text-field) {
+      vertical-align: middle;
+      background-color: transparent;
+      margin: -12px -16px;
+      border-radius: 0;
+      display: block;
+      height: 100%;
+
+      :global(.mdc-line-ripple::before) {
+        border-bottom-width: 0;
+      }
+
+      input {
+        @include typography.typography('body2');
+      }
+    }
+
+    > :global(.mdc-switch) {
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
+    > :global(.mdc-select .mdc-select__selected-text) {
+      @include typography.typography('body2');
+    }
+
+    &.visible,
+    &.vetted {
+      padding-right: 0;
+    }
+
+    &.name {
+      min-width: 150px;
+      position: sticky;
+      top: auto;
+      left: 0;
+      background-color: map.get(config.$colors, 'background');
+      box-shadow: 1px 0 #e0e0e0;
+      z-index: 1;
+
+      @-moz-document url-prefix() {
+        box-shadow: 1px 0 #e0e0e0, 0 -1px #e0e0e0;
+      }
+    }
+
+    &.bio,
+    &.message,
+    &.availability {
+      min-width: 500px;
+    }
+
+    &.email {
+      min-width: 200px;
+    }
+
+    &.phone {
+      min-width: 150px;
+    }
+
+    &.availability :global(.mdc-text-field) {
+      display: block;
+      padding: 0;
+    }
+  }
+}
+
+.pagination {
+  height: $filters-height;
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-top: none;
+  display: flex;
+  justify-content: space-between;
+
+  .right {
+    align-items: center;
+    display: flex;
+
+    .hitsPerPage {
+      @include typography.typography('body2');
+      align-items: center;
+      display: flex;
+
+      :global(.mdc-select) {
+        background-color: transparent;
+        border-radius: 0;
+
+        :global(.mdc-select__anchor) {
+          border-radius: 0;
+          width: 70px;
+
+          :global(.mdc-line-ripple::before) {
+            border: none;
+          }
+        }
+      }
+
+      :global(.mdc-select:not(.mdc-select--disabled) .mdc-select__anchor) {
+        background-color: transparent;
+      }
+    }
+
+    .pageNumber {
+      @include typography.typography('body2');
+      margin: 0 24px;
+    }
+
+    :global(.mdc-icon-button:last-child) {
+      margin-right: ($filters-height - 48px) / 2;
+    }
+  }
+}
+
+.wrapper {
+  @include common.wrapper;
+  list-style: none;
+  margin: 48px auto;
+}
+
+.empty {
+  margin: 0;
+  padding: 24px;
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-top: none;
+}
+
+.snackbar {
+  @include snackbar.viewport-margin(24px);
+}

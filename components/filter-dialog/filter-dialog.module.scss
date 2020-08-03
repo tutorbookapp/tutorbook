@@ -1,0 +1,50 @@
+@use 'sass:map';
+@use 'styles/config';
+
+.dialog :global(.mdc-dialog__surface) {
+  width: calc(100vw - 32px);
+  max-width: 650px;
+
+  .wrapper {
+    max-height: calc(100vh - 32px);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    .nav {
+      padding: 16px;
+      border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+
+      .btn {
+        font-size: 18px;
+        padding: 9px;
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    .content {
+      height: 100%;
+      padding: 0 48px;
+      overflow: auto;
+
+      .form {
+        max-width: 500px;
+        margin: 32px auto;
+        display: flex;
+        flex-direction: column;
+
+        .btn {
+          margin: 8px 0 0;
+          width: 100%;
+        }
+
+        .error {
+          color: map.get(config.$colors, 'error');
+          font-weight: 450;
+          margin-top: 16px;
+        }
+      }
+    }
+  }
+}

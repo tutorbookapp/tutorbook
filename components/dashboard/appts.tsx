@@ -25,7 +25,7 @@ import { ApptRow, LoadingRow } from './appt-row';
 import Title from './title';
 import Placeholder from './placeholder';
 
-import styles from './dashboard.module.scss';
+import styles from './appts.module.scss';
 
 interface ApptsProps {
   org: Org;

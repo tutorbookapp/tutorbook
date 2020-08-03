@@ -3,14 +3,7 @@ import useSWR, { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 import axios from 'axios';
 
-import {
-  DataTable,
-  DataTableContent,
-  DataTableHead,
-  DataTableHeadCell,
-  DataTableBody,
-  DataTableRow,
-} from '@rmwc/data-table';
+import { Fab } from '@rmwc/fab';
 import { SimpleDialog, DialogOnCloseEventT } from '@rmwc/dialog';
 import { TextField } from '@rmwc/textfield';
 import { Snackbar } from '@rmwc/snackbar';
@@ -18,19 +11,18 @@ import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
-import { Option, UsersQuery, Org, User, UserJSON, Tag } from 'lib/model';
+import { Option, UsersQuery, Org, UserJSON, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
 import React from 'react';
+import Result from 'components/search/result';
 import CreateUserDialog from 'components/create-user-dialog';
-import VerificationDialog from 'components/verification-dialog';
-
-import { UserRow, LoadingRow } from './user-row';
+import FilterDialog from 'components/filter-dialog';
 
 import Title from './title';
 import Placeholder from './placeholder';
 
-import styles from './dashboard.module.scss';
+import styles from './people.module.scss';
 
 interface PeopleProps {
   org: Org;
@@ -55,6 +47,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
   const [valid, setValid] = React.useState<boolean>(true);
   const [warningDialog, setWarningDialog] = React.useState<React.ReactNode>();
   const [searching, setSearching] = React.useState<boolean>(true);
+  const [filtering, setFiltering] = React.useState<boolean>(false);
   const [creating, setCreating] = React.useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = React.useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = React.useState<boolean>(false);
@@ -69,7 +62,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
     () =>
       Array(query.hitsPerPage)
         .fill(null)
-        .map(() => <LoadingRow key={uuid()} />),
+        .map(() => <Result loading key={uuid()} />),
     [query.hitsPerPage]
   );
 
@@ -181,18 +174,24 @@ export default function People({ org }: PeopleProps): JSX.Element {
   return (
     <>
       {warningDialog}
+      {filtering && (
+        <FilterDialog
+          onClosed={() => setFiltering(false)}
+          onChange={(updated: UsersQuery) => setQuery(updated)}
+          value={query}
+        />
+      )}
       {creating && (
         <CreateUserDialog
           onClosed={() => setCreating(false)}
-          initialData={data.users[0]}
           initialPage='edit'
         />
       )}
       {data && viewingIdx !== undefined && (
-        <VerificationDialog
-          user={data.users[viewingIdx]}
-          onChange={mutateUser}
+        <CreateUserDialog
           onClosed={() => setViewingIdx(undefined)}
+          initialData={data.users[viewingIdx]}
+          initialPage='display'
         />
       )}
       {viewingSnackbar && (
@@ -227,11 +226,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
               //false
               //);
             },
-          },
-          {
-            label: t('people:import-data-btn'),
-            onClick: () =>
-              IntercomAPI('showNewMessage', t('people:import-data-msg')),
           },
           {
             label: t('people:share-signup-link'),
@@ -269,16 +263,20 @@ export default function People({ org }: PeopleProps): JSX.Element {
             },
           },
           {
-            label: t('people:view-search'),
-            href: '/[org]/search/[[...slug]]',
-            as: `/${org.id}/search`,
+            label: t('people:import-data-btn'),
+            onClick: () =>
+              IntercomAPI('showNewMessage', t('people:import-data-msg')),
           },
         ]}
       />
       <div className={styles.wrapper}>
         <div className={styles.filters}>
           <div className={styles.left}>
-            <IconButton className={styles.filtersButton} icon='filter_list' />
+            <IconButton
+              className={styles.filtersButton}
+              icon='filter_list'
+              onClick={() => setFiltering(true)}
+            />
             <ChipSet className={styles.filterChips}>
               <Chip
                 className={
@@ -377,58 +375,15 @@ export default function People({ org }: PeopleProps): JSX.Element {
             />
           </div>
         </div>
-        {(searching || !!(data ? data.users : []).length) && (
-          <DataTable className={styles.table}>
-            <DataTableContent>
-              <DataTableHead className={styles.header}>
-                <DataTableRow>
-                  <DataTableHeadCell hasFormControl className={styles.visible}>
-                    {t('people:visible')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell hasFormControl className={styles.vetted}>
-                    {t('people:vetted')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.name}>
-                    {t('people:name')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.bio}>
-                    {t('people:bio')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.email}>
-                    {t('people:email')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.phone}>
-                    {t('people:phone')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.parents}>
-                    {t('people:parents')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.availability}>
-                    {t('people:availability')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.subjects}>
-                    {t('people:tutoring-subjects')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.subjects}>
-                    {t('people:mentoring-subjects')}
-                  </DataTableHeadCell>
-                </DataTableRow>
-              </DataTableHead>
-              <DataTableBody>
-                {!searching &&
-                  (data ? data.users : []).map((user, idx) => (
-                    <UserRow
-                      key={user.id}
-                      user={user}
-                      onChange={mutateUser}
-                      onClick={() => setViewingIdx(idx)}
-                    />
-                  ))}
-                {searching && loadingRows}
-              </DataTableBody>
-            </DataTableContent>
-          </DataTable>
-        )}
+        {!searching &&
+          (data ? data.users : []).map((user, idx) => (
+            <Result
+              user={user}
+              key={user.id}
+              onClick={() => setViewingIdx(idx)}
+            />
+          ))}
+        {searching && loadingRows}
         {!searching && !(data ? data.users : []).length && (
           <div className={styles.empty}>
             <Placeholder>{t('people:empty')}</Placeholder>

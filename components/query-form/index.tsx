@@ -21,6 +21,7 @@ interface QueryFormProps {
   onChange: Callback<UsersQuery>;
   vertical?: boolean;
   focusTarget?: FocusTarget;
+  renderToPortal?: boolean;
 }
 
 export default function QueryForm({
@@ -28,6 +29,7 @@ export default function QueryForm({
   onChange,
   vertical,
   focusTarget,
+  renderToPortal,
   subjects,
   availability,
   langs,
@@ -84,6 +86,7 @@ export default function QueryForm({
           selected={query.subjects}
           placeholder={t(`query:subjects-${query.aspect}-placeholder`)}
           aspect={query.aspect}
+          renderToPortal={renderToPortal}
           outlined
         />
       )}
@@ -96,6 +99,7 @@ export default function QueryForm({
           className={className}
           onChange={onAvailabilityChange}
           value={query.availability}
+          renderToPortal={renderToPortal}
           outlined
         />
       )}
@@ -108,6 +112,7 @@ export default function QueryForm({
           className={className}
           onSelectedChange={onLangsChange}
           selected={query.langs}
+          renderToPortal={renderToPortal}
           outlined
         />
       )}

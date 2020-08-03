@@ -8,7 +8,7 @@ import UserSelect from 'components/user-select';
 import SubjectSelect from 'components/subject-select';
 
 import equal from 'fast-deep-equal';
-import styles from './dashboard.module.scss';
+import styles from './appts.module.scss';
 
 interface ApptRowProps {
   appt: ApptJSON;
