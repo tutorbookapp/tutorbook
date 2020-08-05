@@ -1,4 +1,4 @@
-import { LinkHeader } from 'components/header';
+import { LinkHeader } from 'components/navigation';
 import { withI18n } from 'lib/intl';
 
 import React from 'react';

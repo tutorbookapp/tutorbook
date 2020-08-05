@@ -11,7 +11,7 @@ import Router, { useRouter } from 'next/router';
 import { withI18n } from 'lib/intl';
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import { QueryHeader } from 'components/header';
+import { QueryHeader } from 'components/navigation';
 import {
   User,
   UserJSON,

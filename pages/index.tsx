@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { withI18n } from 'lib/intl';
 import { Aspect } from 'lib/model';
-import { AspectHeader } from 'components/header';
+import { AspectHeader } from 'components/navigation';
 
 import Banner from 'components/banner';
 import Intercom from 'components/react-intercom';

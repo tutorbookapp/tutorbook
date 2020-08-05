@@ -14,11 +14,10 @@ import { UserDialogProps } from 'components/user-dialog';
 
 import React, { useMemo, useEffect, useState } from 'react';
 import Result from 'components/search/result';
+import Header from 'components/header';
+import Placeholder from 'components/placeholder';
 
 import dynamic from 'next/dynamic';
-
-import Title from './title';
-import Placeholder from './placeholder';
 
 import { FilterDialogProps } from './filter-dialog';
 
@@ -117,7 +116,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
           leading
         />
       )}
-      <Title
+      <Header
         header={t('common:people')}
         body={t('people:subtitle', { name: org.name })}
         actions={[

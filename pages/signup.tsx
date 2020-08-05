@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 
 import { withI18n } from 'lib/intl';
 import { Aspect } from 'lib/model';
-import { AspectHeader } from 'components/header';
+import { AspectHeader } from 'components/navigation';
 
 import common from 'locales/en/common.json';
 import signup from 'locales/en/signup.json';

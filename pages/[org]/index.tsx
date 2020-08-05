@@ -7,7 +7,7 @@ import Footer from 'components/footer';
 import { withI18n } from 'lib/intl';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { LinkHeader } from 'components/header';
+import { LinkHeader } from 'components/navigation';
 import { Org, OrgJSON } from 'lib/model';
 import {
   db,

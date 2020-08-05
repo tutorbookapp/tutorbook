@@ -2,9 +2,9 @@ import React from 'react';
 import ErrorPage from 'next/error';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
+import Overview from 'components/overview';
 
-import { Overview } from 'components/dashboard';
-import { TabHeader } from 'components/header';
+import { TabHeader } from 'components/navigation';
 import { withI18n } from 'lib/intl';
 import { useUser } from 'lib/account';
 

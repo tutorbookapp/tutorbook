@@ -19,11 +19,10 @@ import { ApptsQuery, Org, ApptJSON } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
 import React from 'react';
+import Header from 'components/header';
+import Placeholder from 'components/placeholder';
 
-import { ApptRow, LoadingRow } from './appt-row';
-
-import Title from './title';
-import Placeholder from './placeholder';
+import { ApptRow, LoadingRow } from './row';
 
 import styles from './appts.module.scss';
 
@@ -136,7 +135,7 @@ export default function Appts({ org }: ApptsProps): JSX.Element {
 
   return (
     <>
-      <Title
+      <Header
         header={t('common:appts')}
         body={t('appts:subtitle', { name: org.name })}
         actions={[

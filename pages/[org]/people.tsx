@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import ErrorPage from 'next/error';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
+import People from 'components/people';
 
-import { People } from 'components/dashboard';
-import { TabHeader } from 'components/header';
+import { TabHeader } from 'components/navigation';
 import { useRouter } from 'next/router';
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';

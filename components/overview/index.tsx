@@ -1,10 +1,10 @@
 import React from 'react';
+import Header from 'components/header';
+import Placeholder from 'components/placeholder';
+
 import useTranslation from 'next-translate/useTranslation';
 
 import { Org, Account } from 'lib/model';
-
-import Title from './title';
-import Placeholder from './placeholder';
 
 import styles from './overview.module.scss';
 
@@ -16,7 +16,7 @@ export default function Overview({ account }: OverviewProps): JSX.Element {
   const { t } = useTranslation();
   return (
     <>
-      <Title
+      <Header
         header={t('common:overview')}
         body={t('overview:subtitle', { name: account.name })}
         actions={[
