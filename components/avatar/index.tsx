@@ -4,8 +4,8 @@ import { TooltipProps } from '@rmwc/tooltip';
 
 import styles from './avatar.module.scss';
 
-const Tooltip = dynamic<TooltipProps>(async () =>
-  import('@rmwc/tooltip').then((mod) => mod.Tooltip)
+const Tooltip = dynamic<TooltipProps>(() =>
+  import('@rmwc/tooltip').then((m) => m.Tooltip)
 );
 
 interface AvatarProps {

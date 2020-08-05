@@ -10,16 +10,26 @@ import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
 import { Option, UsersQuery, Org, User, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
+import { UserDialogProps } from 'components/user-dialog';
 
 import React, { useMemo, useEffect, useState } from 'react';
 import Result from 'components/search/result';
-import UserDialog from 'components/user-dialog';
+
+import dynamic from 'next/dynamic';
 
 import Title from './title';
 import Placeholder from './placeholder';
-import FilterDialog from './filter-dialog';
+
+import { FilterDialogProps } from './filter-dialog';
 
 import styles from './people.module.scss';
+
+const UserDialog = dynamic<UserDialogProps>(() =>
+  import('components/user-dialog')
+);
+const FilterDialog = dynamic<FilterDialogProps>(() =>
+  import('./filter-dialog')
+);
 
 interface PeopleProps {
   org: Org;

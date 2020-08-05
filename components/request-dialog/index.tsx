@@ -39,11 +39,11 @@ import to from 'await-to-js';
 
 import styles from './request-dialog.module.scss';
 
-const TimesSelect = dynamic<TimesSelectProps>(async () =>
+const TimesSelect = dynamic<TimesSelectProps>(() =>
   import('components/times-select')
 );
-const Tooltip = dynamic<TooltipProps>(async () =>
-  import('@rmwc/tooltip').then((mod) => mod.Tooltip)
+const Tooltip = dynamic<TooltipProps>(() =>
+  import('@rmwc/tooltip').then((m) => m.Tooltip)
 );
 
 interface RequestDialogProps {

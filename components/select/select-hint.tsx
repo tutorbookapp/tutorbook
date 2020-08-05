@@ -3,8 +3,8 @@ import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 import { TooltipProps } from '@rmwc/tooltip';
 
-const Tooltip = dynamic<TooltipProps>(async () =>
-  import('@rmwc/tooltip').then((mod) => mod.Tooltip)
+const Tooltip = dynamic<TooltipProps>(() =>
+  import('@rmwc/tooltip').then((m) => m.Tooltip)
 );
 
 interface SelectHintProps {
