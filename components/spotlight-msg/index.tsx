@@ -1,5 +1,4 @@
-import React from 'react';
-import VanillaTilt from 'vanilla-tilt';
+import React, { useRef, useEffect } from 'react';
 
 import CTALink, { CTALinkProps } from './cta-link';
 
@@ -24,11 +23,17 @@ export default function SpotlightMsg({
   img,
   cta,
 }: SpotlightMsgProps): JSX.Element {
-  const imgRef: React.RefObject<HTMLDivElement> = React.useRef(null);
+  const imgRef = useRef<HTMLDivElement>(null);
   const colorClass: string = gray ? styles.featureSpotlightGray : '';
 
-  React.useEffect(() => {
-    if (imgRef.current) VanillaTilt.init(imgRef.current, { max: 10 });
+  useEffect(() => {
+    if (imgRef.current) {
+      const init = async (elem: HTMLDivElement) => {
+        const { default: VanillaTilt } = await import('vanilla-tilt');
+        VanillaTilt.init(elem, { max: 10 });
+      };
+      void init(imgRef.current);
+    }
   }, [imgRef]);
 
   return (

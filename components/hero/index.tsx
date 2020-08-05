@@ -1,15 +1,20 @@
+import { RequestDialogProps } from 'components/request-dialog';
 import { UsersQuery, User, Aspect } from 'lib/model';
 import { Card } from '@rmwc/card';
 
+import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
 import React, { useMemo, useState, useCallback } from 'react';
-import RequestDialog from 'components/request-dialog';
 import Carousel from 'components/carousel';
 import Title from 'components/title';
 import SearchForm from './search-form';
 
 import styles from './hero.module.scss';
+
+const RequestDialog = dynamic<RequestDialogProps>(() =>
+  import('components/request-dialog')
+);
 
 export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
   const { t } = useTranslation();

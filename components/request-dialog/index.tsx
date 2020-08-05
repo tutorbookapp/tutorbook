@@ -46,7 +46,7 @@ const Tooltip = dynamic<TooltipProps>(() =>
   import('@rmwc/tooltip').then((m) => m.Tooltip)
 );
 
-interface RequestDialogProps {
+export interface RequestDialogProps {
   onClosed: () => void;
   subjects: string[];
   times?: Availability;
