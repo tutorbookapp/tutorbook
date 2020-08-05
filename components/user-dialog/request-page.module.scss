@@ -12,10 +12,6 @@
     padding: 16px;
     border-bottom: 1px solid map.get(config.$colors, 'accents-2');
 
-    .field {
-      @include common.field;
-    }
-
     .btn {
       font-size: 18px;
       padding: 9px;
@@ -32,6 +28,10 @@
     .form {
       max-width: 500px;
       margin: 32px auto;
+
+      .field {
+        @include common.field;
+      }
 
       .btn {
         margin: 8px 0 0;

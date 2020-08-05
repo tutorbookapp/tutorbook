@@ -1,0 +1,23 @@
+{
+  "update-btn": "Update profile",
+  "mentoring-btn": "Become a mentor",
+  "tutoring-btn": "Become a tutor",
+  "name": "Your name",
+  "email": "Your email address",
+  "phone": "Your phone number",
+  "photo": "Your profile photo",
+  "langs": "What languages do you speak?",
+  "availability": "When are you available?",
+  "mentoring-subjects": "What are your fields of expertise?",
+  "tutoring-subjects": "What can you tutor?",
+  "mentoring-bio": "What's your background? What projects are you working on?",
+  "tutoring-bio": "What's your background? Why are you a good tutor?",
+  "bio-placeholder": "Hint: Copy-and-paste your LinkedIn or Facebook bio",
+  "website": "Your portfolio website",
+  "linkedin": "Your LinkedIn profile",
+  "twitter": "Your Twitter profile",
+  "facebook": "Your Facebook profile",
+  "instagram": "Your Instagram profile",
+  "github": "Your GitHub profile",
+  "indiehackers": "Your IndieHackers profile"
+}

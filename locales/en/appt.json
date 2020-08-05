@@ -1,0 +1,9 @@
+{
+  "attendees": "Attendees",
+  "subjects": "Subjects",
+  "times": "Times",
+  "message": "Message",
+  "message-placeholder": "I could really use your help with my {{subject}} project...",
+  "send-btn": "Send Request",
+  "signup-btn": "Signup and Send"
+}

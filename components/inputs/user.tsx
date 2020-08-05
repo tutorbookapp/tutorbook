@@ -63,6 +63,7 @@ type Input =
 export default function UserInputs({
   value,
   onChange,
+  thirdPerson,
   renderToPortal,
   className,
   name,
@@ -122,7 +123,7 @@ export default function UserInputs({
   const s = (type: SocialTypeAlias, p: (v: string) => string) => ({
     ...sharedProps,
     value: getSocial(type),
-    label: t(`user:${type}`),
+    label: t(`user${thirdPerson ? '3rd' : ''}:${type}`),
     onFocus: () => {
       const username: string = value.name
         ? value.name.replace(' ', '').toLowerCase()
@@ -241,7 +242,7 @@ export default function UserInputs({
         <LangSelect
           {...sharedProps}
           value={value.langs}
-          label={t('query:langs')}
+          label={t(`user${thirdPerson ? '3rd' : ''}:langs`)}
           onChange={(langs: string[]) =>
             onChange(new User({ ...value, langs }))
           }
@@ -262,8 +263,8 @@ export default function UserInputs({
         <SubjectSelect
           {...sharedProps}
           value={value.mentoring.subjects}
-          label={t('user:mentoring-subjects')}
-          placeholder={t('query:subjects-mentoring-placeholder')}
+          label={t(`user${thirdPerson ? '3rd' : ''}:mentoring-subjects`)}
+          placeholder={t('common:mentoring-subjects-placeholder')}
           onChange={(subjects: string[]) =>
             onChange(
               new User({
@@ -280,8 +281,8 @@ export default function UserInputs({
         <SubjectSelect
           {...sharedProps}
           value={value.tutoring.subjects}
-          label={t('user:tutoring-subjects')}
-          placeholder={t('query:subjects-tutoring-placeholder')}
+          label={t(`user${thirdPerson ? '3rd' : ''}:tutoring-subjects`)}
+          placeholder={t('common:tutoring-subjects-placeholder')}
           onChange={(subjects: string[]) =>
             onChange(
               new User({ ...value, tutoring: { ...value.tutoring, subjects } })
@@ -298,8 +299,8 @@ export default function UserInputs({
             onChange(new User({ ...value, bio: event.currentTarget.value }))
           }
           value={value.bio}
-          label={t('user:mentoring-bio')}
-          placeholder={t('user:bio-placeholder')}
+          label={t(`user${thirdPerson ? '3rd' : ''}:bio`)}
+          placeholder={t(`user${thirdPerson ? '3rd' : ''}:bio-placeholder`)}
           required
           rows={4}
           textarea
@@ -318,10 +319,12 @@ export default function UserInputs({
                   />
                 </DataTableHeadCell>
                 <DataTableHeadCell>
-                  {t('verifications:description')}
+                  {t(
+                    `user${thirdPerson ? '3rd' : ''}:verification-description`
+                  )}
                 </DataTableHeadCell>
                 <DataTableHeadCell>
-                  {t('verifications:notes')}
+                  {t(`user${thirdPerson ? '3rd' : ''}:verification-notes`)}
                 </DataTableHeadCell>
               </DataTableRow>
             </DataTableHead>
@@ -336,7 +339,9 @@ export default function UserInputs({
                       }
                     />
                   </DataTableCell>
-                  <DataTableCell>{t(`verifications:${check}`)}</DataTableCell>
+                  <DataTableCell>
+                    {t(`user:verification-${check}`)}
+                  </DataTableCell>
                   <DataTableCell>
                     <TextField
                       value={getValue(check)}

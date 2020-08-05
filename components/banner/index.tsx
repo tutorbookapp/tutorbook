@@ -9,10 +9,8 @@ export default function Banner(): JSX.Element {
   return (
     <div className={styles.wrapper + (hidden ? ` ${styles.hidden}` : '')}>
       <div className={styles.content}>
-        <span className={styles.desktopTitle}>
-          {t('common:banner-desktop')}
-        </span>
-        <span className={styles.mobileTitle}>{t('common:banner-mobile')}</span>
+        <span className={styles.desktopTitle}>{t('banner:desktop')}</span>
+        <span className={styles.mobileTitle}>{t('banner:mobile')}</span>
       </div>
       <span
         tabIndex={0}

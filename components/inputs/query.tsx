@@ -19,6 +19,7 @@ export default function UsersQueryInputs({
   value,
   onChange,
   focused: focusTarget,
+  thirdPerson,
   renderToPortal,
   className,
   subjects,
@@ -59,12 +60,12 @@ export default function UsersQueryInputs({
       {subjects && (
         <SubjectSelect
           focused={focused === 'subjects'}
-          label={t('query:subjects')}
+          label={t(`query${thirdPerson ? '3rd' : ''}:subjects`)}
           onFocused={focusSubjects}
           onBlurred={focusNothing}
           onSelectedChange={onSubjectsChange}
           selected={value.subjects}
-          placeholder={t(`query:subjects-${value.aspect}-placeholder`)}
+          placeholder={t(`common:${value.aspect}-subjects-placeholder`)}
           aspect={value.aspect}
           renderToPortal={renderToPortal}
           className={className}
@@ -74,7 +75,7 @@ export default function UsersQueryInputs({
       {availability && (
         <TimesSelect
           focused={focused === 'availability'}
-          label={t('query:availability')}
+          label={t(`query${thirdPerson ? '3rd' : ''}:availability`)}
           onFocused={focusAvailability}
           onBlurred={focusNothing}
           onChange={onAvailabilityChange}
@@ -87,7 +88,7 @@ export default function UsersQueryInputs({
       {langs && (
         <LangSelect
           focused={focused === 'langs'}
-          label={t('query:langs')}
+          label={t(`query${thirdPerson ? '3rd' : ''}:langs`)}
           onFocused={focusLangs}
           onBlurred={focusNothing}
           onSelectedChange={onLangsChange}

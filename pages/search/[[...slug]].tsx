@@ -22,7 +22,8 @@ import {
 
 import common from 'locales/en/common.json';
 import search from 'locales/en/search.json';
-import query from 'locales/en/query.json';
+import query3rd from 'locales/en/query3rd.json';
+import appt3rd from 'locales/en/appt3rd.json';
 
 type App = admin.app.App;
 type Firestore = admin.firestore.Firestore;
@@ -195,4 +196,4 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   );
 }
 
-export default withI18n(SearchPage, { common, search, query });
+export default withI18n(SearchPage, { common, search, query3rd, appt3rd });

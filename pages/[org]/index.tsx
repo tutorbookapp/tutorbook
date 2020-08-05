@@ -16,9 +16,8 @@ import {
 } from 'lib/api/helpers/firebase';
 
 import common from 'locales/en/common.json';
-import signup from 'locales/en/signup.json';
-import query from 'locales/en/query.json';
 import org from 'locales/en/org.json';
+import query3rd from 'locales/en/query3rd.json';
 
 interface OrgPageProps {
   org?: OrgJSON;
@@ -87,4 +86,4 @@ function OrgPage({ errorCode, errorMessage, org }: OrgPageProps): JSX.Element {
   );
 }
 
-export default withI18n(OrgPage, { common, query, signup, org });
+export default withI18n(OrgPage, { common, org, query3rd });

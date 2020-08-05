@@ -27,6 +27,7 @@ function DashboardPage(): JSX.Element {
       {loggedIn !== false && (
         <>
           <TabHeader
+            links
             tabs={[
               {
                 label: t('common:overview'),

@@ -140,7 +140,7 @@ export default function ApptInputs({
       {showTutors && (
         <UserSelect
           focused={focused === 'tutors'}
-          label={t('appt:tutors')}
+          label={t('common:tutors')}
           onFocused={focusTutors}
           onBlurred={focusNothing}
           onChange={onTutorsChange}
@@ -153,7 +153,7 @@ export default function ApptInputs({
       {showTutees && (
         <UserSelect
           focused={focused === 'tutees'}
-          label={t('appt:tutees')}
+          label={t('common:tutees')}
           onFocused={focusTutees}
           onBlurred={focusNothing}
           onChange={onTuteesChange}
@@ -166,7 +166,7 @@ export default function ApptInputs({
       {showMentors && (
         <UserSelect
           focused={focused === 'mentors'}
-          label={t('appt:mentors')}
+          label={t('common:mentors')}
           onFocused={focusMentors}
           onBlurred={focusNothing}
           onChange={onMentorsChange}
@@ -179,7 +179,7 @@ export default function ApptInputs({
       {showMentees && (
         <UserSelect
           focused={focused === 'mentees'}
-          label={t('appt:mentees')}
+          label={t('common:mentees')}
           onFocused={focusMentees}
           onBlurred={focusNothing}
           onChange={onMenteesChange}
@@ -191,6 +191,7 @@ export default function ApptInputs({
       )}
       {subjects && (
         <SubjectSelect
+          required
           focused={focused === 'subjects'}
           label={t('appt:subjects')}
           onFocused={focusSubjects}
@@ -220,8 +221,9 @@ export default function ApptInputs({
         <TextField
           textarea
           rows={4}
+          required
           characterCount
-          maxLength={500}
+          maxLength={700}
           label={t('appt:message')}
           placeholder={t('appt:message-placeholder', {
             subject: value.subjects[0] || 'Computer Science',

@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import FilterForm from 'components/filter-form';
 
 import { Callback, UsersQuery } from 'lib/model';
+
+import cn from 'classnames';
 
 import styles from './form.module.scss';
 
@@ -12,10 +14,10 @@ export default function Form({
   query: UsersQuery;
   onChange: Callback<UsersQuery>;
 }): JSX.Element {
-  const [elevated, setElevated] = React.useState<boolean>(false);
-  const formRef: React.RefObject<HTMLDivElement> = React.createRef();
+  const [elevated, setElevated] = useState<boolean>(false);
+  const formRef = useRef<HTMLDivElement>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const listener = () => {
       if (!formRef.current) return;
       const viewportOffset = formRef.current.getBoundingClientRect();
@@ -30,7 +32,7 @@ export default function Form({
 
   return (
     <div
-      className={styles.form + (elevated ? ` ${styles.elevated}` : '')}
+      className={cn(styles.form, { [styles.elevated]: elevated })}
       ref={formRef}
     >
       <FilterForm query={query} onChange={onChange} />

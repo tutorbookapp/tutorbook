@@ -140,7 +140,7 @@ export default function Appts({ org }: ApptsProps): JSX.Element {
         body={t('appts:subtitle', { name: org.name })}
         actions={[
           {
-            label: t('appts:import-data-btn'),
+            label: t('common:import-data'),
             onClick: () =>
               IntercomAPI('showNewMessage', t('appts:import-data-msg')),
           },
@@ -170,10 +170,10 @@ export default function Appts({ org }: ApptsProps): JSX.Element {
               <DataTableHead className={styles.header}>
                 <DataTableRow>
                   <DataTableHeadCell className={styles.message}>
-                    {t('common:message')}
+                    {t('appt:message')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.subjects}>
-                    {t('common:subjects')}
+                    {t('appt:subjects')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.tutors}>
                     {t('common:tutors')}

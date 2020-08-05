@@ -2,8 +2,10 @@ import { Option, UsersQuery, Callback } from 'lib/model';
 import { QueryInputs } from 'components/inputs';
 import { Ripple } from '@rmwc/ripple';
 
-import React from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 
+import cn from 'classnames';
+import useTranslation from 'next-translate/useTranslation';
 import styles from './filter-form.module.scss';
 
 interface SearchButtonProps {
@@ -32,18 +34,16 @@ export default function FilterForm({
   query,
   onChange,
 }: FilterFormProps): JSX.Element {
-  const [active, setActive] = React.useState<boolean>(false);
-  const formRef: React.RefObject<HTMLDivElement> = React.createRef<
-    HTMLDivElement
-  >();
+  const [active, setActive] = useState<boolean>(false);
+  const formRef = useRef<HTMLFormElement | null>(null);
   const str: (value: Option<string>[]) => string = (
     value: Option<string>[]
   ) => {
     return value.map((option: Option<string>) => option.label).join(', ');
   };
-  const [focused, setFocused] = React.useState<FocusTarget | undefined>();
+  const [focused, setFocused] = useState<FocusTarget | undefined>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!formRef.current) return () => {};
 
     const element: HTMLElement = formRef.current;
@@ -64,11 +64,19 @@ export default function FilterForm({
     return removeClickListener;
   });
 
+  const onSubmit = useCallback((event: React.FormEvent) => {
+    event.preventDefault();
+    setActive(false);
+  }, []);
+
+  const { t } = useTranslation();
+
   return (
     <>
       <div className={styles.wrapper}>
-        <div
-          className={styles.form + (active ? ` ${styles.active}` : '')}
+        <form
+          className={cn(styles.form, { [styles.active]: active })}
+          onSubmit={onSubmit}
           ref={formRef}
         >
           <QueryInputs
@@ -76,11 +84,12 @@ export default function FilterForm({
             focused={focused}
             onChange={onChange}
             className={styles.field}
+            thirdPerson
             subjects
             langs
             availability={query.aspect === 'tutoring'}
           />
-        </div>
+        </form>
       </div>
       <div className={styles.search} role='search'>
         <SearchButton
@@ -89,7 +98,7 @@ export default function FilterForm({
             setActive(true);
           }}
         >
-          {str(query.subjects) || 'Any subjects'}
+          {str(query.subjects) || t('search:any-subjects')}
         </SearchButton>
         {query.aspect === 'tutoring' && (
           <>
@@ -100,7 +109,7 @@ export default function FilterForm({
                 setActive(true);
               }}
             >
-              {query.availability.toString() || 'Any availability'}
+              {query.availability.toString() || t('search:any-availability')}
             </SearchButton>
           </>
         )}
@@ -111,7 +120,7 @@ export default function FilterForm({
             setActive(true);
           }}
         >
-          {str(query.langs) || 'Any language'}
+          {str(query.langs) || t('search:any-langs')}
         </SearchButton>
       </div>
     </>

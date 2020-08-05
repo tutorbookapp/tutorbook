@@ -102,7 +102,7 @@ export default memo(function RequestPage({
           />
           <Button
             className={styles.btn}
-            label={t('common:send-request')}
+            label={t('appt:send-btn')}
             disabled={loading}
             raised
             arrow

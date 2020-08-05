@@ -14,8 +14,8 @@ import useTranslation from 'next-translate/useTranslation';
 import common from 'locales/en/common.json';
 import people from 'locales/en/people.json';
 import query from 'locales/en/query.json';
-import verifications from 'locales/en/verifications.json';
-import signup from 'locales/en/signup.json';
+import user from 'locales/en/user.json';
+import appt from 'locales/en/appt.json';
 
 function PeoplePage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
@@ -74,6 +74,6 @@ export default withI18n(PeoplePage, {
   common,
   people,
   query,
-  verifications,
-  signup,
+  user,
+  appt,
 });

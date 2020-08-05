@@ -13,6 +13,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import common from 'locales/en/common.json';
 import appts from 'locales/en/appts.json';
+import appt from 'locales/en/appt.json';
 
 function ApptsPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
@@ -67,4 +68,4 @@ function ApptsPage(): JSX.Element {
   );
 }
 
-export default withI18n(ApptsPage, { common, appts });
+export default withI18n(ApptsPage, { common, appts, appt });

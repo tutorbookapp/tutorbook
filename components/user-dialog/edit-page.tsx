@@ -123,9 +123,7 @@ export default memo(function EditPage({
           <Button
             className={styles.btn}
             label={t(
-              user.id.startsWith('temp')
-                ? 'signup:create-btn'
-                : `signup:update-btn`
+              user.id.startsWith('temp') ? 'user:create-btn' : `user:update-btn`
             )}
             disabled={loading}
             raised

@@ -51,6 +51,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     <form className={styles.form} onSubmit={handleSubmit}>
       <QueryInputs
         subjects
+        thirdPerson
         availability={query.aspect === 'tutoring'}
         className={styles.field}
         onChange={onChange}
@@ -58,7 +59,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       />
       <Button
         className={styles.btn}
-        label={t(`about:search-${query.aspect}-btn`)}
+        label={t(`query3rd:${query.aspect}-btn`)}
         disabled={submitting}
         raised
         arrow

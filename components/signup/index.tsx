@@ -87,24 +87,25 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     <div className={styles.wrapper}>
       <div className={styles.header} ref={headerRef}>
         <span style={aspect === 'mentoring' ? {} : headerStyle}>
-          <Title>{t('signup-page:mentoring-header')}</Title>
+          <Title>{t('signup:mentoring-header')}</Title>
         </span>
         <span style={aspect === 'tutoring' ? {} : headerStyle}>
-          <Title>{t('signup-page:tutoring-header')}</Title>
+          <Title>{t('signup:tutoring-header')}</Title>
         </span>
       </div>
       <div className={styles.description} ref={descRef}>
         <span style={aspect === 'mentoring' ? {} : descStyle}>
-          {t('signup-page:mentoring-body')}
+          {t('signup:mentoring-body')}
         </span>
         <span style={aspect === 'tutoring' ? {} : descStyle}>
-          {t('signup-page:tutoring-body')}
+          {t('signup:tutoring-body')}
         </span>
       </div>
       <Card className={styles.formCard}>
         <Loader active={submitting || submitted} checked={submitted} />
         <form className={styles.form} onSubmit={handleSubmit}>
           <Inputs
+            thirdPerson
             value={user}
             onChange={updateUser}
             name
@@ -123,9 +124,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             <Button
               className={styles.btn}
               label={t(
-                user.id
-                  ? 'signup:submit-update-btn'
-                  : `signup:submit-${aspect}-btn`
+                user.id ? 'user3rd:update-btn' : `user3rd:${aspect}-btn`
               )}
               disabled={submitting || submitted}
               raised

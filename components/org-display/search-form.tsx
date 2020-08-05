@@ -64,6 +64,7 @@ export default function SearchForm({
         onChange={onChange}
         className={styles.field}
         availability={query.aspect === 'tutoring'}
+        thirdPerson
         subjects
       />
       <Button

@@ -52,7 +52,7 @@ export default function FilterDialog({
             />
             <Button
               className={styles.btn}
-              label={t('query:submit')}
+              label={t('query:submit-btn')}
               raised
               arrow
             />

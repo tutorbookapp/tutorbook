@@ -213,12 +213,12 @@ export default function RequestDialog({
           )}
         </div>
         <div className={styles.right}>
-          <h6 className={styles.header}>About</h6>
+          <h6 className={styles.header}>{t('common:about')}</h6>
           <p className={styles.text}>{user.bio}</p>
           <h6 className={styles.header}>{t('common:request')}</h6>
           <form className={styles.form} onSubmit={onSubmit}>
             <Tooltip
-              content={t('common:login-to-proxy-request')}
+              content={t('appt3rd:login-to-proxy-request')}
               open={!currentUser.id ? undefined : false}
               activateOn='hover'
               align='topRight'
@@ -229,7 +229,7 @@ export default function RequestDialog({
                   outlined
                   renderToPortal
                   disabled={!currentUser.id}
-                  label={t('common:attendees')}
+                  label={t('appt3rd:attendees')}
                   className={styles.field}
                   onSelectedChange={onAttendeesChange}
                   selected={attendees}
@@ -241,7 +241,7 @@ export default function RequestDialog({
               outlined
               autoOpenMenu
               renderToPortal
-              label={t('common:subjects')}
+              label={t('appt3rd:subjects')}
               className={styles.field}
               onChange={onSubjectsChange}
               value={subjects}
@@ -252,7 +252,7 @@ export default function RequestDialog({
               <TimesSelect
                 outlined
                 renderToPortal
-                label={t('common:time')}
+                label={t('appt3rd:times')}
                 className={styles.field}
                 onChange={onTimesChange}
                 options={user.availability}
@@ -266,10 +266,10 @@ export default function RequestDialog({
               required
               characterCount
               maxLength={500}
-              placeholder={t('common:message-placeholder', {
+              placeholder={t('appt3rd:message-placeholder', {
                 subject: subjects[0] || 'Computer Science',
               })}
-              label={t('common:message')}
+              label={t('appt3rd:message')}
               className={styles.field}
               onChange={onMessageChange}
               value={message}
@@ -278,8 +278,8 @@ export default function RequestDialog({
               className={styles.button}
               label={
                 !currentUser.id
-                  ? t('common:signup-and-send')
-                  : t('common:send-request')
+                  ? t('appt3rd:signup-btn')
+                  : t('appt3rd:send-btn')
               }
               disabled={loading}
               google={!currentUser.id}

@@ -160,7 +160,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
             },
           },
           {
-            label: t('people:import-data-btn'),
+            label: t('common:import-data'),
             onClick: () =>
               IntercomAPI('showNewMessage', t('people:import-data-msg')),
           },

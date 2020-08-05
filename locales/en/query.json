@@ -1,7 +1,8 @@
 {
-  "langs": "What languages do you speak?",
-  "availability": "When are you available?",
-  "subjects": "What would you like to learn?",
-  "subjects-tutoring-placeholder": "Ex. Math or Science",
-  "subjects-mentoring-placeholder": "Ex. Computer Science or Music"
+  "langs": "Languages",
+  "availability": "Availability",
+  "subjects": "Subjects",
+  "tutoring-subjects": "Tutoring subjects",
+  "mentoring-subjects": "Mentoring subjects",
+  "submit-btn": "Search people"
 }

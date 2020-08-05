@@ -158,17 +158,21 @@ function DesktopNav(): JSX.Element {
   );
 }
 
-export function TabHeader(props: TabsProps): JSX.Element {
+interface TabHeaderProps extends TabsProps {
+  links?: boolean;
+}
+
+export function TabHeader({ links, ...tabProps }: TabHeaderProps): JSX.Element {
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
           <Switcher />
-          <Tabs {...props} />
+          <Tabs {...tabProps} />
         </div>
         <div className={styles.right}>
-          <DesktopTabLinks />
+          {links && <DesktopTabLinks />}
           <DesktopNav />
         </div>
       </header>

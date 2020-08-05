@@ -4,6 +4,8 @@ import { IconButton } from '@rmwc/icon-button';
 import { Chip, ChipSet } from '@rmwc/chip';
 import { UserJSON, SocialInterface } from 'lib/model';
 
+import useTranslation from 'next-translate/useTranslation';
+
 import styles from './display-page.module.scss';
 
 export interface DisplayPageProps {
@@ -25,6 +27,8 @@ export default memo(function DisplayPage({
     const url = encodeURIComponent(`"${value.name}"<${value.email}>`);
     window.open(`mailto:${url}`);
   }, [value.name, value.email]);
+
+  const { t } = useTranslation();
 
   return (
     <div className={styles.wrapper}>
@@ -60,7 +64,7 @@ export default memo(function DisplayPage({
           )}
         </div>
         <div className={styles.right}>
-          <h6 className={styles.header}>About</h6>
+          <h6 className={styles.header}>{t('common:about')}</h6>
           <p className={styles.text}>{value.bio}</p>
         </div>
       </div>

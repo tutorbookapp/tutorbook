@@ -12,7 +12,8 @@ import Footer from 'components/footer';
 
 import common from 'locales/en/common.json';
 import about from 'locales/en/about.json';
-import query from 'locales/en/query.json';
+import banner from 'locales/en/banner.json';
+import query3rd from 'locales/en/query3rd.json';
 
 function IndexPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');
@@ -34,4 +35,4 @@ function IndexPage(): JSX.Element {
   );
 }
 
-export default withI18n(IndexPage, { common, about, query });
+export default withI18n(IndexPage, { common, about, banner, query3rd });
