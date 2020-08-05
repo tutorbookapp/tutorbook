@@ -24,9 +24,9 @@ import Placeholder from 'components/placeholder';
 
 import { ApptRow, LoadingRow } from './row';
 
-import styles from './appts.module.scss';
+import styles from './matches.module.scss';
 
-interface ApptsProps {
+interface MatchesProps {
   org: Org;
 }
 
@@ -41,7 +41,7 @@ interface ApptsProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/87}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
-export default function Appts({ org }: ApptsProps): JSX.Element {
+export default function Matches({ org }: MatchesProps): JSX.Element {
   const timeoutIds = React.useRef<
     Record<string, ReturnType<typeof setTimeout>>
   >({});
@@ -136,13 +136,13 @@ export default function Appts({ org }: ApptsProps): JSX.Element {
   return (
     <>
       <Header
-        header={t('common:appts')}
-        body={t('appts:subtitle', { name: org.name })}
+        header={t('common:matches')}
+        body={t('matches:subtitle', { name: org.name })}
         actions={[
           {
             label: t('common:import-data'),
             onClick: () =>
-              IntercomAPI('showNewMessage', t('appts:import-data-msg')),
+              IntercomAPI('showNewMessage', t('matches:import-data-msg')),
           },
         ]}
       />
@@ -153,7 +153,7 @@ export default function Appts({ org }: ApptsProps): JSX.Element {
             <TextField
               outlined
               invalid={!valid && !!query.query}
-              placeholder={t('appts:search-placeholder')}
+              placeholder={t('matches:search-placeholder')}
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
@@ -204,7 +204,7 @@ export default function Appts({ org }: ApptsProps): JSX.Element {
         )}
         {!searching && !(data ? data.appts : []).length && (
           <div className={styles.empty}>
-            <Placeholder>{t('appts:empty')}</Placeholder>
+            <Placeholder>{t('matches:empty')}</Placeholder>
           </div>
         )}
         <div className={styles.pagination}>

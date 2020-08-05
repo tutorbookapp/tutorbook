@@ -1,7 +1,7 @@
 {
-  "subtitle": "{{name}}'s tutors, mentors, and students",
+  "subtitle": "{{name}}'s tutors, mentors and students",
   "create-user": "Create user",
-  "import-data-msg": "Could you help me import some people data?",
+  "import-data-msg": "Could you help me import existing people?",
   "share-signup-link": "Share signup link",
   "filters-not-vetted": "Not yet vetted",
   "filters-visible": "Visible in search",

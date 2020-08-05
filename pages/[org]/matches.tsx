@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import ErrorPage from 'next/error';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
-import Appts from 'components/appts';
+import Matches from 'components/matches';
 
 import { TabHeader } from 'components/navigation';
 import { useRouter } from 'next/router';
@@ -12,7 +12,7 @@ import { withI18n } from 'lib/intl';
 import useTranslation from 'next-translate/useTranslation';
 
 import common from 'locales/en/common.json';
-import appts from 'locales/en/appts.json';
+import matches from 'locales/en/matches.json';
 import appt from 'locales/en/appt.json';
 
 function ApptsPage(): JSX.Element {
@@ -52,14 +52,14 @@ function ApptsPage(): JSX.Element {
                 as: `/${query.org as string}/people`,
               },
               {
-                label: t('common:appts'),
+                label: t('common:matches'),
                 active: true,
-                href: '/[org]/appts',
-                as: `/${query.org as string}/appts`,
+                href: '/[org]/matches',
+                as: `/${query.org as string}/matches`,
               },
             ]}
           />
-          <Appts org={org} />
+          <Matches org={org} />
           <Footer />
           <Intercom />
         </>
@@ -68,4 +68,4 @@ function ApptsPage(): JSX.Element {
   );
 }
 
-export default withI18n(ApptsPage, { common, appts, appt });
+export default withI18n(ApptsPage, { common, matches, appt });

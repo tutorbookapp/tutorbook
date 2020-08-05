@@ -54,10 +54,10 @@ function PeoplePage(): JSX.Element {
                 as: `/${query.org as string}/people`,
               },
               {
-                label: t('common:appts'),
+                label: t('common:matches'),
                 active: false,
-                href: '/[org]/appts',
-                as: `/${query.org as string}/appts`,
+                href: '/[org]/matches',
+                as: `/${query.org as string}/matches`,
               },
             ]}
           />
