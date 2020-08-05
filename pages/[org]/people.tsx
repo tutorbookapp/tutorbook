@@ -29,8 +29,9 @@ function PeoplePage(): JSX.Element {
   }, [orgs, query.org]);
   const error = useMemo(() => {
     if (loggedIn === undefined) return;
-    if (loggedIn === false) return 'You must be logged in to access this page.';
-    if (!org) return 'You are not a member of this organization.';
+    if (loggedIn === false) return 'You must be logged in to access this page';
+    if (!org) return 'You are not a member of this organization';
+    return;
   }, [loggedIn, org]);
 
   return (

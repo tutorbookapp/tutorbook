@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import { withI18n } from 'lib/intl';
-import { GetStaticProps, GetStaticPaths } from 'next';
 import { Aspect } from 'lib/model';
 import { AspectHeader } from 'components/header';
 

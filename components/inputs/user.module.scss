@@ -1,25 +1,4 @@
 @use 'styles/typography';
-@use 'components/user-dialog/user-dialog';
-
-.dialog :global(.mdc-dialog__surface) {
-  max-width: 900px !important;
-}
-
-.header {
-  @include user-dialog.header;
-}
-
-.field {
-  @include user-dialog.field;
-}
-
-.button {
-  @include user-dialog.button;
-}
-
-.error {
-  @include user-dialog.error;
-}
 
 .table {
   width: 100%;
@@ -28,7 +7,7 @@
     padding-top: 0;
     padding-bottom: 0;
 
-    .textField {
+    .field {
       vertical-align: middle;
       background-color: transparent;
       margin: -0.75rem -1rem;
@@ -45,13 +24,5 @@
         @include typography.typography('body2');
       }
     }
-  }
-}
-
-.switch {
-  margin: 16px;
-
-  label {
-    margin-left: 16px;
   }
 }

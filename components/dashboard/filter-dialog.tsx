@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import QueryForm from 'components/query-form';
 import Button from 'components/button';
 
 import useTranslation from 'next-translate/useTranslation';
 
+import { QueryInputs } from 'components/inputs';
 import { IconButton } from '@rmwc/icon-button';
 import { UsersQuery, Callback } from 'lib/model';
 import { Dialog } from '@rmwc/dialog';
@@ -41,11 +41,11 @@ export default function FilterDialog({
         </div>
         <div className={styles.content}>
           <form className={styles.form} onSubmit={onSubmit}>
-            <QueryForm
-              query={value}
+            <QueryInputs
+              value={value}
               onChange={onChange}
+              className={styles.field}
               renderToPortal
-              vertical
               availability
               subjects
               langs

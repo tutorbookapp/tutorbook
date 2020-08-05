@@ -14,7 +14,7 @@ import styles from './login.module.scss';
 
 export default function Login(): JSX.Element {
   const { user } = useUser();
-  const { t, lang: locale } = useTranslation();
+  const { t } = useTranslation();
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
 
@@ -22,11 +22,11 @@ export default function Login(): JSX.Element {
     if (user.id) {
       void Router.push('/dashboard');
     }
-  }, [user, locale]);
+  }, [user]);
 
   useEffect(() => {
     void Router.prefetch('/dashboard');
-  }, [locale]);
+  }, []);
 
   const handleClick = useCallback(async () => {
     setSubmitting(true);
@@ -40,7 +40,7 @@ export default function Login(): JSX.Element {
       await Router.push('/dashboard');
       setSubmitting(false);
     }
-  }, [locale]);
+  }, []);
 
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */

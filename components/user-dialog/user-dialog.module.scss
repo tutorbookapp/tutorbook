@@ -1,73 +1,23 @@
-@use 'sass:map';
-@use 'styles/config';
-@use 'styles/typography';
-@use 'social-icons';
-
-@include social-icons.core-styles;
-
-$max-width: 750px;
-$padding: 40px;
-$margin: 24px;
-
 .dialog :global(.mdc-dialog__surface) {
   width: calc(100vw - 32px);
-  max-width: $max-width;
-}
+  max-width: 750px;
+  display: grid;
+  overflow: hidden;
 
-.wrapper {
-  display: flex;
-  padding: $padding;
-  position: relative;
-}
+  .page {
+    // We use grid display to be able to position each page on top of one
+    // another yet still retain their sizing to size the dialog surface.
+    // @see {@link https://stackoverflow.com/a/51949049/10023158}
+    grid-column: 1;
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+    grid-row: 1;
+    opacity: 0;
+    z-index: 1;
 
-.left {
-  flex-grow: 1;
-  flex-basis: 0;
-  max-width: 260px;
-}
-
-.right {
-  flex-grow: 1.5;
-  flex-basis: 0;
-  margin-left: $padding;
-}
-
-@media (max-width: 570px) {
-  .wrapper {
-    flex-direction: column;
-    padding: $margin;
+    &.active {
+      opacity: 1;
+      z-index: 4;
+    }
   }
-
-  .left {
-    margin-bottom: $margin;
-    max-width: none;
-  }
-
-  .right {
-    margin-left: 0;
-  }
-}
-
-.img {
-  display: block;
-  width: 100%;
-}
-
-.name {
-  @include typography.typography('headline4');
-  color: map.get(config.$colors, 'foreground');
-  margin: 12px 0 8px;
-}
-
-.bioHeader {
-  @include typography.typography('headline6');
-  color: map.get(config.$colors, 'foreground');
-  font-weight: 600;
-  margin: 0;
-}
-
-.bio {
-  @include typography.typography('body1');
-  color: map.get(config.$colors, 'accents-5');
-  margin: 0;
 }

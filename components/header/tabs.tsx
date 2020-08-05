@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'lib/intl/link';
 
+import cn from 'classnames';
 import styles from './tabs.module.scss';
 
 interface TabProps {
@@ -13,9 +14,13 @@ interface TabButtonProps extends TabProps {
 }
 
 function TabButton({ label, onClick, active }: TabButtonProps): JSX.Element {
-  const className = styles.tab + (active ? ` ${styles.active}` : '');
   return (
-    <button role='tab' type='button' className={className} onClick={onClick}>
+    <button
+      role='tab'
+      type='button'
+      className={cn(styles.tab, { [styles.active]: active })}
+      onClick={onClick}
+    >
       {label}
     </button>
   );
@@ -27,17 +32,16 @@ interface TabLinkProps extends TabProps {
 }
 
 function TabLink({ label, href, as, active }: TabLinkProps): JSX.Element {
-  const className = styles.tab + (active ? ` ${styles.active}` : '');
   if (href.indexOf('http') < 0)
     return (
       /* eslint-disable jsx-a11y/anchor-is-valid */
       <Link href={href} as={as}>
-        <a className={className}>{label}</a>
+        <a className={cn(styles.tab, { [styles.active]: active })}>{label}</a>
       </Link>
       /* eslint-enable jsx-a11y/anchor-is-valid */
     );
   return (
-    <a href={href} className={className}>
+    <a href={href} className={cn(styles.tab, { [styles.active]: active })}>
       {label}
     </a>
   );

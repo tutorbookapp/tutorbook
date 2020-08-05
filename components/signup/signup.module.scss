@@ -1,0 +1,75 @@
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/common';
+@use 'styles/typography';
+@use '@material/card/_index.scss' as card;
+@use '@material/elevation';
+
+.wrapper {
+  max-width: config.$form-width;
+  padding: 0 24px;
+  margin: 60px auto;
+  box-sizing: border-box;
+
+  .header,
+  .description {
+    overflow: hidden;
+    position: relative;
+
+    span {
+      display: block;
+      transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+
+      &:last-child {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+      }
+    }
+  }
+
+  .header {
+    margin: 0 0 20px;
+    max-width: 520px;
+  }
+
+  .description {
+    @include typography.typography('subtitle1');
+    color: map.get(config.$colors, 'accents-5');
+    margin: 0 0 30px;
+  }
+
+  .formCard {
+    @include card.outline(map.get(config.$colors, 'accents-2'), 1px);
+    @include elevation.elevation(0);
+    transition: elevation.transition-value(),
+      border elevation.$transition-duration
+        elevation.$transition-timing-function;
+    will-change: elevation.$property, border;
+    margin: 16px 0;
+
+    &:hover {
+      @include card.outline(map.get(config.$colors, 'background'), 1px);
+      @include elevation.elevation(8);
+    }
+
+    .divider {
+      list-style: none;
+      margin: 8px 0;
+    }
+
+    .form {
+      padding: 16px;
+    }
+
+    .field {
+      @include common.field;
+    }
+
+    .btn {
+      margin-top: 16px;
+      width: 100%;
+    }
+  }
+}

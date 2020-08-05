@@ -1,10 +1,9 @@
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
-import VolunteerPage from 'components/volunteer-page';
+import Signup from 'components/signup';
 
 import React, { useState } from 'react';
 
-import { GetStaticProps, GetStaticPaths } from 'next';
 import { withI18n } from 'lib/intl';
 import { Aspect } from 'lib/model';
 import { AspectHeader } from 'components/header';
@@ -23,7 +22,7 @@ function SignupPage(): JSX.Element {
         onChange={(newAspect: Aspect) => setAspect(newAspect)}
         formWidth
       />
-      <VolunteerPage aspect={aspect} />
+      <Signup aspect={aspect} />
       <Footer formWidth />
       <Intercom />
     </>

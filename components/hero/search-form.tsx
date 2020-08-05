@@ -1,9 +1,9 @@
 import { Aspect, UsersQuery, Availability } from 'lib/model';
+import { QueryInputs } from 'components/inputs';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Router from 'next/router';
 import Button from 'components/button';
-import QueryForm from 'components/query-form';
 
 import useTranslation from 'next-translate/useTranslation';
 import styles from './search-form.module.scss';
@@ -13,13 +13,13 @@ interface SearchFormProps {
 }
 
 export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
-  const { t, lang: locale } = useTranslation();
+  const { t } = useTranslation();
 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
       aspect: aspect || 'mentoring',
-      langs: [], // TODO: Pre-fill with current locale language.
+      langs: [],
       subjects: [],
       availability: new Availability(),
     })
@@ -34,7 +34,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
 
   useEffect(() => {
     void Router.prefetch('/search/[[...slug]]', query.url);
-  }, [query, locale]);
+  }, [query]);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -43,20 +43,21 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       setSubmitting(true);
       await Router.push('/search/[[...slug]]', query.url);
     },
-    [query, locale]
+    [query]
   );
   const onChange = useCallback((qry: UsersQuery) => setQuery(qry), []);
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <QueryForm
+      <QueryInputs
         subjects
         availability={query.aspect === 'tutoring'}
+        className={styles.field}
         onChange={onChange}
-        query={query}
+        value={query}
       />
       <Button
-        className={styles.button}
+        className={styles.btn}
         label={t(`about:search-${query.aspect}-btn`)}
         disabled={submitting}
         raised

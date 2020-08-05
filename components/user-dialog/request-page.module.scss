@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'styles/config';
+@use 'styles/common';
 
 .wrapper {
   max-height: calc(100vh - 32px);
@@ -10,6 +11,10 @@
   .nav {
     padding: 16px;
     border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+
+    .field {
+      @include common.field;
+    }
 
     .btn {
       font-size: 18px;

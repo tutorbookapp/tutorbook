@@ -15,6 +15,7 @@ export default function Banner(): JSX.Element {
         <span className={styles.mobileTitle}>{t('common:banner-mobile')}</span>
       </div>
       <span
+        tabIndex={0}
         className={styles.close}
         onClick={() => setHidden(true)}
         role='button'

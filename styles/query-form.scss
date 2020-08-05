@@ -71,3 +71,17 @@
     min-width: 0;
   }
 }
+
+@mixin core-styles($vertical: false) {
+  .form {
+    @include form($vertical);
+
+    .field {
+      @include field($vertical);
+    }
+
+    .btn {
+      @include button($vertical);
+    }
+  }
+}

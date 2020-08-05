@@ -22,8 +22,9 @@ export default memo(function DisplayPage({
   onClosed,
 }: DisplayPageProps): JSX.Element {
   const email = useCallback(() => {
-    open(`mailto:${encodeURIComponent(`"${value.name}"<${value.email}>`)}`);
-  }, []);
+    const url = encodeURIComponent(`"${value.name}"<${value.email}>`);
+    window.open(`mailto:${url}`);
+  }, [value.name, value.email]);
 
   return (
     <div className={styles.wrapper}>

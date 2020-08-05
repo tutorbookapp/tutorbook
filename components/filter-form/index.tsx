@@ -1,8 +1,8 @@
 import { Option, UsersQuery, Callback } from 'lib/model';
+import { QueryInputs } from 'components/inputs';
 import { Ripple } from '@rmwc/ripple';
 
 import React from 'react';
-import QueryForm from 'components/query-form';
 
 import styles from './filter-form.module.scss';
 
@@ -71,11 +71,11 @@ export default function FilterForm({
           className={styles.form + (active ? ` ${styles.active}` : '')}
           ref={formRef}
         >
-          <QueryForm
-            query={query}
-            focusTarget={focused}
+          <QueryInputs
+            value={query}
+            focused={focused}
             onChange={onChange}
-            vertical
+            className={styles.field}
             subjects
             langs
             availability={query.aspect === 'tutoring'}

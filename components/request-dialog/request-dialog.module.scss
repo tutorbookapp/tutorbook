@@ -1,17 +1,112 @@
-@use 'components/user-dialog/user-dialog';
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/socials';
+@use 'styles/typography';
 
-.header {
-  @include user-dialog.header;
-}
+.dialog :global(.mdc-dialog__surface) {
+  width: calc(100vw - 32px);
+  max-width: 750px;
 
-.field {
-  @include user-dialog.field;
-}
+  $cutoff: 570px;
+  $padding: 40px;
+  $margin: 24px;
 
-.button {
-  @include user-dialog.button;
-}
+  .wrapper {
+    display: flex;
+    padding: $padding;
+    position: relative;
 
-.error {
-  @include user-dialog.error;
+    @media (max-width: $cutoff) {
+      flex-direction: column;
+      padding: $margin;
+    }
+  }
+
+  .left {
+    flex-grow: 1;
+    flex-basis: 0;
+    max-width: 260px;
+
+    @media (max-width: $cutoff) {
+      margin-bottom: $margin;
+      max-width: none;
+    }
+
+    .img {
+      display: block;
+      width: 100%;
+    }
+
+    .name {
+      @include typography.typography('headline4');
+      color: map.get(config.$colors, 'foreground');
+      margin: 12px 0 8px;
+    }
+
+    @include socials.core-styles;
+  }
+
+  .right {
+    flex-grow: 1.5;
+    flex-basis: 0;
+    margin-left: $padding;
+
+    @media (max-width: $cutoff) {
+      margin-left: 0;
+    }
+
+    .header {
+      @include typography.typography('headline6');
+      color: map.get(config.$colors, 'foreground');
+      font-weight: 600;
+      margin: 24px 0 16px;
+
+      &:first-child {
+        margin: 0;
+      }
+    }
+
+    .text {
+      @include typography.typography('body1');
+      color: map.get(config.$colors, 'accents-5');
+      margin: 0;
+    }
+
+    .field {
+      margin: 8px 0;
+      width: 100%;
+      display: inline-flex;
+
+      textarea {
+        resize: vertical;
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      :global(.mdc-select__anchor) {
+        width: 100%;
+      }
+
+      &:global(.mdc-select > .mdc-menu > .mdc-list > .mdc-list-item) {
+        white-space: nowrap;
+      }
+    }
+
+    .button {
+      margin: 8px 0 0;
+      width: 100%;
+    }
+
+    .error {
+      color: map.get(config.$colors, 'error');
+      font-weight: 450;
+      margin-top: 16px;
+    }
+  }
 }

@@ -1438,7 +1438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
   version: 7.11.0
   resolution: "@babel/runtime@npm:7.11.0"
   dependencies:
@@ -12527,6 +12527,19 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-spring@npm:^8.0.27":
+  version: 8.0.27
+  resolution: "react-spring@npm:8.0.27"
+  dependencies:
+    "@babel/runtime": ^7.3.1
+    prop-types: ^15.5.8
+  peerDependencies:
+    react: ">= 16.8.0"
+    react-dom: ">= 16.8.0"
+  checksum: 8f041fd3037df9b610deeb5eb12d035ed9188ee0be4d2882b017db6074e7ab66ec9a990506e687274576516557d427a9199497b5559d3409ec38986dba987587
+  languageName: node
+  linkType: hard
+
 "react-test-renderer@npm:^16.13.1":
   version: 16.13.1
   resolution: "react-test-renderer@npm:16.13.1"
@@ -14597,6 +14610,7 @@ fsevents@^1.2.7:
     react-dom: ^16.13.1
     react-rnd: ^10.2.1
     react-scroll-sync: ^0.8.0
+    react-spring: ^8.0.27
     react-test-renderer: ^16.13.1
     react-use-measure: ^2.0.1
     rrule: ^2.6.4

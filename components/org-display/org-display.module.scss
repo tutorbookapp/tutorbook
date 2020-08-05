@@ -1,13 +1,13 @@
 @use 'sass:map';
 @use 'styles/config';
 @use 'styles/common';
+@use 'styles/socials';
 @use 'styles/typography';
-@use 'components/user-dialog/social-icons';
 
 @use '@material/card/_index.scss' as card;
 @use '@material/elevation';
 
-@include social-icons.core-styles;
+@include socials.core-styles;
 
 $max-width: 750px;
 $padding: 40px;

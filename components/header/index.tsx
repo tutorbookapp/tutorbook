@@ -1,6 +1,7 @@
 import { UsersQuery, Aspect, Callback } from 'lib/model';
 import { useUser } from 'lib/account';
 
+import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import React, { useState, useCallback } from 'react';
@@ -181,7 +182,7 @@ interface LinkHeaderProps {
 
 export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
   return (
-    <div className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}>
+    <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
@@ -207,7 +208,7 @@ export function AspectHeader({
   formWidth,
 }: AspectHeaderProps): JSX.Element {
   return (
-    <div className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}>
+    <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
@@ -233,7 +234,7 @@ export function QueryHeader({
   formWidth,
 }: QueryHeaderProps): JSX.Element {
   return (
-    <div className={styles.wrapper + (formWidth ? ` ${styles.formWidth}` : '')}>
+    <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />

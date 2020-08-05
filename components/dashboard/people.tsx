@@ -11,13 +11,13 @@ import { ListUsersRes } from 'lib/api/list-users';
 import { Option, UsersQuery, Org, User, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
-import React, { useMemo, useEffect, useState, useRef } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import Result from 'components/search/result';
-import CreateUserDialog from 'components/create-user-dialog';
-import FilterDialog from 'components/filter-dialog';
+import UserDialog from 'components/user-dialog';
 
 import Title from './title';
 import Placeholder from './placeholder';
+import FilterDialog from './filter-dialog';
 
 import styles from './people.module.scss';
 
@@ -88,13 +88,10 @@ export default function People({ org }: PeopleProps): JSX.Element {
         />
       )}
       {creating && (
-        <CreateUserDialog
-          onClosed={() => setCreating(false)}
-          initialPage='edit'
-        />
+        <UserDialog onClosed={() => setCreating(false)} initialPage='edit' />
       )}
       {data && viewingIdx !== undefined && (
-        <CreateUserDialog
+        <UserDialog
           onClosed={() => setViewingIdx(undefined)}
           initialData={data.users[viewingIdx]}
           initialPage='display'
@@ -116,7 +113,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
         actions={[
           {
             label: t('people:create-user'),
-            onClick: async () => setCreating(true),
+            onClick: () => setCreating(true),
           },
           {
             label: t('people:share-signup-link'),
@@ -148,7 +145,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 return navigator.clipboard.writeText(text);
               }
               await copyTextToClipboard(
-                `${location.protocol}//${location.host}/${org.id}`
+                `${window.location.protocol}//${window.location.host}/${org.id}`
               );
               setViewingSnackbar(true);
             },
@@ -175,7 +172,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 onInteraction={() => {
                   setSearching(true);
                   const tags: Option<Tag>[] = Array.from(query.tags);
-                  const idx = tags.findIndex((t) => t.value === 'not-vetted');
+                  const idx = tags.findIndex((a) => a.value === 'not-vetted');
                   if (idx < 0) {
                     tags.push({
                       label: t('people:filters-not-vetted'),
@@ -187,7 +184,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
                   setQuery((p) => new UsersQuery({ ...p, tags, page: 0 }));
                 }}
                 selected={
-                  query.tags.findIndex((t) => t.value === 'not-vetted') >= 0
+                  query.tags.findIndex((a) => a.value === 'not-vetted') >= 0
                 }
               />
               <Chip

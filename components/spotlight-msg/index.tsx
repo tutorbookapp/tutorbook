@@ -1,7 +1,7 @@
 import React from 'react';
 import VanillaTilt from 'vanilla-tilt';
 
-import CTALink, { CTALinkProps } from 'components/cta-link';
+import CTALink, { CTALinkProps } from './cta-link';
 
 import styles from './spotlight-msg.module.scss';
 

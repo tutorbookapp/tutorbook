@@ -77,6 +77,10 @@
   &.active {
     visibility: visible;
   }
+
+  .field {
+    @include query-form.field(true);
+  }
 }
 
 .wrapper {

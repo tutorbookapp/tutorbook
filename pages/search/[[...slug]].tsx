@@ -7,7 +7,6 @@ import Footer from 'components/footer';
 import Search from 'components/search';
 
 import Router, { useRouter } from 'next/router';
-import useTranslation from 'next-translate/useTranslation';
 
 import { withI18n } from 'lib/intl';
 import { GetServerSideProps } from 'next';
@@ -141,7 +140,6 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     UsersQuery.fromJSON(query)
   );
 
-  const { lang: locale } = useTranslation();
   const {
     query: { org },
   } = useRouter();
@@ -169,19 +167,13 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   }, [org]);
   React.useEffect(() => {
     if (typeof org === 'string') {
-      void Router.push(
-        '/[locale]/[org]/search/[[...slug]]',
-        `/${locale}/${org}${qry.url}`,
-        {
-          shallow: true,
-        }
-      );
-    } else {
-      void Router.push('/[locale]/search/[[...slug]]', `/${locale}${qry.url}`, {
+      void Router.push('/[org]/search/[[...slug]]', `/${org}${qry.url}`, {
         shallow: true,
       });
+    } else {
+      void Router.push('/search/[[...slug]]', `${qry.url}`, { shallow: true });
     }
-  }, [org, qry, locale]);
+  }, [org, qry]);
   React.useEffect(() => {
     if (qry.visible !== true)
       setQuery(new UsersQuery({ ...qry, visible: true }));

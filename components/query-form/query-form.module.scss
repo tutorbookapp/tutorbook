@@ -1,9 +1,0 @@
-@use 'styles/query-form';
-
-.horzField {
-  @include query-form.field(false);
-}
-
-.vertField {
-  @include query-form.field(true);
-}

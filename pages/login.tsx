@@ -1,4 +1,3 @@
-import { GetStaticProps, GetStaticPaths } from 'next';
 import { LinkHeader } from 'components/header';
 import { withI18n } from 'lib/intl';
 

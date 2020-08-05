@@ -15,7 +15,7 @@
   },
   "keywords": [
     "Tutorbook",
-    "COVID",
+    "COVID-19",
     "Tutoring",
     "Next.js"
   ],
@@ -121,6 +121,7 @@
     "react-dom": "^16.13.1",
     "react-rnd": "^10.2.1",
     "react-scroll-sync": "^0.8.0",
+    "react-spring": "^8.0.27",
     "react-use-measure": "^2.0.1",
     "rrule": "^2.6.4",
     "sass": "^1.26.10",

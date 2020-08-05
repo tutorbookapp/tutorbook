@@ -1,0 +1,34 @@
+@use 'sass:map';
+@use 'styles/config';
+@use '@material/elevation';
+
+.wrapper {
+  @include elevation.elevation(8);
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  background: white;
+  z-index: 4;
+  border-radius: 4px;
+  width: calc(100vw - 32px);
+  max-width: 400px;
+
+  .nav {
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+
+    .btn {
+      font-size: 18px;
+      padding: 9px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .content {
+    overflow-y: hidden;
+    will-change: height;
+    transition: height 0.2s ease;
+  }
+}

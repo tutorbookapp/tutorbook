@@ -6,3 +6,29 @@
   padding: 0 24px;
   box-sizing: border-box;
 }
+
+@mixin field {
+  margin: 8px 0;
+  width: 100%;
+  display: inline-flex;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  :global(.mdc-select__anchor) {
+    width: 100%;
+  }
+
+  &:not(:global(.mdc-menu-surface--anchor)) textarea {
+    min-height: 47px;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}

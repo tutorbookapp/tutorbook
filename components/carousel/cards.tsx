@@ -16,6 +16,7 @@ export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
   return (
     <Ripple>
       <div
+        tabIndex={0}
         className={styles.card}
         onClick={onClick}
         onKeyPress={() => {}}

@@ -28,6 +28,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    '@typescript-eslint/no-unused-vars': 2,
     'react/static-property-placement': ['error', 'static public field'],
     // Support Typescript's triple slash directive comments in reference files.
     // {@link https://github.com/typescript-eslint/typescript-eslint/issues/600}
@@ -73,7 +74,7 @@ module.exports = {
     //   if (val === 'do-this-thing') return doThisThing():
     //   doSomethingElse();
     // }
-    'consistent-return': ['warning', { treatUndefinedAsUnspecified: true }],
+    'consistent-return': [1, { treatUndefinedAsUnspecified: true }],
   },
   reportUnusedDisableDirectives: true,
   settings: {

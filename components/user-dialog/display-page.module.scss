@@ -1,9 +1,7 @@
 @use 'sass:map';
 @use 'styles/config';
+@use 'styles/socials';
 @use 'styles/typography';
-@use 'social-icons';
-
-@include social-icons.core-styles;
 
 $cutoff: 570px;
 $padding: 40px;
@@ -82,6 +80,8 @@ $margin: 24px;
         color: map.get(config.$colors, 'foreground');
         margin: 12px 0 8px;
       }
+
+      @include socials.core-styles;
     }
 
     .right {

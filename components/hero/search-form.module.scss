@@ -1,9 +1,3 @@
 @use 'styles/query-form';
 
-.form {
-  @include query-form.form;
-}
-
-.button {
-  @include query-form.button;
-}
+@include query-form.core-styles;

@@ -1,9 +1,9 @@
 import { Aspect, UsersQuery, Availability, OrgJSON } from 'lib/model';
+import { QueryInputs } from 'components/inputs';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Router from 'next/router';
 import Button from 'components/button';
-import QueryForm from 'components/query-form';
 
 import useTranslation from 'next-translate/useTranslation';
 import styles from './search-form.module.scss';
@@ -59,15 +59,15 @@ export default function SearchForm({
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <QueryForm
-        subjects
-        vertical
-        availability={query.aspect === 'tutoring'}
+      <QueryInputs
+        value={query}
         onChange={onChange}
-        query={query}
+        className={styles.field}
+        availability={query.aspect === 'tutoring'}
+        subjects
       />
       <Button
-        className={styles.button}
+        className={styles.btn}
         label={t(`org:search-${query.aspect}-btn`, { name: org.name })}
         disabled={submitting}
         raised

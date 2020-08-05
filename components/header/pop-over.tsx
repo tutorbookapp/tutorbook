@@ -73,22 +73,15 @@ export function PopOverButton({
 
 interface PopOverAccountProps {
   account: AccountInterface;
-  checked?: boolean;
 }
 
 export function PopOverAccountButton({
   account,
   onClick,
-  checked,
 }: { onClick: () => void } & PopOverAccountProps): JSX.Element {
   return (
     <Ripple>
       <button type='button' onClick={onClick} className={styles.item}>
-        {checked && (
-          <div className={styles.icon}>
-            <Icon icon='account_circle' />
-          </div>
-        )}
         <div className={styles.avatar}>
           <Avatar src={account.photo} />
         </div>
@@ -102,14 +95,12 @@ export function PopOverAccountHeader({
   account,
 }: PopOverAccountProps): JSX.Element {
   return (
-    /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={`${styles.item} ${styles.header}`}>
       <div className={styles.avatar}>
         <Avatar src={account.photo} />
       </div>
       <span className={styles.label}>{account.name}</span>
     </div>
-    /* eslint-enable jsx-a11y/anchor-is-valid */
   );
 }
 
@@ -117,7 +108,6 @@ export function PopOverAccountLink({
   account,
   href,
   as,
-  checked,
 }: { href: string; as?: string } & PopOverAccountProps): JSX.Element {
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
@@ -125,11 +115,6 @@ export function PopOverAccountLink({
       <div className={styles.item}>
         <Link href={href} as={as}>
           <a className={styles.itemLink}>
-            {checked && (
-              <div className={styles.icon}>
-                <Icon icon='account_circle' />
-              </div>
-            )}
             <div className={styles.avatar}>
               <Avatar src={account.photo} />
             </div>
@@ -165,7 +150,9 @@ export default function PopOverMenu({
         <div className={styles.picker}>
           <PopOverAccountHeader account={user} />
           <PopOverLink href='/'>{t('common:home')}</PopOverLink>
-          <PopOverLink href='/search'>{t('common:search')}</PopOverLink>
+          <PopOverLink href='/search/[[...slug]]' as='/search'>
+            {t('common:search')}
+          </PopOverLink>
           <PopOverLink href='/signup'>{t('common:profile')}</PopOverLink>
           <PopOverLink href='/dashboard'>{t('common:dashboard')}</PopOverLink>
           {orgs.map((org: OrgJSON) => (
