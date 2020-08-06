@@ -65,7 +65,7 @@ export default function UserInputs({
 
   const shared = (key: Input) => ({
     ...sharedProps,
-    label: t(`user:${key}`),
+    label: t(`user${thirdPerson ? '3rd' : ''}:${key}`),
     onChange: (event: React.FormEvent<HTMLInputElement>) =>
       onChange(new User({ ...value, [key]: event.currentTarget.value })),
   });

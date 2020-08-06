@@ -10,7 +10,7 @@ import { AspectHeader } from 'components/navigation';
 
 import common from 'locales/en/common.json';
 import signup from 'locales/en/signup.json';
-import query from 'locales/en/query.json';
+import user3rd from 'locales/en/user3rd.json';
 
 function SignupPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');
@@ -28,4 +28,4 @@ function SignupPage(): JSX.Element {
   );
 }
 
-export default withI18n(SignupPage, { common, signup, query });
+export default withI18n(SignupPage, { common, signup, user3rd });
