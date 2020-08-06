@@ -1,0 +1,20 @@
+{
+  "allLanguages": ["en"],
+  "defaultLanguage": "en",
+  "currentPagesDir": "pages_",
+  "finalPagesDir": "pages",
+  "localesPath": "locales",
+  "pages": {
+    "*": ["common"],
+    "/": ["about", "query"],
+    "/login": ["login"],
+    "/signup": ["signup", "signup-page", "query"],
+    "/dashboard": ["overview"],
+    "/search/[[...slug]]": ["search", "query"],
+    "/[org]/": ["signup", "query", "org"],
+    "/[org]/people": ["people", "verifications"],
+    "/[org]/appts": ["appts"],
+    "/[org]/dashboard": ["overview"],
+    "/[org]/search/[[...slug]]": ["search", "query"]
+  }
+}
