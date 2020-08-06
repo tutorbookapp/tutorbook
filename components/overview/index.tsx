@@ -4,7 +4,7 @@ import Placeholder from 'components/placeholder';
 
 import useTranslation from 'next-translate/useTranslation';
 
-import { Org, Account } from 'lib/model';
+import { Account } from 'lib/model';
 
 import styles from './overview.module.scss';
 
