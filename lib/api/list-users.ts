@@ -190,21 +190,21 @@ export default async function listUsers(
       return user.visible || orgs.some(({ id }) => user.orgs.indexOf(id) >= 0);
     })
     .map((user: User) => {
-      const truncated: UserJSON = {
+      const truncated: Partial<User> = {
         name: onlyFirstNameAndLastInitial(user.name),
         photo: user.photo,
         bio: user.bio,
         orgs: user.orgs,
-        availability: user.availability.toJSON(),
+        availability: user.availability,
         mentoring: user.mentoring,
         tutoring: user.tutoring,
         socials: user.socials,
         langs: user.langs,
         id: user.id,
-      } as UserJSON;
+      };
       if (orgs.some(({ id }) => user.orgs.indexOf(id) >= 0))
         return user.toJSON();
-      return truncated;
+      return new User(truncated).toJSON();
     });
   console.log(`[DEBUG] Got ${users.length} users.`);
   res.status(200).json({ users, hits });
