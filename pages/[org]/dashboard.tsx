@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react';
 import ErrorPage from 'next/error';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 import Overview from 'components/overview';
 
+import React, { useMemo, useEffect } from 'react';
+import Router, { useRouter } from 'next/router';
+
 import { TabHeader } from 'components/navigation';
-import { useRouter } from 'next/router';
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 
@@ -24,16 +25,18 @@ function DashboardPage(): JSX.Element {
     if (idx < 0) return;
     return orgs[idx];
   }, [orgs, query.org]);
-  const error = useMemo(() => {
-    if (loggedIn === undefined) return;
-    if (loggedIn === false) return 'You must be logged in to access this page';
-    if (!org) return 'You are not a member of this organization';
-    return;
-  }, [loggedIn, org]);
+
+  useEffect(() => {
+    if (loggedIn === false) {
+      void Router.push('/login');
+    }
+  }, [loggedIn]);
 
   return (
     <>
-      {!!error && <ErrorPage statusCode={401} title={error} />}
+      {!!loggedIn && !org && (
+        <ErrorPage statusCode={401} title={t('common:not-org-member')} />
+      )}
       {!!org && (
         <>
           <TabHeader

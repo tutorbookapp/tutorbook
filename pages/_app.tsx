@@ -64,13 +64,21 @@ async function updateUserRemote(user: User): Promise<void> {
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
+  const initialPageLoad = useRef<boolean>(true);
   const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
   const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);
   const loggedIn = useMemo(() => {
-    if (data) return true;
-    if (error) return false;
-    return undefined;
-  }, [data, error]);
+    if (user.id) {
+      initialPageLoad.current = false;
+      return true;
+    }
+    if (error) {
+      initialPageLoad.current = false;
+      return false;
+    }
+    if (initialPageLoad.current) return undefined;
+    return false;
+  }, [user, error]);
   const updateUserTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const updateUser = useCallback(
     async (param: UpdateUserParam) => {
@@ -85,14 +93,14 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
       // an issue where the profile view would locally update to an empty
       // `User()` *before* our `/api/account` endpoint could respond. SWR
       // cancelled the `/api/account` mutation in favor of the empty one.
-      await mutate('/api/account', updatedUser, !user);
+      await mutate('/api/account', updatedUser, !loggedIn);
       // Only update the user profile remotely after 5secs of no change.
       // @see {@link https://github.com/vercel/swr/issues/482}
       updateUserTimeoutId.current = setTimeout(() => {
         if (updatedUser.id) void updateUserRemote(updatedUser);
       }, 5000);
     },
-    [user]
+    [user, loggedIn]
   );
 
   const { data: orgsData } = useSWR<OrgJSON[]>('/api/orgs', fetcher);

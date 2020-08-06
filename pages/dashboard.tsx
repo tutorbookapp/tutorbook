@@ -1,5 +1,5 @@
-import React from 'react';
-import ErrorPage from 'next/error';
+import React, { useEffect } from 'react';
+import Router from 'next/router';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 import Overview from 'components/overview';
@@ -16,31 +16,28 @@ import overview from 'locales/en/overview.json';
 function DashboardPage(): JSX.Element {
   const { t } = useTranslation();
   const { user, loggedIn } = useUser();
+
+  useEffect(() => {
+    if (loggedIn === false) {
+      void Router.push('/login');
+    }
+  }, [loggedIn]);
+
   return (
     <>
-      {loggedIn === false && (
-        <ErrorPage
-          statusCode={401}
-          title='You must be logged in to access this page.'
-        />
-      )}
-      {loggedIn !== false && (
-        <>
-          <TabHeader
-            links
-            tabs={[
-              {
-                label: t('common:overview'),
-                active: true,
-                href: '/dashboard',
-              },
-            ]}
-          />
-          <Overview account={user} />
-          <Footer />
-          <Intercom />
-        </>
-      )}
+      <TabHeader
+        links
+        tabs={[
+          {
+            label: t('common:overview'),
+            active: true,
+            href: '/dashboard',
+          },
+        ]}
+      />
+      <Overview account={user} />
+      <Footer />
+      <Intercom />
     </>
   );
 }

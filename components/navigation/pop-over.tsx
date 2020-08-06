@@ -1,5 +1,4 @@
 import Link from 'lib/intl/link';
-import Router from 'next/router';
 import Avatar from 'components/avatar';
 
 import React, { useState } from 'react';
@@ -193,7 +192,6 @@ export default function PopOverMenu({
               await import('firebase/auth');
               await firebase.auth().signOut();
               await mutate('/api/account', new User().toJSON(), false);
-              await Router.push('/login');
             }}
           >
             {t(loggingOut ? 'common:logging-out' : 'common:logout')}

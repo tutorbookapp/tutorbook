@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react';
 import ErrorPage from 'next/error';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 import People from 'components/people';
 
+import React, { useMemo, useEffect } from 'react';
+import Router, { useRouter } from 'next/router';
+
 import { TabHeader } from 'components/navigation';
-import { useRouter } from 'next/router';
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 
@@ -19,24 +20,26 @@ import appt from 'locales/en/appt.json';
 
 function PeoplePage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
-  const { query } = useRouter();
+  const { query: params } = useRouter();
   const { t } = useTranslation();
 
   const org = useMemo(() => {
-    const idx = orgs.findIndex((o) => o.id === query.org);
+    const idx = orgs.findIndex((o) => o.id === params.org);
     if (idx < 0) return;
     return orgs[idx];
-  }, [orgs, query.org]);
-  const error = useMemo(() => {
-    if (loggedIn === undefined) return;
-    if (loggedIn === false) return 'You must be logged in to access this page';
-    if (!org) return 'You are not a member of this organization';
-    return;
-  }, [loggedIn, org]);
+  }, [orgs, params.org]);
+
+  useEffect(() => {
+    if (loggedIn === false) {
+      void Router.push('/login');
+    }
+  }, [loggedIn]);
 
   return (
     <>
-      {!!error && <ErrorPage statusCode={401} title={error} />}
+      {!!loggedIn && !org && (
+        <ErrorPage statusCode={401} title={t('common:not-org-member')} />
+      )}
       {!!org && (
         <>
           <TabHeader
@@ -45,19 +48,19 @@ function PeoplePage(): JSX.Element {
                 label: t('common:overview'),
                 active: false,
                 href: '/[org]/dashboard',
-                as: `/${query.org as string}/dashboard`,
+                as: `/${params.org as string}/dashboard`,
               },
               {
                 label: t('common:people'),
                 active: true,
                 href: '/[org]/people',
-                as: `/${query.org as string}/people`,
+                as: `/${params.org as string}/people`,
               },
               {
                 label: t('common:matches'),
                 active: false,
                 href: '/[org]/matches',
-                as: `/${query.org as string}/matches`,
+                as: `/${params.org as string}/matches`,
               },
             ]}
           />
