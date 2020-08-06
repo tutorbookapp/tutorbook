@@ -145,10 +145,13 @@ export default function RequestDialog({
       setLoading(true);
       if (!currentUser.id) {
         const [err] = await to(signupWithGoogle(currentUser));
-        if (err)
-          return setError(
+        if (err) {
+          setLoading(false);
+          setError(
             `An error occurred while logging in with Google. ${err.message}`
           );
+          return;
+        }
       }
       const [err] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
         axios.post('/api/appts', appt.current.toJSON())
