@@ -64,13 +64,13 @@ async function updateUserRemote(user: User): Promise<void> {
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
-  const { data, isValidating } = useSWR<UserJSON>('/api/account', fetcher);
+  const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
   const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);
   const loggedIn = useMemo(() => {
-    if (user.id) return true;
-    if (isValidating) return undefined;
-    return false;
-  }, [user, isValidating]);
+    if (data) return true;
+    if (error) return false;
+    return undefined;
+  }, [data, error]);
   const updateUserTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const updateUser = useCallback(
     async (param: UpdateUserParam) => {
