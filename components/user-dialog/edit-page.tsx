@@ -31,7 +31,7 @@ export default memo(function EditPage({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
-  useEffect(() => setUser(value), [value]);
+  useEffect(() => setUser(User.fromJSON(value)), [value]);
 
   const onUserChange = useCallback((updated: User) => setUser(updated), []);
   const onSubmit = useCallback(

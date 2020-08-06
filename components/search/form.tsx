@@ -15,7 +15,7 @@ export default function Form({
   onChange: Callback<UsersQuery>;
 }): JSX.Element {
   const [elevated, setElevated] = useState<boolean>(false);
-  const formRef = useRef<HTMLDivElement>();
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const listener = () => {

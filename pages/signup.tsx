@@ -10,7 +10,6 @@ import { AspectHeader } from 'components/navigation';
 
 import common from 'locales/en/common.json';
 import signup from 'locales/en/signup.json';
-import signupPage from 'locales/en/signup-page.json';
 import query from 'locales/en/query.json';
 
 function SignupPage(): JSX.Element {
@@ -29,9 +28,4 @@ function SignupPage(): JSX.Element {
   );
 }
 
-export default withI18n(SignupPage, {
-  common,
-  signup,
-  query,
-  'signup-page': signupPage,
-});
+export default withI18n(SignupPage, { common, signup, query });

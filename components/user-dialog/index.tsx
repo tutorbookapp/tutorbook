@@ -8,7 +8,6 @@ import React, {
 import Router from 'next/router';
 import useWebAnimations from '@wellyshen/use-web-animations';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
 import cn from 'classnames';
 
 import { Dialog } from '@rmwc/dialog';
