@@ -68,9 +68,8 @@ export default function RequestDialog({
   const { t } = useTranslation();
   const { user: currentUser } = useUser();
 
-  const [attendees, setAttendees] = useState<Option<string>[]>([
-    { label: user.name, value: user.id },
-    { label: currentUser.name || 'You', value: currentUser.id },
+  const [students, setStudents] = useState<Option<string>[]>([
+    { label: 'You', value: currentUser.id },
   ]);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
   const [times, setTimes] = useState<Availability | undefined>(initialTimes);
@@ -80,56 +79,56 @@ export default function RequestDialog({
   // a callback that was called (and thus was also defined) before the update.
   const appt = useRef<Appt>(new Appt());
   useEffect(() => {
-    const creator: Attendee = { id: currentUser.id, handle: uuid(), roles: [] };
+    const creator: Attendee = {
+      id: currentUser.id,
+      handle: uuid(),
+      roles: [],
+    };
+    const target: Attendee = {
+      id: user.id,
+      handle: uuid(),
+      roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
+    };
     appt.current = new Appt({
       times,
       creator,
       message,
       subjects,
-      attendees: attendees.map(({ value: id }) => {
-        const roles: Role[] = [];
-        const handle: string = id === creator.id ? creator.handle : uuid();
-        if (id === user.id) {
-          roles.push(aspect === 'tutoring' ? 'tutor' : 'mentor');
-        } else {
-          roles.push(aspect === 'tutoring' ? 'tutee' : 'mentee');
-        }
-        if (id === creator.id) creator.roles = Array.from(roles);
-        return { id, roles, handle };
-      }),
+      attendees: [
+        target,
+        ...students.map(({ value: id }) => {
+          const roles: Role[] = [aspect === 'tutoring' ? 'tutee' : 'mentee'];
+          const handle: string = id === creator.id ? creator.handle : uuid();
+          if (id === creator.id) creator.roles = Array.from(roles);
+          return { id, roles, handle };
+        }),
+      ],
     });
-  }, [currentUser.id, user.id, aspect, times, message, subjects, attendees]);
+  }, [currentUser.id, user.id, aspect, times, message, subjects, students]);
 
   // Update the names displayed in the attendees select when context or props
   // changes (i.e. when the user logs in, we change 'You' to their actual name).
   useEffect(() => {
-    setAttendees((prev: Option<string>[]) => {
-      const opt = { label: currentUser.name || 'You', value: currentUser.id };
-      if (prev.length < 2) return [...prev, opt];
+    setStudents((prev: Option<string>[]) => {
+      const opt = { label: 'You', value: currentUser.id };
+      if (!prev.length) return [opt];
       const idx = prev.findIndex(({ value: id }) => !id || id === opt.value);
       if (idx < 0) return prev;
       return [...prev.slice(0, idx), opt, ...prev.slice(idx + 1)];
     });
   }, [currentUser]);
-  useEffect(() => {
-    setAttendees((prev: Option<string>[]) => [
-      { label: user.name, value: user.id },
-      ...prev.slice(1),
-    ]);
-  }, [user]);
 
   // Ensure there are at least 2 attendees and that they always contain the
   // recipient of the request (i.e. the user being presented in this dialog).
-  const onAttendeesChange = useCallback(
+  const onStudentsChange = useCallback(
     (selected: Option<string>[]) => {
-      let a: Option<string>[] = Array.from(selected);
-      if (a.findIndex(({ value: id }) => id === user.id) < 0)
-        a = [{ label: user.name, value: user.id }, ...a];
-      if (a.length < 2)
-        a = [...a, { label: currentUser.name || 'You', value: currentUser.id }];
-      setAttendees(a);
+      setStudents(() => {
+        const updated: Option<string>[] = Array.from(selected);
+        if (updated.length) return updated;
+        return [{ label: 'You', value: currentUser.id }];
+      });
     },
-    [user, currentUser]
+    [currentUser]
   );
 
   const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
@@ -231,8 +230,8 @@ export default function RequestDialog({
                   disabled={!currentUser.id}
                   label={t('appt3rd:attendees')}
                   className={styles.field}
-                  onSelectedChange={onAttendeesChange}
-                  selected={attendees}
+                  onSelectedChange={onStudentsChange}
+                  selected={students}
                 />
               </div>
             </Tooltip>
