@@ -249,7 +249,6 @@ export default memo(function DisplayPage({
           <Chip icon='edit' label='Edit profile' onClick={openEdit} />
           <Chip icon='send' label='Send request' onClick={openRequest} />
           <Chip icon='email' label='Send email' onClick={email} />
-          <Chip icon='people' label='Match student' onClick={openMatch} />
         </ChipSet>
       </div>
     </div>

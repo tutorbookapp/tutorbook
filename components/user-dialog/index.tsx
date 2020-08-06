@@ -156,7 +156,7 @@ export default function UserDialog({
       ...prev,
       matching: [...prev.matching, user.id],
     }));
-    await Router.push('search');
+    await Router.push('/search');
   }, [updateUser, user.id]);
 
   const [open, setOpen] = useState<boolean>(true);
