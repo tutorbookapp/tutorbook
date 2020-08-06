@@ -3,46 +3,22 @@ import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 import LangSelect from 'components/lang-select';
 
-import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { useUser } from 'lib/account';
-import { Checkbox } from '@rmwc/checkbox';
-import {
-  DataTable,
-  DataTableContent,
-  DataTableHead,
-  DataTableHeadCell,
-  DataTableBody,
-  DataTableRow,
-  DataTableCell,
-} from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
 import { TimesSelectProps } from 'components/times-select';
 import {
   User,
-  Check,
-  Verification,
   Availability,
   SocialTypeAlias,
   SocialInterface,
 } from 'lib/model';
 import { InputsProps, InputsConfig } from './types';
 
-import styles from './user.module.scss';
-
 const TimesSelect = dynamic<TimesSelectProps>(() =>
   import('components/times-select')
 );
-
-const checks: Check[] = [
-  'background-check',
-  'email',
-  'academic-email',
-  'training',
-  'interview',
-];
 
 type Input =
   | 'name'
@@ -55,8 +31,7 @@ type Input =
   | 'mentoring'
   | 'tutoring'
   | 'langs'
-  | 'parents'
-  | 'verifications';
+  | 'parents';
 
 // TODO: Control focus (i.e. implement the `focused` prop that opens the inputs
 // with a certain field already focused).
@@ -76,10 +51,7 @@ export default function UserInputs({
   mentoring,
   tutoring,
   langs,
-  parents,
-  verifications,
 }: InputsProps<User, Input> & InputsConfig<Input>): JSX.Element {
-  const { user } = useUser();
   const { t } = useTranslation();
 
   const sharedProps = useMemo(
@@ -136,82 +108,6 @@ export default function UserInputs({
       return updateSocial(type, event.currentTarget.value);
     },
   });
-
-  // Deep copy the array of `Verification` objects.
-  // @see {@link https://stackoverflow.com/a/40283265/10023158}
-  const clone = (vs: Verification[]) => vs.map((v: Verification) => ({ ...v }));
-  const getIndex = (check: Check) =>
-    value.verifications.findIndex((v) => v.checks.indexOf(check) >= 0);
-
-  const getChecked = (check: Check) => getIndex(check) >= 0;
-  const setChecked = (
-    event: React.FormEvent<HTMLInputElement>,
-    check: Check
-  ) => {
-    const updated: Verification[] = clone(value.verifications);
-    if (getIndex(check) >= 0 && !event.currentTarget.checked) {
-      updated.splice(getIndex(check), 1);
-    } else {
-      updated.push({
-        user: user.id,
-        org: user.id,
-        checks: [check],
-        notes: '',
-        created: new Date(),
-        updated: new Date(),
-      });
-    }
-    return onChange(new User({ ...value, verifications: updated }));
-  };
-
-  const getSomeChecked = () =>
-    value.verifications.length > 0 &&
-    value.verifications.length < checks.length;
-  const getAllChecked = () => checks.every((c) => getChecked(c));
-  const setAllChecked = (event: React.FormEvent<HTMLInputElement>) => {
-    if (!event.currentTarget.checked)
-      return onChange(new User({ ...value, verifications: [] }));
-    const updated: Verification[] = clone(value.verifications);
-    const checked: Check[] = Object.values(value.verifications).reduce(
-      (acc, cur) => {
-        return acc.concat(cur.checks);
-      },
-      [] as Check[]
-    );
-    const stillNeedsToBeChecked: Check[] = checks.filter(
-      (c) => checked.indexOf(c) < 0
-    );
-    stillNeedsToBeChecked.forEach((check: Check) =>
-      updated.push({
-        user: user.id,
-        org: user.id,
-        checks: [check],
-        notes: '',
-        created: new Date(),
-        updated: new Date(),
-      })
-    );
-    return onChange(new User({ ...value, verifications: updated }));
-  };
-
-  const getValue = (check: Check) =>
-    (value.verifications[getIndex(check)] || {}).notes || '';
-  const setValue = (event: React.FormEvent<HTMLInputElement>, check: Check) => {
-    const updated: Verification[] = clone(value.verifications);
-    if (getIndex(check) >= 0) {
-      updated[getIndex(check)].notes = event.currentTarget.value;
-    } else {
-      updated.push({
-        user: user.id,
-        org: user.id,
-        checks: [check],
-        notes: event.currentTarget.value,
-        created: new Date(),
-        updated: new Date(),
-      });
-    }
-    return onChange(new User({ ...value, verifications: updated }));
-  };
 
   return (
     <>
@@ -305,57 +201,6 @@ export default function UserInputs({
           rows={4}
           textarea
         />
-      )}
-      {verifications && (
-        <DataTable className={cn(styles.table, className)}>
-          <DataTableContent>
-            <DataTableHead>
-              <DataTableRow>
-                <DataTableHeadCell hasFormControl>
-                  <Checkbox
-                    checked={getAllChecked()}
-                    indeterminate={getSomeChecked()}
-                    onChange={setAllChecked}
-                  />
-                </DataTableHeadCell>
-                <DataTableHeadCell>
-                  {t(
-                    `user${thirdPerson ? '3rd' : ''}:verification-description`
-                  )}
-                </DataTableHeadCell>
-                <DataTableHeadCell>
-                  {t(`user${thirdPerson ? '3rd' : ''}:verification-notes`)}
-                </DataTableHeadCell>
-              </DataTableRow>
-            </DataTableHead>
-            <DataTableBody>
-              {checks.map((check: Check) => (
-                <DataTableRow key={check}>
-                  <DataTableCell hasFormControl>
-                    <Checkbox
-                      checked={getChecked(check)}
-                      onChange={(event: React.FormEvent<HTMLInputElement>) =>
-                        setChecked(event, check)
-                      }
-                    />
-                  </DataTableCell>
-                  <DataTableCell>
-                    {t(`user:verification-${check}`)}
-                  </DataTableCell>
-                  <DataTableCell>
-                    <TextField
-                      value={getValue(check)}
-                      onChange={(event: React.FormEvent<HTMLInputElement>) =>
-                        setValue(event, check)
-                      }
-                      className={styles.field}
-                    />
-                  </DataTableCell>
-                </DataTableRow>
-              ))}
-            </DataTableBody>
-          </DataTableContent>
-        </DataTable>
       )}
       {socials && (
         <>

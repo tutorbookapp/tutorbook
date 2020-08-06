@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, useEffect } from 'react';
 import Inputs from 'components/inputs/user';
 import Button from 'components/button';
 import Loader from 'components/loader';
@@ -30,6 +30,8 @@ export default memo(function EditPage({
   const [checked, setChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+
+  useEffect(() => setUser(value), [value]);
 
   const onUserChange = useCallback((updated: User) => setUser(updated), []);
   const onSubmit = useCallback(
@@ -99,16 +101,6 @@ export default memo(function EditPage({
             mentoring
             tutoring
             bio
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <Inputs
-            value={user}
-            onChange={onUserChange}
-            className={styles.field}
-            renderToPortal
-            verifications
           />
         </div>
         <div className={styles.divider} />
