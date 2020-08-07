@@ -29,7 +29,7 @@ export default function Switcher(): JSX.Element {
 
   const destination = useMemo(() => {
     if (pathname.indexOf('people') >= 0) return 'people';
-    if (pathname.indexOf('appts') >= 0) return 'appts';
+    if (pathname.indexOf('matches') >= 0) return 'matches';
     return 'dashboard';
   }, [pathname]);
 
