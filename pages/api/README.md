@@ -203,7 +203,7 @@ The following data fields should be sent in the HTTP request body.
 
 | Field   | Type     | Description                                               |
 | ------- | -------- | --------------------------------------------------------- |
-| `appt`  | `Appt`   | The tutoring appointment to create a pending request for. |
+| `match` | `Match`  | The tutoring appointment to create a pending request for. |
 | `token` | `string` | The logged in user's Firebase Authentication `idToken`.   |
 
 ##### Actions
@@ -222,11 +222,11 @@ Upon request, the `/api/request` serverless API function:
    - Verifies that the requested `subjects` are included in each of the tutors'
      Firestore profile documents (where a tutor is defined as an `attendee` whose
      `roles` include `tutor`).
-   - Verifies that the given `token` belongs to one of the `appt`'s `attendees`.
+   - Verifies that the given `token` belongs to one of the `match`'s `attendees`.
 2. Creates [the Bramble tutoring lesson room](https://about.bramble.io/api.html)
    (so that the parent can preview the venue that their child will be using to
    connect with their tutor).
-3. Creates a new `request` document containing the given `appt`'s data in the
+3. Creates a new `request` document containing the given `match`'s data in the
    pupil's (the owner of the given JWT `token`) Firestore sub-collections.
 4. Sends an email to the pupil's parent(s) asking for parental approval of the
    tutoring match.
@@ -237,11 +237,11 @@ Upon request, the `/api/request` serverless API function:
 
 The created request object (that includes the ID of it's Firestore document).
 
-### `/api/appts`
+### `/api/matches`
 
 #### `POST`
 
-The `/api/appt` endpoint approves a pending lesson request and creates a
+The `/api/match` endpoint approves a pending lesson request and creates a
 tutoring appointment.
 
 ##### Data
@@ -255,7 +255,7 @@ The following parameters should be sent in the HTTP request body.
 
 ##### Actions
 
-Upon request, the `/api/appt` serverless API function:
+Upon request, the `/api/match` serverless API function:
 
 1. Verifies the correct request body was sent (e.g. all parameters are there and
    are all of the correct types).
@@ -275,12 +275,12 @@ Upon request, the `/api/appt` serverless API function:
      Firestore profile documents (where a tutor is defined as an `attendee` whose
      `roles` include `tutor`).
 4. Deletes the old `request` documents.
-5. Creates a new `appt` document containing the request body in each of the
-   `attendee`'s Firestore `appts` subcollection.
+5. Creates a new `match` document containing the request body in each of the
+   `attendee`'s Firestore `matches` subcollection.
 6. Updates each `attendee`'s availability (in their Firestore profile document)
    to reflect this appointment (i.e. remove the appointment's `time` from their
    availability).
-7. Sends each of the `appt`'s `attendee`'s an email containing instructions for
+7. Sends each of the `match`'s `attendee`'s an email containing instructions for
    how to access their Bramble virtual-tutoring room.
 
 ##### Response

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ApiError } from 'lib/model';
-import createAppt, { CreateApptRes } from 'lib/api/create-appt';
-import listAppts, { ListApptsRes } from 'lib/api/list-appts';
+import createMatch, { CreateMatchRes } from 'lib/api/create-match';
+import listMatches, { ListMatchesRes } from 'lib/api/list-matches';
 
 /**
  * GET - Lists the user's, their children's, or their org's appointments.
@@ -10,16 +10,16 @@ import listAppts, { ListApptsRes } from 'lib/api/list-appts';
  * Requires a JWT owned by an appointment attendee, their parents, or their org
  * admin.
  */
-export default async function appts(
+export default async function matches(
   req: NextApiRequest,
-  res: NextApiResponse<ListApptsRes | CreateApptRes | ApiError>
+  res: NextApiResponse<ListMatchesRes | CreateMatchRes | ApiError>
 ): Promise<void> {
   switch (req.method) {
-    case 'GET': // List the user's, their children's, or their org's appts.
-      await listAppts(req, res);
+    case 'GET': // List the user's, their children's, or their org's matches.
+      await listMatches(req, res);
       break;
-    case 'POST': // Create a new appt.
-      await createAppt(req, res);
+    case 'POST': // Create a new match.
+      await createMatch(req, res);
       break;
     default:
       res.setHeader('Allow', ['GET', 'POST']);

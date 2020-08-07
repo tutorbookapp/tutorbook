@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApptEmail } from 'lib/emails';
+import { MatchEmail } from 'lib/emails';
 import {
   Venue,
   Role,
@@ -7,8 +7,8 @@ import {
   Attendee,
   User,
   UserWithRoles,
-  Appt,
-  ApptJSON,
+  Match,
+  MatchJSON,
 } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
@@ -27,7 +27,7 @@ import {
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
-export type CreateApptRes = ApptJSON;
+export type CreateMatchRes = MatchJSON;
 
 interface BrambleRes {
   APImethod: string;
@@ -35,13 +35,13 @@ interface BrambleRes {
   result: string;
 }
 
-async function getBramble(apptId: string): Promise<Venue> {
+async function getBramble(matchId: string): Promise<Venue> {
   const [err, res] = await to<AxiosResponse<BrambleRes>>(
     axios({
       method: 'post',
       url: 'https://api.bramble.io/createRoom',
       headers: {
-        room: apptId,
+        room: matchId,
         agency: 'tutorbook',
         auth_token: process.env.BRAMBLE_API_KEY as string,
       },
@@ -51,12 +51,12 @@ async function getBramble(apptId: string): Promise<Venue> {
   return { url: (res as AxiosResponse<BrambleRes>).data.result };
 }
 
-async function getJitsi(apptId: string): Promise<Venue> {
-  return { url: `https://meet.jit.si/${apptId}` };
+async function getJitsi(matchId: string): Promise<Venue> {
+  return { url: `https://meet.jit.si/${matchId}` };
 }
 
 /**
- * Takes an `ApptJSON` object, an authentication token, and:
+ * Takes an `MatchJSON` object, an authentication token, and:
  * 1. Performs the following verifications (sends a `400` error code and an
  *    accompanying human-readable error message if any of them fail):
  *    - Verifies the correct request body was sent (e.g. all parameters are there
@@ -71,24 +71,24 @@ async function getJitsi(apptId: string): Promise<Venue> {
  *    - Verifies that the given authentication JWT belongs to either an admin of
  *      orgs that all the tutees and mentees are a part of or the parent of all
  *      the tutees and mentees. In the future, teachers will also be able to
- *      create appts on behalf of their students and students will be able to
- *      add fellow students (i.e. students within the same org) to their appts.
+ *      create matches on behalf of their students and students will be able to
+ *      add fellow students (i.e. students within the same org) to their matches.
  * 2. Adds all the tutee and mentee parents as attendees.
  * 3. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
  *    it as a venue to the appointment.
- * 4. Creates a new `appts` document.
+ * 4. Creates a new `matches` document.
  * 5. Sends an email initializing communications btwn the creator and the tutor.
  *
- * @param {ApptJSON} request - The appointment to create a pending request for.
+ * @param {MatchJSON} request - The appointment to create a pending request for.
  * The given `idToken` **must** be from one of the appointment's `attendees`
  * (see the above description for more requirements).
- * @return {ApptJSON} The created request (typically this is exactly the same as
+ * @return {MatchJSON} The created request (typically this is exactly the same as
  * the given `request` but it can be different if the server implements
  * different validations than the client).
  */
-export default async function createAppt(
+export default async function createMatch(
   req: NextApiRequest,
-  res: NextApiResponse<CreateApptRes>
+  res: NextApiResponse<CreateMatchRes>
 ): Promise<void> {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // 1. Verify that the request body is valid.
@@ -120,7 +120,7 @@ export default async function createAppt(
     if (err) {
       error(res, `Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
-      const appt: Appt = Appt.fromJSON(req.body);
+      const match: Match = Match.fromJSON(req.body);
       const attendees: UserWithRoles[] = [];
       const parents: User[] = [];
       let errored = false;
@@ -130,14 +130,14 @@ export default async function createAppt(
         photo: (token as DecodedIdToken).picture,
         phone: (token as DecodedIdToken).phone_number,
       });
-      if (creator.id !== appt.creator.id) {
+      if (creator.id !== match.creator.id) {
         const msg =
-          `Creator (${creator.id}) did not match appt creator ` +
-          `(${appt.creator.id}).`;
+          `Creator (${creator.id}) did not match match creator ` +
+          `(${match.creator.id}).`;
         error(res, msg, 401);
       } else {
         await Promise.all(
-          appt.attendees.map(async (attendee: Attendee) => {
+          match.attendees.map(async (attendee: Attendee) => {
             if (errored) return;
             // 1. Verify that the attendees have uIDs.
             if (!attendee.id) {
@@ -162,8 +162,8 @@ export default async function createAppt(
             // an error if it is the request sender who is unavailable).
             let timeslot: string = 'during appointment time';
             if (
-              appt.times &&
-              !appt.times.every((time: Timeslot) => {
+              match.times &&
+              !match.times.every((time: Timeslot) => {
                 timeslot = time.toString();
                 return user.availability.contains(time);
               })
@@ -185,12 +185,12 @@ export default async function createAppt(
             const canMentorSubject: (s: string) => boolean = (s: string) => {
               return user.mentoring.subjects.includes(s);
             };
-            if (isTutor && !appt.subjects.every(canTutorSubject)) {
+            if (isTutor && !match.subjects.every(canTutorSubject)) {
               error(res, `${user.toString()} cannot tutor these subjects.`);
               errored = true;
               return;
             }
-            if (isMentor && !appt.subjects.every(canMentorSubject)) {
+            if (isMentor && !match.subjects.every(canMentorSubject)) {
               error(res, `${user.toString()} cannot mentor these subjects.`);
               errored = true;
               return;
@@ -211,7 +211,7 @@ export default async function createAppt(
         );
         parents.forEach((parent: User) => {
           const roles: Role[] = ['parent'];
-          appt.attendees.push({ roles, id: parent.id, handle: uuid() });
+          match.attendees.push({ roles, id: parent.id, handle: uuid() });
           const parentWithRoles = parent as UserWithRoles;
           parentWithRoles.roles = roles;
           attendees.push(parentWithRoles);
@@ -230,7 +230,7 @@ export default async function createAppt(
               .get()
           ).docs.map((org: DocumentSnapshot) => org.id);
           // 1. Verify that all the tutees and mentees are either:
-          // - The creator of the appt (i.e. the owner of the JWT).
+          // - The creator of the match (i.e. the owner of the JWT).
           // - The children of the creator (i.e. the creator is their parent).
           // - Part of an org that the creator is an admin of.
           const errorMsg =
@@ -247,30 +247,30 @@ export default async function createAppt(
             })
           )
             return error(res, errorMsg, 401);
-          appt.id = db.collection('appts').doc().id;
-          if (appt.aspect === 'tutoring') {
+          match.id = db.collection('matches').doc().id;
+          if (match.aspect === 'tutoring') {
             console.log('[DEBUG] Creating Bramble room...');
-            const [errr, venue] = await to(getBramble(appt.id));
+            const [errr, venue] = await to(getBramble(match.id));
             if (errr) return error(res, errr.message, 500, errr);
-            appt.bramble = venue;
+            match.bramble = venue;
           } else {
             console.log('[DEBUG] Creating Jitsi room...');
-            const [errr, venue] = await to(getJitsi(appt.id));
+            const [errr, venue] = await to(getJitsi(match.id));
             if (errr) return error(res, errr.message, 500, errr);
-            appt.jitsi = venue;
+            match.jitsi = venue;
           }
-          console.log(`[DEBUG] Creating appointment (${appt.id})...`);
-          await db.collection('appts').doc(appt.id).set(appt.toFirestore());
+          console.log(`[DEBUG] Creating appointment (${match.id})...`);
+          await db.collection('matches').doc(match.id).set(match.toFirestore());
           // 4-5. Send out the appointment email.
           console.log('[DEBUG] Sending appointment email...');
           const [mailErr] = await to(
-            mail.send(new ApptEmail(appt, attendees, creator))
+            mail.send(new MatchEmail(match, attendees, creator))
           );
           if (mailErr) {
             const msg = `${mailErr.name} sending email: ${mailErr.message}`;
             error(res, msg, 500, mailErr);
           } else {
-            res.status(201).json(appt.toJSON());
+            res.status(201).json(match.toJSON());
             console.log('[DEBUG] Created appointment and sent email.');
           }
         }

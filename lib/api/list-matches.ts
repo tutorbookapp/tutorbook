@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchResponse } from '@algolia/client-search';
-import { Appt, ApptJSON, ApptSearchHit, ApptsQuery } from 'lib/model';
+import { Match, MatchJSON, MatchSearchHit, MatchesQuery } from 'lib/model';
 
 import to from 'await-to-js';
 
@@ -12,35 +12,35 @@ const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 const index: SearchIndex = client.initIndex(
-  process.env.NODE_ENV === 'development' ? 'test-appts' : 'default-appts'
+  process.env.NODE_ENV === 'development' ? 'test-matches' : 'default-matches'
 );
 
-async function searchAppts(
-  query: ApptsQuery
-): Promise<{ results: Appt[]; hits: number }> {
+async function searchMatches(
+  query: MatchesQuery
+): Promise<{ results: Match[]; hits: number }> {
   const filters: string = getFilterString(query);
   const { page, hitsPerPage, query: text } = query;
-  console.log('[DEBUG] Searching appts by:', {
+  console.log('[DEBUG] Searching matches by:', {
     text,
     page,
     hitsPerPage,
     filters,
   });
-  const [err, res] = await to<SearchResponse<ApptSearchHit>>(
+  const [err, res] = await to<SearchResponse<MatchSearchHit>>(
     index.search(text, { page, hitsPerPage, filters }) as Promise<
-      SearchResponse<ApptSearchHit>
+      SearchResponse<MatchSearchHit>
     >
   );
   if (err) throw new Error(`${err.name} while searching: ${err.message}`);
-  const { hits, nbHits } = res as SearchResponse<ApptSearchHit>;
+  const { hits, nbHits } = res as SearchResponse<MatchSearchHit>;
   return {
-    results: hits.map((hit: ApptSearchHit) => Appt.fromSearchHit(hit)),
+    results: hits.map((hit: MatchSearchHit) => Match.fromSearchHit(hit)),
     hits: nbHits,
   };
 }
 
-export interface ListApptsRes {
-  appts: ApptJSON[];
+export interface ListMatchesRes {
+  matches: MatchJSON[];
   hits: number;
 }
 
@@ -52,18 +52,18 @@ export interface ListApptsRes {
  * given JWT's authentication access (i.e. to only show their's, their orgs's,
  * and their children's appointments).
  *
- * @param {ApptQueryJSON} query - A query parsed into URL query parameters.
- * @return { appts: ApptJSON[]; hits: number } - The results (visible on the
+ * @param {MatchQueryJSON} query - A query parsed into URL query parameters.
+ * @return { matches: MatchJSON[]; hits: number } - The results (visible on the
  * requested page) and the total number of results (for pagination purposes).
  */
-export default async function listAppts(
+export default async function listMatches(
   req: NextApiRequest,
-  res: NextApiResponse<ListApptsRes>
+  res: NextApiResponse<ListMatchesRes>
 ): Promise<void> {
-  console.log('[DEBUG] Getting appts search results...');
-  const query: ApptsQuery = ApptsQuery.fromURLParams(req.query);
-  const { results, hits } = await searchAppts(query);
+  console.log('[DEBUG] Getting matches search results...');
+  const query: MatchesQuery = MatchesQuery.fromURLParams(req.query);
+  const { results, hits } = await searchMatches(query);
   console.log(`[DEBUG] Got ${hits} results.`);
-  const appts: ApptJSON[] = results.map((appt: Appt) => appt.toJSON());
-  res.status(200).json({ appts, hits });
+  const matches: MatchJSON[] = results.map((match: Match) => match.toJSON());
+  res.status(200).json({ matches, hits });
 }

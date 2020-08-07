@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from 'axios';
-import { Appt } from 'lib/model';
+import { Match } from 'lib/model';
 
 export interface BrambleRes {
   APImethod: string;
@@ -20,12 +20,12 @@ export function getBrambleDescription(url: string): string {
  * Creates a new Bramble room using their REST API.
  * @see {@link https://about.bramble.io/api.html}
  */
-export function createBrambleRoom(appt: Appt): AxiosPromise<BrambleRes> {
+export function createBrambleRoom(match: Match): AxiosPromise<BrambleRes> {
   return axios({
     method: 'post',
     url: 'https://api.bramble.io/createRoom',
     headers: {
-      room: appt.id,
+      room: match.id,
       agency: 'tutorbook',
       auth_token: process.env.BRAMBLE_API_KEY as string,
     },

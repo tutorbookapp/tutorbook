@@ -31,9 +31,9 @@ export interface QueryInterface {
 export type QueryJSON = QueryInterface;
 export type QueryURL = { [key in keyof QueryInterface]?: string };
 
-export type ApptsQueryInterface = QueryInterface;
-export type ApptsQueryJSON = QueryJSON;
-export type ApptsQueryURL = QueryURL;
+export type MatchesQueryInterface = QueryInterface;
+export type MatchesQueryJSON = QueryJSON;
+export type MatchesQueryURL = QueryURL;
 
 /**
  * All the supported filters for the search view.
@@ -132,17 +132,17 @@ export abstract class Query implements QueryInterface {
   }
 }
 
-export class ApptsQuery extends Query implements ApptsQueryInterface {
+export class MatchesQuery extends Query implements MatchesQueryInterface {
   public get endpoint(): string {
-    return this.getURL('/api/appts');
+    return this.getURL('/api/matches');
   }
 
-  public static fromURLParams(params: ApptsQueryURL): ApptsQuery {
-    return new ApptsQuery(super.fromURLParams(params));
+  public static fromURLParams(params: MatchesQueryURL): MatchesQuery {
+    return new MatchesQuery(super.fromURLParams(params));
   }
 
-  public static fromJSON(json: ApptsQueryJSON): ApptsQuery {
-    return new ApptsQuery(super.fromJSON(json));
+  public static fromJSON(json: MatchesQueryJSON): MatchesQuery {
+    return new MatchesQuery(super.fromJSON(json));
   }
 }
 

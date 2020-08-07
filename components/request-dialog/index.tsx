@@ -20,8 +20,8 @@ import {
   Option,
   Role,
   Availability,
-  Appt,
-  ApptJSON,
+  Match,
+  MatchJSON,
   Attendee,
   Aspect,
 } from 'lib/model';
@@ -77,7 +77,7 @@ export default function RequestDialog({
 
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
-  const appt = useRef<Appt>(new Appt());
+  const match = useRef<Match>(new Match());
   useEffect(() => {
     const creator: Attendee = {
       id: currentUser.id,
@@ -89,7 +89,7 @@ export default function RequestDialog({
       handle: uuid(),
       roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
     };
-    appt.current = new Appt({
+    match.current = new Match({
       times,
       creator,
       message,
@@ -153,8 +153,8 @@ export default function RequestDialog({
           return;
         }
       }
-      const [err] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
-        axios.post('/api/appts', appt.current.toJSON())
+      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<ApiError>>(
+        axios.post('/api/matches', match.current.toJSON())
       );
       if (err && err.response) {
         setLoading(false);
@@ -220,7 +220,7 @@ export default function RequestDialog({
           <h6 className={styles.header}>{t('common:request')}</h6>
           <form className={styles.form} onSubmit={onSubmit}>
             <Tooltip
-              content={t('appt3rd:login-to-proxy-request')}
+              content={t('match3rd:login-to-proxy-request')}
               open={!currentUser.id ? undefined : false}
               activateOn='hover'
               align='topRight'
@@ -231,7 +231,7 @@ export default function RequestDialog({
                   outlined
                   renderToPortal
                   disabled={!currentUser.id}
-                  label={t('appt3rd:attendees')}
+                  label={t('match3rd:attendees')}
                   className={styles.field}
                   onSelectedChange={onStudentsChange}
                   selected={students}
@@ -243,7 +243,7 @@ export default function RequestDialog({
               outlined
               autoOpenMenu
               renderToPortal
-              label={t('appt3rd:subjects')}
+              label={t('match3rd:subjects')}
               className={styles.field}
               onChange={onSubjectsChange}
               value={subjects}
@@ -254,7 +254,7 @@ export default function RequestDialog({
               <TimesSelect
                 outlined
                 renderToPortal
-                label={t('appt3rd:times')}
+                label={t('match3rd:times')}
                 className={styles.field}
                 onChange={onTimesChange}
                 options={user.availability}
@@ -268,10 +268,10 @@ export default function RequestDialog({
               required
               characterCount
               maxLength={500}
-              placeholder={t('appt3rd:message-placeholder', {
+              placeholder={t('match3rd:message-placeholder', {
                 subject: subjects[0] || 'Computer Science',
               })}
-              label={t('appt3rd:message')}
+              label={t('match3rd:message')}
               className={styles.field}
               onChange={onMessageChange}
               value={message}
@@ -280,8 +280,8 @@ export default function RequestDialog({
               className={styles.button}
               label={
                 !currentUser.id
-                  ? t('appt3rd:signup-btn')
-                  : t('appt3rd:send-btn')
+                  ? t('match3rd:signup-btn')
+                  : t('match3rd:send-btn')
               }
               disabled={loading}
               google={!currentUser.id}

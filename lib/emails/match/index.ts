@@ -1,5 +1,5 @@
 import Utils from 'lib/utils';
-import { Venue, Appt, Org, User, Role, UserWithRoles } from 'lib/model';
+import { Venue, Match, Org, User, Role, UserWithRoles } from 'lib/model';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
@@ -10,15 +10,15 @@ import MentoringTemplate from './mentoring.hbs';
 
 /**
  * Data used to render the appointment email.
- * @property appt - The appointment the email is about.
- * @property creator - The creator of the `appt`.
+ * @property match - The appointment the email is about.
+ * @property creator - The creator of the `match`.
  * @property creatorEmail - The creator's email handle.
  * @property recipientName - The name of the recipient of the email.
  * @property recipientRoles - The roles of the recipient of the email (i.e. the
  * roles of the attendee who isn't the creator).
  */
 interface GenericData {
-  appt: Appt;
+  match: Match;
   creator: User;
   creatorEmail: string;
   recipientName: string;
@@ -26,18 +26,18 @@ interface GenericData {
 }
 
 /**
- * Data used to render the org appt email (i.e. the email sent when an org admin
- * creates an appt they're not attending).
- * @property appt - The appt the email is about.
- * @property creator - The creator of the appt (i.e. the org admin).
+ * Data used to render the org match email (i.e. the email sent when an org admin
+ * creates an match they're not attending).
+ * @property match - The match the email is about.
+ * @property creator - The creator of the match (i.e. the org admin).
  * @property org - The org that the creator is primarily associated with.
  * @property contacts - A list of the attendees's and creator's contact info.
  * @property attendeeNames - A list of all of the attendee names.
  * @property rolesDescription - A description of who plays what role in this
- * appt (e.g. 'with Bobby as the tutor and Clarisse as the tutee').
+ * match (e.g. 'with Bobby as the tutor and Clarisse as the tutee').
  */
 interface OrgsData {
-  appt: Appt;
+  match: Match;
   creator: User;
   org: Org;
   contacts: Contact[];
@@ -75,21 +75,21 @@ const mentoring: Handlebars.TemplateDelegate<OrgsData> = Handlebars.compile(
 
 /**
  * Gets the given user's unique all-lowercase anonymous email handle from a
- * given appt.
+ * given match.
  * @todo Add unit and integration tests for the anonymous email relay such that
  * we can go back to using this. For now, our email relay is inconsistent and
  * thus we're temporarily disabling it and just using the people's actual
  * email addresses.
  */
 //function getEmail(
-//appt: Appt,
+//match: Match,
 //id: string,
 //domain: string = 'mail.tutorbook.org'
 //): string {
-//if (appt.creator.id === id) return `${appt.creator.handle}@${domain}`;
-//const match: Attendee[] = appt.attendees.filter((a: Attendee) => a.id === id);
+//if (match.creator.id === id) return `${match.creator.handle}@${domain}`;
+//const match: Attendee[] = match.attendees.filter((a: Attendee) => a.id === id);
 //if (match.length > 1) console.warn(`[WARNING] Duplicate attendees (${id}).`);
-//if (match.length < 1) throw new Error(`No attendee ${id} in appt.`);
+//if (match.length < 1) throw new Error(`No attendee ${id} in match.`);
 //return `${match[0].handle}@${domain}`;
 //}
 
@@ -116,7 +116,7 @@ const mentoring: Handlebars.TemplateDelegate<OrgsData> = Handlebars.compile(
  * - Mail-Reply-To: the creator of the appointment.
  * - Mail-Followup-To: the creator and all attendees of the appointment.
  */
-export default class ApptEmail implements Email {
+export default class MatchEmail implements Email {
   public readonly from: EmailData = {
     name: 'Tutorbook',
     email: 'team@tutorbook.org',
@@ -137,7 +137,7 @@ export default class ApptEmail implements Email {
 
   public readonly text: string;
 
-  public constructor(appt: Appt, attendees: UserWithRoles[], creator: User) {
+  public constructor(match: Match, attendees: UserWithRoles[], creator: User) {
     const recipients = attendees.filter((a) => a.id !== creator.id);
     const creatorEmail = creator.email;
     const attendeeNames = recipients.map(({ name }) => name);
@@ -154,11 +154,13 @@ export default class ApptEmail implements Email {
 
     this.to = recipients.map(({ name, email }) => ({ name, email }));
     this.replyTo = { name: creator.name, email: creatorEmail };
-    this.subject = `New ${Utils.join(appt.subjects)} appointment on Tutorbook.`;
+    this.subject = `New ${Utils.join(
+      match.subjects
+    )} appointment on Tutorbook.`;
 
     if (recipients.length === 1) {
       this.html = generic({
-        appt,
+        match,
         creator,
         creatorEmail,
         recipientName,
@@ -168,9 +170,9 @@ export default class ApptEmail implements Email {
       this.text = 
 `Hi ${recipientName},
 
-${creator.name} wants you as a ${Utils.join(recipientRoles)} for ${Utils.join(appt.subjects)}:
+${creator.name} wants you as a ${Utils.join(recipientRoles)} for ${Utils.join(match.subjects)}:
 
-> "${appt.message}"
+> "${match.message}"
 > —${creator.name} 
 
 If you're interested, please get in touch with ${creator.name} by replying to this email or using the following email address:
@@ -180,9 +182,9 @@ ${creatorEmail}
 Thank you.
 
 Tutorbook - tutorbook.org`;
-    } else if (appt.aspect === 'tutoring') {
+    } else if (match.aspect === 'tutoring') {
       this.html = tutoring({
-        appt,
+        match,
         creator,
         org,
         contacts,
@@ -193,17 +195,17 @@ Tutorbook - tutorbook.org`;
       this.text =
 `Hi ${Utils.join(attendeeNames)},
 
-You have a new tutoring lesson for ${Utils.join(appt.subjects)} (${rolesDescription}).
+You have a new tutoring lesson for ${Utils.join(match.subjects)} (${rolesDescription}).
 
 Please reply to this email stating when you're available to join your first lesson.
 
 Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to open:
 
-${(appt.bramble as Venue).url}
+${(match.bramble as Venue).url}
 
 ${creator.name} from ${org.name} set up this lesson:
 
-> "${appt.message}"
+> "${match.message}"
 > —${creator.name} from ${org.name} 
 
 If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:
@@ -215,7 +217,7 @@ Thank you.
 Tutorbook - tutorbook.org`;
     } else {
       this.html = mentoring({
-        appt,
+        match,
         creator,
         org,
         contacts,
@@ -226,17 +228,17 @@ Tutorbook - tutorbook.org`;
       this.text =
 `Hi ${Utils.join(attendeeNames)},
 
-You have a new mentoring match for ${Utils.join(appt.subjects)} (${rolesDescription}).
+You have a new mentoring match for ${Utils.join(match.subjects)} (${rolesDescription}).
 
 Please reply to this email stating when you're available to join your first video call.
 
 Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to join the video call:
 
-${(appt.jitsi as Venue).url}
+${(match.jitsi as Venue).url}
 
 ${creator.name} from ${org.name} set up this lesson:
 
-> "${appt.message}"
+> "${match.message}"
 > —${creator.name} from ${org.name} 
 
 If this doesn't seem like a good match, please get in touch with ${creator.name} by using this email address:

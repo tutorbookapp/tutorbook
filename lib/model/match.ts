@@ -51,15 +51,15 @@ export interface Venue {
  * (i.e. students, their parents and their tutor).
  * @property creator - Person who created the appointment (typically the student
  * but it could be their parent or an org admin).
- * @property message - Initial message sent by the appt creator.
+ * @property message - Initial message sent by the match creator.
  * @property [times] - Timeslots when the appointment will occur. For now, each
  * of these timeslots has the default weekly recurrance.
  * @property [bramble] - The URL to the Bramble virtual tutoring room (only
- * populated when the appt is for tutoring).
+ * populated when the match is for tutoring).
  * @property [jitsi] - The URL to the Jitsi video conferencing room (only
- * populated when the appt is for mentoring).
+ * populated when the match is for mentoring).
  */
-export interface ApptInterface {
+export interface MatchInterface {
   subjects: string[];
   attendees: Attendee[];
   creator: Attendee;
@@ -71,14 +71,14 @@ export interface ApptInterface {
   id: string;
 }
 
-export type ApptJSON = Omit<ApptInterface, 'times'> & {
+export type MatchJSON = Omit<MatchInterface, 'times'> & {
   times?: AvailabilityJSON;
 };
 
-export type ApptSearchHit = ObjectWithObjectID &
-  Omit<ApptInterface, 'times'> & { times?: AvailabilitySearchHit };
+export type MatchSearchHit = ObjectWithObjectID &
+  Omit<MatchInterface, 'times'> & { times?: AvailabilitySearchHit };
 
-export class Appt implements ApptInterface {
+export class Match implements MatchInterface {
   public subjects: string[] = [];
 
   public attendees: Attendee[] = [];
@@ -99,7 +99,7 @@ export class Appt implements ApptInterface {
 
   /**
    * Wrap your boring `Record`s with this class to ensure that they have all of
-   * the needed `ApptInterface` values (we fill any missing values w/
+   * the needed `MatchInterface` values (we fill any missing values w/
    * the above specified defaults) **and** to gain access to a bunch of useful
    * conversion method, etc (e.g. `toString` actually makes sense now).
    * @todo Actually implement a useful `toString` method here.
@@ -107,8 +107,8 @@ export class Appt implements ApptInterface {
    * matches the default value at `this[key]`'s type; and then only update the
    * default value if the types match.
    */
-  public constructor(appt: Partial<ApptInterface> = {}) {
-    construct<ApptInterface>(this, appt);
+  public constructor(match: Partial<MatchInterface> = {}) {
+    construct<MatchInterface>(this, match);
   }
 
   public get aspect(): Aspect {
@@ -118,21 +118,21 @@ export class Appt implements ApptInterface {
     return 'mentoring';
   }
 
-  public toJSON(): ApptJSON {
+  public toJSON(): MatchJSON {
     const { times, ref, ...rest } = this;
     if (times) return { ...rest, times: times.toJSON() };
     return rest;
   }
 
   /**
-   * Creates a new `Appt` object given the JSON representation of it.
+   * Creates a new `Match` object given the JSON representation of it.
    * @todo Convert Firestore document `path`s to `DocumentReference`s.
    */
-  public static fromJSON(json: ApptJSON): Appt {
+  public static fromJSON(json: MatchJSON): Match {
     const { times, ...rest } = json;
     if (times)
-      return new Appt({ ...rest, times: Availability.fromJSON(times) });
-    return new Appt(rest);
+      return new Match({ ...rest, times: Availability.fromJSON(times) });
+    return new Match(rest);
   }
 
   public toFirestore(): DocumentData {
@@ -141,11 +141,11 @@ export class Appt implements ApptInterface {
     return rest;
   }
 
-  public static fromFirestore(snapshot: DocumentSnapshot): Appt {
-    const apptData: DocumentData | undefined = snapshot.data();
-    if (apptData) {
-      const { times, ...rest } = apptData;
-      return new Appt({
+  public static fromFirestore(snapshot: DocumentSnapshot): Match {
+    const matchData: DocumentData | undefined = snapshot.data();
+    if (matchData) {
+      const { times, ...rest } = matchData;
+      return new Match({
         ...rest,
         times: times ? Availability.fromFirestore(times) : undefined,
         ref: snapshot.ref,
@@ -153,15 +153,15 @@ export class Appt implements ApptInterface {
       });
     }
     console.warn(
-      `[WARNING] Tried to create appt (${snapshot.ref.id}) from ` +
+      `[WARNING] Tried to create match (${snapshot.ref.id}) from ` +
         'non-existent Firestore document.'
     );
-    return new Appt();
+    return new Match();
   }
 
-  public static fromSearchHit(hit: ApptSearchHit): Appt {
+  public static fromSearchHit(hit: MatchSearchHit): Match {
     const { times, objectID, ...rest } = hit;
-    return new Appt({
+    return new Match({
       ...rest,
       times: times ? Availability.fromSearchHit(times) : undefined,
       id: objectID,

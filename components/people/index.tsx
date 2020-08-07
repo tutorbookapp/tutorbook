@@ -12,14 +12,12 @@ import { Option, UsersQuery, Org, User, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 import { useUser } from 'lib/account';
 
-import React, { useMemo, useEffect, useState, useCallback } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import UserDialog from 'components/user-dialog';
 import FilterForm from 'components/filter-form';
 import Result from 'components/search/result';
 import Header from 'components/header';
 import Placeholder from 'components/placeholder';
-
-import dynamic from 'next/dynamic';
 
 import Matching from './matching';
 

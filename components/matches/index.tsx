@@ -14,15 +14,15 @@ import {
 import { TextField } from '@rmwc/textfield';
 import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
-import { ListApptsRes } from 'lib/api/list-appts';
-import { ApptsQuery, Org, ApptJSON } from 'lib/model';
+import { ListMatchesRes } from 'lib/api/list-matches';
+import { MatchesQuery, Org, MatchJSON } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
 
 import React from 'react';
 import Header from 'components/header';
 import Placeholder from 'components/placeholder';
 
-import { ApptRow, LoadingRow } from './row';
+import { MatchRow, LoadingRow } from './row';
 
 import styles from './matches.module.scss';
 
@@ -31,7 +31,7 @@ interface MatchesProps {
 }
 
 /**
- * The "Appts" view is a heterogenous combination of live-updating filtered
+ * The "Matches" view is a heterogenous combination of live-updating filtered
  * results and editability (similar to Google Sheets):
  * - Data automatically re-validates when filters are valid.
  * - Filters become invalid when data is edited or new users are being created.
@@ -48,8 +48,8 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
 
   const [valid, setValid] = React.useState<boolean>(true);
   const [searching, setSearching] = React.useState<boolean>(true);
-  const [query, setQuery] = React.useState<ApptsQuery>(
-    new ApptsQuery({
+  const [query, setQuery] = React.useState<MatchesQuery>(
+    new MatchesQuery({
       orgs: [{ label: org.name, value: org.id }],
       hitsPerPage: 10,
     })
@@ -66,14 +66,14 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
   const { t } = useTranslation();
   // TODO: Control the re-validation using the `valid` state variable.
   // See: https://github.com/vercel/swr/issues/529
-  const { data, isValidating } = useSWR<ListApptsRes>(query.endpoint, {
+  const { data, isValidating } = useSWR<ListMatchesRes>(query.endpoint, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
   React.useEffect(() => {
-    setQuery((prev: ApptsQuery) => {
-      return new ApptsQuery({
+    setQuery((prev: MatchesQuery) => {
+      return new MatchesQuery({
         ...prev,
         orgs: [{ label: org.name, value: org.id }],
       });
@@ -89,45 +89,45 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
     setValid((prev: boolean) => prev || searching);
   }, [searching]);
 
-  const mutateAppt = React.useCallback(
-    async (appt: ApptJSON) => {
-      if (timeoutIds.current[appt.id]) {
-        clearTimeout(timeoutIds.current[appt.id]);
-        delete timeoutIds.current[appt.id];
+  const mutateMatch = React.useCallback(
+    async (match: MatchJSON) => {
+      if (timeoutIds.current[match.id]) {
+        clearTimeout(timeoutIds.current[match.id]);
+        delete timeoutIds.current[match.id];
       }
 
-      const updateLocal = async (updated: ApptJSON, oldId?: string) => {
+      const updateLocal = async (updated: MatchJSON, oldId?: string) => {
         await mutate(
           query.endpoint,
-          (prev: ListApptsRes) => {
+          (prev: ListMatchesRes) => {
             if (!prev) return prev;
-            const { appts: old } = prev;
+            const { matches: old } = prev;
             const idx = old.findIndex((u) => u.id === (oldId || updated.id));
             if (idx < 0) return prev;
-            const appts = [
+            const matches = [
               ...old.slice(0, idx),
               updated,
               ...old.slice(idx + 1),
             ];
-            return { ...prev, appts };
+            return { ...prev, matches };
           },
           false
         );
       };
 
-      const updateRemote = async (updated: ApptJSON) => {
+      const updateRemote = async (updated: MatchJSON) => {
         const url = `/api/users/${updated.id}`;
-        const { data: remoteData } = await axios.put<ApptJSON>(url, updated);
+        const { data: remoteData } = await axios.put<MatchJSON>(url, updated);
         await updateLocal(remoteData);
       };
 
       setValid(false); // Filters become invalid when data is updated.
-      await updateLocal(appt);
+      await updateLocal(match);
 
       // Only update the user profile remotely after 5secs of no change.
       // @see {@link https://github.com/vercel/swr/issues/482}
-      timeoutIds.current[appt.id] = setTimeout(() => {
-        void updateRemote(appt);
+      timeoutIds.current[match.id] = setTimeout(() => {
+        void updateRemote(match);
       }, 5000);
     },
     [query]
@@ -159,21 +159,21 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
                 const q: string = event.currentTarget.value;
                 setSearching(true);
-                setQuery((p) => new ApptsQuery({ ...p, query: q, page: 0 }));
+                setQuery((p) => new MatchesQuery({ ...p, query: q, page: 0 }));
               }}
             />
           </div>
         </div>
-        {(searching || !!(data ? data.appts : []).length) && (
+        {(searching || !!(data ? data.matches : []).length) && (
           <DataTable className={styles.table}>
             <DataTableContent>
               <DataTableHead className={styles.header}>
                 <DataTableRow>
                   <DataTableHeadCell className={styles.message}>
-                    {t('appt:message')}
+                    {t('match:message')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.subjects}>
-                    {t('appt:subjects')}
+                    {t('match:subjects')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.tutors}>
                     {t('common:tutors')}
@@ -194,15 +194,19 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               </DataTableHead>
               <DataTableBody>
                 {!searching &&
-                  (data ? data.appts : []).map((appt) => (
-                    <ApptRow key={appt.id} appt={appt} onChange={mutateAppt} />
+                  (data ? data.matches : []).map((match) => (
+                    <MatchRow
+                      key={match.id}
+                      match={match}
+                      onChange={mutateMatch}
+                    />
                   ))}
                 {searching && loadingRows}
               </DataTableBody>
             </DataTableContent>
           </DataTable>
         )}
-        {!searching && !(data ? data.appts : []).length && (
+        {!searching && !(data ? data.matches : []).length && (
           <div className={styles.empty}>
             <Placeholder>{t('matches:empty')}</Placeholder>
           </div>
@@ -220,7 +224,9 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
                   const hitsPerPage = Number(event.currentTarget.value);
                   const page = 0;
                   setSearching(true);
-                  setQuery((p) => new ApptsQuery({ ...p, hitsPerPage, page }));
+                  setQuery(
+                    (p) => new MatchesQuery({ ...p, hitsPerPage, page })
+                  );
                 }}
               />
             </div>
@@ -232,7 +238,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               icon='chevron_left'
               onClick={() => {
                 setSearching(true);
-                setQuery((p) => new ApptsQuery({ ...p, page: p.page - 1 }));
+                setQuery((p) => new MatchesQuery({ ...p, page: p.page - 1 }));
               }}
             />
             <IconButton
@@ -242,7 +248,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               icon='chevron_right'
               onClick={() => {
                 setSearching(true);
-                setQuery((p) => new ApptsQuery({ ...p, page: p.page + 1 }));
+                setQuery((p) => new MatchesQuery({ ...p, page: p.page + 1 }));
               }}
             />
           </div>

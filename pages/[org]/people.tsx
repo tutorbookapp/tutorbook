@@ -17,7 +17,7 @@ import people from 'locales/en/people.json';
 import search from 'locales/en/search.json';
 import query from 'locales/en/query.json';
 import user from 'locales/en/user.json';
-import appt from 'locales/en/appt.json';
+import match from 'locales/en/match.json';
 
 function PeoplePage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
@@ -80,5 +80,5 @@ export default withI18n(PeoplePage, {
   search,
   query,
   user,
-  appt,
+  match,
 });

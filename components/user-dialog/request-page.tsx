@@ -4,8 +4,8 @@ import Button from 'components/button';
 import Utils from 'lib/utils';
 
 import { IconButton } from '@rmwc/icon-button';
-import { ApptInputs } from 'components/inputs';
-import { Appt, ApptJSON, UserJSON, ApiError } from 'lib/model';
+import { MatchInputs } from 'components/inputs';
+import { Match, MatchJSON, UserJSON, ApiError } from 'lib/model';
 import { TextFieldHelperText } from '@rmwc/textfield';
 import { useUser } from 'lib/account';
 
@@ -36,8 +36,8 @@ export default memo(function RequestPage({
   // the labels (i.e. the names) of each user. Right now, we're running extra
   // fetch requests to get those names (when we already have them here). Perhaps
   // just add a `name` property to the `Attendee` object and get it over with.
-  const [appt, setAppt] = useState<Appt>(
-    new Appt({
+  const [match, setMatch] = useState<Match>(
+    new Match({
       attendees: [
         { id: value.id, roles: ['tutor'], handle: uuid() },
         { id: user.id, roles: ['tutee'], handle: uuid() },
@@ -49,8 +49,8 @@ export default memo(function RequestPage({
     async (event: React.FormEvent) => {
       event.preventDefault();
       setLoading(true);
-      const [err] = await to<AxiosResponse<ApptJSON>, AxiosError<ApiError>>(
-        axios.post('/api/appts', appt.toJSON())
+      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<ApiError>>(
+        axios.post('/api/matches', match.toJSON())
       );
       if (err && err.response) {
         setLoading(false);
@@ -76,7 +76,7 @@ export default memo(function RequestPage({
         setChecked(true);
       }
     },
-    [appt]
+    [match]
   );
 
   return (
@@ -87,9 +87,9 @@ export default memo(function RequestPage({
       </div>
       <div className={styles.content}>
         <form className={styles.form} onSubmit={onSubmit}>
-          <ApptInputs
-            value={appt}
-            onChange={setAppt}
+          <MatchInputs
+            value={match}
+            onChange={setMatch}
             renderToPortal
             className={styles.field}
             tutors
@@ -102,7 +102,7 @@ export default memo(function RequestPage({
           />
           <Button
             className={styles.btn}
-            label={t('appt:send-btn')}
+            label={t('match:send-btn')}
             disabled={loading}
             raised
             arrow

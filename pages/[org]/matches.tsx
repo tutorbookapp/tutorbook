@@ -14,9 +14,9 @@ import useTranslation from 'next-translate/useTranslation';
 
 import common from 'locales/en/common.json';
 import matches from 'locales/en/matches.json';
-import appt from 'locales/en/appt.json';
+import match from 'locales/en/match.json';
 
-function ApptsPage(): JSX.Element {
+function MatchesPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
@@ -71,4 +71,4 @@ function ApptsPage(): JSX.Element {
   );
 }
 
-export default withI18n(ApptsPage, { common, matches, appt });
+export default withI18n(MatchesPage, { common, matches, match });

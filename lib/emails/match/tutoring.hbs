@@ -36,11 +36,11 @@
                       
                       <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Hi {{join attendeeNames}},</p>
 
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">You have a new mentoring match for {{join appt.subjects}} ({{rolesDescription}}).</p>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">You have a new tutoring lesson for {{join match.subjects}} ({{rolesDescription}}).</p>
 
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Please reply to this email stating when you're available to join your first video call.</p>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Please reply to this email stating when you're available to join your first lesson.</p>
 
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Once you figure out a time when everyone's available, simply click the button below to join the video call:</p>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Once you figure out a time when everyone's available, simply click the button below to open the lesson room:</p>
                       
                       <br>
 
@@ -49,7 +49,7 @@
                           <tr>
                             <td align="center" style="padding:0">
                               <div>
-                                <a href="{{appt.jitsi.url}}" style="color:#FFFFFF!important;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:12px;line-height:50px;text-decoration:none;background-color:#000000;border-radius:5px;display:inline-block;font-weight:600;text-align:center;width:200px">JOIN VIDEO CALL</a>
+                                <a href="{{match.bramble.url}}" style="color:#FFFFFF!important;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:12px;line-height:50px;text-decoration:none;background-color:#000000;border-radius:5px;display:inline-block;font-weight:600;text-align:center;width:200px">OPEN ROOM</a>
                               </div>
                             </td>
                           </tr>
@@ -60,14 +60,14 @@
 
                       <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">Or copy and paste this URL into a new tab of your browser:</p>
 
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px"><a href="{{appt.jitsi.url}}" style="color:#067DF7!important;text-decoration:none">{{appt.jitsi.url}}</a></p>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px"><a href="{{match.bramble.url}}" style="color:#067DF7!important;text-decoration:none">{{match.bramble.url}}</a></p>
 
                       <br>
 
-                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">{{creator.name}} from {{org.name}} set up this match:</p>
+                      <p style="color:#000000;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">{{creator.name}} from {{org.name}} set up this lesson:</p>
 
                       <blockquote style="margin:0;border-left:4px solid #a6a6a6;padding:0 0 0 24px;display:block;quotes:none">
-                        <p style="color:#474747;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px"><i>"{{appt.message}}"</i></p>
+                        <p style="color:#474747;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px"><i>"{{match.message}}"</i></p>
                         <cite style="color:#474747;font-family:'Poppins','Google Sans',Arial,sans-serif;font-size:14px;line-height:24px">—{{creator.name}} from {{org.name}}</cite>
                       </blockquote>
 

@@ -5,6 +5,6 @@ export * from './user';
 export * from './timeslot';
 export * from './availability';
 export * from './query';
-export * from './appt';
+export * from './match';
 export * from './errors';
 export * from './constants';

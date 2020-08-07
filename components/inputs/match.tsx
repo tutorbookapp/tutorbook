@@ -14,7 +14,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
 import { TextField } from '@rmwc/textfield';
-import { Appt, Attendee, Role, Availability } from 'lib/model';
+import { Match, Attendee, Role, Availability } from 'lib/model';
 import { TimesSelectProps } from 'components/times-select';
 import { InputsProps, InputsConfig } from './types';
 
@@ -35,7 +35,7 @@ type Input =
   | 'mentors'
   | 'mentees';
 
-export default function ApptInputs({
+export default function MatchInputs({
   value,
   onChange,
   focused: focusTarget,
@@ -48,14 +48,14 @@ export default function ApptInputs({
   subjects,
   times,
   message,
-}: InputsProps<Appt, Input> & InputsConfig<Input>): JSX.Element {
+}: InputsProps<Match, Input> & InputsConfig<Input>): JSX.Element {
   const onTutorsChange = useCallback(
     (ids: string[]) => {
       const attendees = [
         ...value.attendees.filter((a) => a.roles.indexOf('tutor') < 0),
         ...ids.map((id) => ({ id, roles: ['tutor'], handle: uuid() })),
       ] as Attendee[];
-      onChange(new Appt({ ...value, attendees }));
+      onChange(new Match({ ...value, attendees }));
     },
     [onChange, value]
   );
@@ -65,7 +65,7 @@ export default function ApptInputs({
         ...value.attendees.filter((a) => a.roles.indexOf('tutee') < 0),
         ...ids.map((id) => ({ id, roles: ['tutee'], handle: uuid() })),
       ] as Attendee[];
-      onChange(new Appt({ ...value, attendees }));
+      onChange(new Match({ ...value, attendees }));
     },
     [onChange, value]
   );
@@ -75,7 +75,7 @@ export default function ApptInputs({
         ...value.attendees.filter((a) => a.roles.indexOf('mentor') < 0),
         ...ids.map((id) => ({ id, roles: ['mentor'], handle: uuid() })),
       ] as Attendee[];
-      onChange(new Appt({ ...value, attendees }));
+      onChange(new Match({ ...value, attendees }));
     },
     [onChange, value]
   );
@@ -85,25 +85,25 @@ export default function ApptInputs({
         ...value.attendees.filter((a) => a.roles.indexOf('mentee') < 0),
         ...ids.map((id) => ({ id, roles: ['mentee'], handle: uuid() })),
       ] as Attendee[];
-      onChange(new Appt({ ...value, attendees }));
+      onChange(new Match({ ...value, attendees }));
     },
     [onChange, value]
   );
   const onSubjectsChange = useCallback(
     (s: string[]) => {
-      onChange(new Appt({ ...value, subjects: s }));
+      onChange(new Match({ ...value, subjects: s }));
     },
     [onChange, value]
   );
   const onTimesChange = useCallback(
     (a: Availability) => {
-      onChange(new Appt({ ...value, times: a }));
+      onChange(new Match({ ...value, times: a }));
     },
     [onChange, value]
   );
   const onMessageChange = useCallback(
     (e: FormEvent<HTMLInputElement>) => {
-      onChange(new Appt({ ...value, message: e.currentTarget.value }));
+      onChange(new Match({ ...value, message: e.currentTarget.value }));
     },
     [onChange, value]
   );
@@ -193,7 +193,7 @@ export default function ApptInputs({
         <SubjectSelect
           required
           focused={focused === 'subjects'}
-          label={t('appt:subjects')}
+          label={t('match:subjects')}
           onFocused={focusSubjects}
           onBlurred={focusNothing}
           onChange={onSubjectsChange}
@@ -207,7 +207,7 @@ export default function ApptInputs({
       {times && (
         <TimesSelect
           focused={focused === 'subjects'}
-          label={t('appt:times')}
+          label={t('match:times')}
           onFocused={focusTimes}
           onBlurred={focusNothing}
           onChange={onTimesChange}
@@ -224,8 +224,8 @@ export default function ApptInputs({
           required
           characterCount
           maxLength={700}
-          label={t('appt:message')}
-          placeholder={t('appt:message-placeholder', {
+          label={t('match:message')}
+          placeholder={t('match:message-placeholder', {
             subject: value.subjects[0] || 'Computer Science',
           })}
           onFocus={focusMessage}

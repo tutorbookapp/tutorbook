@@ -1,6 +1,6 @@
 import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
-import { Attendee, Role, TCallback, ApptJSON } from 'lib/model';
+import { Attendee, Role, TCallback, MatchJSON } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import React, { useCallback, memo } from 'react';
@@ -10,37 +10,41 @@ import SubjectSelect from 'components/subject-select';
 import equal from 'fast-deep-equal';
 import styles from './matches.module.scss';
 
-interface ApptRowProps {
-  appt: ApptJSON;
-  onChange: TCallback<ApptJSON>;
+interface MatchRowProps {
+  match: MatchJSON;
+  onChange: TCallback<MatchJSON>;
 }
 
 function hasRole(attendee: Attendee, role: Role) {
   return attendee.roles.some((r: Role) => r === role);
 }
 
-export const ApptRow = memo(
-  function ApptRow({ appt, onChange }: ApptRowProps) {
+export const MatchRow = memo(
+  function MatchRow({ match, onChange }: MatchRowProps) {
     const onValueChange = useCallback(
-      (val: unknown, key: keyof ApptJSON) => {
-        if (!equal(val, appt[key])) onChange({ ...appt, [key]: val });
+      (val: unknown, key: keyof MatchJSON) => {
+        if (!equal(val, match[key])) onChange({ ...match, [key]: val });
       },
-      [appt, onChange]
+      [match, onChange]
     );
     const shared = { singleLine: true, renderToPortal: true };
     const props = (role: Role) => ({
       ...shared,
       onChange(ids: string[]) {
-        const old: Attendee[] = appt.attendees.filter((a) => !hasRole(a, role));
+        const old: Attendee[] = match.attendees.filter(
+          (a) => !hasRole(a, role)
+        );
         const updated: Attendee[] = ids.map((id: string) => {
           let handle: string = uuid();
-          const idx = appt.attendees.findIndex(({ id: oldId }) => oldId === id);
-          if (idx >= 0) handle = appt.attendees[idx].handle;
+          const idx = match.attendees.findIndex(
+            ({ id: oldId }) => oldId === id
+          );
+          if (idx >= 0) handle = match.attendees[idx].handle;
           return { handle, id, roles: [role] };
         });
         onValueChange([...old, ...updated], 'attendees');
       },
-      value: appt.attendees.filter((a) => hasRole(a, role)).map((a) => a.id),
+      value: match.attendees.filter((a) => hasRole(a, role)).map((a) => a.id),
     });
     // TODO: Fetch all of the attendee data and use it to directly control the
     // selected options on the `UserSelect` and to constrain the selectable
@@ -48,12 +52,12 @@ export const ApptRow = memo(
     return (
       <DataTableRow>
         <DataTableCell className={styles.message}>
-          <TextField value={appt.message} onChange={() => {}} />
+          <TextField value={match.message} onChange={() => {}} />
         </DataTableCell>
         <DataTableCell className={styles.subjects}>
           <SubjectSelect
             {...shared}
-            value={appt.subjects}
+            value={match.subjects}
             onChange={(s: string[]) => onValueChange(s, 'subjects')}
           />
         </DataTableCell>
@@ -75,8 +79,8 @@ export const ApptRow = memo(
       </DataTableRow>
     );
   },
-  (prevProps: ApptRowProps, nextProps: ApptRowProps) => {
-    return equal(prevProps.appt, nextProps.appt);
+  (prevProps: MatchRowProps, nextProps: MatchRowProps) => {
+    return equal(prevProps.match, nextProps.match);
   }
 );
 
