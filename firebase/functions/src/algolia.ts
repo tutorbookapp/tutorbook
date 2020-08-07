@@ -92,15 +92,15 @@ async function updateFilterableAttributes(
   return updateSettings(index, { attributesForFaceting });
 }
 
-function handles(appt: Record<string, unknown>): string[] {
-  const creatorHandle = (appt.creator as { handle: string }).handle;
-  const attendeeHandles = (appt.attendees as { handle: string }[]).map(
+function handles(match: Record<string, unknown>): string[] {
+  const creatorHandle = (match.creator as { handle: string }).handle;
+  const attendeeHandles = (match.attendees as { handle: string }[]).map(
     ({ handle }) => handle
   );
   return [creatorHandle, ...attendeeHandles];
 }
 
-export async function apptUpdate(
+export async function matchUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
@@ -113,13 +113,13 @@ export async function apptUpdate(
    * Gets the orgs for a given appointment. We add all of the orgs that each
    * appointment attendee is a part of during indexing. This allows us to filter
    * by org at search time (i.e. when we want to populate an org admin dashboard).
-   * @param appt - The appointment to fetch orgs for.
-   * @return A list of org IDs that the `appt` attendees are a part of.
+   * @param match - The appointment to fetch orgs for.
+   * @return A list of org IDs that the `match` attendees are a part of.
    */
-  async function orgs(appt: Record<string, unknown>): Promise<string[]> {
+  async function orgs(match: Record<string, unknown>): Promise<string[]> {
     const ids: Set<string> = new Set();
     await Promise.all(
-      (appt.attendees as { id: string }[]).map(async ({ id }) => {
+      (match.attendees as { id: string }[]).map(async ({ id }) => {
         const doc = await db.collection('users').doc(id).get();
         if (!doc.exists) {
           console.warn(`[WARNING] Attendee (${id}) doesn't exist.`);
@@ -128,36 +128,38 @@ export async function apptUpdate(
         }
       })
     );
-    console.log(`[DEBUG] Got orgs for appt (${appt.id as string}):`, ids);
+    console.log(`[DEBUG] Got orgs for match (${match.id as string}):`, ids);
     return Array.from(ids);
   }
 
-  const id: string = context.params.appt as string;
-  const indexId = `${context.params.partition as string}-appts`;
+  const id: string = context.params.match as string;
+  const indexId = `${context.params.partition as string}-matches`;
   const index: SearchIndex = client.initIndex(indexId);
   if (!change.after.exists) {
-    console.log(`[DEBUG] Deleting appt (${id})...`);
+    console.log(`[DEBUG] Deleting match (${id})...`);
     const [err] = await too(index.deleteObject(id));
     if (err) {
       console.error(`[ERROR] ${err.name} while deleting:`, err);
     } else {
-      console.log(`[DEBUG] Deleted appt (${id}).`);
+      console.log(`[DEBUG] Deleted match (${id}).`);
     }
   } else {
-    const appt = change.after.data() as Record<string, unknown>;
-    console.log(`[DEBUG] Updating appt (${id})...`);
+    const match = change.after.data() as Record<string, unknown>;
+    console.log(`[DEBUG] Updating match (${id})...`);
     const ob: Record<string, unknown> = {
-      ...appt,
-      time: appt.time ? timeslot(appt.time as Timeslot<Timestamp>) : undefined,
-      handles: handles(appt),
-      orgs: await orgs(appt),
+      ...match,
+      time: match.time
+        ? timeslot(match.time as Timeslot<Timestamp>)
+        : undefined,
+      handles: handles(match),
+      orgs: await orgs(match),
       objectID: id,
     };
     const [err] = await too(index.saveObject(ob));
     if (err) {
       console.error(`[ERROR] ${err.name} while updating:`, err);
     } else {
-      console.log(`[DEBUG] Updated appt (${id}).`);
+      console.log(`[DEBUG] Updated match (${id}).`);
     }
   }
   await updateFilterableAttributes(index, ['handles', 'orgs']);
