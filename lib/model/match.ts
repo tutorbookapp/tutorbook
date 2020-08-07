@@ -27,14 +27,14 @@ export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 export type UserWithRoles = User & { roles: Role[] };
 
 /**
- * Represents an attendee to an appointment.
+ * Represents an person to an appointment.
  * @property id - The user's unique Firebase-assigned user ID (note that this
  * contains both lowercase and capital letters which is why it can't be used as
  * a unique anonymous email address handle).
  * @property handle - The user's all-lowercase anonymous email handle.
  * @property roles - The user's roles at this appointment (e.g. tutor or pupil).
  */
-export interface Attendee {
+export interface Person {
   id: string;
   handle: string;
   roles: Role[];
@@ -47,7 +47,7 @@ export interface Venue {
 /**
  * Represents a tutoring lesson or mentoring appointment.
  * @property subjects - Subjects the appointment will be about (e.g. CS).
- * @property attendees - People who will be present during the appointment
+ * @property people - People who will be present during the appointment
  * (i.e. students, their parents and their tutor).
  * @property creator - Person who created the appointment (typically the student
  * but it could be their parent or an org admin).
@@ -61,8 +61,8 @@ export interface Venue {
  */
 export interface MatchInterface {
   subjects: string[];
-  attendees: Attendee[];
-  creator: Attendee;
+  people: Person[];
+  creator: Person;
   message: string;
   times?: Availability;
   bramble?: Venue;
@@ -81,9 +81,9 @@ export type MatchSearchHit = ObjectWithObjectID &
 export class Match implements MatchInterface {
   public subjects: string[] = [];
 
-  public attendees: Attendee[] = [];
+  public people: Person[] = [];
 
-  public creator: Attendee = { id: '', handle: uuid(), roles: [] };
+  public creator: Person = { id: '', handle: uuid(), roles: [] };
 
   public message = '';
 
@@ -112,9 +112,9 @@ export class Match implements MatchInterface {
   }
 
   public get aspect(): Aspect {
-    const isTutor = (a: Attendee) => a.roles.indexOf('tutor') >= 0;
-    const isTutee = (a: Attendee) => a.roles.indexOf('tutee') >= 0;
-    if (this.attendees.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
+    const isTutor = (a: Person) => a.roles.indexOf('tutor') >= 0;
+    const isTutee = (a: Person) => a.roles.indexOf('tutee') >= 0;
+    if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
     return 'mentoring';
   }
 

@@ -17,7 +17,7 @@ import {
   DocumentSnapshot,
   DocumentReference,
   MatchSearchHit,
-  Attendee,
+  Person,
 } from './types';
 
 /**
@@ -75,7 +75,7 @@ const index: SearchIndex = client.initIndex('default-matches');
  * `<uid>-<match>@mail.tutorbook.org` email address).
  *
  * If a user doesn't already exist, we create that user and add them to the
- * appointment's `attendees` field.
+ * appointment's `people` field.
  *
  * @todo Get the user's name (from the original `From:` header) and use it when
  * creating new users.
@@ -102,11 +102,11 @@ async function getAnonEmail(
   }
   const id: string = (user as UserRecord).uid;
   const handle: string = uuid();
-  const attendees = (matchDoc.data() || {}).attendees as Attendee[];
-  const idx: number = attendees.findIndex((a: Attendee) => a.handle === handle);
+  const people = (matchDoc.data() || {}).people as Person[];
+  const idx: number = people.findIndex((a: Person) => a.handle === handle);
   if (idx < 0) {
-    const attendee: Attendee = { id, handle, roles: [] };
-    await matchDoc.ref.update({ attendees: [...attendees, attendee] });
+    const person: Person = { id, handle, roles: [] };
+    await matchDoc.ref.update({ people: [...people, person] });
   }
   return `${handle}@mail.tutorbook.org`;
 }
@@ -124,13 +124,13 @@ async function getRealEmail(
   matchDoc: DocumentSnapshot
 ): Promise<string> {
   const handle: string = anonEmail.split('@')[0];
-  const creator: Attendee = (matchDoc.data() || {}).creator as Attendee;
-  const attendees: Attendee[] = (matchDoc.data() || {}).attendees as Attendee[];
-  const idx: number = attendees.findIndex((a: Attendee) => a.handle === handle);
-  const msg = `No attendee or creator with handle (${handle}).`;
+  const creator: Person = (matchDoc.data() || {}).creator as Person;
+  const people: Person[] = (matchDoc.data() || {}).people as Person[];
+  const idx: number = people.findIndex((a: Person) => a.handle === handle);
+  const msg = `No person or creator with handle (${handle}).`;
   if (idx < 0 && creator.handle !== handle) throw new Error(msg);
   const [err, user] = await to<UserRecord, FirebaseError>(
-    auth.getUser(creator.handle === handle ? creator.id : attendees[idx].id)
+    auth.getUser(creator.handle === handle ? creator.id : people[idx].id)
   );
   if (err) {
     throw new Error(`${err.name} fetching user (${anonEmail}): ${err.message}`);
@@ -183,7 +183,7 @@ async function replaceRealWithAnon(
 }
 
 /**
- * Get all possible appointments by filtering by user handle (each attendee is
+ * Get all possible appointments by filtering by user handle (each person is
  * assigned an all-lowercase handle unique to each match).
  */
 async function getMatchByHandles(handles: string[]): Promise<MatchSearchHit> {

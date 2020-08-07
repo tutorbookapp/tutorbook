@@ -94,10 +94,10 @@ async function updateFilterableAttributes(
 
 function handles(match: Record<string, unknown>): string[] {
   const creatorHandle = (match.creator as { handle: string }).handle;
-  const attendeeHandles = (match.attendees as { handle: string }[]).map(
+  const peopleHandles = (match.people as { handle: string }[]).map(
     ({ handle }) => handle
   );
-  return [creatorHandle, ...attendeeHandles];
+  return [creatorHandle, ...peopleHandles];
 }
 
 export async function matchUpdate(
@@ -111,18 +111,18 @@ export async function matchUpdate(
 
   /**
    * Gets the orgs for a given appointment. We add all of the orgs that each
-   * appointment attendee is a part of during indexing. This allows us to filter
+   * appointment person is a part of during indexing. This allows us to filter
    * by org at search time (i.e. when we want to populate an org admin dashboard).
    * @param match - The appointment to fetch orgs for.
-   * @return A list of org IDs that the `match` attendees are a part of.
+   * @return A list of org IDs that the `match` people are a part of.
    */
   async function orgs(match: Record<string, unknown>): Promise<string[]> {
     const ids: Set<string> = new Set();
     await Promise.all(
-      (match.attendees as { id: string }[]).map(async ({ id }) => {
+      (match.people as { id: string }[]).map(async ({ id }) => {
         const doc = await db.collection('users').doc(id).get();
         if (!doc.exists) {
-          console.warn(`[WARNING] Attendee (${id}) doesn't exist.`);
+          console.warn(`[WARNING] Person (${id}) doesn't exist.`);
         } else {
           (doc.data() as { orgs: string[] }).orgs.forEach((o) => ids.add(o));
         }

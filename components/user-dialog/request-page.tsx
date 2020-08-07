@@ -35,10 +35,10 @@ export default memo(function RequestPage({
   // TODO: Refactor the request inputs component such that we can fully control
   // the labels (i.e. the names) of each user. Right now, we're running extra
   // fetch requests to get those names (when we already have them here). Perhaps
-  // just add a `name` property to the `Attendee` object and get it over with.
+  // just add a `name` property to the `Person` object and get it over with.
   const [match, setMatch] = useState<Match>(
     new Match({
-      attendees: [
+      people: [
         { id: value.id, roles: ['tutor'], handle: uuid() },
         { id: user.id, roles: ['tutee'], handle: uuid() },
       ],

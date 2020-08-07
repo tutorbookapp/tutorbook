@@ -9,7 +9,7 @@ export type DocumentReference = admin.firestore.DocumentReference;
 
 export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
-export interface Attendee {
+export interface Person {
   id: string;
   handle: string;
   roles: Role[];

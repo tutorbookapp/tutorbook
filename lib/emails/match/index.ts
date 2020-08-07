@@ -15,7 +15,7 @@ import MentoringTemplate from './mentoring.hbs';
  * @property creatorEmail - The creator's email handle.
  * @property recipientName - The name of the recipient of the email.
  * @property recipientRoles - The roles of the recipient of the email (i.e. the
- * roles of the attendee who isn't the creator).
+ * roles of the person who isn't the creator).
  */
 interface GenericData {
   match: Match;
@@ -31,8 +31,8 @@ interface GenericData {
  * @property match - The match the email is about.
  * @property creator - The creator of the match (i.e. the org admin).
  * @property org - The org that the creator is primarily associated with.
- * @property contacts - A list of the attendees's and creator's contact info.
- * @property attendeeNames - A list of all of the attendee names.
+ * @property contacts - A list of the people's and creator's contact info.
+ * @property personNames - A list of all of the person names.
  * @property rolesDescription - A description of who plays what role in this
  * match (e.g. 'with Bobby as the tutor and Clarisse as the tutee').
  */
@@ -41,7 +41,7 @@ interface OrgsData {
   creator: User;
   org: Org;
   contacts: Contact[];
-  attendeeNames: string[];
+  personNames: string[];
   rolesDescription: string;
 }
 
@@ -87,14 +87,14 @@ const mentoring: Handlebars.TemplateDelegate<OrgsData> = Handlebars.compile(
 //domain: string = 'mail.tutorbook.org'
 //): string {
 //if (match.creator.id === id) return `${match.creator.handle}@${domain}`;
-//const match: Attendee[] = match.attendees.filter((a: Attendee) => a.id === id);
-//if (match.length > 1) console.warn(`[WARNING] Duplicate attendees (${id}).`);
-//if (match.length < 1) throw new Error(`No attendee ${id} in match.`);
+//const match: Person[] = match.people.filter((a: Person) => a.id === id);
+//if (match.length > 1) console.warn(`[WARNING] Duplicate people (${id}).`);
+//if (match.length < 1) throw new Error(`No person ${id} in match.`);
 //return `${match[0].handle}@${domain}`;
 //}
 
 /**
- * Sends one appointment email to all of the attendees CC-ing the creator of the
+ * Sends one appointment email to all of the people CC-ing the creator of the
  * appointment.
  *
  * This appointment email contains:
@@ -104,17 +104,17 @@ const mentoring: Handlebars.TemplateDelegate<OrgsData> = Handlebars.compile(
  * - A prompt to reply-all in order to setup a meeting time and venue (we don't
  * force users to use Bramble anymore; they use whatever works best for them).
  *
- * **Note:** We use the attendees's anonymous email addresses so that our AWS
+ * **Note:** We use the people's anonymous email addresses so that our AWS
  * Lambda function can take care of the anonymizing and relay logic (so that
- * each attendee can only ever see their own direct contact information).
+ * each person can only ever see their own direct contact information).
  *
  * - From: team@tutorbook.org (**not** from the creator of the appointment).
- * - To: the tutor and mentor attendees.
+ * - To: the tutor and mentor people.
  * - BCC: team@tutorbook.org (for analysis purposes).
  * - Reply-To: the creator of the appointment (typically the student but it
  *   could be their parent or an org admin).
  * - Mail-Reply-To: the creator of the appointment.
- * - Mail-Followup-To: the creator and all attendees of the appointment.
+ * - Mail-Followup-To: the creator and all people of the appointment.
  */
 export default class MatchEmail implements Email {
   public readonly from: EmailData = {
@@ -137,17 +137,17 @@ export default class MatchEmail implements Email {
 
   public readonly text: string;
 
-  public constructor(match: Match, attendees: UserWithRoles[], creator: User) {
-    const recipients = attendees.filter((a) => a.id !== creator.id);
+  public constructor(match: Match, people: UserWithRoles[], creator: User) {
+    const recipients = people.filter((a) => a.id !== creator.id);
     const creatorEmail = creator.email;
-    const attendeeNames = recipients.map(({ name }) => name);
+    const personNames = recipients.map(({ name }) => name);
     const contacts = [...recipients, creator].map(({ name, email }) => ({
       name,
       email,
       url: `mailto:${encodeURIComponent(`"${name}"<${email}>`)}`,
     }));
     const rolesDescription = `with ${Utils.join(
-      attendees.map(({ name, roles }) => `${name} as the ${Utils.join(roles)}`)
+      people.map(({ name, roles }) => `${name} as the ${Utils.join(roles)}`)
     )}`;
     const org: Org = new Org({ name: 'Tutorbook' });
     const { roles: recipientRoles, name: recipientName } = recipients[0];
@@ -188,12 +188,12 @@ Tutorbook - tutorbook.org`;
         creator,
         org,
         contacts,
-        attendeeNames,
+        personNames,
         rolesDescription,
       });
       /* prettier-ignore */
       this.text =
-`Hi ${Utils.join(attendeeNames)},
+`Hi ${Utils.join(personNames)},
 
 You have a new tutoring lesson for ${Utils.join(match.subjects)} (${rolesDescription}).
 
@@ -221,12 +221,12 @@ Tutorbook - tutorbook.org`;
         creator,
         org,
         contacts,
-        attendeeNames,
+        personNames,
         rolesDescription,
       });
       /* prettier-ignore */
       this.text =
-`Hi ${Utils.join(attendeeNames)},
+`Hi ${Utils.join(personNames)},
 
 You have a new mentoring match for ${Utils.join(match.subjects)} (${rolesDescription}).
 

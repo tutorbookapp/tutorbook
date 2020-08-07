@@ -22,7 +22,7 @@ import {
   Availability,
   Match,
   MatchJSON,
-  Attendee,
+  Person,
   Aspect,
 } from 'lib/model';
 import { signupWithGoogle } from 'lib/account/signup';
@@ -79,12 +79,12 @@ export default function RequestDialog({
   // a callback that was called (and thus was also defined) before the update.
   const match = useRef<Match>(new Match());
   useEffect(() => {
-    const creator: Attendee = {
+    const creator: Person = {
       id: currentUser.id,
       handle: uuid(),
       roles: [],
     };
-    const target: Attendee = {
+    const target: Person = {
       id: user.id,
       handle: uuid(),
       roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
@@ -94,7 +94,7 @@ export default function RequestDialog({
       creator,
       message,
       subjects,
-      attendees: [
+      people: [
         target,
         ...students.map(({ value: id }) => {
           const roles: Role[] = [aspect === 'tutoring' ? 'tutee' : 'mentee'];
@@ -106,7 +106,7 @@ export default function RequestDialog({
     });
   }, [currentUser.id, user.id, aspect, times, message, subjects, students]);
 
-  // Update the names displayed in the attendees select when context or props
+  // Update the names displayed in the people select when context or props
   // changes (i.e. when the user logs in, we change 'You' to their actual name).
   useEffect(() => {
     setStudents((prev: Option<string>[]) => {
@@ -118,7 +118,7 @@ export default function RequestDialog({
     });
   }, [currentUser]);
 
-  // Ensure there are at least 2 attendees and that they always contain the
+  // Ensure there are at least 2 people and that they always contain the
   // recipient of the request (i.e. the user being presented in this dialog).
   const onStudentsChange = useCallback(
     (selected: Option<string>[]) => {
@@ -231,7 +231,7 @@ export default function RequestDialog({
                   outlined
                   renderToPortal
                   disabled={!currentUser.id}
-                  label={t('match3rd:attendees')}
+                  label={t('match3rd:people')}
                   className={styles.field}
                   onSelectedChange={onStudentsChange}
                   selected={students}

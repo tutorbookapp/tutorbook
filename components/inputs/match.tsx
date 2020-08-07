@@ -14,7 +14,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
 import { TextField } from '@rmwc/textfield';
-import { Match, Attendee, Role, Availability } from 'lib/model';
+import { Match, Person, Role, Availability } from 'lib/model';
 import { TimesSelectProps } from 'components/times-select';
 import { InputsProps, InputsConfig } from './types';
 
@@ -22,8 +22,8 @@ const TimesSelect = dynamic<TimesSelectProps>(async () =>
   import('components/times-select')
 );
 
-function getValue(attendees: Attendee[], role: Role): string[] {
-  return attendees.filter((a) => a.roles.indexOf(role) >= 0).map((a) => a.id);
+function getValue(people: Person[], role: Role): string[] {
+  return people.filter((a) => a.roles.indexOf(role) >= 0).map((a) => a.id);
 }
 
 type Input =
@@ -51,41 +51,41 @@ export default function MatchInputs({
 }: InputsProps<Match, Input> & InputsConfig<Input>): JSX.Element {
   const onTutorsChange = useCallback(
     (ids: string[]) => {
-      const attendees = [
-        ...value.attendees.filter((a) => a.roles.indexOf('tutor') < 0),
+      const people = [
+        ...value.people.filter((a) => a.roles.indexOf('tutor') < 0),
         ...ids.map((id) => ({ id, roles: ['tutor'], handle: uuid() })),
-      ] as Attendee[];
-      onChange(new Match({ ...value, attendees }));
+      ] as Person[];
+      onChange(new Match({ ...value, people }));
     },
     [onChange, value]
   );
   const onTuteesChange = useCallback(
     (ids: string[]) => {
-      const attendees = [
-        ...value.attendees.filter((a) => a.roles.indexOf('tutee') < 0),
+      const people = [
+        ...value.people.filter((a) => a.roles.indexOf('tutee') < 0),
         ...ids.map((id) => ({ id, roles: ['tutee'], handle: uuid() })),
-      ] as Attendee[];
-      onChange(new Match({ ...value, attendees }));
+      ] as Person[];
+      onChange(new Match({ ...value, people }));
     },
     [onChange, value]
   );
   const onMentorsChange = useCallback(
     (ids: string[]) => {
-      const attendees = [
-        ...value.attendees.filter((a) => a.roles.indexOf('mentor') < 0),
+      const people = [
+        ...value.people.filter((a) => a.roles.indexOf('mentor') < 0),
         ...ids.map((id) => ({ id, roles: ['mentor'], handle: uuid() })),
-      ] as Attendee[];
-      onChange(new Match({ ...value, attendees }));
+      ] as Person[];
+      onChange(new Match({ ...value, people }));
     },
     [onChange, value]
   );
   const onMenteesChange = useCallback(
     (ids: string[]) => {
-      const attendees = [
-        ...value.attendees.filter((a) => a.roles.indexOf('mentee') < 0),
+      const people = [
+        ...value.people.filter((a) => a.roles.indexOf('mentee') < 0),
         ...ids.map((id) => ({ id, roles: ['mentee'], handle: uuid() })),
-      ] as Attendee[];
-      onChange(new Match({ ...value, attendees }));
+      ] as Person[];
+      onChange(new Match({ ...value, people }));
     },
     [onChange, value]
   );
@@ -123,17 +123,17 @@ export default function MatchInputs({
   useEffect(() => setFocused(focusTarget), [focusTarget]);
 
   const tutors = useMemo(() => {
-    return getValue(value.attendees, 'tutor');
-  }, [value.attendees]);
+    return getValue(value.people, 'tutor');
+  }, [value.people]);
   const tutees = useMemo(() => {
-    return getValue(value.attendees, 'tutee');
-  }, [value.attendees]);
+    return getValue(value.people, 'tutee');
+  }, [value.people]);
   const mentors = useMemo(() => {
-    return getValue(value.attendees, 'mentor');
-  }, [value.attendees]);
+    return getValue(value.people, 'mentor');
+  }, [value.people]);
   const mentees = useMemo(() => {
-    return getValue(value.attendees, 'mentee');
-  }, [value.attendees]);
+    return getValue(value.people, 'mentee');
+  }, [value.people]);
 
   return (
     <>

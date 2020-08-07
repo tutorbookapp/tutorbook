@@ -214,15 +214,15 @@ Upon request, the `/api/request` serverless API function:
    accompanying human-readable error message if any of them fail):
    - Verifies the correct request body was sent (e.g. all parameters are there
      and are all of the correct types).
-   - Verifies that the `attendees` all have user IDs and profile documents.
+   - Verifies that the `people` all have user IDs and profile documents.
    - Verifies that the appointment creator (the owner of the given `token` JWT)
-     is an `attendee`.
-   - Verifies that the requested `Timeslot` is within all of the `attendee`'s
-     availability (by reading each `attendee`'s Firestore profile document).
+     is an `person`.
+   - Verifies that the requested `Timeslot` is within all of the `person`'s
+     availability (by reading each `person`'s Firestore profile document).
    - Verifies that the requested `subjects` are included in each of the tutors'
-     Firestore profile documents (where a tutor is defined as an `attendee` whose
+     Firestore profile documents (where a tutor is defined as an `person` whose
      `roles` include `tutor`).
-   - Verifies that the given `token` belongs to one of the `match`'s `attendees`.
+   - Verifies that the given `token` belongs to one of the `match`'s `people`.
 2. Creates [the Bramble tutoring lesson room](https://about.bramble.io/api.html)
    (so that the parent can preview the venue that their child will be using to
    connect with their tutor).
@@ -262,25 +262,25 @@ Upon request, the `/api/match` serverless API function:
 2. Fetches the given pending request's data from our Firestore database.
 3. Performs the following verifications (some of which are also included in the
    original `/api/request` endpoint):
-   - Verifies that the `attendees` all have user IDs and profile documents.
+   - Verifies that the `people` all have user IDs and profile documents.
    - Verifies that the pupil (the user whose profile document was referenced in
-     the given `request` Firestore document path) is within the `attendees`.
+     the given `request` Firestore document path) is within the `people`.
    - Verifies that the parent (the owner of the given `id`) is actually the
-     pupil's parent (i.e. the `attendee` whose profile document was referenced
+     pupil's parent (i.e. the `person` whose profile document was referenced
      in the given `request` Firestore document path has the given `id` in their
      profile's `parents` field).
-   - Verifies that the requested `Timeslot` is within all of the `attendee`'s
-     availability (by reading each `attendee`'s Firestore profile document).
+   - Verifies that the requested `Timeslot` is within all of the `person`'s
+     availability (by reading each `person`'s Firestore profile document).
    - Verifies that the requested `subjects` are included in each of the tutors'
-     Firestore profile documents (where a tutor is defined as an `attendee` whose
+     Firestore profile documents (where a tutor is defined as an `person` whose
      `roles` include `tutor`).
 4. Deletes the old `request` documents.
 5. Creates a new `match` document containing the request body in each of the
-   `attendee`'s Firestore `matches` subcollection.
-6. Updates each `attendee`'s availability (in their Firestore profile document)
+   `person`'s Firestore `matches` subcollection.
+6. Updates each `person`'s availability (in their Firestore profile document)
    to reflect this appointment (i.e. remove the appointment's `time` from their
    availability).
-7. Sends each of the `match`'s `attendee`'s an email containing instructions for
+7. Sends each of the `match`'s `person`'s an email containing instructions for
    how to access their Bramble virtual-tutoring room.
 
 ##### Response

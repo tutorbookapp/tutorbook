@@ -7,7 +7,7 @@ import listMatches, { ListMatchesRes } from 'lib/api/list-matches';
  * GET - Lists the user's, their children's, or their org's appointments.
  * POST - Creates a new appointment.
  *
- * Requires a JWT owned by an appointment attendee, their parents, or their org
+ * Requires a JWT owned by an appointment person, their parents, or their org
  * admin.
  */
 export default async function matches(

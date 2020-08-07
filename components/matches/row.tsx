@@ -1,6 +1,6 @@
 import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
-import { Attendee, Role, TCallback, MatchJSON } from 'lib/model';
+import { Person, Role, TCallback, MatchJSON } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import React, { useCallback, memo } from 'react';
@@ -15,8 +15,8 @@ interface MatchRowProps {
   onChange: TCallback<MatchJSON>;
 }
 
-function hasRole(attendee: Attendee, role: Role) {
-  return attendee.roles.some((r: Role) => r === role);
+function hasRole(person: Person, role: Role) {
+  return person.roles.some((r: Role) => r === role);
 }
 
 export const MatchRow = memo(
@@ -31,22 +31,18 @@ export const MatchRow = memo(
     const props = (role: Role) => ({
       ...shared,
       onChange(ids: string[]) {
-        const old: Attendee[] = match.attendees.filter(
-          (a) => !hasRole(a, role)
-        );
-        const updated: Attendee[] = ids.map((id: string) => {
+        const old: Person[] = match.people.filter((a) => !hasRole(a, role));
+        const updated: Person[] = ids.map((id: string) => {
           let handle: string = uuid();
-          const idx = match.attendees.findIndex(
-            ({ id: oldId }) => oldId === id
-          );
-          if (idx >= 0) handle = match.attendees[idx].handle;
+          const idx = match.people.findIndex(({ id: oldId }) => oldId === id);
+          if (idx >= 0) handle = match.people[idx].handle;
           return { handle, id, roles: [role] };
         });
-        onValueChange([...old, ...updated], 'attendees');
+        onValueChange([...old, ...updated], 'people');
       },
-      value: match.attendees.filter((a) => hasRole(a, role)).map((a) => a.id),
+      value: match.people.filter((a) => hasRole(a, role)).map((a) => a.id),
     });
-    // TODO: Fetch all of the attendee data and use it to directly control the
+    // TODO: Fetch all of the person data and use it to directly control the
     // selected options on the `UserSelect` and to constrain the selectable
     // options in the `SubjectSelect` (to only those that the tutors can tutor).
     return (

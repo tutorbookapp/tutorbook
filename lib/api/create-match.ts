@@ -4,7 +4,7 @@ import {
   Venue,
   Role,
   Timeslot,
-  Attendee,
+  Person,
   User,
   UserWithRoles,
   Match,
@@ -61,26 +61,26 @@ async function getJitsi(matchId: string): Promise<Venue> {
  *    accompanying human-readable error message if any of them fail):
  *    - Verifies the correct request body was sent (e.g. all parameters are there
  *      and are all of the correct types).
- *    - Verifies that the requested `Timeslot` is within all of the `attendee`'s
- *      availability (by reading each `attendee`'s Firestore profile document).
+ *    - Verifies that the requested `Timeslot` is within all of the `person`'s
+ *      availability (by reading each `person`'s Firestore profile document).
  *      Note that we **do not** throw an error if it is the request sender who
  *      is unavailable.
  *    - Verifies that the requested `subjects` are included in each of the
  *      tutors' Firestore profile documents (where a tutor is defined as an
- *      `attendee` whose `roles` include `tutor`).
+ *      `person` whose `roles` include `tutor`).
  *    - Verifies that the given authentication JWT belongs to either an admin of
  *      orgs that all the tutees and mentees are a part of or the parent of all
  *      the tutees and mentees. In the future, teachers will also be able to
  *      create matches on behalf of their students and students will be able to
  *      add fellow students (i.e. students within the same org) to their matches.
- * 2. Adds all the tutee and mentee parents as attendees.
+ * 2. Adds all the tutee and mentee parents as people.
  * 3. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
  *    it as a venue to the appointment.
  * 4. Creates a new `matches` document.
  * 5. Sends an email initializing communications btwn the creator and the tutor.
  *
  * @param {MatchJSON} request - The appointment to create a pending request for.
- * The given `idToken` **must** be from one of the appointment's `attendees`
+ * The given `idToken` **must** be from one of the appointment's `people`
  * (see the above description for more requirements).
  * @return {MatchJSON} The created request (typically this is exactly the same as
  * the given `request` but it can be different if the server implements
@@ -97,8 +97,8 @@ export default async function createMatch(
     error(res, 'You must provide a request body.');
   } else if (!req.body.subjects || !req.body.subjects.length) {
     error(res, 'Your appointment must contain valid subjects.');
-  } else if (!req.body.attendees || req.body.attendees.length < 2) {
-    error(res, 'Your appointment must have >= 2 attendees.');
+  } else if (!req.body.people || req.body.people.length < 2) {
+    error(res, 'Your appointment must have >= 2 people.');
   } else if (req.body.time && typeof req.body.time !== 'object') {
     error(res, 'Your appointment had an invalid time.');
   } else if (
@@ -121,7 +121,7 @@ export default async function createMatch(
       error(res, `Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
       const match: Match = Match.fromJSON(req.body);
-      const attendees: UserWithRoles[] = [];
+      const people: UserWithRoles[] = [];
       const parents: User[] = [];
       let errored = false;
       let creator = new User({
@@ -137,28 +137,28 @@ export default async function createMatch(
         error(res, msg, 401);
       } else {
         await Promise.all(
-          match.attendees.map(async (attendee: Attendee) => {
+          match.people.map(async (person: Person) => {
             if (errored) return;
-            // 1. Verify that the attendees have uIDs.
-            if (!attendee.id) {
-              error(res, 'All attendees must have valid uIDs.');
+            // 1. Verify that the people have uIDs.
+            if (!person.id) {
+              error(res, 'All people must have valid uIDs.');
               errored = true;
               return;
             }
-            const attendeeRef: DocumentReference = db
+            const personRef: DocumentReference = db
               .collection('users')
-              .doc(attendee.id);
-            const attendeeDoc: DocumentSnapshot = await attendeeRef.get();
-            // 1. Verify that the attendees exist.
-            if (!attendeeDoc.exists) {
-              error(res, `Attendee (${attendee.id}) does not exist.`);
+              .doc(person.id);
+            const personDoc: DocumentSnapshot = await personRef.get();
+            // 1. Verify that the people exist.
+            if (!personDoc.exists) {
+              error(res, `Person (${person.id}) does not exist.`);
               errored = true;
               return;
             }
-            const user: User = User.fromFirestore(attendeeDoc);
-            // 1. Verify that the appointment creator is an attendee.
+            const user: User = User.fromFirestore(personDoc);
+            // 1. Verify that the appointment creator is an person.
             if (user.id === creator.id) creator = new User({ ...user });
-            // 1. Verify that the attendees are available (note that we don't throw
+            // 1. Verify that the people are available (note that we don't throw
             // an error if it is the request sender who is unavailable).
             let timeslot: string = 'during appointment time';
             if (
@@ -168,7 +168,7 @@ export default async function createMatch(
                 return user.availability.contains(time);
               })
             ) {
-              if (attendee.id === creator.id) {
+              if (person.id === creator.id) {
                 console.warn(`[WARNING] Creator unavailable ${timeslot}.`);
               } else {
                 error(res, `${user.toString()} unavailable ${timeslot}.`);
@@ -177,8 +177,8 @@ export default async function createMatch(
               }
             }
             // 1. Verify the tutors can teach the requested subjects.
-            const isTutor: boolean = attendee.roles.indexOf('tutor') >= 0;
-            const isMentor: boolean = attendee.roles.indexOf('mentor') >= 0;
+            const isTutor: boolean = person.roles.indexOf('tutor') >= 0;
+            const isMentor: boolean = person.roles.indexOf('mentor') >= 0;
             const canTutorSubject: (s: string) => boolean = (s: string) => {
               return user.tutoring.subjects.includes(s);
             };
@@ -195,9 +195,9 @@ export default async function createMatch(
               errored = true;
               return;
             }
-            (user as UserWithRoles).roles = attendee.roles;
-            attendees.push(user as UserWithRoles);
-            // 2. Add all mentee and tutee parents as attendees.
+            (user as UserWithRoles).roles = person.roles;
+            people.push(user as UserWithRoles);
+            // 2. Add all mentee and tutee parents as people.
             if (!isTutor && !isMentor)
               await Promise.all(
                 user.parents.map(async (id) => {
@@ -211,10 +211,10 @@ export default async function createMatch(
         );
         parents.forEach((parent: User) => {
           const roles: Role[] = ['parent'];
-          match.attendees.push({ roles, id: parent.id, handle: uuid() });
+          match.people.push({ roles, id: parent.id, handle: uuid() });
           const parentWithRoles = parent as UserWithRoles;
           parentWithRoles.roles = roles;
-          attendees.push(parentWithRoles);
+          people.push(parentWithRoles);
         });
         if (!errored) {
           if (!creator.name) {
@@ -235,9 +235,9 @@ export default async function createMatch(
           // - Part of an org that the creator is an admin of.
           const errorMsg =
             `Creator (${creator.toString()}) is not authorized to create ` +
-            `appointments for these attendees.`;
+            `appointments for these people.`;
           if (
-            !attendees.every((a: UserWithRoles) => {
+            !people.every((a: UserWithRoles) => {
               if (a.roles.every((r) => ['tutee', 'mentee'].indexOf(r) < 0))
                 return true;
               if (a.id === creator.id) return true;
@@ -264,7 +264,7 @@ export default async function createMatch(
           // 4-5. Send out the appointment email.
           console.log('[DEBUG] Sending appointment email...');
           const [mailErr] = await to(
-            mail.send(new MatchEmail(match, attendees, creator))
+            mail.send(new MatchEmail(match, people, creator))
           );
           if (mailErr) {
             const msg = `${mailErr.name} sending email: ${mailErr.message}`;
