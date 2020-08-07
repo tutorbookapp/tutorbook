@@ -116,6 +116,7 @@ class Intercom extends React.Component<IntercomProps> {
     return {
       app_id: appID,
       language_override: locale,
+      hide_default_launcher: true,
       ...account.toIntercom(),
     };
   }

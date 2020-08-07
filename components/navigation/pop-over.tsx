@@ -184,6 +184,12 @@ export default function PopOverMenu({
           >
             {t('common:new-org-btn')}
           </PopOverButton>
+          <PopOverButton
+            icon='contact_support'
+            onClick={() => IntercomAPI('show')}
+          >
+            {t('common:launch-intercom')}
+          </PopOverButton>
           <div className={styles.line} />
           <PopOverButton
             onClick={async () => {
