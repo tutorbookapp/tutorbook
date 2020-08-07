@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import FilterForm from 'components/filter-form';
 
-import { Callback, UsersQuery } from 'lib/model';
+import { TCallback, UsersQuery } from 'lib/model';
 
 import cn from 'classnames';
 
@@ -12,7 +12,7 @@ export default function Form({
   onChange,
 }: {
   query: UsersQuery;
-  onChange: Callback<UsersQuery>;
+  onChange: TCallback<UsersQuery>;
 }): JSX.Element {
   const [elevated, setElevated] = useState<boolean>(false);
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -35,7 +35,7 @@ export default function Form({
       className={cn(styles.form, { [styles.elevated]: elevated })}
       ref={formRef}
     >
-      <FilterForm query={query} onChange={onChange} />
+      <FilterForm query={query} onChange={onChange} thirdPerson />
     </div>
   );
 }

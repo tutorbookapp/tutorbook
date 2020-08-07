@@ -5,8 +5,8 @@
 .wrapper {
   @include elevation.elevation(8);
   position: fixed;
-  bottom: 16px;
-  left: 16px;
+  bottom: 12px;
+  left: 12px;
   background: white;
   z-index: 4;
   border-radius: 4px;
@@ -14,7 +14,7 @@
   max-width: 400px;
 
   .nav {
-    padding: 16px;
+    padding: 8px;
     display: flex;
     justify-content: flex-end;
 

@@ -9,7 +9,7 @@ import React, {
 import useTranslation from 'next-translate/useTranslation';
 
 import {
-  Callback,
+  TCallback,
   Option,
   Availability,
   Timeslot,
@@ -27,7 +27,7 @@ import Form from './form';
 import styles from './search.module.scss';
 
 interface SearchProps {
-  onChange: Callback<UsersQuery>;
+  onChange: TCallback<UsersQuery>;
   results: ReadonlyArray<User>;
   searching: boolean;
   query: UsersQuery;

@@ -1,7 +1,7 @@
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
-import { Option, Callback } from 'lib/model';
+import { Option, TCallback } from 'lib/model';
 import { Chip } from '@rmwc/chip';
 import { Checkbox } from '@rmwc/checkbox';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
@@ -25,7 +25,7 @@ interface SelectState<T> {
 
 interface UniqueSelectProps<T> {
   value: Option<T>[];
-  onChange: Callback<Option<T>[]>;
+  onChange: TCallback<Option<T>[]>;
   getSuggestions: (query: string) => Promise<Option<T>[]>;
   renderToPortal?: boolean;
   autoOpenMenu?: boolean;

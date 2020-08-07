@@ -1,4 +1,4 @@
-import { UsersQuery, Aspect, Callback } from 'lib/model';
+import { UsersQuery, Aspect, TCallback } from 'lib/model';
 import { useUser } from 'lib/account';
 
 import cn from 'classnames';
@@ -19,7 +19,7 @@ function DesktopTabs({
   onChange,
 }: {
   aspect: Aspect;
-  onChange: Callback<Aspect>;
+  onChange: TCallback<Aspect>;
 }): JSX.Element {
   const { t } = useTranslation();
   return (
@@ -203,7 +203,7 @@ export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
 
 interface AspectHeaderProps extends LinkHeaderProps {
   aspect: Aspect;
-  onChange: Callback<Aspect>;
+  onChange: TCallback<Aspect>;
 }
 
 export function AspectHeader({
@@ -229,7 +229,7 @@ export function AspectHeader({
 
 interface QueryHeaderProps extends LinkHeaderProps {
   query: UsersQuery;
-  onChange: Callback<UsersQuery>;
+  onChange: TCallback<UsersQuery>;
 }
 
 export function QueryHeader({
@@ -250,7 +250,7 @@ export function QueryHeader({
           />
         </div>
         <div className={styles.center}>
-          <FilterForm query={query} onChange={onChange} />
+          <FilterForm query={query} onChange={onChange} thirdPerson />
         </div>
         <div className={styles.right}>
           <MobileNav />

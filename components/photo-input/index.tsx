@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Callback } from 'lib/model';
+import { TCallback } from 'lib/model';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { v4 as uuid } from 'uuid';
 
@@ -11,7 +11,7 @@ type TextFieldPropOverrides = 'helpText' | 'inputRef' | 'invalid';
 interface UniquePhotoInputProps {
   label: string;
   value: string;
-  onChange: Callback<string>;
+  onChange: TCallback<string>;
 }
 
 type Overrides = TextFieldPropOverrides | keyof UniquePhotoInputProps;

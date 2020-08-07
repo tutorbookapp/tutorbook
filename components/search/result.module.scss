@@ -27,49 +27,59 @@ $margin: 20px;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
   }
-}
-
-.img {
-  display: inline-block;
-  position: absolute;
-  left: $margin;
-  top: $margin;
-  width: $height - 2 * $margin;
-  height: $height - 2 * $margin;
-}
-
-.name {
-  @include typography.typography('body1');
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: map.get(config.$colors, 'foreground');
-  display: inline-block;
-  position: absolute;
-  left: $height;
-  top: $margin;
-  width: calc(100% - #{$height + $margin});
-  height: 24px;
-}
-
-.bio {
-  @include typography.typography('body2');
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: map.get(config.$colors, 'accents-5');
-  display: inline-block;
-  position: absolute;
-  left: $height;
-  top: $margin + 24px;
-  width: calc(100% - #{$height + $margin});
-  height: $height - (2 * $margin + 24px);
 
   &.loading {
-    top: $margin * 2 + 24px;
-    height: $height - (3 * $margin + 24px);
-  }
-}
+    .img,
+    .name,
+    .bio {
+      @include loader.loading();
+      border-radius: 4px;
+    }
 
-.loading {
-  @include loader.loading();
-  border-radius: 4px;
+    .bio {
+      top: $margin * 2 + 24px;
+      height: $height - (3 * $margin + 24px);
+    }
+  }
+
+  &.avatar .name,
+  &.avatar .bio {
+    left: $height;
+    width: calc(100% - #{$height + $margin});
+  }
+
+  .img {
+    display: inline-block;
+    position: absolute;
+    left: $margin;
+    top: $margin;
+    width: $height - 2 * $margin;
+    height: $height - 2 * $margin;
+  }
+
+  .name {
+    @include typography.typography('body1');
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: map.get(config.$colors, 'foreground');
+    display: inline-block;
+    position: absolute;
+    left: $margin;
+    top: $margin;
+    width: calc(100% - #{2 * $margin});
+    height: 24px;
+  }
+
+  .bio {
+    @include typography.typography('body2');
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: map.get(config.$colors, 'accents-5');
+    display: inline-block;
+    position: absolute;
+    left: $margin;
+    top: $margin + 24px;
+    width: calc(100% - #{2 * $margin});
+    height: $height - (2 * $margin + 24px);
+  }
 }

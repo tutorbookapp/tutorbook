@@ -67,8 +67,6 @@ export interface Option<T> {
   value: T;
 }
 
-export type Callback<T> = (value: T) => void;
-
 export abstract class Query implements QueryInterface {
   public query = '';
 

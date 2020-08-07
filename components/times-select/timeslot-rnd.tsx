@@ -4,7 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { ResizeDirection } from 're-resizable';
 import { Rnd, DraggableData, ResizableDelta, Position } from 'react-rnd';
-import { Timeslot, Callback } from 'lib/model';
+import { Timeslot, TCallback } from 'lib/model';
 
 import { getPosition, getHeight, getTimeslot } from './utils';
 import styles from './timeslot-rnd.module.scss';
@@ -12,7 +12,7 @@ import styles from './timeslot-rnd.module.scss';
 interface TimeslotRndProps {
   value: Timeslot;
   width?: number;
-  onChange: Callback<Timeslot>;
+  onChange: TCallback<Timeslot>;
 }
 
 /**

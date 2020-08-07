@@ -1,6 +1,49 @@
+import { Option } from 'lib/model';
+import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
+
 export { default as TimeUtils } from './time';
 
+const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
+const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
+
+const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
+const searchIndex: SearchIndex = client.initIndex('langs');
+
+type LangHit = ObjectWithObjectID & {
+  [key: string]: { name: string; synonyms: string[] };
+};
+
 export default class Utils {
+  /**
+   * Converts a given array of locale codes into an array of `Option<string>`
+   * that include the language's label (i.e. `en` -> `English`) by fetching the
+   * labels from our Algolia search index.
+   */
+  public static async langsToOptions(
+    langs: string[],
+    locale: string = 'en'
+  ): Promise<Option<string>[]> {
+    const res: SearchResponse<LangHit> = await searchIndex.search('', {
+      filters: langs.map((lang: string) => `objectID:${lang}`).join(' OR '),
+    });
+    return res.hits.map((lang: LangHit) => {
+      return { label: lang[locale].name, value: lang.objectID };
+    });
+  }
+
+  /**
+   * Converts an array of subject codes into their `Option<string>` values by
+   * fetching their labels from our Algolia search index.
+   * @todo Actually add i18n to subjects.
+   */
+  public static async subjectsToOptions(
+    subjects: string[],
+    locale: string = 'en'
+  ): Promise<Option<string>[]> {
+    return subjects.map((subject) => ({ label: subject, value: subject }));
+  }
+
   /**
    * Ensures that the given string ends in a period.
    */

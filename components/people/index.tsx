@@ -2,33 +2,28 @@ import { v4 as uuid } from 'uuid';
 import useSWR, { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
+import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import { Snackbar } from '@rmwc/snackbar';
 import { Select } from '@rmwc/select';
-import { IconButton } from '@rmwc/icon-button';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
 import { Option, UsersQuery, Org, User, Tag } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
-import { UserDialogProps } from 'components/user-dialog';
+import { useUser } from 'lib/account';
 
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
+import UserDialog from 'components/user-dialog';
+import FilterForm from 'components/filter-form';
 import Result from 'components/search/result';
 import Header from 'components/header';
 import Placeholder from 'components/placeholder';
 
 import dynamic from 'next/dynamic';
 
-import { FilterDialogProps } from './filter-dialog';
+import Matching from './matching';
 
 import styles from './people.module.scss';
-
-const UserDialog = dynamic<UserDialogProps>(() =>
-  import('components/user-dialog')
-);
-const FilterDialog = dynamic<FilterDialogProps>(() =>
-  import('./filter-dialog')
-);
 
 interface PeopleProps {
   org: Org;
@@ -47,7 +42,6 @@ interface PeopleProps {
  */
 export default function People({ org }: PeopleProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(true);
-  const [filtering, setFiltering] = useState<boolean>(false);
   const [creating, setCreating] = useState<boolean>(false);
   const [viewingIdx, setViewingIdx] = useState<number>();
   const [viewingSnackbar, setViewingSnackbar] = useState<boolean>(false);
@@ -67,6 +61,9 @@ export default function People({ org }: PeopleProps): JSX.Element {
   );
 
   const { t } = useTranslation();
+  const {
+    user: { matching },
+  } = useUser();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
   useEffect(() => {
@@ -78,6 +75,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
     });
   }, [org]);
   useEffect(() => {
+    setSearching(true);
     void mutate(query.endpoint);
   }, [query]);
   useEffect(() => {
@@ -86,22 +84,20 @@ export default function People({ org }: PeopleProps): JSX.Element {
 
   return (
     <>
-      {filtering && (
-        <FilterDialog
-          onClosed={() => setFiltering(false)}
-          onChange={(updated: UsersQuery) => {
-            setSearching(true);
-            setQuery(updated);
-          }}
-          value={query}
-        />
+      {!!matching && !!matching.length && (
+        <Matching users={matching} setQuery={setQuery} />
       )}
       {creating && (
-        <UserDialog onClosed={() => setCreating(false)} initialPage='edit' />
+        <UserDialog
+          onClosed={() => setCreating(false)}
+          setQuery={setQuery}
+          initialPage='edit'
+        />
       )}
       {data && viewingIdx !== undefined && (
         <UserDialog
           onClosed={() => setViewingIdx(undefined)}
+          setQuery={setQuery}
           initialData={data.users[viewingIdx]}
           initialPage='display'
         />
@@ -167,19 +163,16 @@ export default function People({ org }: PeopleProps): JSX.Element {
         ]}
       />
       <div className={styles.wrapper}>
+        <div className={styles.filterForm}>
+          <FilterForm query={query} onChange={setQuery} />
+        </div>
         <div className={styles.filters}>
           <div className={styles.left}>
-            <IconButton
-              className={styles.filtersButton}
-              icon='filter_list'
-              onClick={() => setFiltering(true)}
-            />
             <ChipSet className={styles.filterChips}>
               <Chip
                 label={t('people:filters-not-vetted')}
                 checkmark
                 onInteraction={() => {
-                  setSearching(true);
                   const tags: Option<Tag>[] = Array.from(query.tags);
                   const idx = tags.findIndex((a) => a.value === 'not-vetted');
                   if (idx < 0) {
@@ -200,7 +193,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 label={t('people:filters-visible')}
                 checkmark
                 onInteraction={() => {
-                  setSearching(true);
                   const { visible: prev } = query;
                   const visible = prev !== true ? true : undefined;
                   setQuery((p) => new UsersQuery({ ...p, visible, page: 0 }));
@@ -211,12 +203,29 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 label={t('people:filters-hidden')}
                 checkmark
                 onInteraction={() => {
-                  setSearching(true);
                   const { visible: prev } = query;
                   const visible = prev !== false ? false : undefined;
                   setQuery((p) => new UsersQuery({ ...p, visible, page: 0 }));
                 }}
                 selected={query.visible === false}
+              />
+              <Chip
+                label={t('common:mentors')}
+                checkmark
+                onInteraction={() => {
+                  const aspect = 'mentoring';
+                  setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
+                }}
+                selected={query.aspect === 'mentoring'}
+              />
+              <Chip
+                label={t('common:tutors')}
+                checkmark
+                onInteraction={() => {
+                  const aspect = 'tutoring';
+                  setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
+                }}
+                selected={query.aspect === 'tutoring'}
               />
             </ChipSet>
           </div>
@@ -227,7 +236,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
               className={styles.searchField}
               value={query.query}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                setSearching(true);
                 const q: string = event.currentTarget.value;
                 setQuery((p) => new UsersQuery({ ...p, query: q, page: 0 }));
               }}
@@ -258,7 +266,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 value={`${query.hitsPerPage}`}
                 options={['5', '10', '15', '20', '25', '30']}
                 onChange={(event: React.FormEvent<HTMLSelectElement>) => {
-                  setSearching(true);
                   const hitsPerPage = Number(event.currentTarget.value);
                   setQuery(
                     (p) => new UsersQuery({ ...p, hitsPerPage, page: 0 })
@@ -273,7 +280,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
               disabled={query.page <= 0}
               icon='chevron_left'
               onClick={() => {
-                setSearching(true);
                 setQuery((p) => new UsersQuery({ ...p, page: p.page - 1 }));
               }}
             />
@@ -283,7 +289,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
               }
               icon='chevron_right'
               onClick={() => {
-                setSearching(true);
                 setQuery((p) => new UsersQuery({ ...p, page: p.page + 1 }));
               }}
             />

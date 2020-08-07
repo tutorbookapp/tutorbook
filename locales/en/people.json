@@ -10,5 +10,9 @@
   "link-copied": "Link copied to clipboard.",
   "visible": "Visible",
   "vetted": "Vetted",
-  "empty": "NO PEOPLE TO SHOW"
+  "empty": "NO PEOPLE TO SHOW",
+  "clear-queue-title": "Clear matching queue?",
+  "clear-queue-body": "Are you sure you want to permanently clear your matching queue? You cannot undo this action.",
+  "clear-queue-accept": "Clear Queue",
+  "clear-queue-cancel": "Cancel"
 }

@@ -6,7 +6,7 @@ import {
   UserJSON,
   Verification,
   Check,
-  Callback,
+  TCallback,
   SocialInterface,
 } from 'lib/model';
 import { useUser } from 'lib/account';
@@ -38,10 +38,10 @@ const checks: Check[] = [
 
 export interface DisplayPageProps {
   value: UserJSON;
-  onChange: Callback<UserJSON>;
+  onChange: TCallback<UserJSON>;
   openEdit: () => Promise<void>;
-  openRequest: () => Promise<void>;
   openMatch: () => Promise<void>;
+  openRequest: () => Promise<void>;
   onClosed: () => void;
 }
 
@@ -49,8 +49,8 @@ export default memo(function DisplayPage({
   value,
   onChange: onFinalChange,
   openEdit,
-  openRequest,
   openMatch,
+  openRequest,
   onClosed,
 }: DisplayPageProps): JSX.Element {
   const { t } = useTranslation();
@@ -79,7 +79,7 @@ export default memo(function DisplayPage({
     [onFinalChange]
   );
 
-  const email = useCallback(() => {
+  const openEmail = useCallback(() => {
     const url = encodeURIComponent(`"${user.name}"<${user.email}>`);
     window.open(`mailto:${url}`);
   }, [user.name, user.email]);
@@ -248,7 +248,8 @@ export default memo(function DisplayPage({
         <ChipSet className={styles.chips}>
           <Chip icon='edit' label='Edit profile' onClick={openEdit} />
           <Chip icon='send' label='Send request' onClick={openRequest} />
-          <Chip icon='email' label='Send email' onClick={email} />
+          <Chip icon='email' label='Send email' onClick={openEmail} />
+          <Chip icon='search' label='Find match' onClick={openMatch} />
         </ChipSet>
       </div>
     </div>

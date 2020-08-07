@@ -1,5 +1,5 @@
 import { Ripple } from '@rmwc/ripple';
-import { Callback, User } from 'lib/model';
+import { TCallback, User } from 'lib/model';
 
 import React from 'react';
 import Avatar from 'components/avatar';
@@ -7,7 +7,7 @@ import Avatar from 'components/avatar';
 import styles from './cards.module.scss';
 
 interface UserCardProps {
-  onClick: Callback<React.SyntheticEvent<HTMLDivElement>>;
+  onClick: TCallback<React.SyntheticEvent<HTMLDivElement>>;
   user: User;
 }
 

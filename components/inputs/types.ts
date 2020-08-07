@@ -1,4 +1,4 @@
-import { Callback } from 'lib/model';
+import { TCallback } from 'lib/model';
 
 export type InputsConfig<Input extends string | number | symbol> = {
   [key in Input]?: boolean;
@@ -7,7 +7,7 @@ export type InputsConfig<Input extends string | number | symbol> = {
 /**
  * Each abstract `Inputs` component is fully configurable and controlled.
  * @param value - The current data model state.
- * @param onChange - Callback when the data model state changes.
+ * @param onChange - TCallback when the data model state changes.
  * @param [focused] - The input to focus automatically first (e.g. when clicking
  * a button on a filter form opens this input set to a certain input).
  * @param [thirdPerson] - Whether to use third person labels instead of the
@@ -22,7 +22,7 @@ export interface InputsProps<
   Input extends string | number | symbol
 > {
   value: T;
-  onChange: Callback<T>;
+  onChange: TCallback<T>;
   focused?: Input;
   thirdPerson?: boolean;
   renderToPortal?: boolean;

@@ -5,14 +5,14 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { QueryInputs } from 'components/inputs';
 import { IconButton } from '@rmwc/icon-button';
-import { UsersQuery, Callback } from 'lib/model';
+import { UsersQuery, TCallback } from 'lib/model';
 import { Dialog } from '@rmwc/dialog';
 
 import styles from './filter-dialog.module.scss';
 
 export interface FilterDialogProps {
   value: UsersQuery;
-  onChange: Callback<UsersQuery>;
+  onChange: TCallback<UsersQuery>;
   onClosed: () => void;
 }
 

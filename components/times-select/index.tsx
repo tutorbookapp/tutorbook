@@ -1,7 +1,7 @@
 import React, { useState, useLayoutEffect, useRef, useCallback } from 'react';
 
 import { TimeUtils } from 'lib/utils';
-import { Callback, Timeslot, Availability, DayAlias } from 'lib/model';
+import { TCallback, Timeslot, Availability, DayAlias } from 'lib/model';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
 import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
@@ -25,7 +25,7 @@ type OverridenProps =
   | 'className';
 interface Props {
   value: Availability;
-  onChange: Callback<Availability>;
+  onChange: TCallback<Availability>;
   options?: Availability;
   renderToPortal?: boolean;
   focused?: boolean;

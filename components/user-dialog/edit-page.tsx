@@ -9,13 +9,13 @@ import to from 'await-to-js';
 
 import { TextFieldHelperText } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
-import { User, UserJSON, Callback } from 'lib/model';
+import { User, UserJSON, TCallback } from 'lib/model';
 
 import styles from './edit-page.module.scss';
 
 export interface EditPageProps {
   value: UserJSON;
-  onChange: Callback<UserJSON>;
+  onChange: TCallback<UserJSON>;
   openDisplay: () => Promise<void>;
 }
 
@@ -98,8 +98,10 @@ export default memo(function EditPage({
             renderToPortal
             langs
             availability
-            mentoring
-            tutoring
+            mentoringSubjects
+            mentoringSearches
+            tutoringSubjects
+            tutoringSearches
             bio
           />
         </div>

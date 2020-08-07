@@ -1,6 +1,6 @@
 import { DataTableRow, DataTableCell } from '@rmwc/data-table';
 import { TextField } from '@rmwc/textfield';
-import { Attendee, Role, Callback, ApptJSON } from 'lib/model';
+import { Attendee, Role, TCallback, ApptJSON } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import React, { useCallback, memo } from 'react';
@@ -12,7 +12,7 @@ import styles from './matches.module.scss';
 
 interface ApptRowProps {
   appt: ApptJSON;
-  onChange: Callback<ApptJSON>;
+  onChange: TCallback<ApptJSON>;
 }
 
 function hasRole(attendee: Attendee, role: Role) {

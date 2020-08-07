@@ -115,9 +115,12 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             bio
             socials
             availability
+            availabilityRequired
             langs
-            mentoring={aspect === 'mentoring'}
-            tutoring={aspect === 'tutoring'}
+            mentoringSubjects={aspect === 'mentoring'}
+            mentoringRequired={aspect === 'mentoring'}
+            tutoringSubjects={aspect === 'tutoring'}
+            tutoringRequired={aspect === 'tutoring'}
             className={styles.field}
           />
           {!user.id && (

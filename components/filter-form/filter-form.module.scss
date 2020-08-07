@@ -8,7 +8,6 @@
   border: 1px solid map.get(config.$colors, 'accents-2');
   background: map.get(config.$colors, 'background');
   height: config.$nav-height - 24px;
-  -moz-box-align: center;
   align-items: center;
   display: inline-flex;
   position: relative;
@@ -21,7 +20,6 @@
 
 .searchButton {
   @include typography.typography('body2');
-  -moz-appearance: none;
   background: transparent none repeat scroll 0% 0%;
   border: 0px none;
   color: map.get(config.$colors, 'foreground');

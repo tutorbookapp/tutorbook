@@ -1,4 +1,4 @@
-import { Option, UsersQuery, Callback } from 'lib/model';
+import { Option, UsersQuery, TCallback } from 'lib/model';
 import { QueryInputs } from 'components/inputs';
 import { Ripple } from '@rmwc/ripple';
 
@@ -25,7 +25,8 @@ function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
 
 interface FilterFormProps {
   query: UsersQuery;
-  onChange: Callback<UsersQuery>;
+  onChange: TCallback<UsersQuery>;
+  thirdPerson?: boolean;
 }
 
 type FocusTarget = 'subjects' | 'availability' | 'langs';
@@ -33,6 +34,7 @@ type FocusTarget = 'subjects' | 'availability' | 'langs';
 export default function FilterForm({
   query,
   onChange,
+  thirdPerson,
 }: FilterFormProps): JSX.Element {
   const [active, setActive] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -84,7 +86,7 @@ export default function FilterForm({
             focused={focused}
             onChange={onChange}
             className={styles.field}
-            thirdPerson
+            thirdPerson={thirdPerson}
             subjects
             langs
             availability={query.aspect === 'tutoring'}

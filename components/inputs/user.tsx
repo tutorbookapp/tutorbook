@@ -28,10 +28,18 @@ type Input =
   | 'bio'
   | 'socials'
   | 'availability'
-  | 'mentoring'
-  | 'tutoring'
+  | 'mentoringSubjects'
+  | 'mentoringSearches'
+  | 'tutoringSubjects'
+  | 'tutoringSearches'
   | 'langs'
   | 'parents';
+
+interface Props {
+  availabilityRequired?: boolean;
+  mentoringRequired?: boolean;
+  tutoringRequired?: boolean;
+}
 
 // TODO: Control focus (i.e. implement the `focused` prop that opens the inputs
 // with a certain field already focused).
@@ -48,10 +56,15 @@ export default function UserInputs({
   bio,
   socials,
   availability,
-  mentoring,
-  tutoring,
+  mentoringSubjects,
+  mentoringSearches,
+  tutoringSubjects,
+  tutoringSearches,
+  availabilityRequired,
+  mentoringRequired,
+  tutoringRequired,
   langs,
-}: InputsProps<User, Input> & InputsConfig<Input>): JSX.Element {
+}: Props & InputsProps<User, Input> & InputsConfig<Input>): JSX.Element {
   const { t } = useTranslation();
 
   const sharedProps = useMemo(
@@ -152,10 +165,10 @@ export default function UserInputs({
           onChange={(availability: Availability) =>
             onChange(new User({ ...value, availability }))
           }
-          required
+          required={availabilityRequired}
         />
       )}
-      {mentoring && (
+      {mentoringSubjects && (
         <SubjectSelect
           {...sharedProps}
           value={value.mentoring.subjects}
@@ -170,10 +183,28 @@ export default function UserInputs({
             )
           }
           aspect='mentoring'
-          required
+          required={mentoringRequired}
         />
       )}
-      {tutoring && (
+      {mentoringSearches && (
+        <SubjectSelect
+          {...sharedProps}
+          value={value.mentoring.searches}
+          label={t(`user${thirdPerson ? '3rd' : ''}:mentoring-searches`)}
+          placeholder={t('common:mentoring-subjects-placeholder')}
+          onChange={(searches: string[]) =>
+            onChange(
+              new User({
+                ...value,
+                mentoring: { ...value.mentoring, searches },
+              })
+            )
+          }
+          aspect='mentoring'
+          required={mentoringRequired}
+        />
+      )}
+      {tutoringSubjects && (
         <SubjectSelect
           {...sharedProps}
           value={value.tutoring.subjects}
@@ -185,7 +216,22 @@ export default function UserInputs({
             )
           }
           aspect='tutoring'
-          required
+          required={tutoringRequired}
+        />
+      )}
+      {tutoringSearches && (
+        <SubjectSelect
+          {...sharedProps}
+          value={value.tutoring.searches}
+          label={t(`user${thirdPerson ? '3rd' : ''}:tutoring-searches`)}
+          placeholder={t('common:tutoring-subjects-placeholder')}
+          onChange={(searches: string[]) =>
+            onChange(
+              new User({ ...value, tutoring: { ...value.tutoring, searches } })
+            )
+          }
+          aspect='tutoring'
+          required={tutoringRequired}
         />
       )}
       {bio && (

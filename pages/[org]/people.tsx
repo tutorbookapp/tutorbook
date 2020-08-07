@@ -14,6 +14,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import common from 'locales/en/common.json';
 import people from 'locales/en/people.json';
+import search from 'locales/en/search.json';
 import query from 'locales/en/query.json';
 import user from 'locales/en/user.json';
 import appt from 'locales/en/appt.json';
@@ -76,6 +77,7 @@ function PeoplePage(): JSX.Element {
 export default withI18n(PeoplePage, {
   common,
   people,
+  search,
   query,
   user,
   appt,

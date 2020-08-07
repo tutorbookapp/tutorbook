@@ -1,10 +1,10 @@
 import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
 import { Option } from 'lib/model';
 
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Select, { SelectControllerProps } from 'components/select';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 
-import React from 'react';
 import equal from 'fast-deep-equal';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -37,13 +37,13 @@ export default function LangSelect({
   ...props
 }: SelectControllerProps<string>): JSX.Element {
   // Store a cache of labels fetched (i.e. a map of values and labels).
-  const cache = React.useRef<Record<string, LangHit>>({});
+  const cache = useRef<Record<string, LangHit>>({});
 
   // Directly control the `Select` component with this internal state.
-  const [selectedOptions, setSelectedOptions] = React.useState<
-    Option<string>[]
-  >(selected || []);
-  const onSelectedOptionsChange = React.useCallback(
+  const [selectedOptions, setSelectedOptions] = useState<Option<string>[]>(
+    selected || []
+  );
+  const onSelectedOptionsChange = useCallback(
     (os: Option<string>[]) => {
       setSelectedOptions(os);
       if (onSelectedChange) onSelectedChange(os);
@@ -55,7 +55,7 @@ export default function LangSelect({
   // Convert a language search hit to an option (gets the label in the current
   // locale/language).
   const { lang: locale } = useTranslation();
-  const langHitToOption = React.useCallback(
+  const langHitToOption = useCallback(
     (lang: LangHit) => {
       cache.current[lang.objectID] = lang;
       return { label: lang[locale].name, value: lang.objectID };
@@ -64,7 +64,7 @@ export default function LangSelect({
   );
 
   // Searches the Algolia search index based on the user's `textarea` input.
-  const getSuggestions = React.useCallback(
+  const getSuggestions = useCallback(
     async (query = '') => {
       const res: SearchResponse<LangHit> = await searchIndex.search(query);
       return res.hits.map(langHitToOption);
@@ -74,45 +74,41 @@ export default function LangSelect({
 
   // Sync the controlled values (i.e. locale codes) with the internally stored
   // `selectedOptions` state **only** if they don't already match.
-  React.useEffect(
-    () =>
-      setSelectedOptions((prev: Option<string>[]) => {
-        // If they already match, do nothing.
-        if (!value) return prev;
-        if (
-          equal(
-            prev.map(({ value: val }) => val),
-            value
-          )
+  useEffect(() => {
+    setSelectedOptions((prev: Option<string>[]) => {
+      // If they already match, do nothing.
+      if (!value) return prev;
+      if (
+        equal(
+          prev.map(({ value: val }) => val),
+          value
         )
-          return prev;
-        // Otherwise, fetch the correct labels (for those locale codes) by
-        // searching our Algolia `langs` index.
-        const updateLabelsFromAlgolia = async () => {
-          const res: SearchResponse<LangHit> = await searchIndex.search('', {
-            filters: value.map((val) => `objectID:${val}`).join(' OR '),
-          });
-          setSelectedOptions(res.hits.map(langHitToOption));
-        };
-        void updateLabelsFromAlgolia();
-        // Then, temporarily update the options based on locale codes and cache.
-        return value.map((id: string) => {
-          if (cache.current[id]) return langHitToOption(cache.current[id]);
-          return { label: id, value: id };
+      )
+        return prev;
+      // Otherwise, fetch the correct labels (for those locale codes) by
+      // searching our Algolia `langs` index.
+      const updateLabelsFromAlgolia = async () => {
+        const res: SearchResponse<LangHit> = await searchIndex.search('', {
+          filters: value.map((val) => `objectID:${val}`).join(' OR '),
         });
-      }),
-    [value, langHitToOption]
-  );
+        setSelectedOptions(res.hits.map(langHitToOption));
+      };
+      void updateLabelsFromAlgolia();
+      // Then, temporarily update the options based on locale codes and cache.
+      return value.map((id: string) => {
+        if (cache.current[id]) return langHitToOption(cache.current[id]);
+        return { label: id, value: id };
+      });
+    });
+  }, [value, langHitToOption]);
 
   // Expose API surface to directly control the `selectedOptions` state.
-  React.useEffect(
-    () =>
-      setSelectedOptions((prev: Option<string>[]) => {
-        if (!selected || equal(prev, selected)) return prev;
-        return selected;
-      }),
-    [selected]
-  );
+  useEffect(() => {
+    setSelectedOptions((prev: Option<string>[]) => {
+      if (!selected || equal(prev, selected)) return prev;
+      return selected;
+    });
+  }, [selected]);
 
   return (
     <Select

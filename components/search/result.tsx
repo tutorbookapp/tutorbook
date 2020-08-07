@@ -1,14 +1,17 @@
 import { Ripple } from '@rmwc/ripple';
-import { Callback, User } from 'lib/model';
+import { TCallback, User } from 'lib/model';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Avatar from 'components/avatar';
+
+import cn from 'classnames';
 import styles from './result.module.scss';
 
 interface Props {
   user?: User;
-  onClick?: Callback<React.SyntheticEvent<HTMLElement>>;
+  onClick?: TCallback<React.SyntheticEvent<HTMLElement>>;
   loading?: boolean;
+  avatar?: boolean;
 }
 
 const canUseDOM = !!(
@@ -17,28 +20,39 @@ const canUseDOM = !!(
   window.document.createElement
 );
 
-export default function Result({ user, onClick, loading }: Props): JSX.Element {
-  const loaderClass: string = loading ? ` ${styles.loading}` : '';
-  const bioRef = React.useRef<HTMLDivElement>(null);
-  const truncateBio = async () => {
-    if (loading || !canUseDOM) return;
-    const Dotdotdot = (await import('@tutorbook/dotdotdot-js')).default;
-    /* eslint-disable-next-line no-new */
-    if (bioRef.current) new Dotdotdot(bioRef.current, { watch: 'resize' });
-  };
+export default function Result({
+  user,
+  onClick,
+  loading,
+  avatar = true,
+}: Props): JSX.Element {
+  const bioRef = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const truncateBio = async () => {
+      if (loading || !canUseDOM) return;
+      const Dotdotdot = (await import('@tutorbook/dotdotdot-js')).default;
+      /* eslint-disable-next-line no-new */
+      if (bioRef.current) new Dotdotdot(bioRef.current, { watch: 'resize' });
+    };
     void truncateBio();
   });
 
   return (
     <Ripple disabled={loading} onClick={onClick}>
-      <li className={styles.listItem + (loading ? ` ${styles.disabled}` : '')}>
-        <div className={styles.img}>
-          <Avatar loading={loading} src={(user || {}).photo} />
-        </div>
-        <div className={styles.name + loaderClass}>{user && user.name}</div>
-        <div ref={bioRef} className={styles.bio + loaderClass}>
+      <li
+        className={cn(styles.listItem, {
+          [styles.loading]: loading,
+          [styles.avatar]: avatar,
+        })}
+      >
+        {avatar && (
+          <div className={styles.img}>
+            <Avatar loading={loading} src={(user || {}).photo} />
+          </div>
+        )}
+        <div className={styles.name}>{user && user.name}</div>
+        <div ref={bioRef} className={styles.bio}>
           {user && user.bio}
         </div>
       </li>

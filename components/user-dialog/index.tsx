@@ -5,13 +5,21 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import Router from 'next/router';
+import Utils from 'lib/utils';
+import useTranslation from 'next-translate/useTranslation';
 import useWebAnimations from '@wellyshen/use-web-animations';
 import useSWR, { mutate } from 'swr';
 import cn from 'classnames';
 
 import { Dialog } from '@rmwc/dialog';
-import { User, UserJSON } from 'lib/model';
+import {
+  Aspect,
+  User,
+  UserJSON,
+  Availability,
+  FCallback,
+  UsersQuery,
+} from 'lib/model';
 import { useUser } from 'lib/account';
 import { v4 as uuid } from 'uuid';
 
@@ -25,6 +33,7 @@ type Page = 'edit' | 'display' | 'request';
 
 export interface UserDialogProps {
   id?: string;
+  setQuery: FCallback<UsersQuery>;
   initialData?: UserJSON;
   initialPage?: Page;
   onClosed: () => void;
@@ -92,6 +101,7 @@ const outgoingFadeOut = {
 // configured via the `page` prop.
 export default function UserDialog({
   onClosed,
+  setQuery,
   initialData = new User().toJSON(),
   initialPage = 'display',
 }: UserDialogProps): JSX.Element {
@@ -151,13 +161,34 @@ export default function UserDialog({
   }, []);
 
   const { updateUser } = useUser();
+  const { lang: locale } = useTranslation();
   const openMatch = useCallback(async () => {
-    await updateUser((prev) => ({
-      ...prev,
-      matching: [...prev.matching, user.id],
-    }));
-    await Router.push('/search');
-  }, [updateUser, user.id]);
+    await updateUser((prev) => {
+      const { matching } = prev;
+      if (matching.indexOf(user.id) < 0) matching.push(user.id);
+      return { ...prev, matching };
+    });
+    const stringToOption = (str: string) => ({ label: str, value: str });
+    let aspect: Aspect = 'mentoring';
+    /* eslint-disable-next-line no-return-assign */
+    setQuery(
+      (prev) =>
+        new UsersQuery({
+          ...prev,
+          subjects: user[(aspect = prev.aspect)].searches.map(stringToOption),
+          availability: Availability.fromJSON(user.availability),
+          langs: user.langs.map(stringToOption),
+          visible: true,
+          query: '',
+          tags: [],
+          page: 0,
+        })
+    );
+    onClosed();
+    const langs = await Utils.langsToOptions(user.langs, locale);
+    const subjects = await Utils.subjectsToOptions(user[aspect].searches);
+    setQuery((prev) => new UsersQuery({ ...prev, subjects, langs }));
+  }, [updateUser, user, onClosed, setQuery, locale]);
 
   const [open, setOpen] = useState<boolean>(true);
   const onDisplayClosed = useCallback(() => setOpen(false), []);
@@ -171,8 +202,8 @@ export default function UserDialog({
         <DisplayPage
           value={user}
           openEdit={openEdit}
-          openRequest={openRequest}
           openMatch={openMatch}
+          openRequest={openRequest}
           onClosed={onDisplayClosed}
           onChange={onChange}
         />

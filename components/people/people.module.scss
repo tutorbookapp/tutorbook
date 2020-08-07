@@ -11,6 +11,14 @@ $filters-height: 56px;
   font-weight: 600;
 }
 
+.filterForm {
+  margin-bottom: 24px;
+
+  button {
+    font-weight: 500;
+  }
+}
+
 .filters {
   height: $filters-height;
   border: 1px solid map.get(config.$colors, 'accents-2');
@@ -28,6 +36,7 @@ $filters-height: 56px;
     }
 
     .filterChips {
+      margin-left: 10px;
       flex-wrap: nowrap;
       overflow: auto;
 
