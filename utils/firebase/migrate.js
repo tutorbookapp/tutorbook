@@ -169,7 +169,15 @@ const moveApptsToMatches = async () => {
   const appts = (await db.collection('appts').get()).docs;
   await Promise.all(
     appts.map(async (appt) => {
-      await db.collection('matches').doc(appt.id).set(appt.data());
+      const matchRef = db.collection('matches').doc(appt.id);
+      const emails = (await appt.ref.collection('emails').get()).docs;
+      await Promise.all(
+        emails.map(async (email) => {
+          await matchRef.collection('emails').doc(email.id).set(email.data());
+          await email.ref.delete();
+        })
+      );
+      await matchRef.set(appt.data());
       await appt.ref.delete();
     })
   );
