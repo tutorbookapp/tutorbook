@@ -132,26 +132,6 @@ const users = async () => {
   );
 };
 
-const updateAppt = (apptDoc) => {
-  const appt = apptDoc.data();
-  return apptDoc.ref.set({
-    ...appt,
-    attendees: appt.attendees.map((a) => ({ id: a.uid, roles: a.roles })),
-  });
-};
-
-const appts = async () => {
-  const users = (await db.collection('users').get()).docs;
-  await Promise.all(
-    users.map(async (user) => {
-      const requests = (await user.ref.collection('requests').get()).docs;
-      const appts = (await user.ref.collection('appts').get()).docs;
-      await Promise.all(requests.map((request) => updateAppt(request)));
-      await Promise.all(appts.map((appt) => updateAppt(appt)));
-    })
-  );
-};
-
 /**
  * Helper function to trigger an update operation on all of our current `users`
  * documents (which will then be synced with the Algolia search index via our
@@ -173,16 +153,26 @@ const triggerUsersUpdate = async () => {
   );
 };
 
-const triggerApptsUpdate = async () => {
-  const appts = (await db.collection('appts').get()).docs;
+const triggerMatchesUpdate = async () => {
+  const matches = (await db.collection('matches').get()).docs;
   await Promise.all(
-    appts.map(async (appt) => {
-      const original = appt.data();
+    matches.map(async (match) => {
+      const original = match.data();
       const updated = { ...original, message: original.message + ' ' };
-      await appt.ref.update(updated);
-      await appt.ref.update(original);
+      await match.ref.update(updated);
+      await match.ref.update(original);
     })
   );
 };
 
-triggerApptsUpdate();
+const moveApptsToMatches = async () => {
+  const appts = (await db.collection('appts').get()).docs;
+  await Promise.all(
+    appts.map(async (appt) => {
+      await db.collection('matches').doc(appt.id).set(appt.data());
+      await appt.ref.delete();
+    })
+  );
+};
+
+moveApptsToMatches();
