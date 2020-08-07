@@ -15,7 +15,7 @@ export interface Attendee {
   roles: Role[];
 }
 
-export interface ApptSearchHit {
+export interface MatchSearchHit {
   objectID: string;
 }
 

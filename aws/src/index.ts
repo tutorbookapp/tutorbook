@@ -16,7 +16,7 @@ import {
   SESNotification,
   DocumentSnapshot,
   DocumentReference,
-  ApptSearchHit,
+  MatchSearchHit,
   Attendee,
 } from './types';
 
@@ -68,11 +68,11 @@ const client: SearchClient = algoliasearch(
   process.env.ALGOLIA_SEARCH_ID as string,
   process.env.ALGOLIA_SEARCH_KEY as string
 );
-const index: SearchIndex = client.initIndex('default-appts');
+const index: SearchIndex = client.initIndex('default-matches');
 
 /**
  * Takes a user's actual email and returns their anonymized email (i.e. their
- * `<uid>-<appt>@mail.tutorbook.org` email address).
+ * `<uid>-<match>@mail.tutorbook.org` email address).
  *
  * If a user doesn't already exist, we create that user and add them to the
  * appointment's `attendees` field.
@@ -85,7 +85,7 @@ const index: SearchIndex = client.initIndex('default-appts');
  */
 async function getAnonEmail(
   realEmail: string,
-  apptDoc: DocumentSnapshot
+  matchDoc: DocumentSnapshot
 ): Promise<string> {
   if (whitelist.some((rgx: RegExp) => rgx.test(realEmail))) return realEmail;
   let [err, user] = await to<UserRecord, FirebaseError>(
@@ -102,11 +102,11 @@ async function getAnonEmail(
   }
   const id: string = (user as UserRecord).uid;
   const handle: string = uuid();
-  const attendees = (apptDoc.data() || {}).attendees as Attendee[];
+  const attendees = (matchDoc.data() || {}).attendees as Attendee[];
   const idx: number = attendees.findIndex((a: Attendee) => a.handle === handle);
   if (idx < 0) {
     const attendee: Attendee = { id, handle, roles: [] };
-    await apptDoc.ref.update({ attendees: [...attendees, attendee] });
+    await matchDoc.ref.update({ attendees: [...attendees, attendee] });
   }
   return `${handle}@mail.tutorbook.org`;
 }
@@ -121,11 +121,11 @@ async function getAnonEmail(
  */
 async function getRealEmail(
   anonEmail: string,
-  apptDoc: DocumentSnapshot
+  matchDoc: DocumentSnapshot
 ): Promise<string> {
   const handle: string = anonEmail.split('@')[0];
-  const creator: Attendee = (apptDoc.data() || {}).creator as Attendee;
-  const attendees: Attendee[] = (apptDoc.data() || {}).attendees as Attendee[];
+  const creator: Attendee = (matchDoc.data() || {}).creator as Attendee;
+  const attendees: Attendee[] = (matchDoc.data() || {}).attendees as Attendee[];
   const idx: number = attendees.findIndex((a: Attendee) => a.handle === handle);
   const msg = `No attendee or creator with handle (${handle}).`;
   if (idx < 0 && creator.handle !== handle) throw new Error(msg);
@@ -172,30 +172,34 @@ async function replaceAsync(
  */
 async function replaceRealWithAnon(
   header: string,
-  apptDoc: DocumentSnapshot
+  matchDoc: DocumentSnapshot
 ): Promise<string> {
   if (header.indexOf('mail.tutorbook.org') >= 0) return header;
   return replaceAsync(
     header,
     /<(.*)>/,
-    async (_, email: string) => `<${await getAnonEmail(email, apptDoc)}>`
+    async (_, email: string) => `<${await getAnonEmail(email, matchDoc)}>`
   );
 }
 
 /**
  * Get all possible appointments by filtering by user handle (each attendee is
- * assigned an all-lowercase handle unique to each appt).
+ * assigned an all-lowercase handle unique to each match).
  */
-async function getApptByHandles(handles: string[]): Promise<ApptSearchHit> {
+async function getMatchByHandles(handles: string[]): Promise<MatchSearchHit> {
   const filters = handles.map((handle) => `handles:${handle}`).join(' AND ');
-  const [err, res] = await to<SearchResponse<ApptSearchHit>>(
-    index.search('', { filters }) as Promise<SearchResponse<ApptSearchHit>>
+  const [err, res] = await to<SearchResponse<MatchSearchHit>>(
+    index.search('', { filters }) as Promise<SearchResponse<MatchSearchHit>>
   );
   if (err) throw new Error(`${err.name} searching index: ${err.message}`);
-  const { hits: appts } = res as SearchResponse<ApptSearchHit>;
-  const msg = `Multiple (${filters}) appts: ${JSON.stringify(appts, null, 2)}`;
-  if (appts.length !== 1) throw new Error(msg);
-  return appts[0];
+  const { hits: matches } = res as SearchResponse<MatchSearchHit>;
+  const msg = `Multiple (${filters}) matches: ${JSON.stringify(
+    matches,
+    null,
+    2
+  )}`;
+  if (matches.length !== 1) throw new Error(msg);
+  return matches[0];
 }
 
 /**
@@ -208,7 +212,7 @@ async function getApptByHandles(handles: string[]): Promise<ApptSearchHit> {
  * recipient.
  *
  * @todo Catch errors and use the SES Node.js SDK to send the error mesage email
- * to the original sender (e.g. "This appt no longer exists").
+ * to the original sender (e.g. "This match no longer exists").
  */
 /* eslint-disable-next-line import/prefer-default-export */
 export function handler(event: MailEvent): void {
@@ -233,18 +237,19 @@ export function handler(event: MailEvent): void {
       const handles: string[] = notification.receipt.recipients.map(
         (anonEmail: string) => anonEmail.split('@')[0]
       );
-      const appt: ApptSearchHit = await getApptByHandles(handles);
+      const match: MatchSearchHit = await getMatchByHandles(handles);
 
       // Abort this operation if the Firestore document already exists (because
       // AWS Lambda functions can be invoked multiple times; the queue is
       // *eventually* consistent).
       // @see {@link https://amzn.to/38IqQ8S}
-      const apptDoc: DocumentSnapshot = await db
-        .collection('appts')
-        .doc(appt.objectID)
+      const matchDoc: DocumentSnapshot = await db
+        .collection('matches')
+        .doc(match.objectID)
         .get();
-      if (!apptDoc.exists) throw new Error(`Appt ${apptDoc.id} doesn't exist.`);
-      const mailDoc: DocumentSnapshot = await apptDoc.ref
+      if (!matchDoc.exists)
+        throw new Error(`Match ${matchDoc.id} doesn't exist.`);
+      const mailDoc: DocumentSnapshot = await matchDoc.ref
         .collection('emails')
         .doc(notification.mail.messageId)
         .get();
@@ -255,7 +260,7 @@ export function handler(event: MailEvent): void {
       const recipients: Record<string, string> = {};
       await Promise.all(
         notification.receipt.recipients.map(async (anonEmail: string) => {
-          recipients[anonEmail] = await getRealEmail(anonEmail, apptDoc);
+          recipients[anonEmail] = await getRealEmail(anonEmail, matchDoc);
         })
       );
 
@@ -290,12 +295,12 @@ export function handler(event: MailEvent): void {
           /^bcc:[\t ]?(.*(?:\r?\n\s+.*)*)/gim,
           /^to:[\t ]?(.*(?:\r?\n\s+.*)*)/gim,
         ].map(async (regex: RegExp) => {
-          const replacer = (h: string) => replaceRealWithAnon(h, apptDoc);
+          const replacer = (h: string) => replaceRealWithAnon(h, matchDoc);
           headers = await replaceAsync(headers, regex, replacer);
         })
       );
 
-      // Store the email (with all email addresses anonymized) in the appt's
+      // Store the email (with all email addresses anonymized) in the match's
       // `emails` Firestore subcollection.
       await mailDoc.ref.set({ ...notification.mail, raw: `${headers}${body}` });
 
