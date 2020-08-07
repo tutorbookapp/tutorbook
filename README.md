@@ -6,36 +6,87 @@
 [![Typescript](https://img.shields.io/badge/uses-typescript-orange?styles=flat)](https://www.typescriptlang.org)
 [![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
-**[Tutorbook](https://tutorbook.org/) is an online volunteer tutoring platform**
-that connects students in need (who no longer have face-to-face support from
-teachers) with volunteer tutors (who want to make a difference from home).
+**[Tutorbook](https://tutorbook.org) is the best way to manage tutoring and
+mentoring programs (virtually).**
 
-#### The problem
+It's an online app used by organizations (i.e. nonprofits, K-12 schools) to:
 
-- Students no longer have the individualized support teachers usually have given
-  (when they met face-to-face)
-- Teachers can no longer attend to each student individually; some students are
-  falling behind
+- Match students with tutors and mentors (e.g. by subjects, availability,
+  languages spoken).
+- Manage and track those matches (e.g. via a communications timeline and tags).
 
-#### The solution
+Students use Tutorbook to:
 
-- Support those students by connecting them to university students and
-  professionals also confined in their homes
-- Enable teachers to request one-on-one help for students they know are
-  struggling
+- Search their school's tutors/mentors themselves (instead of having an admin
+  match them up).
+- Keep track of appointments and availability (e.g. via the schedule view).
 
-#### Current work
+Parents and teachers use Tutorbook to:
 
-Here's what we're working on at a super high-level:
+- Request tutors/mentors for their students (those requests are then fulfilled
+  by an admin who matches the student with the appropriate tutor/mentor).
+- Track their student's matches (e.g. via the communications timeline).
 
-1. Building out a front-end where students and tutors can sign-up to be
-   connected to one another.
-2. Building out a back-end to automatically match students with tutors and send
-   them three links:
-   - Link to video call
-   - Link to virtual whiteboard (probably using
-     [DrawChat](https://github.com/cojapacze/sketchpad))
-   - Link to shared Google Drive folder
+## Terminology and Data Model
+
+This is a high-level overview of the various resources ("things") manipulated by
+and created through the app.
+
+**Note:** This section is not a complete technical definition of our data model.
+Instead, please refer to
+[`lib/model`](https://github.com/tutorbookapp/tutorbook/tree/master/lib/model)
+for always up-to-date Typescript data model definitions.
+
+### `User`
+
+A user is a person. This person could be a tutor, mentor, student, admin or all
+of them at the same time. Those roles are not inscribed on each user but rather
+implied by role-specific properties (e.g. a mentor will have subjects specified
+in their `mentoring.subjects` property).
+
+### `Request`
+
+A request is a job post. Typically created by parents or teachers, it comprises
+of:
+
+- The student who needs help (e.g. "Nicholas Chiang").
+  - When the student is available (this is included in the student's profile).
+- The subjects he/she needs help with (e.g. "AP Computer Science A"). This is
+  also added to the student's profile under their `tutoring.searches` property.
+- A concise description of what specifically the student is struggling with
+  (e.g. "Nicholas doesn't understand Java arrays and sorting algorithms").
+
+**Note:** Requests can also be created by admins (and often are). For example,
+an admin might need to migrate the results of a Google Form to Tutorbook (by
+creating the requests all at once and then fulfilling them over time).
+
+Once created, a request is fulfilled by an admin, who searches on behalf of the
+student and creates a match (between the student and an appropriate
+tutor/mentor).
+
+### `Match`
+
+A match is a pairing of people (typically between a single student and a single
+tutor/mentor, but there can be group pairings as well). Matches can specify
+times (e.g. "Every Monday at 3-4pm") and meeting venues (e.g. "Use this Zoom
+meeting room" or "Use this Google Meet link").
+
+- Students create matches when they "send a request" to a tutor/mentor from the
+  search view.
+- Admins can directly create matches (e.g. when migrating from an existing
+  system, admins know who's matched with whom).
+- Admins can create matches to fulfill requests (e.g. a teacher requests help
+  for their struggling student and the admin finds that help).
+
+Upon creation, Tutorbook sends an email to everyone in the match (all of the
+`attendees`) with everyone's anonymous contact info.
+
+Tutorbook has a system like
+[Craigslist's](https://www.craigslist.org/about/anonymize) where each attendee
+in each match has a unique anonymous email address (e.g.
+`88626b40-49c7-bd16-a845-ece7527cded7@mail.tutorbook.org`). Emails can then be
+intercepted by Tutorbook and added to the in-app communications timeline before
+being relayed to their intended recipients.
 
 # Contributing
 
