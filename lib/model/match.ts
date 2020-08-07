@@ -1,9 +1,12 @@
 import * as admin from 'firebase-admin';
 
-import { v4 as uuid } from 'uuid';
-
 import { ObjectWithObjectID } from '@algolia/client-search';
-import { User, Aspect } from './user';
+import {
+  Request,
+  RequestSearchHit,
+  RequestJSON,
+  RequestInterface,
+} from './request';
 import {
   Availability,
   AvailabilityJSON,
@@ -12,33 +15,8 @@ import {
 
 import construct from './construct';
 
-/**
- * Type aliases so that we don't have to type out the whole type. We could try
- * importing these directly from the `@firebase/firestore-types` or the
- * `@google-cloud/firestore` packages, but that's not recommended.
- * @todo Perhaps figure out a way to **only** import the type defs we need.
- */
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DocumentReference = admin.firestore.DocumentReference;
-
-export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
-
-export type UserWithRoles = User & { roles: Role[] };
-
-/**
- * Represents an person to an appointment.
- * @property id - The user's unique Firebase-assigned user ID (note that this
- * contains both lowercase and capital letters which is why it can't be used as
- * a unique anonymous email address handle).
- * @property handle - The user's all-lowercase anonymous email handle.
- * @property roles - The user's roles at this appointment (e.g. tutor or pupil).
- */
-export interface Person {
-  id: string;
-  handle: string;
-  roles: Role[];
-}
 
 export interface Venue {
   url: string;
@@ -46,82 +24,48 @@ export interface Venue {
 
 /**
  * Represents a tutoring lesson or mentoring appointment.
- * @property subjects - Subjects the appointment will be about (e.g. CS).
- * @property people - People who will be present during the appointment
- * (i.e. students, their parents and their tutor).
- * @property creator - Person who created the appointment (typically the student
- * but it could be their parent or an org admin).
- * @property message - Initial message sent by the match creator.
- * @property [times] - Timeslots when the appointment will occur. For now, each
- * of these timeslots has the default weekly recurrance.
+ * @property [request] - The request that was fulfilled by this match (if any).
  * @property [bramble] - The URL to the Bramble virtual tutoring room (only
  * populated when the match is for tutoring).
  * @property [jitsi] - The URL to the Jitsi video conferencing room (only
  * populated when the match is for mentoring).
  */
-export interface MatchInterface {
-  subjects: string[];
-  people: Person[];
-  creator: Person;
-  message: string;
-  times?: Availability;
+export interface MatchInterface extends RequestInterface {
+  request?: Request;
   bramble?: Venue;
   jitsi?: Venue;
-  ref?: DocumentReference;
-  id: string;
 }
 
-export type MatchJSON = Omit<MatchInterface, 'times'> & {
+export type MatchJSON = Omit<MatchInterface, 'times' | 'request'> & {
   times?: AvailabilityJSON;
+  request?: RequestJSON;
 };
 
 export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, 'times'> & { times?: AvailabilitySearchHit };
+  Omit<MatchInterface, 'times' | 'request'> & {
+    times?: AvailabilitySearchHit;
+    request?: RequestSearchHit;
+  };
 
-export class Match implements MatchInterface {
-  public subjects: string[] = [];
-
-  public people: Person[] = [];
-
-  public creator: Person = { id: '', handle: uuid(), roles: [] };
-
-  public message = '';
+export class Match extends Request implements MatchInterface {
+  public request?: Request;
 
   public bramble?: Venue;
 
   public jitsi?: Venue;
 
-  public ref?: DocumentReference;
-
-  public times?: Availability;
-
-  public id: string = '';
-
-  /**
-   * Wrap your boring `Record`s with this class to ensure that they have all of
-   * the needed `MatchInterface` values (we fill any missing values w/
-   * the above specified defaults) **and** to gain access to a bunch of useful
-   * conversion method, etc (e.g. `toString` actually makes sense now).
-   * @todo Actually implement a useful `toString` method here.
-   * @todo Perhaps add an explicit check to ensure that the given `val`'s type
-   * matches the default value at `this[key]`'s type; and then only update the
-   * default value if the types match.
-   */
   public constructor(match: Partial<MatchInterface> = {}) {
-    construct<MatchInterface>(this, match);
-  }
-
-  public get aspect(): Aspect {
-    const isTutor = (a: Person) => a.roles.indexOf('tutor') >= 0;
-    const isTutee = (a: Person) => a.roles.indexOf('tutee') >= 0;
-    if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
-    return 'mentoring';
+    super(match);
+    construct<MatchInterface>(this, match, new Request());
   }
 
   public toJSON(): MatchJSON {
-    const { times, ref, ...rest } = this;
-    if (times) return { ...rest, times: times.toJSON() };
-    return rest;
+    const { times, request, ...rest } = this;
+    return {
+      ...rest,
+      times: times ? times.toJSON() : undefined,
+      request: request ? request.toJSON() : undefined,
+    };
   }
 
   /**
@@ -129,25 +73,31 @@ export class Match implements MatchInterface {
    * @todo Convert Firestore document `path`s to `DocumentReference`s.
    */
   public static fromJSON(json: MatchJSON): Match {
-    const { times, ...rest } = json;
-    if (times)
-      return new Match({ ...rest, times: Availability.fromJSON(times) });
-    return new Match(rest);
+    const { times, request, ...rest } = json;
+    return new Match({
+      ...rest,
+      times: times ? Availability.fromJSON(times) : undefined,
+      request: request ? Request.fromJSON(request) : undefined,
+    });
   }
 
   public toFirestore(): DocumentData {
-    const { times, ref, id, ...rest } = this;
-    if (times) return { ...rest, times: times.toFirestore() };
-    return rest;
+    const { times, request, ref, id, ...rest } = this;
+    return {
+      ...rest,
+      times: times ? times.toFirestore() : undefined,
+      request: request ? request.toFirestore() : undefined,
+    };
   }
 
   public static fromFirestore(snapshot: DocumentSnapshot): Match {
     const matchData: DocumentData | undefined = snapshot.data();
     if (matchData) {
-      const { times, ...rest } = matchData;
+      const { times, request, ...rest } = matchData;
       return new Match({
         ...rest,
         times: times ? Availability.fromFirestore(times) : undefined,
+        request: request ? Request.fromJSON(request) : undefined,
         ref: snapshot.ref,
         id: snapshot.id,
       });
@@ -160,10 +110,11 @@ export class Match implements MatchInterface {
   }
 
   public static fromSearchHit(hit: MatchSearchHit): Match {
-    const { times, objectID, ...rest } = hit;
+    const { times, request, objectID, ...rest } = hit;
     return new Match({
       ...rest,
       times: times ? Availability.fromSearchHit(times) : undefined,
+      request: request ? Request.fromSearchHit(request) : undefined,
       id: objectID,
     });
   }

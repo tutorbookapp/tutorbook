@@ -5,6 +5,7 @@ export * from './user';
 export * from './timeslot';
 export * from './availability';
 export * from './query';
+export * from './request';
 export * from './match';
 export * from './errors';
 export * from './constants';
