@@ -8,16 +8,26 @@ import { Snackbar } from '@rmwc/snackbar';
 import { Select } from '@rmwc/select';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { ListUsersRes } from 'lib/api/list-users';
-import { Option, UsersQuery, Org, User, Tag } from 'lib/model';
+import {
+  Availability,
+  UserJSON,
+  CallbackParam,
+  Option,
+  UsersQuery,
+  Org,
+  User,
+  Tag,
+} from 'lib/model';
+import { MatchingContext } from 'lib/matching';
 import { IntercomAPI } from 'components/react-intercom';
-import { useUser } from 'lib/account';
 
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import UserDialog from 'components/user-dialog';
 import FilterForm from 'components/filter-form';
 import Result from 'components/search/result';
 import Header from 'components/header';
 import Placeholder from 'components/placeholder';
+import Utils from 'lib/utils';
 
 import Matching from './matching';
 
@@ -59,18 +69,16 @@ export default function People({ org }: PeopleProps): JSX.Element {
   );
 
   const { t } = useTranslation();
-  const {
-    user: { matching },
-  } = useUser();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
   useEffect(() => {
-    setQuery((prev: UsersQuery) => {
-      return new UsersQuery({
-        ...prev,
-        orgs: [{ label: org.name, value: org.id }],
-      });
-    });
+    setQuery(
+      (prev: UsersQuery) =>
+        new UsersQuery({
+          ...prev,
+          orgs: [{ label: org.name, value: org.id }],
+        })
+    );
   }, [org]);
   useEffect(() => {
     setSearching(true);
@@ -80,34 +88,109 @@ export default function People({ org }: PeopleProps): JSX.Element {
     setSearching((prev: boolean) => prev && (isValidating || !data));
   }, [isValidating, data]);
 
+  // Header action button callbacks.
+  const createUser = useCallback(() => setCreating(true), []);
+  const copySignupLink = useCallback(async () => {
+    function fallbackCopyTextToClipboard(text: string): void {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+
+      // Avoid scrolling to bottom
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.position = 'fixed';
+
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+    async function copyTextToClipboard(text: string): Promise<void> {
+      if (!navigator.clipboard) return fallbackCopyTextToClipboard(text);
+      return navigator.clipboard.writeText(text);
+    }
+    await copyTextToClipboard(
+      `${window.location.protocol}//${window.location.host}/${org.id}`
+    );
+    setViewingSnackbar(true);
+  }, [org.id]);
+  const importData = useCallback(() => {
+    return IntercomAPI('showNewMessage', t('people:import-data-msg'));
+  }, [t]);
+
+  // Filter chip callbacks.
+  const toggleVettedFilter = useCallback(() => {
+    setQuery((prev: UsersQuery) => {
+      const tags: Option<Tag>[] = Array.from(prev.tags);
+      const idx = tags.findIndex((a) => a.value === 'not-vetted');
+      if (idx < 0) {
+        tags.push({
+          label: t('people:filters-not-vetted'),
+          value: 'not-vetted',
+        });
+      } else {
+        tags.splice(idx, 1);
+      }
+      return new UsersQuery({ ...prev, tags, page: 0 });
+    });
+  }, [t]);
+  const toggleVisibleFilter = useCallback(() => {
+    setQuery((prev: UsersQuery) => {
+      const { visible: vprev } = prev;
+      const visible = vprev !== true ? true : undefined;
+      return new UsersQuery({ ...prev, visible, page: 0 });
+    });
+  }, []);
+  const toggleHiddenFilter = useCallback(() => {
+    setQuery((prev: UsersQuery) => {
+      const { visible: vprev } = prev;
+      const visible = vprev !== false ? false : undefined;
+      return new UsersQuery({ ...prev, visible, page: 0 });
+    });
+  }, []);
+
+  // Pagination callbacks.
+  const onHitsPerPageChange = useCallback(
+    (event: React.FormEvent<HTMLSelectElement>) => {
+      const hitsPerPage = Number(event.currentTarget.value);
+      setQuery((prev) => new UsersQuery({ ...prev, hitsPerPage, page: 0 }));
+    },
+    []
+  );
+  const pageLeft = useCallback(() => {
+    setQuery((prev) => new UsersQuery({ ...prev, page: prev.page - 1 }));
+  }, []);
+  const pageRight = useCallback(() => {
+    setQuery((prev) => new UsersQuery({ ...prev, page: prev.page + 1 }));
+  }, []);
+
   return (
     <>
-      {!!matching && !!matching.length && (
-        <Matching users={matching} setQuery={setQuery} />
-      )}
       {creating && (
-        <UserDialog
-          onClosed={() => setCreating(false)}
-          setQuery={setQuery}
-          initialPage='edit'
-        />
+        <UserDialog onClosed={() => setCreating(false)} initialPage='edit' />
       )}
       {data && viewingIdx !== undefined && (
         <UserDialog
           onClosed={() => setViewingIdx(undefined)}
-          setQuery={setQuery}
           initialData={data.users[viewingIdx]}
           initialPage='display'
         />
       )}
       {viewingSnackbar && (
         <Snackbar
-          open={viewingSnackbar}
           className={styles.snackbar}
           onClose={() => setViewingSnackbar(false)}
           message={t('people:link-copied')}
           dismissIcon
           leading
+          open
         />
       )}
       <Header
@@ -116,73 +199,26 @@ export default function People({ org }: PeopleProps): JSX.Element {
         actions={[
           {
             label: t('people:create-user'),
-            onClick: () => setCreating(true),
+            onClick: createUser,
           },
           {
             label: t('people:share-signup-link'),
-            onClick: async () => {
-              function fallbackCopyTextToClipboard(text: string): void {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-
-                // Avoid scrolling to bottom
-                textArea.style.top = '0';
-                textArea.style.left = '0';
-                textArea.style.position = 'fixed';
-
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-
-                try {
-                  document.execCommand('copy');
-                } catch (err) {
-                  console.error('Fallback: Oops, unable to copy', err);
-                }
-
-                document.body.removeChild(textArea);
-              }
-              async function copyTextToClipboard(text: string): Promise<void> {
-                if (!navigator.clipboard)
-                  return fallbackCopyTextToClipboard(text);
-                return navigator.clipboard.writeText(text);
-              }
-              await copyTextToClipboard(
-                `${window.location.protocol}//${window.location.host}/${org.id}`
-              );
-              setViewingSnackbar(true);
-            },
+            onClick: copySignupLink,
           },
           {
             label: t('common:import-data'),
-            onClick: () =>
-              IntercomAPI('showNewMessage', t('people:import-data-msg')),
+            onClick: importData,
           },
         ]}
       />
       <div className={styles.wrapper}>
-        <div className={styles.filterForm}>
-          <FilterForm query={query} onChange={setQuery} />
-        </div>
         <div className={styles.filters}>
           <div className={styles.left}>
             <ChipSet className={styles.filterChips}>
               <Chip
                 label={t('people:filters-not-vetted')}
                 checkmark
-                onInteraction={() => {
-                  const tags: Option<Tag>[] = Array.from(query.tags);
-                  const idx = tags.findIndex((a) => a.value === 'not-vetted');
-                  if (idx < 0) {
-                    tags.push({
-                      label: t('people:filters-not-vetted'),
-                      value: 'not-vetted',
-                    });
-                  } else {
-                    tags.splice(idx, 1);
-                  }
-                  setQuery((p) => new UsersQuery({ ...p, tags, page: 0 }));
-                }}
+                onInteraction={toggleVettedFilter}
                 selected={
                   query.tags.findIndex((a) => a.value === 'not-vetted') >= 0
                 }
@@ -190,21 +226,13 @@ export default function People({ org }: PeopleProps): JSX.Element {
               <Chip
                 label={t('people:filters-visible')}
                 checkmark
-                onInteraction={() => {
-                  const { visible: prev } = query;
-                  const visible = prev !== true ? true : undefined;
-                  setQuery((p) => new UsersQuery({ ...p, visible, page: 0 }));
-                }}
+                onInteraction={toggleVisibleFilter}
                 selected={query.visible === true}
               />
               <Chip
                 label={t('people:filters-hidden')}
                 checkmark
-                onInteraction={() => {
-                  const { visible: prev } = query;
-                  const visible = prev !== false ? false : undefined;
-                  setQuery((p) => new UsersQuery({ ...p, visible, page: 0 }));
-                }}
+                onInteraction={toggleHiddenFilter}
                 selected={query.visible === false}
               />
               <Chip
@@ -263,12 +291,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
                 enhanced
                 value={`${query.hitsPerPage}`}
                 options={['5', '10', '15', '20', '25', '30']}
-                onChange={(event: React.FormEvent<HTMLSelectElement>) => {
-                  const hitsPerPage = Number(event.currentTarget.value);
-                  setQuery(
-                    (p) => new UsersQuery({ ...p, hitsPerPage, page: 0 })
-                  );
-                }}
+                onChange={onHitsPerPageChange}
               />
             </div>
             <div className={styles.pageNumber}>
@@ -277,18 +300,14 @@ export default function People({ org }: PeopleProps): JSX.Element {
             <IconButton
               disabled={query.page <= 0}
               icon='chevron_left'
-              onClick={() => {
-                setQuery((p) => new UsersQuery({ ...p, page: p.page - 1 }));
-              }}
+              onClick={pageLeft}
             />
             <IconButton
               disabled={
                 query.page + 1 >= (data ? data.hits : 0) / query.hitsPerPage
               }
               icon='chevron_right'
-              onClick={() => {
-                setQuery((p) => new UsersQuery({ ...p, page: p.page + 1 }));
-              }}
+              onClick={pageRight}
             />
           </div>
         </div>
