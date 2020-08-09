@@ -1,14 +1,8 @@
-import { v4 as uuid } from 'uuid';
-import useSWR, { mutate } from 'swr';
-import useTranslation from 'next-translate/useTranslation';
-
 import { ListUsersRes } from 'lib/api/list-users';
 import { UsersQuery, Org, User } from 'lib/model';
 
 import React, { useMemo, useEffect, useState } from 'react';
 import UserDialog from 'components/user-dialog';
-import Result from 'components/search/result';
-import Placeholder from 'components/placeholder';
 
 import Pagination from './pagination';
 import Filters from './filters';
@@ -41,17 +35,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
     })
   );
 
-  const loadingRows: JSX.Element[] = useMemo(
-    () =>
-      Array(query.hitsPerPage)
-        .fill(null)
-        .map(() => <Result loading key={uuid()} />),
-    [query.hitsPerPage]
-  );
-
-  const { t } = useTranslation();
-  const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
-
   useEffect(() => {
     setQuery(
       (prev: UsersQuery) =>
@@ -61,13 +44,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
         })
     );
   }, [org]);
-  useEffect(() => {
-    setSearching(true);
-    void mutate(query.endpoint);
-  }, [query]);
-  useEffect(() => {
-    setSearching((prev: boolean) => prev && (isValidating || !data));
-  }, [isValidating, data]);
 
   return (
     <>
@@ -81,20 +57,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
       <Header orgId={org.id} orgName={org.name} />
       <div className={styles.wrapper}>
         <Filters query={query} setQuery={setQuery} />
-        {!searching &&
-          (data ? data.users : []).map((user, idx) => (
-            <Result
-              user={User.fromJSON(user)}
-              key={user.id}
-              onClick={() => setViewingIdx(idx)}
-            />
-          ))}
-        {searching && loadingRows}
-        {!searching && !(data ? data.users : []).length && (
-          <div className={styles.empty}>
-            <Placeholder>{t('people:empty')}</Placeholder>
-          </div>
-        )}
+        <Results query={query} />
         <Pagination
           hits={data ? data.hits : 0}
           query={query}

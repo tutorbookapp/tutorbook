@@ -1,0 +1,9 @@
+@use 'sass:map';
+@use 'styles/config';
+
+.empty {
+  margin: 0;
+  padding: 24px;
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-top: none;
+}
