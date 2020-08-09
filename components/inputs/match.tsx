@@ -206,7 +206,7 @@ export default function MatchInputs({
       )}
       {times && (
         <TimesSelect
-          focused={focused === 'subjects'}
+          focused={focused === 'times'}
           label={t('match:times')}
           onFocused={focusTimes}
           onBlurred={focusNothing}
