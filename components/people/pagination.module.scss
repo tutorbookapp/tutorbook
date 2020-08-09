@@ -1,0 +1,53 @@
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/typography';
+
+$filters-height: 56px;
+
+.pagination {
+  height: $filters-height;
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-top: none;
+  display: flex;
+  justify-content: space-between;
+
+  .right {
+    align-items: center;
+    display: flex;
+
+    .hitsPerPage {
+      @include typography.typography('body2');
+      align-items: center;
+      display: flex;
+
+      :global(.mdc-select) {
+        background-color: transparent;
+        border-radius: 0;
+
+        :global(.mdc-select__anchor) {
+          border-radius: 0;
+          width: 70px;
+
+          :global(.mdc-line-ripple::before) {
+            border: none;
+          }
+        }
+      }
+
+      :global(.mdc-select:not(.mdc-select--disabled) .mdc-select__anchor) {
+        background-color: transparent;
+      }
+    }
+
+    .pageNumber {
+      @include typography.typography('body2');
+      margin: 0 24px;
+    }
+
+    :global(.mdc-icon-button:last-child) {
+      margin-right: ($filters-height - 48px) / 2;
+    }
+  }
+}

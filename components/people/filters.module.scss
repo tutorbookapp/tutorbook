@@ -1,0 +1,65 @@
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/typography';
+
+$filters-height: 56px;
+
+.filters {
+  height: $filters-height;
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+
+  .left {
+    display: flex;
+    align-items: center;
+
+    .filtersButton {
+      margin-left: 12px;
+    }
+
+    .filterChips {
+      margin-left: 10px;
+      flex-wrap: nowrap;
+      overflow: auto;
+
+      .invalid {
+        background-color: map.get(config.$colors, 'error-darker');
+        color: white;
+
+        svg path {
+          stroke: white;
+        }
+      }
+    }
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+
+    .searchField {
+      $margin: 10px;
+      height: $filters-height - $margin * 2;
+      margin-right: $margin;
+
+      &:not(:global(.mdc-text-field--focused)):not(:global(.mdc-text-field--invalid)) {
+        :global(.mdc-notched-outline__leading),
+        :global(.mdc-notched-outline__notch),
+        :global(.mdc-notched-outline__trailing) {
+          border-color: map.get(config.$colors, 'accents-2');
+        }
+      }
+
+      input {
+        @include typography.typography('body2');
+      }
+    }
+
+    .menuButton {
+      margin-right: 12px;
+    }
+  }
+}
