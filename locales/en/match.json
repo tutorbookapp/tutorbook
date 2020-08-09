@@ -4,6 +4,6 @@
   "times": "Times",
   "message": "Message",
   "message-placeholder": "I could really use your help with my {{subject}} project...",
-  "send-btn": "Send Request",
-  "signup-btn": "Signup and Send"
+  "create-btn": "Create Match",
+  "update-btn": "Update Match"
 }
