@@ -1,13 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import UserDialog from 'components/user-dialog';
+import { Org, UsersQuery } from 'lib/model';
 
-import { Org, User, UsersQuery } from 'lib/model';
-import { ListUsersRes } from 'lib/api/list-users';
-
+import Results from './results';
 import Filters from './filters';
 import Header from './header';
-import Pagination from './pagination';
 import styles from './people.module.scss';
 
 interface PeopleProps {
@@ -26,8 +23,6 @@ interface PeopleProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function People({ org }: PeopleProps): JSX.Element {
-  const [searching, setSearching] = useState<boolean>(true);
-  const [viewingIdx, setViewingIdx] = useState<number>();
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
       orgs: [{ label: org.name, value: org.id }],
@@ -47,22 +42,10 @@ export default function People({ org }: PeopleProps): JSX.Element {
 
   return (
     <>
-      {data && viewingIdx !== undefined && (
-        <UserDialog
-          onClosed={() => setViewingIdx(undefined)}
-          initialData={data.users[viewingIdx]}
-          initialPage='display'
-        />
-      )}
       <Header orgId={org.id} orgName={org.name} />
       <div className={styles.wrapper}>
         <Filters query={query} setQuery={setQuery} />
-        <Results query={query} />
-        <Pagination
-          hits={data ? data.hits : 0}
-          query={query}
-          setQuery={setQuery}
-        />
+        <Results query={query} setQuery={setQuery} />
       </div>
     </>
   );
