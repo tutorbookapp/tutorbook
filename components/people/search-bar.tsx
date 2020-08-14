@@ -1,5 +1,5 @@
 import { Chip, ChipSet } from '@rmwc/chip';
-import { memo, FormEvent, useCallback } from 'react';
+import { FormEvent, memo, useCallback } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';

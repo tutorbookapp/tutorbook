@@ -1,20 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { v4 as uuid } from 'uuid';
-import axios, { AxiosResponse } from 'axios';
 import to from 'await-to-js';
-import mail from '@sendgrid/mail';
 
 import {
-  Match,
-  MatchJSON,
   Person,
+  Request,
+  RequestJSON,
   Role,
   Timeslot,
   User,
   UserWithRoles,
-  Venue,
 } from 'lib/model';
-import { MatchEmail } from 'lib/emails';
 
 import error from './helpers/error';
 import {
@@ -25,38 +21,10 @@ import {
   db,
 } from './helpers/firebase';
 
-mail.setApiKey(process.env.SENDGRID_API_KEY as string);
-
-export type CreateMatchRes = MatchJSON;
-
-interface BrambleRes {
-  APImethod: string;
-  status: string;
-  result: string;
-}
-
-async function getBramble(matchId: string): Promise<Venue> {
-  const [err, res] = await to<AxiosResponse<BrambleRes>>(
-    axios({
-      method: 'post',
-      url: 'https://api.bramble.io/createRoom',
-      headers: {
-        room: matchId,
-        agency: 'tutorbook',
-        auth_token: process.env.BRAMBLE_API_KEY as string,
-      },
-    })
-  );
-  if (err) throw new Error(`${err.name} creating Bramble room: ${err.message}`);
-  return { url: (res as AxiosResponse<BrambleRes>).data.result };
-}
-
-async function getJitsi(matchId: string): Promise<Venue> {
-  return { url: `https://meet.jit.si/${matchId}` };
-}
+export type CreateRequestRes = RequestJSON;
 
 /**
- * Takes an `MatchJSON` object, an authentication token, and:
+ * Takes an `RequestJSON` object, an authentication token, and:
  * 1. Performs the following verifications (sends a `400` error code and an
  *    accompanying human-readable error message if any of them fail):
  *    - Verifies the correct request body was sent (e.g. all parameters are there
@@ -71,24 +39,21 @@ async function getJitsi(matchId: string): Promise<Venue> {
  *    - Verifies that the given authentication JWT belongs to either an admin of
  *      orgs that all the tutees and mentees are a part of or the parent of all
  *      the tutees and mentees. In the future, teachers will also be able to
- *      create matches on behalf of their students and students will be able to
- *      add fellow students (i.e. students within the same org) to their matches.
+ *      create requests on behalf of their students and students will be able to
+ *      add fellow students (i.e. students within the same org) to their requests.
  * 2. Adds all the tutee and mentee parents as people.
- * 3. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
- *    it as a venue to the match.
- * 4. Creates a new `matches` document.
- * 5. Sends an email initializing communications btwn the creator and the tutor.
+ * 3. Creates a new `requests` document.
  *
- * @param {MatchJSON} request - The match to create a pending request for.
- * The given `idToken` **must** be from one of the match's `people`
+ * @param {RequestJSON} request - The request to create a pending request for.
+ * The given `idToken` **must** be from one of the request's `people`
  * (see the above description for more requirements).
- * @return {MatchJSON} The created request (typically this is exactly the same as
+ * @return {RequestJSON} The created request (typically this is exactly the same as
  * the given `request` but it can be different if the server implements
  * different validations than the client).
  */
-export default async function createMatch(
+export default async function createRequest(
   req: NextApiRequest,
-  res: NextApiResponse<CreateMatchRes>
+  res: NextApiResponse<CreateRequestRes>
 ): Promise<void> {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // 1. Verify that the request body is valid.
@@ -96,21 +61,21 @@ export default async function createMatch(
   if (!req.body) {
     error(res, 'You must provide a request body.');
   } else if (!req.body.subjects || !req.body.subjects.length) {
-    error(res, 'Your match must contain valid subjects.');
-  } else if (!req.body.people || req.body.people.length < 2) {
-    error(res, 'Your match must have >= 2 people.');
+    error(res, 'Your request must contain valid subjects.');
+  } else if (!req.body.people || req.body.people.length < 1) {
+    error(res, 'Your request must have >= 1 people.');
   } else if (req.body.time && typeof req.body.time !== 'object') {
-    error(res, 'Your match had an invalid time.');
+    error(res, 'Your request had an invalid time.');
   } else if (
     req.body.time &&
     new Date(req.body.time.from).toString() === 'Invalid Date'
   ) {
-    error(res, 'Your match had an invalid start time.');
+    error(res, 'Your request had an invalid start time.');
   } else if (
     req.body.time &&
     new Date(req.body.time.to).toString() === 'Invalid Date'
   ) {
-    error(res, 'Your match had an invalid end time.');
+    error(res, 'Your request had an invalid end time.');
   } else if (!req.headers.authorization) {
     error(res, 'You must provide a valid Firebase Auth JWT.', 401);
   } else {
@@ -120,7 +85,7 @@ export default async function createMatch(
     if (err) {
       error(res, `Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
     } else {
-      const match: Match = Match.fromJSON(req.body);
+      const request: Request = Request.fromJSON(req.body);
       const people: UserWithRoles[] = [];
       const parents: User[] = [];
       let errored = false;
@@ -130,14 +95,14 @@ export default async function createMatch(
         photo: (token as DecodedIdToken).picture,
         phone: (token as DecodedIdToken).phone_number,
       });
-      if (creator.id !== match.creator.id) {
+      if (creator.id !== request.creator.id) {
         const msg =
           `Authentication JWT (${creator.id}) did not belong to the listed ` +
-          `match creator (${match.creator.id}).`;
+          `request creator (${request.creator.id}).`;
         error(res, msg, 401);
       } else {
         await Promise.all(
-          match.people.map(async (person: Person) => {
+          request.people.map(async (person: Person) => {
             if (errored) return;
             // 1. Verify that the people have uIDs.
             if (!person.id) {
@@ -156,14 +121,14 @@ export default async function createMatch(
               return;
             }
             const user: User = User.fromFirestore(personDoc);
-            // 1. Verify that the match creator is an person.
+            // 1. Verify that the request creator is an person.
             if (user.id === creator.id) creator = new User({ ...user });
             // 1. Verify that the people are available (note that we don't throw
             // an error if it is the request sender who is unavailable).
-            let timeslot = 'during match time';
+            let timeslot = 'during request time';
             if (
-              match.times &&
-              !match.times.every((time: Timeslot) => {
+              request.times &&
+              !request.times.every((time: Timeslot) => {
                 timeslot = time.toString();
                 return user.availability.contains(time);
               })
@@ -185,12 +150,12 @@ export default async function createMatch(
             const canMentorSubject: (s: string) => boolean = (s: string) => {
               return user.mentoring.subjects.includes(s);
             };
-            if (isTutor && !match.subjects.every(canTutorSubject)) {
+            if (isTutor && !request.subjects.every(canTutorSubject)) {
               error(res, `${user.toString()} cannot tutor these subjects.`);
               errored = true;
               return;
             }
-            if (isMentor && !match.subjects.every(canMentorSubject)) {
+            if (isMentor && !request.subjects.every(canMentorSubject)) {
               error(res, `${user.toString()} cannot mentor these subjects.`);
               errored = true;
               return;
@@ -211,7 +176,7 @@ export default async function createMatch(
         );
         parents.forEach((parent: User) => {
           const roles: Role[] = ['parent'];
-          match.people.push({ roles, id: parent.id, handle: uuid() });
+          request.people.push({ roles, id: parent.id, handle: uuid() });
           const parentWithRoles = parent as UserWithRoles;
           parentWithRoles.roles = roles;
           people.push(parentWithRoles);
@@ -230,12 +195,12 @@ export default async function createMatch(
               .get()
           ).docs.map((org: DocumentSnapshot) => org.id);
           // 1. Verify that all the tutees and mentees are either:
-          // - The creator of the match (i.e. the owner of the JWT).
+          // - The creator of the request (i.e. the owner of the JWT).
           // - The children of the creator (i.e. the creator is their parent).
           // - Part of an org that the creator is an admin of.
           const errorMsg =
             `Creator (${creator.toString()}) is not authorized to create ` +
-            `matches for these people.`;
+            `requests for these people.`;
           if (
             !people.every((a: UserWithRoles) => {
               if (a.roles.every((r) => ['tutee', 'mentee'].indexOf(r) < 0))
@@ -247,32 +212,14 @@ export default async function createMatch(
             })
           )
             return error(res, errorMsg, 401);
-          match.id = db.collection('matches').doc().id;
-          if (match.aspect === 'tutoring') {
-            console.log('[DEBUG] Creating Bramble room...');
-            const [errr, venue] = await to(getBramble(match.id));
-            if (errr) return error(res, errr.message, 500, errr);
-            match.bramble = venue;
-          } else {
-            console.log('[DEBUG] Creating Jitsi room...');
-            const [errr, venue] = await to(getJitsi(match.id));
-            if (errr) return error(res, errr.message, 500, errr);
-            match.jitsi = venue;
-          }
-          console.log(`[DEBUG] Creating match (${match.id})...`);
-          await db.collection('matches').doc(match.id).set(match.toFirestore());
-          // 4-5. Send out the match email.
-          console.log('[DEBUG] Sending match email...');
-          const [mailErr] = await to(
-            mail.send(new MatchEmail(match, people, creator))
-          );
-          if (mailErr) {
-            const msg = `${mailErr.name} sending email: ${mailErr.message}`;
-            error(res, msg, 500, mailErr);
-          } else {
-            res.status(201).json(match.toJSON());
-            console.log('[DEBUG] Created match and sent email.');
-          }
+          request.id = db.collection('requests').doc().id;
+          console.log(`[DEBUG] Creating request (${request.id})...`);
+          await db
+            .collection('requests')
+            .doc(request.id)
+            .set(request.toFirestore());
+          res.status(201).json(request.toJSON());
+          console.log('[DEBUG] Created request and sent success response.');
         }
       }
     }

@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 
-import { matchUpdate, userUpdate } from './algolia';
+import { requestUpdate, matchUpdate, userUpdate } from './algolia';
 
 export const algoliaUserUpdate = functions.firestore
   .document('partitions/{partition}/users/{user}')
@@ -9,3 +9,7 @@ export const algoliaUserUpdate = functions.firestore
 export const algoliaMatchUpdate = functions.firestore
   .document('partitions/{partition}/matches/{match}')
   .onWrite(matchUpdate);
+
+export const algoliaRequestUpdate = functions.firestore
+  .document('partitions/{partition}/requests/{request}')
+  .onWrite(requestUpdate);

@@ -165,6 +165,71 @@ export async function matchUpdate(
   await updateFilterableAttributes(index, ['handles', 'orgs']);
 }
 
+export async function requestUpdate(
+  change: Change<DocumentSnapshot>,
+  context: EventContext
+): Promise<void> {
+  const db: DocumentReference = admin
+    .firestore()
+    .collection('partitions')
+    .doc(context.params.partition);
+
+  /**
+   * Gets the orgs for a given appointment. We add all of the orgs that each
+   * appointment person is a part of during indexing. This allows us to filter
+   * by org at search time (i.e. when we want to populate an org admin dashboard).
+   * @param request - The appointment to fetch orgs for.
+   * @return A list of org IDs that the `request` people are a part of.
+   */
+  async function orgs(request: Record<string, unknown>): Promise<string[]> {
+    const ids: Set<string> = new Set();
+    await Promise.all(
+      (request.people as { id: string }[]).map(async ({ id }) => {
+        const doc = await db.collection('users').doc(id).get();
+        if (!doc.exists) {
+          console.warn(`[WARNING] Person (${id}) doesn't exist.`);
+        } else {
+          (doc.data() as { orgs: string[] }).orgs.forEach((o) => ids.add(o));
+        }
+      })
+    );
+    console.log(`[DEBUG] Got orgs for request (${request.id as string}):`, ids);
+    return Array.from(ids);
+  }
+
+  const id: string = context.params.request as string;
+  const indexId = `${context.params.partition as string}-requests`;
+  const index: SearchIndex = client.initIndex(indexId);
+  if (!change.after.exists) {
+    console.log(`[DEBUG] Deleting request (${id})...`);
+    const [err] = await too(index.deleteObject(id));
+    if (err) {
+      console.error(`[ERROR] ${err.name} while deleting:`, err);
+    } else {
+      console.log(`[DEBUG] Deleted request (${id}).`);
+    }
+  } else {
+    const request = change.after.data() as Record<string, unknown>;
+    console.log(`[DEBUG] Updating request (${id})...`);
+    const ob: Record<string, unknown> = {
+      ...request,
+      time: request.time
+        ? timeslot(request.time as Timeslot<Timestamp>)
+        : undefined,
+      handles: handles(request),
+      orgs: await orgs(request),
+      objectID: id,
+    };
+    const [err] = await too(index.saveObject(ob));
+    if (err) {
+      console.error(`[ERROR] ${err.name} while updating:`, err);
+    } else {
+      console.log(`[DEBUG] Updated request (${id}).`);
+    }
+  }
+  await updateFilterableAttributes(index, ['handles', 'orgs']);
+}
+
 /**
  * We sync our Firestore database with Algolia in order to perform SQL-like
  * search operations (and to easily enable full-text search OFC).

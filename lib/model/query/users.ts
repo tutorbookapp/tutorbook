@@ -6,8 +6,9 @@ import to from 'await-to-js';
 import { Availability, AvailabilityJSON } from '../availability';
 import { Aspect, Check, User, UserJSON } from '../user';
 import { ApiError } from '../errors';
-import { Option, Query, QueryInterface } from './base';
 import construct from '../construct';
+
+import { Option, Query, QueryInterface } from './base';
 
 /**
  * All the supported filters for the search view.

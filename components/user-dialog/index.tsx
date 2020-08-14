@@ -1,28 +1,23 @@
 import {
+  RefObject,
   useCallback,
-  useEffect,
+  useMemo,
   useLayoutEffect,
-  useRef,
   useState,
 } from 'react';
 import { Dialog } from '@rmwc/dialog';
 import { v4 as uuid } from 'uuid';
-import useSWR, { mutate } from 'swr';
+import axios from 'axios';
+import to from 'await-to-js';
 import cn from 'classnames';
+import useSWR, { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 import useWebAnimations from '@wellyshen/use-web-animations';
 
-import {
-  Aspect,
-  Availability,
-  FCallback,
-  User,
-  UserJSON,
-  UsersQuery,
-} from 'lib/model';
-import Utils from 'lib/utils';
-import { usePrevious } from 'lib/hooks';
+import { RequestJSON, FCallback, User, UserJSON, UsersQuery } from 'lib/model';
+import { ListRequestsRes } from 'lib/api/list-requests';
 import { useUser } from 'lib/account';
+import { usePrevious } from 'lib/hooks';
 
 import DisplayPage from './display-page';
 import EditPage from './edit-page';
@@ -152,35 +147,50 @@ export default function UserDialog({
     return new Promise<void>((resolve) => setTimeout(resolve, duration));
   }, []);
 
-  const { updateUser } = useUser();
-  const { lang: locale } = useTranslation();
+  const { user: currentUser } = useUser();
   const openMatch = useCallback(async () => {
-    await updateUser((prev) => {
-      const { matching } = prev;
-      if (matching.indexOf(user.id) < 0) matching.push(user.id);
-      return { ...prev, matching };
-    });
-    const stringToOption = (str: string) => ({ label: str, value: str });
-    let aspect: Aspect = 'mentoring';
-    /* eslint-disable-next-line no-return-assign */
-    setQuery(
-      (prev) =>
-        new UsersQuery({
-          ...prev,
-          subjects: user[(aspect = prev.aspect)].searches.map(stringToOption),
-          availability: Availability.fromJSON(user.availability),
-          langs: user.langs.map(stringToOption),
-          visible: true,
-          query: '',
-          tags: [],
-          page: 0,
-        })
+    const request: RequestJSON = {
+      id: `temp-${uuid()}`,
+      subjects: user.tutoring.searches,
+      people: [{ id: user.id, roles: ['tutee'], handle: uuid() }],
+      creator: { id: currentUser.id, roles: [], handle: uuid() },
+      message: 'Request auto created by matching queue.',
+    };
+    /* eslint-disable @typescript-eslint/require-await */
+    await mutate(
+      '/api/requests',
+      async (res?: ListRequestsRes) => {
+        return res
+          ? { hits: res.hits + 1, requests: [...res.requests, request] }
+          : { hits: 1, requests: [request] };
+      },
+      false
     );
     onClosed();
-    const langs = await Utils.langsToOptions(user.langs, locale);
-    const subjects = await Utils.subjectsToOptions(user[aspect].searches);
-    setQuery((prev) => new UsersQuery({ ...prev, subjects, langs }));
-  }, [updateUser, user, onClosed, setQuery, locale]);
+    const { data: created } = await axios.post<RequestJSON>(
+      '/api/requests',
+      request
+    );
+    await mutate(
+      '/api/requests',
+      async (res?: ListRequestsRes) => {
+        if (!res) return { hits: 1, requests: [created] };
+        const idx = res.requests.findIndex((r) => r.id === request.id);
+        if (idx < 0)
+          return { hits: res.hits + 1, requests: [...res.requests, created] };
+        return {
+          hits: res.hits,
+          requests: [
+            ...res.requests.slice(0, idx),
+            created,
+            ...res.requests.slice(idx + 1),
+          ],
+        };
+      },
+      false
+    );
+    /* eslint-enable @typescript-eslint/require-await */
+  }, [onClosed, user, currentUser]);
 
   const [open, setOpen] = useState<boolean>(true);
   const onDisplayClosed = useCallback(() => setOpen(false), []);
@@ -189,7 +199,7 @@ export default function UserDialog({
     <Dialog open={open} onClosed={onClosed} className={styles.dialog}>
       <div
         className={cn(styles.page, { [styles.active]: active === 'display' })}
-        ref={displayRef as React.RefObject<HTMLDivElement>}
+        ref={displayRef as RefObject<HTMLDivElement>}
       >
         <DisplayPage
           value={user}
@@ -202,13 +212,13 @@ export default function UserDialog({
       </div>
       <div
         className={cn(styles.page, { [styles.active]: active === 'edit' })}
-        ref={editRef as React.RefObject<HTMLDivElement>}
+        ref={editRef as RefObject<HTMLDivElement>}
       >
         <EditPage value={user} onChange={onChange} openDisplay={openDisplay} />
       </div>
       <div
         className={cn(styles.page, { [styles.active]: active === 'request' })}
-        ref={requestRef as React.RefObject<HTMLDivElement>}
+        ref={requestRef as RefObject<HTMLDivElement>}
       >
         <RequestPage value={user} openDisplay={openDisplay} />
       </div>
