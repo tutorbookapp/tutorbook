@@ -10,6 +10,7 @@ import styles from './result.module.scss';
 
 interface Props {
   user?: User;
+  className?: string;
   onClick?: TCallback<SyntheticEvent<HTMLElement>>;
   loading?: boolean;
   avatar?: boolean;
@@ -23,6 +24,7 @@ const canUseDOM = !!(
 
 export default function Result({
   user,
+  className,
   onClick,
   loading,
   avatar = true,
@@ -42,7 +44,7 @@ export default function Result({
   return (
     <Ripple disabled={loading} onClick={onClick}>
       <li
-        className={cn(styles.listItem, {
+        className={cn(styles.listItem, className, {
           [styles.loading]: loading,
           [styles.avatar]: avatar,
         })}
