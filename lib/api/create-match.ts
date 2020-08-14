@@ -75,12 +75,12 @@ async function getJitsi(matchId: string): Promise<Venue> {
  *      add fellow students (i.e. students within the same org) to their matches.
  * 2. Adds all the tutee and mentee parents as people.
  * 3. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
- *    it as a venue to the appointment.
+ *    it as a venue to the match.
  * 4. Creates a new `matches` document.
  * 5. Sends an email initializing communications btwn the creator and the tutor.
  *
- * @param {MatchJSON} request - The appointment to create a pending request for.
- * The given `idToken` **must** be from one of the appointment's `people`
+ * @param {MatchJSON} request - The match to create a pending request for.
+ * The given `idToken` **must** be from one of the match's `people`
  * (see the above description for more requirements).
  * @return {MatchJSON} The created request (typically this is exactly the same as
  * the given `request` but it can be different if the server implements
@@ -96,21 +96,21 @@ export default async function createMatch(
   if (!req.body) {
     error(res, 'You must provide a request body.');
   } else if (!req.body.subjects || !req.body.subjects.length) {
-    error(res, 'Your appointment must contain valid subjects.');
+    error(res, 'Your match must contain valid subjects.');
   } else if (!req.body.people || req.body.people.length < 2) {
-    error(res, 'Your appointment must have >= 2 people.');
+    error(res, 'Your match must have >= 2 people.');
   } else if (req.body.time && typeof req.body.time !== 'object') {
-    error(res, 'Your appointment had an invalid time.');
+    error(res, 'Your match had an invalid time.');
   } else if (
     req.body.time &&
     new Date(req.body.time.from).toString() === 'Invalid Date'
   ) {
-    error(res, 'Your appointment had an invalid start time.');
+    error(res, 'Your match had an invalid start time.');
   } else if (
     req.body.time &&
     new Date(req.body.time.to).toString() === 'Invalid Date'
   ) {
-    error(res, 'Your appointment had an invalid end time.');
+    error(res, 'Your match had an invalid end time.');
   } else if (!req.headers.authorization) {
     error(res, 'You must provide a valid Firebase Auth JWT.', 401);
   } else {
@@ -156,11 +156,11 @@ export default async function createMatch(
               return;
             }
             const user: User = User.fromFirestore(personDoc);
-            // 1. Verify that the appointment creator is an person.
+            // 1. Verify that the match creator is an person.
             if (user.id === creator.id) creator = new User({ ...user });
             // 1. Verify that the people are available (note that we don't throw
             // an error if it is the request sender who is unavailable).
-            let timeslot = 'during appointment time';
+            let timeslot = 'during match time';
             if (
               match.times &&
               !match.times.every((time: Timeslot) => {
@@ -235,7 +235,7 @@ export default async function createMatch(
           // - Part of an org that the creator is an admin of.
           const errorMsg =
             `Creator (${creator.toString()}) is not authorized to create ` +
-            `appointments for these people.`;
+            `matches for these people.`;
           if (
             !people.every((a: UserWithRoles) => {
               if (a.roles.every((r) => ['tutee', 'mentee'].indexOf(r) < 0))
@@ -259,10 +259,10 @@ export default async function createMatch(
             if (errr) return error(res, errr.message, 500, errr);
             match.jitsi = venue;
           }
-          console.log(`[DEBUG] Creating appointment (${match.id})...`);
+          console.log(`[DEBUG] Creating match (${match.id})...`);
           await db.collection('matches').doc(match.id).set(match.toFirestore());
-          // 4-5. Send out the appointment email.
-          console.log('[DEBUG] Sending appointment email...');
+          // 4-5. Send out the match email.
+          console.log('[DEBUG] Sending match email...');
           const [mailErr] = await to(
             mail.send(new MatchEmail(match, people, creator))
           );
@@ -271,7 +271,7 @@ export default async function createMatch(
             error(res, msg, 500, mailErr);
           } else {
             res.status(201).json(match.toJSON());
-            console.log('[DEBUG] Created appointment and sent email.');
+            console.log('[DEBUG] Created match and sent email.');
           }
         }
       }

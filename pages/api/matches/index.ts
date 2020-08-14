@@ -5,18 +5,17 @@ import createMatch, { CreateMatchRes } from 'lib/api/create-match';
 import listMatches, { ListMatchesRes } from 'lib/api/list-matches';
 
 /**
- * GET - Lists the user's, their children's, or their org's appointments.
- * POST - Creates a new appointment.
+ * GET - Lists the user's, their children's, or their org's matches.
+ * POST - Creates a new match.
  *
- * Requires a JWT owned by an appointment person, their parents, or their org
- * admin.
+ * Requires a JWT owned by an match person, their parents, or their org admin.
  */
 export default async function matches(
   req: NextApiRequest,
   res: NextApiResponse<ListMatchesRes | CreateMatchRes | ApiError>
 ): Promise<void> {
   switch (req.method) {
-    case 'GET': // List the user's, their children's, or their org's matches.
+    case 'GET': // List the user's, their children's, and their org's matches.
       await listMatches(req, res);
       break;
     case 'POST': // Create a new match.
