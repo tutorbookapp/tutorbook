@@ -4,7 +4,7 @@ export * from './org';
 export * from './user';
 export * from './timeslot';
 export * from './availability';
-export * from './query';
+export * from './query/index';
 export * from './request';
 export * from './match';
 export * from './errors';
