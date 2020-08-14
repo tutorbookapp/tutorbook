@@ -1,30 +1,28 @@
-import { useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { v4 as uuid } from 'uuid';
 import useTranslation from 'next-translate/useTranslation';
 
 import Placeholder from 'components/placeholder';
-import UserDialog from 'components/user-dialog';
 import Result from 'components/search/result';
 
+import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/list-users';
-import { Callback, User, UsersQuery } from 'lib/model';
 
 import styles from './results-list.module.scss';
 
 export interface ResultsListProps {
   query: UsersQuery;
-  setQuery: Callback<UsersQuery>;
   setHits: Callback<number>;
+  setViewing: Callback<UserJSON | undefined>;
 }
 
-export default function ResultsList({
+export default memo(function ResultsList({
   query,
-  setQuery,
   setHits,
+  setViewing,
 }: ResultsListProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(true);
-  const [viewingIdx, setViewingIdx] = useState<number>();
 
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
@@ -50,32 +48,22 @@ export default function ResultsList({
   }, [query.hitsPerPage]);
 
   return (
-    <>
-      {data && viewingIdx !== undefined && (
-        <UserDialog
-          onClosed={() => setViewingIdx(undefined)}
-          initialData={data.users[viewingIdx]}
-          initialPage='display'
-          setQuery={setQuery}
-        />
+    <div className={styles.wrapper}>
+      {!searching &&
+        (data ? data.users : []).map((user: UserJSON) => (
+          <Result
+            onClick={() => setViewing(user)}
+            user={User.fromJSON(user)}
+            className={styles.item}
+            key={user.id}
+          />
+        ))}
+      {!searching && !(data ? data.users : []).length && (
+        <div className={styles.empty}>
+          <Placeholder>{t('people:empty')}</Placeholder>
+        </div>
       )}
-      <div className={styles.wrapper}>
-        {!searching &&
-          (data ? data.users : []).map((user, idx) => (
-            <Result
-              onClick={() => setViewingIdx(idx)}
-              user={User.fromJSON(user)}
-              className={styles.item}
-              key={user.id}
-            />
-          ))}
-        {!searching && !(data ? data.users : []).length && (
-          <div className={styles.empty}>
-            <Placeholder>{t('people:empty')}</Placeholder>
-          </div>
-        )}
-        {searching && loadingRows}
-      </div>
-    </>
+      {searching && loadingRows}
+    </div>
   );
-}
+});

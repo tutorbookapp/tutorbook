@@ -1,5 +1,5 @@
 import { Chip, ChipSet } from '@rmwc/chip';
-import { FormEvent, useCallback } from 'react';
+import { memo, FormEvent, useCallback } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
@@ -14,7 +14,7 @@ export interface SearchBarProps {
   setOpen: Callback<boolean>;
 }
 
-export default function SearchBar({
+export default memo(function SearchBar({
   query,
   setQuery,
   setOpen,
@@ -117,4 +117,4 @@ export default function SearchBar({
       </div>
     </div>
   );
-}
+});

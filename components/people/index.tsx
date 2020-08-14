@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { Org, UsersQuery } from 'lib/model';
+import UserDialog from 'components/user-dialog';
 
-import SearchBar from './search-bar';
-import ResultsList from './results-list';
+import { Org, UserJSON, UsersQuery } from 'lib/model';
+
 import FiltersSheet from './filters-sheet';
 import Header from './header';
+import ResultsList from './results-list';
+import SearchBar from './search-bar';
 import Pagination from './pagination';
 import styles from './people.module.scss';
 
@@ -14,13 +16,15 @@ interface PeopleProps {
 }
 
 /**
- * The "People" view is a heterogenous combination of live-updating filtered
- * results and editability (similar to Google Sheets):
- * - Data automatically re-validates when filters are valid.
- * - Filters become invalid when data is edited or new users are being created.
- * - Creating new users locally updates the SWR data and calls the `/api/users`
- * API endpoint when the user has a valid email address.
- * - Local edits are pushed to remote after 5secs of no change.
+ * The "People" view is a fully filterable list of users that can be clicked on
+ * to open a "UserDialog" that includes:
+ * - Profile editing
+ * - People matching (i.e. match and/or request creation)
+ * - Convenient contact actions (i.e. email a certain user)
+ * This component merely acts as a shared state provider by passing down state
+ * variables and their corresponding `setState` callbacks.
+ * @todo Ensure that child components are wrapped in `React.memo`s so that they
+ * don't re-render due to irrelevant state changes (e.g. the matching queue).
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/87}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
@@ -33,6 +37,9 @@ export default function People({ org }: PeopleProps): JSX.Element {
     })
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
+  const [viewing, setViewing] = useState<UserJSON>();
+
+  const onClosed = useCallback(() => setViewing(undefined), []);
 
   useEffect(() => {
     setQuery(
@@ -46,6 +53,14 @@ export default function People({ org }: PeopleProps): JSX.Element {
 
   return (
     <>
+      {viewing && (
+        <UserDialog
+          onClosed={onClosed}
+          initialData={viewing}
+          initialPage='display'
+          setQuery={setQuery}
+        />
+      )}
       <Header orgId={org.id} orgName={org.name} />
       <div className={styles.wrapper}>
         <SearchBar query={query} setQuery={setQuery} setOpen={setFiltersOpen} />
@@ -56,7 +71,11 @@ export default function People({ org }: PeopleProps): JSX.Element {
             open={filtersOpen}
             setOpen={setFiltersOpen}
           />
-          <ResultsList query={query} setQuery={setQuery} setHits={setHits} />
+          <ResultsList
+            query={query}
+            setHits={setHits}
+            setViewing={setViewing}
+          />
         </div>
         <Pagination query={query} setQuery={setQuery} hits={hits} />
       </div>

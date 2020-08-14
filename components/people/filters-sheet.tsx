@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { animated, useSpring } from 'react-spring';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
@@ -15,7 +16,7 @@ export interface FiltersSheetProps {
   setOpen: Callback<boolean>;
 }
 
-export default function FiltersSheet({
+export default memo(function FiltersSheet({
   query,
   setQuery,
   open,
@@ -44,4 +45,4 @@ export default function FiltersSheet({
       </div>
     </animated.div>
   );
-}
+});

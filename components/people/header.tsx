@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Snackbar } from '@rmwc/snackbar';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -13,7 +13,10 @@ export interface HeaderProps {
   orgName: string;
 }
 
-export default function Header({ orgId, orgName }: HeaderProps): JSX.Element {
+export default memo(function Header({
+  orgId,
+  orgName,
+}: HeaderProps): JSX.Element {
   const [creating, setCreating] = useState<boolean>(false);
   const hideCreating = useCallback(() => setCreating(false), []);
   const createUser = useCallback(() => setCreating(true), []);
@@ -90,4 +93,4 @@ export default function Header({ orgId, orgName }: HeaderProps): JSX.Element {
       />
     </>
   );
-}
+});
