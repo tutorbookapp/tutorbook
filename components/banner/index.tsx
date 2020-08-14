@@ -1,11 +1,11 @@
-import React from 'react';
+import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import styles from './banner.module.scss';
 
 export default function Banner(): JSX.Element {
   const { t } = useTranslation();
-  const [hidden, setHidden] = React.useState<boolean>(false);
+  const [hidden, setHidden] = useState<boolean>(false);
   return (
     <div className={styles.wrapper + (hidden ? ` ${styles.hidden}` : '')}>
       <div className={styles.content}>

@@ -1,5 +1,5 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 

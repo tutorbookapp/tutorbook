@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { SyntheticEvent, useEffect, useRef } from 'react';
 import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 
@@ -10,7 +10,7 @@ import styles from './result.module.scss';
 
 interface Props {
   user?: User;
-  onClick?: TCallback<React.SyntheticEvent<HTMLElement>>;
+  onClick?: TCallback<SyntheticEvent<HTMLElement>>;
   loading?: boolean;
   avatar?: boolean;
 }

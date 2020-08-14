@@ -75,6 +75,8 @@ module.exports = {
     //   doSomethingElse();
     // }
     'consistent-return': [1, { treatUndefinedAsUnspecified: true }],
+    // Next.js already imports React globally and handles JSX for us.
+    'react/react-in-jsx-scope': 'off',
     // Sort imports using ESLint (the AirBNB config disables these opinionated
     // import sorting rules). This sorts the imports within each import group
     // (e.g. built-ins, externals, internals) alphabetically.

@@ -1,5 +1,11 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import {
+  MouseEvent,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
@@ -92,7 +98,7 @@ export default function TimesSelect({
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const onClick = useCallback(
-    (event: React.MouseEvent) => {
+    (event: MouseEvent) => {
       const position = { x: event.pageX - x, y: event.pageY - y };
       onChange(new Availability(...value, getTimeslot(48, position)));
     },

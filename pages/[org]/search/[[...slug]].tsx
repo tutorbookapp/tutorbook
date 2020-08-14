@@ -2,7 +2,7 @@ import { ParsedUrlQuery } from 'querystring';
 
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import common from 'locales/en/common.json';
@@ -132,13 +132,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
-  const [searching, setSearching] = React.useState<boolean>(false);
-  const [res, setResults] = React.useState<ReadonlyArray<User>>(
+  const [searching, setSearching] = useState<boolean>(false);
+  const [res, setResults] = useState<ReadonlyArray<User>>(
     results.map((result: UserJSON) => User.fromJSON(result))
   );
-  const [qry, setQuery] = React.useState<UsersQuery>(
-    UsersQuery.fromJSON(query)
-  );
+  const [qry, setQuery] = useState<UsersQuery>(UsersQuery.fromJSON(query));
 
   const {
     query: { org },
@@ -158,14 +156,14 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     setSearching(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof org === 'string')
       setQuery(
         (prev: UsersQuery) =>
           new UsersQuery({ ...prev, orgs: [{ label: '', value: org }] })
       );
   }, [org]);
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof org === 'string') {
       void Router.push('/[org]/search/[[...slug]]', `/${org}${qry.url}`, {
         shallow: true,
@@ -174,7 +172,7 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
       void Router.push('/search/[[...slug]]', `${qry.url}`, { shallow: true });
     }
   }, [org, qry]);
-  React.useEffect(() => {
+  useEffect(() => {
     if (qry.visible !== true)
       setQuery(new UsersQuery({ ...qry, visible: true }));
   }, [qry]);

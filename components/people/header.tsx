@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Snackbar } from '@rmwc/snackbar';
 import useTranslation from 'next-translate/useTranslation';
 

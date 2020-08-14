@@ -1,4 +1,3 @@
-import React from 'react';
 import { TooltipProps } from '@rmwc/tooltip';
 import dynamic from 'next/dynamic';
 

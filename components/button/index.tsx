@@ -3,7 +3,6 @@ import {
   Button as MDCButton,
   ButtonProps as MDCButtonProps,
 } from '@rmwc/button';
-import React from 'react';
 
 import Arrow from './arrow';
 import styles from './button.module.scss';

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -119,7 +119,7 @@ function MobileNav(): JSX.Element {
 function DesktopNav(): JSX.Element {
   const { user, loggedIn } = useUser();
   const { t } = useTranslation();
-  const [open, setOpen] = React.useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>

@@ -1,5 +1,5 @@
 import { DataTableCell, DataTableRow } from '@rmwc/data-table';
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { TextField } from '@rmwc/textfield';
 import equal from 'fast-deep-equal';
 import { v4 as uuid } from 'uuid';

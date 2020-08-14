@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import { Select } from '@rmwc/select';
 import useTranslation from 'next-translate/useTranslation';
@@ -19,7 +19,7 @@ export default function Pagination({
   setQuery,
 }: PaginationProps): JSX.Element {
   const onHitsPerPageChange = useCallback(
-    (event: React.FormEvent<HTMLSelectElement>) => {
+    (event: FormEvent<HTMLSelectElement>) => {
       const hitsPerPage = Number(event.currentTarget.value);
       setQuery((prev) => new UsersQuery({ ...prev, hitsPerPage, page: 0 }));
     },

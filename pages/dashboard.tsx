@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 import common from 'locales/en/common.json';

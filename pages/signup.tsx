@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import common from 'locales/en/common.json';
 import signup from 'locales/en/signup.json';
 import user3rd from 'locales/en/user3rd.json';

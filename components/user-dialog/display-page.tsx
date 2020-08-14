@@ -8,7 +8,14 @@ import {
   DataTableHeadCell,
   DataTableRow,
 } from '@rmwc/data-table';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  FormEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Checkbox } from '@rmwc/checkbox';
 import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
@@ -92,10 +99,7 @@ export default memo(function DisplayPage({
     user.verifications.findIndex((v) => v.checks.indexOf(check) >= 0);
 
   const getChecked = (check: Check) => getIndex(check) >= 0;
-  const setChecked = (
-    event: React.FormEvent<HTMLInputElement>,
-    check: Check
-  ) => {
+  const setChecked = (event: FormEvent<HTMLInputElement>, check: Check) => {
     const updated: Verification[] = clone(user.verifications);
     if (getIndex(check) >= 0 && !event.currentTarget.checked) {
       updated.splice(getIndex(check), 1);
@@ -115,7 +119,7 @@ export default memo(function DisplayPage({
   const getSomeChecked = () =>
     user.verifications.length > 0 && user.verifications.length < checks.length;
   const getAllChecked = () => checks.every((c) => getChecked(c));
-  const setAllChecked = (event: React.FormEvent<HTMLInputElement>) => {
+  const setAllChecked = (event: FormEvent<HTMLInputElement>) => {
     if (!event.currentTarget.checked)
       return onChange({ ...user, verifications: [] });
     const updated: Verification[] = clone(user.verifications);
@@ -143,7 +147,7 @@ export default memo(function DisplayPage({
 
   const getValue = (check: Check) =>
     (user.verifications[getIndex(check)] || {}).notes || '';
-  const setValue = (event: React.FormEvent<HTMLInputElement>, check: Check) => {
+  const setValue = (event: FormEvent<HTMLInputElement>, check: Check) => {
     const updated: Verification[] = clone(user.verifications);
     if (getIndex(check) >= 0) {
       updated[getIndex(check)].notes = event.currentTarget.value;
@@ -221,7 +225,7 @@ export default memo(function DisplayPage({
                     <DataTableCell hasFormControl>
                       <Checkbox
                         checked={getChecked(check)}
-                        onChange={(event: React.FormEvent<HTMLInputElement>) =>
+                        onChange={(event: FormEvent<HTMLInputElement>) =>
                           setChecked(event, check)
                         }
                       />
@@ -232,7 +236,7 @@ export default memo(function DisplayPage({
                     <DataTableCell>
                       <TextField
                         value={getValue(check)}
-                        onChange={(event: React.FormEvent<HTMLInputElement>) =>
+                        onChange={(event: FormEvent<HTMLInputElement>) =>
                           setValue(event, check)
                         }
                         className={styles.field}

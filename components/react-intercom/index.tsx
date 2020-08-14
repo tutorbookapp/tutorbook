@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
-import React from 'react';
+import { Component } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import { User } from 'lib/model';
@@ -51,7 +51,7 @@ export function IntercomAPI(...args: any[]): void {
   }
 }
 
-class Intercom extends React.Component<IntercomProps> {
+class Intercom extends Component<IntercomProps> {
   public constructor(props: IntercomProps) {
     super(props);
     if (canUseDOM) {

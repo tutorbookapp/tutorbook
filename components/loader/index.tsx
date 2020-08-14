@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 import Checkmark from './checkmark';
 import styles from './loader.module.scss';
@@ -9,10 +9,10 @@ interface Props {
 }
 
 export default function Loader({ active, checked }: Props): JSX.Element {
-  const [visible, setVisible] = React.useState<boolean>(active);
-  const [closing, setClosing] = React.useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(active);
+  const [closing, setClosing] = useState<boolean>(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Workaround to ensure `visibility` stays `visible` while animating the
     // opacity and elevation (during closing).
     if (!active) {

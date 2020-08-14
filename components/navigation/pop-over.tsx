@@ -1,5 +1,5 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { mutate } from 'swr';

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
@@ -11,7 +11,7 @@ import styles from './filter-form.module.scss';
 
 interface SearchButtonProps {
   children: string;
-  onClick: (event: React.FormEvent<HTMLButtonElement>) => void;
+  onClick: (event: FormEvent<HTMLButtonElement>) => void;
 }
 
 function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
@@ -67,7 +67,7 @@ export default function FilterForm({
     return removeClickListener;
   });
 
-  const onSubmit = useCallback((event: React.FormEvent) => {
+  const onSubmit = useCallback((event: FormEvent) => {
     event.preventDefault();
     setActive(false);
   }, []);

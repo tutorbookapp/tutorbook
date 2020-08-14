@@ -1,5 +1,5 @@
 import ErrorPage from 'next/error';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 import common from 'locales/en/common.json';

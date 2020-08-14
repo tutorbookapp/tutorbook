@@ -8,7 +8,7 @@ import {
 } from '@rmwc/data-table';
 import useSWR, { mutate } from 'swr';
 import { IconButton } from '@rmwc/icon-button';
-import React from 'react';
+import { FormEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
@@ -41,20 +41,18 @@ interface MatchesProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function Matches({ org }: MatchesProps): JSX.Element {
-  const timeoutIds = React.useRef<
-    Record<string, ReturnType<typeof setTimeout>>
-  >({});
+  const timeoutIds = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
-  const [valid, setValid] = React.useState<boolean>(true);
-  const [searching, setSearching] = React.useState<boolean>(true);
-  const [query, setQuery] = React.useState<MatchesQuery>(
+  const [valid, setValid] = useState<boolean>(true);
+  const [searching, setSearching] = useState<boolean>(true);
+  const [query, setQuery] = useState<MatchesQuery>(
     new MatchesQuery({
       orgs: [{ label: org.name, value: org.id }],
       hitsPerPage: 10,
     })
   );
 
-  const loadingRows: JSX.Element[] = React.useMemo(
+  const loadingRows: JSX.Element[] = useMemo(
     () =>
       Array(query.hitsPerPage)
         .fill(null)
@@ -70,7 +68,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
     revalidateOnReconnect: false,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     setQuery((prev: MatchesQuery) => {
       return new MatchesQuery({
         ...prev,
@@ -78,17 +76,17 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
       });
     });
   }, [org]);
-  React.useEffect(() => {
+  useEffect(() => {
     void mutate(query.endpoint);
   }, [query]);
-  React.useEffect(() => {
+  useEffect(() => {
     setSearching((prev: boolean) => prev && (isValidating || !data));
   }, [isValidating, data]);
-  React.useEffect(() => {
+  useEffect(() => {
     setValid((prev: boolean) => prev || searching);
   }, [searching]);
 
-  const mutateMatch = React.useCallback(
+  const mutateMatch = useCallback(
     async (match: MatchJSON) => {
       if (timeoutIds.current[match.id]) {
         clearTimeout(timeoutIds.current[match.id]);
@@ -155,7 +153,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               placeholder={t('matches:search-placeholder')}
               className={styles.searchField}
               value={query.query}
-              onChange={(event: React.FormEvent<HTMLInputElement>) => {
+              onChange={(event: FormEvent<HTMLInputElement>) => {
                 const q: string = event.currentTarget.value;
                 setSearching(true);
                 setQuery((p) => new MatchesQuery({ ...p, query: q, page: 0 }));
@@ -219,7 +217,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
                 enhanced
                 value={`${query.hitsPerPage}`}
                 options={['5', '10', '15', '20', '25', '30']}
-                onChange={(event: React.FormEvent<HTMLSelectElement>) => {
+                onChange={(event: FormEvent<HTMLSelectElement>) => {
                   const hitsPerPage = Number(event.currentTarget.value);
                   const page = 0;
                   setSearching(true);

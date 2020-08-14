@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import { FormEvent, memo, useCallback, useEffect, useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import { IconButton } from '@rmwc/icon-button';
 import { TextFieldHelperText } from '@rmwc/textfield';
@@ -36,7 +36,7 @@ export default memo(function EditPage({
 
   const onUserChange = useCallback((updated: User) => setUser(updated), []);
   const onSubmit = useCallback(
-    async (event: React.FormEvent) => {
+    async (event: FormEvent) => {
       event.preventDefault();
       setChecked(false);
       setLoading(true);

@@ -4,7 +4,15 @@ import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { Checkbox } from '@rmwc/checkbox';
 import { Chip } from '@rmwc/chip';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
-import React from 'react';
+import {
+  Component,
+  FormEvent,
+  MouseEvent,
+  MutableRefObject,
+  RefObject,
+  SyntheticEvent,
+  createRef,
+} from 'react';
 import to from 'await-to-js';
 
 import { Option, TCallback } from 'lib/model';
@@ -64,21 +72,21 @@ export type SelectControllerProps<T> = Omit<
 > &
   Partial<SelectControls<T>>;
 
-export default class Select<T> extends React.Component<
+export default class Select<T> extends Component<
   SelectProps<T>,
   SelectState<T>
 > {
   private suggestionsTimeoutID?: ReturnType<typeof setTimeout>;
 
-  private foundationRef: React.RefObject<MDCMenuSurfaceFoundation>;
+  private foundationRef: RefObject<MDCMenuSurfaceFoundation>;
 
-  private inputRef: React.RefObject<HTMLInputElement>;
+  private inputRef: RefObject<HTMLInputElement>;
 
-  private ghostElementRef: React.RefObject<HTMLSpanElement>;
+  private ghostElementRef: RefObject<HTMLSpanElement>;
 
-  private lastSelectedRef: React.MutableRefObject<Option<T> | null>;
+  private lastSelectedRef: MutableRefObject<Option<T> | null>;
 
-  private textareaBreakWidth: React.MutableRefObject<number | null>;
+  private textareaBreakWidth: MutableRefObject<number | null>;
 
   private hasOpenedSuggestions = false;
 
@@ -91,11 +99,11 @@ export default class Select<T> extends React.Component<
       inputValue: '',
       lineBreak: false,
     };
-    this.foundationRef = React.createRef();
-    this.inputRef = React.createRef();
-    this.lastSelectedRef = React.createRef();
-    this.ghostElementRef = React.createRef();
-    this.textareaBreakWidth = React.createRef();
+    this.foundationRef = createRef();
+    this.inputRef = createRef();
+    this.lastSelectedRef = createRef();
+    this.ghostElementRef = createRef();
+    this.textareaBreakWidth = createRef();
     this.maybeOpenSuggestions = this.maybeOpenSuggestions.bind(this);
     this.openSuggestions = this.openSuggestions.bind(this);
     this.closeSuggestions = this.closeSuggestions.bind(this);
@@ -189,7 +197,7 @@ export default class Select<T> extends React.Component<
    * the `TextField`'s value using `setState`.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/601}
    */
-  private updateInputValue(event: React.FormEvent<HTMLInputElement>): void {
+  private updateInputValue(event: FormEvent<HTMLInputElement>): void {
     const inputValue: string = event.currentTarget.value || this.inputValue;
     this.updateInputLine(event);
     this.setState({ inputValue });
@@ -216,7 +224,7 @@ export default class Select<T> extends React.Component<
    * To measure the width of the content, the width of the invisible `<span>` is
    * used (to which the value of `<textarea>` is then assigned).
    */
-  private updateInputLine(event: React.FormEvent<HTMLInputElement>): void {
+  private updateInputLine(event: FormEvent<HTMLInputElement>): void {
     const { singleLine } = this.props;
     if (singleLine && this.ghostElementRef.current && this.inputRef.current) {
       this.ghostElementRef.current.innerText = event.currentTarget.value;
@@ -252,7 +260,7 @@ export default class Select<T> extends React.Component<
    * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
    * 2. Adding it as a chip to the `mdc-text-field` content.
    */
-  private updateSelected(option: Option<T>, event?: React.MouseEvent): void {
+  private updateSelected(option: Option<T>, event?: MouseEvent): void {
     const { value, onChange } = this.props;
     const { suggestions, inputValue } = this.state;
     const selected: Option<T>[] = Array.from(value);
@@ -311,9 +319,7 @@ export default class Select<T> extends React.Component<
               ? option.value
               : option.label
           }
-          onClick={(event: React.MouseEvent) =>
-            this.updateSelected(option, event)
-          }
+          onClick={(event: MouseEvent) => this.updateSelected(option, event)}
           className={styles.menuItem}
         >
           <ListItemGraphic
@@ -378,7 +384,7 @@ export default class Select<T> extends React.Component<
         <MenuSurface
           foundationRef={this.foundationRef}
           open={suggestionsOpen}
-          onFocus={(event: React.SyntheticEvent<HTMLDivElement>) => {
+          onFocus={(event: SyntheticEvent<HTMLDivElement>) => {
             event.preventDefault();
             event.stopPropagation();
             if (this.inputRef.current) this.inputRef.current.focus();

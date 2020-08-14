@@ -2,7 +2,7 @@ import { AppProps } from 'next/app';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { SWRConfig, mutate } from 'swr';
 import to from 'await-to-js';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 

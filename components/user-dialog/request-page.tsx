@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from 'react';
+import { FormEvent, memo, useCallback, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { IconButton } from '@rmwc/icon-button';
 import { TextFieldHelperText } from '@rmwc/textfield';
@@ -46,7 +46,7 @@ export default memo(function RequestPage({
   );
 
   const onSubmit = useCallback(
-    async (event: React.FormEvent) => {
+    async (event: FormEvent) => {
       event.preventDefault();
       setLoading(true);
       const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<ApiError>>(

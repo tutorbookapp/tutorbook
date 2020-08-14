@@ -1,10 +1,4 @@
-import React, {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextField } from '@rmwc/textfield';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';

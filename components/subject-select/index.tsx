@@ -1,5 +1,5 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import algoliasearch, { SearchClient } from 'algoliasearch/lite';
 import equal from 'fast-deep-equal';
 

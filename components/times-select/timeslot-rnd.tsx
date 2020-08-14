@@ -1,5 +1,12 @@
 import { DraggableData, Position, ResizableDelta, Rnd } from 'react-rnd';
-import React, { ElementRef, useCallback, useMemo, useState } from 'react';
+import {
+  ElementRef,
+  MouseEvent as ReactMouseEvent,
+  TouchEvent as ReactTouchEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import { ResizeDirection } from 're-resizable';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -43,7 +50,7 @@ export default function TimeslotRnd({
     [onChange, width]
   );
 
-  const onClick = useCallback((e: React.MouseEvent) => e.stopPropagation(), []);
+  const onClick = useCallback((e: ReactMouseEvent) => e.stopPropagation(), []);
   const onResizeStop = useCallback(() => setOffset({ x: 0, y: 0 }), []);
   const onResize = useCallback(
     (
@@ -69,7 +76,7 @@ export default function TimeslotRnd({
   );
   const onDrag = useCallback(
     (
-      e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent,
+      e: ReactMouseEvent | ReactTouchEvent | MouseEvent | TouchEvent,
       data: DraggableData
     ) => {
       // We don't have to use the `lastY` workaround b/c `react-draggable` snaps

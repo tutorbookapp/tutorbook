@@ -1,4 +1,3 @@
-import React from 'react';
 import common from 'locales/en/common.json';
 import login from 'locales/en/login.json';
 

@@ -1,5 +1,5 @@
 import { Chip, ChipSet } from '@rmwc/chip';
-import React, { useCallback } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -98,7 +98,7 @@ export default function Filters({
           placeholder={t('people:search-placeholder')}
           className={styles.searchField}
           value={query.query}
-          onChange={(event: React.FormEvent<HTMLInputElement>) => {
+          onChange={(event: FormEvent<HTMLInputElement>) => {
             const q: string = event.currentTarget.value;
             setQuery((p) => new UsersQuery({ ...p, query: q, page: 0 }));
           }}

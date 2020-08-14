@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import common from 'locales/en/common.json';
 import about from 'locales/en/about.json';
 import banner from 'locales/en/banner.json';

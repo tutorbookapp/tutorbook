@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 import { v4 as uuid } from 'uuid';
 

@@ -1,6 +1,6 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import React from 'react';
+import { ComponentType, FunctionComponent } from 'react';
 import I18nProvider from 'next-translate/I18nProvider';
 
 import localeConfig from './config.json';
@@ -69,8 +69,8 @@ export function getIntlPaths(): IntlPaths {
  * @see {@link https://bit.ly/3b7ZuZb}
  */
 export function withIntl<P extends Record<string, any>>(
-  Component: React.ComponentType<P>
-): React.FunctionComponent<P & IntlProps> {
+  Component: ComponentType<P>
+): FunctionComponent<P & IntlProps> {
   function WithIntl({ locale, namespaces, ...props }: IntlProps): JSX.Element {
     return (
       <I18nProvider lang={locale} namespaces={namespaces}>
@@ -87,9 +87,9 @@ export function withIntl<P extends Record<string, any>>(
  * their static i18n locale files (to re-enable static optimization).
  */
 export function withI18n<P extends Record<string, any>>(
-  Component: React.ComponentType<P>,
+  Component: ComponentType<P>,
   namespaces: Namespaces
-): React.FunctionComponent<P> {
+): FunctionComponent<P> {
   function WithI18n(props: P): JSX.Element {
     return (
       <I18nProvider lang='en' namespaces={namespaces}>

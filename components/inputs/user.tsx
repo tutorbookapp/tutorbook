@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { FormEvent, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
@@ -80,7 +80,7 @@ export default function UserInputs({
   const shared = (key: Input) => ({
     ...sharedProps,
     label: t(`user${thirdPerson ? '3rd' : ''}:${key}`),
-    onChange: (event: React.FormEvent<HTMLInputElement>) =>
+    onChange: (event: FormEvent<HTMLInputElement>) =>
       onChange(new User({ ...value, [key]: event.currentTarget.value })),
   });
 
@@ -118,7 +118,7 @@ export default function UserInputs({
         void updateSocial(type, p(username));
       }
     },
-    onChange: (event: React.FormEvent<HTMLInputElement>) => {
+    onChange: (event: FormEvent<HTMLInputElement>) => {
       return updateSocial(type, event.currentTarget.value);
     },
   });

@@ -1,5 +1,5 @@
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
-import React from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { TCallback } from 'lib/model';
@@ -25,10 +25,10 @@ export default function PhotoInput({
   onChange,
   ...textFieldProps
 }: PhotoInputProps): JSX.Element {
-  const inputRef: React.RefObject<HTMLInputElement> = React.createRef();
-  const helperRef: React.RefObject<HTMLParagraphElement> = React.createRef();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const helperRef = useRef<HTMLParagraphElement | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.type = 'file';
       inputRef.current.accept = 'image/*';
@@ -36,16 +36,16 @@ export default function PhotoInput({
     }
   });
 
-  const [helperValue, setHelperValue] = React.useState<string>(
+  const [helperValue, setHelperValue] = useState<string>(
     'Click the text field above to upload a photo.'
   );
-  const [errored, setErrored] = React.useState<boolean>(false);
-  const handleClick = (event: React.FormEvent<HTMLButtonElement>) => {
+  const [errored, setErrored] = useState<boolean>(false);
+  const handleClick = (event: FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
     if (inputRef.current) inputRef.current.click();
   };
-  const handleChange = async (event: React.FormEvent<HTMLInputElement>) => {
+  const handleChange = async (event: FormEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
 

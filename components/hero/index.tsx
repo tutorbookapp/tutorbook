@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Card } from '@rmwc/card';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';

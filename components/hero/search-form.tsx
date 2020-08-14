@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -38,7 +38,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
   }, [query]);
 
   const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
+    async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       event.stopPropagation();
       setSubmitting(true);

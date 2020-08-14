@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import CTALink, { CTALinkProps } from './cta-link';
 import styles from './spotlight-msg.module.scss';

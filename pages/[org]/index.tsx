@@ -1,6 +1,5 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import React from 'react';
 import ErrorPage from 'next/error';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import common from 'locales/en/common.json';

@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import React from 'react';
 
 /**
  * Defines our custom `<head>` tag properties. Note that the `/favicon/`
