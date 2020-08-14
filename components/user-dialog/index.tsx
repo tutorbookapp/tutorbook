@@ -21,6 +21,7 @@ import {
   UsersQuery,
 } from 'lib/model';
 import Utils from 'lib/utils';
+import { usePrevious } from 'lib/hooks';
 import { useUser } from 'lib/account';
 
 import DisplayPage from './display-page';
@@ -29,14 +30,6 @@ import RequestPage from './request-page';
 import styles from './user-dialog.module.scss';
 
 type Page = 'edit' | 'display' | 'request';
-
-function usePrevious<T>(value: T): T {
-  const ref = useRef<T>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current as T;
-}
 
 // Animation durations and easing from the MWC spec and Sass implementation.
 // @see {@link https://material.io/design/motion/the-motion-system.html#shared-axis}
