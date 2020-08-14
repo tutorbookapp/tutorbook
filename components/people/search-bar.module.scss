@@ -34,7 +34,7 @@ $filters-height: 56px;
         :global(.mdc-notched-outline__leading),
         :global(.mdc-notched-outline__notch),
         :global(.mdc-notched-outline__trailing) {
-          border-color: map.get(config.$colors, 'accents-2');
+          border-color: map.get(config.$colors, 'accents-2') !important;
         }
       }
 

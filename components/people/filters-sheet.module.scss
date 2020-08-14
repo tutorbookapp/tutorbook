@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use 'styles/query-form';
 @use 'styles/config';
 
 .wrapper {
@@ -6,4 +7,6 @@
   height: 100%;
   border-left: 1px solid map.get(config.$colors, 'accents-2');
   box-sizing: border-box;
+
+  @include query-form.core-styles(true);
 }
