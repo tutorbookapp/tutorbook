@@ -1,23 +1,29 @@
 import { Chip, ChipSet } from '@rmwc/chip';
 import { FormEvent, useCallback } from 'react';
+import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Callback, Option, Tag, UsersQuery } from 'lib/model';
 
-import styles from './filters.module.scss';
+import styles from './search-bar.module.scss';
 
-export interface FiltersProps {
+export interface SearchBarProps {
   query: UsersQuery;
   setQuery: Callback<UsersQuery>;
+  setOpen: Callback<boolean>;
 }
 
-export default function Filters({
+export default function SearchBar({
   query,
   setQuery,
-}: FiltersProps): JSX.Element {
+  setOpen,
+}: SearchBarProps): JSX.Element {
   const { t } = useTranslation();
 
+  const toggleFiltersOpen = useCallback(() => {
+    setOpen((prev: boolean) => !prev);
+  }, [setOpen]);
   const toggleVettedFilter = useCallback(() => {
     setQuery((prev: UsersQuery) => {
       const tags: Option<Tag>[] = Array.from(prev.tags);
@@ -51,6 +57,11 @@ export default function Filters({
   return (
     <div className={styles.filters}>
       <div className={styles.left}>
+        <IconButton
+          className={styles.filtersButton}
+          onClick={toggleFiltersOpen}
+          icon='filter_list'
+        />
         <ChipSet className={styles.filterChips}>
           <Chip
             label={t('people:filters-not-vetted')}

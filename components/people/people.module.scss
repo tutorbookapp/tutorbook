@@ -1,7 +1,13 @@
+@use 'sass:map';
+@use 'styles/config';
 @use 'styles/common';
 
 .wrapper {
   @include common.wrapper;
   list-style: none;
   margin: 48px auto;
+
+  .content {
+    display: flex;
+  }
 }

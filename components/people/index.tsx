@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 
 import { Org, UsersQuery } from 'lib/model';
 
-import Results from './results';
-import Filters from './filters';
+import SearchBar from './search-bar';
+import ResultsList from './results-list';
+import FiltersSheet from './filters-sheet';
 import Header from './header';
+import Pagination from './pagination';
 import styles from './people.module.scss';
 
 interface PeopleProps {
@@ -23,12 +25,14 @@ interface PeopleProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function People({ org }: PeopleProps): JSX.Element {
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
       orgs: [{ label: org.name, value: org.id }],
       hitsPerPage: 10,
     })
   );
+  const [hits, setHits] = useState<number>(query.hitsPerPage);
 
   useEffect(() => {
     setQuery(
@@ -44,8 +48,17 @@ export default function People({ org }: PeopleProps): JSX.Element {
     <>
       <Header orgId={org.id} orgName={org.name} />
       <div className={styles.wrapper}>
-        <Filters query={query} setQuery={setQuery} />
-        <Results query={query} setQuery={setQuery} />
+        <SearchBar query={query} setQuery={setQuery} setOpen={setFiltersOpen} />
+        <div className={styles.content}>
+          <FiltersSheet
+            query={query}
+            setQuery={setQuery}
+            open={filtersOpen}
+            setOpen={setFiltersOpen}
+          />
+          <ResultsList query={query} setQuery={setQuery} setHits={setHits} />
+        </div>
+        <Pagination query={query} setQuery={setQuery} hits={hits} />
       </div>
     </>
   );

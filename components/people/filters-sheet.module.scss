@@ -1,0 +1,9 @@
+@use 'sass:map';
+@use 'styles/config';
+
+.wrapper {
+  width: 300px;
+  height: 100%;
+  border-left: 1px solid map.get(config.$colors, 'accents-2');
+  box-sizing: border-box;
+}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { v4 as uuid } from 'uuid';
 import useTranslation from 'next-translate/useTranslation';
@@ -10,29 +10,28 @@ import Result from 'components/search/result';
 import { ListUsersRes } from 'lib/api/list-users';
 import { Callback, User, UsersQuery } from 'lib/model';
 
-import Pagination from './pagination';
-import styles from './results.module.scss';
+import styles from './results-list.module.scss';
 
-export interface ResultsProps {
+export interface ResultsListProps {
   query: UsersQuery;
   setQuery: Callback<UsersQuery>;
+  setHits: Callback<number>;
 }
 
-export default function Results({
+export default function ResultsList({
   query,
   setQuery,
-}: ResultsProps): JSX.Element {
+  setHits,
+}: ResultsListProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(true);
   const [viewingIdx, setViewingIdx] = useState<number>();
 
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
-  const prevHits = useRef<number>(query.hitsPerPage);
   useEffect(() => {
-    if (data) prevHits.current = data.hits;
-  });
-
+    setHits((prev: number) => (data ? data.hits : prev));
+  }, [setHits, data]);
   useEffect(() => {
     setSearching(true);
     void mutate(query.endpoint);
@@ -47,7 +46,7 @@ export default function Results({
     // logic here (using `prevHits` and `query.page`).
     return Array(query.hitsPerPage)
       .fill(null)
-      .map(() => <Result loading key={uuid()} />);
+      .map(() => <Result className={styles.item} loading key={uuid()} />);
   }, [query.hitsPerPage]);
 
   return (
@@ -60,25 +59,23 @@ export default function Results({
           setQuery={setQuery}
         />
       )}
-      {!searching &&
-        (data ? data.users : []).map((user, idx) => (
-          <Result
-            onClick={() => setViewingIdx(idx)}
-            user={User.fromJSON(user)}
-            key={user.id}
-          />
-        ))}
-      {!searching && !(data ? data.users : []).length && (
-        <div className={styles.empty}>
-          <Placeholder>{t('people:empty')}</Placeholder>
-        </div>
-      )}
-      {searching && loadingRows}
-      <Pagination
-        hits={data ? data.hits : prevHits.current}
-        query={query}
-        setQuery={setQuery}
-      />
+      <div className={styles.wrapper}>
+        {!searching &&
+          (data ? data.users : []).map((user, idx) => (
+            <Result
+              onClick={() => setViewingIdx(idx)}
+              user={User.fromJSON(user)}
+              className={styles.item}
+              key={user.id}
+            />
+          ))}
+        {!searching && !(data ? data.users : []).length && (
+          <div className={styles.empty}>
+            <Placeholder>{t('people:empty')}</Placeholder>
+          </div>
+        )}
+        {searching && loadingRows}
+      </div>
     </>
   );
 }

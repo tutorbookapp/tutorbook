@@ -19,21 +19,6 @@ $filters-height: 56px;
     .filtersButton {
       margin-left: 12px;
     }
-
-    .filterChips {
-      margin-left: 10px;
-      flex-wrap: nowrap;
-      overflow: auto;
-
-      .invalid {
-        background-color: map.get(config.$colors, 'error-darker');
-        color: white;
-
-        svg path {
-          stroke: white;
-        }
-      }
-    }
   }
 
   .right {
@@ -56,10 +41,6 @@ $filters-height: 56px;
       input {
         @include typography.typography('body2');
       }
-    }
-
-    .menuButton {
-      margin-right: 12px;
     }
   }
 }
