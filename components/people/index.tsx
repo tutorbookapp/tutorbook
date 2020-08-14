@@ -29,7 +29,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
       orgs: [{ label: org.name, value: org.id }],
-      hitsPerPage: 10,
+      hitsPerPage: 5,
     })
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
