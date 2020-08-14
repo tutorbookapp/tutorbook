@@ -1,8 +1,9 @@
-import { Ripple } from '@rmwc/ripple';
-import { TCallback, User } from 'lib/model';
-
 import React from 'react';
+import { Ripple } from '@rmwc/ripple';
+
 import Avatar from 'components/avatar';
+
+import { TCallback, User } from 'lib/model';
 
 import styles from './cards.module.scss';
 

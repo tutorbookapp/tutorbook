@@ -1,8 +1,7 @@
 import * as admin from 'firebase-admin';
 
 import { Aspect } from './user';
-import { AccountInterface, Account } from './account';
-
+import { Account, AccountInterface } from './account';
 import construct from './construct';
 
 type DocumentData = admin.firestore.DocumentData;
@@ -40,7 +39,7 @@ export function isOrgJSON(json: any): json is OrgJSON {
 export class Org extends Account implements OrgInterface {
   public members: string[] = [];
 
-  public safeguarding: string = '';
+  public safeguarding = '';
 
   public aspect: Aspect = 'mentoring';
 

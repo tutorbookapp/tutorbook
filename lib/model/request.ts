@@ -1,15 +1,13 @@
 import * as admin from 'firebase-admin';
-
 import { v4 as uuid } from 'uuid';
-
 import { ObjectWithObjectID } from '@algolia/client-search';
-import { User, Aspect } from './user';
+
+import { Aspect, User } from './user';
 import {
   Availability,
   AvailabilityJSON,
   AvailabilitySearchHit,
 } from './availability';
-
 import construct from './construct';
 
 type DocumentData = admin.firestore.DocumentData;
@@ -78,7 +76,7 @@ export class Request implements RequestInterface {
 
   public ref?: DocumentReference;
 
-  public id: string = '';
+  public id = '';
 
   public constructor(request: Partial<RequestInterface> = {}) {
     construct<RequestInterface>(this, request);

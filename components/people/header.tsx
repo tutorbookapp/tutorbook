@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import UserDialog from 'components/user-dialog';
-import TitleHeader from 'components/header';
 import { Snackbar } from '@rmwc/snackbar';
-import { IntercomAPI } from 'components/react-intercom';
-
 import useTranslation from 'next-translate/useTranslation';
+
+import { IntercomAPI } from 'components/react-intercom';
+import TitleHeader from 'components/header';
+import UserDialog from 'components/user-dialog';
+
 import styles from './header.module.scss';
 
 export interface HeaderProps {

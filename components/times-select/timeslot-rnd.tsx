@@ -1,12 +1,11 @@
-import React, { useMemo, useState, useCallback, ElementRef } from 'react';
-
+import { DraggableData, Position, ResizableDelta, Rnd } from 'react-rnd';
+import React, { ElementRef, useCallback, useMemo, useState } from 'react';
+import { ResizeDirection } from 're-resizable';
 import useTranslation from 'next-translate/useTranslation';
 
-import { ResizeDirection } from 're-resizable';
-import { Rnd, DraggableData, ResizableDelta, Position } from 'react-rnd';
-import { Timeslot, TCallback } from 'lib/model';
+import { TCallback, Timeslot } from 'lib/model';
 
-import { getPosition, getHeight, getTimeslot } from './utils';
+import { getHeight, getPosition, getTimeslot } from './utils';
 import styles from './timeslot-rnd.module.scss';
 
 interface TimeslotRndProps {

@@ -1,29 +1,28 @@
+import { ParsedUrlQuery } from 'querystring';
+
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-
 import React from 'react';
-import Intercom from 'components/react-intercom';
-import Footer from 'components/footer';
-import Search from 'components/search';
-
 import Router, { useRouter } from 'next/router';
-
-import { withI18n } from 'lib/intl';
 import { GetServerSideProps } from 'next';
-import { ParsedUrlQuery } from 'querystring';
-import { QueryHeader } from 'components/navigation';
-import {
-  User,
-  UserJSON,
-  UsersQuery,
-  UsersQueryJSON,
-  Availability,
-} from 'lib/model';
-
 import common from 'locales/en/common.json';
 import search from 'locales/en/search.json';
 import query3rd from 'locales/en/query3rd.json';
 import match3rd from 'locales/en/match3rd.json';
+
+import { QueryHeader } from 'components/navigation';
+import Search from 'components/search';
+import Footer from 'components/footer';
+import Intercom from 'components/react-intercom';
+
+import {
+  Availability,
+  User,
+  UserJSON,
+  UsersQuery,
+  UsersQueryJSON,
+} from 'lib/model';
+import { withI18n } from 'lib/intl';
 
 type App = admin.app.App;
 type Firestore = admin.firestore.Firestore;

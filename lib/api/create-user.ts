@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import to from 'await-to-js';
+import mail from '@sendgrid/mail';
+
 import { User, UserJSON } from 'lib/model';
 import { SignUpEmail } from 'lib/emails';
 
-import to from 'await-to-js';
-import mail from '@sendgrid/mail';
 import error from './helpers/error';
 import createUser from './helpers/create-user';
-
-import { auth, FirebaseError } from './helpers/firebase';
+import { FirebaseError, auth } from './helpers/firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
 

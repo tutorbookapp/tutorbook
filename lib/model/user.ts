@@ -1,15 +1,14 @@
-import * as admin from 'firebase-admin';
-
 import url from 'url';
 
+import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
+
 import {
   Availability,
-  AvailabilitySearchHit,
   AvailabilityJSON,
+  AvailabilitySearchHit,
 } from './availability';
 import { Account, AccountInterface } from './account';
-
 import construct from './construct';
 
 export type Aspect = 'mentoring' | 'tutoring';

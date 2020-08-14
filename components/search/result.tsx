@@ -1,10 +1,11 @@
+import React, { useEffect, useRef } from 'react';
 import { Ripple } from '@rmwc/ripple';
-import { TCallback, User } from 'lib/model';
+import cn from 'classnames';
 
-import React, { useRef, useEffect } from 'react';
 import Avatar from 'components/avatar';
 
-import cn from 'classnames';
+import { TCallback, User } from 'lib/model';
+
 import styles from './result.module.scss';
 
 interface Props {

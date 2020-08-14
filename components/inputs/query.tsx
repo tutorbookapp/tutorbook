@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import LangSelect from 'components/lang-select';
-import SubjectSelect from 'components/subject-select';
-
+import React, { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Option, Availability, UsersQuery } from 'lib/model';
+import LangSelect from 'components/lang-select';
+import SubjectSelect from 'components/subject-select';
 import { TimesSelectProps } from 'components/times-select';
-import { InputsProps, InputsConfig } from './types';
+
+import { Availability, Option, UsersQuery } from 'lib/model';
+
+import { InputsConfig, InputsProps } from './types';
 
 const TimesSelect = dynamic<TimesSelectProps>(async () =>
   import('components/times-select')

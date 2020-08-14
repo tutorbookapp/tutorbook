@@ -1,41 +1,41 @@
 import React, {
-  useState,
+  FormEvent,
   useCallback,
   useEffect,
   useRef,
-  FormEvent,
+  useState,
 } from 'react';
-import Utils from 'lib/utils';
+import { TextField, TextFieldHelperText } from '@rmwc/textfield';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { Dialog } from '@rmwc/dialog';
+import { TooltipProps } from '@rmwc/tooltip';
+import dynamic from 'next/dynamic';
+import to from 'await-to-js';
+import useTranslation from 'next-translate/useTranslation';
+import { v4 as uuid } from 'uuid';
+
 import Avatar from 'components/avatar';
-import Loader from 'components/loader';
 import Button from 'components/button';
+import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
+import { TimesSelectProps } from 'components/times-select';
 import UserSelect from 'components/user-select';
 
-import { Dialog } from '@rmwc/dialog';
+import Utils from 'lib/utils';
+import { signupWithGoogle } from 'lib/account/signup';
+import { useUser } from 'lib/account';
 import {
-  User,
   ApiError,
-  SocialInterface,
-  Option,
-  Role,
+  Aspect,
   Availability,
   Match,
   MatchJSON,
+  Option,
   Person,
-  Aspect,
+  Role,
+  SocialInterface,
+  User,
 } from 'lib/model';
-import { signupWithGoogle } from 'lib/account/signup';
-import { useUser } from 'lib/account';
-import { TooltipProps } from '@rmwc/tooltip';
-import { TimesSelectProps } from 'components/times-select';
-import { TextField, TextFieldHelperText } from '@rmwc/textfield';
-import axios, { AxiosResponse, AxiosError } from 'axios';
-import { v4 as uuid } from 'uuid';
-
-import useTranslation from 'next-translate/useTranslation';
-import dynamic from 'next/dynamic';
-import to from 'await-to-js';
 
 import styles from './request-dialog.module.scss';
 

@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+
 import { ApiError } from 'lib/model';
 import fetchUser, { FetchUserRes } from 'lib/api/fetch-user';
 import updateUser, { UpdateUserRes } from 'lib/api/update-user';

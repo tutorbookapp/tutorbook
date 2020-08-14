@@ -1,7 +1,8 @@
 import React from 'react';
+import cn from 'classnames';
+
 import Link from 'lib/intl/link';
 
-import cn from 'classnames';
 import styles from './tabs.module.scss';
 
 interface TabProps {

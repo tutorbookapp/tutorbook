@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
-import { Callback, UsersQuery } from 'lib/model';
-import { Select } from '@rmwc/select';
 import { IconButton } from '@rmwc/icon-button';
-
+import { Select } from '@rmwc/select';
 import useTranslation from 'next-translate/useTranslation';
+
+import { Callback, UsersQuery } from 'lib/model';
 
 import styles from './pagination.module.scss';
 

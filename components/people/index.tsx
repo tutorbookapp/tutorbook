@@ -1,13 +1,13 @@
-import { ListUsersRes } from 'lib/api/list-users';
-import { UsersQuery, Org, User } from 'lib/model';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import React, { useMemo, useEffect, useState } from 'react';
 import UserDialog from 'components/user-dialog';
 
-import Pagination from './pagination';
+import { Org, User, UsersQuery } from 'lib/model';
+import { ListUsersRes } from 'lib/api/list-users';
+
 import Filters from './filters';
 import Header from './header';
-
+import Pagination from './pagination';
 import styles from './people.module.scss';
 
 interface PeopleProps {

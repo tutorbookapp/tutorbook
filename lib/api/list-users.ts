@@ -1,19 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchOptions, SearchResponse } from '@algolia/client-search';
+import to from 'await-to-js';
+
 import {
   Org,
+  Timeslot,
   User,
   UserJSON,
   UserSearchHit,
   UsersQuery,
-  Timeslot,
 } from 'lib/model';
 
-import to from 'await-to-js';
-
 import { addFilter, addFilters, getFilterString } from './helpers/search';
-import { db, auth, DecodedIdToken, DocumentSnapshot } from './helpers/firebase';
+import { DecodedIdToken, DocumentSnapshot, auth, db } from './helpers/firebase';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;

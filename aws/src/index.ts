@@ -8,16 +8,16 @@ import { SearchResponse } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 
 import {
-  FirebaseApp,
-  FirebaseError,
-  FirebaseAuth,
-  UserRecord,
-  MailEvent,
-  SESNotification,
-  DocumentSnapshot,
   DocumentReference,
+  DocumentSnapshot,
+  FirebaseApp,
+  FirebaseAuth,
+  FirebaseError,
+  MailEvent,
   MatchSearchHit,
   Person,
+  SESNotification,
+  UserRecord,
 } from './types';
 
 /**

@@ -1,16 +1,15 @@
+import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useUser } from 'lib/account';
-import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
-import { Org, OrgJSON } from 'lib/model';
-import { IntercomAPI } from 'components/react-intercom';
-
-import React, { useState, useEffect, useMemo } from 'react';
-
 import useTranslation from 'next-translate/useTranslation';
 
-import { PopOverButton, PopOverAccountLink } from './pop-over';
+import { IntercomAPI } from 'components/react-intercom';
+
+import { Org, OrgJSON } from 'lib/model';
+import { useUser } from 'lib/account';
 
 import styles from './pop-over.module.scss';
+import { PopOverAccountLink, PopOverButton } from './pop-over';
 
 export default function Switcher(): JSX.Element {
   const { t } = useTranslation();

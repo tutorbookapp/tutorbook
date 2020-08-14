@@ -1,9 +1,9 @@
+import { Chip, ChipSet } from '@rmwc/chip';
 import React, { useCallback } from 'react';
-import { Option, Tag, Callback, UsersQuery } from 'lib/model';
-import { ChipSet, Chip } from '@rmwc/chip';
 import { TextField } from '@rmwc/textfield';
-
 import useTranslation from 'next-translate/useTranslation';
+
+import { Callback, Option, Tag, UsersQuery } from 'lib/model';
 
 import styles from './filters.module.scss';
 

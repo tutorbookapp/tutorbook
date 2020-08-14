@@ -1,5 +1,5 @@
 import Utils from 'lib/utils';
-import { Venue, Match, Org, User, Role, UserWithRoles } from 'lib/model';
+import { Match, Org, Role, User, UserWithRoles, Venue } from 'lib/model';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
@@ -81,17 +81,17 @@ const mentoring: Handlebars.TemplateDelegate<OrgsData> = Handlebars.compile(
  * thus we're temporarily disabling it and just using the people's actual
  * email addresses.
  */
-//function getEmail(
-//match: Match,
-//id: string,
-//domain: string = 'mail.tutorbook.org'
-//): string {
-//if (match.creator.id === id) return `${match.creator.handle}@${domain}`;
-//const match: Person[] = match.people.filter((a: Person) => a.id === id);
-//if (match.length > 1) console.warn(`[WARNING] Duplicate people (${id}).`);
-//if (match.length < 1) throw new Error(`No person ${id} in match.`);
-//return `${match[0].handle}@${domain}`;
-//}
+// function getEmail(
+// match: Match,
+// id: string,
+// domain: string = 'mail.tutorbook.org'
+// ): string {
+// if (match.creator.id === id) return `${match.creator.handle}@${domain}`;
+// const match: Person[] = match.people.filter((a: Person) => a.id === id);
+// if (match.length > 1) console.warn(`[WARNING] Duplicate people (${id}).`);
+// if (match.length < 1) throw new Error(`No person ${id} in match.`);
+// return `${match[0].handle}@${domain}`;
+// }
 
 /**
  * Sends one appointment email to all of the people CC-ing the creator of the

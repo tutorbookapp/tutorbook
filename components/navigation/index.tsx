@@ -1,17 +1,17 @@
-import { UsersQuery, Aspect, TCallback } from 'lib/model';
-import { useUser } from 'lib/account';
-
+import React, { useCallback, useState } from 'react';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
-import React, { useState, useCallback } from 'react';
-import Link from 'lib/intl/link';
 import Avatar from 'components/avatar';
 import FilterForm from 'components/filter-form';
+
+import { Aspect, TCallback, UsersQuery } from 'lib/model';
+import Link from 'lib/intl/link';
+import { useUser } from 'lib/account';
+
+import Tabs, { TabsProps } from './tabs';
 import PopOver from './pop-over';
 import Switcher from './switcher';
-import Tabs, { TabsProps } from './tabs';
-
 import styles from './navigation.module.scss';
 
 function DesktopTabs({

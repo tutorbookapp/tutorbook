@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+
 import { matchUpdate, userUpdate } from './algolia';
 
 export const algoliaUserUpdate = functions.firestore

@@ -1,17 +1,17 @@
-import { ResizeObserver as polyfill } from '@juggle/resize-observer';
-import { useUser } from 'lib/account';
-import { signup } from 'lib/account/signup';
+import React, { FormEvent, useCallback, useMemo, useState } from 'react';
 import { Card } from '@rmwc/card';
-import { Aspect } from 'lib/model';
-
-import React, { useState, useMemo, useCallback, FormEvent } from 'react';
-import Title from 'components/title';
-import Loader from 'components/loader';
-import Button from 'components/button';
-import Inputs from 'components/inputs/user';
-
+import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
+
+import Button from 'components/button';
+import Inputs from 'components/inputs/user';
+import Loader from 'components/loader';
+import Title from 'components/title';
+
+import { signup } from 'lib/account/signup';
+import { Aspect } from 'lib/model';
+import { useUser } from 'lib/account';
 
 import styles from './signup.module.scss';
 

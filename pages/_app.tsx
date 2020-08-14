@@ -1,15 +1,15 @@
 import { AppProps } from 'next/app';
-import { User, UserJSON, Org, OrgJSON, ApiError } from 'lib/model';
-import { UpdateUserParam, UserContext } from 'lib/account';
-
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import useSWR, { mutate, SWRConfig } from 'swr';
+import useSWR, { SWRConfig, mutate } from 'swr';
 import to from 'await-to-js';
-
-import React, { useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import Router from 'next/router';
 import NProgress from 'nprogress';
+
 import CovidHead from 'components/doc-head';
+
+import { UpdateUserParam, UserContext } from 'lib/account';
+import { ApiError, Org, OrgJSON, User, UserJSON } from 'lib/model';
 
 import 'styles/global.scss';
 

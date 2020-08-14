@@ -1,4 +1,4 @@
-import { User, UserWithRoles, Role } from 'lib/model';
+import { Role, User, UserWithRoles } from 'lib/model';
 
 import {
   Email,
@@ -6,6 +6,7 @@ import {
   addVerifications,
 } from '../common';
 import Handlebars from '../handlebars';
+
 import Template from './template.hbs';
 
 export default class SignUpEmail implements Email {

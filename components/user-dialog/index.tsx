@@ -1,43 +1,34 @@
-import React, {
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
-  useLayoutEffect,
-  useEffect,
-  useCallback,
 } from 'react';
-import Utils from 'lib/utils';
-import useTranslation from 'next-translate/useTranslation';
-import useWebAnimations from '@wellyshen/use-web-animations';
+import { Dialog } from '@rmwc/dialog';
+import { v4 as uuid } from 'uuid';
 import useSWR, { mutate } from 'swr';
 import cn from 'classnames';
+import useTranslation from 'next-translate/useTranslation';
+import useWebAnimations from '@wellyshen/use-web-animations';
 
-import { Dialog } from '@rmwc/dialog';
 import {
   Aspect,
-  User,
-  UserJSON,
   Availability,
   FCallback,
+  User,
+  UserJSON,
   UsersQuery,
 } from 'lib/model';
+import Utils from 'lib/utils';
 import { useUser } from 'lib/account';
-import { v4 as uuid } from 'uuid';
 
 import DisplayPage from './display-page';
-import RequestPage from './request-page';
 import EditPage from './edit-page';
-
+import RequestPage from './request-page';
 import styles from './user-dialog.module.scss';
 
 type Page = 'edit' | 'display' | 'request';
-
-export interface UserDialogProps {
-  id?: string;
-  setQuery: FCallback<UsersQuery>;
-  initialData?: UserJSON;
-  initialPage?: Page;
-  onClosed: () => void;
-}
 
 function usePrevious<T>(value: T): T {
   const ref = useRef<T>();
@@ -95,6 +86,14 @@ const outgoingFadeOut = {
   ],
   timing: { duration, easing },
 };
+
+export interface UserDialogProps {
+  id?: string;
+  setQuery: FCallback<UsersQuery>;
+  initialData?: UserJSON;
+  initialPage?: Page;
+  onClosed: () => void;
+}
 
 // This wrapper component merely manages the navigation transitions between it's
 // children. The default visible page is the `DisplayPage` but that can be

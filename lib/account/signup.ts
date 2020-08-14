@@ -1,8 +1,8 @@
-import { User, UserJSON, UserInterface, ApiError } from 'lib/model';
-
 import { mutate } from 'swr';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
+
+import { ApiError, User, UserInterface, UserJSON } from 'lib/model';
 
 export async function signup(newUser: User, parents?: User[]): Promise<void> {
   const { default: firebase } = await import('lib/firebase');

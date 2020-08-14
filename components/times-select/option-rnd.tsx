@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 
 import { Timeslot } from 'lib/model';
-import { getPosition, getHeight } from './utils';
 
+import { getHeight, getPosition } from './utils';
 import styles from './option-rnd.module.scss';
 
 interface OptionRndProps {

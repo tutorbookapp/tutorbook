@@ -1,16 +1,15 @@
 import { List, ListItem, ListItemGraphic } from '@rmwc/list';
-import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
-import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
-import { Option, TCallback } from 'lib/model';
-import { Chip } from '@rmwc/chip';
+import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
+import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { Checkbox } from '@rmwc/checkbox';
+import { Chip } from '@rmwc/chip';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
-
 import React from 'react';
 import to from 'await-to-js';
 
-import SelectHint from './select-hint';
+import { Option, TCallback } from 'lib/model';
 
+import SelectHint from './select-hint';
 import styles from './select.module.scss';
 
 type TextFieldPropOverrides = 'textarea' | 'onFocus' | 'onBlur';

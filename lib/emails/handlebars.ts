@@ -1,4 +1,5 @@
 import Handlebars from 'handlebars';
+
 import Utils from 'lib/utils';
 
 import Check from './shared/check.hbs';

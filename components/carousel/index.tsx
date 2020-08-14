@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
-
-import { ListUsersRes } from 'lib/api/list-users';
-import { UsersQuery, User, UserJSON } from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
+import { User, UserJSON, UsersQuery } from 'lib/model';
+import { ListUsersRes } from 'lib/api/list-users';
+
 import Carousel from './carousel';
-import { UserCard, LoadingCard } from './cards';
+import { LoadingCard, UserCard } from './cards';
 
 interface Props {
   query: UsersQuery;

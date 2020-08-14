@@ -1,13 +1,13 @@
-import { LinkHeader } from 'components/navigation';
-import { withI18n } from 'lib/intl';
-
 import React from 'react';
+import common from 'locales/en/common.json';
+import login from 'locales/en/login.json';
+
 import Login from 'components/login';
 import Footer from 'components/footer';
 import Intercom from 'components/react-intercom';
+import { LinkHeader } from 'components/navigation';
 
-import common from 'locales/en/common.json';
-import login from 'locales/en/login.json';
+import { withI18n } from 'lib/intl';
 
 function LoginPage(): JSX.Element {
   return (

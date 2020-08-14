@@ -1,6 +1,7 @@
-import { Option } from 'lib/model';
-import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
+import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
+
+import { Option } from 'lib/model';
 
 export { default as TimeUtils } from './time';
 
@@ -22,7 +23,7 @@ export default class Utils {
    */
   public static async langsToOptions(
     langs: string[],
-    locale: string = 'en'
+    locale = 'en'
   ): Promise<Option<string>[]> {
     const res: SearchResponse<LangHit> = await searchIndex.search('', {
       filters: langs.map((lang: string) => `objectID:${lang}`).join(' OR '),
@@ -39,7 +40,7 @@ export default class Utils {
    */
   public static async subjectsToOptions(
     subjects: string[],
-    locale: string = 'en'
+    locale = 'en'
   ): Promise<Option<string>[]> {
     return subjects.map((subject) => ({ label: subject, value: subject }));
   }

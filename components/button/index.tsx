@@ -1,12 +1,11 @@
-import React from 'react';
 import {
+  ButtonHTMLProps,
   Button as MDCButton,
   ButtonProps as MDCButtonProps,
-  ButtonHTMLProps,
 } from '@rmwc/button';
+import React from 'react';
 
 import Arrow from './arrow';
-
 import styles from './button.module.scss';
 
 interface UniqueButtonProps {

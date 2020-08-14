@@ -1,4 +1,4 @@
-import { Timeslot, DayAlias } from 'lib/model';
+import { DayAlias, Timeslot } from 'lib/model';
 import { TimeUtils } from 'lib/utils';
 
 interface Position {
@@ -6,7 +6,7 @@ interface Position {
   y: number;
 }
 
-export function getPosition(value: Timeslot, width: number = 82): Position {
+export function getPosition(value: Timeslot, width = 82): Position {
   const { from: start } = value;
   const minsFromMidnight = start.getHours() * 60 + start.getMinutes();
   return { x: start.getDay() * width, y: (minsFromMidnight / 15) * 12 };
@@ -24,7 +24,7 @@ export function getHeight(value: Timeslot): number {
 export function getTimeslot(
   height: number,
   position: Position,
-  width: number = 82
+  width = 82
 ): Timeslot {
   // Each column is 82px wide, so we merely divide to figure out which column
   // the `TimeslotRnd` is located (e.g. 0 = Sunday, 1 = Monday, etc).

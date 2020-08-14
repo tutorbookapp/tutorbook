@@ -1,11 +1,11 @@
-import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
-import { Option, Aspect, GradeAlias } from 'lib/model';
+import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import algoliasearch, { SearchClient } from 'algoliasearch/lite';
+import equal from 'fast-deep-equal';
 
 import Select, { SelectControllerProps } from 'components/select';
-import algoliasearch, { SearchClient } from 'algoliasearch/lite';
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import equal from 'fast-deep-equal';
+import { Aspect, GradeAlias, Option } from 'lib/model';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;

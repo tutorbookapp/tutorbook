@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import cn from 'classnames';
+
 import FilterForm from 'components/filter-form';
 
 import { TCallback, UsersQuery } from 'lib/model';
-
-import cn from 'classnames';
 
 import styles from './form.module.scss';
 

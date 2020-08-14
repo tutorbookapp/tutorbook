@@ -1,6 +1,6 @@
 import React from 'react';
-import dynamic from 'next/dynamic';
 import { TooltipProps } from '@rmwc/tooltip';
+import dynamic from 'next/dynamic';
 
 import styles from './avatar.module.scss';
 

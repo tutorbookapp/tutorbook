@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
-import Result from 'components/search/result';
-import Placeholder from 'components/placeholder';
-
-import { v4 as uuid } from 'uuid';
 import useSWR, { mutate } from 'swr';
+import { v4 as uuid } from 'uuid';
 
-import { UsersQuery } from 'lib/model';
+import Placeholder from 'components/placeholder';
+import Result from 'components/search/result';
+
 import { ListUsersRes } from 'lib/api/list-users';
+import { UsersQuery } from 'lib/model';
 
 import styles from './results.module.scss';
 

@@ -19,8 +19,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'prettier',
-    'prettier/@typescript-eslint',
     'prettier/react',
+    'prettier/@typescript-eslint',
     'plugin:postcss-modules/recommended',
   ],
   env: {
@@ -75,6 +75,58 @@ module.exports = {
     //   doSomethingElse();
     // }
     'consistent-return': [1, { treatUndefinedAsUnspecified: true }],
+    // Sort imports using ESLint (the AirBNB config disables these opinionated
+    // import sorting rules). This sorts the imports within each import group
+    // (e.g. built-ins, externals, internals) alphabetically.
+    // @see {@link https://eslint.org/docs/rules/sort-imports}
+    'sort-imports': [
+      'error',
+      {
+        ignoreCase: false,
+        ignoreDeclarationSort: false,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        allowSeparatedGroups: true,
+      },
+    ],
+    'import/order': [
+      'error',
+      {
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
+        ],
+        pathGroups: [
+          {
+            pattern: 'pages/**',
+            group: 'internal',
+            position: 'after',
+          },
+          {
+            pattern: 'components/**',
+            group: 'internal',
+            position: 'after',
+          },
+          {
+            pattern: 'lib/**',
+            group: 'internal',
+            position: 'after',
+          },
+          {
+            pattern: 'styles/**',
+            group: 'internal',
+            position: 'after',
+          },
+        ],
+        pathGroupsExcludedImportTypes: ['builtin'],
+        'newlines-between': 'always',
+      },
+    ],
+    'import/exports-last': 'warn',
   },
   reportUnusedDisableDirectives: true,
   settings: {

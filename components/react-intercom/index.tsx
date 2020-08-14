@@ -3,8 +3,8 @@
 import React from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
-import { UserContext } from 'lib/account';
 import { User } from 'lib/model';
+import { UserContext } from 'lib/account';
 
 const appID = 'faz7lcyb';
 const canUseDOM = !!(

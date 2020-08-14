@@ -1,11 +1,11 @@
-import { useUser } from 'lib/account';
-import { User, UserJSON, Option, UsersQuery } from 'lib/model';
-
-import Select, { SelectControllerProps } from 'components/select';
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-
 import axios from 'axios';
 import equal from 'fast-deep-equal';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import Select, { SelectControllerProps } from 'components/select';
+
+import { useUser } from 'lib/account';
+import { Option, User, UserJSON, UsersQuery } from 'lib/model';
 
 /**
  * Each `Option` object's label is the user's name and value is the user's uID.
@@ -50,7 +50,7 @@ export default function UserSelect({
     return { label: u.name, value: u.id };
   }, []);
   const getSuggestions = useCallback(
-    async (query: string = '') => {
+    async (query = '') => {
       const promises: Promise<{ users: User[] }>[] = [];
       if (orgs.length)
         promises.push(

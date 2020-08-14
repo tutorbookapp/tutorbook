@@ -1,13 +1,14 @@
-import { DataTableRow, DataTableCell } from '@rmwc/data-table';
+import { DataTableCell, DataTableRow } from '@rmwc/data-table';
+import React, { memo, useCallback } from 'react';
 import { TextField } from '@rmwc/textfield';
-import { Person, Role, TCallback, MatchJSON } from 'lib/model';
+import equal from 'fast-deep-equal';
 import { v4 as uuid } from 'uuid';
 
-import React, { useCallback, memo } from 'react';
 import UserSelect from 'components/user-select';
 import SubjectSelect from 'components/subject-select';
 
-import equal from 'fast-deep-equal';
+import { MatchJSON, Person, Role, TCallback } from 'lib/model';
+
 import styles from './matches.module.scss';
 
 interface MatchRowProps {

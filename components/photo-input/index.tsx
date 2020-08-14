@@ -1,8 +1,8 @@
+import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import React from 'react';
+import { v4 as uuid } from 'uuid';
 
 import { TCallback } from 'lib/model';
-import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
-import { v4 as uuid } from 'uuid';
 
 import styles from './photo-input.module.scss';
 

@@ -1,7 +1,7 @@
+import { ParsedUrlQuery } from 'querystring';
+
 import React from 'react';
 import I18nProvider from 'next-translate/I18nProvider';
-
-import { ParsedUrlQuery } from 'querystring';
 
 import localeConfig from './config.json';
 

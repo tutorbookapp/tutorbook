@@ -1,30 +1,29 @@
-import { v4 as uuid } from 'uuid';
-import useSWR, { mutate } from 'swr';
-import useTranslation from 'next-translate/useTranslation';
-import axios from 'axios';
-
 import {
   DataTable,
+  DataTableBody,
   DataTableContent,
   DataTableHead,
   DataTableHeadCell,
-  DataTableBody,
   DataTableRow,
 } from '@rmwc/data-table';
-import { TextField } from '@rmwc/textfield';
-import { Select } from '@rmwc/select';
+import useSWR, { mutate } from 'swr';
 import { IconButton } from '@rmwc/icon-button';
-import { ListMatchesRes } from 'lib/api/list-matches';
-import { MatchesQuery, Org, MatchJSON } from 'lib/model';
-import { IntercomAPI } from 'components/react-intercom';
-
 import React from 'react';
-import Header from 'components/header';
-import Placeholder from 'components/placeholder';
+import { Select } from '@rmwc/select';
+import { TextField } from '@rmwc/textfield';
+import axios from 'axios';
+import useTranslation from 'next-translate/useTranslation';
+import { v4 as uuid } from 'uuid';
 
-import { MatchRow, LoadingRow } from './row';
+import Placeholder from 'components/placeholder';
+import { IntercomAPI } from 'components/react-intercom';
+import Header from 'components/header';
+
+import { ListMatchesRes } from 'lib/api/list-matches';
+import { MatchJSON, MatchesQuery, Org } from 'lib/model';
 
 import styles from './matches.module.scss';
+import { LoadingRow, MatchRow } from './row';
 
 interface MatchesProps {
   org: Org;

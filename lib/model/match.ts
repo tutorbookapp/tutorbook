@@ -1,18 +1,17 @@
 import * as admin from 'firebase-admin';
-
 import { ObjectWithObjectID } from '@algolia/client-search';
+
 import {
   Request,
-  RequestSearchHit,
-  RequestJSON,
   RequestInterface,
+  RequestJSON,
+  RequestSearchHit,
 } from './request';
 import {
   Availability,
   AvailabilityJSON,
   AvailabilitySearchHit,
 } from './availability';
-
 import construct from './construct';
 
 type DocumentData = admin.firestore.DocumentData;

@@ -1,18 +1,16 @@
-import React, { useState, useLayoutEffect, useRef, useCallback } from 'react';
-
-import { TimeUtils } from 'lib/utils';
-import { TCallback, Timeslot, Availability, DayAlias } from 'lib/model';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import { TextField, TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
+import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
-
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
+import { TimeUtils } from 'lib/utils';
+import { Availability, DayAlias, TCallback, Timeslot } from 'lib/model';
+
 import OptionRnd from './option-rnd';
 import TimeslotRnd from './timeslot-rnd';
-
 import { getTimeslot } from './utils';
 import styles from './times-select.module.scss';
 

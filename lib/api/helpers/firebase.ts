@@ -1,5 +1,4 @@
 import * as admin from 'firebase-admin';
-
 import { v4 as uuid } from 'uuid';
 
 export type FirebaseError = admin.FirebaseError & Error;

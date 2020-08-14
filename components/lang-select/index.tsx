@@ -1,12 +1,12 @@
-import { SearchResponse, ObjectWithObjectID } from '@algolia/client-search';
-import { Option } from 'lib/model';
-
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import Select, { SelectControllerProps } from 'components/select';
+import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
-
 import equal from 'fast-deep-equal';
 import useTranslation from 'next-translate/useTranslation';
+
+import Select, { SelectControllerProps } from 'components/select';
+
+import { Option } from 'lib/model';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;

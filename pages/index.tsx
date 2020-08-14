@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
+import common from 'locales/en/common.json';
+import about from 'locales/en/about.json';
+import banner from 'locales/en/banner.json';
+import query3rd from 'locales/en/query3rd.json';
 
-import { withI18n } from 'lib/intl';
-import { Aspect } from 'lib/model';
 import { AspectHeader } from 'components/navigation';
-
 import Banner from 'components/banner';
 import Intercom from 'components/react-intercom';
 import Hero from 'components/hero';
 import About from 'components/about';
 import Footer from 'components/footer';
 
-import common from 'locales/en/common.json';
-import about from 'locales/en/about.json';
-import banner from 'locales/en/banner.json';
-import query3rd from 'locales/en/query3rd.json';
+import { Aspect } from 'lib/model';
+import { withI18n } from 'lib/intl';
 
 function IndexPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');

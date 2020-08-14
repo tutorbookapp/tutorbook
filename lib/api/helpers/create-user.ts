@@ -1,14 +1,14 @@
-import { User } from 'lib/model';
-
 import to from 'await-to-js';
 
+import { User } from 'lib/model';
+
 import {
-  db,
-  auth,
-  UserRecord,
-  FirebaseError,
-  DocumentSnapshot,
   DocumentReference,
+  DocumentSnapshot,
+  FirebaseError,
+  UserRecord,
+  auth,
+  db,
 } from './firebase';
 
 /**

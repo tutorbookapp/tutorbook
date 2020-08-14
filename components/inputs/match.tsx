@@ -1,22 +1,22 @@
 import React, {
-  useState,
-  useMemo,
+  FormEvent,
   useCallback,
   useEffect,
-  FormEvent,
+  useMemo,
+  useState,
 } from 'react';
-import UserSelect from 'components/user-select';
-import SubjectSelect from 'components/subject-select';
-
+import { TextField } from '@rmwc/textfield';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
-
 import { v4 as uuid } from 'uuid';
 
-import { TextField } from '@rmwc/textfield';
-import { Match, Person, Role, Availability } from 'lib/model';
+import UserSelect from 'components/user-select';
 import { TimesSelectProps } from 'components/times-select';
-import { InputsProps, InputsConfig } from './types';
+import SubjectSelect from 'components/subject-select';
+
+import { Availability, Match, Person, Role } from 'lib/model';
+
+import { InputsConfig, InputsProps } from './types';
 
 const TimesSelect = dynamic<TimesSelectProps>(async () =>
   import('components/times-select')

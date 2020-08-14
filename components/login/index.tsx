@@ -1,14 +1,14 @@
-import Link from 'lib/intl/link';
+import { useCallback, useEffect, useState } from 'react';
+import { TextFieldHelperText } from '@rmwc/textfield';
+import to from 'await-to-js';
+import useTranslation from 'next-translate/useTranslation';
 import Router from 'next/router';
+
 import Button from 'components/button';
-import React, { useState, useEffect, useCallback } from 'react';
 
 import { useUser } from 'lib/account';
 import { signupWithGoogle } from 'lib/account/signup';
-import { TextFieldHelperText } from '@rmwc/textfield';
-
-import useTranslation from 'next-translate/useTranslation';
-import to from 'await-to-js';
+import Link from 'lib/intl/link';
 
 import styles from './login.module.scss';
 

@@ -1,13 +1,13 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { Card } from '@rmwc/card';
+
 import Avatar from 'components/avatar';
 import Carousel from 'components/carousel';
 import RequestDialog from 'components/request-dialog';
 
-import { Card } from '@rmwc/card';
-import { User, OrgJSON, UsersQuery, SocialInterface } from 'lib/model';
+import { OrgJSON, SocialInterface, User, UsersQuery } from 'lib/model';
 
 import SearchForm from './search-form';
-
 import styles from './org-display.module.scss';
 
 interface OrgDisplayProps {

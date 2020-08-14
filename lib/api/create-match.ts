@@ -1,28 +1,28 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { MatchEmail } from 'lib/emails';
-import {
-  Venue,
-  Role,
-  Timeslot,
-  Person,
-  User,
-  UserWithRoles,
-  Match,
-  MatchJSON,
-} from 'lib/model';
 import { v4 as uuid } from 'uuid';
-
 import axios, { AxiosResponse } from 'axios';
 import to from 'await-to-js';
 import mail from '@sendgrid/mail';
-import error from './helpers/error';
 
 import {
-  db,
-  auth,
+  Match,
+  MatchJSON,
+  Person,
+  Role,
+  Timeslot,
+  User,
+  UserWithRoles,
+  Venue,
+} from 'lib/model';
+import { MatchEmail } from 'lib/emails';
+
+import error from './helpers/error';
+import {
   DecodedIdToken,
-  DocumentSnapshot,
   DocumentReference,
+  DocumentSnapshot,
+  auth,
+  db,
 } from './helpers/firebase';
 
 mail.setApiKey(process.env.SENDGRID_API_KEY as string);
@@ -160,7 +160,7 @@ export default async function createMatch(
             if (user.id === creator.id) creator = new User({ ...user });
             // 1. Verify that the people are available (note that we don't throw
             // an error if it is the request sender who is unavailable).
-            let timeslot: string = 'during appointment time';
+            let timeslot = 'during appointment time';
             if (
               match.times &&
               !match.times.every((time: Timeslot) => {

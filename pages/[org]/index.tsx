@@ -1,23 +1,24 @@
+import { ParsedUrlQuery } from 'querystring';
+
 import React from 'react';
 import ErrorPage from 'next/error';
-import Intercom from 'components/react-intercom';
-import OrgDisplay from 'components/org-display';
-import Footer from 'components/footer';
-
-import { withI18n } from 'lib/intl';
-import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { LinkHeader } from 'components/navigation';
-import { Org, OrgJSON } from 'lib/model';
-import {
-  db,
-  DocumentSnapshot,
-  DocumentReference,
-} from 'lib/api/helpers/firebase';
-
 import common from 'locales/en/common.json';
 import org from 'locales/en/org.json';
 import query3rd from 'locales/en/query3rd.json';
+
+import Intercom from 'components/react-intercom';
+import OrgDisplay from 'components/org-display';
+import Footer from 'components/footer';
+import { LinkHeader } from 'components/navigation';
+
+import { withI18n } from 'lib/intl';
+import { Org, OrgJSON } from 'lib/model';
+import {
+  DocumentReference,
+  DocumentSnapshot,
+  db,
+} from 'lib/api/helpers/firebase';
 
 interface OrgPageProps {
   org?: OrgJSON;

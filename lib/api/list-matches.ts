@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import { SearchResponse } from '@algolia/client-search';
-import { Match, MatchJSON, MatchSearchHit, MatchesQuery } from 'lib/model';
-
 import to from 'await-to-js';
+
+import { Match, MatchJSON, MatchSearchHit, MatchesQuery } from 'lib/model';
 
 import { getFilterString } from './helpers/search';
 

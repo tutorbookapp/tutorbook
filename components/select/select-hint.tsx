@@ -1,7 +1,7 @@
 import React from 'react';
+import { TooltipProps } from '@rmwc/tooltip';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
-import { TooltipProps } from '@rmwc/tooltip';
 
 const Tooltip = dynamic<TooltipProps>(() =>
   import('@rmwc/tooltip').then((m) => m.Tooltip)

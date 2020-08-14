@@ -1,19 +1,17 @@
 import ErrorPage from 'next/error';
+import React, { useEffect, useMemo } from 'react';
+import Router, { useRouter } from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
+import common from 'locales/en/common.json';
+import overview from 'locales/en/overview.json';
+
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 import Overview from 'components/overview';
-
-import React, { useMemo, useEffect } from 'react';
-import Router, { useRouter } from 'next/router';
-
 import { TabHeader } from 'components/navigation';
+
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
-
-import useTranslation from 'next-translate/useTranslation';
-
-import common from 'locales/en/common.json';
-import overview from 'locales/en/overview.json';
 
 function DashboardPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();

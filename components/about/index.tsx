@@ -1,13 +1,12 @@
 import React from 'react';
-import SpotlightMsg from 'components/spotlight-msg';
-
 import useTranslation from 'next-translate/useTranslation';
 
-import VolunteerRegisters from './gifs/volunteer-registers.gif';
+import SpotlightMsg from 'components/spotlight-msg';
+
 import OrgVetsVolunteer from './gifs/org-vets-volunteer.gif';
 import StudentRequests from './gifs/student-requests.gif';
 import VolunteerEmails from './gifs/volunteer-emails.gif';
-
+import VolunteerRegisters from './gifs/volunteer-registers.gif';
 import styles from './about.module.scss';
 
 export default function About(): JSX.Element {

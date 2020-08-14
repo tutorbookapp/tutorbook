@@ -1,29 +1,28 @@
 import React, {
-  useState,
-  useRef,
   useCallback,
-  useMemo,
   useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
-
 import useTranslation from 'next-translate/useTranslation';
-
-import {
-  TCallback,
-  Option,
-  Availability,
-  Timeslot,
-  User,
-  UsersQuery,
-} from 'lib/model';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from 'components/carousel';
 import RequestDialog from 'components/request-dialog';
-import Utils from 'lib/utils';
-import Result from './result';
-import Form from './form';
 
+import {
+  Availability,
+  Option,
+  TCallback,
+  Timeslot,
+  User,
+  UsersQuery,
+} from 'lib/model';
+import Utils from 'lib/utils';
+
+import Form from './form';
+import Result from './result';
 import styles from './search.module.scss';
 
 interface SearchProps {

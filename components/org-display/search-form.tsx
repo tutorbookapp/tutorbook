@@ -1,11 +1,12 @@
-import { Aspect, UsersQuery, Availability, OrgJSON } from 'lib/model';
+import React, { useCallback, useEffect, useState } from 'react';
+import Router from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
+
+import Button from 'components/button';
 import { QueryInputs } from 'components/inputs';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Router from 'next/router';
-import Button from 'components/button';
+import { Aspect, Availability, OrgJSON, UsersQuery } from 'lib/model';
 
-import useTranslation from 'next-translate/useTranslation';
 import styles from './search-form.module.scss';
 
 interface SearchFormProps {

@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, Org } from 'lib/model';
-
 import to from 'await-to-js';
-import error from './error';
 
-import { db, auth, DecodedIdToken, DocumentSnapshot } from './firebase';
+import { Org, User } from 'lib/model';
+
+import error from './error';
+import { DecodedIdToken, DocumentSnapshot, auth, db } from './firebase';
 
 export default async function verify(
   req: NextApiRequest,

@@ -1,8 +1,8 @@
 import React from 'react';
+import useTranslation from 'next-translate/useTranslation';
+
 import Header from 'components/header';
 import Placeholder from 'components/placeholder';
-
-import useTranslation from 'next-translate/useTranslation';
 
 import { Account } from 'lib/model';
 

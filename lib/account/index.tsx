@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import { User, UserInterface, Org } from 'lib/model';
+import { Org, User, UserInterface } from 'lib/model';
 
 export type UpdateUserParam = UserInterface | ((prev: User) => UserInterface);
 

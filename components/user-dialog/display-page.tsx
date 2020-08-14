@@ -1,30 +1,31 @@
-import React, { memo, useState, useEffect, useRef, useCallback } from 'react';
-import Avatar from 'components/avatar';
-import { IconButton } from '@rmwc/icon-button';
 import { Chip, ChipSet } from '@rmwc/chip';
 import {
-  UserJSON,
-  Verification,
-  Check,
-  TCallback,
-  SocialInterface,
-} from 'lib/model';
-import { useUser } from 'lib/account';
-import { Checkbox } from '@rmwc/checkbox';
-import {
   DataTable,
+  DataTableBody,
+  DataTableCell,
   DataTableContent,
   DataTableHead,
   DataTableHeadCell,
-  DataTableBody,
   DataTableRow,
-  DataTableCell,
 } from '@rmwc/data-table';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { Checkbox } from '@rmwc/checkbox';
+import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
-
 import axios from 'axios';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
+
+import Avatar from 'components/avatar';
+
+import {
+  Check,
+  SocialInterface,
+  TCallback,
+  UserJSON,
+  Verification,
+} from 'lib/model';
+import { useUser } from 'lib/account';
 
 import styles from './display-page.module.scss';
 

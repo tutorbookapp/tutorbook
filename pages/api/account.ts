@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from 'lib/model';
-import { auth, DecodedIdToken } from 'lib/api/helpers/firebase';
-
 import to from 'await-to-js';
+
+import { ApiError } from 'lib/model';
+import { DecodedIdToken, auth } from 'lib/api/helpers/firebase';
 import error from 'lib/api/helpers/error';
 
 /**

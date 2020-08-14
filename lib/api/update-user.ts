@@ -1,17 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import to from 'await-to-js';
+
 import { User, UserJSON } from 'lib/model';
 
-import to from 'await-to-js';
 import error from './helpers/error';
 import verify from './helpers/verify';
-
 import {
-  db,
-  auth,
-  UserRecord,
-  FirebaseError,
-  DocumentSnapshot,
   DocumentReference,
+  DocumentSnapshot,
+  FirebaseError,
+  UserRecord,
+  auth,
+  db,
 } from './helpers/firebase';
 
 /**

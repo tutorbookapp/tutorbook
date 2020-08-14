@@ -1,15 +1,16 @@
-import React, { memo, useState, useCallback, useEffect } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import axios, { AxiosResponse } from 'axios';
+import { IconButton } from '@rmwc/icon-button';
+import { TextFieldHelperText } from '@rmwc/textfield';
+import { mutate } from 'swr';
+import to from 'await-to-js';
+import useTranslation from 'next-translate/useTranslation';
+
+import Loader from 'components/loader';
 import Inputs from 'components/inputs/user';
 import Button from 'components/button';
-import Loader from 'components/loader';
-import { mutate } from 'swr';
-import useTranslation from 'next-translate/useTranslation';
-import axios, { AxiosResponse } from 'axios';
-import to from 'await-to-js';
 
-import { TextFieldHelperText } from '@rmwc/textfield';
-import { IconButton } from '@rmwc/icon-button';
-import { User, UserJSON, TCallback } from 'lib/model';
+import { TCallback, User, UserJSON } from 'lib/model';
 
 import styles from './edit-page.module.scss';
 

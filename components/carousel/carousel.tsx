@@ -1,7 +1,5 @@
-import React from 'react';
-
 import { IconButton } from '@rmwc/icon-button';
-
+import React from 'react';
 import { v4 as uuid } from 'uuid';
 
 import styles from './carousel.module.scss';

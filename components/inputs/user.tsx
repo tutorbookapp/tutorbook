@@ -1,20 +1,21 @@
 import React, { useMemo } from 'react';
-import PhotoInput from 'components/photo-input';
-import SubjectSelect from 'components/subject-select';
-import LangSelect from 'components/lang-select';
-
+import { TextField } from '@rmwc/textfield';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { TextField } from '@rmwc/textfield';
+import LangSelect from 'components/lang-select';
+import PhotoInput from 'components/photo-input';
+import SubjectSelect from 'components/subject-select';
 import { TimesSelectProps } from 'components/times-select';
+
 import {
-  User,
   Availability,
-  SocialTypeAlias,
   SocialInterface,
+  SocialTypeAlias,
+  User,
 } from 'lib/model';
-import { InputsProps, InputsConfig } from './types';
+
+import { InputsConfig, InputsProps } from './types';
 
 const TimesSelect = dynamic<TimesSelectProps>(() =>
   import('components/times-select')

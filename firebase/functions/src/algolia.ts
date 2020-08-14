@@ -1,4 +1,4 @@
-import { config, Change, EventContext } from 'firebase-functions';
+import { Change, EventContext, config } from 'firebase-functions';
 import { Settings } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 import to from 'await-to-js';

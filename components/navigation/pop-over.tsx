@@ -1,16 +1,16 @@
-import Link from 'lib/intl/link';
-import Avatar from 'components/avatar';
-
+import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import React, { useState } from 'react';
+import { Icon } from '@rmwc/icon';
+import { Ripple } from '@rmwc/ripple';
+import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { mutate } from 'swr';
-import { useUser } from 'lib/account';
-import { MenuSurfaceAnchor, MenuSurface } from '@rmwc/menu';
-import { OrgJSON, User, AccountInterface } from 'lib/model';
 import { IntercomAPI } from 'components/react-intercom';
-import { Ripple } from '@rmwc/ripple';
-import { Icon } from '@rmwc/icon';
+import Avatar from 'components/avatar';
+
+import Link from 'lib/intl/link';
+import { AccountInterface, OrgJSON, User } from 'lib/model';
+import { useUser } from 'lib/account';
 
 import styles from './pop-over.module.scss';
 

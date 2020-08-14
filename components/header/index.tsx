@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Link from 'lib/intl/link';
 
 import styles from './header.module.scss';

@@ -1,5 +1,6 @@
-import { UserJSON, Callback, CallbackParam } from 'lib/model';
 import { createContext, useContext } from 'react';
+
+import { Callback, CallbackParam, UserJSON } from 'lib/model';
 
 export interface MatchingContextValue {
   user?: UserJSON;

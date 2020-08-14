@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { UserJSON, User } from 'lib/model';
-
 import to from 'await-to-js';
+
+import { User, UserJSON } from 'lib/model';
+
 import verify from './helpers/verify';
 import error from './helpers/error';
 import createUser from './helpers/create-user';
-
-import { db, DocumentSnapshot, DocumentReference } from './helpers/firebase';
+import { DocumentReference, DocumentSnapshot, db } from './helpers/firebase';
 
 export type CreateParentRes = UserJSON;
 

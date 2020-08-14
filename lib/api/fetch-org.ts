@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import to from 'await-to-js';
+
 import { Org, OrgJSON } from 'lib/model';
 
-import to from 'await-to-js';
 import error from './helpers/error';
-
-import { db, auth, DocumentSnapshot, DecodedIdToken } from './helpers/firebase';
+import { DecodedIdToken, DocumentSnapshot, auth, db } from './helpers/firebase';
 
 export type FetchOrgRes = OrgJSON;
 

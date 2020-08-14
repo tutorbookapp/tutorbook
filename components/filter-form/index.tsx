@@ -1,11 +1,12 @@
-import { Option, UsersQuery, TCallback } from 'lib/model';
-import { QueryInputs } from 'components/inputs';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Ripple } from '@rmwc/ripple';
-
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
+
+import { QueryInputs } from 'components/inputs';
+
+import { Option, TCallback, UsersQuery } from 'lib/model';
+
 import styles from './filter-form.module.scss';
 
 interface SearchButtonProps {

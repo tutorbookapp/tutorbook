@@ -1,10 +1,11 @@
 import { TimeUtils } from 'lib/utils';
+
 import {
   DayAlias,
   Timeslot,
-  TimeslotJSON,
-  TimeslotInterface,
   TimeslotFirestore,
+  TimeslotInterface,
+  TimeslotJSON,
   TimeslotSearchHit,
 } from './timeslot';
 

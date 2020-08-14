@@ -1,15 +1,15 @@
 /* eslint-disable max-classes-per-file */
 
 import url from 'url';
+
 import to from 'await-to-js';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import { ListUsersRes } from 'lib/api/list-users';
 
 import { ApiError } from './errors';
-import { User, UserJSON, Check, Tag, Aspect } from './user';
+import { Aspect, Check, Tag, User, UserJSON } from './user';
 import { Availability, AvailabilityJSON } from './availability';
-
 import construct from './construct';
 
 /**

@@ -81,7 +81,7 @@ export type TimeslotSearchHit = TimeslotBase<number>;
  * than `[Object object]`.
  */
 export class Timeslot implements TimeslotBase<Date> {
-  public recur: string = 'RRULE:FREQ=WEEKLY';
+  public recur = 'RRULE:FREQ=WEEKLY';
 
   /**
    * Constructor that takes advantage of Typescript's shorthand assignment.

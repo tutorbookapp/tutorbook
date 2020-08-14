@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+
 import { User, UserJSON } from 'lib/model';
 
 import error from './helpers/error';
 import verify from './helpers/verify';
-
-import { db, DocumentSnapshot } from './helpers/firebase';
+import { DocumentSnapshot, db } from './helpers/firebase';
 
 export type FetchUserRes = UserJSON;
 

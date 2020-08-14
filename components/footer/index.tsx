@@ -1,10 +1,12 @@
 import React from 'react';
-/* import NextLink from 'next/link'; */
-/* import config from 'intl/config.json'; */
-import Link from 'lib/intl/link';
 import useTranslation from 'next-translate/useTranslation';
 
+import Link from 'lib/intl/link';
+
 import styles from './footer.module.scss';
+
+/* import NextLink from 'next/link'; */
+/* import config from 'intl/config.json'; */
 
 /*
  *const locales: Record<string, Msg> = defineMessages({

@@ -1,6 +1,6 @@
 import React from 'react';
-import Checkmark from './checkmark';
 
+import Checkmark from './checkmark';
 import styles from './loader.module.scss';
 
 interface Props {
