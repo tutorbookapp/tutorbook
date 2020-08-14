@@ -2,9 +2,6 @@ import ErrorPage from 'next/error';
 import { useEffect, useMemo } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
-import common from 'locales/en/common.json';
-import matches from 'locales/en/matches.json';
-import match from 'locales/en/match.json';
 
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
@@ -13,6 +10,10 @@ import { TabHeader } from 'components/navigation';
 
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
+
+import match from 'locales/en/match.json';
+import matches from 'locales/en/matches.json';
+import common from 'locales/en/common.json';
 
 function MatchesPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();

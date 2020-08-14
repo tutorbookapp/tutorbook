@@ -2,8 +2,6 @@ import ErrorPage from 'next/error';
 import { useEffect, useMemo } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
-import common from 'locales/en/common.json';
-import overview from 'locales/en/overview.json';
 
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
@@ -12,6 +10,9 @@ import { TabHeader } from 'components/navigation';
 
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
+
+import overview from 'locales/en/overview.json';
+import common from 'locales/en/common.json';
 
 function DashboardPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();

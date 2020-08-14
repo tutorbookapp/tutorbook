@@ -2,9 +2,6 @@ import { ParsedUrlQuery } from 'querystring';
 
 import ErrorPage from 'next/error';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import common from 'locales/en/common.json';
-import org from 'locales/en/org.json';
-import query3rd from 'locales/en/query3rd.json';
 
 import Intercom from 'components/react-intercom';
 import OrgDisplay from 'components/org-display';
@@ -18,6 +15,10 @@ import {
   DocumentSnapshot,
   db,
 } from 'lib/api/helpers/firebase';
+
+import query3rd from 'locales/en/query3rd.json';
+import org from 'locales/en/org.json';
+import common from 'locales/en/common.json';
 
 interface OrgPageProps {
   org?: OrgJSON;

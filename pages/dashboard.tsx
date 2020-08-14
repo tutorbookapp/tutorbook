@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
-import common from 'locales/en/common.json';
-import overview from 'locales/en/overview.json';
 
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
@@ -11,6 +9,9 @@ import { TabHeader } from 'components/navigation';
 
 import { withI18n } from 'lib/intl';
 import { useUser } from 'lib/account';
+
+import overview from 'locales/en/overview.json';
+import common from 'locales/en/common.json';
 
 function DashboardPage(): JSX.Element {
   const { t } = useTranslation();

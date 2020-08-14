@@ -1,8 +1,4 @@
 import { useState } from 'react';
-import common from 'locales/en/common.json';
-import about from 'locales/en/about.json';
-import banner from 'locales/en/banner.json';
-import query3rd from 'locales/en/query3rd.json';
 
 import { AspectHeader } from 'components/navigation';
 import Banner from 'components/banner';
@@ -13,6 +9,11 @@ import Footer from 'components/footer';
 
 import { Aspect } from 'lib/model';
 import { withI18n } from 'lib/intl';
+
+import query3rd from 'locales/en/query3rd.json';
+import banner from 'locales/en/banner.json';
+import about from 'locales/en/about.json';
+import common from 'locales/en/common.json';
 
 function IndexPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');

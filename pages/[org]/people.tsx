@@ -2,12 +2,6 @@ import ErrorPage from 'next/error';
 import { useEffect, useMemo } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
-import common from 'locales/en/common.json';
-import people from 'locales/en/people.json';
-import search from 'locales/en/search.json';
-import query from 'locales/en/query.json';
-import user from 'locales/en/user.json';
-import match from 'locales/en/match.json';
 
 import { TabHeader } from 'components/navigation';
 import People from 'components/people';
@@ -16,6 +10,13 @@ import Intercom from 'components/react-intercom';
 
 import { withI18n } from 'lib/intl';
 import { useUser } from 'lib/account';
+
+import common from 'locales/en/common.json';
+import people from 'locales/en/people.json';
+import search from 'locales/en/search.json';
+import query from 'locales/en/query.json';
+import user from 'locales/en/user.json';
+import match from 'locales/en/match.json';
 
 function PeoplePage(): JSX.Element {
   const { orgs, loggedIn } = useUser();

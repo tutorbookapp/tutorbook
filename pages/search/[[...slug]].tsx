@@ -5,10 +5,6 @@ import { v4 as uuid } from 'uuid';
 import { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
-import common from 'locales/en/common.json';
-import search from 'locales/en/search.json';
-import query3rd from 'locales/en/query3rd.json';
-import match3rd from 'locales/en/match3rd.json';
 
 import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
@@ -23,6 +19,11 @@ import {
   UsersQueryJSON,
 } from 'lib/model';
 import { withI18n } from 'lib/intl';
+
+import match3rd from 'locales/en/match3rd.json';
+import query3rd from 'locales/en/query3rd.json';
+import search from 'locales/en/search.json';
+import common from 'locales/en/common.json';
 
 type App = admin.app.App;
 type Firestore = admin.firestore.Firestore;

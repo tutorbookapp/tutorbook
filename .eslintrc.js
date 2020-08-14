@@ -123,12 +123,21 @@ module.exports = {
             group: 'internal',
             position: 'after',
           },
+          {
+            pattern: 'locales/**',
+            group: 'internal',
+            position: 'after',
+          },
         ],
         pathGroupsExcludedImportTypes: ['builtin'],
         'newlines-between': 'always',
       },
     ],
     'import/exports-last': 'warn',
+    // Disallow multiple empty lines, only one newline at the end, and no new
+    // lines at the beginning.
+    // @see {@link https://eslint.org/docs/rules/no-multiple-empty-lines}
+    'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
   },
   reportUnusedDisableDirectives: true,
   settings: {
