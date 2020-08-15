@@ -2,17 +2,14 @@ import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
 import {
-  Request,
-  RequestInterface,
-  RequestJSON,
-  RequestSearchHit,
-} from './request';
-import {
   Availability,
   AvailabilityJSON,
   AvailabilitySearchHit,
-} from './availability';
-import construct from './construct';
+} from '../availability';
+import construct from '../construct';
+
+import { Base, BaseInterface } from './base';
+import { Request, RequestJSON, RequestSearchHit } from './request';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -29,7 +26,7 @@ export interface Venue {
  * @property [jitsi] - The URL to the Jitsi video conferencing room (only
  * populated when the match is for mentoring).
  */
-export interface MatchInterface extends RequestInterface {
+export interface MatchInterface extends BaseInterface {
   request?: Request;
   bramble?: Venue;
   jitsi?: Venue;
@@ -46,7 +43,7 @@ export type MatchSearchHit = ObjectWithObjectID &
     request?: RequestSearchHit;
   };
 
-export class Match extends Request implements MatchInterface {
+export class Match extends Base implements MatchInterface {
   public request?: Request;
 
   public bramble?: Venue;
@@ -55,7 +52,7 @@ export class Match extends Request implements MatchInterface {
 
   public constructor(match: Partial<MatchInterface> = {}) {
     super(match);
-    construct<MatchInterface>(this, match, new Request());
+    construct<MatchInterface>(this, match);
   }
 
   public toJSON(): MatchJSON {

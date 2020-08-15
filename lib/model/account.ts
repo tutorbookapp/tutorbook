@@ -52,6 +52,9 @@ export interface AccountInterface {
   ref?: DocumentReference;
 }
 
+// TODO: Make this an abstract class but still prevent the `phone` property from
+// being overriden by child constructors (i.e. the child constructor doesn't
+// perform the same phone validation as this one does).
 export class Account implements AccountInterface {
   public id = '';
 

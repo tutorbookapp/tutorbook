@@ -1,38 +1,19 @@
 import * as admin from 'firebase-admin';
-import { v4 as uuid } from 'uuid';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
-import { Aspect, User } from './user';
 import {
   Availability,
   AvailabilityJSON,
   AvailabilitySearchHit,
-} from './availability';
-import construct from './construct';
+} from '../availability';
+import construct from '../construct';
+
+import { Base, BaseInterface } from './base';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DocumentReference = admin.firestore.DocumentReference;
 
-export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
-
-export type UserWithRoles = User & { roles: Role[] };
-
-/**
- * Represents a person that is involved in a request or match. Here, roles are
- * explicitly listed (unlike the `User` object where roles are implied by
- * role-specific properties).
- * @property id - The user's unique Firebase-assigned user ID (note that this
- * contains both lowercase and capital letters which is why it can't be used as
- * a unique anonymous email address handle).
- * @property handle - The user's all-lowercase anonymous email handle.
- * @property roles - The user's roles in this request or match (e.g. `tutor`).
- */
-export interface Person {
-  id: string;
-  handle: string;
-  roles: Role[];
-}
+export type RequestStatus = 'created' | 'queued' | 'matched';
 
 /**
  * A request is a job post. Typically created by parents or teachers.
@@ -45,15 +26,11 @@ export interface Person {
  * @property [times] - Requested timeslots when (tutoring/mentoring) meetings
  * should occur (i.e. the times that work best for the student). For now, each
  * of these timeslots has the default weekly recurrance.
+ * @property status - Whether the request is in the matching queue or has been
+ * already matched (this is used to create a 3-step "matching pipeline").
  */
-export interface RequestInterface {
-  subjects: string[];
-  people: Person[];
-  creator: Person;
-  message: string;
-  times?: Availability;
-  ref?: DocumentReference;
-  id: string;
+export interface RequestInterface extends BaseInterface {
+  status: RequestStatus;
 }
 
 export type RequestJSON = Omit<RequestInterface, 'times'> & {
@@ -63,30 +40,12 @@ export type RequestJSON = Omit<RequestInterface, 'times'> & {
 export type RequestSearchHit = ObjectWithObjectID &
   Omit<RequestInterface, 'times'> & { times?: AvailabilitySearchHit };
 
-export class Request implements RequestInterface {
-  public subjects: string[] = [];
-
-  public people: Person[] = [];
-
-  public creator: Person = { id: '', handle: uuid(), roles: [] };
-
-  public message = '';
-
-  public times?: Availability;
-
-  public ref?: DocumentReference;
-
-  public id = '';
+export class Request extends Base implements RequestInterface {
+  public status: RequestStatus = 'created';
 
   public constructor(request: Partial<RequestInterface> = {}) {
+    super(request);
     construct<RequestInterface>(this, request);
-  }
-
-  public get aspect(): Aspect {
-    const isTutor = (a: Person) => a.roles.indexOf('tutor') >= 0;
-    const isTutee = (a: Person) => a.roles.indexOf('tutee') >= 0;
-    if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
-    return 'mentoring';
   }
 
   public toJSON(): RequestJSON {
