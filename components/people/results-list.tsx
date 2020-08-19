@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useState } from 'react';
+import { animated, useSpring } from 'react-spring';
 import useSWR, { mutate } from 'swr';
 import { v4 as uuid } from 'uuid';
 import useTranslation from 'next-translate/useTranslation';
@@ -9,18 +10,21 @@ import Result from 'components/search/result';
 import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/list-users';
 
+import { config, width } from './spring-animation';
 import styles from './results-list.module.scss';
 
 export interface ResultsListProps {
   query: UsersQuery;
   setHits: Callback<number>;
   setViewing: Callback<UserJSON | undefined>;
+  open: boolean;
 }
 
 export default memo(function ResultsList({
   query,
   setHits,
   setViewing,
+  open,
 }: ResultsListProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(true);
 
@@ -46,9 +50,10 @@ export default memo(function ResultsList({
       .fill(null)
       .map(() => <Result className={styles.item} loading key={uuid()} />);
   }, [query.hitsPerPage]);
+  const props = useSpring({ config, marginLeft: open ? width : 0 });
 
   return (
-    <div className={styles.wrapper}>
+    <animated.div className={styles.wrapper} style={props}>
       {!searching &&
         (data ? data.users : []).map((user: UserJSON) => (
           <Result
@@ -64,6 +69,6 @@ export default memo(function ResultsList({
         </div>
       )}
       {searching && loadingRows}
-    </div>
+    </animated.div>
   );
 });

@@ -75,6 +75,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
             query={query}
             setHits={setHits}
             setViewing={setViewing}
+            open={filtersOpen}
           />
         </div>
         <Pagination query={query} setQuery={setQuery} hits={hits} />

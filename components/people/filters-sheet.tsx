@@ -12,6 +12,7 @@ import Utils from 'lib/utils';
 import { ListRequestsRes } from 'lib/api/list-requests';
 import { Callback, UsersQuery, RequestJSON } from 'lib/model';
 
+import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';
 
 const canUseDOM = !!(
@@ -70,33 +71,27 @@ export default memo(function FiltersSheet({
   open,
   setOpen,
 }: FiltersSheetProps): JSX.Element {
-  const [ref, { width }] = useMeasure({ polyfill });
-  const props = useSpring({
-    width: open ? width : 0,
-    config: { tension: 250, friction: 32, clamp: true },
-  });
+  const props = useSpring({ config, width: open ? width : 0 });
 
   const { data } = useSWR<ListRequestsRes>('/api/requests');
 
   return (
-    <animated.div style={{ overflow: 'hidden', ...props }}>
-      <div ref={ref} className={styles.wrapper}>
-        <form className={styles.form}>
-          <QueryInputs
-            value={query}
-            onChange={setQuery}
-            className={styles.field}
-            renderToPortal
-            availability
-            subjects
-            langs
-          />
-        </form>
-        {data &&
-          data.requests.map((request: RequestJSON) => (
-            <RequestItem request={request} onClick={() => {}} />
-          ))}
-      </div>
+    <animated.div className={styles.wrapper} style={props}>
+      <form className={styles.form}>
+        <QueryInputs
+          value={query}
+          onChange={setQuery}
+          className={styles.field}
+          renderToPortal
+          availability
+          subjects
+          langs
+        />
+      </form>
+      {data &&
+        data.requests.map((request: RequestJSON) => (
+          <RequestItem request={request} onClick={() => {}} />
+        ))}
     </animated.div>
   );
 });
