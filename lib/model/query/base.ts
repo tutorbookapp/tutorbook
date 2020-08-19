@@ -3,10 +3,7 @@ import url from 'url';
 import { Tag } from '../user';
 import construct from '../construct';
 
-export interface Option<T> {
-  label: string;
-  value: T;
-}
+import { Option } from './shared';
 
 /**
  * The base object just supports pagination, text-based search, and tag filters.
