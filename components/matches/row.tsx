@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import UserSelect from 'components/user-select';
 import SubjectSelect from 'components/subject-select';
 
-import { MatchJSON, Person, Role, TCallback } from 'lib/model';
+import { MatchJSON, Person, Role, TCallback, Option } from 'lib/model';
 
 import styles from './matches.module.scss';
 
@@ -31,17 +31,19 @@ export const MatchRow = memo(
     const shared = { singleLine: true, renderToPortal: true };
     const props = (role: Role) => ({
       ...shared,
-      onChange(ids: string[]) {
+      onSelectedChange(people: Option<string>[]) {
         const old: Person[] = match.people.filter((a) => !hasRole(a, role));
-        const updated: Person[] = ids.map((id: string) => {
+        const updated: Person[] = people.map(({ value: id, label: name }) => {
           let handle: string = uuid();
           const idx = match.people.findIndex(({ id: oldId }) => oldId === id);
           if (idx >= 0) handle = match.people[idx].handle;
-          return { handle, id, roles: [role] };
+          return { id, name, handle, roles: [role] };
         });
         onValueChange([...old, ...updated], 'people');
       },
-      value: match.people.filter((a) => hasRole(a, role)).map((a) => a.id),
+      selected: match.people
+        .filter((a) => hasRole(a, role))
+        .map((a) => ({ value: a.id, label: a.name })),
     });
     // TODO: Fetch all of the person data and use it to directly control the
     // selected options on the `UserSelect` and to constrain the selectable

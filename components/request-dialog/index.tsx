@@ -75,11 +75,15 @@ export default function RequestDialog({
   useEffect(() => {
     const creator: Person = {
       id: currentUser.id,
+      name: currentUser.name,
+      photo: currentUser.photo,
       handle: uuid(),
       roles: [],
     };
     const target: Person = {
       id: user.id,
+      name: user.name,
+      photo: user.photo,
       handle: uuid(),
       roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
     };

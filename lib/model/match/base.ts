@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
-import { Aspect, User } from '../user';
+import { Aspect } from '../user';
 import {
   Availability,
   AvailabilityJSON,
@@ -10,29 +10,11 @@ import {
 } from '../availability';
 import construct from '../construct';
 
+import { Person } from './shared';
+
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
-
-export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
-
-export type UserWithRoles = User & { roles: Role[] };
-
-/**
- * Represents a person that is involved in a request or match. Here, roles are
- * explicitly listed (unlike the `User` object where roles are implied by
- * role-specific properties).
- * @property id - The user's unique Firebase-assigned user ID (note that this
- * contains both lowercase and capital letters which is why it can't be used as
- * a unique anonymous email address handle).
- * @property handle - The user's all-lowercase anonymous email handle.
- * @property roles - The user's roles in this request or match (e.g. `tutor`).
- */
-export interface Person {
-  id: string;
-  handle: string;
-  roles: Role[];
-}
 
 export interface BaseInterface {
   subjects: string[];
@@ -59,7 +41,13 @@ export abstract class Base implements BaseInterface {
 
   public people: Person[] = [];
 
-  public creator: Person = { id: '', handle: uuid(), roles: [] };
+  public creator: Person = {
+    id: '',
+    name: '',
+    photo: '',
+    handle: uuid(),
+    roles: [],
+  };
 
   public message = '';
 

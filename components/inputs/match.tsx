@@ -8,7 +8,7 @@ import UserSelect from 'components/user-select';
 import { TimesSelectProps } from 'components/times-select';
 import SubjectSelect from 'components/subject-select';
 
-import { Availability, Match, Person, Role } from 'lib/model';
+import { Availability, Match, Option, Person, Role } from 'lib/model';
 
 import { InputsConfig, InputsProps } from './types';
 
@@ -16,8 +16,10 @@ const TimesSelect = dynamic<TimesSelectProps>(async () =>
   import('components/times-select')
 );
 
-function getValue(people: Person[], role: Role): string[] {
-  return people.filter((a) => a.roles.indexOf(role) >= 0).map((a) => a.id);
+function getValue(people: Person[], role: Role): Option<string>[] {
+  return people
+    .filter((a) => a.roles.indexOf(role) >= 0)
+    .map((a) => ({ value: a.id, label: a.name }));
 }
 
 type Input =
@@ -44,40 +46,60 @@ export default function MatchInputs({
   message,
 }: InputsProps<Match, Input> & InputsConfig<Input>): JSX.Element {
   const onTutorsChange = useCallback(
-    (ids: string[]) => {
+    (tutors: Option<string>[]) => {
       const people = [
         ...value.people.filter((a) => a.roles.indexOf('tutor') < 0),
-        ...ids.map((id) => ({ id, roles: ['tutor'], handle: uuid() })),
+        ...tutors.map((a) => ({
+          id: a.value,
+          name: a.label,
+          roles: ['tutor'],
+          handle: uuid(),
+        })),
       ] as Person[];
       onChange(new Match({ ...value, people }));
     },
     [onChange, value]
   );
   const onTuteesChange = useCallback(
-    (ids: string[]) => {
+    (tutees: Option<string>[]) => {
       const people = [
         ...value.people.filter((a) => a.roles.indexOf('tutee') < 0),
-        ...ids.map((id) => ({ id, roles: ['tutee'], handle: uuid() })),
+        ...tutees.map((a) => ({
+          id: a.value,
+          name: a.label,
+          roles: ['tutee'],
+          handle: uuid(),
+        })),
       ] as Person[];
       onChange(new Match({ ...value, people }));
     },
     [onChange, value]
   );
   const onMentorsChange = useCallback(
-    (ids: string[]) => {
+    (mentors: Option<string>[]) => {
       const people = [
         ...value.people.filter((a) => a.roles.indexOf('mentor') < 0),
-        ...ids.map((id) => ({ id, roles: ['mentor'], handle: uuid() })),
+        ...mentors.map((a) => ({
+          id: a.value,
+          name: a.label,
+          roles: ['mentor'],
+          handle: uuid(),
+        })),
       ] as Person[];
       onChange(new Match({ ...value, people }));
     },
     [onChange, value]
   );
   const onMenteesChange = useCallback(
-    (ids: string[]) => {
+    (mentees: Option<string>[]) => {
       const people = [
         ...value.people.filter((a) => a.roles.indexOf('mentee') < 0),
-        ...ids.map((id) => ({ id, roles: ['mentee'], handle: uuid() })),
+        ...mentees.map((a) => ({
+          id: a.value,
+          name: a.label,
+          roles: ['mentee'],
+          handle: uuid(),
+        })),
       ] as Person[];
       onChange(new Match({ ...value, people }));
     },
@@ -137,8 +159,8 @@ export default function MatchInputs({
           label={t('common:tutors')}
           onFocused={focusTutors}
           onBlurred={focusNothing}
-          onChange={onTutorsChange}
-          value={tutors}
+          onSelectedChange={onTutorsChange}
+          selected={tutors}
           renderToPortal={renderToPortal}
           className={className}
           outlined
@@ -150,8 +172,8 @@ export default function MatchInputs({
           label={t('common:tutees')}
           onFocused={focusTutees}
           onBlurred={focusNothing}
-          onChange={onTuteesChange}
-          value={tutees}
+          onSelectedChange={onTuteesChange}
+          selected={tutees}
           renderToPortal={renderToPortal}
           className={className}
           outlined
@@ -163,8 +185,8 @@ export default function MatchInputs({
           label={t('common:mentors')}
           onFocused={focusMentors}
           onBlurred={focusNothing}
-          onChange={onMentorsChange}
-          value={mentors}
+          onSelectedChange={onMentorsChange}
+          selected={mentors}
           renderToPortal={renderToPortal}
           className={className}
           outlined
@@ -176,8 +198,8 @@ export default function MatchInputs({
           label={t('common:mentees')}
           onFocused={focusMentees}
           onBlurred={focusNothing}
-          onChange={onMenteesChange}
-          value={mentees}
+          onSelectedChange={onMenteesChange}
+          selected={mentees}
           renderToPortal={renderToPortal}
           className={className}
           outlined
