@@ -13,10 +13,6 @@ $margin: 20px;
   border-top: none;
   cursor: pointer;
 
-  &.disabled {
-    cursor: not-allowed;
-  }
-
   &:first-child {
     border-top: 1px solid map.get(config.$colors, 'accents-2');
     border-top-left-radius: 4px;
@@ -29,6 +25,8 @@ $margin: 20px;
   }
 
   &.loading {
+    cursor: not-allowed;
+
     .img,
     .name,
     .bio {

@@ -1,6 +1,8 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { animated, useSpring } from 'react-spring';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
+import { Ripple } from '@rmwc/ripple';
+import cn from 'classnames';
 import useMeasure from 'react-use-measure';
 import useSWR from 'swr';
 
@@ -11,6 +13,49 @@ import { ListRequestsRes } from 'lib/api/list-requests';
 import { Callback, UsersQuery, RequestJSON } from 'lib/model';
 
 import styles from './filters-sheet.module.scss';
+
+const canUseDOM = !!(
+  typeof window !== 'undefined' &&
+  window.document &&
+  window.document.createElement
+);
+
+interface RequestItemProps {
+  request: RequestJSON;
+  loading?: boolean;
+  onClick: () => void;
+}
+
+function RequestItem({
+  request,
+  loading,
+  onClick,
+}: RequestItemProps): JSX.Element {
+  const bioRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const truncateBio = async () => {
+      if (loading || !canUseDOM) return;
+      const Dotdotdot = (await import('@tutorbook/dotdotdot-js')).default;
+      /* eslint-disable-next-line no-new */
+      if (bioRef.current) new Dotdotdot(bioRef.current, { watch: 'resize' });
+    };
+    void truncateBio();
+  });
+
+  return (
+    <Ripple disabled={loading} onClick={onClick}>
+      <li className={cn(styles.item, { [styles.loading]: loading })}>
+        <div className={styles.name}>
+          {Utils.join(request.people.map((p) => p.id))}
+        </div>
+        <div ref={bioRef} className={styles.bio}>
+          {request.message}
+        </div>
+      </li>
+    </Ripple>
+  );
+}
 
 export interface FiltersSheetProps {
   query: UsersQuery;
@@ -49,14 +94,7 @@ export default memo(function FiltersSheet({
         </form>
         {data &&
           data.requests.map((request: RequestJSON) => (
-            <div>
-              <h4>{`ID: ${request.id}`}</h4>
-              <p>{`Subjects: ${Utils.join(request.subjects)}`}</p>
-              <p>{`People IDs: ${Utils.join(
-                request.people.map((p) => p.id)
-              )}`}</p>
-              <p>{`Message: ${request.message}`}</p>
-            </div>
+            <RequestItem request={request} onClick={() => {}} />
           ))}
       </div>
     </animated.div>
