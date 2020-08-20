@@ -1,5 +1,4 @@
-import { Change, EventContext } from 'firebase-functions';
-import admin from 'firebase-admin';
+import { Change } from 'firebase-functions';
 
 import { DocumentSnapshot, Person } from './types';
 
@@ -10,11 +9,10 @@ import { DocumentSnapshot, Person } from './types';
  * hard to work with (and I don't like data duplication).
  */
 export default async function addPeopleIds(
-  change: Change<DocumentSnapshot>,
-  context: EventContext
+  change: Change<DocumentSnapshot>
 ): Promise<void> {
   if (!change.after.exists) return;
   const resource = change.after.data() as { people: Person[] };
-  const peopleIds = resource.people.map((person: Person) => person.id);
-  await change.after.ref.update({ ...resource, peopleIds });
+  const peopleIds = new Set(resource.people.map((person: Person) => person.id));
+  await change.after.ref.update({ ...resource, peopleIds: [...peopleIds] });
 }
