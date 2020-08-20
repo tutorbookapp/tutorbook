@@ -12,7 +12,8 @@ export default async function addPeopleIds(
   change: Change<DocumentSnapshot>
 ): Promise<void> {
   if (!change.after.exists) return;
-  const resource = change.after.data() as { people: Person[] };
+  const resource = change.after.data() as { people: Person[]; creator: Person };
   const peopleIds = new Set(resource.people.map((person: Person) => person.id));
+  peopleIds.add(resource.creator.id);
   await change.after.ref.update({ ...resource, peopleIds: [...peopleIds] });
 }
