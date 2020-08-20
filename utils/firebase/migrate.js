@@ -141,26 +141,25 @@ const users = async () => {
  * known errors with that GCP Function (e.g. when I forgot to update the Algolia
  * API keys).
  */
-const triggerUsersUpdate = async () => {
-  const users = (await db.collection('users').get()).docs;
+const triggerUpdate = async (collectionId = 'users') => {
+  const resources = (await db.collection(collectionId).get()).docs;
   await Promise.all(
-    users.map(async (user) => {
-      const original = user.data();
-      const updated = { ...original, bio: original.bio + ' ' };
-      await user.ref.update(updated);
-      await user.ref.update(original);
+    resources.map(async (resource) => {
+      const original = resource.data();
+      await resource.ref.set({ ...original, temp: '' });
+      delete original.temp; // Just in case. This shouldn't be in use anyways.
+      await resource.ref.set(original);
     })
   );
 };
 
-const triggerMatchesUpdate = async () => {
-  const matches = (await db.collection('matches').get()).docs;
+const removeTemp = async (collectionId = 'users') => {
+  const resources = (await db.collection(collectionId).get()).docs;
   await Promise.all(
-    matches.map(async (match) => {
-      const original = match.data();
-      const updated = { ...original, message: original.message + ' ' };
-      await match.ref.update(updated);
-      await match.ref.update(original);
+    resources.map(async (resource) => {
+      const original = resource.data();
+      delete original.temp;
+      await resource.ref.set(original);
     })
   );
 };
@@ -183,4 +182,16 @@ const moveApptsToMatches = async () => {
   );
 };
 
-moveApptsToMatches();
+const renameAttendeesToPeople = async () => {
+  const matches = (await db.collection('matches').get()).docs;
+  await Promise.all(
+    matches.map(async (match) => {
+      const original = match.data();
+      const people = original.attendees;
+      delete original.attendees;
+      await match.ref.set({ ...original, people });
+    })
+  );
+};
+
+triggerUpdate('users');
