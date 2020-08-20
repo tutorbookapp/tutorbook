@@ -30,18 +30,27 @@ export default async function syncUserName(
   if (change.before.exists) {
     // If the `name` and `photo` is unchanged, we don't have to do anything.
     const old = change.before.data() as Pick<Person, 'id' | 'name' | 'photo'>;
-    if (old.name === user.name && old.photo === user.photo) return;
+    if (old.name === user.name && old.photo === user.photo) {
+      console.log(`Name (old: ${old.name}, new: ${user.name}) matched.`);
+      console.log(`Photo (old: ${old.photo}, new: ${user.photo}) matched.`);
+      return;
+    }
   }
 
-  const firestore = admin.firestore();
-  firestore.settings({ ignoreUndefinedProperties: true });
-  const db = firestore.collection('partitions').doc(context.params.partition);
+  const db = admin
+    .firestore()
+    .collection('partitions')
+    .doc(context.params.partition);
 
   async function updateResource(resource: DocumentSnapshot): Promise<void> {
     const old = resource.data() as { people: Person[]; creator: Person };
     const updated = { ...old };
     if (user.id === old.creator.id) {
-      updated.creator = { ...old.creator, name: user.name, photo: user.photo };
+      updated.creator = {
+        ...old.creator,
+        name: user.name || '',
+        photo: user.photo || '',
+      };
     }
     const idx = old.people.findIndex(({ id }) => id === user.id);
     if (idx < 0 && user.id !== old.creator.id) {
@@ -51,7 +60,7 @@ export default async function syncUserName(
     } else if (idx >= 0) {
       updated.people = [
         ...old.people.slice(0, idx),
-        { ...old.people[idx], name: user.name, photo: user.photo },
+        { ...old.people[idx], name: user.name || '', photo: user.photo || '' },
         ...old.people.slice(idx + 1),
       ];
     }
