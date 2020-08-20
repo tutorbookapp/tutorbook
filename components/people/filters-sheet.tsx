@@ -32,21 +32,23 @@ export default memo(function FiltersSheet({
 
   return (
     <animated.div className={styles.wrapper} style={props}>
-      <form className={styles.form}>
-        <QueryInputs
-          value={query}
-          onChange={setQuery}
-          className={styles.field}
-          renderToPortal
-          availability
-          subjects
-          langs
-        />
-      </form>
-      {data &&
-        data.requests.map((request: RequestJSON) => (
-          <RequestItem request={request} onClick={() => {}} />
-        ))}
+      <div className={styles.content} style={{ width }}>
+        <form className={styles.form}>
+          <QueryInputs
+            value={query}
+            onChange={setQuery}
+            className={styles.field}
+            renderToPortal
+            availability
+            subjects
+            langs
+          />
+        </form>
+        {data &&
+          data.requests.map((request: RequestJSON) => (
+            <RequestItem request={request} onClick={() => {}} />
+          ))}
+      </div>
     </animated.div>
   );
 });
