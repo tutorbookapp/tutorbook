@@ -81,6 +81,8 @@ export interface UserDialogProps {
   initialData?: UserJSON;
   initialPage?: Page;
   onClosed: () => void;
+  matching: RequestJSON[];
+  setMatching: Callback<RequestJSON[]>;
 }
 
 // This wrapper component merely manages the navigation transitions between it's
@@ -91,6 +93,8 @@ export default function UserDialog({
   setQuery,
   initialData = new User().toJSON(),
   initialPage = 'display',
+  matching,
+  setMatching,
 }: UserDialogProps): JSX.Element {
   // Temporary ID that is used to locally mutate SWR data (without calling API).
   // We have to use a stateful variable for our ID to support user creation.
@@ -220,7 +224,11 @@ export default function UserDialog({
         className={cn(styles.page, { [styles.active]: active === 'request' })}
         ref={requestRef as RefObject<HTMLDivElement>}
       >
-        <RequestPage value={user} openDisplay={openDisplay} />
+        <RequestPage
+          value={user}
+          openDisplay={openDisplay}
+          matching={matching}
+        />
       </div>
     </Dialog>
   );

@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use 'styles/config';
 
 @mixin wrapper {
@@ -31,4 +32,8 @@
   textarea {
     resize: vertical;
   }
+}
+
+@mixin divider {
+  border-top: 1px solid map.get(config.$colors, 'accents-2');
 }

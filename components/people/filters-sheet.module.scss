@@ -1,5 +1,7 @@
 @use 'sass:map';
+@use 'styles/typography';
 @use 'styles/query-form';
+@use 'styles/common';
 @use 'styles/config';
 
 .wrapper {
@@ -14,7 +16,23 @@
   @include query-form.core-styles(true);
 
   .content {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     height: 100%;
+
+    .form {
+      @include common.divider;
+      padding-top: 32px;
+    }
+
+    .header {
+      @include typography.typography('subtitle1');
+      padding: 24px 16px 16px;
+      margin: 0;
+
+      &:first-child {
+        border-top: none;
+      }
+    }
   }
 }

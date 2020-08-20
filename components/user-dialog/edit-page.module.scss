@@ -25,7 +25,7 @@
     overflow: auto;
 
     .divider {
-      border-top: 1px solid map.get(config.$colors, 'accents-2');
+      @include common.divider;
     }
 
     .inputs {

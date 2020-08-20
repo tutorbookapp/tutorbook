@@ -2,7 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 
 import UserDialog from 'components/user-dialog';
 
-import { Org, UserJSON, UsersQuery } from 'lib/model';
+import {
+  Availability,
+  Option,
+  Org,
+  RequestJSON,
+  UserJSON,
+  UsersQuery,
+} from 'lib/model';
 
 import FiltersSheet from './filters-sheet';
 import Header from './header';
@@ -38,8 +45,9 @@ export default function People({ org }: PeopleProps): JSX.Element {
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
   const [viewing, setViewing] = useState<UserJSON>();
+  const [matching, setMatching] = useState<RequestJSON[]>([]);
 
-  const onClosed = useCallback(() => setViewing(undefined), []);
+  const onViewingClosed = useCallback(() => setViewing(undefined), []);
 
   useEffect(() => {
     setQuery(
@@ -50,15 +58,36 @@ export default function People({ org }: PeopleProps): JSX.Element {
         })
     );
   }, [org]);
+  useEffect(() => {
+    const subjects = matching.reduce((acc, cur) => {
+      cur.subjects.forEach((subject: string) => acc.add(subject));
+      return acc;
+    }, new Set());
+    const availability = matching.reduce((a, c) => {
+      if (!c.times) return a;
+      return new Availability(...a, ...Availability.fromJSON(c.times));
+    }, new Availability());
+    setQuery(
+      (prev: UsersQuery) =>
+        new UsersQuery({
+          ...prev,
+          availability,
+          subjects: [...subjects].map((s) => ({ label: s, value: s })),
+          page: 0,
+        })
+    );
+  }, [matching]);
 
   return (
     <>
       {viewing && (
         <UserDialog
-          onClosed={onClosed}
+          onClosed={onViewingClosed}
           initialData={viewing}
           initialPage='display'
           setQuery={setQuery}
+          matching={matching}
+          setMatching={setMatching}
         />
       )}
       <Header orgId={org.id} orgName={org.name} />
@@ -66,16 +95,17 @@ export default function People({ org }: PeopleProps): JSX.Element {
         <SearchBar query={query} setQuery={setQuery} setOpen={setFiltersOpen} />
         <div className={styles.content}>
           <FiltersSheet
+            open={filtersOpen}
             query={query}
             setQuery={setQuery}
-            open={filtersOpen}
-            setOpen={setFiltersOpen}
+            matching={matching}
+            setMatching={setMatching}
           />
           <ResultsList
+            open={filtersOpen}
             query={query}
             setHits={setHits}
             setViewing={setViewing}
-            open={filtersOpen}
           />
         </div>
         <Pagination query={query} setQuery={setQuery} hits={hits} />

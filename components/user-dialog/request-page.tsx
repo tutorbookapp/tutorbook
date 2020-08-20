@@ -12,17 +12,28 @@ import Button from 'components/button';
 
 import { useUser } from 'lib/account';
 import Utils from 'lib/utils';
-import { ApiError, Match, MatchJSON, UserJSON } from 'lib/model';
+import {
+  Availability,
+  ApiError,
+  TimeslotJSON,
+  Match,
+  MatchJSON,
+  RequestJSON,
+  UserJSON,
+  Person,
+} from 'lib/model';
 
 import styles from './request-page.module.scss';
 
 export interface RequestPageProps {
   value: UserJSON;
+  matching: RequestJSON[];
   openDisplay: () => Promise<void>;
 }
 
 export default memo(function RequestPage({
   value,
+  matching,
   openDisplay,
 }: RequestPageProps): JSX.Element {
   const { user } = useUser();
@@ -36,14 +47,43 @@ export default memo(function RequestPage({
   // the labels (i.e. the names) of each user. Right now, we're running extra
   // fetch requests to get those names (when we already have them here). Perhaps
   // just add a `name` property to the `Person` object and get it over with.
-  const [match, setMatch] = useState<Match>(
-    new Match({
-      people: [
-        { id: value.id, roles: ['tutor'], handle: uuid() },
-        { id: user.id, roles: ['tutee'], handle: uuid() },
-      ],
-    })
-  );
+  const [match, setMatch] = useState<Match>(() => {
+    const people: Person[] = [
+      {
+        id: value.id,
+        name: value.name,
+        photo: value.photo,
+        roles: ['tutor'],
+        handle: uuid(),
+      },
+    ];
+    const subjects: Set<string> = new Set();
+    const times: TimeslotJSON[] = [];
+    let message = '';
+    matching.forEach((m: RequestJSON) => {
+      m.people.forEach((person: Person) => {
+        if (people.findIndex((p) => p.id === person.id) >= 0) return;
+        people.push(person);
+      });
+      m.subjects.forEach((subject: string) => subjects.add(subject));
+      if (m.times) m.times.forEach((time: TimeslotJSON) => times.push(time));
+      message +=
+        !m.message.endsWith(' ') && !message ? `${m.message} ` : m.message;
+    });
+    return new Match({
+      people,
+      message,
+      subjects: [...subjects],
+      times: Availability.fromJSON(times),
+      creator: {
+        id: user.id,
+        name: user.name,
+        photo: user.photo,
+        roles: [],
+        handle: uuid(),
+      },
+    });
+  });
 
   const onSubmit = useCallback(
     async (event: FormEvent) => {

@@ -17,7 +17,7 @@ $filters-height: 56px;
     align-items: center;
 
     .filtersButton {
-      margin-left: 12px;
+      margin-left: ($filters-height - 48px) / 2;
     }
   }
 
