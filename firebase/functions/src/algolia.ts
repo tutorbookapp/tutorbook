@@ -4,16 +4,7 @@ import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 import to from 'await-to-js';
 import admin from 'firebase-admin';
 
-/**
- * We don't have to provide any authentication for this because it's already
- * included as environment variables in the GCP function Node.js runtime.
- * @see {@link https://bit.ly/3eXZeOz}
- */
-admin.initializeApp();
-
-type DocumentReference = admin.firestore.DocumentReference;
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type Timestamp = admin.firestore.Timestamp;
+import { DocumentReference, DocumentSnapshot, Timestamp } from './types';
 
 const client: SearchClient = algoliasearch(
   (config().algolia as Record<'id' | 'key', string>).id,
