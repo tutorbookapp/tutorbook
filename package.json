@@ -99,7 +99,6 @@
     "@sendgrid/client": "^7.2.2",
     "@sendgrid/helpers": "^7.2.0",
     "@sendgrid/mail": "^7.2.2",
-    "@tutorbook/dotdotdot-js": "^4.0.12",
     "@wellyshen/use-web-animations": "^0.5.1",
     "accept-language-parser": "^1.5.0",
     "algoliasearch": "^4.3.1",

@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useRef } from 'react';
+import { SyntheticEvent, useEffect } from 'react';
 import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 
@@ -16,12 +16,6 @@ interface Props {
   avatar?: boolean;
 }
 
-const canUseDOM = !!(
-  typeof window !== 'undefined' &&
-  window.document &&
-  window.document.createElement
-);
-
 export default function Result({
   user,
   className,
@@ -29,18 +23,6 @@ export default function Result({
   loading,
   avatar = true,
 }: Props): JSX.Element {
-  const bioRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const truncateBio = async () => {
-      if (loading || !canUseDOM) return;
-      const Dotdotdot = (await import('@tutorbook/dotdotdot-js')).default;
-      /* eslint-disable-next-line no-new */
-      if (bioRef.current) new Dotdotdot(bioRef.current, { watch: 'resize' });
-    };
-    void truncateBio();
-  });
-
   return (
     <Ripple disabled={loading} onClick={onClick}>
       <li
@@ -55,9 +37,7 @@ export default function Result({
           </div>
         )}
         <div className={styles.name}>{user && user.name}</div>
-        <div ref={bioRef} className={styles.bio}>
-          {user && user.bio}
-        </div>
+        <div className={styles.bio}>{user && user.bio}</div>
       </li>
     </Ripple>
   );

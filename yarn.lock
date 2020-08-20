@@ -3256,13 +3256,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tutorbook/dotdotdot-js@npm:^4.0.12":
-  version: 4.0.12
-  resolution: "@tutorbook/dotdotdot-js@npm:4.0.12"
-  checksum: f410b84330f8eba3fab3267b20f80645bd8a67cb8dc4c63a55133f33756f2c4f305c41ca9de6914c87f0472e8b920357fa1de73c878487353431f48eafa1ef69
-  languageName: node
-  linkType: hard
-
 "@types/accept-language-parser@npm:^1.5.1":
   version: 1.5.1
   resolution: "@types/accept-language-parser@npm:1.5.1"
@@ -14558,7 +14551,6 @@ fsevents@^1.2.7:
     "@sendgrid/client": ^7.2.2
     "@sendgrid/helpers": ^7.2.0
     "@sendgrid/mail": ^7.2.2
-    "@tutorbook/dotdotdot-js": ^4.0.12
     "@types/accept-language-parser": ^1.5.1
     "@types/jest": ^25.2.3
     "@types/node": ^14.0.26

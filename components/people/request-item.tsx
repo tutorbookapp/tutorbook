@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { ChipSet, Chip } from '@rmwc/chip';
 import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
@@ -8,12 +8,6 @@ import Utils from 'lib/utils';
 import { RequestJSON } from 'lib/model';
 
 import styles from './request-item.module.scss';
-
-const canUseDOM = !!(
-  typeof window !== 'undefined' &&
-  window.document &&
-  window.document.createElement
-);
 
 export interface RequestItemProps {
   request: RequestJSON;
@@ -59,27 +53,13 @@ export default function RequestItem({
       'Scarlet and Paul both seem to be struggling with arrays and other data models. It might help to give her a visualization of what those data models could represent in real life.',
   };
 
-  const bioRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const truncateBio = async () => {
-      if (loading || !canUseDOM) return;
-      const Dotdotdot = (await import('@tutorbook/dotdotdot-js')).default;
-      /* eslint-disable-next-line no-new */
-      if (bioRef.current) new Dotdotdot(bioRef.current, { watch: 'resize' });
-    };
-    void truncateBio();
-  });
-
   return (
     <Ripple disabled={loading} onClick={onClick}>
       <li className={cn(styles.item, { [styles.loading]: loading })}>
         <div className={styles.name}>
           {Utils.join(request.people.map((p) => p.name))}
         </div>
-        <div ref={bioRef} className={styles.bio}>
-          {request.message}
-        </div>
+        <div className={styles.bio}>{request.message}</div>
         <div className={styles.subjectsScroller}>
           <ChipSet className={styles.subjects}>
             {request.subjects.map((subject: string) => (
