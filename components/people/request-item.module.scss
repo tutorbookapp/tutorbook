@@ -4,11 +4,11 @@
 @use 'styles/loader';
 @use '@material/chips/_index.scss' as chips;
 
-$height: 140px;
+$height: 160px;
 $space: 20px;
 
 .item {
-  height: $height;
+  max-height: $height;
   border-top: 1px solid map.get(config.$colors, 'accents-2');
   cursor: pointer;
   padding: $space;
