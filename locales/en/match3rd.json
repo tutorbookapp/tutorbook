@@ -5,6 +5,6 @@
   "times": "When do you want to meet?",
   "message": "What specifically do you need help with?",
   "message-placeholder": "Ex: I could really use your help with my {{subject}} project...",
-  "send-btn": "Send Request",
-  "signup-btn": "Signup and Send"
+  "send-btn": "Send request",
+  "signup-btn": "Signup and send"
 }

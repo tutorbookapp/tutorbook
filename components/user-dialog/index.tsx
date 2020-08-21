@@ -1,30 +1,28 @@
-import {
-  RefObject,
-  useCallback,
-  useMemo,
-  useLayoutEffect,
-  useState,
-} from 'react';
+import { RefObject, useCallback, useLayoutEffect, useState } from 'react';
 import { Dialog } from '@rmwc/dialog';
 import { v4 as uuid } from 'uuid';
-import axios from 'axios';
-import to from 'await-to-js';
 import cn from 'classnames';
 import useSWR, { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 import useWebAnimations from '@wellyshen/use-web-animations';
 
-import { RequestJSON, FCallback, User, UserJSON, UsersQuery } from 'lib/model';
-import { ListRequestsRes } from 'lib/api/list-requests';
-import { useUser } from 'lib/account';
+import {
+  Callback,
+  FCallback,
+  RequestJSON,
+  User,
+  UserJSON,
+  UsersQuery,
+} from 'lib/model';
 import { usePrevious } from 'lib/hooks';
 
 import DisplayPage from './display-page';
 import EditPage from './edit-page';
 import MatchPage from './match-page';
+import RequestPage from './request-page';
 import styles from './user-dialog.module.scss';
 
-type Page = 'edit' | 'display' | 'match';
+type Page = 'edit' | 'display' | 'match' | 'request';
 
 // Animation durations and easing from the MWC spec and Sass implementation.
 // @see {@link https://material.io/design/motion/the-motion-system.html#shared-axis}
@@ -112,6 +110,7 @@ export default function UserDialog({
   const { ref: displayRef, animate: animateDisplay } = useWebAnimations();
   const { ref: editRef, animate: animateEdit } = useWebAnimations();
   const { ref: matchRef, animate: animateMatch } = useWebAnimations();
+  const { ref: requestRef, animate: animateRequest } = useWebAnimations();
 
   const [active, setActive] = useState<Page>(initialPage);
   const prevActive = usePrevious<Page>(active);
@@ -130,13 +129,25 @@ export default function UserDialog({
         animateMatch(incomingFadeIn);
         animateDisplay(outgoingFadeIn);
         break;
+      case 'request':
+        animateRequest(incomingFadeIn);
+        animateDisplay(outgoingFadeIn);
+        break;
       default:
         animateDisplay(incomingFadeOut);
         if (prevActive === 'edit') animateEdit(outgoingFadeOut);
         if (prevActive === 'match') animateMatch(outgoingFadeOut);
+        if (prevActive === 'request') animateRequest(outgoingFadeOut);
         break;
     }
-  }, [active, prevActive, animateDisplay, animateEdit, animateMatch]);
+  }, [
+    active,
+    prevActive,
+    animateDisplay,
+    animateEdit,
+    animateMatch,
+    animateRequest,
+  ]);
 
   const openEdit = useCallback(() => {
     setActive('edit');
@@ -146,55 +157,14 @@ export default function UserDialog({
     setActive('match');
     return new Promise<void>((resolve) => setTimeout(resolve, duration));
   }, []);
+  const openRequest = useCallback(() => {
+    setActive('request');
+    return new Promise<void>((resolve) => setTimeout(resolve, duration));
+  }, []);
   const openDisplay = useCallback(() => {
     setActive('display');
     return new Promise<void>((resolve) => setTimeout(resolve, duration));
   }, []);
-
-  const { user: currentUser } = useUser();
-  const openRequest = useCallback(async () => {
-    const request: RequestJSON = {
-      id: `temp-${uuid()}`,
-      subjects: user.tutoring.searches,
-      people: [{ id: user.id, roles: ['tutee'], handle: uuid() }],
-      creator: { id: currentUser.id, roles: [], handle: uuid() },
-      message: 'Request auto created by matching queue.',
-    };
-    /* eslint-disable @typescript-eslint/require-await */
-    await mutate(
-      '/api/requests',
-      async (res?: ListRequestsRes) => {
-        return res
-          ? { hits: res.hits + 1, requests: [...res.requests, request] }
-          : { hits: 1, requests: [request] };
-      },
-      false
-    );
-    onClosed();
-    const { data: created } = await axios.post<RequestJSON>(
-      '/api/requests',
-      request
-    );
-    await mutate(
-      '/api/requests',
-      async (res?: ListRequestsRes) => {
-        if (!res) return { hits: 1, requests: [created] };
-        const idx = res.requests.findIndex((r) => r.id === request.id);
-        if (idx < 0)
-          return { hits: res.hits + 1, requests: [...res.requests, created] };
-        return {
-          hits: res.hits,
-          requests: [
-            ...res.requests.slice(0, idx),
-            created,
-            ...res.requests.slice(idx + 1),
-          ],
-        };
-      },
-      false
-    );
-    /* eslint-enable @typescript-eslint/require-await */
-  }, [onClosed, user, currentUser]);
 
   const [open, setOpen] = useState<boolean>(true);
   const onDisplayClosed = useCallback(() => setOpen(false), []);
@@ -225,6 +195,12 @@ export default function UserDialog({
         ref={matchRef as RefObject<HTMLDivElement>}
       >
         <MatchPage value={user} openDisplay={openDisplay} matching={matching} />
+      </div>
+      <div
+        className={cn(styles.page, { [styles.active]: active === 'request' })}
+        ref={requestRef as RefObject<HTMLDivElement>}
+      >
+        <RequestPage value={user} openDisplay={openDisplay} />
       </div>
     </Dialog>
   );

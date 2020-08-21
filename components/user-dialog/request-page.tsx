@@ -19,7 +19,6 @@ import { TimesSelectProps } from 'components/times-select';
 import Loader from 'components/loader';
 import Button from 'components/button';
 import Result from 'components/search/result';
-import UserSelect, { UserOption } from 'components/user-select';
 import SubjectSelect, { SubjectOption } from 'components/subject-select';
 
 import { useUser } from 'lib/account';
@@ -28,9 +27,8 @@ import {
   ApiError,
   Aspect,
   Availability,
-  Match,
-  MatchJSON,
   Person,
+  Request,
   RequestJSON,
   User,
   UserJSON,
@@ -42,17 +40,15 @@ const TimesSelect = dynamic<TimesSelectProps>(async () =>
   import('components/times-select')
 );
 
-export interface MatchPageProps {
+export interface RequestPageProps {
   value: UserJSON;
-  matching: RequestJSON[];
   openDisplay: () => Promise<void>;
 }
 
-export default memo(function MatchPage({
+export default memo(function RequestPage({
   value,
-  matching,
   openDisplay,
-}: MatchPageProps): JSX.Element {
+}: RequestPageProps): JSX.Element {
   const { user } = useUser();
   const { t } = useTranslation();
 
@@ -61,31 +57,7 @@ export default memo(function MatchPage({
   const [error, setError] = useState<string>('');
 
   const aspects = useRef<Set<Aspect>>(new Set());
-  const [students, setStudents] = useState<UserOption[]>(() => {
-    const selected: UserOption[] = [];
-    matching.forEach((request: RequestJSON) => {
-      request.people.forEach((person: Person) => {
-        if (person.roles.includes('tutor') || person.roles.includes('tutee'))
-          aspects.current.add('tutoring');
-        if (person.roles.includes('mentor') || person.roles.includes('mentee'))
-          aspects.current.add('mentoring');
-        if (selected.findIndex((s) => s.value === person.id) < 0)
-          selected.push({
-            value: person.id,
-            label: person.name || person.id,
-            photo: person.photo,
-          });
-      });
-    });
-    return selected;
-  });
-  const [subjects, setSubjects] = useState<SubjectOption[]>(() => {
-    const selected: Set<string> = new Set();
-    matching.forEach((request: RequestJSON) => {
-      request.subjects.forEach((subject: string) => selected.add(subject));
-    });
-    return [...selected].map((s) => ({ label: s, value: s }));
-  });
+  const [subjects, setSubjects] = useState<SubjectOption[]>([]);
   const [times, setTimes] = useState<Availability>(new Availability());
   const [message, setMessage] = useState<string>('');
 
@@ -99,36 +71,21 @@ export default memo(function MatchPage({
     });
   }, [subjects]);
 
-  const match = useMemo(() => {
+  const request = useMemo(() => {
     const asps: Aspect[] = [...aspects.current];
-    const target: Person = {
+    const person: Person = {
       id: value.id,
       name: value.name,
       photo: value.photo,
       roles: [],
       handle: uuid(),
     };
-    if (asps.includes('tutoring')) target.roles.push('tutor');
-    if (asps.includes('mentoring')) target.roles.push('mentor');
-    const people: Person[] = [
-      target,
-      ...students.map((s: UserOption) => {
-        const student: Person = {
-          id: s.value,
-          name: s.label,
-          photo: s.photo || '',
-          roles: [],
-          handle: uuid(),
-        };
-        if (asps.includes('tutoring')) student.roles.push('tutee');
-        if (asps.includes('mentoring')) student.roles.push('mentee');
-        return student;
-      }),
-    ];
-    return new Match({
+    if (asps.includes('tutoring')) person.roles.push('tutor');
+    if (asps.includes('mentoring')) person.roles.push('mentor');
+    return new Request({
       times,
-      people,
       message,
+      people: [person],
       subjects: subjects.map((s) => s.value),
       creator: {
         id: user.id,
@@ -137,33 +94,34 @@ export default memo(function MatchPage({
         roles: [],
         handle: uuid(),
       },
+      status: 'queued',
     });
-  }, [value, user, students, subjects, times, message]);
+  }, [value, user, subjects, times, message]);
 
   const onSubmit = useCallback(
     async (event: FormEvent) => {
       event.preventDefault();
       setLoading(true);
-      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<ApiError>>(
-        axios.post('/api/matches', match.toJSON())
+      const [err] = await to<AxiosResponse<RequestJSON>, AxiosError<ApiError>>(
+        axios.post('/api/requests', request.toJSON())
       );
       if (err && err.response) {
         setLoading(false);
         setError(
-          `An error occurred while creating your match. ${Utils.period(
+          `An error occurred while creating your request. ${Utils.period(
             err.response.data.msg || err.message
           )}`
         );
       } else if (err && err.request) {
         setLoading(false);
         setError(
-          'An error occurred while creating your match. Please check your ' +
+          'An error occurred while creating your request. Please check your ' +
             'Internet connection and try again.'
         );
       } else if (err) {
         setLoading(false);
         setError(
-          `An error occurred while creating your match. ${Utils.period(
+          `An error occurred while creating your request. ${Utils.period(
             err.message
           )} Please check your Internet connection and try again.`
         );
@@ -171,7 +129,7 @@ export default memo(function MatchPage({
         setChecked(true);
       }
     },
-    [match]
+    [request]
   );
 
   return (
@@ -183,19 +141,10 @@ export default memo(function MatchPage({
       <div className={styles.content}>
         <Result user={User.fromJSON(value)} className={styles.display} />
         <form className={styles.form} onSubmit={onSubmit}>
-          <UserSelect
-            required
-            label={t('common:students')}
-            onSelectedChange={setStudents}
-            selected={students}
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
           <SubjectSelect
             required
             autoOpenMenu
-            options={[...value.tutoring.subjects, ...value.mentoring.subjects]}
+            options={[...value.tutoring.searches, ...value.mentoring.searches]}
             label={t('common:subjects')}
             onSelectedChange={setSubjects}
             selected={subjects}
@@ -218,10 +167,9 @@ export default memo(function MatchPage({
             characterCount
             maxLength={700}
             label={t('common:message')}
-            placeholder={t('match:message-placeholder', {
-              student: students[0] ? students[0].label.split(' ')[0] : 'Nick',
+            placeholder={t('request:message-placeholder', {
+              student: value.name.split(' ')[0],
               subject: subjects[0] ? subjects[0].label : 'Computer Science',
-              tutor: value.name.split(' ')[0],
             })}
             onChange={onMessageChange}
             value={message}
@@ -230,7 +178,7 @@ export default memo(function MatchPage({
           />
           <Button
             className={styles.btn}
-            label={t('match:create-btn')}
+            label={t('request:create-btn')}
             disabled={loading}
             raised
             arrow
