@@ -54,7 +54,7 @@ export default function LangSelect({
 
   // Convert a language search hit to an option (gets the label in the current
   // locale/language).
-  const { lang: locale } = useTranslation();
+  const { t, lang: locale } = useTranslation();
   const langHitToOption = useCallback(
     (lang: LangHit) => {
       cache.current[lang.objectID] = lang;
@@ -116,6 +116,7 @@ export default function LangSelect({
       value={selectedOptions}
       onChange={onSelectedOptionsChange}
       getSuggestions={getSuggestions}
+      noResultsMessage={t('common:no-langs')}
     />
   );
 }

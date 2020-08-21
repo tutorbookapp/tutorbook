@@ -1,6 +1,7 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import useTranslation from 'next-translate/useTranslation';
 import equal from 'fast-deep-equal';
 
 import Select, { SelectControllerProps } from 'components/select';
@@ -123,12 +124,15 @@ export default function SubjectSelect({
     });
   }, [selected]);
 
+  const { t } = useTranslation();
+
   return (
     <Select
       {...props}
       value={selectedOptions}
       onChange={onSelectedOptionsChange}
       getSuggestions={getSuggestions}
+      noResultsMessage={t('common:no-subjects')}
     />
   );
 }

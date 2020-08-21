@@ -1,11 +1,12 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import equal from 'fast-deep-equal';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
 
-import { useUser } from 'lib/account';
 import { Option, User, UserJSON, UsersQuery } from 'lib/model';
+import { useUser } from 'lib/account';
 
 export interface UserOption extends Option<string> {
   photo?: string;
@@ -124,12 +125,15 @@ export default function UserSelect({
     });
   }, [selected]);
 
+  const { t } = useTranslation();
+
   return (
     <Select
       {...props}
       value={selectedOptions}
       onChange={onSelectedOptionsChange}
       getSuggestions={getSuggestions}
+      noResultsMessage={t('common:no-users')}
     />
   );
 }

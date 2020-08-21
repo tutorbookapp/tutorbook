@@ -34,6 +34,7 @@ interface UniqueSelectProps<T, O extends Option<T> = Option<T>> {
   value: O[];
   onChange: TCallback<O[]>;
   getSuggestions: (query: string) => Promise<O[]>;
+  noResultsMessage: string;
   renderToPortal?: boolean;
   autoOpenMenu?: boolean;
   singleLine?: boolean;
@@ -307,10 +308,10 @@ export default class Select<
 
   private renderSuggestionMenuItems(): JSX.Element[] | JSX.Element {
     const { errored, suggestions } = this.state;
-    const { value } = this.props;
+    const { value, noResultsMessage } = this.props;
     const noResults: JSX.Element = (
       <div className={styles.noResults}>
-        {errored ? 'Errored, try again' : 'No results'}
+        {errored ? 'Errored, try again' : noResultsMessage}
       </div>
     );
     const suggestionMenuItems: JSX.Element[] = [];
