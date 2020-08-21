@@ -11,7 +11,6 @@ import { TabHeader } from 'components/navigation';
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 
-import match from 'locales/en/match.json';
 import matches from 'locales/en/matches.json';
 import common from 'locales/en/common.json';
 
@@ -70,4 +69,4 @@ function MatchesPage(): JSX.Element {
   );
 }
 
-export default withI18n(MatchesPage, { common, matches, match });
+export default withI18n(MatchesPage, { common, matches });

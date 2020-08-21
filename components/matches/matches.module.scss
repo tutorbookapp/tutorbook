@@ -74,12 +74,6 @@ $filters-height: 56px;
   width: 100%;
   border-radius: 0;
 
-  :global(.mdc-data-table__row:not(.mdc-data-table__row--selected):hover)
-    .name
-    :global(.mdc-text-field) {
-    background-color: rgba(0, 0, 0, 0.04);
-  }
-
   :global(.mdc-data-table__cell),
   :global(.mdc-data-table__header-cell) {
     padding: 0 16px;
@@ -143,37 +137,16 @@ $filters-height: 56px;
       padding-right: 0;
     }
 
-    &.name {
-      min-width: 150px;
-      position: sticky;
-      top: auto;
-      left: 0;
-      background-color: map.get(config.$colors, 'background');
-      box-shadow: 1px 0 #e0e0e0;
-      z-index: 1;
-
-      @-moz-document url-prefix() {
-        box-shadow: 1px 0 #e0e0e0, 0 -1px #e0e0e0;
-      }
-    }
-
-    &.bio,
-    &.message,
-    &.availability {
+    &.people {
       min-width: 500px;
     }
 
-    &.email {
-      min-width: 200px;
+    &.subjects {
+      min-width: 300px;
     }
 
-    &.phone {
-      min-width: 150px;
-    }
-
-    &.availability :global(.mdc-text-field) {
-      display: block;
-      padding: 0;
+    &.message {
+      min-width: 900px;
     }
   }
 }

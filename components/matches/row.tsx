@@ -1,79 +1,34 @@
 import { DataTableCell, DataTableRow } from '@rmwc/data-table';
-import { memo, useCallback } from 'react';
-import { TextField } from '@rmwc/textfield';
+import { memo } from 'react';
 import equal from 'fast-deep-equal';
-import { v4 as uuid } from 'uuid';
 
-import UserSelect from 'components/user-select';
-import SubjectSelect from 'components/subject-select';
-
-import { MatchJSON, Option, Person, Role, TCallback } from 'lib/model';
+import { MatchJSON, Person } from 'lib/model';
+import Utils from 'lib/utils';
 
 import styles from './matches.module.scss';
 
 interface MatchRowProps {
   match: MatchJSON;
-  onChange: TCallback<MatchJSON>;
-}
-
-function hasRole(person: Person, role: Role) {
-  return person.roles.some((r: Role) => r === role);
 }
 
 export const MatchRow = memo(
-  function MatchRow({ match, onChange }: MatchRowProps) {
-    const onValueChange = useCallback(
-      (val: unknown, key: keyof MatchJSON) => {
-        if (!equal(val, match[key])) onChange({ ...match, [key]: val });
-      },
-      [match, onChange]
-    );
-    const shared = { singleLine: true, renderToPortal: true };
-    const props = (role: Role) => ({
-      ...shared,
-      onSelectedChange(people: Option<string>[]) {
-        const old: Person[] = match.people.filter((a) => !hasRole(a, role));
-        const updated: Person[] = people.map(({ value: id, label: name }) => {
-          let handle: string = uuid();
-          const idx = match.people.findIndex(({ id: oldId }) => oldId === id);
-          if (idx >= 0) handle = match.people[idx].handle;
-          return { id, name, handle, roles: [role] };
-        });
-        onValueChange([...old, ...updated], 'people');
-      },
-      selected: match.people
-        .filter((a) => hasRole(a, role))
-        .map((a) => ({ value: a.id, label: a.name })),
+  function MatchRow({ match }: MatchRowProps) {
+    const names: string[] = [];
+    match.people.forEach((p: Person) => {
+      if (p.name) names.push(`${p.name} (${Utils.join(p.roles) || 'other'})`);
     });
-    // TODO: Fetch all of the person data and use it to directly control the
-    // selected options on the `UserSelect` and to constrain the selectable
-    // options in the `SubjectSelect` (to only those that the tutors can tutor).
+    const diff = match.people.length - names.length;
+    if (diff > 0) names.push(`${diff} more`);
     return (
       <DataTableRow>
-        <DataTableCell className={styles.message}>
-          <TextField value={match.message} onChange={() => {}} />
+        <DataTableCell className={styles.people}>
+          {Utils.join(names)}
         </DataTableCell>
         <DataTableCell className={styles.subjects}>
-          <SubjectSelect
-            {...shared}
-            value={match.subjects}
-            onChange={(s: string[]) => onValueChange(s, 'subjects')}
-          />
+          {Utils.join(match.subjects)}
         </DataTableCell>
-        <DataTableCell className={styles.tutors}>
-          <UserSelect {...props('tutor')} />
-        </DataTableCell>
-        <DataTableCell className={styles.tutees}>
-          <UserSelect {...props('tutee')} />
-        </DataTableCell>
-        <DataTableCell className={styles.mentors}>
-          <UserSelect {...props('mentor')} />
-        </DataTableCell>
-        <DataTableCell className={styles.mentees}>
-          <UserSelect {...props('mentee')} />
-        </DataTableCell>
-        <DataTableCell className={styles.parents}>
-          <UserSelect {...props('parent')} />
+        <DataTableCell className={styles.message}>
+          {match.message}
         </DataTableCell>
       </DataTableRow>
     );
@@ -86,13 +41,9 @@ export const MatchRow = memo(
 export const LoadingRow = memo(function LoadingRow(): JSX.Element {
   return (
     <DataTableRow>
-      <DataTableCell className={styles.message} />
+      <DataTableCell className={styles.people} />
       <DataTableCell className={styles.subjects} />
-      <DataTableCell className={styles.tutors} />
-      <DataTableCell className={styles.tutees} />
-      <DataTableCell className={styles.mentors} />
-      <DataTableCell className={styles.mentees} />
-      <DataTableCell className={styles.parents} />
+      <DataTableCell className={styles.message} />
     </DataTableRow>
   );
 });

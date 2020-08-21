@@ -8,14 +8,7 @@ import {
 } from '@rmwc/data-table';
 import useSWR, { mutate } from 'swr';
 import { IconButton } from '@rmwc/icon-button';
-import {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
@@ -48,8 +41,6 @@ interface MatchesProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function Matches({ org }: MatchesProps): JSX.Element {
-  const timeoutIds = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-
   const [valid, setValid] = useState<boolean>(true);
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MatchesQuery>(
@@ -93,50 +84,6 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
     setValid((prev: boolean) => prev || searching);
   }, [searching]);
 
-  const mutateMatch = useCallback(
-    async (match: MatchJSON) => {
-      if (timeoutIds.current[match.id]) {
-        clearTimeout(timeoutIds.current[match.id]);
-        delete timeoutIds.current[match.id];
-      }
-
-      const updateLocal = async (updated: MatchJSON, oldId?: string) => {
-        await mutate(
-          query.endpoint,
-          (prev: ListMatchesRes) => {
-            if (!prev) return prev;
-            const { matches: old } = prev;
-            const idx = old.findIndex((u) => u.id === (oldId || updated.id));
-            if (idx < 0) return prev;
-            const matches = [
-              ...old.slice(0, idx),
-              updated,
-              ...old.slice(idx + 1),
-            ];
-            return { ...prev, matches };
-          },
-          false
-        );
-      };
-
-      const updateRemote = async (updated: MatchJSON) => {
-        const url = `/api/users/${updated.id}`;
-        const { data: remoteData } = await axios.put<MatchJSON>(url, updated);
-        await updateLocal(remoteData);
-      };
-
-      setValid(false); // Filters become invalid when data is updated.
-      await updateLocal(match);
-
-      // Only update the user profile remotely after 5secs of no change.
-      // @see {@link https://github.com/vercel/swr/issues/482}
-      timeoutIds.current[match.id] = setTimeout(() => {
-        void updateRemote(match);
-      }, 5000);
-    },
-    [query]
-  );
-
   return (
     <>
       <Header
@@ -173,37 +120,21 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
             <DataTableContent>
               <DataTableHead className={styles.header}>
                 <DataTableRow>
-                  <DataTableHeadCell className={styles.message}>
-                    {t('match:message')}
+                  <DataTableHeadCell className={styles.people}>
+                    {t('common:people')}
                   </DataTableHeadCell>
                   <DataTableHeadCell className={styles.subjects}>
-                    {t('match:subjects')}
+                    {t('common:subjects')}
                   </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.tutors}>
-                    {t('common:tutors')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.tutees}>
-                    {t('common:tutees')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.mentors}>
-                    {t('common:mentors')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.mentees}>
-                    {t('common:mentees')}
-                  </DataTableHeadCell>
-                  <DataTableHeadCell className={styles.parents}>
-                    {t('common:parents')}
+                  <DataTableHeadCell className={styles.message}>
+                    {t('common:message')}
                   </DataTableHeadCell>
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
                 {!searching &&
                   (data ? data.matches : []).map((match) => (
-                    <MatchRow
-                      key={match.id}
-                      match={match}
-                      onChange={mutateMatch}
-                    />
+                    <MatchRow key={match.id} match={match} />
                   ))}
                 {searching && loadingRows}
               </DataTableBody>
