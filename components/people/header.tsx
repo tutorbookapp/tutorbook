@@ -4,22 +4,25 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { IntercomAPI } from 'components/react-intercom';
 import TitleHeader from 'components/header';
-import UserDialog from 'components/user-dialog';
+
+import { TCallback, User, UserJSON } from 'lib/model';
 
 import styles from './header.module.scss';
 
 export interface HeaderProps {
   orgId: string;
   orgName: string;
+  setViewing: TCallback<UserJSON | undefined>;
 }
 
 export default memo(function Header({
   orgId,
   orgName,
+  setViewing,
 }: HeaderProps): JSX.Element {
-  const [creating, setCreating] = useState<boolean>(false);
-  const hideCreating = useCallback(() => setCreating(false), []);
-  const createUser = useCallback(() => setCreating(true), []);
+  const createUser = useCallback(() => {
+    setViewing(new User().toJSON());
+  }, [setViewing]);
 
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const hideSnackbar = useCallback(() => setSnackbar(false), []);
@@ -62,7 +65,6 @@ export default memo(function Header({
 
   return (
     <>
-      {creating && <UserDialog onClosed={hideCreating} initialPage='edit' />}
       {snackbar && (
         <Snackbar
           className={styles.snackbar}

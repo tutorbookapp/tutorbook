@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import UserDialog from 'components/user-dialog';
 
@@ -79,19 +79,25 @@ export default function People({ org }: PeopleProps): JSX.Element {
     );
   }, [matching]);
 
+  const initialPage = useMemo(() => {
+    if (!viewing || !viewing.id || viewing.id.startsWith('temp')) return 'edit';
+    if (matching.length) return 'match';
+    return 'display';
+  }, [viewing, matching.length]);
+
   return (
     <>
       {viewing && (
         <UserDialog
           onClosed={onViewingClosed}
           initialData={viewing}
-          initialPage={matching.length ? 'match' : 'display'}
+          initialPage={initialPage}
           setQuery={setQuery}
           matching={matching}
           setMatching={setMatching}
         />
       )}
-      <Header orgId={org.id} orgName={org.name} />
+      <Header orgId={org.id} orgName={org.name} setViewing={setViewing} />
       <div className={styles.wrapper}>
         <SearchBar query={query} setQuery={setQuery} setOpen={setFiltersOpen} />
         <div className={styles.content}>

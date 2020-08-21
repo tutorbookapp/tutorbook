@@ -8,7 +8,6 @@ import Placeholder from 'components/placeholder';
 
 import { Callback, CallbackParam, RequestJSON, UsersQuery } from 'lib/model';
 import { ListRequestsRes } from 'lib/api/list-requests';
-import Utils from 'lib/utils';
 
 import { config, width } from './spring-animation';
 import RequestItem from './request-item';

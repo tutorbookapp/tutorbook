@@ -7,7 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Placeholder from 'components/placeholder';
 import Result from 'components/search/result';
 
-import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
+import { TCallback, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/list-users';
 
 import { config, width } from './spring-animation';
@@ -16,7 +16,7 @@ import styles from './results-list.module.scss';
 export interface ResultsListProps {
   query: UsersQuery;
   setHits: Callback<number>;
-  setViewing: Callback<UserJSON | undefined>;
+  setViewing: TCallback<UserJSON | undefined>;
   open: boolean;
 }
 
