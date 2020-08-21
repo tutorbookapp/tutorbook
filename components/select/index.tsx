@@ -22,18 +22,18 @@ import styles from './select.module.scss';
 
 type TextFieldPropOverrides = 'textarea' | 'onFocus' | 'onBlur';
 
-interface SelectState<T> {
+interface SelectState<T, O extends Option<T> = Option<T>> {
   suggestionsOpen: boolean;
-  suggestions: Option<T>[];
+  suggestions: O[];
   inputValue: string;
   lineBreak: boolean;
   errored: boolean;
 }
 
-interface UniqueSelectProps<T> {
-  value: Option<T>[];
-  onChange: TCallback<Option<T>[]>;
-  getSuggestions: (query: string) => Promise<Option<T>[]>;
+interface UniqueSelectProps<T, O extends Option<T> = Option<T>> {
+  value: O[];
+  onChange: TCallback<O[]>;
+  getSuggestions: (query: string) => Promise<O[]>;
   renderToPortal?: boolean;
   autoOpenMenu?: boolean;
   singleLine?: boolean;
@@ -47,9 +47,12 @@ type Overrides<T> =
   | keyof UniqueSelectProps<T>
   | keyof JSX.IntrinsicClassAttributes<Select<T>>;
 
-export type SelectProps<T> = Omit<TextFieldHTMLProps, Overrides<T>> &
+export type SelectProps<T, O extends Option<T> = Option<T>> = Omit<
+  TextFieldHTMLProps,
+  Overrides<T>
+> &
   Omit<TextFieldProps, Overrides<T>> &
-  UniqueSelectProps<T>;
+  UniqueSelectProps<T, O>;
 
 /**
  * Each `Select` component provides a wrapper around the base `Select`
@@ -59,23 +62,23 @@ export type SelectProps<T> = Omit<TextFieldHTMLProps, Overrides<T>> &
  * Algolia search indices.
  * 3. Also exposes that `Option[]` state if needed by the parent component.
  */
-export interface SelectControls<T> {
+export interface SelectControls<T, O extends Option<T> = Option<T>> {
   value: T[];
   onChange: (value: T[]) => void;
-  selected: Option<T>[];
-  onSelectedChange: (options: Option<T>[]) => void;
+  selected: O[];
+  onSelectedChange: (options: O[]) => void;
 }
 
-export type SelectControllerProps<T> = Omit<
-  SelectProps<T>,
-  keyof SelectControls<T> | 'getSuggestions'
+export type SelectControllerProps<T, O extends Option<T> = Option<T>> = Omit<
+  SelectProps<T, O>,
+  keyof SelectControls<T, O> | 'getSuggestions'
 > &
-  Partial<SelectControls<T>>;
+  Partial<SelectControls<T, O>>;
 
-export default class Select<T> extends Component<
-  SelectProps<T>,
-  SelectState<T>
-> {
+export default class Select<
+  T,
+  O extends Option<T> = Option<T>
+> extends Component<SelectProps<T, O>, SelectState<T, O>> {
   private suggestionsTimeoutID?: ReturnType<typeof setTimeout>;
 
   private foundationRef: RefObject<MDCMenuSurfaceFoundation>;
@@ -90,7 +93,7 @@ export default class Select<T> extends Component<
 
   private hasOpenedSuggestions = false;
 
-  public constructor(props: SelectProps<T>) {
+  public constructor(props: SelectProps<T, O>) {
     super(props);
     this.state = {
       suggestionsOpen: false,
@@ -152,11 +155,11 @@ export default class Select<T> extends Component<
 
   private async updateSuggestions(query = ''): Promise<void> {
     const { getSuggestions } = this.props;
-    const [err, options] = await to<Option<T>[]>(getSuggestions(query));
+    const [err, options] = await to<O[]>(getSuggestions(query));
     if (err) {
       this.setState({ suggestions: [], errored: true });
     } else {
-      this.setState({ suggestions: options as Option<T>[], errored: false });
+      this.setState({ suggestions: options as O[], errored: false });
     }
   }
 
@@ -260,12 +263,12 @@ export default class Select<T> extends Component<
    * 1. Checks it's corresponding `mdc-checkbox` within our drop-down menu.
    * 2. Adding it as a chip to the `mdc-text-field` content.
    */
-  private updateSelected(option: Option<T>, event?: MouseEvent): void {
+  private updateSelected(option: O, event?: MouseEvent): void {
     const { value, onChange } = this.props;
     const { suggestions, inputValue } = this.state;
-    const selected: Option<T>[] = Array.from(value);
+    const selected: O[] = Array.from(value);
     const selectedIndex: number = selected.findIndex(
-      (s: Option<T>) => s.value === option.value
+      (s: O) => s.value === option.value
     );
     if (selectedIndex < 0) {
       selected.push(option);
@@ -277,13 +280,13 @@ export default class Select<T> extends Component<
       // Select/unselect multiple options with 'SHIFT + click'
       const idx: number = suggestions.indexOf(option);
       const idxOfLast: number = suggestions.findIndex(
-        (s: Option<T>) => s.value === (this.lastSelectedRef.current || {}).value
+        (s: O) => s.value === (this.lastSelectedRef.current || {}).value
       );
       suggestions
         .slice(Math.min(idx, idxOfLast), Math.max(idx, idxOfLast) + 1)
-        .forEach((suggestion: Option<T>) => {
+        .forEach((suggestion: O) => {
           const index: number = selected.findIndex(
-            (s: Option<T>) => s.value === suggestion.value
+            (s: O) => s.value === suggestion.value
           );
           if (selectedIndex < 0 && index < 0) {
             selected.push(suggestion);
@@ -311,7 +314,7 @@ export default class Select<T> extends Component<
       </div>
     );
     const suggestionMenuItems: JSX.Element[] = [];
-    suggestions.forEach((option: Option<T>) =>
+    suggestions.forEach((option: O) =>
       suggestionMenuItems.push(
         <ListItem
           key={
@@ -327,7 +330,7 @@ export default class Select<T> extends Component<
               <Checkbox
                 checked={
                   value.findIndex(
-                    (selected: Option<T>) => selected.value === option.value
+                    (selected: O) => selected.value === option.value
                   ) >= 0
                 }
                 readOnly
@@ -343,7 +346,7 @@ export default class Select<T> extends Component<
 
   private renderSelectedChipItems(): JSX.Element[] {
     const { value } = this.props;
-    return value.map((option: Option<T>) => (
+    return value.map((option: O) => (
       <Chip
         key={
           typeof option.value === 'string' || typeof option.value === 'number'

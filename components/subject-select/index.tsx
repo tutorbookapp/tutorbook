@@ -1,6 +1,6 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import algoliasearch, { SearchClient } from 'algoliasearch/lite';
+import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 import equal from 'fast-deep-equal';
 
 import Select, { SelectControllerProps } from 'components/select';
@@ -14,6 +14,10 @@ const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 
 interface SubjectHit extends ObjectWithObjectID {
   name: string;
+}
+
+interface Subject extends Option<string> {
+  aspect?: Aspect;
 }
 
 interface SubjectSelectProps {
@@ -40,13 +44,13 @@ export default function SubjectSelect({
   aspect,
   grade,
   ...props
-}: SelectControllerProps<string> & SubjectSelectProps): JSX.Element {
+}: SelectControllerProps<string, Subject> & SubjectSelectProps): JSX.Element {
   // Directly control the `Select` component with this internal state.
-  const [selectedOptions, setSelectedOptions] = useState<Option<string>[]>(
+  const [selectedOptions, setSelectedOptions] = useState<Subject[]>(
     selected || []
   );
   const onSelectedOptionsChange = useCallback(
-    (os: Option<string>[]) => {
+    (os: Subject[]) => {
       setSelectedOptions(os);
       if (onSelectedChange) onSelectedChange(os);
       if (onChange) onChange(os.map(({ value: val }) => val));
@@ -69,17 +73,21 @@ export default function SubjectSelect({
           : undefined;
       const optionalFilters: string[] | undefined =
         grade !== undefined ? [`grades:${grade}`] : undefined;
-      const suggestions: Set<string> = new Set();
+      const suggestions: Subject[] = [];
       await Promise.all(
-        searchIndexes.map(async (index) => {
+        searchIndexes.map(async (index: SearchIndex) => {
           const res: SearchResponse<SubjectHit> = await index.search(query, {
             filters,
             optionalFilters,
           });
-          res.hits.forEach(({ name }) => suggestions.add(name));
+          const asp: Aspect = index.indexName as Aspect;
+          res.hits.forEach((h: SubjectHit) => {
+            if (suggestions.findIndex((s) => s.label === h.name) >= 0) return;
+            suggestions.push({ aspect: asp, label: h.name, value: h.name });
+          });
         })
       );
-      return Array.from(suggestions).map((label) => ({ label, value: label }));
+      return suggestions;
     },
     [options, grade, searchIndexes]
   );
@@ -102,6 +110,7 @@ export default function SubjectSelect({
       // TODO: Add i18n to subjects by including labels for all languages in that
       // search index (and then fetching the correct labels for the given subject
       // codes here by searching that index).
+      // TODO: Add the subject aspect to each option using the search indexes.
     });
   }, [value]);
 
