@@ -11,7 +11,6 @@ import { IconButton } from '@rmwc/icon-button';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
-import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
@@ -20,7 +19,7 @@ import { IntercomAPI } from 'components/react-intercom';
 import Header from 'components/header';
 
 import { ListMatchesRes } from 'lib/api/list-matches';
-import { MatchJSON, MatchesQuery, Org } from 'lib/model';
+import { MatchesQuery, Org } from 'lib/model';
 
 import styles from './matches.module.scss';
 import { LoadingRow, MatchRow } from './row';
