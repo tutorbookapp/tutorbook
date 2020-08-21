@@ -205,7 +205,7 @@ export class User extends Account implements UserInterface {
     };
     const intercomValues: Record<string, any> = Object.fromEntries(
       Object.entries(rest)
-        .filter(([key, val]) => isFilled(val))
+        .filter(([_, val]) => isFilled(val))
         .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
     return { ...intercomValues, ...super.toIntercom() };
@@ -248,10 +248,10 @@ export class User extends Account implements UserInterface {
   public toFirestore(): DocumentData {
     const { availability, token, ref, ...rest } = this;
     const allDefinedValues = Object.fromEntries(
-      Object.entries(rest).filter(([key, val]) => val !== undefined)
+      Object.entries(rest).filter(([_, val]) => val !== undefined)
     );
     const allFilledValues = Object.fromEntries(
-      Object.entries(allDefinedValues).filter(([key, val]) => {
+      Object.entries(allDefinedValues).filter(([_, val]) => {
         if (!val) return false;
         if (typeof val === 'object' && !Object.keys(val).length) return false;
         return true;

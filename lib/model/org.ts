@@ -80,7 +80,7 @@ export class Org extends Account implements OrgInterface {
     };
     const intercomValues: Record<string, any> = Object.fromEntries(
       Object.entries(rest)
-        .filter(([key, val]) => isFilled(val))
+        .filter(([_, val]) => isFilled(val))
         .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
     return { ...intercomValues, ...super.toIntercom() };
