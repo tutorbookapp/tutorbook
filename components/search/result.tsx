@@ -24,9 +24,10 @@ export default function Result({
   avatar = true,
 }: Props): JSX.Element {
   return (
-    <Ripple disabled={loading} onClick={onClick}>
+    <Ripple disabled={loading || !onClick} onClick={onClick}>
       <li
         className={cn(styles.listItem, className, {
+          [styles.disabled]: loading || !onClick,
           [styles.loading]: loading,
           [styles.avatar]: avatar,
         })}

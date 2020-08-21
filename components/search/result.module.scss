@@ -24,9 +24,11 @@ $margin: 20px;
     border-bottom-right-radius: 4px;
   }
 
-  &.loading {
+  &.disabled {
     cursor: not-allowed;
+  }
 
+  &.loading {
     .img,
     .name,
     .bio {
