@@ -22,6 +22,10 @@ function getValue(people: Person[], role: Role): Option<string>[] {
     .map((a) => ({ value: a.id, label: a.name }));
 }
 
+interface Props {
+  subjectOptions: string[];
+}
+
 type Input =
   | 'subjects'
   | 'times'
@@ -42,9 +46,10 @@ export default function MatchInputs({
   mentors: showMentors,
   mentees: showMentees,
   subjects,
+  subjectOptions,
   times,
   message,
-}: InputsProps<Match, Input> & InputsConfig<Input>): JSX.Element {
+}: Props & InputsProps<Match, Input> & InputsConfig<Input>): JSX.Element {
   const onTutorsChange = useCallback(
     (tutors: Option<string>[]) => {
       const people = [
@@ -213,6 +218,7 @@ export default function MatchInputs({
           onFocused={focusSubjects}
           onBlurred={focusNothing}
           onChange={onSubjectsChange}
+          options={subjectOptions}
           value={value.subjects}
           autoOpenMenu
           renderToPortal={renderToPortal}
