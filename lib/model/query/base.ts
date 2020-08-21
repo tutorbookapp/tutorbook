@@ -1,9 +1,12 @@
 import url from 'url';
 
-import { Tag } from '../user';
+import { Check, Tag } from '../user';
 import construct from '../construct';
 
-import { Option } from './shared';
+export interface Option<T> {
+  label: string;
+  value: T;
+}
 
 /**
  * The base object just supports pagination, text-based search, and tag filters.
