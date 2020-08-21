@@ -72,7 +72,7 @@ export interface SelectControls<T, O extends Option<T> = Option<T>> {
 
 export type SelectControllerProps<T, O extends Option<T> = Option<T>> = Omit<
   SelectProps<T, O>,
-  keyof SelectControls<T, O> | 'getSuggestions'
+  keyof SelectControls<T, O> | 'getSuggestions' | 'noResultsMessage'
 > &
   Partial<SelectControls<T, O>>;
 
