@@ -62,7 +62,7 @@ export default memo(function EditPage({
         }
       }
       setChecked(true);
-      // Wait 1.2secs to show checkmark animation before hiding the loading
+      // Wait one sec to show checkmark animation before hiding the loading
       // overlay and letting the user edit their newly created/updated user.
       setTimeout(() => openDisplay().then(() => setLoading(false)), 1000);
     },

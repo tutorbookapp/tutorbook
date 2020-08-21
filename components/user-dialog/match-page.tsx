@@ -61,7 +61,36 @@ export default memo(function MatchPage({
   const [error, setError] = useState<string>('');
 
   const aspects = useRef<Set<Aspect>>(new Set());
-  const [students, setStudents] = useState<UserOption[]>(() => {
+  const [students, setStudents] = useState<UserOption[]>([]);
+  const [subjects, setSubjects] = useState<SubjectOption[]>([]);
+  const [times, setTimes] = useState<Availability>(new Availability());
+  const [message, setMessage] = useState<string>('');
+
+  const onMessageChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
+    setMessage(evt.currentTarget.value);
+  }, []);
+
+  useEffect(() => {
+    subjects.forEach((s) => {
+      if (s.aspect) aspects.current.add(s.aspect);
+    });
+  }, [subjects]);
+  useEffect(() => {
+    const options = [...value.tutoring.subjects, ...value.mentoring.subjects];
+    setSubjects((prev: SubjectOption[]) => {
+      const selected: Set<string> = new Set();
+      prev.forEach((subject: SubjectOption) => {
+        if (options.includes(subject.value)) selected.add(subject.value);
+      });
+      matching.forEach((request: RequestJSON) => {
+        request.subjects.forEach((subject: string) => {
+          if (options.includes(subject)) selected.add(subject);
+        });
+      });
+      return [...selected].map((s) => ({ label: s, value: s }));
+    });
+  }, [value.tutoring.subjects, value.mentoring.subjects, matching]);
+  useEffect(() => {
     const selected: UserOption[] = [];
     matching.forEach((request: RequestJSON) => {
       request.people.forEach((person: Person) => {
@@ -77,27 +106,8 @@ export default memo(function MatchPage({
           });
       });
     });
-    return selected;
-  });
-  const [subjects, setSubjects] = useState<SubjectOption[]>(() => {
-    const selected: Set<string> = new Set();
-    matching.forEach((request: RequestJSON) => {
-      request.subjects.forEach((subject: string) => selected.add(subject));
-    });
-    return [...selected].map((s) => ({ label: s, value: s }));
-  });
-  const [times, setTimes] = useState<Availability>(new Availability());
-  const [message, setMessage] = useState<string>('');
-
-  const onMessageChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
-    setMessage(evt.currentTarget.value);
-  }, []);
-
-  useEffect(() => {
-    subjects.forEach((s) => {
-      if (s.aspect) aspects.current.add(s.aspect);
-    });
-  }, [subjects]);
+    setStudents(selected);
+  }, [matching]);
 
   const match = useMemo(() => {
     const asps: Aspect[] = [...aspects.current];
@@ -169,9 +179,12 @@ export default memo(function MatchPage({
         );
       } else {
         setChecked(true);
+        // Wait one sec to show checkmark animation before hiding the loading
+        // overlay and letting the user edit their newly created/updated user.
+        setTimeout(() => openDisplay().then(() => setLoading(false)), 1000);
       }
     },
-    [match]
+    [match, openDisplay]
   );
 
   return (

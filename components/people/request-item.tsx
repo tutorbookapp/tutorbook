@@ -11,10 +11,10 @@ import { Callback, RequestJSON } from 'lib/model';
 import styles from './request-item.module.scss';
 
 export interface RequestItemProps {
-  request: RequestJSON;
+  request?: RequestJSON;
   loading?: boolean;
-  checked: boolean;
-  setChecked: Callback<boolean>;
+  checked?: boolean;
+  setChecked?: Callback<boolean>;
 }
 
 export default function RequestItem({
@@ -23,7 +23,9 @@ export default function RequestItem({
   checked,
   setChecked,
 }: RequestItemProps): JSX.Element {
-  const onClick = useCallback(() => setChecked((prev) => !prev), [setChecked]);
+  const onClick = useCallback(() => {
+    if (setChecked) setChecked((prev) => !prev);
+  }, [setChecked]);
 
   const props = useSpring({
     transform: `translateX(${checked ? 48 : 0}px)`,
@@ -37,14 +39,15 @@ export default function RequestItem({
       <Ripple disabled={loading} onClick={onClick}>
         <animated.div style={props} className={styles.display}>
           <div className={styles.name}>
-            {Utils.join(request.people.map((p) => p.name))}
+            {request && Utils.join(request.people.map((p) => p.name))}
           </div>
-          <div className={styles.bio}>{request.message}</div>
+          <div className={styles.bio}>{request && request.message}</div>
           <div className={styles.subjectsScroller}>
             <ChipSet className={styles.subjects}>
-              {request.subjects.map((subject: string) => (
-                <Chip className={styles.subject}>{subject}</Chip>
-              ))}
+              {request &&
+                request.subjects.map((subject: string) => (
+                  <Chip className={styles.subject}>{subject}</Chip>
+                ))}
             </ChipSet>
           </div>
         </animated.div>

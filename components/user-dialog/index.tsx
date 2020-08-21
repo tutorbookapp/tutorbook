@@ -167,7 +167,7 @@ export default function UserDialog({
   }, []);
 
   const [open, setOpen] = useState<boolean>(true);
-  const onDisplayClosed = useCallback(() => setOpen(false), []);
+  const closeDialog = useCallback(() => setOpen(false), []);
 
   return (
     <Dialog open={open} onClosed={onClosed} className={styles.dialog}>
@@ -180,7 +180,7 @@ export default function UserDialog({
           openEdit={openEdit}
           openMatch={openMatch}
           openRequest={openRequest}
-          onClosed={onDisplayClosed}
+          closeDialog={closeDialog}
           onChange={onChange}
         />
       </div>
@@ -194,13 +194,23 @@ export default function UserDialog({
         className={cn(styles.page, { [styles.active]: active === 'match' })}
         ref={matchRef as RefObject<HTMLDivElement>}
       >
-        <MatchPage value={user} openDisplay={openDisplay} matching={matching} />
+        <MatchPage
+          value={user}
+          openDisplay={openDisplay}
+          matching={matching}
+          closeDialog={closeDialog}
+        />
       </div>
       <div
         className={cn(styles.page, { [styles.active]: active === 'request' })}
         ref={requestRef as RefObject<HTMLDivElement>}
       >
-        <RequestPage value={user} openDisplay={openDisplay} />
+        <RequestPage
+          value={user}
+          openDisplay={openDisplay}
+          setMatching={setMatching}
+          closeDialog={closeDialog}
+        />
       </div>
     </Dialog>
   );

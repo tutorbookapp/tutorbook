@@ -10,6 +10,7 @@ import {
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
+import { mutate } from 'swr';
 import to from 'await-to-js';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
@@ -21,12 +22,14 @@ import Button from 'components/button';
 import Result from 'components/search/result';
 import SubjectSelect, { SubjectOption } from 'components/subject-select';
 
+import { ListRequestsRes } from 'lib/api/list-requests';
 import { useUser } from 'lib/account';
 import Utils from 'lib/utils';
 import {
   ApiError,
   Aspect,
   Availability,
+  Callback,
   Person,
   Request,
   RequestJSON,
@@ -43,11 +46,15 @@ const TimesSelect = dynamic<TimesSelectProps>(async () =>
 export interface RequestPageProps {
   value: UserJSON;
   openDisplay: () => Promise<void>;
+  setMatching: Callback<RequestJSON[]>;
+  closeDialog: () => void;
 }
 
 export default memo(function RequestPage({
   value,
   openDisplay,
+  setMatching,
+  closeDialog,
 }: RequestPageProps): JSX.Element {
   const { user } = useUser();
   const { t } = useTranslation();
@@ -80,9 +87,10 @@ export default memo(function RequestPage({
       roles: [],
       handle: uuid(),
     };
-    if (asps.includes('tutoring')) person.roles.push('tutor');
-    if (asps.includes('mentoring')) person.roles.push('mentor');
+    if (asps.includes('tutoring')) person.roles.push('tutee');
+    if (asps.includes('mentoring')) person.roles.push('mentee');
     return new Request({
+      id: `temp-${uuid()}`,
       times,
       message,
       people: [person],
@@ -102,9 +110,27 @@ export default memo(function RequestPage({
     async (event: FormEvent) => {
       event.preventDefault();
       setLoading(true);
-      const [err] = await to<AxiosResponse<RequestJSON>, AxiosError<ApiError>>(
-        axios.post('/api/requests', request.toJSON())
+
+      // TODO: Locally mutate the data and close this dialog (that way, the app
+      // feels faster even though we're really still creating the request). Show
+      // a snackbar and remove the request is the HTTP POST fails.
+      await mutate(
+        '/api/requests',
+        (prev?: ListRequestsRes) => {
+          if (!prev) return { requests: [request.toJSON()], hits: 1 };
+          return {
+            requests: [request.toJSON(), ...prev.requests],
+            hits: prev.hits + 1,
+          };
+        },
+        false
       );
+
+      const [err, res] = await to<
+        AxiosResponse<RequestJSON>,
+        AxiosError<ApiError>
+      >(axios.post('/api/requests', request.toJSON()));
+
       if (err && err.response) {
         setLoading(false);
         setError(
@@ -126,10 +152,35 @@ export default memo(function RequestPage({
           )} Please check your Internet connection and try again.`
         );
       } else {
+        const { data } = res as AxiosResponse<RequestJSON>;
+        await mutate('/api/requests', (prev?: ListRequestsRes) => {
+          if (!prev) return { requests: [data], hits: 1 };
+          const idx = prev.requests.findIndex((r) => r.id === request.id);
+          if (idx < 0) {
+            console.warn(`[WARNING] Request (${request.id}) not found.`);
+            return { requests: [data, ...prev.requests], hits: prev.hits + 1 };
+          }
+          const requests = [
+            ...prev.requests.slice(0, idx),
+            data,
+            ...prev.requests.slice(idx + 1),
+          ];
+          debugger;
+          return { requests, hits: prev.hits };
+        });
+        setMatching((prev: RequestJSON[]) => {
+          const idx = prev.findIndex((r) => r.id === request.id);
+          debugger;
+          if (idx < 0) return prev;
+          return [...prev.slice(0, idx), data, ...prev.slice(idx + 1)];
+        });
         setChecked(true);
+        // Wait one sec to show checkmark animation before hiding the loading
+        // overlay and letting the user edit their newly created/updated user.
+        setTimeout(closeDialog, 1000);
       }
     },
-    [request]
+    [request, setMatching, closeDialog]
   );
 
   return (

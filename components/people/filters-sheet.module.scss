@@ -34,5 +34,14 @@
         border-top: none;
       }
     }
+
+    .list {
+      @include common.divider;
+
+      .empty {
+        margin: 0;
+        padding: 24px 16px;
+      }
+    }
   }
 }

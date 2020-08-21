@@ -73,6 +73,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
           ...prev,
           availability,
           subjects: [...subjects].map((s) => ({ label: s, value: s })),
+          query: '',
           page: 0,
         })
     );
@@ -84,7 +85,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
         <UserDialog
           onClosed={onViewingClosed}
           initialData={viewing}
-          initialPage='display'
+          initialPage={matching.length ? 'match' : 'display'}
           setQuery={setQuery}
           matching={matching}
           setMatching={setMatching}

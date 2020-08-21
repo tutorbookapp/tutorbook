@@ -1,8 +1,10 @@
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { animated, useSpring } from 'react-spring';
+import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 
 import { QueryInputs } from 'components/inputs';
+import Placeholder from 'components/placeholder';
 
 import { Callback, CallbackParam, RequestJSON, UsersQuery } from 'lib/model';
 import { ListRequestsRes } from 'lib/api/list-requests';
@@ -28,6 +30,13 @@ export default memo(function FiltersSheet({
   setMatching,
 }: FiltersSheetProps): JSX.Element {
   const props = useSpring({ config, width: open ? width : 0 });
+  const loadingRows = useMemo(
+    () =>
+      Array(5)
+        .fill(null)
+        .map(() => <RequestItem loading />),
+    []
+  );
   const inputs = useMemo(
     () => (
       <QueryInputs
@@ -43,7 +52,16 @@ export default memo(function FiltersSheet({
     [query, setQuery]
   );
 
-  const { data } = useSWR<ListRequestsRes>('/api/requests');
+  const { t } = useTranslation();
+  const { isValidating, data } = useSWR<ListRequestsRes>('/api/requests');
+
+  useEffect(() => {
+    // Remove requests that don't exist (in our db) from the matching queue.
+    setMatching((requests: RequestJSON[]) => {
+      const fetched = data ? data.requests.map((r) => r.id) : [];
+      return requests.filter((r) => fetched.includes(r.id));
+    });
+  }, [data, setMatching]);
 
   return (
     <animated.div className={styles.wrapper} style={props}>
@@ -52,6 +70,12 @@ export default memo(function FiltersSheet({
         <form className={styles.form}>{inputs}</form>
         <h4 className={styles.header}>Queued requests</h4>
         <div className={styles.list}>
+          {isValidating && !data && loadingRows}
+          {!isValidating && data && !data.hits && (
+            <div className={styles.empty}>
+              <Placeholder>{t('people:requests-empty')}</Placeholder>
+            </div>
+          )}
           {data &&
             data.requests.map((request: RequestJSON) => (
               <RequestItem

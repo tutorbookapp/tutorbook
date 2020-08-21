@@ -50,7 +50,7 @@ export interface DisplayPageProps {
   openEdit: () => Promise<void>;
   openMatch: () => Promise<void>;
   openRequest: () => Promise<void>;
-  onClosed: () => void;
+  closeDialog: () => void;
 }
 
 export default memo(function DisplayPage({
@@ -59,7 +59,7 @@ export default memo(function DisplayPage({
   openEdit,
   openMatch,
   openRequest,
-  onClosed,
+  closeDialog,
 }: DisplayPageProps): JSX.Element {
   const { t } = useTranslation();
   const { user: currentUser } = useUser();
@@ -167,7 +167,7 @@ export default memo(function DisplayPage({
   return (
     <div className={styles.wrapper}>
       <div className={styles.nav}>
-        <IconButton className={styles.btn} icon='close' onClick={onClosed} />
+        <IconButton className={styles.btn} icon='close' onClick={closeDialog} />
       </div>
       <div className={styles.content}>
         <div className={styles.left}>
