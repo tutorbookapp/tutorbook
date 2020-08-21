@@ -1,4 +1,12 @@
-import { FormEvent, memo, useCallback, useState } from 'react';
+import {
+  FormEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
@@ -11,22 +19,21 @@ import { TimesSelectProps } from 'components/times-select';
 import Loader from 'components/loader';
 import Button from 'components/button';
 import Result from 'components/search/result';
-import UserSelect from 'components/user-select';
-import SubjectSelect from 'components/subject-select';
+import UserSelect, { UserOption } from 'components/user-select';
+import SubjectSelect, { SubjectOption } from 'components/subject-select';
 
 import { useUser } from 'lib/account';
 import Utils from 'lib/utils';
 import {
+  Aspect,
   Availability,
   ApiError,
-  TimeslotJSON,
   Match,
   MatchJSON,
   RequestJSON,
   User,
   UserJSON,
   Person,
-  Option,
 } from 'lib/model';
 
 import styles from './match-page.module.scss';
@@ -53,34 +60,76 @@ export default memo(function MatchPage({
   const [checked, setChecked] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
-  const [match, setMatch] = useState<Match>(() => {
-    const people: Person[] = [
-      {
-        id: value.id,
-        name: value.name,
-        photo: value.photo,
-        roles: ['tutor'],
-        handle: uuid(),
-      },
-    ];
-    const subjects: Set<string> = new Set();
-    const times: TimeslotJSON[] = [];
-    let message = '';
-    matching.forEach((m: RequestJSON) => {
-      m.people.forEach((person: Person) => {
-        if (people.findIndex((p) => p.id === person.id) >= 0) return;
-        people.push(person);
+  const aspects = useRef<Set<Aspect>>(new Set());
+  const [students, setStudents] = useState<UserOption[]>(() => {
+    const selected: UserOption[] = [];
+    matching.forEach((request: RequestJSON) => {
+      request.people.forEach((person: Person) => {
+        if (person.roles.includes('tutor') || person.roles.includes('tutee'))
+          aspects.current.add('tutoring');
+        if (person.roles.includes('mentor') || person.roles.includes('mentee'))
+          aspects.current.add('mentoring');
+        if (selected.findIndex((s) => s.value === person.id) < 0)
+          selected.push({
+            value: person.id,
+            label: person.name || person.id,
+            photo: person.photo,
+          });
       });
-      m.subjects.forEach((subject: string) => subjects.add(subject));
-      if (m.times) m.times.forEach((time: TimeslotJSON) => times.push(time));
-      message +=
-        !m.message.endsWith(' ') && !message ? `${m.message} ` : m.message;
     });
+    return selected;
+  });
+  const [subjects, setSubjects] = useState<SubjectOption[]>(() => {
+    const selected: Set<string> = new Set();
+    matching.forEach((request: RequestJSON) => {
+      request.subjects.forEach((subject: string) => selected.add(subject));
+    });
+    return [...selected].map((s) => ({ label: s, value: s }));
+  });
+  const [times, setTimes] = useState<Availability>(new Availability());
+  const [message, setMessage] = useState<string>('');
+
+  const onMessageChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
+    setMessage(evt.currentTarget.value);
+  }, []);
+
+  useEffect(() => {
+    subjects.forEach((s) => {
+      if (s.aspect) aspects.current.add(s.aspect);
+    });
+  }, [subjects]);
+
+  const match = useMemo(() => {
+    const asps: Aspect[] = [...aspects.current];
+    const target: Person = {
+      id: value.id,
+      name: value.name,
+      photo: value.photo,
+      roles: [],
+      handle: uuid(),
+    };
+    if (asps.includes('tutoring')) target.roles.push('tutor');
+    if (asps.includes('mentoring')) target.roles.push('mentor');
+    const people: Person[] = [
+      target,
+      ...students.map((s: UserOption) => {
+        const student: Person = {
+          id: s.value,
+          name: s.label,
+          photo: s.photo || '',
+          roles: [],
+          handle: uuid(),
+        };
+        if (asps.includes('tutoring')) student.roles.push('tutee');
+        if (asps.includes('mentoring')) student.roles.push('mentee');
+        return student;
+      }),
+    ];
     return new Match({
+      times,
       people,
       message,
-      subjects: [...subjects],
-      times: Availability.fromJSON(times),
+      subjects: subjects.map((s) => s.value),
       creator: {
         id: user.id,
         name: user.name,
@@ -89,7 +138,7 @@ export default memo(function MatchPage({
         handle: uuid(),
       },
     });
-  });
+  }, [value, user, students, subjects, times, message]);
 
   const onSubmit = useCallback(
     async (event: FormEvent) => {
@@ -125,15 +174,6 @@ export default memo(function MatchPage({
     [match]
   );
 
-  const [students, setStudents] = useState<Option<string>[]>([]);
-  const [subjects, setSubjects] = useState<Option<string>[]>([]);
-  const [times, setTimes] = useState<Availability>(new Availability());
-  const [message, setMessage] = useState<string>('');
-
-  const onMessageChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
-    setMessage(evt.currentTarget.value);
-  }, []);
-
   return (
     <div className={styles.wrapper}>
       <Loader active={loading} checked={checked} />
@@ -144,7 +184,8 @@ export default memo(function MatchPage({
         <Result user={User.fromJSON(value)} className={styles.display} />
         <form className={styles.form} onSubmit={onSubmit}>
           <UserSelect
-            label={t('common:tutors')}
+            required
+            label={t('common:students')}
             onSelectedChange={setStudents}
             selected={students}
             className={styles.field}
@@ -178,7 +219,9 @@ export default memo(function MatchPage({
             maxLength={700}
             label={t('match:message')}
             placeholder={t('match:message-placeholder', {
+              student: students[0] ? students[0].label.split(' ')[0] : 'Nick',
               subject: subjects[0] ? subjects[0].label : 'Computer Science',
+              tutor: value.name.split(' ')[0],
             })}
             onChange={onMessageChange}
             value={message}
@@ -187,7 +230,7 @@ export default memo(function MatchPage({
           />
           <Button
             className={styles.btn}
-            label={t('match:send-btn')}
+            label={t('match:create-btn')}
             disabled={loading}
             raised
             arrow

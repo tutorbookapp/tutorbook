@@ -3,7 +3,7 @@
   "subjects": "Subjects",
   "times": "Times",
   "message": "Message",
-  "message-placeholder": "I could really use your help with my {{subject}} project...",
+  "message-placeholder": "Ex: {{student}} really needs help with a {{subject}} project. {{tutor}} seemed like a good fit so I'll let you two take it from here!",
   "create-btn": "Create Match",
   "update-btn": "Update Match"
 }

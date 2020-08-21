@@ -16,7 +16,7 @@ interface SubjectHit extends ObjectWithObjectID {
   name: string;
 }
 
-interface Subject extends Option<string> {
+export interface SubjectOption extends Option<string> {
   aspect?: Aspect;
 }
 
@@ -44,13 +44,14 @@ export default function SubjectSelect({
   aspect,
   grade,
   ...props
-}: SelectControllerProps<string, Subject> & SubjectSelectProps): JSX.Element {
+}: SelectControllerProps<string, SubjectOption> &
+  SubjectSelectProps): JSX.Element {
   // Directly control the `Select` component with this internal state.
-  const [selectedOptions, setSelectedOptions] = useState<Subject[]>(
+  const [selectedOptions, setSelectedOptions] = useState<SubjectOption[]>(
     selected || []
   );
   const onSelectedOptionsChange = useCallback(
-    (os: Subject[]) => {
+    (os: SubjectOption[]) => {
       setSelectedOptions(os);
       if (onSelectedChange) onSelectedChange(os);
       if (onChange) onChange(os.map(({ value: val }) => val));
@@ -73,7 +74,7 @@ export default function SubjectSelect({
           : undefined;
       const optionalFilters: string[] | undefined =
         grade !== undefined ? [`grades:${grade}`] : undefined;
-      const suggestions: Subject[] = [];
+      const suggestions: SubjectOption[] = [];
       await Promise.all(
         searchIndexes.map(async (index: SearchIndex) => {
           const res: SearchResponse<SubjectHit> = await index.search(query, {
@@ -95,7 +96,7 @@ export default function SubjectSelect({
   // Sync the controlled values (i.e. subject codes) with the internally stored
   // `selectedOptions` state **only** if they don't already match.
   useEffect(() => {
-    setSelectedOptions((prev: Option<string>[]) => {
+    setSelectedOptions((prev: SubjectOption[]) => {
       // If they already match, do nothing.
       if (!value) return prev;
       if (
@@ -116,7 +117,7 @@ export default function SubjectSelect({
 
   // Expose API surface to directly control the `selectedOptions` state.
   useEffect(() => {
-    setSelectedOptions((prev: Option<string>[]) => {
+    setSelectedOptions((prev: SubjectOption[]) => {
       if (!selected || equal(prev, selected)) return prev;
       return selected;
     });

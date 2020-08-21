@@ -7,6 +7,10 @@ import Select, { SelectControllerProps } from 'components/select';
 import { useUser } from 'lib/account';
 import { Option, User, UserJSON, UsersQuery } from 'lib/model';
 
+export interface UserOption extends Option<string> {
+  photo?: string;
+}
+
 /**
  * Each `Option` object's label is the user's name and value is the user's uID.
  * We use a `Query` object and call the `/api/users` API endpoint to get
@@ -22,21 +26,21 @@ export default function UserSelect({
   selected,
   onSelectedChange,
   ...props
-}: SelectControllerProps<string>): JSX.Element {
+}: SelectControllerProps<string, UserOption>): JSX.Element {
   // Only show users that are either:
   // a) Within one of the orgs that the current user is an admin of.
   // b) A child of the current user.
   const { user, orgs } = useUser();
 
   // Store a cache of labels fetched (i.e. a map of values and labels).
-  const cache = useRef<Record<string, string>>({});
+  const cache = useRef<Record<string, { name: string; photo: string }>>({});
 
   // Directly control the `Select` component (just like the `SubjectSelect`).
-  const [selectedOptions, setSelectedOptions] = useState<Option<string>[]>(
+  const [selectedOptions, setSelectedOptions] = useState<UserOption[]>(
     selected || []
   );
   const onSelectedOptionsChange = useCallback(
-    (os: Option<string>[]) => {
+    (os: UserOption[]) => {
       setSelectedOptions(os);
       if (onSelectedChange) onSelectedChange(os);
       if (onChange) onChange(os.map(({ value: val }) => val));
@@ -46,8 +50,8 @@ export default function UserSelect({
 
   // Call the `/api/users` API endpoint to get suggestions.
   const userToOption = useCallback((u: User | UserJSON) => {
-    cache.current[u.id] = u.name;
-    return { label: u.name, value: u.id };
+    cache.current[u.id] = { name: u.name, photo: u.photo };
+    return { value: u.id, label: u.name, photo: u.photo };
   }, []);
   const getSuggestions = useCallback(
     async (query = '') => {
@@ -66,7 +70,7 @@ export default function UserSelect({
             parents: [{ label: user.name, value: user.id }],
           }).search()
         );
-      const suggestions: Option<string>[] = [];
+      const suggestions: UserOption[] = [];
       (await Promise.all(promises)).forEach(({ users }) => {
         users.forEach((u: User) => {
           if (suggestions.findIndex(({ value: id }) => id === u.id) < 0)
@@ -81,7 +85,7 @@ export default function UserSelect({
   // Sync the controlled values (i.e. subject codes) with the internally stored
   // `selectedOptions` state **only** if they don't already match.
   useEffect(() => {
-    setSelectedOptions((prev: Option<string>[]) => {
+    setSelectedOptions((prev: UserOption[]) => {
       // If they already match, do nothing.
       if (!value) return prev;
       if (
@@ -105,7 +109,8 @@ export default function UserSelect({
       void updateLabels();
       // Then, temporarily update the options based on the IDs and cache.
       return value.map((id) => ({
-        label: cache.current[id] || id,
+        label: cache.current[id] ? cache.current[id].name : id,
+        photo: cache.current[id] ? cache.current[id].photo : '',
         value: id,
       }));
     });
@@ -113,7 +118,7 @@ export default function UserSelect({
 
   // Expose API surface to directly control the `selectedOptions` state.
   useEffect(() => {
-    setSelectedOptions((prev: Option<string>[]) => {
+    setSelectedOptions((prev: UserOption[]) => {
       if (!selected || equal(prev, selected)) return prev;
       return selected;
     });

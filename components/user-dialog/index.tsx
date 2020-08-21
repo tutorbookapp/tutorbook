@@ -24,7 +24,7 @@ import EditPage from './edit-page';
 import MatchPage from './match-page';
 import styles from './user-dialog.module.scss';
 
-type Page = 'edit' | 'display' | 'request';
+type Page = 'edit' | 'display' | 'match';
 
 // Animation durations and easing from the MWC spec and Sass implementation.
 // @see {@link https://material.io/design/motion/the-motion-system.html#shared-axis}
@@ -111,7 +111,7 @@ export default function UserDialog({
 
   const { ref: displayRef, animate: animateDisplay } = useWebAnimations();
   const { ref: editRef, animate: animateEdit } = useWebAnimations();
-  const { ref: requestRef, animate: animateRequest } = useWebAnimations();
+  const { ref: matchRef, animate: animateMatch } = useWebAnimations();
 
   const [active, setActive] = useState<Page>(initialPage);
   const prevActive = usePrevious<Page>(active);
@@ -126,24 +126,24 @@ export default function UserDialog({
         animateEdit(incomingFadeIn);
         animateDisplay(outgoingFadeIn);
         break;
-      case 'request':
-        animateRequest(incomingFadeIn);
+      case 'match':
+        animateMatch(incomingFadeIn);
         animateDisplay(outgoingFadeIn);
         break;
       default:
         animateDisplay(incomingFadeOut);
         if (prevActive === 'edit') animateEdit(outgoingFadeOut);
-        if (prevActive === 'request') animateRequest(outgoingFadeOut);
+        if (prevActive === 'match') animateMatch(outgoingFadeOut);
         break;
     }
-  }, [active, prevActive, animateDisplay, animateEdit, animateRequest]);
+  }, [active, prevActive, animateDisplay, animateEdit, animateMatch]);
 
   const openEdit = useCallback(() => {
     setActive('edit');
     return new Promise<void>((resolve) => setTimeout(resolve, duration));
   }, []);
-  const openRequest = useCallback(() => {
-    setActive('request');
+  const openMatch = useCallback(() => {
+    setActive('match');
     return new Promise<void>((resolve) => setTimeout(resolve, duration));
   }, []);
   const openDisplay = useCallback(() => {
@@ -152,7 +152,7 @@ export default function UserDialog({
   }, []);
 
   const { user: currentUser } = useUser();
-  const openMatch = useCallback(async () => {
+  const openRequest = useCallback(async () => {
     const request: RequestJSON = {
       id: `temp-${uuid()}`,
       subjects: user.tutoring.searches,
@@ -221,8 +221,8 @@ export default function UserDialog({
         <EditPage value={user} onChange={onChange} openDisplay={openDisplay} />
       </div>
       <div
-        className={cn(styles.page, { [styles.active]: active === 'request' })}
-        ref={requestRef as RefObject<HTMLDivElement>}
+        className={cn(styles.page, { [styles.active]: active === 'match' })}
+        ref={matchRef as RefObject<HTMLDivElement>}
       >
         <MatchPage value={user} openDisplay={openDisplay} matching={matching} />
       </div>

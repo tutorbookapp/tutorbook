@@ -251,10 +251,14 @@ export default memo(function DisplayPage({
       </div>
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
-          <Chip icon='edit' label='Edit profile' onClick={openEdit} />
-          <Chip icon='send' label='Send request' onClick={openRequest} />
+          <Chip icon='group_add' label='Create match' onClick={openMatch} />
+          <Chip
+            icon='person_add'
+            label='Create request'
+            onClick={openRequest}
+          />
           <Chip icon='email' label='Send email' onClick={openEmail} />
-          <Chip icon='search' label='Find match' onClick={openMatch} />
+          <Chip icon='edit' label='Edit profile' onClick={openEdit} />
         </ChipSet>
       </div>
     </div>
