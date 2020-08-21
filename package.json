@@ -10,8 +10,7 @@
     "build": "cd sw && webpack && cd .. && next build",
     "start": "next start",
     "analyze": "ANALYZE=true next build",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "intl": "formatjs extract --out-file lib/intl/locales/en.json components/*/*.ts*"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ."
   },
   "keywords": [
     "Tutorbook",
