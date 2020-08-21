@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 
-import UserDialog from 'components/user-dialog';
+import { UserDialogProps } from 'components/user-dialog';
 
 import {
   Availability,
@@ -16,6 +17,10 @@ import ResultsList from './results-list';
 import SearchBar from './search-bar';
 import Pagination from './pagination';
 import styles from './people.module.scss';
+
+const UserDialog = dynamic<UserDialogProps>(() =>
+  import('components/user-dialog')
+);
 
 interface PeopleProps {
   org: Org;
