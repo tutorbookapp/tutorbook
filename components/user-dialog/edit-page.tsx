@@ -66,7 +66,7 @@ export default memo(function EditPage({
       // overlay and letting the user edit their newly created/updated user.
       setTimeout(() => openDisplay().then(() => setLoading(false)), 1000);
     },
-    [openDisplay, mutate, user]
+    [onChange, openDisplay, mutate, user]
   );
 
   const { t } = useTranslation();
@@ -99,11 +99,20 @@ export default memo(function EditPage({
             renderToPortal
             langs
             availability
+            bio
+          />
+        </div>
+        <div className={styles.divider} />
+        <div className={styles.inputs}>
+          <Inputs
+            value={user}
+            onChange={onUserChange}
+            className={styles.field}
+            renderToPortal
             mentoringSubjects
             mentoringSearches
             tutoringSubjects
             tutoringSearches
-            bio
           />
         </div>
         <div className={styles.divider} />
