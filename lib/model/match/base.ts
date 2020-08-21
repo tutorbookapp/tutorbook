@@ -13,7 +13,6 @@ import construct from '../construct';
 import { Person } from './shared';
 
 type DocumentData = admin.firestore.DocumentData;
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
 
 export interface BaseInterface {

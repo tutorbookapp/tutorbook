@@ -7,7 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Placeholder from 'components/placeholder';
 import Result from 'components/search/result';
 
-import { TCallback, User, UserJSON, UsersQuery } from 'lib/model';
+import { Callback, TCallback, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/list-users';
 
 import { config, width } from './spring-animation';

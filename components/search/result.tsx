@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect } from 'react';
+import { SyntheticEvent } from 'react';
 import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 

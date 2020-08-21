@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { animated, useSpring } from 'react-spring';
 import { Chip, ChipSet } from '@rmwc/chip';
 import { Ripple } from '@rmwc/ripple';

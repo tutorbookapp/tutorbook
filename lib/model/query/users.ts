@@ -3,6 +3,8 @@ import url from 'url';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
+import { ListUsersRes } from 'lib/api/list-users';
+
 import { Availability, AvailabilityJSON } from '../availability';
 import { Aspect, Check, User, UserJSON } from '../user';
 import { ApiError } from '../errors';

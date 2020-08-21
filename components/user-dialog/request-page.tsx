@@ -165,12 +165,10 @@ export default memo(function RequestPage({
             data,
             ...prev.requests.slice(idx + 1),
           ];
-          debugger;
           return { requests, hits: prev.hits };
         });
         setMatching((prev: RequestJSON[]) => {
           const idx = prev.findIndex((r) => r.id === request.id);
-          debugger;
           if (idx < 0) return prev;
           return [...prev.slice(0, idx), data, ...prev.slice(idx + 1)];
         });

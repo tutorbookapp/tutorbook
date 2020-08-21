@@ -3,17 +3,9 @@ import { Dialog } from '@rmwc/dialog';
 import { v4 as uuid } from 'uuid';
 import cn from 'classnames';
 import useSWR, { mutate } from 'swr';
-import useTranslation from 'next-translate/useTranslation';
 import useWebAnimations from '@wellyshen/use-web-animations';
 
-import {
-  Callback,
-  FCallback,
-  RequestJSON,
-  User,
-  UserJSON,
-  UsersQuery,
-} from 'lib/model';
+import { Callback, RequestJSON, User, UserJSON } from 'lib/model';
 import { usePrevious } from 'lib/hooks';
 
 import DisplayPage from './display-page';
@@ -75,7 +67,6 @@ const outgoingFadeOut = {
 
 export interface UserDialogProps {
   id?: string;
-  setQuery: FCallback<UsersQuery>;
   initialData?: UserJSON;
   initialPage?: Page;
   onClosed: () => void;
@@ -88,7 +79,6 @@ export interface UserDialogProps {
 // configured via the `page` prop.
 export default function UserDialog({
   onClosed,
-  setQuery,
   initialData = new User().toJSON(),
   initialPage = 'display',
   matching,
@@ -194,12 +184,7 @@ export default function UserDialog({
         className={cn(styles.page, { [styles.active]: active === 'match' })}
         ref={matchRef as RefObject<HTMLDivElement>}
       >
-        <MatchPage
-          value={user}
-          openDisplay={openDisplay}
-          matching={matching}
-          closeDialog={closeDialog}
-        />
+        <MatchPage value={user} openDisplay={openDisplay} matching={matching} />
       </div>
       <div
         className={cn(styles.page, { [styles.active]: active === 'request' })}

@@ -4,7 +4,6 @@ import UserDialog from 'components/user-dialog';
 
 import {
   Availability,
-  Option,
   Org,
   RequestJSON,
   UserJSON,
@@ -62,7 +61,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
     const subjects = matching.reduce((acc, cur) => {
       cur.subjects.forEach((subject: string) => acc.add(subject));
       return acc;
-    }, new Set());
+    }, new Set<string>());
     const availability = matching.reduce((a, c) => {
       if (!c.times) return a;
       return new Availability(...a, ...Availability.fromJSON(c.times));
@@ -72,7 +71,7 @@ export default function People({ org }: PeopleProps): JSX.Element {
         new UsersQuery({
           ...prev,
           availability,
-          subjects: [...subjects].map((s) => ({ label: s, value: s })),
+          subjects: [...subjects].map((s: string) => ({ label: s, value: s })),
           query: '',
           page: 0,
         })
@@ -92,7 +91,6 @@ export default function People({ org }: PeopleProps): JSX.Element {
           onClosed={onViewingClosed}
           initialData={viewing}
           initialPage={initialPage}
-          setQuery={setQuery}
           matching={matching}
           setMatching={setMatching}
         />
