@@ -6,7 +6,7 @@
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0",
+    "dev": "NODE_OPTIONS='--inspect' next dev --hostname 0.0.0.0",
     "build": "cd sw && webpack && cd .. && next build",
     "start": "next start",
     "analyze": "ANALYZE=true next build",
