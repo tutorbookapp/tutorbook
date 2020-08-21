@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import admin from 'firebase-admin';
 
-import { requestUpdate, matchUpdate, userUpdate } from './algolia';
+import { matchUpdate, requestUpdate, userUpdate } from './algolia';
 import syncUserName from './sync-user-name';
 import addPeopleIds from './add-people-ids';
 

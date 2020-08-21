@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import UserSelect from 'components/user-select';
 import SubjectSelect from 'components/subject-select';
 
-import { MatchJSON, Person, Role, TCallback, Option } from 'lib/model';
+import { MatchJSON, Option, Person, Role, TCallback } from 'lib/model';
 
 import styles from './matches.module.scss';
 

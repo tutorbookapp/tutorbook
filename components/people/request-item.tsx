@@ -6,7 +6,6 @@ import { Icon } from '@rmwc/icon';
 import cn from 'classnames';
 
 import Utils from 'lib/utils';
-
 import { Callback, RequestJSON } from 'lib/model';
 
 import styles from './request-item.module.scss';
