@@ -21,7 +21,7 @@ import { usePrevious } from 'lib/hooks';
 
 import DisplayPage from './display-page';
 import EditPage from './edit-page';
-import RequestPage from './request-page';
+import MatchPage from './match-page';
 import styles from './user-dialog.module.scss';
 
 type Page = 'edit' | 'display' | 'request';
@@ -224,11 +224,7 @@ export default function UserDialog({
         className={cn(styles.page, { [styles.active]: active === 'request' })}
         ref={requestRef as RefObject<HTMLDivElement>}
       >
-        <RequestPage
-          value={user}
-          openDisplay={openDisplay}
-          matching={matching}
-        />
+        <MatchPage value={user} openDisplay={openDisplay} matching={matching} />
       </div>
     </Dialog>
   );

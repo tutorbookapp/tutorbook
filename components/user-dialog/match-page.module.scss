@@ -25,6 +25,13 @@
     padding: 0 48px;
     overflow: auto;
 
+    .display {
+      max-width: 500px;
+      margin: 32px auto;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
     .form {
       max-width: 500px;
       margin: 32px auto;
