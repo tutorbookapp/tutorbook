@@ -38,3 +38,5 @@ export default function Loader({ active, checked }: Props): JSX.Element {
     </div>
   );
 }
+
+Loader.defaultProps = { checked: false };

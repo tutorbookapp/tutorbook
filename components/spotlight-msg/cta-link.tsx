@@ -2,13 +2,6 @@ import Link from 'lib/intl/link';
 
 import styles from './cta-link.module.scss';
 
-export interface CTALinkProps {
-  label: string;
-  href: string;
-  small?: boolean;
-  wide?: boolean;
-}
-
 function Arrow(): JSX.Element {
   return (
     <svg
@@ -24,6 +17,13 @@ function Arrow(): JSX.Element {
       />
     </svg>
   );
+}
+
+export interface CTALinkProps {
+  label: string;
+  href: string;
+  small?: boolean;
+  wide?: boolean;
 }
 
 export default function CTALink({
@@ -53,3 +53,5 @@ export default function CTALink({
     </a>
   );
 }
+
+CTALink.defaultProps = { small: false, wide: false };

@@ -260,3 +260,5 @@ export default function Footer({
     </footer>
   );
 }
+
+Footer.defaultProps = { formWidth: false };

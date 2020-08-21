@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import CTALink, { CTALinkProps } from './cta-link';
 import styles from './spotlight-msg.module.scss';
 
-interface SpotlightMsgProps {
+export interface SpotlightMsgProps {
   gray?: boolean;
   flipped?: boolean;
   headline: string;
@@ -82,3 +82,5 @@ export default function SpotlightMsg({
     </div>
   );
 }
+
+SpotlightMsg.defaultProps = { gray: false, flipped: false };

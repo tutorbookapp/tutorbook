@@ -43,3 +43,5 @@ export default function Checkmark({
     </svg>
   );
 }
+
+Checkmark.defaultProps = { className: '', black: false, checked: false };

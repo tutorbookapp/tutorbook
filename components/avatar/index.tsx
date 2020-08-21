@@ -40,3 +40,5 @@ export default function Avatar({
     </div>
   );
 }
+
+Avatar.defaultProps = { src: undefined, loading: false, verified: undefined };

@@ -43,6 +43,8 @@ function Action({ label, href, as, onClick }: ActionProps): JSX.Element {
   return <ActionButton label={label} onClick={onClick || (() => {})} />;
 }
 
+Action.defaultProps = { href: '', as: undefined, onClick: () => {} };
+
 interface TitleProps {
   header: string;
   body: string;
@@ -75,3 +77,5 @@ export default function Title({
     </header>
   );
 }
+
+Title.defaultProps = { actions: [] };

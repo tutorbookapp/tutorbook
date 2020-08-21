@@ -129,3 +129,5 @@ export default function FilterForm({
     </>
   );
 }
+
+FilterForm.defaultProps = { thirdPerson: false };
