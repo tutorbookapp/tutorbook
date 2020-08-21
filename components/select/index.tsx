@@ -373,6 +373,7 @@ export default class Select<
       value,
       onChange,
       getSuggestions,
+      noResultsMessage,
       renderToPortal,
       autoOpenMenu,
       singleLine,
