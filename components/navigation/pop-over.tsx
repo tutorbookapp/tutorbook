@@ -49,16 +49,18 @@ interface PopOverButtonProps {
   onClick: () => void;
   children: string;
   icon?: string;
+  id?: string;
 }
 
 export function PopOverButton({
   onClick,
   children,
   icon,
+  id,
 }: PopOverButtonProps): JSX.Element {
   return (
     <Ripple>
-      <button type='button' onClick={onClick} className={styles.item}>
+      <button id={id} type='button' onClick={onClick} className={styles.item}>
         {icon && (
           <div className={styles.icon}>
             <Icon icon={icon} />
@@ -177,6 +179,7 @@ export default function PopOverMenu({
           ))}
           <div className={styles.line} />
           <PopOverButton
+            id='create-org'
             icon='add'
             onClick={() =>
               IntercomAPI('showNewMessage', t('common:new-org-msg'))
@@ -185,6 +188,7 @@ export default function PopOverMenu({
             {t('common:new-org-btn')}
           </PopOverButton>
           <PopOverButton
+            id='get-help'
             icon='contact_support'
             onClick={() => IntercomAPI('show')}
           >
@@ -192,6 +196,7 @@ export default function PopOverMenu({
           </PopOverButton>
           <div className={styles.line} />
           <PopOverButton
+            id='logout'
             onClick={async () => {
               setLoggingOut(true);
               const { default: firebase } = await import('lib/firebase');
