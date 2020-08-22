@@ -66,9 +66,22 @@ export default memo(function MatchPage({
   const [times, setTimes] = useState<Availability>(new Availability());
   const [message, setMessage] = useState<string>('');
 
+  const msgPlaceholder = useMemo(
+    () =>
+      t('match:message-placeholder', {
+        student: students[0] ? students[0].label.split(' ')[0] : 'Nick',
+        subject: subjects[0] ? subjects[0].label : 'Computer Science',
+        tutor: value.name.split(' ')[0],
+      }),
+    [t, students, subjects, value.name]
+  );
+
   const onMessageChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
     setMessage(evt.currentTarget.value);
   }, []);
+  const onMessageFocus = useCallback(() => {
+    setMessage((prev: string) => prev || msgPlaceholder.replace('Ex: ', ''));
+  }, [msgPlaceholder]);
 
   useEffect(() => {
     subjects.forEach((s) => {
@@ -106,7 +119,14 @@ export default memo(function MatchPage({
           });
       });
     });
-    setStudents(selected);
+    if (selected.length) setStudents(selected);
+  }, [matching]);
+  useEffect(() => {
+    let msg = '';
+    matching.forEach((r: RequestJSON) => {
+      msg += !msg && !r.message.endsWith(' ') ? r.message : ` ${r.message}`;
+    });
+    if (msg) setMessage(msg);
   }, [matching]);
 
   const match = useMemo(() => {
@@ -231,12 +251,9 @@ export default memo(function MatchPage({
             characterCount
             maxLength={700}
             label={t('common:message')}
-            placeholder={t('match:message-placeholder', {
-              student: students[0] ? students[0].label.split(' ')[0] : 'Nick',
-              subject: subjects[0] ? subjects[0].label : 'Computer Science',
-              tutor: value.name.split(' ')[0],
-            })}
+            placeholder={msgPlaceholder}
             onChange={onMessageChange}
+            onFocus={onMessageFocus}
             value={message}
             className={styles.field}
             outlined
