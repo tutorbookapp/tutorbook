@@ -78,6 +78,7 @@ export default memo(function FiltersSheet({
           {data &&
             data.requests.map((request: RequestJSON) => (
               <RequestItem
+                key={request.id}
                 checked={matching.findIndex((r) => r.id === request.id) >= 0}
                 setChecked={(param: CallbackParam<boolean>) => {
                   let checked = false;
