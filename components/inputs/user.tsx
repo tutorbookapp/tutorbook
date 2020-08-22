@@ -71,10 +71,9 @@ export default function UserInputs({
   const sharedProps = useMemo(
     () => ({
       outlined: true,
-      renderToPortal,
       className,
     }),
-    [renderToPortal, className]
+    [className]
   );
 
   const shared = (key: Input) => ({
@@ -157,6 +156,7 @@ export default function UserInputs({
             onChange(new User({ ...value, langs }))
           }
           required
+          renderToPortal={renderToPortal}
         />
       )}
       {availability && (
@@ -167,6 +167,7 @@ export default function UserInputs({
             onChange(new User({ ...value, availability }))
           }
           required={availabilityRequired}
+          renderToPortal={renderToPortal}
         />
       )}
       {mentoringSubjects && (
@@ -185,6 +186,7 @@ export default function UserInputs({
           }
           aspect='mentoring'
           required={mentoringRequired}
+          renderToPortal={renderToPortal}
         />
       )}
       {mentoringSearches && (
@@ -203,6 +205,7 @@ export default function UserInputs({
           }
           aspect='mentoring'
           required={mentoringRequired}
+          renderToPortal={renderToPortal}
         />
       )}
       {tutoringSubjects && (
@@ -218,6 +221,7 @@ export default function UserInputs({
           }
           aspect='tutoring'
           required={tutoringRequired}
+          renderToPortal={renderToPortal}
         />
       )}
       {tutoringSearches && (
@@ -233,6 +237,7 @@ export default function UserInputs({
           }
           aspect='tutoring'
           required={tutoringRequired}
+          renderToPortal={renderToPortal}
         />
       )}
       {bio && (
