@@ -125,6 +125,17 @@ export default function SubjectSelect({
     });
   }, [selected]);
 
+  // Don't allow selections not included in `options` prop.
+  useEffect(() => {
+    setSelectedOptions((prev: SubjectOption[]) => {
+      const os = prev.filter((s) => !options || options.includes(s.value));
+      if (equal(os, prev)) return prev;
+      if (onSelectedChange) onSelectedChange(os);
+      if (onChange) onChange(os.map(({ value: val }) => val));
+      return os;
+    });
+  }, [options, onSelectedChange, onChange]);
+
   const { t } = useTranslation();
   const prevOptions = usePrevious(options);
 
