@@ -86,7 +86,7 @@ const anonymizeUsers = (users, blacklist = BLACKLIST) =>
  */
 const anonymize = (database) => {
   const data = Object.values(database['__collections__'].users);
-  const users = anonymizeUsers(replaceEmails(data));
+  const users = replaceEmails(data);
   return {
     __collections__: {
       ...database['__collections__'],
