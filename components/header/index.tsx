@@ -64,7 +64,7 @@ export default function Title({
           <p className={styles.body}>{body}</p>
         </div>
       </div>
-      {actions && actions.length && (
+      {actions && !!actions.length && (
         <div className={styles.menu}>
           <div />
           <div className={styles.actions}>
