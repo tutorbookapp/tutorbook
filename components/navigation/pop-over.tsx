@@ -1,5 +1,5 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { mutate } from 'swr';
@@ -157,7 +157,7 @@ export default function PopOverMenu({
           <PopOverLink href='/signup'>{t('common:profile')}</PopOverLink>
           <PopOverLink href='/dashboard'>{t('common:dashboard')}</PopOverLink>
           {orgs.map((org: OrgJSON) => (
-            <>
+            <Fragment key={org.id}>
               <div className={styles.line} />
               <PopOverAccountHeader account={org} />
               <PopOverLink href='/[org]' as={`/${org.id}`}>
@@ -175,7 +175,7 @@ export default function PopOverMenu({
               <PopOverLink href='/[org]/matches' as={`/${org.id}/matches`}>
                 {t('common:matches')}
               </PopOverLink>
-            </>
+            </Fragment>
           ))}
           <div className={styles.line} />
           <PopOverButton

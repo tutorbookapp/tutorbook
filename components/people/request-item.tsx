@@ -46,7 +46,9 @@ export default function RequestItem({
             <ChipSet className={styles.subjects}>
               {request &&
                 request.subjects.map((subject: string) => (
-                  <Chip className={styles.subject}>{subject}</Chip>
+                  <Chip key={subject} className={styles.subject}>
+                    {subject}
+                  </Chip>
                 ))}
             </ChipSet>
           </div>

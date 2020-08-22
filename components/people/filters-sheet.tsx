@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo } from 'react';
 import { animated, useSpring } from 'react-spring';
+import { v4 as uuid } from 'uuid';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 
@@ -33,7 +34,7 @@ export default memo(function FiltersSheet({
     () =>
       Array(5)
         .fill(null)
-        .map(() => <RequestItem loading />),
+        .map(() => <RequestItem key={uuid()} loading />),
     []
   );
   const inputs = useMemo(

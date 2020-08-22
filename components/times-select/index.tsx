@@ -9,6 +9,7 @@ import {
 import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
+import { v4 as uuid } from 'uuid';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -122,7 +123,7 @@ export default function TimesSelect({
           {Array(7)
             .fill(null)
             .map((_: null, weekday: number) => (
-              <div className={styles.headerWrapper}>
+              <div key={weekday} className={styles.headerWrapper}>
                 <h2 className={styles.headerContent}>
                   <div className={styles.day}>
                     {TimeUtils.getNextDateWithDay(weekday as DayAlias)
@@ -139,7 +140,7 @@ export default function TimesSelect({
           {Array(7)
             .fill(null)
             .map(() => (
-              <div className={styles.headerCell} />
+              <div key={uuid()} className={styles.headerCell} />
             ))}
           <div className={styles.scroller} />
         </div>
@@ -152,7 +153,7 @@ export default function TimesSelect({
                     {Array(24)
                       .fill(null)
                       .map((_: null, hour: number) => (
-                        <div className={styles.timeWrapper}>
+                        <div key={hour} className={styles.timeWrapper}>
                           <span className={styles.timeLabel}>
                             {TimeUtils.getDateWithTime(
                               hour
@@ -174,7 +175,7 @@ export default function TimesSelect({
                       {Array(24)
                         .fill(null)
                         .map(() => (
-                          <div className={styles.line} />
+                          <div key={uuid()} className={styles.line} />
                         ))}
                     </div>
                     <div className={styles.space} />
@@ -184,10 +185,11 @@ export default function TimesSelect({
                       ref={cellsRef}
                     >
                       {options.map((timeslot: Timeslot) => (
-                        <OptionRnd value={timeslot} />
+                        <OptionRnd key={uuid()} value={timeslot} />
                       ))}
                       {value.map((timeslot: Timeslot, idx: number) => (
                         <TimeslotRnd
+                          key={uuid()}
                           value={timeslot}
                           onChange={(updated: Timeslot) => {
                             onChange(
@@ -203,7 +205,7 @@ export default function TimesSelect({
                       {Array(7)
                         .fill(null)
                         .map(() => (
-                          <div className={styles.cell} />
+                          <div key={uuid()} className={styles.cell} />
                         ))}
                     </div>
                   </div>
