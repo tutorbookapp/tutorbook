@@ -34,6 +34,7 @@ interface UniqueSelectProps<T, O extends Option<T> = Option<T>> {
   value: O[];
   onChange: TCallback<O[]>;
   getSuggestions: (query: string) => Promise<O[]>;
+  forceUpdateSuggestions?: boolean;
   noResultsMessage: string;
   renderToPortal?: boolean;
   autoOpenMenu?: boolean;
@@ -72,7 +73,10 @@ export interface SelectControls<T, O extends Option<T> = Option<T>> {
 
 export type SelectControllerProps<T, O extends Option<T> = Option<T>> = Omit<
   SelectProps<T, O>,
-  keyof SelectControls<T, O> | 'getSuggestions' | 'noResultsMessage'
+  | keyof SelectControls<T, O>
+  | 'getSuggestions'
+  | 'noResultsMessage'
+  | 'forceUpdateSuggestions'
 > &
   Partial<SelectControls<T, O>>;
 
@@ -124,9 +128,11 @@ export default class Select<
    * (the `TextField`) changes shape.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
-  public componentDidUpdate(): void {
+  public componentDidUpdate({
+    forceUpdateSuggestions: prevForceUpdateSuggestions,
+  }: SelectProps<T, O>): void {
     const { inputValue } = this.state;
-    const { focused } = this.props;
+    const { focused, forceUpdateSuggestions } = this.props;
     const shouldChangeInputValue: boolean =
       (inputValue === '' || inputValue === '\xa0') &&
       this.inputValue !== inputValue;
@@ -137,6 +143,9 @@ export default class Select<
       (this.foundationRef.current as any).autoPosition_();
     }
     if (focused && this.inputRef.current) this.inputRef.current.focus();
+    if (forceUpdateSuggestions && !prevForceUpdateSuggestions) {
+      void this.updateSuggestions();
+    }
   }
 
   /**
@@ -374,6 +383,7 @@ export default class Select<
       onChange,
       getSuggestions,
       noResultsMessage,
+      forceUpdateSuggestions,
       renderToPortal,
       autoOpenMenu,
       singleLine,

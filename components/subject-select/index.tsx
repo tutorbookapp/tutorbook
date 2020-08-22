@@ -7,6 +7,7 @@ import equal from 'fast-deep-equal';
 import Select, { SelectControllerProps } from 'components/select';
 
 import { Aspect, GradeAlias, Option } from 'lib/model';
+import { usePrevious } from 'lib/hooks';
 
 const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
@@ -125,6 +126,7 @@ export default function SubjectSelect({
   }, [selected]);
 
   const { t } = useTranslation();
+  const prevOptions = usePrevious(options);
 
   return (
     <Select
@@ -133,6 +135,7 @@ export default function SubjectSelect({
       onChange={onSelectedOptionsChange}
       getSuggestions={getSuggestions}
       noResultsMessage={t('common:no-subjects')}
+      forceUpdateSuggestions={!equal(prevOptions, options)}
     />
   );
 }
