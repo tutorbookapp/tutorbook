@@ -82,9 +82,6 @@ export interface Verification extends Resource {
  * @property tutoring - The subjects that the user wants a and can tutor for.
  * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
- * @property matching - An array of Firebase uIDs of students currently being
- * matched by an org admin (this way, we can maintain their state across browser
- * windows and tabs and sessions).
  * @property visible - Whether or not this user appears in search results.
  * @property token - The user's Firebase Authentication JWT `idToken`.
  */
@@ -95,7 +92,6 @@ export interface UserInterface extends AccountInterface {
   tutoring: { subjects: string[]; searches: string[] };
   langs: string[];
   parents: string[];
-  matching: string[];
   verifications: Verification[];
   visible: boolean;
   token?: string;
@@ -139,8 +135,6 @@ export class User extends Account implements UserInterface {
   public langs: string[] = [];
 
   public parents: string[] = [];
-
-  public matching: string[] = [];
 
   public verifications: Verification[] = [];
 
