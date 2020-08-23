@@ -2,7 +2,9 @@ const path = require('path');
 const to = require('await-to-js').default;
 const admin = require('firebase-admin');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+require('dotenv').config({
+  path: path.resolve(__dirname, '../../.env.production'),
+});
 
 const app = admin.initializeApp({
   credential: admin.credential.cert({
@@ -15,7 +17,7 @@ const app = admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
-const db = app.firestore().collection('partitions').doc('test');
+const db = app.firestore().collection('partitions').doc('default');
 const auth = app.auth();
 
 const createUser = async (user, emailVerified = false) => {
@@ -34,16 +36,31 @@ const createUser = async (user, emailVerified = false) => {
 };
 
 createUser({
-  name: 'John Doe',
-  email: 'john.doe@example.org',
-  phone: '+16508889345',
-  orgs: ['default'],
+  name: 'Lisa Collart',
+  email: 'lcollart@pausd.org',
+  phone: '+16503548271',
+  orgs: ['default', 'gunn'],
   availability: {},
   mentoring: { subjects: [], searches: [] },
-  tutoring: { subjects: [], searches: [] },
+  tutoring: {
+    subjects: [
+      'Math',
+      'Algebra',
+      'Geometry',
+      'Trigonometry',
+      'Analysis',
+      'Statistics',
+    ],
+    searches: [],
+  },
   langs: ['en'],
   parents: [],
-  socials: [],
+  socials: [
+    {
+      type: 'linkedin',
+      url: 'https://www.linkedin.com/in/lisa-collart-6203745a/',
+    },
+  ],
   verifications: [],
-  visible: false,
+  visible: true,
 });

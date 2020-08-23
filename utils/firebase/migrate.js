@@ -51,38 +51,37 @@ const GRADES = [
   '12th Grade',
 ];
 
-const SUBJECT_LEVELS = ['1', '2', '3', '4'];
+const SUBJECT_LEVELS = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+const updateSubjects = (subjects, validSubjects) => {
+  const all = subjects.map((subject) => {
+    const idx = validSubjects.findIndex((s) => {
+      const synonyms = s.synonyms.split(', ');
+      const valid = (name) => s.name === name || synonyms.includes(name);
+      if (valid(subject)) return true;
+      for (const grade of GRADES) {
+        if (valid(subject.replace(`${grade} `, ''))) return true;
+      }
+      for (const subjectLevel of SUBJECT_LEVELS) {
+        if (valid(subject.replace(` ${subjectLevel}`, ''))) return true;
+        if (valid(subject.replace(` ${subjectLevel}A`, ''))) return true;
+      }
+      if (valid(subject.replace(' A', ''))) return true;
+      if (valid(`${subject} Language`)) return true;
+      return false;
+    });
+    if (idx < 0) {
+      console.log(`[DEBUG] Subject "${subject}" could not be found.`);
+      debugger;
+    }
+    return idx >= 0 ? validSubjects[idx].name : subject;
+  });
+  return [...new Set(all)];
+};
 
 const users = async () => {
   const mentoringSubjects = getSubjects('mentoring');
   const tutoringSubjects = getSubjects('tutoring');
-
-  const updateSubjects = (subjects, validSubjects) => {
-    const all = subjects.map((subject) => {
-      const idx = validSubjects.findIndex((s) => {
-        if (s.name === subject) return true;
-        const synonyms = s.synonyms.split(', ');
-        if (synonyms.indexOf(subject) >= 0) return true;
-        for (const grade of GRADES) {
-          const subjectWithoutGrade = subject.replace(grade + ' ', '');
-          if (s.name === subjectWithoutGrade) return true;
-          if (synonyms.indexOf(subjectWithoutGrade) >= 0) return true;
-        }
-        for (const subjectLevel of SUBJECT_LEVELS) {
-          const subjectWithoutLevel = subject.replace(' ' + subjectLevel, '');
-          if (s.name === subjectWithoutLevel) return true;
-          if (synonyms.indexOf(subjectWithoutLevel) >= 0) return true;
-        }
-        return false;
-      });
-      if (idx < 0) {
-        console.log(`[DEBUG] Subject "${subject}" could not be found.`);
-        debugger;
-      }
-      return idx >= 0 ? validSubjects[idx].name : subject;
-    });
-    return [...new Set(all)];
-  };
 
   const updateLangs = (subjects) => {
     const langs = ['en'];
@@ -194,4 +193,4 @@ const renameAttendeesToPeople = async () => {
   );
 };
 
-triggerUpdate('users');
+module.exports = { updateSubjects };
