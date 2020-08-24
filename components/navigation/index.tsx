@@ -146,6 +146,7 @@ function DesktopNav(): JSX.Element {
         <PopOver open={open} onClose={() => setOpen(false)}>
           <button
             type='button'
+            id='open-nav'
             className={styles.avatar}
             onClick={() => setOpen(true)}
           >
