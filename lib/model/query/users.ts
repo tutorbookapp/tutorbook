@@ -42,7 +42,7 @@ export type UsersQueryJSON = Omit<UsersQueryInterface, 'availability'> & {
 export type UsersQueryURL = { [key in keyof UsersQueryInterface]?: string };
 
 export class UsersQuery extends Query implements UsersQueryInterface {
-  public aspect: Aspect = 'mentoring';
+  public aspect: Aspect = 'tutoring';
 
   public subjects: Option<string>[] = [];
 
