@@ -1,6 +1,7 @@
 {
   "update-btn": "Update user",
   "create-btn": "Create user",
+  "visible": "Visible in search results",
   "name": "Name",
   "email": "Email address",
   "phone": "Phone number",

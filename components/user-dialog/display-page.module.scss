@@ -112,7 +112,7 @@ $margin: 24px;
 
       .table {
         width: 100%;
-        margin: 24px 0 $padding;
+        margin: 24px 0;
 
         td {
           padding-top: 0;
@@ -135,6 +135,14 @@ $margin: 24px;
               @include typography.typography('body2');
             }
           }
+        }
+      }
+
+      .switch {
+        margin-bottom: $padding;
+
+        label {
+          margin-left: 16px;
         }
       }
     }

@@ -1,4 +1,5 @@
 import { Chip, ChipSet } from '@rmwc/chip';
+import { Switch } from '@rmwc/switch';
 import {
   DataTable,
   DataTableBody,
@@ -85,6 +86,12 @@ export default memo(function DisplayPage({
       }, 5000);
     },
     [onFinalChange]
+  );
+  const onVisibilityChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      onChange({ ...user, visible: evt.currentTarget.checked });
+    },
+    [onChange, user]
   );
 
   const openEmail = useCallback(() => {
@@ -247,6 +254,12 @@ export default memo(function DisplayPage({
               </DataTableBody>
             </DataTableContent>
           </DataTable>
+          <Switch
+            className={styles.switch}
+            label={t('user:visible')}
+            checked={user.visible}
+            onChange={onVisibilityChange}
+          />
         </div>
       </div>
       <div className={styles.actions}>
