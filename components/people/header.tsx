@@ -21,8 +21,8 @@ export default memo(function Header({
   setViewing,
 }: HeaderProps): JSX.Element {
   const createUser = useCallback(() => {
-    setViewing(new User().toJSON());
-  }, [setViewing]);
+    setViewing(new User({ orgs: [orgId] }).toJSON());
+  }, [setViewing, orgId]);
 
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const hideSnackbar = useCallback(() => setSnackbar(false), []);
