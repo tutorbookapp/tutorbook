@@ -1,9 +1,12 @@
 const path = require('path');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+require('dotenv').config({
+  path: path.resolve(__dirname, '../../.env.production'),
+});
 
 const updateSubjects = require('./update-subjects');
 const parse = require('csv-parse/lib/sync');
+const equal = require('fast-deep-equal');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const app = admin.initializeApp({
@@ -17,7 +20,7 @@ const app = admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
-const db = app.firestore().collection('partitions').doc('test');
+const db = app.firestore().collection('partitions').doc('default');
 
 const getSubjects = (id) => {
   return parse(fs.readFileSync(`../algolia/${id}.csv`), {
@@ -139,3 +142,27 @@ const renameAttendeesToPeople = async () => {
     })
   );
 };
+
+const removePAUSDFromDefault = async () => {
+  const users = (await db.collection('users').get()).docs;
+  await Promise.all(
+    users.map(async (user) => {
+      const data = user.data();
+      const orgs = Array.from(data.orgs || []);
+      const idx = orgs.indexOf('default');
+      if (
+        idx >= 0 &&
+        (orgs.includes('woodside') ||
+          orgs.includes('pioneer') ||
+          orgs.includes('gunn') ||
+          orgs.includes('paly') ||
+          orgs.includes('jls'))
+      )
+        orgs.splice(idx, 1);
+      if (equal(data.orgs, orgs)) return;
+      await user.ref.update({ ...data, orgs });
+    })
+  );
+};
+
+removePAUSDFromDefault();
