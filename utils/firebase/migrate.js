@@ -2,6 +2,7 @@ const path = require('path');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
+const updateSubjects = require('./update-subjects');
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs');
 const admin = require('firebase-admin');
@@ -23,60 +24,6 @@ const getSubjects = (id) => {
     columns: true,
     skip_empty_lines: true,
   }).filter((subject) => !!subject.name);
-};
-
-const SUBJECT_TO_LANG_DICT = {
-  Latin: 'la',
-  Spanish: 'es',
-  Chinese: 'zh',
-  Urdu: 'ur',
-  Hindi: 'hi',
-  Japanese: 'ja',
-  French: 'fr',
-  German: 'de',
-};
-const GRADES = [
-  'Kindergarten',
-  '1st Grade',
-  '2nd Grade',
-  '3rd Grade',
-  '4th Grade',
-  '5th Grade',
-  '6th Grade',
-  '7th Grade',
-  '8th Grade',
-  '9th Grade',
-  '10th Grade',
-  '11th Grade',
-  '12th Grade',
-];
-
-const SUBJECT_LEVELS = ['1', '2', '3', '4', '5', '6', '7', '8'];
-
-const updateSubjects = (subjects, validSubjects) => {
-  const all = subjects.map((subject) => {
-    const idx = validSubjects.findIndex((s) => {
-      const synonyms = s.synonyms.split(', ');
-      const valid = (name) => s.name === name || synonyms.includes(name);
-      if (valid(subject)) return true;
-      for (const grade of GRADES) {
-        if (valid(subject.replace(`${grade} `, ''))) return true;
-      }
-      for (const subjectLevel of SUBJECT_LEVELS) {
-        if (valid(subject.replace(` ${subjectLevel}`, ''))) return true;
-        if (valid(subject.replace(` ${subjectLevel}A`, ''))) return true;
-      }
-      if (valid(subject.replace(' A', ''))) return true;
-      if (valid(`${subject} Language`)) return true;
-      return false;
-    });
-    if (idx < 0) {
-      console.log(`[DEBUG] Subject "${subject}" could not be found.`);
-      debugger;
-    }
-    return idx >= 0 ? validSubjects[idx].name : subject;
-  });
-  return [...new Set(all)];
 };
 
 const users = async () => {
@@ -192,5 +139,3 @@ const renameAttendeesToPeople = async () => {
     })
   );
 };
-
-module.exports = { updateSubjects };

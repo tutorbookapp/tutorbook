@@ -2,19 +2,38 @@
 // Firebase project to the new one (this one).
 
 const path = require('path');
+const fs = require('fs');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+const { default: to } = require('await-to-js');
 
+const updateSubjects = require('./update-subjects');
 const parse = require('csv-parse/lib/sync');
+const progress = require('cli-progress');
 const mime = require('mime-types');
 const uuid = require('uuid').v4;
 const axios = require('axios');
 const phone = require('phone');
-const fs = require('fs');
-
-const { updateSubjects } = require('./migrate');
 
 const admin = require('firebase-admin');
+const serviceAccount = require('./old-admin.json');
+const oldApp = admin.initializeApp(
+  {
+    credential: admin.credential.cert(serviceAccount),
+    projectId: 'tutorbook-779d8',
+    storageBucket: 'tutorbook-779d8.appspot.com',
+    databaseURL: 'https://tutorbook-779d8.firebaseio.com',
+  },
+  'old'
+);
+
+const oldFirestore = oldApp.firestore();
+oldFirestore.settings({ ignoreUndefinedProperties: true });
+const oldDB = oldFirestore.collection('partitions').doc('default');
+
+require('dotenv').config({
+  path: path.resolve(__dirname, '../../.env.production'),
+});
+
 const newApp = admin.initializeApp(
   {
     credential: admin.credential.cert({
@@ -30,21 +49,34 @@ const newApp = admin.initializeApp(
   'new'
 );
 
-const serviceAccount = require('./old-admin.json');
-const oldApp = admin.initializeApp(
-  {
-    credential: admin.credential.cert(serviceAccount),
-    projectId: 'tutorbook-779d8',
-    storageBucket: 'tutorbook-779d8.appspot.com',
-    databaseURL: 'https://tutorbook-779d8.firebaseio.com',
-  },
-  'old'
-);
+const newFirestore = newApp.firestore();
+newFirestore.settings({ ignoreUndefinedProperties: true });
+const newDB = newFirestore.collection('partitions').doc('default');
+const newBucket = newApp.storage().bucket();
+const newAuth = newApp.auth();
 
-const oldDB = oldApp.firestore().collection('partitions').doc('default');
-const newDB = newApp.firestore().collection('partitions').doc('test');
+async function doesUserExist(user) {
+  if (!user.email) return false;
+  const [err, userRecord] = await to(newAuth.getUserByEmail(user.email));
+  if (err) return false;
+  return true;
+}
 
-const bucket = oldApp.storage().bucket();
+async function createUser(user, emailVerified = false) {
+  const [err, userRecord] = await to(
+    newAuth.createUser({
+      emailVerified,
+      disabled: false,
+      displayName: user.name,
+      photoURL: user.photo ? user.photo : undefined,
+      email: user.email,
+      phoneNumber: user.phone ? user.phone : undefined,
+    })
+  );
+  if (err && err.code === 'auth/email-already-exists') return;
+  if (err) throw new Error(`${err.name} creating user: ${err.message}`);
+  await newDB.collection('users').doc(userRecord.uid).set(user);
+}
 
 function getSubjects(id) {
   return parse(fs.readFileSync(`../algolia/${id}.csv`), {
@@ -53,16 +85,19 @@ function getSubjects(id) {
   }).filter((subject) => !!subject.name);
 }
 
-function downloadFile(
-  url,
-  filename = `./temp/${url.split('/').pop().split('.').shift()}`
-) {
-  return axios.get(url, { responseType: 'stream' }).then((res) => {
-    const extension = mime.extension(res.headers['content-type']);
-    const path = `${filename}.${extension}`;
-    res.data.pipe(fs.createWriteStream(path));
-    return Promise.resolve(path);
-  });
+async function downloadFile(url, filename = uuid()) {
+  if (url === 'https://tutorbook.app/app/img/male.png') return './male.png';
+  if (url === 'https://tutorbook.app/app/img/female.png') return './female.png';
+  if (url === 'https://tutorbook.app/app/img/loading.gif') return './male.png';
+  const [err, res] = await to(axios.get(url, { responseType: 'stream' }));
+  if (err) {
+    console.error(`${err.name} fetching (${url}): ${err.message}`);
+    return './male.png';
+  }
+  const extension = mime.extension(res.headers['content-type']);
+  const path = `./temp/${filename}.${extension}`;
+  const stream = res.data.pipe(fs.createWriteStream(path));
+  return new Promise((resolve) => stream.on('finish', () => resolve(path)));
 }
 
 function uploadFile(
@@ -70,7 +105,7 @@ function uploadFile(
   destination = `temp/${uuid()}.${filename.split('.').pop()}`
 ) {
   const uid = uuid();
-  return bucket
+  return newBucket
     .upload(filename, {
       destination,
       uploadType: 'media',
@@ -82,23 +117,33 @@ function uploadFile(
     .then((data) => {
       const file = data[0];
       const url =
-        `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/` +
+        `https://firebasestorage.googleapis.com/v0/b/${newBucket.name}/o/` +
         `${encodeURIComponent(file.name)}?alt=media&token=${uid}`;
       return Promise.resolve(url);
     });
 }
 
 async function migrate() {
+  console.log('Fetching user documents...');
   const validSubjects = [
     ...getSubjects('tutoring'),
     ...getSubjects('mentoring'),
   ];
   const users = (await oldDB.collection('users').get()).docs;
-  debugger;
+  console.log(`Fetched ${users.length} user documents. Processing...`);
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  bar.start(users.length, 0);
+  let count = 0;
   await Promise.all(
     users.map(async (userDoc) => {
+      const user = userDoc.data();
+      if (await doesUserExist(user)) {
+        count += 1;
+        bar.update(count);
+        return;
+      }
       try {
-        const user = userDoc.data();
+        if (!user.name || !user.email) throw new Error('No name or email.');
         const orgs = new Set(['default']);
         (user.locations || []).forEach((location) => {
           switch (location) {
@@ -127,7 +172,9 @@ async function migrate() {
           name: user.name,
           email: user.email,
           phone: phone(user.phone)[0],
-          photo: await downloadFile(user.photo).then((p) => uploadFile(p)),
+          photo: user.photo
+            ? await downloadFile(user.photo).then((p) => uploadFile(p))
+            : '',
           bio: user.bio,
           socials: [],
           orgs: [...orgs],
@@ -142,13 +189,17 @@ async function migrate() {
           verifications: [],
           visible: !!(user.config || {}).showProfile,
         };
-        debugger;
+        await createUser(updated);
       } catch (error) {
         console.error(`${error.name} processing user (${userDoc.id}):`, error);
         debugger;
       }
+      count += 1;
+      bar.update(count);
     })
   );
+  bar.stop();
+  console.log(`Processed ${users.length} user documents. Migration complete.`);
 }
 
 migrate();
