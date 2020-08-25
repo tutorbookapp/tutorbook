@@ -139,9 +139,6 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   );
   const [qry, setQuery] = useState<UsersQuery>(UsersQuery.fromJSON(query));
 
-  const { query: params } = useRouter();
-  const org = useMemo(() => params.org as string, [params.org]);
-
   const handleChange = async (newQuery: UsersQuery) => {
     // TODO: Store the availability filters in the tutoring aspect and then
     // re-fill them when we go back to that aspect. Or, just keep them in the
@@ -156,15 +153,16 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     setSearching(false);
   };
 
+  const { query: params } = useRouter();
+  const org = useMemo(() => params.org as string, [params.org]);
   useEffect(() => {
     setQuery((prev: UsersQuery) => {
       return new UsersQuery({ ...prev, orgs: [{ label: '', value: org }] });
     });
   }, [org]);
   useEffect(() => {
-    void Router.push('/[org]/search/[[...slug]]', qry.getURL(org), {
-      shallow: true,
-    });
+    const url = qry.getURL(`/${org}/search`);
+    void Router.push('/[org]/search/[[...slug]]', url, { shallow: true });
   }, [org, qry]);
   useEffect(() => {
     if (qry.visible !== true) {
