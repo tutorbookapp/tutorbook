@@ -68,7 +68,7 @@ export default function Login(): JSX.Element {
         </div>
       </div>
       <div className={styles.signup}>
-        <Link href='/signup'>
+        <Link href='/[org]/signup' as='/default/signup'>
           <a className={styles.link}>{t('login:signup')}</a>
         </Link>
       </div>

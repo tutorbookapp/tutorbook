@@ -14,6 +14,10 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
  */
 type IntercomCustomAttribute = string | boolean | number | Date;
 
+type SignupConfig = {
+  [locale: string]: { [key in Aspect]?: { header: string; body: string } };
+};
+
 /**
  * An `Org` object represents a non-profit organization that is using Tutorbook
  * to manage their virtual tutoring programs.
@@ -21,13 +25,14 @@ type IntercomCustomAttribute = string | boolean | number | Date;
  * @property members - An array of user UIDs that are members of this org.
  * @property safeguarding - A description of the org's safeguarding policy (i.e.
  * what they do to vet their volunteers before adding them to the search view).
- * @property aspect - The default aspect of a given org (i.e. are they more
- * focused on `tutoring` or `mentoring`).
+ * @property aspects - The supported aspects of a given org (i.e. are they more
+ * focused on `tutoring` or `mentoring`). The first one listed is the default.
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
   safeguarding: string;
-  aspect: Aspect;
+  aspects: Aspect[];
+  signup: SignupConfig;
 }
 
 export type OrgJSON = OrgInterface;
@@ -41,7 +46,29 @@ export class Org extends Account implements OrgInterface {
 
   public safeguarding = '';
 
-  public aspect: Aspect = 'mentoring';
+  public aspects: Aspect[] = ['tutoring'];
+
+  public signup: SignupConfig = {
+    en: {
+      mentoring: {
+        header: 'Guide the next generation',
+        body:
+          "Help us redefine mentorship. We're connecting high performing and " +
+          'underserved 9-12 students with experts (like you) to collaborate ' +
+          "on meaningful projects that you're both passionate about. " +
+          'Complete the form below to create your profile and sign-up as a ' +
+          'mentor.',
+      },
+      tutoring: {
+        header: 'Support students throughout COVID',
+        body:
+          'Help us support the millions of K-12 students who no longer have ' +
+          "individualized instruction due to COVID-19. We're making sure " +
+          'that no one loses out on education in these difficult times by ' +
+          'connecting students with free, volunteer tutors like you.',
+      },
+    },
+  };
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);

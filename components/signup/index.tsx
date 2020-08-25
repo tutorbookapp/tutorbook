@@ -1,7 +1,6 @@
-import { FormEvent, useCallback, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Card } from '@rmwc/card';
-import { ResizeObserver as polyfill } from '@juggle/resize-observer';
-import useMeasure from 'react-use-measure';
+import { animated, useSpring } from 'react-spring';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
@@ -10,13 +9,14 @@ import Loader from 'components/loader';
 import Title from 'components/title';
 
 import { signup } from 'lib/account/signup';
-import { Aspect } from 'lib/model';
+import { Aspect, User, OrgJSON } from 'lib/model';
 import { useUser } from 'lib/account';
 
 import styles from './signup.module.scss';
 
 interface SignupProps {
   aspect: Aspect;
+  org: OrgJSON;
 }
 
 /**
@@ -27,29 +27,17 @@ interface SignupProps {
  * 1. The volunteer tutor sign-up form where altruistic individuals can sign-up
  * to help tutor somebody affected by COVID-19.
  */
-export default function Signup({ aspect }: SignupProps): JSX.Element {
-  const [headerRef, { height: headerHeight }] = useMeasure({ polyfill });
-  const [descRef, { height: descHeight }] = useMeasure({ polyfill });
-
-  const headerStyle: Record<string, string> = useMemo(() => {
-    const height: string = headerHeight ? `${headerHeight}px` : '125px';
-    const transform: string =
-      aspect === 'mentoring'
-        ? `translateY(-${height})`
-        : `translateY(${height})`;
-    return { transform };
-  }, [aspect, headerHeight]);
-  const descStyle: Record<string, string> = useMemo(() => {
-    const height: string = descHeight ? `${descHeight}px` : '84px';
-    const transform: string =
-      aspect === 'mentoring'
-        ? `translateY(-${height})`
-        : `translateY(${height})`;
-    return { transform };
-  }, [aspect, descHeight]);
-
-  const { t } = useTranslation();
+export default function Signup({ aspect, org }: SignupProps): JSX.Element {
+  const { t, lang: locale } = useTranslation();
   const { user, updateUser } = useUser();
+
+  useEffect(() => {
+    void updateUser((prev: User) => {
+      const orgs = new Set(prev.orgs);
+      orgs.add(org.id);
+      return new User({ ...prev, orgs: [...orgs] });
+    });
+  }, [updateUser, org.id]);
 
   const [submittingMentor, setSubmittingMentor] = useState<boolean>(false);
   const [submittingTutor, setSubmittingTutor] = useState<boolean>(false);
@@ -83,23 +71,36 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     [aspect, user]
   );
 
+  const mentorsHProps = useSpring({
+    transform: `translateY(-${aspect === 'mentoring' ? 0 : 100}%)`,
+  });
+  const mentorsBProps = useSpring({
+    transform: `translateY(-${aspect === 'mentoring' ? 0 : 100}%)`,
+  });
+  const tutorsHProps = useSpring({
+    transform: `translateY(${aspect === 'tutoring' ? 0 : 100}%)`,
+  });
+  const tutorsBProps = useSpring({
+    transform: `translateY(${aspect === 'tutoring' ? 0 : 100}%)`,
+  });
+
   return (
     <div className={styles.wrapper}>
-      <div className={styles.header} ref={headerRef}>
-        <span style={aspect === 'mentoring' ? {} : headerStyle}>
-          <Title>{t('signup:mentoring-header')}</Title>
-        </span>
-        <span style={aspect === 'tutoring' ? {} : headerStyle}>
-          <Title>{t('signup:tutoring-header')}</Title>
-        </span>
+      <div className={styles.header}>
+        <animated.div style={mentorsHProps}>
+          <Title>{(org.signup[locale].mentoring || {}).header || ''}</Title>
+        </animated.div>
+        <animated.div style={tutorsHProps}>
+          <Title>{(org.signup[locale].tutoring || {}).header || ''}</Title>
+        </animated.div>
       </div>
-      <div className={styles.description} ref={descRef}>
-        <span style={aspect === 'mentoring' ? {} : descStyle}>
-          {t('signup:mentoring-body')}
-        </span>
-        <span style={aspect === 'tutoring' ? {} : descStyle}>
-          {t('signup:tutoring-body')}
-        </span>
+      <div className={styles.description}>
+        <animated.div style={mentorsBProps}>
+          {(org.signup[locale].mentoring || {}).body || ''}
+        </animated.div>
+        <animated.div style={tutorsBProps}>
+          {(org.signup[locale].tutoring || {}).body || ''}
+        </animated.div>
       </div>
       <Card className={styles.formCard}>
         <Loader active={submitting || submitted} checked={submitted} />

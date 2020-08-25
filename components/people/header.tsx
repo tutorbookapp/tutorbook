@@ -53,7 +53,7 @@ export default memo(function Header({
       return navigator.clipboard.writeText(text);
     }
     await copyTextToClipboard(
-      `${window.location.protocol}//${window.location.host}/${orgId}`
+      `${window.location.protocol}//${window.location.host}/${orgId}/signup`
     );
     setSnackbar(true);
   }, [orgId]);

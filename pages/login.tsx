@@ -1,7 +1,7 @@
 import Login from 'components/login';
 import Footer from 'components/footer';
 import Intercom from 'components/react-intercom';
-import { LinkHeader } from 'components/navigation';
+import { EmptyHeader } from 'components/navigation';
 
 import { withI18n } from 'lib/intl';
 
@@ -11,7 +11,7 @@ import common from 'locales/en/common.json';
 function LoginPage(): JSX.Element {
   return (
     <>
-      <LinkHeader />
+      <EmptyHeader />
       <Login />
       <Footer />
       <Intercom />

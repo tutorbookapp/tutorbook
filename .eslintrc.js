@@ -165,10 +165,6 @@ module.exports = {
       },
     ],
 
-    // Generally, imports are best put at the end of each file.
-    // @see {@link https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/exports-last.md}
-    'import/exports-last': 'warn',
-
     // Disallow multiple empty lines, only one newline at the end, and no new
     // lines at the beginning.
     // @see {@link https://eslint.org/docs/rules/no-multiple-empty-lines}

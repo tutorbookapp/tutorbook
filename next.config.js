@@ -10,31 +10,15 @@ module.exports = withImages({
       path.resolve(__dirname, 'src/*/node_modules'),
     ],
   },
-  /*
-   *async rewrites() {
-   *  return [
-   *    {
-   *      // We redirect the user to their appropriate locale directory based on
-   *      // their browser request cookies (via the `/api/redirect` endpoint).
-   *      // @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/35}
-   *      source: '/',
-   *      destination: '/api/redirect',
-   *    },
-   *    {
-   *      // Don't redirect if there's a locale already in the requested URL. We
-   *      // also don't redirect if the browser's just trying to fetch favicons.
-   *      //
-   *      // Note that Next.js should already exclude API endpoints from these
-   *      // rewrites (but we keep it here just in case).
-   *      //
-   *      // @see {@link https://github.com/UnlyEd/next-right-now/pull/42}
-   *      // @see {@link https://github.com/pillarjs/path-to-regexp/issues/223}
-   *      source: `/:locale((?!${locales.join('|')}|favicon|api|sw.js)[^/]+)(.*)`,
-   *      destination: '/api/redirect',
-   *    },
-   *  ];
-   *},
-   */
+  async redirects() {
+    return [
+      {
+        source: '/signup',
+        destination: '/default/signup',
+        permanent: true,
+      },
+    ];
+  },
   webpack(config, { isServer }) {
     if (!isServer && process.env.ANALYZE === 'true') {
       // Only run the bundle analyzer for the client-side chunks.

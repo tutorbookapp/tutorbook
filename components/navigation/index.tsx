@@ -102,7 +102,7 @@ function MobileNav(): JSX.Element {
         }
       >
         <ul className={styles.mobileLinks}>
-          <Link href='/signup'>
+          <Link href='/[org]/signup' as='/default/signup'>
             <a className={styles.mobileLink}>
               <li className={styles.mobileLinkItem}>
                 {user.id ? t('common:profile') : t('common:signup')}
@@ -130,7 +130,7 @@ function DesktopNav(): JSX.Element {
               {t('common:login')}
             </a>
           </Link>
-          <Link href='/signup'>
+          <Link href='/[org]/signup' as='/default/signup'>
             <a className={`${styles.desktopLink} ${styles.signupLink}`}>
               {t('common:signup')}
             </a>
@@ -181,17 +181,16 @@ export function TabHeader({ links, ...tabProps }: TabHeaderProps): JSX.Element {
   );
 }
 
-interface LinkHeaderProps {
+interface EmptyHeaderProps {
   formWidth?: boolean;
 }
 
-export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
+export function EmptyHeader({ formWidth }: EmptyHeaderProps): JSX.Element {
   return (
     <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
-          <DesktopTabLinks />
         </div>
         <div className={styles.right}>
           <MobileNav />
@@ -202,7 +201,7 @@ export function LinkHeader({ formWidth }: LinkHeaderProps): JSX.Element {
   );
 }
 
-interface AspectHeaderProps extends LinkHeaderProps {
+interface AspectHeaderProps extends EmptyHeaderProps {
   aspect: Aspect;
   onChange: TCallback<Aspect>;
 }
@@ -228,7 +227,7 @@ export function AspectHeader({
   );
 }
 
-interface QueryHeaderProps extends LinkHeaderProps {
+interface QueryHeaderProps extends EmptyHeaderProps {
   query: UsersQuery;
   onChange: TCallback<UsersQuery>;
 }

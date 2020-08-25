@@ -13,25 +13,21 @@
 
   .header,
   .description {
+    display: grid;
     overflow: hidden;
-    position: relative;
 
-    span {
-      display: block;
-      transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+    div {
+      grid-row: 1;
+      grid-column: 1;
 
       &:last-child {
-        position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
+        transform: translateY(100%);
       }
     }
   }
 
   .header {
     margin: 0 0 20px;
-    max-width: 520px;
   }
 
   .description {
