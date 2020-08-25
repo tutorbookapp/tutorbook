@@ -2,7 +2,7 @@ import { ParsedUrlQuery } from 'querystring';
 
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 
@@ -10,15 +10,19 @@ import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
 import Footer from 'components/footer';
 import Intercom from 'components/react-intercom';
+import RequestDialog from 'components/request-dialog';
 
 import {
   Availability,
+  Option,
+  Timeslot,
   User,
   UserJSON,
   UsersQuery,
   UsersQueryJSON,
 } from 'lib/model';
 import { withI18n } from 'lib/intl';
+import Utils from 'lib/utils';
 
 import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
@@ -31,9 +35,9 @@ type DocumentReference = admin.firestore.DocumentReference;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 interface SearchPageProps {
-  query: UsersQueryJSON;
-  results: UserJSON[];
-  user?: UserJSON;
+  initialQuery: UsersQueryJSON;
+  initialResults: UserJSON[];
+  initialViewing?: UserJSON;
 }
 
 function onlyFirstAndLastInitial(name: string): string {
@@ -121,25 +125,34 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      query: JSON.parse(JSON.stringify(query)) as UsersQueryJSON,
-      results: JSON.parse(
+      initialQuery: JSON.parse(JSON.stringify(query)) as UsersQueryJSON,
+      initialResults: JSON.parse(
         JSON.stringify((await query.search(url)).users)
       ) as UserJSON[],
-      user: JSON.parse(
+      initialViewing: JSON.parse(
         JSON.stringify(await getUser(context.params))
       ) as UserJSON | null,
     },
   };
 };
 
-function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
+function SearchPage({
+  initialQuery,
+  initialResults,
+  initialViewing,
+}: SearchPageProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(false);
-  const [res, setResults] = useState<ReadonlyArray<User>>(
-    results.map((result: UserJSON) => User.fromJSON(result))
+  const [results, setResults] = useState<ReadonlyArray<User>>(
+    initialResults.map((result: UserJSON) => User.fromJSON(result))
   );
-  const [qry, setQuery] = useState<UsersQuery>(UsersQuery.fromJSON(query));
+  const [query, setQuery] = useState<UsersQuery>(
+    UsersQuery.fromJSON(initialQuery)
+  );
+  const [viewing, setViewing] = useState<User | undefined>(
+    initialViewing ? User.fromJSON(initialViewing) : undefined
+  );
 
-  const handleChange = async (newQuery: UsersQuery) => {
+  const handleQueryChange = async (newQuery: UsersQuery) => {
     // TODO: Store the availability filters in the tutoring aspect and then
     // re-fill them when we go back to that aspect. Or, just keep them in the
     // query and ignore them when searching for mentors (i.e. in `api/users`).
@@ -161,24 +174,58 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
     });
   }, [org]);
   useEffect(() => {
-    const url = qry.getURL(`/${org}/search`);
+    const url = query.getURL(`/${org}/search/${viewing ? viewing.id : ''}`);
     void Router.push('/[org]/search/[[...slug]]', url, { shallow: true });
-  }, [org, qry]);
+  }, [org, query, viewing]);
   useEffect(() => {
-    if (qry.visible !== true) {
-      setQuery(new UsersQuery({ ...qry, visible: true }));
+    if (query.visible !== true) {
+      setQuery(new UsersQuery({ ...query, visible: true }));
     }
-  }, [qry]);
+  }, [query]);
+
+  const onClosed = useCallback(() => setViewing(undefined), []);
+  const subjects = useMemo(() => {
+    if (!viewing) return [];
+    return Utils.intersection<string, Option<string>>(
+      viewing[query.aspect].subjects,
+      query.subjects,
+      (a: string, b: Option<string>) => a === b.value
+    );
+  }, [viewing, query.aspect, query.subjects]);
+  const times = useMemo(() => {
+    if (!viewing) return new Availability();
+    const possible = Utils.intersection<Timeslot, Timeslot>(
+      query.availability,
+      viewing.availability,
+      (a: Timeslot, b: Timeslot) => a.equalTo(b)
+    );
+    if (!possible.length) return new Availability();
+    const start = possible[0].from;
+    let end = possible[0].to;
+    if (end.valueOf() - start.valueOf() >= 3600000) {
+      end = new Date(start.valueOf() + 3600000);
+    }
+    return new Availability(new Timeslot(start, end));
+  }, [viewing, query.availability]);
 
   return (
     <>
-      <QueryHeader query={qry} onChange={handleChange} />
+      <QueryHeader query={query} onChange={handleQueryChange} />
+      {viewing && (
+        <RequestDialog
+          user={viewing}
+          aspect={query.aspect}
+          onClosed={onClosed}
+          subjects={subjects}
+          times={times}
+        />
+      )}
       <Search
-        query={qry}
-        results={res}
+        query={query}
+        results={results}
         searching={searching}
-        user={user ? User.fromJSON(user) : undefined}
-        onChange={handleChange}
+        onChange={handleQueryChange}
+        setViewing={setViewing}
       />
       <Footer />
       <Intercom />
