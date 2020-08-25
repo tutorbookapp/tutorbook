@@ -17,6 +17,11 @@ module.exports = withImages({
         destination: '/default/signup',
         permanent: true,
       },
+      {
+        source: '/search/:slug*',
+        destination: '/default/search/:slug*',
+        permanent: true,
+      },
     ];
   },
   webpack(config, { isServer }) {

@@ -42,13 +42,20 @@ function DesktopTabs({
 
 function DesktopTabLinks(): JSX.Element {
   const { t } = useTranslation();
+  const { user } = useUser();
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <div className={styles.desktopLinks}>
-      <Link href='/search/[[...slug]]' as='/search?aspect=mentoring'>
+      <Link
+        href='/[org]/search/[[...slug]]'
+        as={`/${user.orgs[0] || 'default'}/search?aspect=mentoring`}
+      >
         <a className={styles.desktopLink}>{t('common:mentors')}</a>
       </Link>
-      <Link href='/search/[[...slug]]' as='/search?aspect=tutoring'>
+      <Link
+        href='/[org]/search/[[...slug]]'
+        as={`/${user.orgs[0] || 'default'}/search?aspect=tutoring`}
+      >
         <a className={styles.desktopLink}>{t('common:tutors')}</a>
       </Link>
     </div>

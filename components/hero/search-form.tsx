@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -6,6 +6,7 @@ import Button from 'components/button';
 import { QueryInputs } from 'components/inputs';
 
 import { Aspect, Availability, UsersQuery } from 'lib/model';
+import { useUser } from 'lib/account';
 
 import styles from './search-form.module.scss';
 
@@ -15,6 +16,7 @@ interface SearchFormProps {
 
 export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
   const { t } = useTranslation();
+  const { user } = useUser();
 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
@@ -26,6 +28,10 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     })
   );
 
+  const url = useMemo(() => {
+    return query.getURL(`/${user.orgs[0] || 'default'}/search`);
+  }, [query, user.orgs]);
+
   useEffect(() => {
     setQuery((prev: UsersQuery) => {
       if (!aspect || aspect === prev.aspect) return prev;
@@ -34,17 +40,16 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
   }, [aspect]);
 
   useEffect(() => {
-    void Router.prefetch('/search/[[...slug]]', query.url);
-  }, [query]);
+    void Router.prefetch('/[org]/search/[[...slug]]', url);
+  }, [url]);
 
   const handleSubmit = useCallback(
-    async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
+    async (evt: FormEvent<HTMLFormElement>) => {
+      evt.preventDefault();
       setSubmitting(true);
-      await Router.push('/search/[[...slug]]', query.url);
+      await Router.push('/[org]/search/[[...slug]]', url);
     },
-    [query]
+    [url]
   );
   const onChange = useCallback((qry: UsersQuery) => setQuery(qry), []);
 

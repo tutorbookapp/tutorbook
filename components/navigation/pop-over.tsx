@@ -151,7 +151,10 @@ export default function PopOverMenu({
         <div className={styles.picker}>
           <PopOverAccountHeader account={user} />
           <PopOverLink href='/'>{t('common:home')}</PopOverLink>
-          <PopOverLink href='/search/[[...slug]]' as='/search'>
+          <PopOverLink
+            href='/[org]/search/[[...slug]]'
+            as={`/${user.orgs[0] || 'default'}/search`}
+          >
             {t('common:search')}
           </PopOverLink>
           <PopOverLink

@@ -1,6 +1,7 @@
 import useTranslation from 'next-translate/useTranslation';
 
 import Link from 'lib/intl/link';
+import { useUser } from 'lib/account';
 
 import styles from './footer.module.scss';
 
@@ -58,11 +59,13 @@ import styles from './footer.module.scss';
  */
 
 interface LinkProps {
+  as?: string;
   href: string;
   label: string;
 }
 
 function NavLink({
+  as,
   href,
   label,
   className,
@@ -70,7 +73,7 @@ function NavLink({
   /* eslint-disable jsx-a11y/anchor-is-valid */
   if (href.indexOf('http') < 0 && href.indexOf('mailto') < 0)
     return (
-      <Link href={href}>
+      <Link href={href} as={as}>
         <a className={className}>{label}</a>
       </Link>
     );
@@ -126,6 +129,7 @@ export default function Footer({
   formWidth?: boolean;
 }): JSX.Element {
   const { t } = useTranslation();
+  const { user } = useUser();
   return (
     <footer
       className={styles.footer + (formWidth ? ` ${styles.formWidth}` : '')}
@@ -139,11 +143,13 @@ export default function Footer({
             header={t('common:footer-useful-links')}
             links={[
               {
-                href: '/signup',
+                href: '/[org]/signup',
+                as: `/${user.orgs[0] || 'default'}/signup`,
                 label: t('common:footer-signup'),
               },
               {
-                href: '/search',
+                href: '/[org]/search/[[...slug]]',
+                as: `/${user.orgs[0] || 'default'}/search`,
                 label: t('common:footer-search'),
               },
               {

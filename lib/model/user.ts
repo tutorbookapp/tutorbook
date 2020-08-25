@@ -1,5 +1,3 @@
-import url from 'url';
-
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
@@ -278,22 +276,5 @@ export class User extends Account implements UserInterface {
       ...rest,
       availability: availability.toJSON(),
     };
-  }
-
-  /**
-   * Gets the search URL where the URL parameters are determined by this user's
-   * `searches` and `availability` fields.
-   *
-   * @todo Ensure this works on the server-side (i.e. when it doesn't know what
-   * hostname or protocol to use).
-   */
-  public get searchURL(): string {
-    return url.format({
-      pathname: '/search',
-      query: {
-        subjects: encodeURIComponent(JSON.stringify(this.tutoring.searches)),
-        availability: this.availability.toURLParam(),
-      },
-    });
   }
 }

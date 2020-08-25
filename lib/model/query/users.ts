@@ -61,15 +61,11 @@ export class UsersQuery extends Query implements UsersQueryInterface {
     construct<QueryInterface>(this, query);
   }
 
-  public get url(): string {
-    return this.getURL('/search');
-  }
-
   public get endpoint(): string {
     return this.getURL('/api/users');
   }
 
-  protected getURL(pathname: string): string {
+  public getURL(pathname: string): string {
     function encode(p?: Option<any>[]): string {
       return encodeURIComponent(JSON.stringify(p));
     }

@@ -2,6 +2,8 @@ import useTranslation from 'next-translate/useTranslation';
 
 import SpotlightMsg from 'components/spotlight-msg';
 
+import { useUser } from 'lib/account';
+
 import OrgVetsVolunteer from './gifs/org-vets-volunteer.gif';
 import StudentRequests from './gifs/student-requests.gif';
 import VolunteerEmails from './gifs/volunteer-emails.gif';
@@ -10,6 +12,7 @@ import styles from './about.module.scss';
 
 export default function About(): JSX.Element {
   const { t } = useTranslation();
+  const { user } = useUser();
   return (
     <>
       <div className={styles.summary}>
@@ -30,7 +33,8 @@ export default function About(): JSX.Element {
           img={VolunteerRegisters}
           cta={{
             label: t('about:step-one-cta'),
-            href: '/signup',
+            href: '/[org]/signup',
+            as: `/${user.orgs[0] || 'default'}/signup`,
           }}
           flipped
         />
@@ -52,7 +56,8 @@ export default function About(): JSX.Element {
           img={StudentRequests}
           cta={{
             label: t('about:step-three-cta'),
-            href: '/search',
+            href: '/[org]/search/[[...slug]]',
+            as: `/${user.orgs[0] || 'default'}/search`,
           }}
           flipped
         />

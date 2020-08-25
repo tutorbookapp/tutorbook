@@ -2,7 +2,7 @@ import { ParsedUrlQuery } from 'querystring';
 
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 
@@ -139,9 +139,8 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   );
   const [qry, setQuery] = useState<UsersQuery>(UsersQuery.fromJSON(query));
 
-  const {
-    query: { org },
-  } = useRouter();
+  const { query: params } = useRouter();
+  const org = useMemo(() => params.org as string, [params.org]);
 
   const handleChange = async (newQuery: UsersQuery) => {
     // TODO: Store the availability filters in the tutoring aspect and then
@@ -158,24 +157,19 @@ function SearchPage({ query, results, user }: SearchPageProps): JSX.Element {
   };
 
   useEffect(() => {
-    if (typeof org === 'string')
-      setQuery(
-        (prev: UsersQuery) =>
-          new UsersQuery({ ...prev, orgs: [{ label: '', value: org }] })
-      );
+    setQuery((prev: UsersQuery) => {
+      return new UsersQuery({ ...prev, orgs: [{ label: '', value: org }] });
+    });
   }, [org]);
   useEffect(() => {
-    if (typeof org === 'string') {
-      void Router.push('/[org]/search/[[...slug]]', `/${org}${qry.url}`, {
-        shallow: true,
-      });
-    } else {
-      void Router.push('/search/[[...slug]]', `${qry.url}`, { shallow: true });
-    }
+    void Router.push('/[org]/search/[[...slug]]', qry.getURL(org), {
+      shallow: true,
+    });
   }, [org, qry]);
   useEffect(() => {
-    if (qry.visible !== true)
+    if (qry.visible !== true) {
       setQuery(new UsersQuery({ ...qry, visible: true }));
+    }
   }, [qry]);
 
   return (
