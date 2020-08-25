@@ -15,7 +15,7 @@ import signup from 'locales/en/signup.json';
 import common from 'locales/en/common.json';
 
 interface SignupPageProps {
-  org: OrgJSON;
+  org?: OrgJSON;
 }
 
 /**
@@ -27,13 +27,16 @@ interface SignupPageProps {
  * given org.
  */
 function SignupPage({ org }: SignupPageProps): JSX.Element {
-  const [aspect, setAspect] = useState<Aspect>(org.aspects[0] || 'tutoring');
+  const [aspect, setAspect] = useState<Aspect>(() => {
+    if (!org) return 'mentoring';
+    return org.aspects[0] || 'mentoring';
+  });
   return (
     <>
-      {org.aspects.length === 2 && (
+      {(!org || org.aspects.length === 2) && (
         <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
       )}
-      {org.aspects.length !== 2 && <EmptyHeader formWidth />}
+      {!!org && org.aspects.length !== 2 && <EmptyHeader formWidth />}
       <Signup aspect={aspect} org={org} />
       <Footer formWidth />
       <Intercom />
@@ -52,13 +55,13 @@ export const getStaticProps: GetStaticProps<
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) throw new Error(`Org (${doc.id}) doesn't exist.`);
   const org = Org.fromFirestore(doc);
-  return { props: { org: org.toJSON() } };
+  return { props: { org: org.toJSON() }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SignupPageQuery> = async () => {
   const orgs = (await db.collection('orgs').get()).docs;
   const paths = orgs.map((org) => ({ params: { org: org.id } }));
-  return { paths, fallback: false };
+  return { paths, fallback: true };
 };
 
 export default withI18n(SignupPage, { common, signup, user3rd });

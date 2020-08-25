@@ -2,6 +2,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Card } from '@rmwc/card';
 import { animated, useSpring } from 'react-spring';
 import useTranslation from 'next-translate/useTranslation';
+import cn from 'classnames';
 
 import Button from 'components/button';
 import Inputs from 'components/inputs/user';
@@ -16,7 +17,7 @@ import styles from './signup.module.scss';
 
 interface SignupProps {
   aspect: Aspect;
-  org: OrgJSON;
+  org?: OrgJSON;
 }
 
 /**
@@ -32,12 +33,13 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
   const { user, updateUser } = useUser();
 
   useEffect(() => {
+    if (!org) return;
     void updateUser((prev: User) => {
       const orgs = new Set(prev.orgs);
       orgs.add(org.id);
       return new User({ ...prev, orgs: [...orgs] });
     });
-  }, [updateUser, org.id]);
+  }, [updateUser, org]);
 
   const [submittingMentor, setSubmittingMentor] = useState<boolean>(false);
   const [submittingTutor, setSubmittingTutor] = useState<boolean>(false);
@@ -86,20 +88,24 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.header}>
+      <div className={cn(styles.header, { [styles.loading]: !org })}>
         <animated.div style={mentorsHProps}>
-          <Title>{(org.signup[locale].mentoring || {}).header || ''}</Title>
+          <Title>
+            {!org ? '' : (org.signup[locale].mentoring || {}).header || ''}
+          </Title>
         </animated.div>
         <animated.div style={tutorsHProps}>
-          <Title>{(org.signup[locale].tutoring || {}).header || ''}</Title>
+          <Title>
+            {!org ? '' : (org.signup[locale].tutoring || {}).header || ''}
+          </Title>
         </animated.div>
       </div>
-      <div className={styles.description}>
+      <div className={cn(styles.description, { [styles.loading]: !org })}>
         <animated.div style={mentorsBProps}>
-          {(org.signup[locale].mentoring || {}).body || ''}
+          {!org ? '' : (org.signup[locale].mentoring || {}).body || ''}
         </animated.div>
         <animated.div style={tutorsBProps}>
-          {(org.signup[locale].tutoring || {}).body || ''}
+          {!org ? '' : (org.signup[locale].tutoring || {}).body || ''}
         </animated.div>
       </div>
       <Card className={styles.formCard}>

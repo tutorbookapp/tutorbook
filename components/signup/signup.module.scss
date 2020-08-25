@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use 'styles/config';
 @use 'styles/common';
+@use 'styles/loader';
 @use 'styles/typography';
 @use '@material/card/_index.scss' as card;
 @use '@material/elevation';
@@ -16,6 +17,11 @@
     display: grid;
     overflow: hidden;
 
+    &.loading div {
+      @include loader.loading;
+      border-radius: 4px;
+    }
+
     div {
       grid-row: 1;
       grid-column: 1;
@@ -28,12 +34,20 @@
 
   .header {
     margin: 0 0 20px;
+
+    &.loading div {
+      height: 125px;
+    }
   }
 
   .description {
     @include typography.typography('subtitle1');
     color: map.get(config.$colors, 'accents-5');
     margin: 0 0 30px;
+
+    &.loading div {
+      height: 85px;
+    }
   }
 
   .formCard {
