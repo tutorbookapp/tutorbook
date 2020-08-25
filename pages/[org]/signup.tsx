@@ -1,3 +1,5 @@
+import { ParsedUrlQuery } from 'querystring';
+
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useState } from 'react';
 
@@ -18,14 +20,6 @@ interface SignupPageProps {
   org?: OrgJSON;
 }
 
-/**
- * A basic org-specific signup page (meant to replace a Google Form or Typeform)
- * that includes:
- * - The org's name, photo, bio, and contact information.
- * - A brief "How it works" message from the org.
- * - The generic floating sign-up form that creates a new account within the
- * given org.
- */
 function SignupPage({ org }: SignupPageProps): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>(() => {
     if (!org) return 'mentoring';
@@ -52,6 +46,7 @@ export const getStaticProps: GetStaticProps<
   SignupPageProps,
   SignupPageQuery
 > = async (ctx: GetStaticPropsContext<SignupPageQuery>) => {
+  if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) throw new Error(`Org (${doc.id}) doesn't exist.`);
   const org = Org.fromFirestore(doc);
