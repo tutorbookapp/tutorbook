@@ -2,7 +2,7 @@
   "login-to-proxy-request": "You must be logged in to send requests for others",
   "people": "Who is this for?",
   "subjects": "What would you like to learn?",
-  "times": "When do you want to meet?",
+  "times": "When would you like to meet?",
   "message": "What specifically do you need help with?",
   "message-placeholder": "Ex: I could really use your help with my {{subject}} project...",
   "send-btn": "Send request",
