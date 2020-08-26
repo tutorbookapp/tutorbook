@@ -10,7 +10,8 @@
     "build": "cd sw && webpack && cd .. && next build",
     "start": "next start",
     "analyze": "ANALYZE=true next build",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ."
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "style": "pretty-quick --staged"
   },
   "keywords": [
     "Tutorbook",
