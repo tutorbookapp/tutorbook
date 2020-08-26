@@ -105,9 +105,11 @@ $space: 20px;
     border-top: none;
   }
 
-  &.loading {
+  &.disabled .display {
     cursor: not-allowed;
+  }
 
+  &.loading {
     .img,
     .name,
     .bio {

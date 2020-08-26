@@ -34,7 +34,12 @@ export default function RequestItem({
   });
 
   return (
-    <li className={cn(styles.item, { [styles.loading]: loading })}>
+    <li
+      className={cn(styles.item, {
+        [styles.loading]: loading,
+        [styles.disabled]: loading || !setChecked,
+      })}
+    >
       <Icon className={styles.checkmark} icon='checkmark' />
       <Ripple disabled={loading} onClick={onClick}>
         <animated.div style={props} className={styles.display}>
