@@ -13,6 +13,11 @@ interface ZoomToken {
   scope: string;
 }
 
+interface ZoomUser {
+  id: string;
+  account_id: string;
+}
+
 /**
  * Given an authorization code supplied by the Zoom OAuth redirect and an org
  * supplied by our app before the user was redirected, this API endpoint:
@@ -44,10 +49,10 @@ async function authorize(
     redirect.searchParams.delete('code');
     const [err, token] = await to<AxiosResponse<ZoomToken>>(
       axios({
+        method: 'post',
         url:
           `https://zoom.us/oauth/token?grant_type=authorization_code&code=` +
           `${req.query.code}&redirect_uri=${encodeURIComponent(redirect.href)}`,
-        method: 'post',
         auth: {
           username: process.env.ZOOM_CLIENT_ID as string,
           password: process.env.ZOOM_CLIENT_KEY as string,
@@ -55,19 +60,34 @@ async function authorize(
       })
     );
     if (err) {
-      error(res, `${err.name} calling Zoom token API: ${err.message}`, 500);
+      error(res, `${err.name} calling Zoom OAuth API: ${err.message}`, 500);
     } else {
-      // 2. Store the Zoom refresh token in the org's Firestore document.
-      await db
-        .collection('orgs')
-        .doc(req.query.org)
-        .update({
-          zoom: (token as AxiosResponse<ZoomToken>).data.refresh_token,
-        });
-      // 3. Redirect the user back to our app (where they started).
-      res.statusCode = 302;
-      res.setHeader('Location', req.query.redirect || '/dashboard');
-      res.end();
+      // 2. Get the Zoom account ID by fetching the user's Zoom data.
+      const {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      } = (token as AxiosResponse<ZoomToken>).data;
+      const [e, user] = await to<AxiosResponse<ZoomUser>>(
+        axios.get('https://api.zoom.us/v2/users/me', {
+          headers: { authorization: `Bearer ${accessToken}` },
+        })
+      );
+      if (e) {
+        error(res, `${e.name} calling Zoom User API: ${e.message}`, 500);
+      } else {
+        // 3. Store the Zoom refresh token in the org's Firestore document.
+        const { account_id: accountId } = (user as AxiosResponse<
+          ZoomUser
+        >).data;
+        await db
+          .collection('orgs')
+          .doc(req.query.org)
+          .update({ zoom: { id: accountId, token: refreshToken } });
+        // 4. Redirect the user back to our app (where they started).
+        res.statusCode = 302;
+        res.setHeader('Location', req.query.redirect || '/dashboard');
+        res.end();
+      }
     }
   }
 }
@@ -103,8 +123,10 @@ function isZoomEvent(evt: any): evt is ZoomEvent {
  * request, this API endpoint:
  * 1. Verify that the request actually came from Zoom by checking that the
  *    verification token is as expected (this is to prevent DOS attacks).
- * 2. Removes the Zoom refresh token from the any orgs that use the given
- *    account ID.
+ * 2. Removes the Zoom refresh token from any orgs that use the given account.
+ * 3. Notifies Zoom that the account data has been removed by calling their
+ *    Data Compliance API.
+ * @see {@link https://marketplace.zoom.us/docs/guides/publishing/data-compliance}
  * @see {@link https://marketplace.zoom.us/docs/guides/auth/deauthorization}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
  */
@@ -113,10 +135,12 @@ async function deauthorize(
   res: NextApiResponse<void>
 ): Promise<void> {
   if (req.headers.authorization !== process.env.ZOOM_TOKEN) {
+    // 1. Verify that the request actually came from Zoom.
     error(res, 'Invalid authorization header.', 401);
   } else if (!isZoomEvent(req.body)) {
     error(res, 'You must provide a request body w/ a deauthorization event.');
   } else {
+    // 2. Remove the Zoom refresh token from org data.
     const orgs = (
       await db
         .collection('orgs')
@@ -130,7 +154,29 @@ async function deauthorize(
         await org.ref.set(prev);
       })
     );
-    res.status(200).end();
+    // 3. Notify Zoom that we're data compliant.
+    const [err] = await to(
+      axios({
+        method: 'post',
+        url: 'https://api.zoom.us/oauth/data/compliance',
+        auth: {
+          username: process.env.ZOOM_CLIENT_ID as string,
+          password: process.env.ZOOM_CLIENT_KEY as string,
+        },
+        data: {
+          client_id: req.body.payload.client_id,
+          user_id: req.body.payload.user_id,
+          account_id: req.body.payload.account_id,
+          deauthorization_event_received: req.body.payload,
+          compliance_completed: true,
+        },
+      })
+    );
+    if (err) {
+      error(res, `${err.name} calling Zoom Compliance API: ${err.message}`);
+    } else {
+      res.status(200).end();
+    }
   }
 }
 
