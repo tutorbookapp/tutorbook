@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 
-import { Aspect } from './user';
 import { Account, AccountInterface } from './account';
+import { Aspect } from './user';
 import construct from './construct';
 
 type DocumentData = admin.firestore.DocumentData;
@@ -25,6 +25,28 @@ type HomePageConfig = PageConfig<{
 }>;
 
 /**
+ * The only two Zoom OAuth scopes that we ever will request access to.
+ * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
+ * @see {@link https://marketplace.zoom.us/docs/guides/auth/oauth/oauth-scopes}
+ */
+export type ZoomScope = 'meeting:write:admin' | 'user:write:admin';
+
+/**
+ * An authentication config for a certain Zoom account. This enables us to call
+ * Zoom APIs on behalf of a user or org (using OAuth patterns).
+ * @property id - The Zoom account ID that has given us authorization.
+ * @property token - The Zoom `refresh_token` we can use to access Zoom APIs.
+ * @property scopes - The scopes that `refresh_token` gives us access to.
+ * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
+ * @see {@link https://marketplace.zoom.us/docs/guides/auth/oauth}
+ */
+export interface ZoomAuth {
+  id: string;
+  token: string;
+  scopes: ZoomScope[];
+}
+
+/**
  * An `Org` object represents a non-profit organization that is using Tutorbook
  * to manage their virtual tutoring programs.
  * @typedef {Object} Org
@@ -35,6 +57,8 @@ type HomePageConfig = PageConfig<{
  * focused on `tutoring` or `mentoring`). The first one listed is the default.
  * @property signup - Configuration for the org's unique custom sign-up page.
  * @property home - Configuration for the org's unique custom landing homepage.
+ * @property [zoom] - This org's Zoom OAuth config. Used to create meetings and
+ * (optionally) users.
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
@@ -42,6 +66,7 @@ export interface OrgInterface extends AccountInterface {
   aspects: Aspect[];
   signup: SignupPageConfig;
   home: HomePageConfig;
+  zoom?: ZoomAuth;
 }
 
 export type OrgJSON = OrgInterface;
@@ -93,6 +118,8 @@ export class Org extends Account implements OrgInterface {
         'then set up via email.',
     },
   };
+  
+  public zoom?: ZoomAuth;
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);

@@ -20,6 +20,8 @@ export interface Venue {
 
 /**
  * Represents a tutoring lesson or mentoring appointment.
+ * @typedef {Object} MatchInterface
+ * @extends RequestMatchBaseInterface
  * @property [request] - The request that was fulfilled by this match (if any).
  * @property [bramble] - The URL to the Bramble virtual tutoring room (only
  * populated when the match is for tutoring).

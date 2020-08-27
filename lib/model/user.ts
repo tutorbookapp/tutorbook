@@ -62,6 +62,8 @@ export type Tag = 'not-vetted';
  * A verification is run by a non-profit organization (the `org`) by a member of
  * that organization (the `user`). The non-profit takes full responsibility for
  * their verification and liability for the user's actions.
+ * @typedef {Object} Verification
+ * @extends Resource
  * @property user - The uID of the user who ran the verification.
  * @property org - The id of the non-profit org that the `user` belongs to.
  * @property notes - Any notes about the verification (e.g. what happened).
@@ -75,9 +77,26 @@ export interface Verification extends Resource {
 }
 
 /**
+ * A user's Zoom account that belongs to a certain org.
+ * @typedef {Object} ZoomAccount
+ * @extends Resource
+ * @property id - The Zoom user ID or email address.
+ * @property org - The ID of the TB org under which this Zoom user belongs.
+ */
+export interface ZoomAccount extends Resource {
+  id: string;
+  org: string;
+}
+
+/**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
+ * @extends AccountInterface
  * @property orgs - An array of the IDs of the orgs this user belongs to.
+ * @property zooms - An array of Zoom user accounts. These are used when
+ * creating Zoom meetings for a match. Each TB user can have multiple Zoom user
+ * accounts managed by different orgs; we use the Zoom account belonging to the
+ * org that owns the match when creating Zoom meetings for said match.
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property mentoring - The subjects that the user wants a and can mentor for.
  * @property tutoring - The subjects that the user wants a and can tutor for.
@@ -85,9 +104,13 @@ export interface Verification extends Resource {
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property visible - Whether or not this user appears in search results.
  * @property token - The user's Firebase Authentication JWT `idToken`.
+ * @todo Add a `zoom` prop that contains the user's personal Zoom OAuth token
+ * (e.g. for freelancers who want to user their own Zoom account when creating
+ * meetings).
  */
 export interface UserInterface extends AccountInterface {
   orgs: string[];
+  zooms: ZoomAccount[];
   availability: Availability;
   mentoring: { subjects: string[]; searches: string[] };
   tutoring: { subjects: string[]; searches: string[] };
@@ -120,6 +143,8 @@ export function isUserJSON(json: any): json is UserJSON {
  */
 export class User extends Account implements UserInterface {
   public orgs: string[] = ['default'];
+
+  public zooms: ZoomAccount[] = [];
 
   public availability: Availability = new Availability();
 

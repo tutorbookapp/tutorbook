@@ -56,6 +56,18 @@ async function getJitsi(matchId: string): Promise<Venue> {
 }
 
 /**
+ * Takes a match and creates a recurring Zoom meeting for it by:
+ * 1. Fetching the orgs that the tutor or mentor belongs to. We go through each
+ *    org and attempt to create the Zoom meeting using each org's Zoom tokens.
+ * 2. If that fails (e.g. b/c the tutor or mentor doesn't have a Zoom account
+ *    w/in the org's Zoom account), we try to create...
+ * @todo Finish this doc-comment and actually implement this API flow.
+ */
+async function getZoom(match: Match): Promise<Venue> {
+  return getJitsi(match.id);
+}
+
+/**
  * Takes an `MatchJSON` object, an authentication token, and:
  * 1. Performs the following verifications (sends a `400` error code and an
  *    accompanying human-readable error message if any of them fail):

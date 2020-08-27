@@ -17,6 +17,8 @@ export type RequestStatus = 'created' | 'queued' | 'matched';
 
 /**
  * A request is a job post. Typically created by parents or teachers.
+ * @typedef {Object} RequestInterface
+ * @extends RequestMatchBaseInterface
  * @property people - Student(s) who need help (e.g. "Nicholas Chiang").
  * @property subjects - What the student needs help with (e.g. "AP CS A").
  * @property creator - Person who created the request (typically a parent or

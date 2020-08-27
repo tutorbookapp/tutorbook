@@ -15,7 +15,18 @@ import { Person } from './shared';
 type DocumentData = admin.firestore.DocumentData;
 type DocumentReference = admin.firestore.DocumentReference;
 
+/**
+ * Base object containing properties shared by both requests and matches.
+ * @typedef {Object} RequestMatchBaseInterface
+ * @property org - The ID of the organization that owns this request or match.
+ * @property subjects - The subjects that this match is about (e.g. AP CS).
+ * @property people - The people involved in this match (i.e. pupil and tutor).
+ * @property creator - The person who created this match (e.g. pupil or admin).
+ * @property message - A more detailed description of this match or request.
+ * @property [times] - When the people in this match will meet.
+ */
 export interface BaseInterface {
+  org: string;
   subjects: string[];
   people: Person[];
   creator: Person;
