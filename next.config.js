@@ -44,6 +44,9 @@ module.exports = withImages({
     return config;
   },
   env: {
+    ZOOM_TOKEN: process.env.ZOOM_TOKEN,
+    ZOOM_CLIENT_ID: process.env.ZOOM_CLIENT_ID,
+    ZOOM_CLIENT_KEY: process.env.ZOOM_CLIENT_KEY,
     INTERCOM_APP_ID: process.env.INTERCOM_APP_ID,
     FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
     FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
