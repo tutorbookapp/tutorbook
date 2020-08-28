@@ -168,9 +168,6 @@ export default function PopOverMenu({
             <Fragment key={org.id}>
               <div className={styles.line} />
               <PopOverAccountHeader account={org} />
-              <PopOverLink href='/[org]' as={`/${org.id}`}>
-                {t('common:home')}
-              </PopOverLink>
               <PopOverLink
                 href='/[org]/search/[[...slug]]'
                 as={`/${org.id}/search`}
@@ -182,6 +179,9 @@ export default function PopOverMenu({
               </PopOverLink>
               <PopOverLink href='/[org]/matches' as={`/${org.id}/matches`}>
                 {t('common:matches')}
+              </PopOverLink>
+              <PopOverLink href='/[org]/dashboard' as={`/${org.id}/dashboard`}>
+                {t('common:dashboard')}
               </PopOverLink>
             </Fragment>
           ))}
