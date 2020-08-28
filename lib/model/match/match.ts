@@ -59,15 +59,11 @@ export type Venue = ZoomVenue | JitsiVenue;
  * @typedef {Object} MatchInterface
  * @extends RequestMatchBaseInterface
  * @property [request] - The request that was fulfilled by this match (if any).
- * @property [bramble] - The URL to the Bramble virtual tutoring room (only
- * populated when the match is for tutoring).
- * @property [jitsi] - The URL to the Jitsi video conferencing room (only
- * populated when the match is for mentoring).
+ * @property venues - An array of meeting venues for a given match.
  */
 export interface MatchInterface extends BaseInterface {
   request?: Request;
-  bramble?: Venue;
-  jitsi?: Venue;
+  venues: Venue[];
 }
 
 export type MatchJSON = Omit<MatchInterface, 'times' | 'request'> & {
@@ -84,9 +80,7 @@ export type MatchSearchHit = ObjectWithObjectID &
 export class Match extends Base implements MatchInterface {
   public request?: Request;
 
-  public bramble?: Venue;
-
-  public jitsi?: Venue;
+  public venues: Venue[] = [];
 
   public constructor(match: Partial<MatchInterface> = {}) {
     super(match);

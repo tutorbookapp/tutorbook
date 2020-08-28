@@ -284,8 +284,8 @@ async function getZoom(match: Match, people: UserWithRoles[]): Promise<Venue> {
  *      create matches on behalf of their students and students will be able to
  *      add fellow students (i.e. students within the same org) to their matches.
  * 2. Adds all the tutee and mentee parents as people.
- * 3. Creates [a Bramble room]{@link https://about.bramble.io/api.html} and adds
- *    it as a venue to the match.
+ * 3. Creates a recurring (non-scheduled) Zoom meeting and adds it as a venue to
+ *    the match.
  * 4. Creates a new `matches` document.
  * 5. Sends an email initializing communications btwn the creator and the tutor.
  *
@@ -458,19 +458,16 @@ export default async function createMatch(
           )
             return error(res, errorMsg, 401);
           match.id = db.collection('matches').doc().id;
-          if (match.aspect === 'tutoring') {
-            console.log('[DEBUG] Creating Bramble room...');
-            const [errr, venue] = await to(getBramble(match.id));
-            if (errr) return error(res, errr.message, 500, errr);
-            match.bramble = venue;
-          } else {
-            console.log('[DEBUG] Creating Jitsi room...');
-            const [errr, venue] = await to(getJitsi(match.id));
-            if (errr) return error(res, errr.message, 500, errr);
-            match.jitsi = venue;
-          }
+
+          // 3. Create recurring (non-scheduled) Zoom meeting venue.
+          console.log('[DEBUG] Creating Zoom meeting...');
+          const [errr, venue] = await to(getZoom(match, people));
+          if (errr) return error(res, errr.message, 500, errr);
+          match.venues.push(venue as Venue);
+
           console.log(`[DEBUG] Creating match (${match.id})...`);
           await db.collection('matches').doc(match.id).set(match.toFirestore());
+
           // 4-5. Send out the match email.
           console.log('[DEBUG] Sending match email...');
           const [mailErr] = await to(
