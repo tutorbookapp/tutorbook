@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
+import { v4 as uuid } from 'uuid';
 
 import {
   Availability,
@@ -59,11 +60,11 @@ export type Venue = ZoomVenue | JitsiVenue;
  * @typedef {Object} MatchInterface
  * @extends RequestMatchBaseInterface
  * @property [request] - The request that was fulfilled by this match (if any).
- * @property venues - An array of meeting venues for a given match.
+ * @property venue - The meeting venue (e.g. Zoom or Jitsi) for this match.
  */
 export interface MatchInterface extends BaseInterface {
   request?: Request;
-  venues: Venue[];
+  venue: Venue;
 }
 
 export type MatchJSON = Omit<MatchInterface, 'times' | 'request'> & {
@@ -80,7 +81,12 @@ export type MatchSearchHit = ObjectWithObjectID &
 export class Match extends Base implements MatchInterface {
   public request?: Request;
 
-  public venues: Venue[] = [];
+  public venue: Venue = {
+    type: 'jitsi',
+    url: `https://meet.jit.si/${uuid()}`,
+    created: new Date(),
+    updated: new Date(),
+  };
 
   public constructor(match: Partial<MatchInterface> = {}) {
     super(match);

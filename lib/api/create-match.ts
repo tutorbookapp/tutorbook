@@ -463,7 +463,7 @@ export default async function createMatch(
           console.log('[DEBUG] Creating Zoom meeting...');
           const [errr, venue] = await to(getZoom(match, people));
           if (errr) return error(res, errr.message, 500, errr);
-          match.venues.push(venue as Venue);
+          match.venue = venue as Venue;
 
           console.log(`[DEBUG] Creating match (${match.id})...`);
           await db.collection('matches').doc(match.id).set(match.toFirestore());

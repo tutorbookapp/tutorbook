@@ -1,5 +1,5 @@
 import Utils from 'lib/utils';
-import { Match, Org, Role, User, UserWithRoles, Venue } from 'lib/model';
+import { Match, Org, Role, User, UserWithRoles } from 'lib/model';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
@@ -199,9 +199,9 @@ You have a new tutoring lesson for ${Utils.join(match.subjects)} (${rolesDescrip
 
 Please reply to this email stating when you're available to join your first lesson.
 
-Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to open:
+Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to join the lesson:
 
-${(match.bramble as Venue).url}
+${match.venue.url}
 
 ${creator.name} from ${org.name} set up this lesson:
 
@@ -234,9 +234,9 @@ Please reply to this email stating when you're available to join your first vide
 
 Once you figure out a time when everyone's available, simply copy and paste this URL into a new tab of your browser to join the video call:
 
-${(match.jitsi as Venue).url}
+${match.venue.url}
 
-${creator.name} from ${org.name} set up this lesson:
+${creator.name} from ${org.name} set up this match:
 
 > "${match.message}"
 > —${creator.name} from ${org.name} 
