@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-
-import { Component } from 'react';
+import { useEffect, useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
-import { User } from 'lib/model';
-import { UserContext } from 'lib/account';
+import { useUser } from 'lib/account';
 
-const appID = 'faz7lcyb';
+const appId = process.env.INTERCOM_APP_ID as string;
 const canUseDOM = !!(
   typeof window !== 'undefined' &&
   window.document &&
@@ -26,111 +23,114 @@ interface IntercomSettings {
   [key: string]: IntercomCustomAttribute;
 }
 
-interface IntercomProps {
-  locale: string;
-  account: User;
-}
+/**
+ * Type definitions for the various actions that can be performed using the
+ * global `window.Intercom` object.
+ * @see {@link https://developers.intercom.com/installing-intercom/docs/intercom-javascript}
+ */
+
+type Basics = (action: 'hide' | 'show' | 'shutdown' | 'showMessages') => void;
+type Boot = (action: 'boot', settings: IntercomSettings) => void;
+type NewMsg = (action: 'showNewMessage', message: string) => void;
+type Update = (
+  action: 'update',
+  user: { [key: string]: IntercomCustomAttribute }
+) => void;
+type TrackEvt = (action: 'trackEvent', event: string) => void;
+type Visitor = (action: 'getVisitorId') => string;
+type StartTour = (action: 'startTour', tourId: number) => void;
+
+type Callbacks = (trigger: 'onHide' | 'onShow', callback: () => void) => void;
+type Unread = (
+  trigger: 'onUnreadCountChange',
+  callback: (unread: number) => void
+) => void;
+
+type Intercom =
+  | Basics
+  | Boot
+  | NewMsg
+  | Update
+  | TrackEvt
+  | Visitor
+  | StartTour
+  | Callbacks
+  | Unread;
 
 declare global {
   interface Window {
-    Intercom: any;
+    Intercom: Intercom;
     intercomSettings: IntercomSettings;
   }
 }
 
 /**
- * @deprecated I haven't tested this at all and I don't think we'll need it for
- * our use case anyways.
- * @see {@link https://github.com/nhagen/react-intercom#usage}
+ * Wrapper around the Intercom JavaScript API. This just catches errors that
+ * would otherwise occur during SSR (when `window.Intercom` isn't populated).
+ * @see {@link https://developers.intercom.com/installing-intercom/docs/intercom-javascript}
  */
-export function IntercomAPI(...args: any[]): void {
+export function IntercomAPI(...args: Parameters<Intercom>): void {
   if (canUseDOM && window.Intercom) {
-    window.Intercom.apply(null, args);
-  } else {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    (window.Intercom as Function)(...args);
+  } else if (canUseDOM) {
     console.warn('[WARNING] Intercom has not been initialized yet.');
   }
 }
 
-class Intercom extends Component<IntercomProps> {
-  public constructor(props: IntercomProps) {
-    super(props);
+export default function Intercom(): JSX.Element {
+  const { user } = useUser();
+  const { lang: locale } = useTranslation();
+
+  const intercomSettings = useMemo(
+    () => ({
+      app_id: appId,
+      language_override: locale,
+      hide_default_launcher: true,
+      ...user.toIntercom(),
+    }),
+    [locale, user]
+  );
+
+  useEffect(() => {
     if (canUseDOM) {
       if (!window.Intercom) {
-        (function (w: Window, d: Document, id: string) {
+        ((w: Window, d: Document, id: string) => {
           function i(...args: any[]) {
             i.c(args);
           }
           i.q = [] as any[];
-          i.c = function (args: any) {
-            i.q.push(args);
-          };
+          i.c = (args: any) => i.q.push(args);
           /* eslint-disable-next-line no-param-reassign */
           w.Intercom = i;
           const s: HTMLScriptElement = d.createElement('script');
           s.async = true;
           s.src = `https://widget.intercom.io/widget/${id}`;
           d.head.appendChild(s);
-        })(window, document, appID);
+        })(window, document, appId);
       }
-      window.intercomSettings = this.settings;
-      if (window.Intercom) window.Intercom('boot', this.settings);
+      window.intercomSettings = intercomSettings;
+      IntercomAPI('boot', intercomSettings);
     } else {
       console.warn('[WARNING] No DOM, skipping Intercom initialization.');
     }
-  }
+    return () => {
+      // Right now, we boot and shutdown Intercom on every page navigation (even
+      // if that navigation occurs client-side).
+      IntercomAPI('shutdown');
+      delete window.Intercom;
+      delete window.intercomSettings;
+    };
+  });
 
-  public componentDidUpdate(prevProps: IntercomProps): void {
+  useEffect(() => {
     if (!canUseDOM) {
       console.warn('[WARNING] No DOM, skipping Intercom update.');
     } else {
-      window.intercomSettings = this.settings;
-
-      const { account } = this.props;
-
-      if (window.Intercom) {
-        // TODO: We should have each user signed into Intercom and then just
-        // have their orgs as 'companies' within the Intercom CRM.
-        if (prevProps.account.id !== account.id) {
-          // Shutdown & boot each time the user logs out to clear conversations.
-          window.Intercom('shutdown');
-          window.Intercom('boot', this.settings);
-        } else {
-          window.Intercom('update', this.settings);
-        }
-      }
+      window.intercomSettings = intercomSettings;
+      IntercomAPI('update', intercomSettings);
     }
-  }
+  }, [intercomSettings]);
 
-  public componentWillUnmount(): void {
-    if (!canUseDOM || !window.Intercom) {
-      console.warn('[WARNING] No DOM, skipping Intercom unmounting.');
-    } else {
-      window.Intercom('shutdown');
-      delete window.Intercom;
-      delete window.intercomSettings;
-    }
-  }
-
-  private get settings(): IntercomSettings {
-    const { locale, account } = this.props;
-    return {
-      app_id: appID,
-      language_override: locale,
-      hide_default_launcher: true,
-      ...account.toIntercom(),
-    };
-  }
-
-  public render(): boolean {
-    return false;
-  }
-}
-
-export default function IntercomHOC(): JSX.Element {
-  const { lang: locale } = useTranslation();
-  return (
-    <UserContext.Consumer>
-      {({ user }) => <Intercom account={user} locale={locale} />}
-    </UserContext.Consumer>
-  );
+  return <></>;
 }
