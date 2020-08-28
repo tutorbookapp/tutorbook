@@ -15,6 +15,33 @@ export interface HeaderProps {
   setViewing: TCallback<UserJSON | undefined>;
 }
 
+function fallbackCopyTextToClipboard(text: string): void {
+  const textArea = document.createElement('textarea');
+
+  textArea.value = text;
+  textArea.style.top = '0';
+  textArea.style.left = '0';
+  textArea.style.position = 'fixed';
+
+  document.body.appendChild(textArea);
+
+  textArea.focus();
+  textArea.select();
+
+  try {
+    document.execCommand('copy');
+  } catch (err) {
+    console.error('Fallback: Oops, unable to copy', err);
+  }
+
+  document.body.removeChild(textArea);
+}
+
+async function copyTextToClipboard(text: string): Promise<void> {
+  if (!navigator.clipboard) return fallbackCopyTextToClipboard(text);
+  return navigator.clipboard.writeText(text);
+}
+
 export default memo(function Header({
   orgId,
   orgName,
@@ -27,33 +54,14 @@ export default memo(function Header({
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const hideSnackbar = useCallback(() => setSnackbar(false), []);
   const copySignupLink = useCallback(async () => {
-    function fallbackCopyTextToClipboard(text: string): void {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-
-      // Avoid scrolling to bottom
-      textArea.style.top = '0';
-      textArea.style.left = '0';
-      textArea.style.position = 'fixed';
-
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        document.execCommand('copy');
-      } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err);
-      }
-
-      document.body.removeChild(textArea);
-    }
-    async function copyTextToClipboard(text: string): Promise<void> {
-      if (!navigator.clipboard) return fallbackCopyTextToClipboard(text);
-      return navigator.clipboard.writeText(text);
-    }
     await copyTextToClipboard(
       `${window.location.protocol}//${window.location.host}/${orgId}/signup`
+    );
+    setSnackbar(true);
+  }, [orgId]);
+  const copySearchLink = useCallback(async () => {
+    await copyTextToClipboard(
+      `${window.location.protocol}//${window.location.host}/${orgId}/search`
     );
     setSnackbar(true);
   }, [orgId]);
@@ -86,6 +94,10 @@ export default memo(function Header({
           {
             label: t('people:share-signup-link'),
             onClick: copySignupLink,
+          },
+          {
+            label: t('people:share-search-link'),
+            onClick: copySearchLink,
           },
           {
             label: t('common:import-data'),
