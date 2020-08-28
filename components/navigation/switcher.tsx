@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { IntercomAPI } from 'components/react-intercom';
 
-import { Org, OrgJSON } from 'lib/model';
+import { Org } from 'lib/model';
 import { useUser } from 'lib/account';
 
 import styles from './pop-over.module.scss';
@@ -21,7 +21,7 @@ export default function Switcher(): JSX.Element {
 
   useEffect(() => {
     if (!orgs) return setSelected('Account');
-    const idx: number = orgs.findIndex((o: OrgJSON) => o.id === query.org);
+    const idx: number = orgs.findIndex((o: Org) => o.id === query.org);
     if (idx < 0) return setSelected('Account');
     return setSelected(orgs[idx].name);
   }, [orgs, query]);
@@ -46,10 +46,10 @@ export default function Switcher(): JSX.Element {
             <>
               <div className={styles.line} />
               <div className={styles.header}>{t('common:organizations')}</div>
-              {orgs.map((org: OrgJSON) => (
+              {orgs.map((org: Org) => (
                 <PopOverAccountLink
                   key={org.id}
-                  account={Org.fromJSON(org)}
+                  account={org}
                   href={`/[org]/${destination}`}
                   as={`/${org.id}/${destination}`}
                 />

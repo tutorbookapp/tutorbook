@@ -9,7 +9,7 @@ import { IntercomAPI } from 'components/react-intercom';
 import Avatar from 'components/avatar';
 
 import Link from 'lib/intl/link';
-import { AccountInterface, OrgJSON, User } from 'lib/model';
+import { AccountInterface, Org, User } from 'lib/model';
 import { useUser } from 'lib/account';
 
 import styles from './pop-over.module.scss';
@@ -164,7 +164,7 @@ export default function PopOverMenu({
             {t('common:profile')}
           </PopOverLink>
           <PopOverLink href='/dashboard'>{t('common:dashboard')}</PopOverLink>
-          {orgs.map((org: OrgJSON) => (
+          {orgs.map((org: Org) => (
             <Fragment key={org.id}>
               <div className={styles.line} />
               <PopOverAccountHeader account={org} />

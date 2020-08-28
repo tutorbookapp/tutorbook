@@ -70,7 +70,7 @@ export interface OrgInterface extends AccountInterface {
   zoom?: ZoomAccount;
 }
 
-export type OrgJSON = OrgInterface;
+export type OrgJSON = Omit<OrgInterface, 'zoom'> & { zoom: ZoomAccount | null };
 
 export function isOrgJSON(json: any): json is OrgJSON {
   return (json as OrgJSON).members !== undefined;
@@ -182,11 +182,12 @@ export class Org extends Account implements OrgInterface {
   }
 
   public static fromJSON(json: OrgJSON): Org {
-    return new Org(json);
+    const { zoom, ...rest } = json;
+    return new Org({ zoom: zoom || undefined, ...rest });
   }
 
   public toJSON(): OrgJSON {
-    const { ref, ...rest } = this;
-    return { ...rest };
+    const { ref, zoom, ...rest } = this;
+    return { zoom: zoom || null, ...rest };
   }
 }
