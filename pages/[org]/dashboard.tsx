@@ -58,6 +58,12 @@ function DashboardPage(): JSX.Element {
                 href: '/[org]/matches',
                 as: `/${query.org as string}/matches`,
               },
+              {
+                label: t('common:settings'),
+                active: false,
+                href: '/[org]/settings',
+                as: `/${query.org as string}/settings`,
+              },
             ]}
           />
           <Overview account={org} />

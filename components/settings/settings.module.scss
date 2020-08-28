@@ -1,0 +1,9 @@
+@use 'styles/config';
+
+.wrapper {
+  list-style: none;
+  padding: 0 24px;
+  max-width: config.$default-width;
+  margin: 48px auto;
+  box-sizing: border-box;
+}

@@ -3,32 +3,27 @@ import { useEffect, useMemo } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import { TabHeader } from 'components/navigation';
-import People from 'components/people';
-import Footer from 'components/footer';
 import Intercom from 'components/react-intercom';
+import Footer from 'components/footer';
+import Settings from 'components/settings';
+import { TabHeader } from 'components/navigation';
 
-import { withI18n } from 'lib/intl';
 import { useUser } from 'lib/account';
+import { withI18n } from 'lib/intl';
 
+import settings from 'locales/en/settings.json';
 import common from 'locales/en/common.json';
-import people from 'locales/en/people.json';
-import search from 'locales/en/search.json';
-import query from 'locales/en/query.json';
-import user from 'locales/en/user.json';
-import match from 'locales/en/match.json';
-import request from 'locales/en/request.json';
 
-function PeoplePage(): JSX.Element {
+function SettingsPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
-  const { query: params } = useRouter();
+  const { query } = useRouter();
   const { t } = useTranslation();
 
   const org = useMemo(() => {
-    const idx = orgs.findIndex((o) => o.id === params.org);
+    const idx = orgs.findIndex((o) => o.id === query.org);
     if (idx < 0) return;
     return orgs[idx];
-  }, [orgs, params.org]);
+  }, [orgs, query.org]);
 
   useEffect(() => {
     if (loggedIn === false) {
@@ -49,29 +44,29 @@ function PeoplePage(): JSX.Element {
                 label: t('common:overview'),
                 active: false,
                 href: '/[org]/dashboard',
-                as: `/${params.org as string}/dashboard`,
+                as: `/${query.org as string}/dashboard`,
               },
               {
                 label: t('common:people'),
-                active: true,
+                active: false,
                 href: '/[org]/people',
-                as: `/${params.org as string}/people`,
+                as: `/${query.org as string}/people`,
               },
               {
                 label: t('common:matches'),
                 active: false,
                 href: '/[org]/matches',
-                as: `/${params.org as string}/matches`,
+                as: `/${query.org as string}/matches`,
               },
               {
                 label: t('common:settings'),
-                active: false,
+                active: true,
                 href: '/[org]/settings',
-                as: `/${params.org as string}/settings`,
+                as: `/${query.org as string}/settings`,
               },
             ]}
           />
-          <People org={org} />
+          <Settings org={org} />
           <Footer />
           <Intercom />
         </>
@@ -80,12 +75,4 @@ function PeoplePage(): JSX.Element {
   );
 }
 
-export default withI18n(PeoplePage, {
-  common,
-  people,
-  search,
-  query,
-  user,
-  match,
-  request,
-});
+export default withI18n(SettingsPage, { common, settings });
