@@ -10,6 +10,7 @@ import Footer from 'components/footer';
 import { Aspect } from 'lib/model';
 import { withI18n } from 'lib/intl';
 
+import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
 import banner from 'locales/en/banner.json';
 import about from 'locales/en/about.json';
@@ -35,4 +36,10 @@ function IndexPage(): JSX.Element {
   );
 }
 
-export default withI18n(IndexPage, { common, about, banner, query3rd });
+export default withI18n(IndexPage, {
+  common,
+  about,
+  banner,
+  query3rd,
+  match3rd,
+});
