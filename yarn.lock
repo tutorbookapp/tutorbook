@@ -11401,6 +11401,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"password-generator@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "password-generator@npm:2.3.2"
+  bin:
+    password-generator: bin/password-generator
+  checksum: 2d83d5a0575991fbee7556e4a7daa5fdf0c540b9cd5e2210a90f55161127db38895e20e7c8605a127bff1461766e28c4ecd89beab899319f2aed87da77a5c2e7
+  languageName: node
+  linkType: hard
+
 "path-browserify@npm:0.0.1":
   version: 0.0.1
   resolution: "path-browserify@npm:0.0.1"
@@ -14608,6 +14617,7 @@ fsevents@^1.2.7:
     next-images: ^1.4.0
     next-translate: ^0.17.1
     nprogress: ^0.2.0
+    password-generator: ^2.3.2
     phone: ^2.4.13
     prettier: ^2.0.5
     pretty-quick: ^2.0.1

@@ -47,6 +47,8 @@ export type BaseSearchHit = ObjectWithObjectID &
 // want to be able to create a super `Base` data model class that ensures each
 // data model class includes certain transformation functions (e.g. `fromJSON`).
 export abstract class Base implements BaseInterface {
+  public org: string = 'default';
+
   public subjects: string[] = [];
 
   public people: Person[] = [];

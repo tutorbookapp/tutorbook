@@ -7,6 +7,7 @@ import {
   AvailabilitySearchHit,
 } from './availability';
 import { Account, AccountInterface } from './account';
+import { Resource } from './resource';
 import construct from './construct';
 
 export type Aspect = 'mentoring' | 'tutoring';
@@ -47,11 +48,6 @@ export type Check =
   | 'training'
   | 'interview';
 
-interface Resource {
-  created: Date;
-  updated: Date;
-}
-
 /**
  * Various tags that are added to the Algolia users search during indexing (via
  * the `firebase/functions/src/algolia.ts` GCP serverless function).
@@ -78,13 +74,15 @@ export interface Verification extends Resource {
 
 /**
  * A user's Zoom account that belongs to a certain org.
- * @typedef {Object} ZoomAccount
+ * @typedef {Object} ZoomUser
  * @extends Resource
- * @property id - The Zoom user ID or email address.
+ * @property id - The Zoom-assigned user ID.
+ * @property email - The email address used with the Zoom user account.
  * @property org - The ID of the TB org under which this Zoom user belongs.
  */
-export interface ZoomAccount extends Resource {
+export interface ZoomUser extends Resource {
   id: string;
+  email: string;
   org: string;
 }
 
@@ -110,7 +108,7 @@ export interface ZoomAccount extends Resource {
  */
 export interface UserInterface extends AccountInterface {
   orgs: string[];
-  zooms: ZoomAccount[];
+  zooms: ZoomUser[];
   availability: Availability;
   mentoring: { subjects: string[]; searches: string[] };
   tutoring: { subjects: string[]; searches: string[] };
@@ -144,7 +142,7 @@ export function isUserJSON(json: any): json is UserJSON {
 export class User extends Account implements UserInterface {
   public orgs: string[] = ['default'];
 
-  public zooms: ZoomAccount[] = [];
+  public zooms: ZoomUser[] = [];
 
   public availability: Availability = new Availability();
 

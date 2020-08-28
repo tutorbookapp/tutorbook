@@ -6,6 +6,7 @@ import {
   AvailabilityJSON,
   AvailabilitySearchHit,
 } from '../availability';
+import { Resource } from '../resource';
 import construct from '../construct';
 
 import { Base, BaseInterface } from './base';
@@ -14,9 +15,44 @@ import { Request, RequestJSON, RequestSearchHit } from './request';
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
-export interface Venue {
+/**
+ * A venue for a tutoring or mentoring match to occur (e.g. Zoom or Jitsi).
+ * @typedef {Object} Venue
+ * @extends Resource
+ * @property type - The type of venue (currently only Zoom or Jitsi).
+ * @property url - The URL of the venue (right now, all venues are online and
+ * thus have a definitive URL).
+ */
+export interface BaseVenue extends Resource {
+  type: 'zoom' | 'jitsi';
   url: string;
 }
+
+/**
+ * An anonymous Jitsi video conferencing room. Jitsi is an open-source software
+ * that has a room for every single Zoom meeting venue.
+ * @typedef {Object} JitsiVenue
+ * @extends BaseVenue
+ */
+export interface JitsiVenue extends BaseVenue {
+  type: 'jitsi';
+}
+
+/**
+ * A recurring, non-scheduled Zoom meeting venue.
+ * @typedef {Object} ZoomVenue
+ * @extends BaseVenue
+ * @property id - The Zoom meeting ID.
+ * @property invite - The Zoom meeting invitation (that includes the meeting
+ * URL, telephony audio phone numbers, the meeting topic, etc).
+ */
+export interface ZoomVenue extends BaseVenue {
+  type: 'zoom';
+  id: string;
+  invite: string;
+}
+
+export type Venue = ZoomVenue | JitsiVenue;
 
 /**
  * Represents a tutoring lesson or mentoring appointment.

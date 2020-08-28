@@ -34,13 +34,14 @@ export type ZoomScope = 'meeting:write:admin' | 'user:write:admin';
 /**
  * An authentication config for a certain Zoom account. This enables us to call
  * Zoom APIs on behalf of a user or org (using OAuth patterns).
+ * @typedef {Object} ZoomAccount
  * @property id - The Zoom account ID that has given us authorization.
  * @property token - The Zoom `refresh_token` we can use to access Zoom APIs.
  * @property scopes - The scopes that `refresh_token` gives us access to.
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
  * @see {@link https://marketplace.zoom.us/docs/guides/auth/oauth}
  */
-export interface ZoomAuth {
+export interface ZoomAccount {
   id: string;
   token: string;
   scopes: ZoomScope[];
@@ -66,7 +67,7 @@ export interface OrgInterface extends AccountInterface {
   aspects: Aspect[];
   signup: SignupPageConfig;
   home: HomePageConfig;
-  zoom?: ZoomAuth;
+  zoom?: ZoomAccount;
 }
 
 export type OrgJSON = OrgInterface;
@@ -119,7 +120,7 @@ export class Org extends Account implements OrgInterface {
     },
   };
   
-  public zoom?: ZoomAuth;
+  public zoom?: ZoomAccount;
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
