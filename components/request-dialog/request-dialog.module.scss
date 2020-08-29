@@ -40,7 +40,8 @@
     .name {
       @include typography.typography('headline4');
       color: map.get(config.$colors, 'foreground');
-      margin: 12px 0 8px;
+      line-height: 2.2rem;
+      margin: 16px 0 8px;
     }
 
     @include socials.core-styles;

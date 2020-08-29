@@ -1,0 +1,150 @@
+@use 'sass:map';
+@use 'styles/common';
+@use 'styles/config';
+@use 'styles/loader';
+@use 'styles/socials';
+@use 'styles/typography';
+@use '@material/elevation';
+
+.background img {
+  @include typography.typography('subtitle1');
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  width: 100%;
+  height: calc(40vh + #{config.$nav-height});
+  opacity: 1;
+  object-fit: cover;
+  object-position: center 50%;
+  margin-top: -#{config.$nav-height};
+  background: map.get(config.$colors, 'accents-2');
+  font-size: 0;
+}
+
+.content {
+  @include common.wrapper(config.$form-width);
+  display: flex;
+  padding: 48px 24px;
+
+  $cutoff: 570px;
+
+  @media (max-width: $cutoff) {
+    flex-direction: column;
+  }
+
+  .left {
+    flex: 1 1 auto;
+    margin-right: 24px;
+
+    @media (max-width: $cutoff) {
+      margin-right: 0;
+      margin-bottom: 24px;
+    }
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+
+      .img {
+        display: block;
+        min-width: 120px;
+        margin-right: 16px;
+      }
+
+      .name {
+        @include typography.typography('headline4');
+        color: map.get(config.$colors, 'foreground');
+        line-height: 2.2rem;
+        margin: 0 0 8px;
+      }
+
+      .socials {
+        height: 28px;
+      }
+
+      @include socials.core-styles;
+    }
+
+    .header {
+      @include typography.typography('headline6');
+      color: map.get(config.$colors, 'foreground');
+      font-weight: 600;
+      margin: 24px 0 0;
+    }
+
+    .body {
+      @include typography.typography('body1');
+      color: map.get(config.$colors, 'accents-5');
+      white-space: pre-wrap;
+      margin: 0 0 8px;
+    }
+  }
+
+  .right {
+    flex: 0;
+
+    .actions {
+      position: sticky;
+      top: config.$nav-height + 24px;
+
+      .card {
+        @include elevation.elevation(0);
+        border: 1px solid map.get(config.$colors, 'accents-2');
+        border-radius: 4px;
+        padding: 16px;
+        margin-bottom: 24px;
+        transition: elevation.transition-value(),
+          border elevation.$transition-duration
+            elevation.$transition-timing-function;
+        will-change: elevation.$property, border;
+
+        &:hover {
+          @include elevation.elevation(8);
+          border: 1px solid map.get(config.$colors, 'background');
+        }
+
+        .btn {
+          width: 100%;
+          margin-top: 16px;
+
+          &:first-child {
+            margin-top: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+.loading {
+  .background img {
+    @include loader.loading;
+  }
+
+  .name,
+  .socials,
+  .header,
+  .body {
+    @include loader.loading;
+    border-radius: 4px;
+  }
+
+  .name {
+    height: 2.2rem;
+    width: 200px;
+  }
+
+  .socials {
+    width: 200px;
+  }
+
+  .header {
+    height: 32px;
+    margin-bottom: 8px !important;
+  }
+
+  .body {
+    height: 100px;
+  }
+}

@@ -14,9 +14,15 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
  */
 type IntercomCustomAttribute = string | boolean | number | Date;
 
-type SignupConfig = {
-  [locale: string]: { [key in Aspect]?: { header: string; body: string } };
-};
+type PageConfig<T> = { [locale: string]: T };
+type AspectPageConfig<T> = PageConfig<{ [key in Aspect]?: T }>;
+
+type SignupPageConfig = AspectPageConfig<{ header: string; body: string }>;
+type HomePageConfig = PageConfig<{
+  header: string;
+  body: string;
+  img?: string;
+}>;
 
 /**
  * An `Org` object represents a non-profit organization that is using Tutorbook
@@ -27,12 +33,15 @@ type SignupConfig = {
  * what they do to vet their volunteers before adding them to the search view).
  * @property aspects - The supported aspects of a given org (i.e. are they more
  * focused on `tutoring` or `mentoring`). The first one listed is the default.
+ * @property signup - Configuration for the org's unique custom sign-up page.
+ * @property home - Configuration for the org's unique custom landing homepage.
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
   safeguarding: string;
   aspects: Aspect[];
-  signup: SignupConfig;
+  signup: SignupPageConfig;
+  home: HomePageConfig;
 }
 
 export type OrgJSON = OrgInterface;
@@ -48,7 +57,7 @@ export class Org extends Account implements OrgInterface {
 
   public aspects: Aspect[] = ['tutoring'];
 
-  public signup: SignupConfig = {
+  public signup: SignupPageConfig = {
     en: {
       mentoring: {
         header: 'Guide the next generation',
@@ -67,6 +76,21 @@ export class Org extends Account implements OrgInterface {
           'that no one loses out on education in these difficult times by ' +
           'connecting students with free, volunteer tutors like you.',
       },
+    },
+  };
+
+  public home: HomePageConfig = {
+    en: {
+      header: 'How it works',
+      img: 'https://assets.tutorbook.org/jpgs/rocky-beach.jpg',
+      body:
+        'First, new volunteers register using the sign-up form linked to the ' +
+        'right. Organization admins then vet those volunteers (to ensure ' +
+        'they are who they say they are) before adding them to the search ' +
+        'view for students to find. Finally, students and parents use the ' +
+        'search view (linked to the right) to find and request those ' +
+        'volunteers. Recurring meetings (e.g. on Zoom or Google Meet) are ' +
+        'then set up via email.',
     },
   };
 
