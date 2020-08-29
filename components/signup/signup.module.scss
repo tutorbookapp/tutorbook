@@ -7,8 +7,7 @@
 @use '@material/elevation';
 
 .wrapper {
-  max-width: config.$form-width;
-  padding: 0 24px;
+  @include common.wrapper(config.$form-width);
   margin: 60px auto;
   box-sizing: border-box;
 

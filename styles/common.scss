@@ -1,8 +1,8 @@
 @use 'sass:map';
 @use 'styles/config';
 
-@mixin wrapper {
-  max-width: config.$default-width;
+@mixin wrapper($width: config.$default-width) {
+  max-width: $width;
   margin: 0 auto;
   padding: 0 24px;
   box-sizing: border-box;
