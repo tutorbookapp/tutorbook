@@ -10,6 +10,9 @@ import { Account, AccountInterface } from './account';
 import construct from './construct';
 
 export type Aspect = 'mentoring' | 'tutoring';
+export function isAspect(param: any): param is Aspect {
+  return param === 'mentoring' || param === 'tutoring';
+}
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
