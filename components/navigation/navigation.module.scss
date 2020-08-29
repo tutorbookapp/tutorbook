@@ -62,8 +62,10 @@
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  height: config.$nav-height;
   cursor: pointer;
-  padding: 20px 0;
   margin-right: 10px;
   text-decoration: none;
 }
