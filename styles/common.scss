@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'styles/config';
+@use '@material/elevation';
 
 @mixin wrapper($width: config.$default-width) {
   max-width: $width;
@@ -36,4 +37,18 @@
 
 @mixin divider {
   border-top: 1px solid map.get(config.$colors, 'accents-2');
+}
+
+@mixin card {
+  @include elevation.elevation(0);
+  border: 1px solid map.get(config.$colors, 'accents-2');
+  border-radius: 4px;
+  transition: elevation.transition-value(),
+    border elevation.$transition-duration elevation.$transition-timing-function;
+  will-change: elevation.$property, border;
+
+  &:hover {
+    @include elevation.elevation(8);
+    border: 1px solid map.get(config.$colors, 'background');
+  }
 }

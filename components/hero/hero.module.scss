@@ -1,13 +1,7 @@
-@use 'sass:map';
-@use '@material/card/_index.scss' as card;
-@use 'styles/config';
-@use '@material/elevation';
+@use 'styles/common';
 
 .wrapper {
-  max-width: config.$default-width;
-  margin: 0 auto;
-  padding: 0 24px;
-  box-sizing: border-box;
+  @include common.wrapper;
 }
 
 .hero {
@@ -29,14 +23,5 @@
 }
 
 .card {
-  @include card.outline(map.get(config.$colors, 'accents-2'), 1px);
-  @include elevation.elevation(0);
-  transition: elevation.transition-value(),
-    border elevation.$transition-duration elevation.$transition-timing-function;
-  will-change: elevation.$property, border;
-}
-
-.card:hover {
-  @include card.outline(map.get(config.$colors, 'background'), 1px);
-  @include elevation.elevation(8);
+  @include common.card;
 }

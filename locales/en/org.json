@@ -1,0 +1,16 @@
+{
+  "name": "Organization name",
+  "email": "Organization email address",
+  "phone": "Organization phone number",
+  "photo": "Organization avatar",
+  "bio": "Organization description",
+  "bio-placeholder": "Ex: {{name}} is a nonprofit connecting 9-12 students with expert mentors and K-12 students with volunteer tutors.",
+  "website": "Website link",
+  "linkedin": "LinkedIn company link",
+  "twitter": "Twitter account link",
+  "facebook": "Facebook page link",
+  "instagram": "Instagram account link",
+  "github": "GitHub organization link",
+  "indiehackers": "IndieHackers project link",
+  "update-btn": "Update organization"
+}

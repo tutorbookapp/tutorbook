@@ -1,5 +1,4 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { Card } from '@rmwc/card';
 import { animated, useSpring } from 'react-spring';
 import useTranslation from 'next-translate/useTranslation';
 import cn from 'classnames';
@@ -108,7 +107,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
           {!org ? '' : (org.signup[locale].tutoring || {}).body || ''}
         </animated.div>
       </div>
-      <Card className={styles.formCard}>
+      <div className={styles.formCard}>
         <Loader active={submitting || submitted} checked={submitted} />
         <form className={styles.form} onSubmit={handleSubmit}>
           <Inputs
@@ -139,7 +138,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
             />
           )}
         </form>
-      </Card>
+      </div>
     </div>
   );
 }

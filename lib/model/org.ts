@@ -21,7 +21,7 @@ type SignupPageConfig = AspectPageConfig<{ header: string; body: string }>;
 type HomePageConfig = PageConfig<{
   header: string;
   body: string;
-  img?: string;
+  photo?: string;
 }>;
 
 /**
@@ -108,7 +108,7 @@ export class Org extends Account implements OrgInterface {
   public home: HomePageConfig = {
     en: {
       header: 'How it works',
-      img: 'https://assets.tutorbook.org/jpgs/rocky-beach.jpg',
+      photo: 'https://assets.tutorbook.org/jpgs/rocky-beach.jpg',
       body:
         'First, new volunteers register using the sign-up form linked to the ' +
         'right. Organization admins then vet those volunteers (to ensure ' +
@@ -119,7 +119,7 @@ export class Org extends Account implements OrgInterface {
         'then set up via email.',
     },
   };
-  
+
   public zoom?: ZoomAccount;
 
   public constructor(org: Partial<OrgInterface> = {}) {

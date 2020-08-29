@@ -8,7 +8,7 @@ import NProgress from 'nprogress';
 
 import CovidHead from 'components/doc-head';
 
-import { UpdateUserParam, UserContext } from 'lib/account';
+import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/account';
 import { ApiError, Org, OrgJSON, User, UserJSON } from 'lib/model';
 
 import 'styles/global.scss';
@@ -64,6 +64,15 @@ async function updateUserRemote(user: User): Promise<void> {
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
+  // TODO: Currently, calling `updateUser` triggers an eventual remote data
+  // update which we don't want. Instead, each component should have an explicit
+  // "update" button that:
+  // 1. Shows a loading state that prevents further user input.
+  // 2. Locally mutates data (to start any expensive re-rendering).
+  // 3. Calls POST or PUT API to update remote data.
+  // 4. If error, resets local data and shows error message. Otherwise, locally
+  //    mutates data with server response.
+  // 5. Hides loading state. Data has been updated (or error received).
   const initialPageLoad = useRef<boolean>(true);
   const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
   const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);
@@ -86,7 +95,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
         clearTimeout(updateUserTimeoutId.current);
         updateUserTimeoutId.current = undefined;
       }
-      let updatedUser: User = new User();
+      let updatedUser: User = user;
       if (typeof param === 'object') updatedUser = new User(param);
       if (typeof param === 'function') updatedUser = new User(param(user));
       // Re-validate if we haven't gotten any account data yet. This fixes
@@ -103,10 +112,27 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     [user, loggedIn]
   );
 
+  // Consumers can update local app-wide org data (proxy to SWR's mutate FN).
   const { data: orgsData } = useSWR<OrgJSON[]>('/api/orgs', fetcher);
   const orgs = useMemo(() => {
     return orgsData ? orgsData.map((o: OrgJSON) => Org.fromJSON(o)) : [];
   }, [orgsData]);
+  const updateOrg = useCallback(
+    async (id: string, param: UpdateOrgParam) => {
+      const idx = orgs.findIndex((org: Org) => org.id === id);
+      if (idx < 0) throw new Error(`Org (${id}) not found in local data.`);
+      let updatedOrg: Org = orgs[idx];
+      if (typeof param === 'object') updatedOrg = new Org(param);
+      if (typeof param === 'function') updatedOrg = new Org(param(updatedOrg));
+      const updated = [
+        ...orgs.map((org: Org) => org.toJSON()).slice(0, idx),
+        updatedOrg.toJSON(),
+        ...orgs.map((org: Org) => org.toJSON()).slice(idx + 1),
+      ];
+      await mutate('/api/orgs', updated, false);
+    },
+    [orgs]
+  );
 
   // This service worker appends the Firebase Authentication JWT to all of our
   // same-origin fetch requests. In the future, it'll handle caching as well.
@@ -141,7 +167,9 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
 
   return (
     <SWRConfig value={{ fetcher }}>
-      <UserContext.Provider value={{ user, orgs, updateUser, loggedIn }}>
+      <UserContext.Provider
+        value={{ user, orgs, updateUser, updateOrg, loggedIn }}
+      >
         <div id='portal' />
         <CovidHead />
         <Component {...pageProps} />

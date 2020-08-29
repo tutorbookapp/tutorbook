@@ -11,6 +11,7 @@ import Inputs from 'components/inputs/user';
 import Button from 'components/button';
 
 import { TCallback, User, UserJSON } from 'lib/model';
+import Utils from 'lib/utils';
 
 import styles from './edit-page.module.scss';
 
@@ -30,43 +31,49 @@ export default memo(function EditPage({
   const [user, setUser] = useState<User>(User.fromJSON(value));
   const [checked, setChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string>('');
 
   useEffect(() => setUser(User.fromJSON(value)), [value]);
 
-  const onUserChange = useCallback((updated: User) => setUser(updated), []);
+  useEffect(() => setError((prev: string) => Utils.period(prev)), [error]);
+
   const onSubmit = useCallback(
     async (event: FormEvent) => {
       event.preventDefault();
       setChecked(false);
       setLoading(true);
       if (user.id.startsWith('temp')) {
-        const url = '/api/users';
         const [err, res] = await to(
-          axios.post<UserJSON>(url, {
+          axios.post<UserJSON>('/api/users', {
             user: { ...user, id: '' },
           })
         );
         if (err) {
           setError(`An error occurred while creating user. ${err.message}`);
+          setLoading(false);
         } else {
           onChange((res as AxiosResponse<UserJSON>).data);
+          setChecked(true);
+          setTimeout(() => {
+            void openDisplay().then(() => setLoading(false));
+          }, 1000);
         }
       } else {
         const url = `/api/users/${user.id}`;
         const [err, res] = await to(axios.put<UserJSON>(url, user));
         if (err) {
           setError(`An error occurred while updating user. ${err.message}`);
+          setLoading(false);
         } else {
           onChange((res as AxiosResponse<UserJSON>).data);
+          setChecked(true);
+          setTimeout(() => {
+            void openDisplay().then(() => setLoading(false));
+          }, 1000);
         }
       }
-      setChecked(true);
-      // Wait one sec to show checkmark animation before hiding the loading
-      // overlay and letting the user edit their newly created/updated user.
-      setTimeout(() => openDisplay().then(() => setLoading(false)), 1000);
     },
-    [onChange, openDisplay, mutate, user]
+    [onChange, openDisplay, user]
   );
 
   const { t } = useTranslation();
@@ -81,7 +88,7 @@ export default memo(function EditPage({
         <div className={styles.inputs}>
           <Inputs
             value={user}
-            onChange={onUserChange}
+            onChange={setUser}
             className={styles.field}
             renderToPortal
             name
@@ -94,7 +101,7 @@ export default memo(function EditPage({
         <div className={styles.inputs}>
           <Inputs
             value={user}
-            onChange={onUserChange}
+            onChange={setUser}
             className={styles.field}
             renderToPortal
             bio
@@ -104,7 +111,7 @@ export default memo(function EditPage({
         <div className={styles.inputs}>
           <Inputs
             value={user}
-            onChange={onUserChange}
+            onChange={setUser}
             className={styles.field}
             renderToPortal
             mentoringSubjects
@@ -117,7 +124,7 @@ export default memo(function EditPage({
         <div className={styles.inputs}>
           <Inputs
             value={user}
-            onChange={onUserChange}
+            onChange={setUser}
             className={styles.field}
             renderToPortal
             socials
@@ -125,7 +132,7 @@ export default memo(function EditPage({
           <Button
             className={styles.btn}
             label={t(
-              user.id.startsWith('temp') ? 'user:create-btn' : `user:update-btn`
+              user.id.startsWith('temp') ? 'user:create-btn' : 'user:update-btn'
             )}
             disabled={loading}
             raised

@@ -78,7 +78,6 @@
     "@juggle/resize-observer": "^3.2.0",
     "@material/menu-surface": "^5.1.0",
     "@rmwc/button": "^6.1.3",
-    "@rmwc/card": "^6.1.3",
     "@rmwc/checkbox": "^6.1.3",
     "@rmwc/chip": "^6.1.3",
     "@rmwc/data-table": "^6.1.3",

@@ -35,10 +35,10 @@ export default function Home({ org }: HomeProps): JSX.Element {
 
   return (
     <div className={cn({ [styles.loading]: !org })}>
-      {(!org || org.home[locale].img) && (
+      {(!org || org.home[locale].photo) && (
         <div className={styles.background}>
           <img
-            src={org && org.home[locale].img}
+            src={org && org.home[locale].photo}
             alt={`Background of ${org ? org.name : 'Organization'}`}
           />
         </div>

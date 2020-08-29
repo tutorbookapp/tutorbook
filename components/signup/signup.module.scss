@@ -3,8 +3,6 @@
 @use 'styles/common';
 @use 'styles/loader';
 @use 'styles/typography';
-@use '@material/card/_index.scss' as card;
-@use '@material/elevation';
 
 .wrapper {
   @include common.wrapper(config.$form-width);
@@ -50,18 +48,8 @@
   }
 
   .formCard {
-    @include card.outline(map.get(config.$colors, 'accents-2'), 1px);
-    @include elevation.elevation(0);
-    transition: elevation.transition-value(),
-      border elevation.$transition-duration
-        elevation.$transition-timing-function;
-    will-change: elevation.$property, border;
+    @include common.card;
     margin: 16px 0;
-
-    &:hover {
-      @include card.outline(map.get(config.$colors, 'background'), 1px);
-      @include elevation.elevation(8);
-    }
 
     .divider {
       list-style: none;

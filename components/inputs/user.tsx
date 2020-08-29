@@ -216,12 +216,12 @@ export default function UserInputs({
       {socials && (
         <>
           <TextField {...s('website', (v) => `https://${v}.com`)} />
+          <TextField {...s('facebook', (v) => `https://facebook.com/${v}`)} />
+          <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
+          <TextField {...s('twitter', (v) => `https://twitter.com/${v}`)} />
           <TextField
             {...s('linkedin', (v) => `https://linkedin.com/in/${v}`)}
           />
-          <TextField {...s('instagram', (v) => `https://instagram.com/${v}`)} />
-          <TextField {...s('facebook', (v) => `https://facebook.com/${v}`)} />
-          <TextField {...s('twitter', (v) => `https://twitter.com/${v}`)} />
           <TextField {...s('github', (v) => `https://github.com/${v}`)} />
           <TextField
             {...s('indiehackers', (v) => `https://indiehackers.com/${v}`)}

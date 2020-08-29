@@ -1,9 +1,17 @@
-@use 'styles/config';
+@use 'styles/common';
 
 .wrapper {
-  list-style: none;
-  padding: 0 24px;
-  max-width: config.$default-width;
+  @include common.wrapper;
   margin: 48px auto;
-  box-sizing: border-box;
+  display: flex;
+
+  .left {
+    flex: 0 0 auto;
+    margin-right: 96px;
+  }
+
+  .right {
+    flex: 1 1 auto;
+    box-sizing: border-box;
+  }
 }

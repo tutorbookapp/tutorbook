@@ -66,7 +66,7 @@ function SettingsPage(): JSX.Element {
               },
             ]}
           />
-          <Settings org={org} />
+          <Settings active='signup' org={org} />
           <Footer />
           <Intercom />
         </>

@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Card } from '@rmwc/card';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -38,9 +37,9 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
         <div className={styles.title}>
           <Title>{t(`about:hero-${aspect}-title`)}</Title>
         </div>
-        <Card className={styles.card}>
+        <div className={styles.card}>
           <SearchForm aspect={aspect} />
-        </Card>
+        </div>
         <Carousel query={query} onClick={setViewing} />
       </div>
     </div>
