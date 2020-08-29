@@ -83,7 +83,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
         <div className={styles.right}>
           <div className={styles.actions}>
             {(org ? org.aspects : ['tutoring', 'mentoring']).map((aspect) => (
-              <div className={styles.card}>
+              <div key={aspect} className={styles.card}>
                 <Link
                   href='/[org]/search/[[...slug]]'
                   as={`/${org ? org.id : 'default'}/search?aspect=${aspect}`}
