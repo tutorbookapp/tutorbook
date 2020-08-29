@@ -1,7 +1,8 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 import { AspectHeader, EmptyHeader } from 'components/navigation';
 import Intercom from 'components/react-intercom';
@@ -9,7 +10,7 @@ import Footer from 'components/footer';
 import Signup from 'components/signup';
 
 import { withI18n } from 'lib/intl';
-import { Aspect, Org, OrgJSON } from 'lib/model';
+import { isAspect, Aspect, Org, OrgJSON } from 'lib/model';
 import { db } from 'lib/api/helpers/firebase';
 
 import user3rd from 'locales/en/user3rd.json';
@@ -21,10 +22,20 @@ interface SignupPageProps {
 }
 
 function SignupPage({ org }: SignupPageProps): JSX.Element {
+  const { query } = useRouter();
   const [aspect, setAspect] = useState<Aspect>(() => {
     if (!org) return 'mentoring';
     return org.aspects[0] || 'mentoring';
   });
+
+  useEffect(() => {
+    setAspect((prev: Aspect) => {
+      const updated = isAspect(query.aspect) ? query.aspect : prev;
+      if (org && !org.aspects.includes(updated)) return prev;
+      return updated;
+    });
+  }, [org, query]);
+
   return (
     <>
       {(!org || org.aspects.length === 2) && (
