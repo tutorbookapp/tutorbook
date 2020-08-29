@@ -4382,6 +4382,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^0.20.0":
+  version: 0.20.0
+  resolution: "axios@npm:0.20.0"
+  dependencies:
+    follow-redirects: ^1.10.0
+  checksum: 6cf2e963176a0d18fc457d7cb71cb6cf552193619b161fc61070d9a4db3a26a87ecfe760ba36e7af174c05a6a9898dc52cfeb5c0e62e19fddd9788739553ad73
+  languageName: node
+  linkType: hard
+
 "axobject-query@npm:^2.1.2":
   version: 2.2.0
   resolution: "axobject-query@npm:2.2.0"
@@ -7585,6 +7594,13 @@ __metadata:
   dependencies:
     debug: =3.1.0
   checksum: 6e58e02c31337b6b41ffc3d5f3d49920b7db428eddcf374537da00ef121fe473983e12d8557f4304287604168d3efcc288d1f009abaf4c9d61e5db0c0cee3c4a
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.10.0":
+  version: 1.13.0
+  resolution: "follow-redirects@npm:1.13.0"
+  checksum: f220828d3f153da30ea616fdbe9f6676e74e4e68c51d336a751037c1d556e2de34aa5918f58951fa19bb6517c9c88b4403a0a8bdfc40d3e779d37def2ac0f2c4
   languageName: node
   linkType: hard
 
@@ -14566,7 +14582,7 @@ fsevents@^1.2.7:
     accept-language-parser: ^1.5.0
     algoliasearch: ^4.3.1
     await-to-js: ^2.1.1
-    axios: ^0.19.2
+    axios: ^0.20.0
     babel-eslint: ^10.1.0
     classnames: ^2.2.6
     dotenv: ^8.2.0
