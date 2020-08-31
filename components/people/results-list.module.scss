@@ -6,6 +6,7 @@
   border-left: 1px solid map.get(config.$colors, 'accents-2');
   border-right: 1px solid map.get(config.$colors, 'accents-2');
   overflow: hidden;
+  min-height: 625px;
 
   .empty {
     margin: 0;

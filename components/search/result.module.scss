@@ -10,6 +10,7 @@ $margin: 20px;
   height: $height;
   position: relative;
   border: 1px solid map.get(config.$colors, 'accents-2');
+  box-sizing: border-box;
   border-top: none;
   cursor: pointer;
 
