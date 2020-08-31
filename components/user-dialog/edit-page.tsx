@@ -2,7 +2,6 @@ import { FormEvent, memo, useCallback, useEffect, useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import { IconButton } from '@rmwc/icon-button';
 import { TextFieldHelperText } from '@rmwc/textfield';
-import { mutate } from 'swr';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 

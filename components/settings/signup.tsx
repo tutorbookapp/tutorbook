@@ -2,8 +2,6 @@ import { useCallback, FormEvent } from 'react';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
-import PhotoInput from 'components/photo-input';
-
 import { Aspect, Org } from 'lib/model';
 
 import { useSettings } from './context';

@@ -1,26 +1,17 @@
-import { useCallback, useEffect, useRef, useState, ReactNode } from 'react';
+import { useCallback, useEffect, ReactNode } from 'react';
 import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
-import axios, { AxiosResponse } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
-import to from 'await-to-js';
 import cn from 'classnames';
+import axios from 'axios';
 import Link from 'next/link';
 
 import Header from 'components/header';
 
-import {
-  isSignupPageConfig,
-  isHomePageConfig,
-  isAccount,
-  isOrgJSON,
-  Org,
-  OrgJSON,
-} from 'lib/model';
+import { Org, OrgJSON } from 'lib/model';
 import { useContinuous } from 'lib/hooks';
 import { useUser } from 'lib/account';
 
 import { SettingsContext } from './context';
-import Links from './links';
 import styles from './settings.module.scss';
 
 export interface SettingsProps {

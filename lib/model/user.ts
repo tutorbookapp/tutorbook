@@ -8,7 +8,6 @@ import {
 } from './availability';
 import { Account, AccountInterface } from './account';
 import { Resource } from './resource';
-import { Aspect } from './aspect';
 import construct from './construct';
 
 type DocumentData = admin.firestore.DocumentData;

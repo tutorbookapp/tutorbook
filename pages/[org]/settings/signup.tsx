@@ -1,5 +1,5 @@
 import ErrorPage from 'next/error';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -62,7 +62,7 @@ function SettingsPage(): JSX.Element {
               },
             ]}
           />
-          <Settings active='signup' orgId={query.org}>
+          <Settings active='signup' orgId={query.org as string}>
             <Signup />
           </Settings>
           <Footer />
