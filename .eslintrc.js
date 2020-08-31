@@ -86,7 +86,7 @@ module.exports = {
     // }
     '@typescript-eslint/no-inferrable-types': [
       'error',
-      { ignoreParameters: false },
+      { ignoreParameters: true },
     ],
 
     // Allow for skipping code paths by returning undefined values or callbacks.
