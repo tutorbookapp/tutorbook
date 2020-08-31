@@ -8,8 +8,8 @@ import { IntercomAPI } from 'components/react-intercom';
 import { Org } from 'lib/model';
 import { useUser } from 'lib/account';
 
-import styles from './pop-over.module.scss';
 import { PopOverAccountLink, PopOverButton } from './pop-over';
+import styles from './pop-over.module.scss';
 
 export default function Switcher(): JSX.Element {
   const { t } = useTranslation();
@@ -27,9 +27,8 @@ export default function Switcher(): JSX.Element {
   }, [orgs, query]);
 
   const destination = useMemo(() => {
-    if (pathname.indexOf('people') >= 0) return 'people';
-    if (pathname.indexOf('matches') >= 0) return 'matches';
-    return 'dashboard';
+    if (!pathname.includes('[org]')) return 'dashboard';
+    return pathname.split('/').slice(2).join('/');
   }, [pathname]);
 
   return (
