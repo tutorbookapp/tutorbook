@@ -65,14 +65,8 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
   // TODO: Currently, calling `updateUser` triggers an eventual remote data
-  // update which we don't want. Instead, each component should have an explicit
-  // "update" button that:
-  // 1. Shows a loading state that prevents further user input.
-  // 2. Locally mutates data (to start any expensive re-rendering).
-  // 3. Calls POST or PUT API to update remote data.
-  // 4. If error, resets local data and shows error message. Otherwise, locally
-  //    mutates data with server response.
-  // 5. Hides loading state. Data has been updated (or error received).
+  // update which we don't want. Instead, each component should manage remote
+  // data mutation itself and only use this callback to mutate local data.
   const initialPageLoad = useRef<boolean>(true);
   const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
   const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);

@@ -6,24 +6,20 @@ import useTranslation from 'next-translate/useTranslation';
 import Intercom from 'components/react-intercom';
 import Footer from 'components/footer';
 import Settings from 'components/settings';
+import Home from 'components/settings/home';
 import { TabHeader } from 'components/navigation';
 
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 
+import org from 'locales/en/org.json';
 import settings from 'locales/en/settings.json';
 import common from 'locales/en/common.json';
 
 function SettingsPage(): JSX.Element {
-  const { orgs, loggedIn } = useUser();
+  const { loggedIn } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
-
-  const org = useMemo(() => {
-    const idx = orgs.findIndex((o) => o.id === query.org);
-    if (idx < 0) return;
-    return orgs[idx];
-  }, [orgs, query.org]);
 
   useEffect(() => {
     if (loggedIn === false) {
@@ -66,7 +62,9 @@ function SettingsPage(): JSX.Element {
               },
             ]}
           />
-          <Settings active='home' org={org} />
+          <Settings active='home' orgId={query.org}>
+            <Home />
+          </Settings>
           <Footer />
           <Intercom />
         </>
@@ -75,4 +73,4 @@ function SettingsPage(): JSX.Element {
   );
 }
 
-export default withI18n(SettingsPage, { common, settings });
+export default withI18n(SettingsPage, { common, settings, org });

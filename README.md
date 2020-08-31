@@ -148,6 +148,41 @@ creating a Zoom meeting for a match:
 For more info on our Zoom integration, see [this
 issue](https://github.com/tutorbookapp/tutorbook/issues/100).
 
+## Design Specifications
+
+These are some of the front-end design guidelines that TB follows in order to
+maintain consistency and display predictable behavior.
+
+### Forms and Data Mutation
+
+There are two types of data entry forms used throughout TB:
+
+1. **Single update forms.** These are forms that are explicitly submitted by the
+   user upon completion (think Google Forms; must be submitted to be saved).
+   - Includes inputs, submission button, loading overlay, and error message.
+   - Upon submission, these forms:
+     1. Show a loading state that prevents further user input.
+     2. Immediately mutate local data (to start any expensive re-rendering).
+     3. Update remote data with a POST or PUT API request.
+     4. If the server sends an error, reset local data and show error message.
+        Otherwise, mutate local data with the server's response.
+     5. Hide the loading state. Data has been updated or an error has occurred.
+   - Ex: New request form, edit user form (in people dashboard), sign-up form.
+2. **Continuous update forms.** These are forms that continually receive user
+   input, mutate local data, and update remote data at set intervals (think
+   Google Docs; continually auto-saves user input).
+   - Includes inputs (shows error message via a snackbar).
+   - Upon update, these forms:
+     1. Immediately mutate local data (unless such a mutation would cause too
+        much expensive re-rendering delaying further user input).
+     2. Set a timeout to update the remote data (e.g. after 5secs of no change,
+        update the remote). Clear any existing timeouts.
+     3. Update remote data with a POST or PUT API request.
+     4. If the server sends an error, show an error message via a snackbar and
+        retry the request. Local data stays mutated. Otherwise, mutate local
+        data with the server's response.
+   - Ex: Org settings form, profile form, query/search form.
+
 # Contributing
 
 Do the following (preferably in order):

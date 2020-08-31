@@ -49,7 +49,7 @@ export default class Utils {
    * Ensures that the given string ends in a period.
    */
   public static period(msg: string): string {
-    if (msg.endsWith('.')) return msg;
+    if (!msg || msg.endsWith('.')) return msg;
     return `${msg}.`;
   }
 

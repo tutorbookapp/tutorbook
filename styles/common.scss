@@ -52,3 +52,11 @@
     border: 1px solid map.get(config.$colors, 'background');
   }
 }
+
+@mixin snackbar {
+  margin: 24px;
+
+  :global(.mdc-snackbar__action) {
+    color: map.get(config.$colors, 'primary');
+  }
+}

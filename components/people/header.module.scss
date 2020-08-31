@@ -1,5 +1,5 @@
-@use '@material/snackbar/_index.scss' as snackbar;
+@use 'styles/common';
 
 .snackbar {
-  @include snackbar.viewport-margin(24px);
+  @include common.snackbar;
 }

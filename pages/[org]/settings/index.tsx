@@ -17,15 +17,9 @@ import settings from 'locales/en/settings.json';
 import common from 'locales/en/common.json';
 
 function SettingsPage(): JSX.Element {
-  const { orgs, loggedIn } = useUser();
+  const { loggedIn } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
-
-  const org = useMemo(() => {
-    const idx = orgs.findIndex((o) => o.id === query.org);
-    if (idx < 0) return;
-    return orgs[idx];
-  }, [orgs, query.org]);
 
   useEffect(() => {
     if (loggedIn === false) {
@@ -68,8 +62,8 @@ function SettingsPage(): JSX.Element {
               },
             ]}
           />
-          <Settings active='general' org={org}>
-            <General orgId={org.id} />
+          <Settings active='general' orgId={query.org}>
+            <General />
           </Settings>
           <Footer />
           <Intercom />

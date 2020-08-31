@@ -1,3 +1,5 @@
+@use 'sass:map';
+@use 'styles/config';
 @use 'styles/common';
 
 .wrapper {
@@ -8,10 +10,76 @@
   .left {
     flex: 0 0 auto;
     margin-right: 96px;
+
+    .links {
+      position: sticky;
+      top: config.$nav-height + 24px;
+
+      > a {
+        display: block;
+        font-size: 14px;
+        line-height: 24px;
+        margin-bottom: 16px;
+        font-family: map.get(config.$fonts, 'sans');
+        color: map.get(config.$colors, 'accents-5');
+        text-decoration: none;
+        transition: color 0.2s ease-in-out;
+        position: relative;
+        cursor: pointer;
+
+        &:hover {
+          color: map.get(config.$colors, 'foreground');
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.active {
+          color: map.get(config.$colors, 'foreground');
+          font-weight: 600;
+        }
+      }
+    }
   }
 
   .right {
     flex: 1 1 auto;
     box-sizing: border-box;
+
+    .card {
+      border: 1px solid map.get(config.$colors, 'accents-2');
+      border-radius: 4px;
+      position: relative;
+
+      .divider {
+        @include common.divider;
+      }
+
+      .inputs {
+        max-width: 500px;
+        margin: 32px auto;
+        padding: 0 48px;
+
+        .field {
+          @include common.field;
+        }
+
+        .btn {
+          margin: 8px 0 0;
+          width: 100%;
+        }
+
+        .error {
+          color: map.get(config.$colors, 'error');
+          font-weight: 450;
+          margin-top: 16px;
+        }
+      }
+    }
   }
+}
+
+.snackbar {
+  @include common.snackbar;
 }

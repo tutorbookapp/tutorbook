@@ -28,16 +28,6 @@ export function isSignupPageConfig(config: any): config is SignupPageConfig {
   if (!config || typeof config !== 'object') return false;
   return Object.values(config).every((localeConfig: any) => {
     if (!localeConfig || typeof localeConfig !== 'object') return false;
-    if (typeof localeConfig.header !== 'string') return false;
-    if (typeof localeConfig.body !== 'string') return false;
-    return true;
-  });
-}
-
-export function isHomePageConfig(config: any): config is HomePageConfig {
-  if (!config || typeof config !== 'object') return false;
-  return Object.values(config).every((localeConfig: any) => {
-    if (!localeConfig || typeof localeConfig !== 'object') return false;
     if (!Object.keys(localeConfig).every((k: any) => isAspect(k))) return false;
     return Object.values(localeConfig).every((aspectConfig: any) => {
       if (!aspectConfig || typeof aspectConfig !== 'object') return false;
@@ -45,6 +35,16 @@ export function isHomePageConfig(config: any): config is HomePageConfig {
       if (typeof aspectConfig.body !== 'string') return false;
       return true;
     });
+  });
+}
+
+export function isHomePageConfig(config: any): config is SignupPageConfig {
+  if (!config || typeof config !== 'object') return false;
+  return Object.values(config).every((localeConfig: any) => {
+    if (!localeConfig || typeof localeConfig !== 'object') return false;
+    if (typeof localeConfig.header !== 'string') return false;
+    if (typeof localeConfig.body !== 'string') return false;
+    return true;
   });
 }
 
