@@ -1,0 +1,9 @@
+{
+  "users-header": "Create new Zoom users",
+  "users-body": "Users created on Tutorbook will automatically be added to your organization's Zoom account.",
+  "users-scopes": "Requires the <0>user:write:admin</0> scope.",
+  "meetings-header": "Create new Zoom meetings",
+  "meetings-body": "Matches created on Tutorbook will use your organization's Zoom account to schedule recurring Zoom meetings.",
+  "meetings-scopes": "Requires the <0>meeting:write:admin</0> scope.",
+  "learn-more": "Learn more about <0>Zoom Integrations →</0>"
+}

@@ -93,12 +93,13 @@ in each match has a unique anonymous email address (e.g.
 intercepted by Tutorbook and added to the in-app communications timeline before
 being relayed to their intended recipients.
 
-## Integrations and Data Flow
+## Design Specifications
 
-Summarized here are descriptions of common data flow patterns and integration
-use cases.
+Summarized here are descriptions of common data flow patterns and design specs.
+These are some of the front-end design guidelines that TB follows in order to
+maintain consistency and display predictable behavior.
 
-### Zoom
+### Zoom Integration
 
 TB ([Tutorbook](https://tutorbook.app)) creates new recurring Zoom meetings for
 every [match](#match). To do so, TB stores Zoom OAuth refresh tokens and account
@@ -147,11 +148,6 @@ creating a Zoom meeting for a match:
 
 For more info on our Zoom integration, see [this
 issue](https://github.com/tutorbookapp/tutorbook/issues/100).
-
-## Design Specifications
-
-These are some of the front-end design guidelines that TB follows in order to
-maintain consistency and display predictable behavior.
 
 ### Forms and Data Mutation
 

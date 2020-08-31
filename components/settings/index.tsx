@@ -88,6 +88,11 @@ export default function Settings({
                 {t('settings:signup')}
               </a>
             </Link>
+            <Link href='/[org]/settings/zoom' as={`/${orgId}/settings/zoom`}>
+              <a className={cn({ [styles.active]: active === 'zoom' })}>
+                {t('settings:zoom')}
+              </a>
+            </Link>
           </div>
         </div>
         <div className={styles.right}>

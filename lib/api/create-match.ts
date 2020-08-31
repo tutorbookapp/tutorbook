@@ -197,7 +197,7 @@ async function getZoom(match: Match, people: UserWithRoles[]): Promise<Venue> {
         method: 'post',
         url: 'https://api.zoom.us/users',
         data: {
-          action: 'create', // Sends user an invitation email to join org's Zoom.
+          action: 'create', // Sends user invitation email to join org's Zoom.
           user_info: {
             type: 1, // Creates basic user w/out a paid license.
             email: user.email,

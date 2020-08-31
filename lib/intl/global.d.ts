@@ -1,5 +1,15 @@
 /* eslint-disable no-underscore-dangle, @typescript-eslint/ban-types, @typescript-eslint/naming-convention */
 
+interface TransProps {
+  i18nKey: string;
+  components?: ReactNode[];
+  values?: { [name: string]: string | number };
+}
+
+declare module 'next-translate/Trans' {
+  export default function Trans(props: TransProps): JSX.Element;
+}
+
 interface I18nProps {
   t: (key: string, query?: { [name: string]: string | number }) => string;
   lang: string;
