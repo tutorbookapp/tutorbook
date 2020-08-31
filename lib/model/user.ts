@@ -8,12 +8,8 @@ import {
 } from './availability';
 import { Account, AccountInterface } from './account';
 import { Resource } from './resource';
+import { Aspect } from './aspect';
 import construct from './construct';
-
-export type Aspect = 'mentoring' | 'tutoring';
-export function isAspect(param: any): param is Aspect {
-  return param === 'mentoring' || param === 'tutoring';
-}
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -264,21 +260,9 @@ export class User extends Account implements UserInterface {
    * @see {@link https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter}
    */
   public toFirestore(): DocumentData {
-    const { availability, token, ref, ...rest } = this;
-    const allDefinedValues = Object.fromEntries(
-      Object.entries(rest).filter(([_, val]) => val !== undefined)
-    );
-    const allFilledValues = Object.fromEntries(
-      Object.entries(allDefinedValues).filter(([_, val]) => {
-        if (!val) return false;
-        if (typeof val === 'object' && !Object.keys(val).length) return false;
-        return true;
-      })
-    );
-    return {
-      ...allFilledValues,
-      availability: availability.toFirestore(),
-    };
+    const base = super.toFirestore();
+    delete base.token;
+    return { ...base, availability: this.availability.toFirestore() };
   }
 
   public static fromJSON(json: UserJSON): User {

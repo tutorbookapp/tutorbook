@@ -6,7 +6,8 @@ import to from 'await-to-js';
 import { ListUsersRes } from 'lib/api/list-users';
 
 import { Availability, AvailabilityJSON } from '../availability';
-import { Aspect, Check, User, UserJSON } from '../user';
+import { Check, User, UserJSON } from '../user';
+import { Aspect } from '../aspect';
 import { ApiError } from '../errors';
 import construct from '../construct';
 

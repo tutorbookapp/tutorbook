@@ -2,6 +2,7 @@ import * as admin from 'firebase-admin';
 
 import construct from './construct';
 
+type DocumentData = admin.firestore.DocumentData;
 type DocumentReference = admin.firestore.DocumentReference;
 
 /**
@@ -36,6 +37,24 @@ export interface SocialInterface {
   url: string;
 }
 
+export function isSocial(obj: any): obj is SocialInterface {
+  if (!obj || typeof obj !== 'object' || !obj) return false;
+  if (
+    ![
+      'website',
+      'linkedin',
+      'twitter',
+      'facebook',
+      'instagram',
+      'github',
+      'indiehackers',
+    ].includes(obj.type)
+  )
+    return false;
+  if (typeof obj.url !== 'string') return false;
+  return true;
+}
+
 /**
  * An `Account` object is the base object that is extended by the `Org` and
  * `User` objects. That way, we can have one `AccountProvider` for both orgs and
@@ -50,6 +69,21 @@ export interface AccountInterface {
   bio: string;
   socials: SocialInterface[];
   ref?: DocumentReference;
+}
+
+export type Extendable<T> = T & Record<string, unknown>;
+
+export function isAccount(obj: any): obj is Extendable<AccountInterface> {
+  if (!obj || typeof obj !== 'object') return false;
+  if (
+    !['id', 'name', 'photo', 'email', 'phone', 'bio'].every(
+      (key: string) => typeof obj[key] === 'string'
+    )
+  )
+    return false;
+  if (!(obj.socials instanceof Array)) return false;
+  if (!obj.socials.every((social: any) => isSocial(social))) return false;
+  return true;
 }
 
 // TODO: Make this an abstract class but still prevent the `phone` property from
@@ -124,6 +158,21 @@ export class Account implements AccountInterface {
         .filter(([key, val]) => isFilled(val))
         .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
+  }
+
+  public toFirestore(): DocumentData {
+    const { ref, ...rest } = this;
+    const allDefinedValues = Object.fromEntries(
+      Object.entries(rest).filter(([_, val]) => val !== undefined)
+    );
+    const allFilledValues = Object.fromEntries(
+      Object.entries(allDefinedValues).filter(([_, val]) => {
+        if (!val) return false;
+        if (typeof val === 'object' && !Object.keys(val).length) return false;
+        return true;
+      })
+    );
+    return allFilledValues;
   }
 
   public toString(): string {

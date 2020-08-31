@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 
-import { Account, AccountInterface } from './account';
-import { Aspect } from './user';
+import { isAccount, Account, AccountInterface } from './account';
+import { isAspect, Aspect } from './aspect';
 import construct from './construct';
 
 type DocumentData = admin.firestore.DocumentData;
@@ -23,6 +23,30 @@ type HomePageConfig = PageConfig<{
   body: string;
   photo?: string;
 }>;
+
+export function isSignupPageConfig(config: any): config is SignupPageConfig {
+  if (!config || typeof config !== 'object') return false;
+  return Object.values(config).every((localeConfig: any) => {
+    if (!localeConfig || typeof localeConfig !== 'object') return false;
+    if (typeof localeConfig.header !== 'string') return false;
+    if (typeof localeConfig.body !== 'string') return false;
+    return true;
+  });
+}
+
+export function isHomePageConfig(config: any): config is HomePageConfig {
+  if (!config || typeof config !== 'object') return false;
+  return Object.values(config).every((localeConfig: any) => {
+    if (!localeConfig || typeof localeConfig !== 'object') return false;
+    if (!Object.keys(localeConfig).every((k: any) => isAspect(k))) return false;
+    return Object.values(localeConfig).every((aspectConfig: any) => {
+      if (!aspectConfig || typeof aspectConfig !== 'object') return false;
+      if (typeof aspectConfig.header !== 'string') return false;
+      if (typeof aspectConfig.body !== 'string') return false;
+      return true;
+    });
+  });
+}
 
 /**
  * The only two Zoom OAuth scopes that we ever will request access to.
@@ -52,8 +76,6 @@ export interface ZoomAccount {
  * to manage their virtual tutoring programs.
  * @typedef {Object} Org
  * @property members - An array of user UIDs that are members of this org.
- * @property safeguarding - A description of the org's safeguarding policy (i.e.
- * what they do to vet their volunteers before adding them to the search view).
  * @property aspects - The supported aspects of a given org (i.e. are they more
  * focused on `tutoring` or `mentoring`). The first one listed is the default.
  * @property signup - Configuration for the org's unique custom sign-up page.
@@ -63,7 +85,6 @@ export interface ZoomAccount {
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
-  safeguarding: string;
   aspects: Aspect[];
   signup: SignupPageConfig;
   home: HomePageConfig;
@@ -73,13 +94,16 @@ export interface OrgInterface extends AccountInterface {
 export type OrgJSON = Omit<OrgInterface, 'zoom'> & { zoom: ZoomAccount | null };
 
 export function isOrgJSON(json: any): json is OrgJSON {
-  return (json as OrgJSON).members !== undefined;
+  if (!isAccount(json)) return false;
+  if (!(json.members instanceof Array)) return false;
+  if (!json.members.every((m: any) => typeof m === 'string')) return false;
+  if (!isSignupPageConfig(json.signup)) return false;
+  if (!isHomePageConfig(json.home)) return false;
+  return true;
 }
 
 export class Org extends Account implements OrgInterface {
   public members: string[] = [];
-
-  public safeguarding = '';
 
   public aspects: Aspect[] = ['tutoring'];
 

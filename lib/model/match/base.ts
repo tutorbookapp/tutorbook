@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
-import { Aspect } from '../user';
+import { Aspect } from '../aspect';
 import {
   Availability,
   AvailabilityJSON,
