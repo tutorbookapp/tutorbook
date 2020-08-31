@@ -3,9 +3,8 @@ import { ParsedUrlQuery } from 'querystring';
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 
 import { EmptyHeader } from 'components/navigation';
-import Intercom from 'components/react-intercom';
-import Footer from 'components/footer';
 import Home from 'components/home';
+import Page from 'components/page';
 
 import { Org, OrgJSON } from 'lib/model';
 import { withI18n } from 'lib/intl';
@@ -20,12 +19,10 @@ interface HomePageProps {
 
 function HomePage({ org }: HomePageProps): JSX.Element {
   return (
-    <>
+    <Page formWidth>
       <EmptyHeader formWidth />
       <Home org={org} />
-      <Footer formWidth />
-      <Intercom />
-    </>
+    </Page>
   );
 }
 

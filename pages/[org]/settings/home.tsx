@@ -3,8 +3,7 @@ import { useEffect } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Intercom from 'components/react-intercom';
-import Footer from 'components/footer';
+import Page from 'components/page';
 import Settings from 'components/settings';
 import Home from 'components/settings/home';
 import { TabHeader } from 'components/navigation';
@@ -16,7 +15,7 @@ import org from 'locales/en/org.json';
 import settings from 'locales/en/settings.json';
 import common from 'locales/en/common.json';
 
-function SettingsPage(): JSX.Element {
+function HomeSettingsPage(): JSX.Element {
   const { loggedIn } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
@@ -33,7 +32,7 @@ function SettingsPage(): JSX.Element {
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
       {!!org && (
-        <>
+        <Page>
           <TabHeader
             tabs={[
               {
@@ -65,12 +64,10 @@ function SettingsPage(): JSX.Element {
           <Settings active='home' orgId={query.org as string}>
             <Home />
           </Settings>
-          <Footer />
-          <Intercom />
-        </>
+        </Page>
       )}
     </>
   );
 }
 
-export default withI18n(SettingsPage, { common, settings, org });
+export default withI18n(HomeSettingsPage, { common, settings, org });

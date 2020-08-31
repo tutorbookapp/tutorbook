@@ -3,8 +3,7 @@ import { useEffect, useMemo } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Intercom from 'components/react-intercom';
-import Footer from 'components/footer';
+import Page from 'components/page';
 import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
@@ -37,7 +36,7 @@ function DashboardPage(): JSX.Element {
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
       {!!org && (
-        <>
+        <Page>
           <TabHeader
             tabs={[
               {
@@ -67,9 +66,7 @@ function DashboardPage(): JSX.Element {
             ]}
           />
           <Overview account={org} />
-          <Footer />
-          <Intercom />
-        </>
+        </Page>
       )}
     </>
   );

@@ -3,8 +3,7 @@ import { useEffect } from 'react';
 import Router, { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Intercom from 'components/react-intercom';
-import Footer from 'components/footer';
+import Page from 'components/page';
 import Settings from 'components/settings';
 import General from 'components/settings/general';
 import { TabHeader } from 'components/navigation';
@@ -33,7 +32,7 @@ function SettingsPage(): JSX.Element {
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
       {!!org && (
-        <>
+        <Page>
           <TabHeader
             tabs={[
               {
@@ -65,9 +64,7 @@ function SettingsPage(): JSX.Element {
           <Settings active='general' orgId={query.org as string}>
             <General />
           </Settings>
-          <Footer />
-          <Intercom />
-        </>
+        </Page>
       )}
     </>
   );

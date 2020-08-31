@@ -7,8 +7,7 @@ import equal from 'fast-deep-equal';
 
 import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
-import Footer from 'components/footer';
-import Intercom from 'components/react-intercom';
+import Page from 'components/page';
 import RequestDialog from 'components/request-dialog';
 
 import {
@@ -150,11 +149,11 @@ function SearchPage({
   }, [viewing, query.aspect, query.subjects]);
 
   return (
-    <>
-      <QueryHeader
-        aspects={org.aspects}
-        query={query}
-        onChange={handleQueryChange}
+    <Page>
+      <QueryHeader 
+        aspects={org.aspects} 
+        query={query} 
+        onChange={handleQueryChange} 
       />
       {viewing && (
         <RequestDialog
@@ -171,9 +170,7 @@ function SearchPage({
         onChange={handleQueryChange}
         setViewing={setViewing}
       />
-      <Footer />
-      <Intercom />
-    </>
+    </Page>
   );
 }
 

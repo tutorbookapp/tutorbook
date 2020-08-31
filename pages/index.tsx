@@ -2,10 +2,9 @@ import { useState } from 'react';
 
 import { AspectHeader } from 'components/navigation';
 import Banner from 'components/banner';
-import Intercom from 'components/react-intercom';
 import Hero from 'components/hero';
 import About from 'components/about';
-import Footer from 'components/footer';
+import Page from 'components/page';
 
 import { Aspect } from 'lib/model';
 import { withI18n } from 'lib/intl';
@@ -19,7 +18,7 @@ import common from 'locales/en/common.json';
 function IndexPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');
   return (
-    <>
+    <Page>
       <Banner />
       <AspectHeader
         aspect={aspect}
@@ -30,9 +29,7 @@ function IndexPage(): JSX.Element {
       <div style={{ marginBottom: '60px' }}>
         <Hero aspect={aspect} />
       </div>
-      <Footer />
-      <Intercom />
-    </>
+    </Page>
   );
 }
 

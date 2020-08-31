@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Intercom from 'components/react-intercom';
-import Footer from 'components/footer';
+import Page from 'components/page';
 import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
@@ -24,7 +23,7 @@ function DashboardPage(): JSX.Element {
   }, [loggedIn]);
 
   return (
-    <>
+    <Page>
       <TabHeader
         links
         tabs={[
@@ -36,9 +35,7 @@ function DashboardPage(): JSX.Element {
         ]}
       />
       <Overview account={user} />
-      <Footer />
-      <Intercom />
-    </>
+    </Page>
   );
 }
 

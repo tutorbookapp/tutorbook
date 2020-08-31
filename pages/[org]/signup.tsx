@@ -5,9 +5,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import { AspectHeader, EmptyHeader } from 'components/navigation';
-import Intercom from 'components/react-intercom';
-import Footer from 'components/footer';
 import Signup from 'components/signup';
+import Page from 'components/page';
 
 import { withI18n } from 'lib/intl';
 import { isAspect, Aspect, Org, OrgJSON } from 'lib/model';
@@ -37,15 +36,13 @@ function SignupPage({ org }: SignupPageProps): JSX.Element {
   }, [org, query]);
 
   return (
-    <>
+    <Page formWidth>
       {(!org || org.aspects.length === 2) && (
         <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
       )}
       {!!org && org.aspects.length !== 2 && <EmptyHeader formWidth />}
       <Signup aspect={aspect} org={org} />
-      <Footer formWidth />
-      <Intercom />
-    </>
+    </Page>
   );
 }
 

@@ -5,8 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { TabHeader } from 'components/navigation';
 import People from 'components/people';
-import Footer from 'components/footer';
-import Intercom from 'components/react-intercom';
+import Page from 'components/page';
 
 import { withI18n } from 'lib/intl';
 import { useUser } from 'lib/account';
@@ -42,7 +41,7 @@ function PeoplePage(): JSX.Element {
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
       {!!org && (
-        <>
+        <Page>
           <TabHeader
             tabs={[
               {
@@ -72,9 +71,7 @@ function PeoplePage(): JSX.Element {
             ]}
           />
           <People org={org} />
-          <Footer />
-          <Intercom />
-        </>
+        </Page>
       )}
     </>
   );
