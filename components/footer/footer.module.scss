@@ -1,14 +1,14 @@
 @use 'sass:map';
 @use 'styles/config';
 
-.footer {
+.wrapper {
   display: grid;
   grid-template-columns: 1fr [content] 12fr 1fr;
   background: map.get(config.$colors, 'accents-1');
   border-top: 1px solid map.get(config.$colors, 'accents-2');
 }
 
-.footer * {
+.wrapper * {
   line-height: normal;
   font-family: map.get(config.$fonts, 'sans');
   font-weight: 400;
@@ -16,8 +16,8 @@
   color: map.get(config.$colors, 'foreground');
 }
 
-.footer ul,
-.footer li {
+.wrapper ul,
+.wrapper li {
   list-style: none;
   display: inline-block;
   margin: 0;

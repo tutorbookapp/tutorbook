@@ -1,4 +1,5 @@
 import useTranslation from 'next-translate/useTranslation';
+import cn from 'classnames';
 
 import Link from 'lib/intl/link';
 import { useUser } from 'lib/account';
@@ -131,9 +132,7 @@ export default function Footer({
   const { t } = useTranslation();
   const { user } = useUser();
   return (
-    <footer
-      className={styles.footer + (formWidth ? ` ${styles.formWidth}` : '')}
-    >
+    <footer className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <span className={styles.sitemapTitle}>
         <h1 id='sitemap'>{t('common:footer-sitemap')}</h1>
       </span>
