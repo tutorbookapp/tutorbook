@@ -2,8 +2,6 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Dialog } from '@rmwc/dialog';
-import { TooltipProps } from '@rmwc/tooltip';
-import dynamic from 'next/dynamic';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
@@ -12,7 +10,6 @@ import Avatar from 'components/avatar';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
-import UserSelect from 'components/user-select';
 
 import Utils from 'lib/utils';
 import { signupWithGoogle } from 'lib/account/signup';
@@ -22,18 +19,12 @@ import {
   Aspect,
   Match,
   MatchJSON,
-  Option,
   Person,
-  Role,
   SocialInterface,
   User,
 } from 'lib/model';
 
 import styles from './request-dialog.module.scss';
-
-const Tooltip = dynamic<TooltipProps>(() =>
-  import('@rmwc/tooltip').then((m) => m.Tooltip)
-);
 
 export interface RequestDialogProps {
   onClosed: () => void;
@@ -48,6 +39,7 @@ export default function RequestDialog({
   aspect,
   user,
 }: RequestDialogProps): JSX.Element {
+  const [open, setOpen] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
@@ -55,9 +47,6 @@ export default function RequestDialog({
   const { t } = useTranslation();
   const { user: currentUser } = useUser();
 
-  const [students, setStudents] = useState<Option<string>[]>([
-    { label: 'You', value: currentUser.id },
-  ]);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
   const [message, setMessage] = useState<string>('');
 
@@ -70,7 +59,7 @@ export default function RequestDialog({
       name: currentUser.name,
       photo: currentUser.photo,
       handle: uuid(),
-      roles: [],
+      roles: [aspect === 'tutoring' ? 'tutee' : 'mentee'],
     };
     const target: Person = {
       id: user.id,
@@ -83,42 +72,9 @@ export default function RequestDialog({
       creator,
       message,
       subjects,
-      people: [
-        target,
-        ...students.map(({ value: id }) => {
-          const roles: Role[] = [aspect === 'tutoring' ? 'tutee' : 'mentee'];
-          const handle: string = id === creator.id ? creator.handle : uuid();
-          if (id === creator.id) creator.roles = Array.from(roles);
-          return { id, roles, handle };
-        }),
-      ],
+      people: [target, creator],
     });
-  }, [currentUser.id, user.id, aspect, message, subjects, students]);
-
-  // Update the names displayed in the people select when context or props
-  // changes (i.e. when the user logs in, we change 'You' to their actual name).
-  useEffect(() => {
-    setStudents((prev: Option<string>[]) => {
-      const opt = { label: 'You', value: currentUser.id };
-      if (!prev.length) return [opt];
-      const idx = prev.findIndex(({ value: id }) => !id || id === opt.value);
-      if (idx < 0) return prev;
-      return [...prev.slice(0, idx), opt, ...prev.slice(idx + 1)];
-    });
-  }, [currentUser]);
-
-  // Ensure there are at least 2 people and that they always contain the
-  // recipient of the request (i.e. the user being presented in this dialog).
-  const onStudentsChange = useCallback(
-    (selected: Option<string>[]) => {
-      setStudents(() => {
-        const updated: Option<string>[] = Array.from(selected);
-        if (updated.length) return updated;
-        return [{ label: 'You', value: currentUser.id }];
-      });
-    },
-    [currentUser]
-  );
+  }, [currentUser, user, aspect, message, subjects]);
 
   const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
@@ -166,13 +122,14 @@ export default function RequestDialog({
         );
       } else {
         setChecked(true);
+        setTimeout(() => setOpen(false), 1000);
       }
     },
     [currentUser]
   );
 
   return (
-    <Dialog open onClosed={onClosed} className={styles.dialog}>
+    <Dialog open={open} onClosed={onClosed} className={styles.dialog}>
       <div className={styles.wrapper}>
         <Loader active={loading} checked={checked} />
         <div className={styles.left}>
@@ -207,25 +164,6 @@ export default function RequestDialog({
           <p className={styles.text}>{user.bio}</p>
           <h6 className={styles.header}>{t('common:request')}</h6>
           <form className={styles.form} onSubmit={onSubmit}>
-            <Tooltip
-              content={t('match3rd:login-to-proxy-request')}
-              open={!currentUser.id ? undefined : false}
-              activateOn='hover'
-              align='topRight'
-            >
-              <div className={styles.field}>
-                <UserSelect
-                  required
-                  outlined
-                  renderToPortal
-                  disabled={!currentUser.id}
-                  label={t('match3rd:people')}
-                  className={styles.field}
-                  onSelectedChange={onStudentsChange}
-                  selected={students}
-                />
-              </div>
-            </Tooltip>
             <SubjectSelect
               required
               outlined
