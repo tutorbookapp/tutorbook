@@ -135,7 +135,7 @@ export function isUserJSON(json: any): json is UserJSON {
  * @see {@link https://stackoverflow.com/a/54857125/10023158}
  */
 export class User extends Account implements UserInterface {
-  public orgs: string[] = ['default'];
+  public orgs: string[] = [];
 
   public zooms: ZoomUser[] = [];
 
