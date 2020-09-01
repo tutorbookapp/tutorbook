@@ -92,13 +92,17 @@
         padding: 16px;
         margin-bottom: 24px;
 
-        .btn {
-          width: 100%;
+        a {
+          display: block;
           margin-top: 16px;
 
           &:first-child {
             margin-top: 0;
           }
+        }
+
+        .btn {
+          width: 100%;
         }
       }
     }

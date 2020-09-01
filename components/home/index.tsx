@@ -88,23 +88,27 @@ export default function Home({ org }: HomeProps): JSX.Element {
                   href='/[org]/search/[[...slug]]'
                   as={`/${org ? org.id : 'default'}/search?aspect=${aspect}`}
                 >
-                  <Button
-                    className={styles.btn}
-                    label={t(`home:search-${aspect}`)}
-                    raised
-                    arrow
-                  />
+                  <a>
+                    <Button
+                      className={styles.btn}
+                      label={t(`home:search-${aspect}`)}
+                      raised
+                      arrow
+                    />
+                  </a>
                 </Link>
                 <Link
                   href='/[org]/signup'
                   as={`/${org ? org.id : 'default'}/signup?aspect=${aspect}`}
                 >
-                  <Button
-                    className={styles.btn}
-                    label={t(`home:signup-${aspect}`)}
-                    outlined
-                    arrow
-                  />
+                  <a>
+                    <Button
+                      className={styles.btn}
+                      label={t(`home:signup-${aspect}`)}
+                      outlined
+                      arrow
+                    />
+                  </a>
                 </Link>
               </div>
             ))}
