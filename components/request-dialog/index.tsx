@@ -12,7 +12,6 @@ import Avatar from 'components/avatar';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
-import { TimesSelectProps } from 'components/times-select';
 import UserSelect from 'components/user-select';
 
 import Utils from 'lib/utils';
@@ -21,7 +20,6 @@ import { useUser } from 'lib/account';
 import {
   ApiError,
   Aspect,
-  Availability,
   Match,
   MatchJSON,
   Option,
@@ -33,9 +31,6 @@ import {
 
 import styles from './request-dialog.module.scss';
 
-const TimesSelect = dynamic<TimesSelectProps>(() =>
-  import('components/times-select')
-);
 const Tooltip = dynamic<TooltipProps>(() =>
   import('@rmwc/tooltip').then((m) => m.Tooltip)
 );
@@ -43,14 +38,12 @@ const Tooltip = dynamic<TooltipProps>(() =>
 export interface RequestDialogProps {
   onClosed: () => void;
   subjects: string[];
-  times?: Availability;
   aspect: Aspect;
   user: User;
 }
 
 export default function RequestDialog({
   subjects: initialSubjects,
-  times: initialTimes,
   onClosed,
   aspect,
   user,
@@ -66,7 +59,6 @@ export default function RequestDialog({
     { label: 'You', value: currentUser.id },
   ]);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
-  const [times, setTimes] = useState<Availability | undefined>(initialTimes);
   const [message, setMessage] = useState<string>('');
 
   // We have to use React refs in order to access updated state information in
@@ -88,7 +80,6 @@ export default function RequestDialog({
       roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
     };
     match.current = new Match({
-      times,
       creator,
       message,
       subjects,
@@ -102,7 +93,7 @@ export default function RequestDialog({
         }),
       ],
     });
-  }, [currentUser.id, user.id, aspect, times, message, subjects, students]);
+  }, [currentUser.id, user.id, aspect, message, subjects, students]);
 
   // Update the names displayed in the people select when context or props
   // changes (i.e. when the user logs in, we change 'You' to their actual name).
@@ -130,7 +121,6 @@ export default function RequestDialog({
   );
 
   const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
-  const onTimesChange = useCallback((a: Availability) => setTimes(a), []);
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setMessage(event.currentTarget.value);
   }, []);
@@ -248,17 +238,6 @@ export default function RequestDialog({
               options={user[aspect].subjects}
               aspect={aspect}
             />
-            {aspect === 'tutoring' && times && (
-              <TimesSelect
-                outlined
-                renderToPortal
-                label={t('match3rd:times')}
-                className={styles.field}
-                onChange={onTimesChange}
-                options={user.availability}
-                value={times}
-              />
-            )}
             <TextField
               outlined
               textarea

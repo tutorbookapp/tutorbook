@@ -44,7 +44,6 @@ export default memo(function FiltersSheet({
         onChange={setQuery}
         className={styles.field}
         renderToPortal
-        availability
         subjects
         langs
       />

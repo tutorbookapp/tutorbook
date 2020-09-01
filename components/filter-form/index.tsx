@@ -30,7 +30,7 @@ interface FilterFormProps {
   thirdPerson?: boolean;
 }
 
-type FocusTarget = 'subjects' | 'availability' | 'langs';
+type FocusTarget = 'subjects' | 'langs';
 
 export default function FilterForm({
   query,
@@ -90,7 +90,6 @@ export default function FilterForm({
             thirdPerson={thirdPerson}
             subjects
             langs
-            availability={query.aspect === 'tutoring'}
           />
         </form>
       </div>
@@ -103,19 +102,6 @@ export default function FilterForm({
         >
           {str(query.subjects) || t('search:any-subjects')}
         </SearchButton>
-        {query.aspect === 'tutoring' && (
-          <>
-            <span className={styles.searchDivider} />
-            <SearchButton
-              onClick={() => {
-                setFocused('availability');
-                setActive(true);
-              }}
-            >
-              {query.availability.toString() || t('search:any-availability')}
-            </SearchButton>
-          </>
-        )}
         <span className={styles.searchDivider} />
         <SearchButton
           onClick={() => {

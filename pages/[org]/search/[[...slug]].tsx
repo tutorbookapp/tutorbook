@@ -14,7 +14,6 @@ import RequestDialog from 'components/request-dialog';
 import {
   Availability,
   Option,
-  Timeslot,
   Org,
   OrgJSON,
   User,
@@ -149,21 +148,6 @@ function SearchPage({
       (a: string, b: Option<string>) => a === b.value
     );
   }, [viewing, query.aspect, query.subjects]);
-  const times = useMemo(() => {
-    if (!viewing) return new Availability();
-    const possible = Utils.intersection<Timeslot, Timeslot>(
-      query.availability,
-      viewing.availability,
-      (a: Timeslot, b: Timeslot) => a.equalTo(b)
-    );
-    if (!possible.length) return new Availability();
-    const start = possible[0].from;
-    let end = possible[0].to;
-    if (end.valueOf() - start.valueOf() >= 3600000) {
-      end = new Date(start.valueOf() + 3600000);
-    }
-    return new Availability(new Timeslot(start, end));
-  }, [viewing, query.availability]);
 
   return (
     <>
@@ -178,7 +162,6 @@ function SearchPage({
           aspect={query.aspect}
           onClosed={onClosed}
           subjects={subjects}
-          times={times}
         />
       )}
       <Search

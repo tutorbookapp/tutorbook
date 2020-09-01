@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Button from 'components/button';
 import { QueryInputs } from 'components/inputs';
 
-import { Aspect, Availability, UsersQuery } from 'lib/model';
+import { Aspect, UsersQuery } from 'lib/model';
 import { useUser } from 'lib/account';
 
 import styles from './search-form.module.scss';
@@ -24,7 +24,6 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       aspect: aspect || 'mentoring',
       langs: [],
       subjects: [],
-      availability: new Availability(),
     })
   );
 
@@ -58,7 +57,6 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
       <QueryInputs
         subjects
         thirdPerson
-        availability={query.aspect === 'tutoring'}
         className={styles.field}
         onChange={onChange}
         value={query}
