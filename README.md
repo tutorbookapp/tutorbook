@@ -233,6 +233,10 @@ trying to contribute; it'll save your reputation and a lot of time):
   instructions](https://eslint.org/docs/user-guide/integrations) to install it
   in the text editor of your choice (such that you won't have to wait until our
   pre-commit hooks fail to update your code).
+- [Cypress](https://docs.cypress.io) for integration, UI, and some unit tests.
+  Cypress is like Selenium; but built from the ground-up with the developer in
+  mind. Cypress runs alongside your code in the browser, enabling DOM snapshots,
+  time travel, and overall faster test runs.
 
 #### Database
 
@@ -281,34 +285,41 @@ $ npm -v
 6.14.7
 ```
 
-6. Clone and `cd` into this repository locally by running:
+6. (Optional) Install the [Cypress system dependencies](https://bit.ly/2QHuAiG)
+   if you plan on running our integration tests locally.
+
+```
+$ sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+```
+
+7. Clone and `cd` into this repository locally by running:
 
 ```
 $ git clone https://github.com/tutorbookapp/tutorbook.git && cd tutorbook/
 ```
 
-7. Follow [these instructions](https://yarnpkg.com/getting-started/install) to
+8. Follow [these instructions](https://yarnpkg.com/getting-started/install) to
    install `yarn` (our dependency manager for a number of reasons):
 
 ```
 $ npm i -g yarn
 ```
 
-8. Then, install of our project's dependencies with the following command:
+9. Then, install of our project's dependencies with the following command:
 
 ```
-$ yarn install
+$ yarn
 ```
 
-9. Follow the instructions included below (see "Available Scripts") to start a
-   [Next.js](https://nextjs.org) development server (to see your updates affect
-   the app live):
+10. Follow the instructions included below (see "Available Scripts") to start a
+    [Next.js](https://nextjs.org) development server (to see your updates affect
+    the app live):
 
 ```
 $ yarn run dev
 ```
 
-10. Message me (DM **@nicholaschiang** on
+11. Message me (DM **@nicholaschiang** on
     [Slack](https://tutorbookapp.slack.com)) once (not if) you get the following
     error (I have to give you some Firebase API keys to put in the `.env` file):
 
@@ -316,7 +327,7 @@ $ yarn run dev
 Error [FirebaseError]: projectId must be a string in FirebaseApp.options
 ```
 
-11. Finally, `cd` into your desired component or lib utility, make your changes,
+12. Finally, `cd` into your desired component or lib utility, make your changes,
     commit them to a branch off of `develop`, push it to a [fork of our
     repository](https://github.com/tutorbookapp/covid-tutoring/fork), and open a
     PR on GitHub.
