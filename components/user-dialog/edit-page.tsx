@@ -97,7 +97,6 @@ export default memo(function EditPage({
             onChange={onUserChange}
             className={styles.field}
             renderToPortal
-            langs
             bio
           />
         </div>

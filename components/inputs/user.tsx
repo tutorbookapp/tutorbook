@@ -2,7 +2,6 @@ import { FormEvent, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
-import LangSelect from 'components/lang-select';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 
@@ -21,7 +20,6 @@ type Input =
   | 'mentoringSearches'
   | 'tutoringSubjects'
   | 'tutoringSearches'
-  | 'langs'
   | 'parents';
 
 interface Props {
@@ -49,7 +47,6 @@ export default function UserInputs({
   tutoringSearches,
   mentoringRequired,
   tutoringRequired,
-  langs,
 }: Props & InputsProps<User, Input> & InputsConfig<Input>): JSX.Element {
   const { t } = useTranslation();
 
@@ -130,18 +127,6 @@ export default function UserInputs({
           {...shared('photo')}
           value={value.photo}
           onChange={(photo: string) => onChange(new User({ ...value, photo }))}
-        />
-      )}
-      {langs && (
-        <LangSelect
-          {...sharedProps}
-          value={value.langs}
-          label={t(`user${thirdPerson ? '3rd' : ''}:langs`)}
-          onChange={(langs: string[]) =>
-            onChange(new User({ ...value, langs }))
-          }
-          required
-          renderToPortal={renderToPortal}
         />
       )}
       {mentoringSubjects && (

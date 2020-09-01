@@ -121,7 +121,6 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
             photo
             bio
             socials
-            langs
             mentoringSubjects={aspect === 'mentoring'}
             mentoringRequired={aspect === 'mentoring'}
             tutoringSubjects={aspect === 'tutoring'}
