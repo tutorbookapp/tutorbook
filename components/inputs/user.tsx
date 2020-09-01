@@ -1,25 +1,14 @@
 import { FormEvent, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
-import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
 import LangSelect from 'components/lang-select';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
-import { TimesSelectProps } from 'components/times-select';
 
-import {
-  Availability,
-  SocialInterface,
-  SocialTypeAlias,
-  User,
-} from 'lib/model';
+import { SocialInterface, SocialTypeAlias, User } from 'lib/model';
 
 import { InputsConfig, InputsProps } from './types';
-
-const TimesSelect = dynamic<TimesSelectProps>(() =>
-  import('components/times-select')
-);
 
 type Input =
   | 'name'
@@ -28,7 +17,6 @@ type Input =
   | 'photo'
   | 'bio'
   | 'socials'
-  | 'availability'
   | 'mentoringSubjects'
   | 'mentoringSearches'
   | 'tutoringSubjects'
@@ -37,7 +25,6 @@ type Input =
   | 'parents';
 
 interface Props {
-  availabilityRequired?: boolean;
   mentoringRequired?: boolean;
   tutoringRequired?: boolean;
 }
@@ -56,12 +43,10 @@ export default function UserInputs({
   photo,
   bio,
   socials,
-  availability,
   mentoringSubjects,
   mentoringSearches,
   tutoringSubjects,
   tutoringSearches,
-  availabilityRequired,
   mentoringRequired,
   tutoringRequired,
   langs,
@@ -156,17 +141,6 @@ export default function UserInputs({
             onChange(new User({ ...value, langs }))
           }
           required
-          renderToPortal={renderToPortal}
-        />
-      )}
-      {availability && (
-        <TimesSelect
-          {...shared('availability')}
-          value={value.availability}
-          onChange={(availability: Availability) =>
-            onChange(new User({ ...value, availability }))
-          }
-          required={availabilityRequired}
           renderToPortal={renderToPortal}
         />
       )}

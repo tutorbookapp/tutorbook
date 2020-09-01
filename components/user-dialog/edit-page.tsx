@@ -98,7 +98,6 @@ export default memo(function EditPage({
             className={styles.field}
             renderToPortal
             langs
-            availability
             bio
           />
         </div>
