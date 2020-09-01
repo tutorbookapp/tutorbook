@@ -12,11 +12,9 @@ import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
 import { mutate } from 'swr';
 import to from 'await-to-js';
-import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
-import { TimesSelectProps } from 'components/times-select';
 import Loader from 'components/loader';
 import Button from 'components/button';
 import Result from 'components/search/result';
@@ -28,7 +26,6 @@ import Utils from 'lib/utils';
 import {
   ApiError,
   Aspect,
-  Availability,
   Callback,
   Person,
   Request,
@@ -38,10 +35,6 @@ import {
 } from 'lib/model';
 
 import styles from './form-page.module.scss';
-
-const TimesSelect = dynamic<TimesSelectProps>(async () =>
-  import('components/times-select')
-);
 
 export interface RequestPageProps {
   value: UserJSON;
@@ -65,7 +58,6 @@ export default memo(function RequestPage({
 
   const aspects = useRef<Set<Aspect>>(new Set());
   const [subjects, setSubjects] = useState<SubjectOption[]>([]);
-  const [times, setTimes] = useState<Availability>(new Availability());
   const [message, setMessage] = useState<string>('');
 
   const msgPlaceholder = useMemo(
@@ -103,7 +95,6 @@ export default memo(function RequestPage({
     if (asps.includes('mentoring')) person.roles.push('mentee');
     return new Request({
       id: `temp-${uuid()}`,
-      times,
       message,
       people: [person],
       subjects: subjects.map((s) => s.value),
@@ -116,7 +107,7 @@ export default memo(function RequestPage({
       },
       status: 'queued',
     });
-  }, [value, user, subjects, times, message]);
+  }, [value, user, subjects, message]);
 
   const onSubmit = useCallback(
     async (event: FormEvent) => {
@@ -209,14 +200,6 @@ export default memo(function RequestPage({
             label={t('common:subjects')}
             onSelectedChange={setSubjects}
             selected={subjects}
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-          <TimesSelect
-            label={t('common:times')}
-            onChange={setTimes}
-            value={times}
             className={styles.field}
             renderToPortal
             outlined

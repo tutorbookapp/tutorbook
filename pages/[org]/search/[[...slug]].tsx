@@ -11,7 +11,6 @@ import Page from 'components/page';
 import RequestDialog from 'components/request-dialog';
 
 import {
-  Availability,
   Option,
   Org,
   OrgJSON,
@@ -113,17 +112,6 @@ function SearchPage({
     initialViewing ? User.fromJSON(initialViewing) : undefined
   );
 
-  const handleQueryChange = async (newQuery: UsersQuery) => {
-    const updatedQuery: UsersQuery =
-      newQuery.aspect === 'mentoring'
-        ? new UsersQuery({ ...newQuery, availability: new Availability() })
-        : newQuery;
-    setQuery(updatedQuery);
-    setSearching(true);
-    setResults((await updatedQuery.search()).users);
-    setSearching(false);
-  };
-
   useEffect(() => {
     const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
     void Router.push('/[org]/search/[[...slug]]', url, { shallow: true });
@@ -137,6 +125,14 @@ function SearchPage({
       return prev;
     });
   }, [org.aspects, query]);
+  useEffect(() => {
+    const search = async () => {
+      setSearching(true);
+      setResults((await query.search()).users);
+      setSearching(false);
+    };
+    void search();
+  }, [query]);
 
   const onClosed = useCallback(() => setViewing(undefined), []);
   const subjects = useMemo(() => {
@@ -150,11 +146,7 @@ function SearchPage({
 
   return (
     <Page>
-      <QueryHeader 
-        aspects={org.aspects} 
-        query={query} 
-        onChange={handleQueryChange} 
-      />
+      <QueryHeader aspects={org.aspects} query={query} onChange={setQuery} />
       {viewing && (
         <RequestDialog
           user={viewing}
@@ -167,7 +159,7 @@ function SearchPage({
         query={query}
         results={results}
         searching={searching}
-        onChange={handleQueryChange}
+        onChange={setQuery}
         setViewing={setViewing}
       />
     </Page>

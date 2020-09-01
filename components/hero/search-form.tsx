@@ -3,9 +3,9 @@ import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
-import { QueryInputs } from 'components/inputs';
+import SubjectSelect from 'components/subject-select';
 
-import { Aspect, UsersQuery } from 'lib/model';
+import { Aspect, Option, UsersQuery } from 'lib/model';
 import { useUser } from 'lib/account';
 
 import styles from './search-form.module.scss';
@@ -42,7 +42,7 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     void Router.prefetch('/[org]/search/[[...slug]]', url);
   }, [url]);
 
-  const handleSubmit = useCallback(
+  const onSubmit = useCallback(
     async (evt: FormEvent<HTMLFormElement>) => {
       evt.preventDefault();
       setSubmitting(true);
@@ -50,16 +50,21 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
     },
     [url]
   );
-  const onChange = useCallback((qry: UsersQuery) => setQuery(qry), []);
+  const onSubjectsChange = useCallback((subjects: Option<string>[]) => {
+    setQuery((prev: UsersQuery) => new UsersQuery({ ...prev, subjects }));
+  }, []);
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <QueryInputs
-        subjects
-        thirdPerson
+    <form className={styles.form} onSubmit={onSubmit}>
+      <SubjectSelect
+        label={t('query3rd:subjects')}
+        onSelectedChange={onSubjectsChange}
+        selected={query.subjects}
+        placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
         className={styles.field}
-        onChange={onChange}
-        value={query}
+        aspect={query.aspect}
+        renderToPortal
+        outlined
       />
       <Button
         className={styles.btn}

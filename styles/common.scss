@@ -60,3 +60,9 @@
     color: map.get(config.$colors, 'primary');
   }
 }
+
+@mixin error {
+  color: map.get(config.$colors, 'error');
+  font-weight: 450;
+  margin-top: 16px;
+}

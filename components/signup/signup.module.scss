@@ -49,24 +49,29 @@
 
   .formCard {
     @include common.card;
+    position: relative;
     margin: 16px 0;
 
-    .divider {
-      list-style: none;
-      margin: 8px 0;
-    }
-
-    .form {
+    .inputs {
       padding: 16px;
+
+      .field {
+        @include common.field;
+      }
+
+      .btn {
+        margin-top: 8px;
+        width: 100%;
+      }
+
+      .error {
+        @include common.error;
+      }
     }
 
-    .field {
-      @include common.field;
-    }
-
-    .btn {
-      margin-top: 16px;
-      width: 100%;
+    .divider {
+      @include common.divider;
+      margin: 8px 0;
     }
   }
 }

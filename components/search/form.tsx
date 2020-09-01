@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 import FilterForm from 'components/filter-form';
 
-import { TCallback, UsersQuery } from 'lib/model';
+import { Callback, UsersQuery } from 'lib/model';
 
 import styles from './form.module.scss';
 
@@ -12,7 +12,7 @@ export default function Form({
   onChange,
 }: {
   query: UsersQuery;
-  onChange: TCallback<UsersQuery>;
+  onChange: Callback<UsersQuery>;
 }): JSX.Element {
   const [elevated, setElevated] = useState<boolean>(false);
   const formRef = useRef<HTMLDivElement | null>(null);

@@ -272,13 +272,6 @@ export class User extends Account implements UserInterface {
     });
   }
 
-  /**
-   * Note that right now, we're sending the `token` property along with a user
-   * JSON object in the `/api/user` REST API endpoint. But that's the **only
-   * case** where we'd ever want to serialize and send a Firebase Auth JWT.
-   * @todo Perhaps remove the `token` from the JSON object and add it manually
-   * in the `/api/user` REST API endpoint.
-   */
   public toJSON(): UserJSON {
     const { availability, ref, token, ...rest } = this;
     return { ...rest, availability: availability.toJSON() };

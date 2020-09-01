@@ -13,29 +13,28 @@ import Link from 'lib/intl/link';
 import styles from './login.module.scss';
 
 export default function Login(): JSX.Element {
-  const { user } = useUser();
+  const { loggedIn } = useUser();
   const { t } = useTranslation();
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<string | undefined>();
+  const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    if (user.id) {
+    if (loggedIn) {
       void Router.push('/dashboard');
     }
-  }, [user]);
+  }, [loggedIn]);
 
   useEffect(() => {
     void Router.prefetch('/dashboard');
   }, []);
 
-  const handleClick = useCallback(async () => {
+  const onClick = useCallback(async () => {
+    setError(undefined);
     setSubmitting(true);
     const [err] = await to(signupWithGoogle());
     if (err) {
       setSubmitting(false);
-      setError(
-        `An error occurred while logging in with Google. ${err.message}`
-      );
+      setError(err);
     } else {
       await Router.push('/dashboard');
       setSubmitting(false);
@@ -49,7 +48,7 @@ export default function Login(): JSX.Element {
         <h1 className={styles.title}>{t('login:title')}</h1>
         <div className={styles.buttons}>
           <Button
-            onClick={handleClick}
+            onClick={onClick}
             label={t('login:google')}
             disabled={submitting}
             google
@@ -62,7 +61,7 @@ export default function Login(): JSX.Element {
               validationMsg
               className={styles.error}
             >
-              {error}
+              {t('login:error', { error: error.message })}
             </TextFieldHelperText>
           )}
         </div>

@@ -55,18 +55,9 @@ async function installServiceWorker(): Promise<void> {
   }
 }
 
-async function updateUserRemote(user: User): Promise<void> {
-  const url = `/api/users/${user.id}`;
-  const { data: updatedUser } = await axios.put<UserJSON>(url, user.toJSON());
-  await mutate('/api/account', updatedUser, false);
-}
-
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
-  // TODO: Currently, calling `updateUser` triggers an eventual remote data
-  // update which we don't want. Instead, each component should manage remote
-  // data mutation itself and only use this callback to mutate local data.
   const initialPageLoad = useRef<boolean>(true);
   const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
   const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);
@@ -82,13 +73,8 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     if (initialPageLoad.current) return undefined;
     return false;
   }, [user, error]);
-  const updateUserTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const updateUser = useCallback(
     async (param: UpdateUserParam) => {
-      if (updateUserTimeoutId.current) {
-        clearTimeout(updateUserTimeoutId.current);
-        updateUserTimeoutId.current = undefined;
-      }
       let updatedUser: User = user;
       if (typeof param === 'object') updatedUser = new User(param);
       if (typeof param === 'function') updatedUser = new User(param(user));
@@ -97,11 +83,6 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
       // `User()` *before* our `/api/account` endpoint could respond. SWR
       // cancelled the `/api/account` mutation in favor of the empty one.
       await mutate('/api/account', updatedUser, !loggedIn);
-      // Only update the user profile remotely after 5secs of no change.
-      // @see {@link https://github.com/vercel/swr/issues/482}
-      updateUserTimeoutId.current = setTimeout(() => {
-        if (updatedUser.id) void updateUserRemote(updatedUser);
-      }, 5000);
     },
     [user, loggedIn]
   );
@@ -123,9 +104,9 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
         updatedOrg.toJSON(),
         ...orgs.map((org: Org) => org.toJSON()).slice(idx + 1),
       ];
-      await mutate('/api/orgs', updated, false);
+      await mutate('/api/orgs', updated, !loggedIn);
     },
-    [orgs]
+    [orgs, loggedIn]
   );
 
   // This service worker appends the Firebase Authentication JWT to all of our

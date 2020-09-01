@@ -1,13 +1,20 @@
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { animated, useSpring } from 'react-spring';
 import { v4 as uuid } from 'uuid';
 import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
 
-import { QueryInputs } from 'components/inputs';
 import Placeholder from 'components/placeholder';
+import LangSelect from 'components/lang-select';
+import SubjectSelect from 'components/subject-select';
 
-import { Callback, CallbackParam, RequestJSON, UsersQuery } from 'lib/model';
+import {
+  Callback,
+  CallbackParam,
+  Option,
+  RequestJSON,
+  UsersQuery,
+} from 'lib/model';
 import { ListRequestsRes } from 'lib/api/list-requests';
 
 import { config, width } from './spring-animation';
@@ -37,19 +44,6 @@ export default memo(function FiltersSheet({
         .map(() => <RequestItem key={uuid()} loading />),
     []
   );
-  const inputs = useMemo(
-    () => (
-      <QueryInputs
-        value={query}
-        onChange={setQuery}
-        className={styles.field}
-        renderToPortal
-        subjects
-        langs
-      />
-    ),
-    [query, setQuery]
-  );
 
   const { t } = useTranslation();
   const { isValidating, data } = useSWR<ListRequestsRes>('/api/requests');
@@ -62,11 +56,41 @@ export default memo(function FiltersSheet({
     });
   }, [data, setMatching]);
 
+  const onSubjectsChange = useCallback(
+    (subjects: Option<string>[]) => {
+      setQuery((prev: UsersQuery) => new UsersQuery({ ...prev, subjects }));
+    },
+    [setQuery]
+  );
+  const onLangsChange = useCallback(
+    (langs: Option<string>[]) => {
+      setQuery((prev: UsersQuery) => new UsersQuery({ ...prev, langs }));
+    },
+    [setQuery]
+  );
+
   return (
     <animated.div className={styles.wrapper} style={props}>
       <div className={styles.content} style={{ width }}>
         <h4 className={styles.header}>More filters</h4>
-        <form className={styles.form}>{inputs}</form>
+        <form className={styles.form}>
+          <SubjectSelect
+            label={t('query:subjects')}
+            onSelectedChange={onSubjectsChange}
+            selected={query.subjects}
+            placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
+            aspect={query.aspect}
+            className={styles.field}
+            outlined
+          />
+          <LangSelect
+            label={t('query:langs')}
+            onSelectedChange={onLangsChange}
+            selected={query.langs}
+            className={styles.field}
+            outlined
+          />
+        </form>
         <h4 className={styles.header}>Queued requests</h4>
         <div className={styles.list}>
           {isValidating && !data && loadingRows}

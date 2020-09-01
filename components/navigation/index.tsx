@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 import FilterForm from 'components/filter-form';
 
-import { Aspect, TCallback, UsersQuery } from 'lib/model';
+import { Aspect, Callback, TCallback, UsersQuery } from 'lib/model';
 import Link from 'lib/intl/link';
 import { useUser } from 'lib/account';
 
@@ -235,7 +235,7 @@ export function AspectHeader({
 
 interface QueryHeaderProps extends EmptyHeaderProps {
   query: UsersQuery;
-  onChange: TCallback<UsersQuery>;
+  onChange: Callback<UsersQuery>;
   aspects: Aspect[];
 }
 

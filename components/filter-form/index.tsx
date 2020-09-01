@@ -3,9 +3,10 @@ import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
-import { QueryInputs } from 'components/inputs';
+import LangSelect from 'components/lang-select';
+import SubjectSelect from 'components/subject-select';
 
-import { Option, TCallback, UsersQuery } from 'lib/model';
+import { Option, Callback, UsersQuery } from 'lib/model';
 
 import styles from './filter-form.module.scss';
 
@@ -24,9 +25,13 @@ function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
   );
 }
 
+function join(options: Option<string>[]): string {
+  return options.map((option: Option<string>) => option.label).join(', ');
+}
+
 interface FilterFormProps {
   query: UsersQuery;
-  onChange: TCallback<UsersQuery>;
+  onChange: Callback<UsersQuery>;
   thirdPerson?: boolean;
 }
 
@@ -38,17 +43,12 @@ export default function FilterForm({
   thirdPerson,
 }: FilterFormProps): JSX.Element {
   const [active, setActive] = useState<boolean>(false);
+  const [focused, setFocused] = useState<FocusTarget>();
+
   const formRef = useRef<HTMLFormElement | null>(null);
-  const str: (value: Option<string>[]) => string = (
-    value: Option<string>[]
-  ) => {
-    return value.map((option: Option<string>) => option.label).join(', ');
-  };
-  const [focused, setFocused] = useState<FocusTarget | undefined>();
 
   useEffect(() => {
     if (!formRef.current) return () => {};
-
     const element: HTMLElement = formRef.current;
     const removeClickListener = () => {
       /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
@@ -56,21 +56,36 @@ export default function FilterForm({
     };
     const outsideClickListener = (event: MouseEvent) => {
       if (!element.contains(event.target as Node) && active) {
-        setActive(false);
         setFocused(undefined);
         removeClickListener();
       }
     };
-
     document.addEventListener('click', outsideClickListener);
-
     return removeClickListener;
   });
 
-  const onSubmit = useCallback((event: FormEvent) => {
-    event.preventDefault();
+  useEffect(() => setActive(!!focused), [focused]);
+
+  const onSubmit = useCallback((evt: FormEvent) => {
+    evt.preventDefault();
     setActive(false);
   }, []);
+  const onSubjectsChange = useCallback(
+    (subjects: Option<string>[]) => {
+      onChange((prev: UsersQuery) => new UsersQuery({ ...prev, subjects }));
+    },
+    [onChange]
+  );
+  const onLangsChange = useCallback(
+    (langs: Option<string>[]) => {
+      onChange((prev: UsersQuery) => new UsersQuery({ ...prev, langs }));
+    },
+    [onChange]
+  );
+
+  const focusSubjects = useCallback(() => setFocused('subjects'), []);
+  const focusLangs = useCallback(() => setFocused('langs'), []);
+  const focusNothing = useCallback(() => setFocused(undefined), []);
 
   const { t } = useTranslation();
 
@@ -82,34 +97,39 @@ export default function FilterForm({
           onSubmit={onSubmit}
           ref={formRef}
         >
-          <QueryInputs
-            value={query}
-            focused={focused}
-            onChange={onChange}
+          <SubjectSelect
             className={styles.field}
-            thirdPerson={thirdPerson}
-            subjects
-            langs
+            focused={focused === 'subjects'}
+            label={t(`query${thirdPerson ? '3rd' : ''}:subjects`)}
+            onFocused={focusSubjects}
+            onBlurred={focusNothing}
+            onSelectedChange={onSubjectsChange}
+            selected={query.subjects}
+            placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
+            aspect={query.aspect}
+            renderToPortal
+            outlined
+          />
+          <LangSelect
+            className={styles.field}
+            focused={focused === 'langs'}
+            label={t(`query${thirdPerson ? '3rd' : ''}:langs`)}
+            onFocused={focusLangs}
+            onBlurred={focusNothing}
+            onSelectedChange={onLangsChange}
+            selected={query.langs}
+            renderToPortal
+            outlined
           />
         </form>
       </div>
       <div className={styles.search} role='search'>
-        <SearchButton
-          onClick={() => {
-            setFocused('subjects');
-            setActive(true);
-          }}
-        >
-          {str(query.subjects) || t('search:any-subjects')}
+        <SearchButton onClick={focusSubjects}>
+          {join(query.subjects) || t('search:any-subjects')}
         </SearchButton>
         <span className={styles.searchDivider} />
-        <SearchButton
-          onClick={() => {
-            setFocused('langs');
-            setActive(true);
-          }}
-        >
-          {str(query.langs) || t('search:any-langs')}
+        <SearchButton onClick={focusLangs}>
+          {join(query.langs) || t('search:any-langs')}
         </SearchButton>
       </div>
     </>

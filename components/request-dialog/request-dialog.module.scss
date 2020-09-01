@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'styles/config';
+@use 'styles/common';
 @use 'styles/socials';
 @use 'styles/typography';
 
@@ -105,9 +106,7 @@
     }
 
     .error {
-      color: map.get(config.$colors, 'error');
-      font-weight: 450;
-      margin-top: 16px;
+      @include common.error;
     }
   }
 }

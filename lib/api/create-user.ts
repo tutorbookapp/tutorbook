@@ -57,8 +57,7 @@ export default async function createUserEndpoint(
       if (err) {
         error(res, `${err.name} creating auth JWT: ${err.message}`, 500, err);
       } else {
-        user.token = token;
-        res.status(201).json(user.toJSON());
+        res.status(201).json({ ...user.toJSON(), token });
         await mail.send(new SignUpEmail(user));
       }
     }

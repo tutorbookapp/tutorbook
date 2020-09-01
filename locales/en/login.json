@@ -1,5 +1,6 @@
 {
   "title": "Login to Tutorbook",
   "google": "Continue with Google",
-  "signup": "Don't have an account? Signup here"
+  "signup": "Don't have an account? Signup here",
+  "error": "An error occurred while logging in with Google. {{error}}"
 }

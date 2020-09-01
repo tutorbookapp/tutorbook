@@ -4,15 +4,10 @@ import { Switch } from '@rmwc/switch';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
 
-import { Aspect, Org } from 'lib/model';
-
-import { useSettings } from './context';
-import ConnectionDisplay from './connection-display';
 import styles from './settings.module.scss';
 
 export default function Zoom(): JSX.Element {
-  const { t, lang: locale } = useTranslation();
-  const { org, setOrg } = useSettings();
+  const { t } = useTranslation();
 
   const onSubmit = useCallback((evt: FormEvent) => evt.preventDefault(), []);
 

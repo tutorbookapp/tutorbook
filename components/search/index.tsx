@@ -4,14 +4,14 @@ import { v4 as uuid } from 'uuid';
 
 import Carousel from 'components/carousel';
 
-import { Callback, TCallback, User, UsersQuery } from 'lib/model';
+import { Callback, User, UsersQuery } from 'lib/model';
 
 import Form from './form';
 import Result from './result';
 import styles from './search.module.scss';
 
 interface SearchProps {
-  onChange: TCallback<UsersQuery>;
+  onChange: Callback<UsersQuery>;
   results: ReadonlyArray<User>;
   searching: boolean;
   query: UsersQuery;

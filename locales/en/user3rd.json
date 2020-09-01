@@ -18,5 +18,6 @@
   "facebook": "Your Facebook profile",
   "instagram": "Your Instagram profile",
   "github": "Your GitHub profile",
-  "indiehackers": "Your IndieHackers profile"
+  "indiehackers": "Your IndieHackers profile",
+  "error": "An error occurred while creating profile. {{error}}"
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import equal from 'fast-deep-equal';
 import to from 'await-to-js';
 
@@ -45,9 +45,9 @@ export default function useContinuous<T extends { id: string }>(
     } else {
       setError(undefined);
       setRetryCount(0);
-      if (res && !equal(res, data)) {
-        lastReceivedResponse.current = res;
-        setData(res);
+      if (!equal(res, data)) {
+        lastReceivedResponse.current = res as T;
+        setData(res as T);
       }
     }
   }, [updateRemote, data]);
@@ -78,6 +78,12 @@ export default function useContinuous<T extends { id: string }>(
       void updateLocal(data);
     }
   }, [updateLocal, data, prevData]);
+
+  useEffect(() => {
+    // Initial data takes precedence over local component-scoped data (e.g. when
+    // editing a profile that can be updated from multiple locations).
+    setData((prev: T) => (equal(prev, initialData) ? prev : initialData));
+  }, [initialData]);
 
   return { error, retry, timeout, data, setData };
 }
