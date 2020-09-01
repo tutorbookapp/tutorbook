@@ -56,6 +56,7 @@ export default function FilterForm({
     };
     const outsideClickListener = (event: MouseEvent) => {
       if (!element.contains(event.target as Node) && active) {
+        setActive(false);
         setFocused(undefined);
         removeClickListener();
       }
@@ -64,7 +65,9 @@ export default function FilterForm({
     return removeClickListener;
   });
 
-  useEffect(() => setActive(!!focused), [focused]);
+  useEffect(() => {
+    setActive((prev: boolean) => prev || !!focused);
+  }, [focused]);
 
   const onSubmit = useCallback((evt: FormEvent) => {
     evt.preventDefault();
@@ -107,7 +110,6 @@ export default function FilterForm({
             selected={query.subjects}
             placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
             aspect={query.aspect}
-            renderToPortal
             outlined
           />
           <LangSelect
@@ -118,7 +120,6 @@ export default function FilterForm({
             onBlurred={focusNothing}
             onSelectedChange={onLangsChange}
             selected={query.langs}
-            renderToPortal
             outlined
           />
         </form>
