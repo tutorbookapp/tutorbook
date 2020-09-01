@@ -141,7 +141,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
           const n = (user.name || 'yourname').replace(' ', '').toLowerCase();
           if (idx < 0) updateSocial(getPlaceholder(n));
         },
-        setUser: (evt: FormEvent<HTMLInputElement>) => {
+        onChange: (evt: FormEvent<HTMLInputElement>) => {
           updateSocial(evt.currentTarget.value);
         },
       };
