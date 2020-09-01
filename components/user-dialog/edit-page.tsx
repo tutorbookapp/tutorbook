@@ -164,7 +164,7 @@ export default memo(function EditPage({
           const n = (user.name || 'yourname').replace(' ', '').toLowerCase();
           if (idx < 0) updateSocial(getPlaceholder(n));
         },
-        setUser: (evt: FormEvent<HTMLInputElement>) => {
+        onChange: (evt: FormEvent<HTMLInputElement>) => {
           updateSocial(evt.currentTarget.value);
         },
       };
@@ -235,7 +235,6 @@ export default memo(function EditPage({
             value={user.mentoring.subjects}
             onChange={onMentoringSubjectsChange}
             aspect='mentoring'
-            required
             className={styles.field}
             outlined
           />
@@ -245,7 +244,6 @@ export default memo(function EditPage({
             value={user.mentoring.searches}
             onChange={onMentoringSearchesChange}
             aspect='mentoring'
-            required
             className={styles.field}
             outlined
           />
@@ -255,7 +253,6 @@ export default memo(function EditPage({
             value={user.tutoring.subjects}
             onChange={onTutoringSubjectsChange}
             aspect='tutoring'
-            required
             className={styles.field}
             outlined
           />
@@ -265,7 +262,6 @@ export default memo(function EditPage({
             value={user.tutoring.searches}
             onChange={onTutoringSearchesChange}
             aspect='tutoring'
-            required
             className={styles.field}
             outlined
           />
