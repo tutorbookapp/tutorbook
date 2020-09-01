@@ -11,16 +11,9 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 import Title from 'components/title';
 
-import {
-  Aspect,
-  OrgJSON,
-  SocialInterface,
-  SocialTypeAlias,
-  User,
-  UserJSON,
-} from 'lib/model';
+import { Aspect, OrgJSON, User, UserJSON } from 'lib/model';
+import { useSocialProps, useSingle } from 'lib/hooks';
 import { signup } from 'lib/account/signup';
-import { useSingle } from 'lib/hooks';
 import { useUser } from 'lib/account';
 
 import styles from './signup.module.scss';
@@ -48,6 +41,8 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
     loading,
     checked,
   } = useSingle(local, updateRemote, updateLocal);
+
+  const getSocialProps = useSocialProps(user, setUser, styles.field, 'user3rd');
 
   useEffect(() => {
     if (!org) return;
@@ -113,40 +108,6 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
       );
     },
     [setUser, aspect]
-  );
-
-  type GetPlaceholderCallback = (username: string) => string;
-
-  const getSocialProps = useCallback(
-    (type: SocialTypeAlias, getPlaceholder: GetPlaceholderCallback) => {
-      const idx = user.socials.findIndex((s) => s.type === type);
-      const val = idx >= 0 ? user.socials[idx].url : '';
-
-      function updateSocial(url: string): void {
-        const updated: SocialInterface[] = Array.from(user.socials);
-        if (idx >= 0) {
-          updated[idx] = { type, url };
-        } else {
-          updated.push({ type, url });
-        }
-        void setUser((prev: User) => new User({ ...prev, socials: updated }));
-      }
-
-      return {
-        value: val,
-        outlined: true,
-        className: styles.field,
-        label: t(`user3rd:${type}`),
-        onFocus: () => {
-          const n = (user.name || 'yourname').replace(' ', '').toLowerCase();
-          if (idx < 0) updateSocial(getPlaceholder(n));
-        },
-        onChange: (evt: FormEvent<HTMLInputElement>) => {
-          updateSocial(evt.currentTarget.value);
-        },
-      };
-    },
-    [setUser, user.socials, user.name, t]
   );
 
   return (
@@ -234,39 +195,13 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
           </div>
           <div className={styles.divider} />
           <div className={styles.inputs}>
-            <TextField
-              {...getSocialProps('website', (v) => `https://${v}.com`)}
-            />
-            <TextField
-              {...getSocialProps(
-                'facebook',
-                (v) => `https://facebook.com/${v}`
-              )}
-            />
-            <TextField
-              {...getSocialProps(
-                'instagram',
-                (v) => `https://instagram.com/${v}`
-              )}
-            />
-            <TextField
-              {...getSocialProps('twitter', (v) => `https://twitter.com/${v}`)}
-            />
-            <TextField
-              {...getSocialProps(
-                'linkedin',
-                (v) => `https://linkedin.com/in/${v}`
-              )}
-            />
-            <TextField
-              {...getSocialProps('github', (v) => `https://github.com/${v}`)}
-            />
-            <TextField
-              {...getSocialProps(
-                'indiehackers',
-                (v) => `https://indiehackers.com/${v}`
-              )}
-            />
+            <TextField {...getSocialProps('website')} />
+            <TextField {...getSocialProps('facebook')} />
+            <TextField {...getSocialProps('instagram')} />
+            <TextField {...getSocialProps('twitter')} />
+            <TextField {...getSocialProps('linkedin')} />
+            <TextField {...getSocialProps('github')} />
+            <TextField {...getSocialProps('indiehackers')} />
             <Button
               className={styles.btn}
               label={t(
