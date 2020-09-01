@@ -20,6 +20,8 @@ export interface SettingsProps {
   children: ReactNode;
 }
 
+const emptyOrg = new Org();
+
 export default function Settings({
   orgId,
   active,
@@ -42,7 +44,7 @@ export default function Settings({
 
   const { error, retry, timeout, data: org, setData: setOrg } = useContinuous<
     Org
-  >(new Org(), updateRemote, updateLocal);
+  >(emptyOrg, updateRemote, updateLocal);
 
   useEffect(() => {
     const idx = orgs.findIndex((o: Org) => o.id === orgId);
@@ -86,11 +88,6 @@ export default function Settings({
             >
               <a className={cn({ [styles.active]: active === 'signup' })}>
                 {t('settings:signup')}
-              </a>
-            </Link>
-            <Link href='/[org]/settings/zoom' as={`/${orgId}/settings/zoom`}>
-              <a className={cn({ [styles.active]: active === 'zoom' })}>
-                {t('settings:zoom')}
               </a>
             </Link>
           </div>
