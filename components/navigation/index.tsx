@@ -14,13 +14,12 @@ import PopOver from './pop-over';
 import Switcher from './switcher';
 import styles from './navigation.module.scss';
 
-function DesktopTabs({
-  aspect,
-  onChange,
-}: {
+interface DesktopTabsProps {
   aspect: Aspect;
   onChange: TCallback<Aspect>;
-}): JSX.Element {
+}
+
+function DesktopTabs({ aspect, onChange }: DesktopTabsProps): JSX.Element {
   const { t } = useTranslation();
   return (
     <Tabs
@@ -237,11 +236,13 @@ export function AspectHeader({
 interface QueryHeaderProps extends EmptyHeaderProps {
   query: UsersQuery;
   onChange: TCallback<UsersQuery>;
+  aspects: Aspect[];
 }
 
 export function QueryHeader({
   query,
   onChange,
+  aspects,
   formWidth,
 }: QueryHeaderProps): JSX.Element {
   return (
@@ -249,12 +250,14 @@ export function QueryHeader({
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
-          <DesktopTabs
-            aspect={query.aspect}
-            onChange={(aspect: Aspect) =>
-              onChange(new UsersQuery({ ...query, aspect }))
-            }
-          />
+          {aspects.length > 1 && (
+            <DesktopTabs
+              aspect={query.aspect}
+              onChange={(aspect: Aspect) =>
+                onChange(new UsersQuery({ ...query, aspect }))
+              }
+            />
+          )}
         </div>
         <div className={styles.center}>
           <FilterForm query={query} onChange={onChange} thirdPerson />

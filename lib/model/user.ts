@@ -274,10 +274,7 @@ export class User extends Account implements UserInterface {
    * in the `/api/user` REST API endpoint.
    */
   public toJSON(): UserJSON {
-    const { availability, ref, ...rest } = this;
-    return {
-      ...rest,
-      availability: availability.toJSON(),
-    };
+    const { availability, ref, token, ...rest } = this;
+    return { ...rest, availability: availability.toJSON() };
   }
 }

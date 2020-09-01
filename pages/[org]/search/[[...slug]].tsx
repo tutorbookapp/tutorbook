@@ -1,10 +1,9 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import * as admin from 'firebase-admin';
-import { v4 as uuid } from 'uuid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Router, { useRouter } from 'next/router';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import Router from 'next/router';
+import equal from 'fast-deep-equal';
 
 import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
@@ -16,11 +15,14 @@ import {
   Availability,
   Option,
   Timeslot,
+  Org,
+  OrgJSON,
   User,
   UserJSON,
   UsersQuery,
   UsersQueryJSON,
 } from 'lib/model';
+import { db } from 'lib/api/helpers/firebase';
 import { withI18n } from 'lib/intl';
 import Utils from 'lib/utils';
 
@@ -29,15 +31,16 @@ import query3rd from 'locales/en/query3rd.json';
 import search from 'locales/en/search.json';
 import common from 'locales/en/common.json';
 
-type App = admin.app.App;
-type Firestore = admin.firestore.Firestore;
-type DocumentReference = admin.firestore.DocumentReference;
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-
 interface SearchPageProps {
-  initialQuery: UsersQueryJSON;
-  initialResults: UserJSON[];
-  initialViewing?: UserJSON;
+  org: OrgJSON;
+  query: UsersQueryJSON;
+  results: UserJSON[];
+  viewing: UserJSON | null;
+}
+
+interface SearchPageQuery extends ParsedUrlQuery {
+  org: string;
+  slug?: string[];
 }
 
 function onlyFirstAndLastInitial(name: string): string {
@@ -50,59 +53,15 @@ function onlyFirstAndLastInitial(name: string): string {
  * an HTTP request.
  * @todo Remove the `JSON.parse(JSON.stringify(ob))` workaround.
  */
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  async function getUser(params?: ParsedUrlQuery): Promise<UserJSON | null> {
-    if (!params || !params.slug || !params.slug.length) return null;
-
-    /**
-     * Initializes a new `firebase.admin` instance with limited database/Firestore
-     * capabilities (using the `databaseAuthVariableOverride` option).
-     * @see {@link https://firebase.google.com/docs/reference/admin/node/admin.AppOptions#optional-databaseauthvariableoverride}
-     * @see {@link https://firebase.google.com/docs/database/admin/start#authenticate-with-limited-privileges}
-     *
-     * Also note that we use [UUID]{@link https://github.com/uuidjs/uuid} package to
-     * generate a unique `firebaseAppId` every time this API is called.
-     * @todo Lift this Firebase app definition to a top-level file that is imported
-     * by all the `/api/` endpoints.
-     *
-     * We have a workaround for the `FIREBASE_ADMIN_KEY` error we were encountering
-     * on Vercel a while ago.
-     * @see {@link https://github.com/tutorbookapp/covid-tutoring/issues/29}
-     * @see {@link https://stackoverflow.com/a/41044630/10023158}
-     * @see {@link https://stackoverflow.com/a/50376092/10023158}
-     */
-    const firebase: App = admin.initializeApp(
-      {
-        credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          privateKey: (process.env.FIREBASE_ADMIN_KEY as string).replace(
-            /\\n/g,
-            '\n'
-          ),
-          clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-        }),
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-        databaseURL: process.env.FIREBASE_DATABASE_URL,
-        databaseAuthVariableOverride: { uid: 'server' },
-      },
-      uuid()
-    );
-    const firestore: Firestore = firebase.firestore();
-    const db: DocumentReference =
-      process.env.NODE_ENV === 'development'
-        ? firestore.collection('partitions').doc('test')
-        : firestore.collection('partitions').doc('default');
-
-    firestore.settings({ ignoreUndefinedProperties: true });
-
-    const userDoc: DocumentSnapshot = await db
-      .collection('users')
-      .doc(params.slug[0])
-      .get();
+export const getServerSideProps: GetServerSideProps<
+  SearchPageProps,
+  SearchPageQuery
+> = async (ctx: GetServerSidePropsContext<SearchPageQuery>) => {
+  async function getUser(params?: SearchPageQuery): Promise<UserJSON | null> {
+    if (!params || !params.slug || !params.slug[0]) return null;
+    const userDoc = await db.collection('users').doc(params.slug[0]).get();
     if (!userDoc.exists) return null;
-    const user: User = User.fromFirestore(userDoc);
+    const user = User.fromFirestore(userDoc);
     return {
       name: onlyFirstAndLastInitial(user.name),
       photo: user.photo,
@@ -116,30 +75,34 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     } as UserJSON;
   }
 
-  const query: UsersQuery = UsersQuery.fromURLParams(context.query);
-  const url = `http://${context.req.headers.host as string}/api/users`;
+  const query = UsersQuery.fromURLParams(ctx.query);
+  const url = `http://${ctx.req.headers.host as string}/api/users`;
+
+  const orgDoc = await db
+    .collection('orgs')
+    .doc(ctx.params?.org || '')
+    .get();
+  const org = Org.fromFirestore(orgDoc);
 
   query.visible = true;
-  if (context.params && context.params.org)
-    query.orgs = [{ label: '', value: context.params.org as string }];
+  query.aspect = org.aspects[0] || 'tutoring';
+  query.orgs = [{ label: org.name, value: org.id }];
 
   return {
     props: {
-      initialQuery: JSON.parse(JSON.stringify(query)) as UsersQueryJSON,
-      initialResults: JSON.parse(
-        JSON.stringify((await query.search(url)).users)
-      ) as UserJSON[],
-      initialViewing: JSON.parse(
-        JSON.stringify(await getUser(context.params))
-      ) as UserJSON | null,
+      org: org.toJSON(),
+      query: query.toJSON(),
+      results: (await query.search(url)).users.map((user) => user.toJSON()),
+      viewing: await getUser(ctx.params),
     },
   };
 };
 
 function SearchPage({
-  initialQuery,
-  initialResults,
-  initialViewing,
+  org,
+  query: initialQuery,
+  results: initialResults,
+  viewing: initialViewing,
 }: SearchPageProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(false);
   const [results, setResults] = useState<ReadonlyArray<User>>(
@@ -153,9 +116,6 @@ function SearchPage({
   );
 
   const handleQueryChange = async (newQuery: UsersQuery) => {
-    // TODO: Store the availability filters in the tutoring aspect and then
-    // re-fill them when we go back to that aspect. Or, just keep them in the
-    // query and ignore them when searching for mentors (i.e. in `api/users`).
     const updatedQuery: UsersQuery =
       newQuery.aspect === 'mentoring'
         ? new UsersQuery({ ...newQuery, availability: new Availability() })
@@ -166,22 +126,19 @@ function SearchPage({
     setSearching(false);
   };
 
-  const { query: params } = useRouter();
-  const org = useMemo(() => params.org as string, [params.org]);
+  useEffect(() => {
+    const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
+    void Router.push('/[org]/search/[[...slug]]', url, { shallow: true });
+  }, [org.id, query, viewing]);
   useEffect(() => {
     setQuery((prev: UsersQuery) => {
-      return new UsersQuery({ ...prev, orgs: [{ label: '', value: org }] });
+      const updated = new UsersQuery({ ...prev });
+      if (!org.aspects.includes(prev.aspect)) [updated.aspect] = org.aspects;
+      if (prev.visible !== true) updated.visible = true;
+      if (!equal(prev, updated)) return updated;
+      return prev;
     });
-  }, [org]);
-  useEffect(() => {
-    const url = query.getURL(`/${org}/search/${viewing ? viewing.id : ''}`);
-    void Router.push('/[org]/search/[[...slug]]', url, { shallow: true });
-  }, [org, query, viewing]);
-  useEffect(() => {
-    if (query.visible !== true) {
-      setQuery(new UsersQuery({ ...query, visible: true }));
-    }
-  }, [query]);
+  }, [org.aspects, query]);
 
   const onClosed = useCallback(() => setViewing(undefined), []);
   const subjects = useMemo(() => {
@@ -210,7 +167,11 @@ function SearchPage({
 
   return (
     <>
-      <QueryHeader query={query} onChange={handleQueryChange} />
+      <QueryHeader
+        aspects={org.aspects}
+        query={query}
+        onChange={handleQueryChange}
+      />
       {viewing && (
         <RequestDialog
           user={viewing}

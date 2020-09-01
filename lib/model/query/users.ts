@@ -108,6 +108,11 @@ export class UsersQuery extends Query implements UsersQueryInterface {
     });
   }
 
+  public toJSON(): UsersQueryJSON {
+    const { availability, ...rest } = this;
+    return { ...rest, availability: availability.toJSON() };
+  }
+
   public static fromJSON(json: UsersQueryJSON): UsersQuery {
     const { availability, ...rest } = json;
     return new UsersQuery({
