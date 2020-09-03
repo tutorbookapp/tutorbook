@@ -132,7 +132,7 @@ export class Org extends Account implements OrgInterface {
   public home: HomePageConfig = {
     en: {
       header: 'How it works',
-      photo: 'https://assets.tutorbook.org/jpgs/rocky-beach.jpg',
+      photo: 'https://assets.tutorbook.app/jpgs/rocky-beach.jpg',
       body:
         'First, new volunteers register using the sign-up form linked to the ' +
         'right. Organization admins then vet those volunteers (to ensure ' +
