@@ -51,7 +51,7 @@ async function installServiceWorker(): Promise<void> {
         });
       });
   } else {
-    throw new Error('Service workers are disabled.');
+    console.error('[ERROR] Service workers are disabled.');
   }
 }
 
@@ -122,23 +122,13 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     void initFirebaseAndAnalytics();
   }, []);
 
-  const loaderTimeoutId = useRef<ReturnType<typeof setTimeout>>();
+  // Show NProgress loader during client-side page navigations. In the future,
+  // we'll probably use an indeterminate MWC linear progress bar (like Google).
   Object.entries({
-    routeChangeStart: () => {
-      // Only show loader if page transition takes longer than 0.5sec.
-      loaderTimeoutId.current = setTimeout(() => NProgress.start(), 500);
-    },
+    routeChangeStart: () => NProgress.start(),
     routeChangeComplete: () => NProgress.done(),
     routeChangeError: () => NProgress.done(),
-  }).forEach(([event, action]) => {
-    Router.events.on(event, () => {
-      if (loaderTimeoutId.current) {
-        clearTimeout(loaderTimeoutId.current);
-        loaderTimeoutId.current = undefined;
-      }
-      action();
-    });
-  });
+  }).forEach(([event, action]) => Router.events.on(event, action));
 
   return (
     <SWRConfig value={{ fetcher }}>
