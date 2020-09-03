@@ -26,6 +26,7 @@ export default function Loader({ active, checked }: Props): JSX.Element {
 
   return (
     <div
+      data-cy='loader'
       className={
         styles.overlay +
         (visible ? ` ${styles.visible}` : '') +
@@ -33,7 +34,11 @@ export default function Loader({ active, checked }: Props): JSX.Element {
       }
     >
       <div className={styles.overlayContent}>
-        <Checkmark className={styles.overlayCheckmark} checked={!!checked} />
+        <Checkmark
+          data-cy='checkmark'
+          className={styles.overlayCheckmark}
+          checked={!!checked}
+        />
       </div>
     </div>
   );

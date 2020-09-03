@@ -50,7 +50,7 @@ export default function Search({
     <div className={styles.wrapper}>
       <Form query={query} onChange={onChange} />
       {searching && !results.length && (
-        <ul className={styles.results}>
+        <ul data-cy='results' className={styles.results}>
           {Array(5)
             .fill(null)
             .map(() => (
@@ -59,7 +59,7 @@ export default function Search({
         </ul>
       )}
       {!!results.length && (
-        <ul className={styles.results}>
+        <ul data-cy='results' className={styles.results}>
           {results.map((res: User) => (
             <Result
               user={res}
@@ -70,7 +70,7 @@ export default function Search({
         </ul>
       )}
       {!searching && !results.length && (
-        <div className={styles.noResults}>
+        <div data-cy='no-results' className={styles.noResults}>
           <h3 className={styles.noResultsHeader}>
             {t('search:no-results-title')}
           </h3>

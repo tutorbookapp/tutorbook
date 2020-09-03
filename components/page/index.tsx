@@ -13,7 +13,9 @@ export interface PageProps {
 export default function Page({ children, formWidth }: PageProps): JSX.Element {
   return (
     <>
-      <div className={styles.wrapper}>{children}</div>
+      <div data-cy='page' className={styles.wrapper}>
+        {children}
+      </div>
       <Footer formWidth={formWidth} />
       <Intercom />
     </>

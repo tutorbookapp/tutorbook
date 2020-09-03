@@ -56,8 +56,10 @@ export default function Home({ org }: HomeProps): JSX.Element {
               <Avatar loading={!org} src={org && org.photo} />
             </a>
             <div>
-              <h1 className={styles.name}>{org && org.name}</h1>
-              {(!org || org.socials.length) && (
+              <h1 data-cy='name' className={styles.name}>
+                {org && org.name}
+              </h1>
+              {(!org || !!org.socials.length) && (
                 <div className={styles.socials}>
                   {(org ? org.socials : []).map((social: SocialInterface) => (
                     <a
