@@ -10,6 +10,7 @@ module.exports = {
       path.resolve(__dirname, 'sw/tsconfig.json'),
       path.resolve(__dirname, 'firebase/functions/tsconfig.json'),
       path.resolve(__dirname, 'aws/tsconfig.json'),
+      path.resolve(__dirname, 'cypress/tsconfig.json'),
     ],
   },
   extends: [

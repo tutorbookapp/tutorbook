@@ -6,14 +6,15 @@
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev --hostname 0.0.0.0",
+    "dev": "NODE_OPTIONS='--inspect' next dev -H 0.0.0.0 -p 3000",
     "build": "cd sw && webpack && cd .. && next build",
-    "start": "next start --hostname 0.0.0.0",
+    "start": "next start -H 0.0.0.0 -p 3000",
+    "test": "start-server-and-test 'yarn start' http://0.0.0.0:3000 'firebase emulators:start' 8080 'yarn cy:open'",
     "analyze": "ANALYZE=true next build",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "style": "pretty-quick --staged",
-    "cypress": "cypress open",
-    "test": "yarn build && yarn start && yarn cypress"
+    "cy:run": "NO_COLOR=1 cypress run",
+    "cy:open": "cypress open"
   },
   "keywords": [
     "Tutorbook",
@@ -48,6 +49,7 @@
     "@typescript-eslint/parser": "^3.7.0",
     "babel-eslint": "^10.1.0",
     "cypress": "^5.1.0",
+    "cypress-file-upload": "^4.1.1",
     "dotenv-webpack": "^1.8.0",
     "eslint": "^7.5.0",
     "eslint-config-airbnb": "^18.2.0",
@@ -67,6 +69,7 @@
     "pretty-quick": "^2.0.1",
     "raw-loader": "^4.0.1",
     "react-test-renderer": "^16.13.1",
+    "start-server-and-test": "^1.11.3",
     "svg-url-loader": "^6.0.0",
     "terser-webpack-plugin": "^3.0.7",
     "ts-jest": "^26.1.3",

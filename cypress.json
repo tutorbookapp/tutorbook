@@ -1,3 +1,5 @@
 {
-  "baseUrl": "http://0.0.0.0:3000"
+  "baseUrl": "http://0.0.0.0:3000",
+  "pluginsFile": "cypress/plugins/index.ts",
+  "supportFile": "cypress/support/index.ts"
 }

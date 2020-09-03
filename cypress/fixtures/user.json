@@ -1,0 +1,49 @@
+{
+  "id": "z49sDtm1UzVcpf1mIAqgaXigW2W2",
+  "name": "John Doe",
+  "photo": "https://assets.tutorbook.app/jpgs/user.jpg",
+  "email": "johndoe@example.com",
+  "phone": "+12025550187",
+  "bio": "I'm currently an electrical engineering Ph.D. student at Stanford University who has been volunteering with AmeriCorps (tutoring local high schoolers) for over five years now. I'm passionate about teaching and would love to help you in any way that I can!",
+  "socials": [
+    {
+      "type": "website",
+      "url": "https://example.com"
+    },
+    {
+      "type": "instagram",
+      "url": "https://instagram.com/johndoe"
+    },
+    {
+      "type": "facebook",
+      "url": "https://facebook.com/johndoe"
+    },
+    {
+      "type": "linkedin",
+      "url": "https://linkedin.com/in/johndoe"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/johndoe"
+    },
+    {
+      "type": "indiehackers",
+      "url": "https://indiehackers.com/johndoe"
+    }
+  ],
+  "orgs": ["default"],
+  "zooms": [],
+  "availability": [],
+  "mentoring": {
+    "subjects": ["Computer Science"],
+    "searches": []
+  },
+  "tutoring": {
+    "subjects": ["Computer Science", "Math"],
+    "searches": []
+  },
+  "langs": ["en"],
+  "parents": [],
+  "verifications": [],
+  "visible": true
+}
