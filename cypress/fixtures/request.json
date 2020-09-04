@@ -1,0 +1,22 @@
+{
+  "id": "7A0gVkC0Ydsioxuh8Oea",
+  "org": "default",
+  "subjects": ["Computer Science"],
+  "people": [
+    {
+      "id": "z49sDtm1UzVcpf1mIAqgaXigW2W2",
+      "name": "John Doe",
+      "photo": "https://assets.tutorbook.app/jpgs/user.jpg",
+      "handle": "94e73eae-687b-4d19-bf01-e1d84cb49248",
+      "roles": ["tutee"]
+    }
+  ],
+  "creator": {
+    "id": "z49sDtm1UzVcpf1mIAqgaXigW2W2",
+    "name": "John Doe",
+    "photo": "https://assets.tutorbook.app/jpgs/user.jpg",
+    "handle": "94e73eae-687b-4d19-bf01-e1d84cb49248",
+    "roles": ["tutee"]
+  },
+  "message": "I could really use your help with learning how to use Cypress for integration and unit tests."
+}
