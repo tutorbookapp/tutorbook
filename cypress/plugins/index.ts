@@ -1,6 +1,8 @@
 import path from 'path';
 
 import admin from 'firebase-admin';
+import algoliasearch from 'algoliasearch';
+import axios from 'axios';
 import dotenv from 'dotenv';
 import to from 'await-to-js';
 
@@ -31,10 +33,14 @@ const app = admin.initializeApp({
   databaseAuthVariableOverride: { uid: 'server' },
 });
 const auth = app.auth();
-const firestore = app.firestore();
-const db = firestore.collection('partitions').doc('test');
+const db = app.firestore();
 
-firestore.settings({ ignoreUndefinedProperties: true });
+db.settings({ ignoreUndefinedProperties: true });
+
+const algoliaId = process.env.ALGOLIA_APP_ID as string;
+const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
+const client = algoliasearch(algoliaId, algoliaKey);
+const index = client.initIndex('test-users');
 
 export default function plugins(on: Cypress.PluginEvents): void {
   on('task', {
@@ -44,7 +50,15 @@ export default function plugins(on: Cypress.PluginEvents): void {
       if (userByEmail) userIds.push(userByEmail.uid);
       const [_, userByPhone] = await to(auth.getUserByPhoneNumber(user.phone));
       if (userByPhone) userIds.push(userByPhone.uid);
-      await Promise.all([auth.deleteUsers(userIds), db.delete()]);
+      const clearFirestoreEndpoint =
+        `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
+        `projects/${process.env.FIREBASE_PROJECT_ID as string}/databases/` +
+        `(default)/documents`;
+      await Promise.all([
+        index.clearObjects(),
+        auth.deleteUsers(userIds),
+        axios.delete(clearFirestoreEndpoint),
+      ]);
       return null;
     },
     async seed() {
@@ -55,7 +69,6 @@ export default function plugins(on: Cypress.PluginEvents): void {
           photoURL: user.photo || undefined,
           phoneNumber: user.phone || undefined,
         }),
-        db.set({}),
         db.collection('users').doc(user.id).set(user),
         db.collection('orgs').doc(org.id).set(org),
       ]);
