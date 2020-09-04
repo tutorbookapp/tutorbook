@@ -345,13 +345,21 @@ you can run:
 
 #### `yarn dev`
 
-Runs `next dev` using `full-icu` and with the Node.js `--inspect` flag on
-(useful for `debugger;` statements) which starts Next.js in development mode.
+This command runs two scripts [concurrently](https://www.npmjs.com/package/concurrently):
+
+1. Runs `next dev` with the Node.js `--inspect` flag on (useful for `debugger`
+   statements) to start the Next.js development server.
+2. Runs `firebase emulators:start` to start the [Firebase Emulator
+   Suite](https://firebase.google.com/docs/emulator-suite).
 
 Open [http://0.0.0.0:3000](http://0.0.0.0:3000) to view the app in the browser
 (note that we use `0.0.0.0` instead of the default `localhost` for [Intercom
 support](https://bit.ly/3cAWfLv). The page will hot-reload if you make edits.
 You will also see any lint errors in the console.
+
+Open [http://localhost:4000](http://localhost:4000) to view the
+(locally-running) Firebase development console. Here, you can manually seed
+Firestore data and view GCP Function logs.
 
 #### `yarn build`
 
