@@ -30,6 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 firestore-debug.log*
+firebase-debug.log*
 ui-debug.log*
 
 # Elastic Beanstalk Files
