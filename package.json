@@ -7,13 +7,13 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "frb:dev": "firebase emulators:start",
-    "nxt:dev": "NODE_OPTIONS='--inspect' next dev -H 0.0.0.0 -p 3000",
+    "nxt:dev": "NODE_OPTIONS='--inspect' next dev -p 3000",
     "cy:run": "NO_COLOR=1 cypress run",
     "cy:open": "cypress open",
     "dev": "concurrently 'yarn frb:dev' 'yarn nxt:dev' 'yarn cy:open'",
-    "test": "start-test 'yarn frb:dev' http-get://localhost:8080 'yarn nxt:dev' http://0.0.0.0:3000 'yarn cy:run'",
+    "test": "start-test 'yarn frb:dev' http-get://localhost:8080 'yarn nxt:dev' 3000 'yarn cy:run'",
     "build": "cd sw && webpack && cd .. && next build",
-    "start": "next start -H 0.0.0.0 -p 3000",
+    "start": "next start -p 3000",
     "analyze": "ANALYZE=true next build",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "style": "pretty-quick --staged"
