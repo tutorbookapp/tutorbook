@@ -36,18 +36,16 @@ First, install the necessary dependencies to backup your Firestore database:
 $ npm i
 ```
 
-To take a snapshot of the data in the default database partition and save it in
-JSON format run the following from this directory:
+To take a snapshot of the data in the default GCP project's database and save it
+in JSON format run the following from this directory:
 
 ```commandline
-$ npx firestore-export -a ../admin-cred.json -b MM-DD-YYYY-HR:MIN-AM/PM.json -n
-partitions/default -p
+$ npx firestore-export -a ../admin-cred.json -b MM-DD-YYYY-HR:MIN-AM/PM.json -p
 ```
 
-To upload a JSON snapshot and overwrite the data in the default database
-partition (again, this must be run in the `utils/firestore` directory):
+To upload a JSON snapshot and overwrite the data in the default GCP project's
+database (again, this must be run in the `utils/firestore` directory):
 
 ```commandline
-$ npx firestore-import -a ../admin-cred.json -b MM-DD-YYYY-HR:MIN-AM/PM.json -n
-partitions/default
+$ npx firestore-import -a ../admin-cred.json -b MM-DD-YYYY-HR:MIN-AM/PM.json
 ```

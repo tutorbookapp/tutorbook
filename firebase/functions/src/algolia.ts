@@ -1,12 +1,15 @@
 import { Change, EventContext, config } from 'firebase-functions';
 import { Settings } from '@algolia/client-search';
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
+import algoliasearch, { SearchIndex } from 'algoliasearch';
 import to from 'await-to-js';
 import admin from 'firebase-admin';
+import { v4 as uuid } from 'uuid';
 
-import { DocumentReference, DocumentSnapshot, Timestamp } from './types';
+import { DocumentSnapshot, Timestamp } from './types';
 
-const client: SearchClient = algoliasearch(
+const app = admin.initializeApp(undefined, uuid());
+const db = app.firestore();
+const client = algoliasearch(
   (config().algolia as Record<'id' | 'key', string>).id,
   (config().algolia as Record<'id' | 'key', string>).key
 );
@@ -95,11 +98,6 @@ export async function matchUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
-  const db: DocumentReference = admin
-    .firestore()
-    .collection('partitions')
-    .doc(context.params.partition);
-
   /**
    * Gets the orgs for a given appointment. We add all of the orgs that each
    * appointment person is a part of during indexing. This allows us to filter
@@ -123,9 +121,10 @@ export async function matchUpdate(
     return Array.from(ids);
   }
 
-  const id: string = context.params.match as string;
-  const indexId = `${context.params.partition as string}-matches`;
-  const index: SearchIndex = client.initIndex(indexId);
+  const id = context.params.match as string;
+  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
+  const partition = (projectId || 'test').includes('test') ? 'test' : 'default';
+  const index: SearchIndex = client.initIndex(`${partition}-matches`);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting match (${id})...`);
     const [err] = await too(index.deleteObject(id));
@@ -160,11 +159,6 @@ export async function requestUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
-  const db: DocumentReference = admin
-    .firestore()
-    .collection('partitions')
-    .doc(context.params.partition);
-
   /**
    * Gets the orgs for a given appointment. We add all of the orgs that each
    * appointment person is a part of during indexing. This allows us to filter
@@ -188,9 +182,10 @@ export async function requestUpdate(
     return Array.from(ids);
   }
 
-  const id: string = context.params.request as string;
-  const indexId = `${context.params.partition as string}-requests`;
-  const index: SearchIndex = client.initIndex(indexId);
+  const id = context.params.request as string;
+  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
+  const partition = (projectId || 'test').includes('test') ? 'test' : 'default';
+  const index: SearchIndex = client.initIndex(`${partition}-requests`);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting request (${id})...`);
     const [err] = await too(index.deleteObject(id));
@@ -233,9 +228,10 @@ export async function userUpdate(
   change: Change<DocumentSnapshot>,
   context: EventContext
 ): Promise<void> {
-  const uid: string = context.params.user as string;
-  const indexId = `${context.params.partition as string}-users`;
-  const index: SearchIndex = client.initIndex(indexId);
+  const uid = context.params.user as string;
+  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
+  const partition = (projectId || 'test').includes('test') ? 'test' : 'default';
+  const index: SearchIndex = client.initIndex(`${partition}-users`);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting user (${uid})...`);
     const [err] = await too(index.deleteObject(uid));

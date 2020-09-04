@@ -17,7 +17,7 @@ const app = admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
-const db = app.firestore().collection('partitions').doc('default');
+const db = app.firestore();
 const auth = app.auth();
 
 const createUser = async (user, emailVerified = false) => {

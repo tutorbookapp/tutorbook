@@ -1,5 +1,3 @@
-// See: https://github.com/zeit/next.js/tree/master/examples/with-firebase
-
 import firebase from 'firebase/app';
 import 'firebase/analytics';
 

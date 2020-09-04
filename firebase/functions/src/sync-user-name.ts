@@ -1,7 +1,11 @@
 import { Change, EventContext } from 'firebase-functions';
 import admin from 'firebase-admin';
+import { v4 as uuid } from 'uuid';
 
 import { DocumentSnapshot, Person } from './types';
+
+const app = admin.initializeApp(undefined, uuid());
+const db = app.firestore();
 
 /**
  * We store the user's name and photo within their `Person` object in a variety
@@ -36,11 +40,6 @@ export default async function syncUserName(
       return;
     }
   }
-
-  const db = admin
-    .firestore()
-    .collection('partitions')
-    .doc(context.params.partition);
 
   async function updateResource(resource: DocumentSnapshot): Promise<void> {
     const old = resource.data() as { people: Person[]; creator: Person };

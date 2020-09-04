@@ -1,7 +1,7 @@
 const path = require('path');
 
 require('dotenv').config({
-  path: path.resolve(__dirname, '../../.env.production'),
+  path: path.resolve(__dirname, '../../.env'),
 });
 
 const updateSubjects = require('./update-subjects');
@@ -20,7 +20,7 @@ const app = admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
-const db = app.firestore().collection('partitions').doc('default');
+const db = app.firestore();
 
 const getSubjects = (id) => {
   return parse(fs.readFileSync(`../algolia/${id}.csv`), {
@@ -165,4 +165,38 @@ const removePAUSDFromDefault = async () => {
   );
 };
 
-removePAUSDFromDefault();
+const removePartition = async (partitionId = 'default', dryRun = false) => {
+  const partition = db.collection('partitions').doc(partitionId);
+  const [users, requests, matches] = await Promise.all([
+    partition.collection('users').get(),
+    partition.collection('requests').get(),
+    partition.collection('matches').get(),
+  ]);
+  const updateUsers = users.map(async (user) => {
+    await db.collection('users').doc(user.id).set(user.data());
+  });
+  const updateRequests = requests.map(async (request) => {
+    const doc = db.collection('requests').doc(request.id);
+    await doc.set(request.data());
+    const emails = (await request.ref.collection('emails').get()).docs;
+    await Promise.all(
+      emails.map(async (email) => {
+        await doc.collection('emails').doc(email.id).set(email.data());
+      })
+    );
+  });
+  const updateMatches = matches.map(async (match) => {
+    const doc = db.collection('matches').doc(match.id);
+    await doc.set(match.data());
+    const emails = (await match.ref.collection('emails').get()).docs;
+    await Promise.all(
+      emails.map(async (email) => {
+        await doc.collection('emails').doc(email.id).set(email.data());
+      })
+    );
+  });
+  await Promise.all([updateUsers, updateRequests, updateMatches]);
+  if (!dryRun) await partition.delete();
+};
+
+removePartition('test', true);

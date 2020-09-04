@@ -51,10 +51,6 @@ const firebase: App = admin.initializeApp(
 );
 
 export const auth: Auth = firebase.auth();
-export const firestore: Firestore = firebase.firestore();
-export const db: DocumentReference =
-  process.env.NODE_ENV === 'development'
-    ? firestore.collection('partitions').doc('test')
-    : firestore.collection('partitions').doc('default');
+export const db: Firestore = firebase.firestore();
 
-firestore.settings({ ignoreUndefinedProperties: true });
+db.settings({ ignoreUndefinedProperties: true });

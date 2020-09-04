@@ -9,7 +9,7 @@ import Select, { SelectControllerProps } from 'components/select';
 import { Aspect, GradeAlias, Option } from 'lib/model';
 import { usePrevious } from 'lib/hooks';
 
-const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
+const algoliaId: string = process.env.ALGOLIA_APP_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);

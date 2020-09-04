@@ -8,7 +8,7 @@ import Select, { SelectControllerProps } from 'components/select';
 
 import { Option } from 'lib/model';
 
-const algoliaId: string = process.env.ALGOLIA_SEARCH_ID as string;
+const algoliaId: string = process.env.ALGOLIA_APP_ID as string;
 const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);

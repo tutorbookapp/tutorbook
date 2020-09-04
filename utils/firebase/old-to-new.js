@@ -49,9 +49,8 @@ const newApp = admin.initializeApp(
   'new'
 );
 
-const newFirestore = newApp.firestore();
-newFirestore.settings({ ignoreUndefinedProperties: true });
-const newDB = newFirestore.collection('partitions').doc('default');
+const newDB = newApp.firestore();
+newDB.settings({ ignoreUndefinedProperties: true });
 const newBucket = newApp.storage().bucket();
 const newAuth = newApp.auth();
 

@@ -1,10 +1,10 @@
 const path = require('path');
 
-require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 const client = require('algoliasearch')(
-  process.env.ALGOLIA_SEARCH_ID,
-  process.env.ALGOLIA_SEARCH_KEY
+  process.env.ALGOLIA_APP_ID,
+  process.env.ALGOLIA_ADMIN_KEY
 );
 const to = require('await-to-js').default;
 const parse = require('csv-parse/lib/sync');

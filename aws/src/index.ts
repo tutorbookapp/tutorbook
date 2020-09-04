@@ -8,11 +8,11 @@ import { SearchResponse } from '@algolia/client-search';
 import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
 
 import {
-  DocumentReference,
   DocumentSnapshot,
   FirebaseApp,
   FirebaseAuth,
   FirebaseError,
+  Firestore,
   MailEvent,
   MatchSearchHit,
   Person,
@@ -58,17 +58,16 @@ const firebase: FirebaseApp = admin.initializeApp(
 const s3: S3 = new S3();
 const ses: SES = new SES();
 const auth: FirebaseAuth = firebase.auth();
-const db: DocumentReference = firebase
-  .firestore()
-  .collection('partitions')
-  .doc('default');
+const db: Firestore = firebase.firestore();
 const whitelist: RegExp[] = [/@tutorbook\.org$/];
 const bucketId = 'tutorbook-mail';
 const client: SearchClient = algoliasearch(
-  process.env.ALGOLIA_SEARCH_ID as string,
+  process.env.ALGOLIA_APP_ID as string,
   process.env.ALGOLIA_SEARCH_KEY as string
 );
 const index: SearchIndex = client.initIndex('default-matches');
+
+db.settings({ ignoreUndefinedProperties: true });
 
 /**
  * Takes a user's actual email and returns their anonymized email (i.e. their

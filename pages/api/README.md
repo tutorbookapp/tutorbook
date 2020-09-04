@@ -248,10 +248,10 @@ tutoring appointment.
 
 The following parameters should be sent in the HTTP request body.
 
-| Field     | Type     | Description                                                                                                                                                           |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `request` | `string` | The path of the pending tutoring lesson's Firestore document to approve (e.g. `partitions/default/users/MKroB319GCfMdVZ2QQFBle8GtCZ2/requests/CEt4uGqTtRg17rZamCLC`). |
-| `id`      | `string` | The user ID of the parent approving the lesson request (e.g. `MKroB319GCfMdVZ2QQFBle8GtCZ2`).                                                                         |
+| Field     | Type     | Description                                                                                                                                        |
+| --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `request` | `string` | The path of the pending tutoring lesson's Firestore document to approve (e.g. `users/MKroB319GCfMdVZ2QQFBle8GtCZ2/requests/CEt4uGqTtRg17rZamCLC`). |
+| `id`      | `string` | The user ID of the parent approving the lesson request (e.g. `MKroB319GCfMdVZ2QQFBle8GtCZ2`).                                                      |
 
 ##### Actions
 

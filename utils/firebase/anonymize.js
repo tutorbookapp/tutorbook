@@ -39,7 +39,7 @@ const app = admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
-const db = app.firestore().collection('partitions').doc('test');
+const db = app.firestore();
 const auth = app.auth();
 
 /**
@@ -149,7 +149,7 @@ const limitJSON = (input, output = input, lim = 10) => {
 /**
  * Limits the JSON to 100 users and anonymizes those users.
  * @param {string} input - The input file location (of a Firestore database
- * backup starting from a partition: `npx firestore-export -b partitions/test`).
+ * backup starting from a partition: `npx firestore-export`).
  * @param {string} [output=input] - The output file location (defaults to
  * replacing the input file).
  */

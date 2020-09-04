@@ -5,7 +5,7 @@ export type FirebaseError = admin.FirebaseError & Error;
 export type FirebaseAuth = admin.auth.Auth;
 export type UserRecord = admin.auth.UserRecord;
 export type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-export type DocumentReference = admin.firestore.DocumentReference;
+export type Firestore = admin.firestore.Firestore;
 
 export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
