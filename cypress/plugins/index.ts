@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 import admin from 'firebase-admin';
@@ -15,7 +16,11 @@ import user from '../fixtures/user.json';
 // @see {@link https://github.com/cypress-io/cypress/issues/7006}
 // import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+// We have to read these env vars into `process.env` for the `firebase-admin`
+// package to use the local Firestore emulator.
+const envFilePath = path.resolve(__dirname, '../../.env');
+const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
+dotenv.config({ path: envFilePath });
 
 const app = admin.initializeApp({
   credential: admin.credential.cert({
@@ -42,9 +47,12 @@ const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const client = algoliasearch(algoliaId, algoliaKey);
 const index = client.initIndex('test-users');
 
-export default function plugins(on: Cypress.PluginEvents): void {
+export default function plugins(
+  on: Cypress.PluginEvents,
+  config: Cypress.PluginConfigOptions
+): Cypress.ConfigOptions {
   on('task', {
-    async clear() {
+    async clear(): Promise<null> {
       const userIds = [user.id];
       const [_, userByEmail] = await to(auth.getUserByEmail(user.email));
       if (userByEmail) userIds.push(userByEmail.uid);
@@ -61,7 +69,7 @@ export default function plugins(on: Cypress.PluginEvents): void {
       ]);
       return null;
     },
-    async seed() {
+    async seed(): Promise<null> {
       await Promise.all([
         auth.createUser({
           email: user.email,
@@ -74,5 +82,9 @@ export default function plugins(on: Cypress.PluginEvents): void {
       ]);
       return null;
     },
+    async login(uid?: string): Promise<string> {
+      return auth.createCustomToken(uid || user.id);
+    },
   });
+  return { ...config, env: { ...config.env, ...envConfig } };
 }

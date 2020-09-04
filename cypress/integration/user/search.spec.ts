@@ -22,7 +22,9 @@ describe('Search page', () => {
     });
 
     cy.contains('Any subjects').click();
-    cy.contains('What would you like to learn?').type('Computer');
+    cy.focused()
+      .should('contain', 'What would you like to learn?')
+      .type('Computer');
     cy.contains('Computer Science').click();
 
     cy.get('[data-cy=page]').click({ force: true });

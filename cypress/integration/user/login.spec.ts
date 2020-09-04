@@ -1,5 +1,7 @@
 describe('Login page', () => {
   beforeEach(() => {
+    cy.task('clear');
+    cy.task('seed');
     cy.visit('/login');
   });
 
@@ -11,5 +13,9 @@ describe('Login page', () => {
     cy.contains('Signup here').should('have.attr', 'href', '/default/signup');
   });
 
-  it('navigates to dashboard on successful login', () => {});
+  it.only('navigates to dashboard on successful login', () => {
+    cy.login();
+    cy.reload();
+    cy.url({ timeout: 60000 }).should('contain', '/dashboard');
+  });
 });
