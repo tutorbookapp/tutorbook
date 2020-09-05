@@ -38,6 +38,8 @@
     "url": "https://github.com/tutorbookapp/tutorbook/issues"
   },
   "devDependencies": {
+    "@cypress/code-coverage": "^3.8.1",
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/accept-language-parser": "^1.5.1",
     "@types/jest": "^25.2.3",
     "@types/node": "^14.0.26",
@@ -66,12 +68,15 @@
     "eslint-plugin-react-hooks": "^4.0.8",
     "husky": "^4.2.5",
     "identity-obj-proxy": "^3.0.0",
+    "istanbul-lib-coverage": "^3.0.0",
     "jest": "^26.1.0",
     "next-images": "^1.4.0",
+    "nyc": "^15.1.0",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "raw-loader": "^4.0.1",
     "react-test-renderer": "^16.13.1",
+    "source-map-support": "^0.5.19",
     "start-server-and-test": "^1.11.3",
     "svg-url-loader": "^6.0.0",
     "terser-webpack-plugin": "^3.0.7",
@@ -112,6 +117,7 @@
     "algoliasearch": "^4.3.1",
     "await-to-js": "^2.1.1",
     "axios": "^0.20.0",
+    "babel-plugin-istanbul": "^6.0.0",
     "classnames": "^2.2.6",
     "cypress-firebase": "^1.4.4",
     "dotenv": "^8.2.0",
@@ -136,6 +142,7 @@
     "rrule": "^2.6.4",
     "sass": "^1.26.10",
     "swr": "^0.3.0",
+    "ts-node": "^9.0.0",
     "url": "^0.11.0",
     "uuid": "^8.2.0",
     "vanilla-tilt": "^1.7.0"
@@ -147,5 +154,12 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "nyc": {
+    "all": true,
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "exclude": [
+      "pages/api/coverage.ts"
+    ]
   }
 }
