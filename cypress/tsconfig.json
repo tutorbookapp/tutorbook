@@ -3,7 +3,7 @@
   "compilerOptions": {
     "isolatedModules": false,
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node", "cypress-firebase"]
+    "types": ["cypress", "node"]
   },
-  "include": ["../node_modules/cypress", "**/*.ts"]
+  "include": ["**/*.ts"]
 }

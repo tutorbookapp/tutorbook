@@ -119,7 +119,6 @@
     "axios": "^0.20.0",
     "babel-plugin-istanbul": "^6.0.0",
     "classnames": "^2.2.6",
-    "cypress-firebase": "^1.4.4",
     "dotenv": "^8.2.0",
     "fast-deep-equal": "^3.1.3",
     "firebase": "^7.17.1",

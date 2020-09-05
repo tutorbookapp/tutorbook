@@ -7302,15 +7302,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-firebase@npm:^1.4.4":
-  version: 1.4.4
-  resolution: "cypress-firebase@npm:1.4.4"
-  peerDependencies:
-    firebase-admin: ^8 || ^9
-  checksum: cc19dd2daca2bbd87dfb3eafbe1f431c39f671f0c676929a7cb3714cc2b44b3d4eaa07e298fb118ff32a602936eca18324cb53bafd32dce44f67e658912c9ceb
-  languageName: node
-  linkType: hard
-
 "cypress@npm:^5.1.0":
   version: 5.1.0
   resolution: "cypress@npm:5.1.0"
@@ -18532,7 +18523,6 @@ resolve@1.1.7:
     concurrently: ^5.3.0
     cypress: ^5.1.0
     cypress-file-upload: ^4.1.1
-    cypress-firebase: ^1.4.4
     dotenv: ^8.2.0
     dotenv-webpack: ^1.8.0
     eslint: ^7.5.0
