@@ -7,7 +7,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "frb:dev": "firebase emulators:start",
-    "nxt:dev": "NODE_OPTIONS='--inspect' next dev -p 3000",
+    "nxt:dev": "next dev -p 3000",
     "cy:run": "NO_COLOR=1 cypress run",
     "cy:open": "cypress open",
     "dev": "concurrently 'yarn frb:dev' 'yarn nxt:dev' 'yarn cy:open'",
