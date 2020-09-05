@@ -38,7 +38,7 @@ export default function Switcher(): JSX.Element {
         open={open}
         onClose={() => setOpen(false)}
       >
-        <div className={styles.picker}>
+        <div data-cy='switcher-list' className={styles.picker}>
           <div className={styles.header}>{t('common:personal-account')}</div>
           <PopOverAccountLink account={user} href='/dashboard' />
           {orgs && !!orgs.length && (
@@ -70,6 +70,7 @@ export default function Switcher(): JSX.Element {
       <div className={styles.selector}>
         <button
           type='button'
+          data-cy='switcher-btn'
           onClick={() => setOpen(true)}
           aria-expanded={open}
           aria-haspopup

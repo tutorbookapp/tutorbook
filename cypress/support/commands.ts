@@ -11,7 +11,8 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
-      login: (uid?: string) => Chainable;
+      login: (uid?: string) => Chainable<null>;
+      logout: () => Chainable<null>;
     }
   }
 }
@@ -30,7 +31,7 @@ const clientCredentials = {
 if (!firebase.apps.length) firebase.initializeApp(clientCredentials);
 
 function loginWithToken(token: string): Promise<null> {
-  return new Promise((resolve, reject): void => {
+  return new Promise<null>((resolve, reject): void => {
     firebase.auth().onAuthStateChanged((auth: unknown): void => {
       if (auth) resolve(null);
     });
@@ -41,9 +42,25 @@ function loginWithToken(token: string): Promise<null> {
 Cypress.Commands.add(
   'login',
   (uid?: string): Cypress.Chainable<null> => {
+    cy.log('logging in');
     if (firebase.auth().currentUser) throw new Error('User already logged in.');
     return cy.task('login', uid).then((token: unknown) => {
       return loginWithToken(token as string);
     });
+  }
+);
+
+Cypress.Commands.add(
+  'logout',
+  (): Cypress.Chainable<null> => {
+    cy.log('logging out');
+    return cy.wrap(
+      new Promise<null>((resolve, reject): void => {
+        firebase.auth().onAuthStateChanged((auth: unknown): void => {
+          if (!auth) resolve(null);
+        });
+        firebase.auth().signOut().catch(reject);
+      })
+    );
   }
 );

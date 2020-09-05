@@ -1,19 +1,24 @@
 describe('Login page', () => {
   beforeEach(() => {
-    cy.task('clear');
-    cy.task('seed');
     cy.visit('/login');
+    cy.logout();
   });
 
   it('greets with login prompt', () => {
     cy.contains('h1', 'Login to Tutorbook');
   });
 
-  it('links to sign-up page', () => {
+  it('links to signup page', () => {
     cy.contains('Signup here').should('have.attr', 'href', '/default/signup');
   });
 
-  it.only('navigates to dashboard on successful login', () => {
+  it('links to home page', () => {
+    cy.get('header').contains('TB').should('have.attr', 'href', '/');
+  });
+
+  it('navigates to dashboard on successful login', () => {
+    cy.task('clear');
+    cy.task('seed');
     cy.login();
     cy.reload();
     cy.url({ timeout: 60000 }).should('contain', '/dashboard');

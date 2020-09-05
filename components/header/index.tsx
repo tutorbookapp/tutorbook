@@ -60,8 +60,12 @@ export default function Title({
     <header className={styles.wrapper}>
       <div className={styles.content}>
         <div className={styles.title}>
-          <h1 className={styles.header}>{header}</h1>
-          <p className={styles.body}>{body}</p>
+          <h1 data-cy='title' className={styles.header}>
+            {header}
+          </h1>
+          <p data-cy='subtitle' className={styles.body}>
+            {body}
+          </p>
         </div>
       </div>
       {actions && !!actions.length && (

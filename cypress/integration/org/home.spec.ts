@@ -1,15 +1,17 @@
+import org from '../../fixtures/org.json';
+
 describe('Org landing page', () => {
   beforeEach(() => {
     cy.task('clear');
     cy.task('seed');
-    cy.visit('/default');
+    cy.visit(`/${org.id}`);
   });
 
   it('links to search tutors page', () => {
     cy.contains('Search tutors').should(
       'have.attr',
       'href',
-      '/default/search?aspect=tutoring'
+      `/${org.id}/search?aspect=tutoring`
     );
   });
 
@@ -17,7 +19,7 @@ describe('Org landing page', () => {
     cy.contains('Search mentors').should(
       'have.attr',
       'href',
-      '/default/search?aspect=mentoring'
+      `/${org.id}/search?aspect=mentoring`
     );
   });
 
@@ -25,7 +27,7 @@ describe('Org landing page', () => {
     cy.contains('Become a tutor').should(
       'have.attr',
       'href',
-      '/default/signup?aspect=tutoring'
+      `/${org.id}/signup?aspect=tutoring`
     );
   });
 
@@ -33,7 +35,7 @@ describe('Org landing page', () => {
     cy.contains('Become a mentor').should(
       'have.attr',
       'href',
-      '/default/signup?aspect=mentoring'
+      `/${org.id}/signup?aspect=mentoring`
     );
   });
 });
