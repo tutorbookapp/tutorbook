@@ -4,6 +4,7 @@ import path from 'path';
 import admin from 'firebase-admin';
 import algoliasearch from 'algoliasearch';
 import axios from 'axios';
+import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
 import to from 'await-to-js';
 
@@ -51,6 +52,7 @@ export default function plugins(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions
 ): Cypress.ConfigOptions {
+  codecov(on, config);
   on('task', {
     async clear(): Promise<null> {
       const userIds = [user.id];
