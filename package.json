@@ -150,12 +150,5 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
-  },
-  "nyc": {
-    "all": true,
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "exclude": [
-      "pages/api/coverage.ts"
-    ]
   }
 }
