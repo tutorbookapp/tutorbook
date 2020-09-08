@@ -176,9 +176,9 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               placeholder={t(`common:${aspect}-subjects-placeholder`)}
               value={user[aspect].subjects}
               onChange={onSubjectsChange}
+              className={styles.field}
               aspect={aspect}
               required
-              className={styles.field}
               outlined
             />
             <TextField

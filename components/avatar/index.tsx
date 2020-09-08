@@ -35,7 +35,9 @@ export default function Avatar({
           <div className={styles.verifiedText}>Verified</div>
         </Tooltip>
       )}
-      {!loading && <img className={styles.img} src={src} alt='' />}
+      {!loading && (
+        <img data-cy='avatar' className={styles.img} src={src} alt='' />
+      )}
       {!src && !loading && <div className={styles.noImg}>No Photo</div>}
     </div>
   );

@@ -19,6 +19,7 @@ function TabButton({ label, onClick, active }: TabButtonProps): JSX.Element {
     <button
       role='tab'
       type='button'
+      aria-selected={active}
       className={cn(styles.tab, { [styles.active]: active })}
       onClick={onClick}
     >

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
+import cn from 'classnames';
 
 import styles from './banner.module.scss';
 
@@ -7,7 +8,10 @@ export default function Banner(): JSX.Element {
   const { t } = useTranslation();
   const [hidden, setHidden] = useState<boolean>(false);
   return (
-    <div className={styles.wrapper + (hidden ? ` ${styles.hidden}` : '')}>
+    <div
+      data-cy='banner'
+      className={cn(styles.wrapper, { [styles.hidden]: hidden })}
+    >
       <div className={styles.content}>
         <span className={styles.desktopTitle}>{t('banner:desktop')}</span>
         <span className={styles.mobileTitle}>{t('banner:mobile')}</span>

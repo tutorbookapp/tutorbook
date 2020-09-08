@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import cn from 'classnames';
 
 import Checkmark from './checkmark';
 import styles from './loader.module.scss';
@@ -27,17 +28,16 @@ export default function Loader({ active, checked }: Props): JSX.Element {
   return (
     <div
       data-cy='loader'
-      className={
-        styles.overlay +
-        (visible ? ` ${styles.visible}` : '') +
-        (closing ? ` ${styles.closing}` : '')
-      }
+      className={cn(styles.overlay, {
+        [styles.visible]: visible,
+        [styles.closing]: closing,
+      })}
     >
       <div className={styles.overlayContent}>
         <Checkmark
           data-cy='checkmark'
           className={styles.overlayCheckmark}
-          checked={!!checked}
+          checked={checked}
         />
       </div>
     </div>
