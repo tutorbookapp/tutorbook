@@ -125,7 +125,7 @@
     "firebase-admin": "^9.0.0",
     "firebase-tools": "^8.10.0",
     "handlebars": "^4.7.6",
-    "next": "^9.5.1",
+    "next": "^9.5.3",
     "next-translate": "^0.17.1",
     "nprogress": "^0.2.0",
     "password-generator": "^2.3.2",
@@ -145,9 +145,6 @@
     "url": "^0.11.0",
     "uuid": "^8.2.0",
     "vanilla-tilt": "^1.7.0"
-  },
-  "resolutions": {
-    "cssnano-preset-simple": "1.1.1"
   },
   "husky": {
     "hooks": {
