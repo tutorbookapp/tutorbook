@@ -24,7 +24,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
     return new UsersQuery({ aspect, visible: true });
   }, [aspect]);
   return (
-    <div className={styles.hero}>
+    <div data-cy='hero' className={styles.hero}>
       <div className={styles.wrapper}>
         {!!viewing && (
           <RequestDialog

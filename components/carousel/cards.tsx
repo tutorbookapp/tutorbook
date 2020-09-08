@@ -17,6 +17,7 @@ export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
   return (
     <Ripple>
       <div
+        data-cy='user-card'
         tabIndex={0}
         className={styles.card}
         onClick={onClick}
@@ -26,8 +27,12 @@ export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
         <div className={styles.img}>
           <Avatar src={user.photo} />
         </div>
-        <div className={styles.name}>{user.name}</div>
-        <div className={styles.bio}>{user.bio}</div>
+        <div data-cy='name' className={styles.name}>
+          {user.name}
+        </div>
+        <div data-cy='bio' className={styles.bio}>
+          {user.bio}
+        </div>
       </div>
     </Ripple>
   );
@@ -36,7 +41,10 @@ export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
 export function LoadingCard(): JSX.Element {
   return (
     <Ripple disabled>
-      <div className={`${styles.card} ${styles.disabled}`}>
+      <div
+        data-cy='loading-card'
+        className={`${styles.card} ${styles.disabled}`}
+      >
         <div className={styles.img}>
           <Avatar loading />
         </div>

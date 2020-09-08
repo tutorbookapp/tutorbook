@@ -129,7 +129,12 @@ export default function RequestDialog({
   );
 
   return (
-    <Dialog open={open} onClosed={onClosed} className={styles.dialog}>
+    <Dialog
+      data-cy='request-dialog'
+      open={open}
+      onClosed={onClosed}
+      className={styles.dialog}
+    >
       <div className={styles.wrapper}>
         <Loader active={loading} checked={checked} />
         <div className={styles.left}>
@@ -142,11 +147,14 @@ export default function RequestDialog({
           >
             <Avatar src={user.photo} />
           </a>
-          <h4 className={styles.name}>{user.name}</h4>
+          <h4 data-cy='name' className={styles.name}>
+            {user.name}
+          </h4>
           {user.socials && !!user.socials.length && (
-            <div className={styles.socials}>
+            <div data-cy='socials' className={styles.socials}>
               {user.socials.map((social: SocialInterface) => (
                 <a
+                  data-cy={`${social.type}-social-link`}
                   key={social.type}
                   target='_blank'
                   rel='noreferrer'
@@ -161,7 +169,9 @@ export default function RequestDialog({
         </div>
         <div className={styles.right}>
           <h6 className={styles.header}>{t('common:about')}</h6>
-          <p className={styles.text}>{user.bio}</p>
+          <p data-cy='bio' className={styles.text}>
+            {user.bio}
+          </p>
           <h6 className={styles.header}>{t('common:request')}</h6>
           <form className={styles.form} onSubmit={onSubmit}>
             <SubjectSelect
@@ -205,6 +215,7 @@ export default function RequestDialog({
             />
             {!!error && (
               <TextFieldHelperText
+                data-cy='error'
                 persistent
                 validationMsg
                 className={styles.error}

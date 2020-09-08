@@ -78,7 +78,7 @@ export default class Carousel extends React.Component<
     return (
       <>
         {title && <h5 className={styles.title}>{title}</h5>}
-        <div className={styles.wrapper}>
+        <div data-cy='carousel' className={styles.wrapper}>
           <IconButton
             style={this.atStart ? hidden : {}}
             onClick={this.scrollLeft}
