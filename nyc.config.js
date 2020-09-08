@@ -6,13 +6,6 @@
 module.exports = {
   all: true,
   extends: '@istanbuljs/nyc-config-typescript',
-  include: [
-    'pages/**',
-    'components/**',
-    'lib/**',
-    'firebase/functions/**',
-    'aws/**',
-    'sw/**',
-  ],
+  include: ['pages/**', 'components/**', 'lib/**'],
   exclude: ['pages/api/coverage.ts', '**/*.d.ts'],
 };
