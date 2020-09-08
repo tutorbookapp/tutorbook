@@ -7,35 +7,47 @@ describe('Org landing page', () => {
     cy.visit(`/${org.id}`);
   });
 
-  it('links to search tutors page', () => {
-    cy.contains('Search tutors').should(
+  it('links to the search and signup pages', () => {
+    cy.contains('a', 'Search tutors').should(
       'have.attr',
       'href',
       `/${org.id}/search?aspect=tutoring`
     );
-  });
-
-  it('links to search mentors page', () => {
-    cy.contains('Search mentors').should(
+    cy.contains('a', 'Search mentors').should(
       'have.attr',
       'href',
       `/${org.id}/search?aspect=mentoring`
     );
-  });
-
-  it('links to tutor sign-up page', () => {
-    cy.contains('Become a tutor').should(
+    cy.contains('a', 'Become a tutor').should(
       'have.attr',
       'href',
       `/${org.id}/signup?aspect=tutoring`
     );
-  });
-
-  it('links to mentor sign-up page', () => {
-    cy.contains('Become a mentor').should(
+    cy.contains('a', 'Become a mentor').should(
       'have.attr',
       'href',
       `/${org.id}/signup?aspect=mentoring`
     );
+  });
+
+  it('displays org information', () => {
+    cy.get('[data-cy=name]').should('have.text', org.name);
+    cy.get('[data-cy=avatar]')
+      .should('have.attr', 'src', org.photo)
+      .closest('a')
+      .should('have.attr', 'href', org.photo);
+    cy.get('[data-cy=socials] a').should('have.length', org.socials.length);
+
+    org.socials.forEach((social: Record<string, string>) => {
+      cy.get(`[data-cy=${social.type}-social-link]`)
+        .should('have.attr', 'href', social.url)
+        .and('have.attr', 'target', '_blank')
+        .and('have.attr', 'rel', 'noreferrer');
+    });
+
+    cy.get('[data-cy=bio]').should('have.text', org.bio);
+    cy.get('[data-cy=header]').should('have.text', org.home.en.header);
+    cy.get('[data-cy=body]').should('have.text', org.home.en.body);
+    cy.get('[data-cy=backdrop]').should('have.attr', 'src', org.home.en.photo);
   });
 });

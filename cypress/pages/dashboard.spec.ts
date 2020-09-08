@@ -1,5 +1,5 @@
-import org from '../../fixtures/org.json';
-import user from '../../fixtures/user.json';
+import org from '../fixtures/org.json';
+import user from '../fixtures/user.json';
 
 describe('Dashboard page', () => {
   beforeEach(() => {
@@ -37,6 +37,8 @@ describe('Dashboard page', () => {
       cy.get('[data-cy=switcher-btn]').should('have.text', 'Account').click();
       cy.get('[data-cy=switcher-list] a')
         .as('accounts')
+        .should('have.length', 2);
+      cy.get('@accounts')
         .eq(0)
         .should('have.text', user.name)
         .and('have.attr', 'href', '/dashboard');

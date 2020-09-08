@@ -4,15 +4,11 @@ describe('Login page', () => {
     cy.logout();
   });
 
-  it('greets with login prompt', () => {
+  it('contains greeting and links', () => {
     cy.contains('h1', 'Login to Tutorbook');
-  });
 
-  it('links to signup page', () => {
     cy.contains('Signup here').should('have.attr', 'href', '/default/signup');
-  });
 
-  it('links to home page', () => {
     cy.get('header').contains('TB').should('have.attr', 'href', '/');
   });
 
