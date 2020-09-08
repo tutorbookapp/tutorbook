@@ -39,4 +39,5 @@ ui-debug.log*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-.now
+# Vercel Linkage
+.vercel
