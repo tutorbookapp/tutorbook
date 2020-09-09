@@ -1,10 +1,11 @@
 # [![Tutorbook Logo](https://raw.githubusercontent.com/tutorbookapp/old-tutorbook/develop/build/favicon/text-logo.png)](https://tutorbook.org/)
 
 [![Release Version](https://img.shields.io/github/v/release/tutorbookapp/tutorbook?color=brightgreen)](https://github.com/tutorbookapp/tutorbook/releases/)
-[![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
 [![Website Status](https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Ftutorbook.org%2F)](https://tutorbook.org/)
+[![Integration Tests](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/i6oq5i/develop&style=flat)](https://dashboard.cypress.io/projects/i6oq5i/runs)
+[![Coverage Status](https://coveralls.io/repos/github/tutorbookapp/tutorbook/badge.svg?branch=develop)](https://coveralls.io/github/tutorbookapp/tutorbook?branch=develop)
+[![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
 [![Typescript](https://img.shields.io/badge/uses-typescript-orange?styles=flat)](https://www.typescriptlang.org)
-[![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
 **[Tutorbook](https://tutorbook.org) is the best way to manage tutoring and
 mentoring programs (virtually).**
