@@ -23,7 +23,7 @@ jobs:
         with:
           record: true
           parallel: true
-          build: yarn build
+          build: yarn test:build
           command: yarn test
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
