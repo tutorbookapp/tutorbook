@@ -6,69 +6,85 @@ on: [push]
 
 jobs:
   test:
+    name: Cypress integration tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         # Automatically load balance tests across machines using Cypress.
         # @see {@link https://github.com/cypress-io/github-action#parallel}
-        containers: [1, 2, 3]
+        containers: [1]
     steps:
       - uses: actions/checkout@v2
-      # Cache the Firebase Emulator JAR files and Node.js dependencies.
+      # Cache the Firebase Emulator JAR files, Node.js deps, and Next.js build.
       # @see {@link https://firebase.google.com/docs/emulator-suite/install_and_configure#running_containerized_emulator_suite_images}
+      # @see {@link https://github.com/vercel/next.js/blob/master/errors/no-cache.md#github-actions}
       - uses: actions/cache@v2
         with:
           path: |
             ~/.cache/firebase/emulators
             **/node_modules
+            ${{ github.workspace }}/.next/cache
           key: ${{ hashFiles('**/yarn.lock', '**/package-lock.json') }}
       # We don't have to use `actions/cache` b/c Yarn Berry already adds our
       # deps to a git-tracked `.yarn/cache` folder. This merely unpacks it.
       # @see {@link https://yarnpkg.com/features/zero-installs}
-      - run: yarn
-      - run: npm install
+      - name: Install project dependencies
+        run: yarn
+      - name: Install Firebase dependencies
+        run: npm install
         working-directory: firebase/functions
-      - run: npm run build
+      - name: Build Firebase functions
+        run: npm run build
         working-directory: firebase/functions
-      - run: yarn start:firebase &>/dev/null &
+      - name: Start Firebase emulators
+        run: yarn start:firebase &>/dev/null &
+      - name: Build service worker
+        run: yarn build:sw
+      - name: Build Next.js client
+        run: yarn build:client
+      - name: Start Next.js client
+        run: yarn next start -p 3000 &>/dev/null &
       # This action installs and caches dependencies (including Cypress), runs
       # the build, and then runs our integration tests.
       # @see {@link https://github.com/cypress-io/github-action}
       # @see {@link https://github.com/cypress-io/github-action/pulls/195}
-      - uses: tutorbookapp/github-action@master
+      - name: Run Cypress integration tests
+        uses: tutorbookapp/github-action@master
         with:
-          install: false
           record: true
+          install: false
           parallel: true
-          build: yarn build
-          command: yarn test
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Report code coverage info (from `coverage/lcov.info`) to Coveralls.
       # @see {@link https://github.com/coverallsapp/github-action}
-      - uses: coverallsapp/github-action@master
+      - name: Report Coveralls code coverage
+        uses: coverallsapp/github-action@master
         with:
           parallel: true
           flag-name: run-${{ matrix.containers }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
   coverage:
+    name: Coveralls code coverage
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: coverallsapp/github-action@master
+      - name: Report Coveralls code coverage
+        uses: coverallsapp/github-action@master
         with:
           parallel-finished: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 env:
+  NODE_ENV: development
+  FIRESTORE_EMULATOR_HOST: localhost:8080
   INTERCOM_APP_ID: ${{ secrets.INTERCOM_APP_ID }}
   ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
   ALGOLIA_SEARCH_KEY: ${{ secrets.ALGOLIA_SEARCH_KEY }}
   ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
   SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-  FIRESTORE_EMULATOR_HOST: ${{ secrets.FIRESTORE_EMULATOR_HOST }}
   FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
   FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
   FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}

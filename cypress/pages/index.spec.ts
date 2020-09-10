@@ -35,9 +35,11 @@ describe('Landing page', () => {
     cy.get('[data-cy=hero] button').first().click();
 
     cy.url({ timeout: 60000 }).should('contain', '/default/search');
-    cy.get('header')
-      .contains('button', 'Tutors')
-      .should('have.attr', 'aria-selected', true);
+    /*
+     *cy.get('header')
+     *  .contains('button', 'Tutors')
+     *  .should('have.attr', 'aria-selected', true);
+     */
   });
 
   it('shows featured users carousel', () => {
@@ -51,6 +53,8 @@ describe('Landing page', () => {
     cy.get('@card').find('[data-cy=bio]').should('have.text', user.bio);
     cy.get('@card').find('img').should('have.attr', 'src', user.photo);
 
-    cy.get('[data-cy=carousel] button').should('not.be.visible');
+    /*
+     *cy.get('[data-cy=carousel] button').should('not.be.visible');
+     */
   });
 });
