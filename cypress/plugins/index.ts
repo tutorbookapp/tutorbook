@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 
 import admin from 'firebase-admin';
@@ -17,11 +16,7 @@ import user from '../fixtures/user.json';
 // @see {@link https://github.com/cypress-io/cypress/issues/7006}
 // import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 
-// We have to read these env vars into `process.env` for the `firebase-admin`
-// package to use the local Firestore emulator.
-const envFilePath = path.resolve(__dirname, '../../.env');
-const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
-dotenv.config({ path: envFilePath });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const app = admin.initializeApp({
   credential: admin.credential.cert({
@@ -88,5 +83,15 @@ export default function plugins(
       return auth.createCustomToken(uid || user.id);
     },
   });
-  return { ...config, env: { ...config.env, ...envConfig } };
+  const env = {
+    FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+    FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+    FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
+    FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+    FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+  };
+  return { ...config, env: { ...config.env, ...env } };
 }

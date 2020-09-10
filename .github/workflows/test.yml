@@ -15,6 +15,14 @@ jobs:
         containers: [1, 2, 3]
     steps:
       - uses: actions/checkout@v2
+      # Cache the Firebase Emulator JAR files and Node.js dependencies.
+      # @see {@link https://firebase.google.com/docs/emulator-suite/install_and_configure#running_containerized_emulator_suite_images}
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/firebase/emulators
+            **/node_modules
+          key: ${{ hashFiles('**/yarn.lock', '**/package-lock.json') }}
       # We don't have to use `actions/cache` b/c Yarn Berry already adds our
       # deps to a git-tracked `.yarn/cache` folder. This merely unpacks it.
       # @see {@link https://yarnpkg.com/features/zero-installs}
@@ -23,12 +31,6 @@ jobs:
         working-directory: firebase/functions
       - run: npm run build
         working-directory: firebase/functions
-      # Cache the Firebase Emulator JAR files.
-      # @see {@link https://firebase.google.com/docs/emulator-suite/install_and_configure#running_containerized_emulator_suite_images}
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/firebase/emulators
-          key: ${{ hashFiles('**/yarn.lock', '**/package-lock.json') }}
       - run: yarn start:firebase &>/dev/null &
       # This action installs and caches dependencies (including Cypress), runs
       # the build, and then runs our integration tests.
@@ -36,6 +38,7 @@ jobs:
       # @see {@link https://github.com/cypress-io/github-action/pulls/195}
       - uses: tutorbookapp/github-action@master
         with:
+          install: false
           record: true
           parallel: true
           build: yarn build
