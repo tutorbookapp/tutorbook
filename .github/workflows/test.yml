@@ -5,6 +5,23 @@ name: Tests
 on: [push]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Cache the Next.js build outputs and update them when deps change.
+      # @see {@link https://github.com/vercel/next.js/blob/master/errors/no-cache.md#github-actions}
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+      - run: yarn
+      - run: yarn start:firebase &>/dev/null &
+      - run: yarn build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: .next/build
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -15,6 +32,16 @@ jobs:
         containers: [1, 2, 3]
     steps:
       - uses: actions/checkout@v2
+      # Only run the Next.js build once for all 3 parallel test runs.
+      # @see {@link https://docs.github.com/en/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts}
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+      # We don't have to use `actions/cache` b/c Yarn Berry already adds our
+      # deps to a git-tracked `.yarn/cache` folder. This merely unpacks it.
+      # @see {@link https://yarnpkg.com/features/zero-installs}
+      - run: yarn
+      - run: yarn start:firebase &>/dev/null &
       # This action installs and caches dependencies (including Cypress), runs
       # the build, and then runs our integration tests.
       # @see {@link https://github.com/cypress-io/github-action}
@@ -23,7 +50,6 @@ jobs:
         with:
           record: true
           parallel: true
-          build: yarn test:build
           command: yarn test
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
