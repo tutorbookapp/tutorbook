@@ -5,8 +5,8 @@ import { Option } from 'lib/model';
 
 export { default as TimeUtils } from './time';
 
-const algoliaId: string = process.env.ALGOLIA_APP_ID as string;
-const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
+const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
+const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
 
 const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
 const searchIndex: SearchIndex = client.initIndex('langs');

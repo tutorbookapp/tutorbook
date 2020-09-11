@@ -34,17 +34,14 @@ export type App = admin.app.App;
 const firebase: App = admin.initializeApp(
   {
     credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: (process.env.FIREBASE_ADMIN_KEY as string).replace(
-        /\\n/g,
-        '\n'
-      ),
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      privateKey: (process.env.FIREBASE_ADMIN_KEY || '').replace(/\\n/g, '\n'),
       clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     }),
-    projectId: process.env.FIREBASE_PROJECT_ID,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
     databaseAuthVariableOverride: { uid: 'server' },
   },
   uuid()

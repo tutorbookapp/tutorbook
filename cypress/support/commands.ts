@@ -17,18 +17,8 @@ declare global {
   }
 }
 
-const clientCredentials = {
-  apiKey: Cypress.env('FIREBASE_API_KEY') as string,
-  authDomain: Cypress.env('FIREBASE_AUTH_DOMAIN') as string,
-  databaseURL: Cypress.env('FIREBASE_DATABASE_URL') as string,
-  projectId: Cypress.env('FIREBASE_PROJECT_ID') as string,
-  storageBucket: Cypress.env('FIREBASE_STORAGE_BUCKET') as string,
-  messagingSenderId: Cypress.env('FIREBASE_MESSAGING_SENDER_ID') as string,
-  appId: Cypress.env('FIREBASE_APP_ID') as string,
-  measurementId: Cypress.env('FIREBASE_MEASUREMENT_ID') as string,
-};
-
-if (!firebase.apps.length) firebase.initializeApp(clientCredentials);
+if (!firebase.apps.length)
+  firebase.initializeApp(Cypress.env('clientCredentials'));
 
 function loginWithToken(token: string): Promise<null> {
   return new Promise<null>((resolve, reject): void => {

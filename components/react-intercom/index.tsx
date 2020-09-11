@@ -3,7 +3,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { useUser } from 'lib/account';
 
-const appId = process.env.INTERCOM_APP_ID as string;
+const appId = process.env.NEXT_PUBLIC_INTERCOM_APP_ID as string;
 const canUseDOM = !!(
   typeof window !== 'undefined' &&
   window.document &&

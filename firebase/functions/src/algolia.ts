@@ -1,8 +1,8 @@
 import { Change, EventContext, config } from 'firebase-functions';
-import { Settings } from '@algolia/client-search';
 import algoliasearch, { SearchIndex } from 'algoliasearch';
-import to from 'await-to-js';
+import { Settings } from '@algolia/client-search';
 import admin from 'firebase-admin';
+import to from 'await-to-js';
 import { v4 as uuid } from 'uuid';
 
 import { DocumentSnapshot, Timestamp } from './types';
@@ -17,6 +17,15 @@ const client = algoliasearch(
 interface Timeslot<T> {
   from: T;
   to: T;
+}
+
+type Partition = 'development' | 'test' | 'production';
+function getPartition(): Partition {
+  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || '';
+  let partition: Partition = 'development';
+  if (projectId.includes('test')) partition = 'test';
+  if (projectId.includes('production')) partition = 'production';
+  return partition;
 }
 
 /**
@@ -122,9 +131,7 @@ export async function matchUpdate(
   }
 
   const id = context.params.match as string;
-  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
-  const partition = (projectId || 'test').includes('test') ? 'test' : 'default';
-  const index: SearchIndex = client.initIndex(`${partition}-matches`);
+  const index: SearchIndex = client.initIndex(`${getPartition()}-matches`);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting match (${id})...`);
     const [err] = await too(index.deleteObject(id));
@@ -183,9 +190,7 @@ export async function requestUpdate(
   }
 
   const id = context.params.request as string;
-  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
-  const partition = (projectId || 'test').includes('test') ? 'test' : 'default';
-  const index: SearchIndex = client.initIndex(`${partition}-requests`);
+  const index: SearchIndex = client.initIndex(`${getPartition()}-requests`);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting request (${id})...`);
     const [err] = await too(index.deleteObject(id));
@@ -229,9 +234,7 @@ export async function userUpdate(
   context: EventContext
 ): Promise<void> {
   const uid = context.params.user as string;
-  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
-  const partition = (projectId || 'test').includes('test') ? 'test' : 'default';
-  const index: SearchIndex = client.initIndex(`${partition}-users`);
+  const index: SearchIndex = client.initIndex(`${getPartition()}-users`);
   if (!change.after.exists) {
     console.log(`[DEBUG] Deleting user (${uid})...`);
     const [err] = await too(index.deleteObject(uid));

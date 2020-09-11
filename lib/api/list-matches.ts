@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import algoliasearch from 'algoliasearch/lite';
 import { SearchResponse } from '@algolia/client-search';
 import to from 'await-to-js';
 
@@ -7,13 +7,11 @@ import { Match, MatchJSON, MatchSearchHit, MatchesQuery } from 'lib/model';
 
 import { getFilterString } from './helpers/search';
 
-const algoliaId: string = process.env.ALGOLIA_APP_ID as string;
-const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
+const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
+const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
 
-const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
-const index: SearchIndex = client.initIndex(
-  process.env.NODE_ENV === 'development' ? 'test-matches' : 'default-matches'
-);
+const client = algoliasearch(algoliaId, algoliaKey);
+const index = client.initIndex(`${process.env.NODE_ENV}-matches`);
 
 async function searchMatches(
   query: MatchesQuery

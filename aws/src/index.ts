@@ -5,7 +5,7 @@ import SES from 'aws-sdk/clients/ses';
 import admin from 'firebase-admin';
 import to from 'await-to-js';
 import { SearchResponse } from '@algolia/client-search';
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch';
+import algoliasearch from 'algoliasearch';
 
 import {
   DocumentSnapshot,
@@ -40,17 +40,14 @@ import {
 const firebase: FirebaseApp = admin.initializeApp(
   {
     credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: (process.env.FIREBASE_ADMIN_KEY as string).replace(
-        /\\n/g,
-        '\n'
-      ),
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      privateKey: (process.env.FIREBASE_ADMIN_KEY || '').replace(/\\n/g, '\n'),
       clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     }),
-    projectId: process.env.FIREBASE_PROJECT_ID,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
     databaseAuthVariableOverride: { uid: 'server' },
   },
   uuid()
@@ -61,11 +58,11 @@ const auth: FirebaseAuth = firebase.auth();
 const db: Firestore = firebase.firestore();
 const whitelist: RegExp[] = [/@tutorbook\.org$/];
 const bucketId = 'tutorbook-mail';
-const client: SearchClient = algoliasearch(
-  process.env.ALGOLIA_APP_ID as string,
-  process.env.ALGOLIA_SEARCH_KEY as string
-);
-const index: SearchIndex = client.initIndex('default-matches');
+
+const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
+const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
+const client = algoliasearch(algoliaId, algoliaKey);
+const index = client.initIndex(`${process.env.NODE_ENV}-matches`);
 
 db.settings({ ignoreUndefinedProperties: true });
 
