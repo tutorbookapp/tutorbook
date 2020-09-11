@@ -13,7 +13,7 @@ jobs:
       matrix:
         # Automatically load balance tests across machines using Cypress.
         # @see {@link https://github.com/cypress-io/github-action#parallel}
-        containers: [1]
+        containers: [1, 2, 3, 4, 5, 6]
     steps:
       - uses: actions/checkout@v2
       # Cache the Firebase Emulator JAR files, Node.js deps, and Next.js build.
@@ -37,16 +37,17 @@ jobs:
       - name: Build Firebase functions
         run: npm run build
         working-directory: firebase/functions
+      # TODO: Use the `wait-on` package to wait until these endpoints are
+      # responding before continuing the run.
+      # @see {@link https://npmjs.com/package/wait-on}
       - name: Start Firebase emulators
         run: yarn start:firebase &>/dev/null &
-      - name: Build service worker
-        run: yarn build:sw
-      - name: Build Next.js client
-        run: yarn build:client
+      - name: Build service worker and Next.js client
+        run: yarn build
       - name: Start Next.js client
-        run: yarn next start -p 3000 &>/dev/null &
-      # This action installs and caches dependencies (including Cypress), runs
-      # the build, and then runs our integration tests.
+        run: yarn start:client &>/dev/null &
+      # This action runs our tests and handles the Cypress Dashboard integration
+      # (e.g. by sending GitHub commit information, etc).
       # @see {@link https://github.com/cypress-io/github-action}
       # @see {@link https://github.com/cypress-io/github-action/pulls/195}
       - name: Run Cypress integration tests
@@ -78,20 +79,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 env:
-  NODE_ENV: development
+  NODE_ENV: test
   FIRESTORE_EMULATOR_HOST: localhost:8080
-  INTERCOM_APP_ID: ${{ secrets.INTERCOM_APP_ID }}
-  ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
-  ALGOLIA_SEARCH_KEY: ${{ secrets.ALGOLIA_SEARCH_KEY }}
   ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-  FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-  FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-  FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-  FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
-  FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
-  FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
-  FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
-  FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
   FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}
   FIREBASE_ADMIN_KEY: ${{ secrets.FIREBASE_ADMIN_KEY }}
