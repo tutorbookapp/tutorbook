@@ -1,6 +1,6 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import algoliasearch from 'algoliasearch/lite';
 import useTranslation from 'next-translate/useTranslation';
 import equal from 'fast-deep-equal';
 
@@ -9,10 +9,10 @@ import Select, { SelectControllerProps } from 'components/select';
 import { Aspect, GradeAlias, Option } from 'lib/model';
 import { usePrevious } from 'lib/hooks';
 
-const algoliaId: string = process.env.ALGOLIA_APP_ID as string;
-const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
+const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
+const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
 
-const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
+const client = algoliasearch(algoliaId, algoliaKey);
 
 interface SubjectHit extends ObjectWithObjectID {
   name: string;
@@ -78,7 +78,7 @@ export default function SubjectSelect({
         grade !== undefined ? [`grades:${grade}`] : undefined;
       const suggestions: SubjectOption[] = [];
       await Promise.all(
-        searchIndexes.map(async (index: SearchIndex) => {
+        searchIndexes.map(async (index) => {
           const res: SearchResponse<SubjectHit> = await index.search(query, {
             filters,
             optionalFilters,

@@ -1,6 +1,6 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
+import algoliasearch from 'algoliasearch/lite';
 import equal from 'fast-deep-equal';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -8,11 +8,11 @@ import Select, { SelectControllerProps } from 'components/select';
 
 import { Option } from 'lib/model';
 
-const algoliaId: string = process.env.ALGOLIA_APP_ID as string;
-const algoliaKey: string = process.env.ALGOLIA_SEARCH_KEY as string;
+const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
+const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
 
-const client: SearchClient = algoliasearch(algoliaId, algoliaKey);
-const searchIndex: SearchIndex = client.initIndex('langs');
+const client = algoliasearch(algoliaId, algoliaKey);
+const searchIndex = client.initIndex('langs');
 
 type LangHit = ObjectWithObjectID & {
   [key: string]: { name: string; synonyms: string[] };

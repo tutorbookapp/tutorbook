@@ -18,17 +18,12 @@ import user from '../fixtures/user.json';
 
 // Follow the Next.js convention for loading `.env` files.
 // @see {@link https://nextjs.org/docs/basic-features/environment-variables}
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-dotenv.config({
-  path: path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}`),
-});
-dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
-dotenv.config({
-  path: path.resolve(
-    __dirname,
-    `../../.env.${process.env.NODE_ENV || 'test'}.local`
-  ),
-});
+[
+  path.resolve(__dirname, '../../.env'),
+  path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}`),
+  path.resolve(__dirname, '../../.env.local'),
+  path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}.local`),
+].forEach((dotfile: string) => dotenv.config({ path: dotfile }));
 
 const clientCredentials = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -56,7 +51,7 @@ const db = app.firestore();
 
 db.settings({ ignoreUndefinedProperties: true });
 
-const algoliaId = process.env.ALGOLIA_APP_ID as string;
+const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const client = algoliasearch(algoliaId, algoliaKey);
 const index = client.initIndex('test-users');
