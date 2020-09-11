@@ -87,7 +87,7 @@ async function searchUsers(
   if (!filterStrings.length) filterStrings = [undefined];
   const optionalFilters: string[] = getOptionalFilterStrings(query);
   const { page, hitsPerPage, query: text } = query;
-  console.log('[DEBUG] Searching users by:', {
+  console.log(`[DEBUG] Searching ${index.indexName} by:`, {
     text,
     page,
     hitsPerPage,
