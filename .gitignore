@@ -23,7 +23,9 @@ node_modules
 
 # Misc
 .DS_Store
-.env*
+
+# Secrets 
+.env*.local
 
 # Debug Logs
 npm-debug.log*
@@ -33,11 +35,6 @@ lerna-debug.log*
 firestore-debug.log*
 firebase-debug.log*
 ui-debug.log*
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
 
 # Vercel Linkage
 .vercel
