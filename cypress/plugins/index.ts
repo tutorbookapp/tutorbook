@@ -16,7 +16,19 @@ import user from '../fixtures/user.json';
 // @see {@link https://github.com/cypress-io/cypress/issues/7006}
 // import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 
+// Follow the Next.js convention for loading `.env` files.
+// @see {@link https://nextjs.org/docs/basic-features/environment-variables}
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({
+  path: path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}`),
+});
+dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+dotenv.config({
+  path: path.resolve(
+    __dirname,
+    `../../.env.${process.env.NODE_ENV || 'test'}.local`
+  ),
+});
 
 const clientCredentials = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -93,5 +105,5 @@ export default function plugins(
       return auth.createCustomToken(uid || user.id);
     },
   });
-  return { ...config, env: { ...config.env, clientCredentials } };
+  return { ...config, env: { ...config.env, ...clientCredentials } };
 }
