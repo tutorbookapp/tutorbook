@@ -35,6 +35,7 @@ describe('Landing page', () => {
     cy.get('[data-cy=hero] button').first().click();
 
     cy.url({ timeout: 60000 }).should('contain', '/default/search');
+
     /*
      *cy.get('header')
      *  .contains('button', 'Tutors')
@@ -42,19 +43,17 @@ describe('Landing page', () => {
      */
   });
 
-  /*
-   *  it('shows featured users carousel', () => {
-   *    cy.get('[data-cy=carousel]')
-   *      .first()
-   *      .find('[data-cy=user-card]', { timeout: 60000 })
-   *      .should('have.length', 1)
-   *      .as('card');
-   *
-   *    cy.get('@card').find('[data-cy=name]').should('have.text', user.username);
-   *    cy.get('@card').find('[data-cy=bio]').should('have.text', user.bio);
-   *    cy.get('@card').find('img').should('have.attr', 'src', user.photo);
-   *
-   *    cy.get('[data-cy=carousel] button').should('not.be.visible');
-   *  });
-   */
+  it('shows featured users carousel', () => {
+    cy.get('[data-cy=carousel]')
+      .first()
+      .find('[data-cy=user-card]', { timeout: 60000 })
+      .should('have.length', 1)
+      .as('card');
+
+    cy.get('@card').find('[data-cy=name]').should('have.text', user.username);
+    cy.get('@card').find('[data-cy=bio]').should('have.text', user.bio);
+    cy.get('@card').find('img').should('have.attr', 'src', user.photo);
+
+    cy.get('[data-cy=carousel] button').should('not.be.visible');
+  });
 });

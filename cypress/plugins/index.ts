@@ -9,6 +9,8 @@ import dotenv from 'dotenv';
 import org from '../fixtures/org.json';
 import user from '../fixtures/user.json';
 
+import generateUserInfo from './generate-user-info';
+
 // Right now, we can't use the `baseUrl` Typescript compiler options, so we
 // can't use any of the existing type annotations in our app source code.
 // @see {@link https://github.com/cypress-io/cypress/issues/7188}
@@ -63,9 +65,9 @@ export default function plugins(
   on('task', {
     async clear(): Promise<null> {
       const { users } = await auth.getUsers([
-        { uid: user.id },
-        { email: user.email },
-        { phoneNumber: user.phone },
+        { uid: Cypress.env('uid') as string },
+        { email: Cypress.env('email') as string },
+        { phoneNumber: Cypress.env('phone') as string },
       ]);
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
@@ -79,21 +81,25 @@ export default function plugins(
       return null;
     },
     async seed(): Promise<null> {
+      const { uid, phone, email } = generateUserInfo();
       await Promise.all([
         auth.createUser({
-          uid: user.id,
-          email: user.email,
+          uid,
+          email,
+          phoneNumber: phone,
           displayName: user.name,
           photoURL: user.photo || undefined,
-          phoneNumber: user.phone || undefined,
         }),
-        db.collection('users').doc(user.id).set(user),
+        db
+          .collection('users')
+          .doc(uid)
+          .set({ ...user, phone, email, id: uid }),
         db.collection('orgs').doc(org.id).set(org),
       ]);
       return null;
     },
     async login(uid?: string): Promise<string> {
-      return auth.createCustomToken(uid || user.id);
+      return auth.createCustomToken(uid || Cypress.env('uid'));
     },
   });
   return { ...config, env: { ...config.env, ...clientCredentials } };

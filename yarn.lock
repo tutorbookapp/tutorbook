@@ -13219,6 +13219,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.1.12":
+  version: 3.1.12
+  resolution: "nanoid@npm:3.1.12"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: dc51417babadca4b00c2126ac0bc1c01e842e3c40edda2d3e1da40e8aae4d691a2a0b9d8e9c3a8cdb16133345a47f9135f0d0eef85a66ad31711ad3d908050e4
+  languageName: node
+  linkType: hard
+
 "nanomatch@npm:^1.2.9":
   version: 1.2.13
   resolution: "nanomatch@npm:1.2.13"
@@ -17758,6 +17767,7 @@ resolve@1.1.7:
     identity-obj-proxy: ^3.0.0
     istanbul-lib-coverage: ^3.0.0
     jest: ^26.1.0
+    nanoid: ^3.1.12
     next: ^9.5.3
     next-images: ^1.4.0
     next-translate: ^0.17.1
