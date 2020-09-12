@@ -100,6 +100,7 @@ export default function plugins(
     async seed(): Promise<null> {
       const userData = { ...user, ...generateUserInfo() };
       const userSearchData = { ...userData, objectID: userData.id };
+      const orgData = { ...org, members: [userData.id] };
       await Promise.all([
         auth.createUser({
           uid: userData.id,
@@ -110,7 +111,7 @@ export default function plugins(
         }),
         index.saveObject(userSearchData),
         db.collection('users').doc(userData.id).set(userData),
-        db.collection('orgs').doc(org.id).set(org),
+        db.collection('orgs').doc(orgData.id).set(orgData),
       ]);
       return null;
     },
