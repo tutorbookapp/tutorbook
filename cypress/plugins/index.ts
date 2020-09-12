@@ -65,7 +65,7 @@ export default function plugins(
   on('task', {
     async clear(): Promise<null> {
       const { users } = await auth.getUsers([
-        { uid: Cypress.env('uid') as string },
+        { uid: Cypress.env('id') as string },
         { email: Cypress.env('email') as string },
         { phoneNumber: Cypress.env('phone') as string },
       ]);
@@ -81,25 +81,22 @@ export default function plugins(
       return null;
     },
     async seed(): Promise<null> {
-      const { uid, phone, email } = generateUserInfo();
+      const userData = { ...user, ...generateUserInfo() };
       await Promise.all([
         auth.createUser({
-          uid,
-          email,
-          phoneNumber: phone,
-          displayName: user.name,
-          photoURL: user.photo || undefined,
+          uid: userData.id,
+          email: userData.email,
+          phoneNumber: userData.phone,
+          displayName: userData.name,
+          photoURL: userData.photo,
         }),
-        db
-          .collection('users')
-          .doc(uid)
-          .set({ ...user, phone, email, id: uid }),
+        db.collection('users').doc(userData.id).set(userData),
         db.collection('orgs').doc(org.id).set(org),
       ]);
       return null;
     },
     async login(uid?: string): Promise<string> {
-      return auth.createCustomToken(uid || Cypress.env('uid'));
+      return auth.createCustomToken(uid || Cypress.env('id'));
     },
   });
   return { ...config, env: { ...config.env, ...clientCredentials } };

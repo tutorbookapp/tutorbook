@@ -35,7 +35,7 @@ describe('Signup page', () => {
   it('signs new volunteers up', () => {
     cy.wrap({ generateUserInfo })
       .invoke('generateUserInfo')
-      .then((info) => {
+      .then(({ email, phone }) => {
         cy.contains('Your name')
           .children('input')
           .as('name-input')
@@ -44,12 +44,12 @@ describe('Signup page', () => {
           .children('input')
           .as('email-input')
           .should('have.attr', 'type', 'email')
-          .type(info.email);
+          .type(email);
         cy.contains('Your phone number')
           .children('input')
           .as('phone-input')
           .should('have.attr', 'type', 'tel')
-          .type(info.phone);
+          .type(phone);
         cy.contains('Your profile photo')
           .children('input')
           .should('have.attr', 'type', 'file')
@@ -78,8 +78,8 @@ describe('Signup page', () => {
         cy.get('header').contains('button', 'Tutors').click();
 
         cy.get('@name-input').should('have.value', user.name);
-        cy.get('@email-input').should('have.value', info.email);
-        cy.get('@phone-input').should('have.value', info.phone);
+        cy.get('@email-input').should('have.value', email);
+        cy.get('@phone-input').should('have.value', phone);
         cy.get('@tutoring-subjects-input').should('not.exist');
 
         cy.contains('What can you tutor?')
