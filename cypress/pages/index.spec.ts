@@ -45,7 +45,7 @@ describe('Landing page', () => {
   it('shows featured users carousel', () => {
     cy.get('[data-cy=carousel]')
       .first()
-      .find('[data-cy=user-card]')
+      .find('[data-cy=user-card]', { timeout: 60000 })
       .should('have.length', 1)
       .as('card');
 
