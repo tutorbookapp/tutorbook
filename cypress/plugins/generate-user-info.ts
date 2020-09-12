@@ -2,7 +2,7 @@ import { customAlphabet } from 'nanoid';
 
 import user from '../fixtures/user.json';
 
-const randId = customAlphabet('abcdefghijklmnopqrstuvwxyz', 20);
+const randId = customAlphabet('abcdefghijklmnopqrstuvwxyz', 5);
 const randPhone = customAlphabet('0123456789', 10);
 
 export interface UserInfo {
