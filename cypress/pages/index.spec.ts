@@ -35,11 +35,9 @@ describe('Landing page', () => {
 
     cy.url({ timeout: 60000 }).should('contain', '/default/search');
 
-    /*
-     *cy.get('header')
-     *  .contains('button', 'Tutors')
-     *  .should('have.attr', 'aria-selected', true);
-     */
+    cy.get('header')
+      .contains('button', 'Tutors')
+      .should('have.attr', 'aria-selected', true);
   });
 
   it('shows featured users carousel', () => {
