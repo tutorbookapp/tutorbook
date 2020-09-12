@@ -1,7 +1,6 @@
+rules_version = '2';
 service firebase.storage {
-  match /b/{bucket}/o {
-    match /{partition}/temp/{allPaths=**} {
-      allow read, write: if true;
-    }
+  match /b/{bucket}/o/temp/{allPaths=**} {
+    allow read, write: if true;
   }
 }
