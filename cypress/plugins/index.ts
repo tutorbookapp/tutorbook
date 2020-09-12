@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 import org from '../fixtures/org.json';
 import user from '../fixtures/user.json';
 
-import generateUserInfo from './generate-user-info';
+import generateUserInfo, { UserInfo } from './generate-user-info';
 
 // Right now, we can't use the `baseUrl` Typescript compiler options, so we
 // can't use any of the existing type annotations in our app source code.
@@ -57,17 +57,30 @@ const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const client = algoliasearch(algoliaId, algoliaKey);
 const index = client.initIndex(`${process.env.NODE_ENV || 'test'}-users`);
 
+declare global {
+  /* eslint-disable-next-line @typescript-eslint/no-namespace */
+  namespace Cypress {
+    interface Chainable {
+      task(event: 'generateUserInfo'): Chainable<UserInfo>;
+      task(event: 'clear'): Chainable<null>;
+      task(event: 'seed'): Chainable<null>;
+      task(event: 'login', arg?: string): Chainable<string>;
+    }
+  }
+}
+
 export default function plugins(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions
 ): Cypress.ConfigOptions {
   codecov(on, config);
   on('task', {
+    generateUserInfo,
     async clear(): Promise<null> {
       const { users } = await auth.getUsers([
-        { uid: Cypress.env('id') as string },
-        { email: Cypress.env('email') as string },
-        { phoneNumber: Cypress.env('phone') as string },
+        { uid: global.user.id },
+        { email: global.user.email },
+        { phoneNumber: global.user.phone },
       ]);
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +

@@ -4,11 +4,13 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'cypress-file-upload';
 
-// Add types to the existing global Cypress object.
-// @see {@link https://github.com/prescottprue/cypress-firebase/blob/master/src/attachCustomCommands.ts#L123}
-// @see {@link https://docs.cypress.io/guides/tooling/typescript-support.html#Types-for-custom-commands}
+/**
+ * Add types to the existing global Cypress object.
+ * @see {@link https://github.com/prescottprue/cypress-firebase/blob/master/src/attachCustomCommands.ts#L123}
+ * @see {@link https://docs.cypress.io/guides/tooling/typescript-support.html#Types-for-custom-commands}
+ */
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+  /* eslint-disable-next-line @typescript-eslint/no-namespace */
   namespace Cypress {
     interface Chainable {
       login: (uid?: string) => Chainable<null>;
@@ -42,9 +44,7 @@ function loginWithToken(token: string): Promise<null> {
 function login(uid?: string): Cypress.Chainable<null> {
   cy.log('logging in');
   if (firebase.auth().currentUser) throw new Error('User already logged in.');
-  return cy.task('login', uid).then((token: unknown) => {
-    return loginWithToken(token as string);
-  });
+  return cy.task('login', uid).then((token: string) => loginWithToken(token));
 }
 
 function logout(): Cypress.Chainable<null> {
@@ -59,7 +59,7 @@ function logout(): Cypress.Chainable<null> {
   );
 }
 
-function setup(): Cypress.Chainable<undefined> {
+function setup(): Cypress.Chainable<null> {
   return cy.task('clear').then(() => cy.task('seed'));
 }
 
