@@ -3,7 +3,7 @@ import { customAlphabet } from 'nanoid';
 import user from '../fixtures/user.json';
 
 const randId = customAlphabet('abcdefghijklmnopqrstuvwxyz', 20);
-const randPhone = customAlphabet('0123456789', 9);
+const randPhone = customAlphabet('0123456789', 10);
 
 export interface UserInfo {
   id: string;
@@ -15,7 +15,7 @@ declare global {
   /* eslint-disable-next-line @typescript-eslint/no-namespace */
   namespace NodeJS {
     interface Global {
-      user: UserInfo;
+      user?: UserInfo;
     }
   }
 }

@@ -77,18 +77,22 @@ export default function plugins(
   on('task', {
     generateUserInfo,
     async clear(): Promise<null> {
-      const { users } = await auth.getUsers([
-        { uid: global.user.id },
-        { email: global.user.email },
-        { phoneNumber: global.user.phone },
-      ]);
+      const userIds = new Set<string>();
+      if (global.user) {
+        const { users } = await auth.getUsers([
+          { uid: global.user.id },
+          { email: global.user.email },
+          { phoneNumber: global.user.phone },
+        ]);
+        users.forEach(({ uid }) => userIds.add(uid));
+      }
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
         `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
         `databases/(default)/documents`;
       await Promise.all([
         index.clearObjects(),
-        auth.deleteUsers(users.map(({ uid }) => uid)),
+        auth.deleteUsers([...userIds]),
         axios.delete(clearFirestoreEndpoint),
       ]);
       return null;
@@ -111,7 +115,7 @@ export default function plugins(
       return null;
     },
     async login(uid?: string): Promise<string> {
-      return auth.createCustomToken(uid || Cypress.env('id'));
+      return auth.createCustomToken(uid || (global.user || {}).id || '');
     },
   });
   return { ...config, env: { ...config.env, ...clientCredentials } };
