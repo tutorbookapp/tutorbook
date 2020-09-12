@@ -5,7 +5,6 @@ import algoliasearch from 'algoliasearch';
 import axios from 'axios';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
-import to from 'await-to-js';
 
 import org from '../fixtures/org.json';
 import user from '../fixtures/user.json';
@@ -63,13 +62,18 @@ export default function plugins(
   codecov(on, config);
   on('task', {
     async clear(): Promise<null> {
+      const { users } = await auth.getUsers([
+        { uid: user.id },
+        { email: user.email },
+        { phoneNumber: user.phone },
+      ]);
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
         `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
         `databases/(default)/documents`;
       await Promise.all([
         index.clearObjects(),
-        auth.deleteUser(user.id),
+        auth.deleteUsers(users.map(({ uid }) => uid)),
         axios.delete(clearFirestoreEndpoint),
       ]);
       return null;
