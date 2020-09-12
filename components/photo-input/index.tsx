@@ -57,9 +57,7 @@ export default function PhotoInput({
     const lastDotIndex: number = file.name.lastIndexOf('.');
     const filename: string = file.name.substring(0, lastDotIndex);
     const extension: string = file.name.substring(lastDotIndex + 1);
-    const pathname = `${
-      process.env.NODE_ENV === 'development' ? 'test' : 'default'
-    }/temp/${uuid()}.${extension}`;
+    const pathname = `temp/${uuid()}.${extension}`;
 
     setHelperValue(`Uploading ${filename}.${extension}...`);
 

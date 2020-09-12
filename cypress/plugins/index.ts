@@ -54,7 +54,7 @@ db.settings({ ignoreUndefinedProperties: true });
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const client = algoliasearch(algoliaId, algoliaKey);
-const index = client.initIndex('test-users');
+const index = client.initIndex(`${process.env.NODE_ENV || 'test'}-users`);
 
 export default function plugins(
   on: Cypress.PluginEvents,
@@ -63,22 +63,13 @@ export default function plugins(
   codecov(on, config);
   on('task', {
     async clear(): Promise<null> {
-      const userIds = [user.id];
-      const [_, userByEmail] = await to(auth.getUserByEmail(user.email));
-      if (userByEmail) userIds.push(userByEmail.uid);
-      const [_, userByPhone] = await to(auth.getUserByPhoneNumber(user.phone));
-      if (userByPhone) userIds.push(userByPhone.uid);
       const clearFirestoreEndpoint =
-        `http://${
-          process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST as string
-        }/emulator/v1/` +
-        `projects/${
-          process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string
-        }/databases/` +
-        `(default)/documents`;
+        `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
+        `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
+        `databases/(default)/documents`;
       await Promise.all([
         index.clearObjects(),
-        auth.deleteUsers(userIds),
+        auth.deleteUser(user.id),
         axios.delete(clearFirestoreEndpoint),
       ]);
       return null;
@@ -86,6 +77,7 @@ export default function plugins(
     async seed(): Promise<null> {
       await Promise.all([
         auth.createUser({
+          uid: user.id,
           email: user.email,
           displayName: user.name,
           photoURL: user.photo || undefined,

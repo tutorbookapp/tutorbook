@@ -16,12 +16,12 @@ const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
 
 const client = algoliasearch(algoliaId, algoliaKey);
-const index = client.initIndex(`${process.env.NODE_ENV}-requests`);
 
 async function searchRequests(
   query: RequestsQuery
 ): Promise<{ results: Request[]; hits: number }> {
-  const filters: string = getFilterString(query);
+  const index = client.initIndex(`${process.env.APP_ENV}-requests`);
+  const filters = getFilterString(query);
   const { page, hitsPerPage, query: text } = query;
   console.log(`[DEBUG] Searching ${index.indexName} by:`, {
     text,

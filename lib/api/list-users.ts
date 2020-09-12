@@ -19,7 +19,6 @@ const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
 
 const client = algoliasearch(algoliaId, algoliaKey);
-const index = client.initIndex(`${process.env.NODE_ENV}-users`);
 
 /**
  * Creates and returns the filter string to search our Algolia index based on
@@ -83,7 +82,8 @@ async function searchUsers(
   const results: User[] = [];
   let filterStrings: (string | undefined)[] = getFilterStrings(query);
   if (!filterStrings.length) filterStrings = [undefined];
-  const optionalFilters: string[] = getOptionalFilterStrings(query);
+  const index = client.initIndex(`${process.env.APP_ENV}-users`);
+  const optionalFilters = getOptionalFilterStrings(query);
   const { page, hitsPerPage, query: text } = query;
   console.log(`[DEBUG] Searching ${index.indexName} by:`, {
     text,

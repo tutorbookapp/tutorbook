@@ -6,7 +6,7 @@
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "cy:run": "cypress run",
+    "cy:run": "NO_COLOR=1 cypress run",
     "cy:open": "cypress open",
     "start:firebase": "firebase emulators:start",
     "start:client": "next start -p 3000",
