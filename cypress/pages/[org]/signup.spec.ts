@@ -1,11 +1,10 @@
+import generateUserInfo from '../../plugins/generate-user-info';
 import org from '../../fixtures/org.json';
 import user from '../../fixtures/user.json';
-import generateUserInfo from '../../plugins/generate-user-info';
 
 describe('Signup page', () => {
   beforeEach(() => {
-    cy.task('clear');
-    cy.task('seed');
+    cy.setup();
     cy.logout();
     cy.visit(`/${org.id}/signup`);
   });
@@ -96,7 +95,7 @@ describe('Signup page', () => {
         cy.get('@btn').click().should('be.disabled');
         cy.get('@loader').should('be.visible');
 
-        cy.get('@loader', { timeout: 60000 }).should('be.not.visible');
+        cy.get('@loader', { timeout: 60000 }).should('not.be.visible');
       });
   });
 });

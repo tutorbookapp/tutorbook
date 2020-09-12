@@ -18,8 +18,7 @@ describe('Dashboard page', () => {
 
   context('when logged in', () => {
     beforeEach(() => {
-      cy.task('clear');
-      cy.task('seed');
+      cy.setup();
       cy.login();
       cy.visit('/dashboard');
     });

@@ -2,8 +2,7 @@ import user from '../fixtures/user.json';
 
 describe('Landing page', () => {
   beforeEach(() => {
-    cy.task('clear');
-    cy.task('seed');
+    cy.setup();
     cy.visit('/');
   });
 

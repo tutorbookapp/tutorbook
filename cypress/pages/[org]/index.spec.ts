@@ -2,8 +2,7 @@ import org from '../../fixtures/org.json';
 
 describe('Org landing page', () => {
   beforeEach(() => {
-    cy.task('clear');
-    cy.task('seed');
+    cy.setup();
     cy.visit(`/${org.id}`);
   });
 

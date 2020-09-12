@@ -13,8 +13,7 @@ describe('Login page', () => {
   });
 
   it('navigates to dashboard on successful login', () => {
-    cy.task('clear');
-    cy.task('seed');
+    cy.setup();
     cy.login();
     cy.reload();
     cy.url({ timeout: 60000 }).should('contain', '/dashboard');

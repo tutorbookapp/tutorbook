@@ -4,8 +4,7 @@ import org from '../../fixtures/org.json';
 
 describe('Search page', () => {
   beforeEach(() => {
-    cy.task('clear');
-    cy.task('seed');
+    cy.setup();
     cy.logout();
 
     // TODO: Refactor the `search.spec.ts` into two specs (one for the default
