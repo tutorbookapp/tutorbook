@@ -8,6 +8,12 @@ jobs:
   test:
     name: Cypress integration tests
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Automatically load balance tests across machines using Cypress.
+        # @see {@link https://github.com/cypress-io/github-action#parallel}
+        containers: [1, 2, 3, 4, 5, 6]
     steps:
       - uses: actions/checkout@v2
       # Cache the Firebase Emulator JAR files, Node.js deps, and Next.js build.
@@ -49,6 +55,7 @@ jobs:
         with:
           record: true
           install: false
+          parallel: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,6 +64,18 @@ jobs:
       - name: Report Coveralls code coverage
         uses: coverallsapp/github-action@master
         with:
+          parallel: true
+          flag-name: run-${{ matrix.containers }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+  coverage:
+    name: Coveralls code coverage
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report Coveralls code coverage
+        uses: coverallsapp/github-action@master
+        with:
+          parallel-finished: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 env:
