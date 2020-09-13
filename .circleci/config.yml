@@ -30,6 +30,7 @@ linux-workflow: &linux-workflow
         name: 'Setup Linux'
         yarn: true
         build: yarn build:ci
+        install-command: yarn install --immutable --immutable-cache
         executor: with-chrome-and-firefox
 
     # Run API tests against backend server
@@ -140,6 +141,7 @@ windows-workflow: &windows-workflow
         name: 'Setup Windows'
         yarn: true
         build: yarn build:ci
+        install-command: yarn install --immutable --immutable-cache
         executor:
           # executor comes from the "windows" orb
           name: win/default
