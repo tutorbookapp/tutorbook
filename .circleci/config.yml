@@ -9,6 +9,7 @@ executors:
   with-chrome-and-firefox:
     docker:
       - image: cypress/browsers:node12.18.0-chrome83-ff77
+        command: apt-get install default-jre -y
 
 commands:
   report-coverage:
@@ -20,19 +21,9 @@ commands:
       - codecov/upload:
           file: coverage/coverage-final.json
 
-jobs:
-  install-java:
-    executor: with-chrome-and-firefox
-    steps:
-      - run: apt-get install default-jre
-
 workflows:
   linux:
     jobs:
-      # Install JavaJRE runtime for Firebase emulators
-      - install-java:
-          name: Install Java
-
       # Setup
       #  1. Install Cypress
       #  2. Validate types (by building app)
@@ -46,8 +37,6 @@ workflows:
             yarn build:ci
           install-command: yarn install --immutable --immutable-cache
           executor: with-chrome-and-firefox
-          requires:
-            - Install Java
 
       # Run API tests against backend server
       - cypress/run:
