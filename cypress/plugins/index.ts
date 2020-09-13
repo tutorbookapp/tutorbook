@@ -91,8 +91,8 @@ export default function plugins(
         `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
         `databases/(default)/documents`;
       await Promise.all([
-        index.clearObjects(),
         auth.deleteUsers([...userIds]),
+        index.deleteObjects([...userIds]),
         axios.delete(clearFirestoreEndpoint),
       ]);
       return null;
@@ -116,6 +116,7 @@ export default function plugins(
       return null;
     },
     async login(uid?: string): Promise<string> {
+      console.log(`Logging in (${uid || (global.user || {}).id || ''})...`);
       return auth.createCustomToken(uid || (global.user || {}).id || '');
     },
   });
