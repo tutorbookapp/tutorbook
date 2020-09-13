@@ -1,8 +1,9 @@
 const path = require('path');
+const dotenv = require('dotenv');
 
-require('dotenv').config({
-  path: path.resolve(__dirname, '../../.env'),
-});
+const env = 'test';
+dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}.local`) });
 
 const updateSubjects = require('./update-subjects');
 const parse = require('csv-parse/lib/sync');

@@ -7002,6 +7002,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-env@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "cross-env@npm:7.0.2"
+  dependencies:
+    cross-spawn: ^7.0.1
+  bin:
+    cross-env: src/bin/cross-env.js
+    cross-env-shell: src/bin/cross-env-shell.js
+  checksum: 624d638db3b4b6b221f32238aeb6785b865365bf41154f01d46a23b6d78f807ca5588a3b32e9af5f17384b866fed3752d0e3ecf8c4a8cfca2935d363d27ba058
+  languageName: node
+  linkType: hard
+
 "cross-fetch@npm:3.0.5":
   version: 3.0.5
   resolution: "cross-fetch@npm:3.0.5"
@@ -17744,6 +17756,7 @@ resolve@1.1.7:
     babel-plugin-istanbul: ^6.0.0
     classnames: ^2.2.6
     concurrently: ^5.3.0
+    cross-env: ^7.0.2
     cypress: ^5.1.0
     cypress-file-upload: ^4.1.1
     dotenv: ^8.2.0

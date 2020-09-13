@@ -6,7 +6,7 @@
 module.exports = {
   all: true,
   extends: '@istanbuljs/nyc-config-typescript',
-  reporter: ['lcovonly'],
+  reporter: ['html', 'json'],
   include: ['pages/**', 'components/**', 'lib/**'],
   exclude: ['pages/api/coverage.ts', '**/*.d.ts'],
 };
