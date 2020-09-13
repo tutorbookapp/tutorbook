@@ -20,8 +20,8 @@ describe('Search page', () => {
   // SendGrid to ensure that our email notifications were sent).
   it('searches and requests users', () => {
     cy.get('[data-cy=results] li')
-      .should('have.length', 1)
-      .and('not.contain', user.name)
+      .first()
+      .should('not.contain', user.name)
       .and('contain', user.username)
       .and('contain', user.bio)
       .find('img')

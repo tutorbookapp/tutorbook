@@ -47,10 +47,7 @@ describe('Landing page', () => {
 
     cy.get('@carousel').find('[data-cy=loading-card]').should('not.exist');
 
-    cy.get('@carousel')
-      .find('[data-cy=user-card]')
-      .should('have.length', 1)
-      .as('card');
+    cy.get('@carousel').find('[data-cy=user-card]').first().as('card');
 
     cy.get('@card').find('[data-cy=name]').should('have.text', user.username);
     cy.get('@card').find('[data-cy=bio]').should('have.text', user.bio);
