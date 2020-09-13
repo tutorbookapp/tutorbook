@@ -33,7 +33,7 @@ describe('Dashboard page', () => {
     });
 
     it('switches accounts', () => {
-      cy.get('[data-cy=switcher-btn]').should('have.text', 'Account').click();
+      cy.contains('Account').click();
       cy.get('[data-cy=switcher-list] a')
         .as('accounts')
         .should('have.length', 2);
