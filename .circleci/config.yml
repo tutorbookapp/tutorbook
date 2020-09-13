@@ -29,9 +29,18 @@ linux-workflow: &linux-workflow
     - cypress/install:
         name: 'Setup Linux'
         yarn: true
-        build: yarn build:ci
         install-command: yarn install --immutable --immutable-cache
         executor: with-chrome-and-firefox
+        post-steps:
+          - run:
+              name: Start Firebase emulators
+              command: yarn start:firebase
+          - run:
+              name: Build
+              command: yarn build:ci
+          - run:
+              name: Cypress info
+              command: yarn cypress info
 
     # Run API tests against backend server
     - cypress/run:
@@ -140,13 +149,18 @@ windows-workflow: &windows-workflow
     - cypress/install:
         name: 'Setup Windows'
         yarn: true
-        build: yarn build:ci
         install-command: yarn install --immutable --immutable-cache
         executor:
           # executor comes from the "windows" orb
           name: win/default
           shell: bash.exe
         post-steps:
+          - run:
+              name: Start Firebase emulators
+              command: yarn start:firebase
+          - run:
+              name: Build
+              command: yarn build:ci
           - run:
               name: Cypress info
               command: yarn cypress info
