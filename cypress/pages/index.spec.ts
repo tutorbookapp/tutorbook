@@ -3,10 +3,6 @@ import user from '../fixtures/user.json';
 describe('Landing page', () => {
   beforeEach(() => {
     cy.setup();
-
-    cy.server();
-    cy.route('GET', '/api/users').as('list-users');
-
     cy.visit('/');
   });
 
@@ -47,12 +43,11 @@ describe('Landing page', () => {
   });
 
   it('shows featured users carousel', () => {
-    cy.get('header').contains('button', 'Tutors').click();
+    cy.get('[data-cy=carousel]').first().as('carousel');
 
-    cy.wait('@list-users');
+    cy.get('@carousel').find('[data-cy=loading-card]').should('not.exist');
 
-    cy.get('[data-cy=carousel]')
-      .first()
+    cy.get('@carousel')
       .find('[data-cy=user-card]')
       .should('have.length', 1)
       .as('card');
@@ -61,6 +56,8 @@ describe('Landing page', () => {
     cy.get('@card').find('[data-cy=bio]').should('have.text', user.bio);
     cy.get('@card').find('img').should('have.attr', 'src', user.photo);
 
-    // cy.get('[data-cy=carousel] button').should('not.be.visible');
+    // TODO: Remove this `click()` workaround b/c that's a bug in our front-end.
+    // cy.get('@carousel').find('button:visible').click();
+    // cy.get('@carousel').find('button').should('not.be.visible');
   });
 });
