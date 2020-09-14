@@ -16,7 +16,7 @@ import { addFilter, addFilters, getFilterString } from './helpers/search';
 import { DecodedIdToken, DocumentSnapshot, auth, db } from './helpers/firebase';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
-const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
+const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 
 const client = algoliasearch(algoliaId, algoliaKey);
 

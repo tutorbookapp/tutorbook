@@ -60,7 +60,7 @@ const whitelist: RegExp[] = [/@tutorbook\.org$/];
 const bucketId = 'tutorbook-mail';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
-const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
+const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const client = algoliasearch(algoliaId, algoliaKey);
 const index = client.initIndex(`${process.env.NODE_ENV}-matches`);
 
