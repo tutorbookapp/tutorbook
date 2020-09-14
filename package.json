@@ -83,6 +83,7 @@
     "pretty-quick": "^2.0.1",
     "raw-loader": "^4.0.1",
     "react-test-renderer": "^16.13.1",
+    "release": "^6.3.0",
     "source-map-support": "^0.5.19",
     "svg-url-loader": "^6.0.0",
     "terser-webpack-plugin": "^3.0.7",
