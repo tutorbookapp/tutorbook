@@ -9,17 +9,16 @@
     "start:firebase": "firebase emulators:start --project test-tutorbook",
     "start:next": "cross-env NODE_OPTIONS='--inspect' next start -p 3000",
     "start:cy": "cross-env NO_COLOR=1 cypress run",
-    "start": "cross-env NODE_ENV=test concurrently yarn:start:firebase yarn:start:next",
+    "start": "concurrently yarn:start:firebase yarn:start:next",
     "dev:firebase": "firebase emulators:start --project development-tutorbook",
     "dev:next": "cross-env NODE_OPTIONS='--inspect' next dev -p 3000",
     "dev:cy": "cypress open",
-    "dev": "cross-env NODE_ENV=development concurrently yarn:dev:firebase yarn:dev:next yarn:dev:cy",
+    "dev": "concurrently yarn:dev:firebase yarn:dev:next yarn:dev:cy",
     "build:sw": "cd sw && webpack",
     "build:next": "next build",
     "build:analyze": "cross-env ANALYZE=true next build",
     "build:firebase": "cd firebase/functions && npm install && npm run build",
-    "build:ci": "cross-env NODE_ENV=test concurrently yarn:build:sw yarn:build:next",
-    "build": "cross-env NODE_ENV=production concurrently yarn:build:sw yarn:build:next",
+    "build": "concurrently yarn:build:sw yarn:build:next",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "style": "pretty-quick --staged"
   },
@@ -27,7 +26,9 @@
     "Tutorbook",
     "COVID-19",
     "Tutoring",
-    "Next.js"
+    "Typescript",
+    "Next.js",
+    "Sass"
   ],
   "files": [
     "src"

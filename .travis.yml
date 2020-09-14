@@ -29,3 +29,6 @@ before_script:
 script:
   - yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
   - yarn start:cy
+
+env:
+  - NODE_ENV=test
