@@ -6,7 +6,6 @@
 [![Integration Tests](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/i6oq5i/develop&style=flat)](https://dashboard.cypress.io/projects/i6oq5i/runs)
 [![Coverage Status](https://img.shields.io/codecov/c/gh/tutorbookapp/tutorbook)](https://codecov.io/gh/tutorbookapp/tutorbook)
 [![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
-[![Typescript](https://img.shields.io/badge/uses-typescript-orange?styles=flat)](https://www.typescriptlang.org)
 
 **[Tutorbook](https://tutorbook.org) is the best way to manage tutoring and
 mentoring programs (virtually).**
