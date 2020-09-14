@@ -19,7 +19,7 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_d8d0a41d2890_key -iv $encrypted_d8d0a41d2890_iv -in firebase/functions/.runtimeconfig.json.enc -out firebase/functions/.runtimeconfig.json -d
 
 install:
-  - yarn
+  - yarn install --immutable --immutable-cache
   - cd firebase/functions
   - npm install
 
