@@ -1,7 +1,7 @@
 describe('Login page', () => {
   beforeEach(() => {
-    cy.visit('/login');
     cy.logout();
+    cy.visit('/login');
   });
 
   it('contains greeting and links', () => {
