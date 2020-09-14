@@ -1,27 +1,44 @@
 const path = require('path');
 const dotenv = require('dotenv');
 
-const env = 'test';
+const env = process.env.NODE_ENV || 'test';
+console.log(`Loading ${env} environment variables...`);
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}`) });
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}.local`) });
 
+console.log(
+  'Using Firebase configuration:',
+  JSON.stringify(
+    {
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    },
+    null,
+    2
+  )
+);
+
 const updateSubjects = require('./update-subjects');
+const progress = require('cli-progress');
 const parse = require('csv-parse/lib/sync');
 const equal = require('fast-deep-equal');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const app = admin.initializeApp({
   credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     privateKey: process.env.FIREBASE_ADMIN_KEY.replace(/\\n/g, '\n'),
     clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
   }),
-  projectId: process.env.FIREBASE_PROJECT_ID,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 });
 const db = app.firestore();
+const auth = app.auth();
 
 const getSubjects = (id) => {
   return parse(fs.readFileSync(`../algolia/${id}.csv`), {
@@ -166,38 +183,28 @@ const removePAUSDFromDefault = async () => {
   );
 };
 
-const removePartition = async (partitionId = 'default', dryRun = false) => {
-  const partition = db.collection('partitions').doc(partitionId);
-  const [users, requests, matches] = await Promise.all([
-    partition.collection('users').get(),
-    partition.collection('requests').get(),
-    partition.collection('matches').get(),
-  ]);
-  const updateUsers = users.map(async (user) => {
-    await db.collection('users').doc(user.id).set(user.data());
-  });
-  const updateRequests = requests.map(async (request) => {
-    const doc = db.collection('requests').doc(request.id);
-    await doc.set(request.data());
-    const emails = (await request.ref.collection('emails').get()).docs;
-    await Promise.all(
-      emails.map(async (email) => {
-        await doc.collection('emails').doc(email.id).set(email.data());
-      })
-    );
-  });
-  const updateMatches = matches.map(async (match) => {
-    const doc = db.collection('matches').doc(match.id);
-    await doc.set(match.data());
-    const emails = (await match.ref.collection('emails').get()).docs;
-    await Promise.all(
-      emails.map(async (email) => {
-        await doc.collection('emails').doc(email.id).set(email.data());
-      })
-    );
-  });
-  await Promise.all([updateUsers, updateRequests, updateMatches]);
-  if (!dryRun) await partition.delete();
+const createUsers = async () => {
+  console.log('Fetching users...');
+  const users = (await db.collection('users').get()).docs;
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  console.log(`Creating ${users.length} users...`);
+  let count = 0;
+  bar.start(users.length, count);
+  await Promise.all(
+    users.map(async (user) => {
+      const data = user.data();
+      await auth.createUser({
+        uid: data.id,
+        email: data.email,
+        displayName: data.name,
+        phoneNumber: data.phone || undefined,
+        photoURL: data.photo || undefined,
+      });
+      count++;
+      bar.update(count);
+    })
+  );
+  console.log(`Created ${users.length} users.`);
 };
 
-removePartition('test', true);
+createUsers();
