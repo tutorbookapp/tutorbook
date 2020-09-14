@@ -12,8 +12,9 @@ addons:
 cache:
   yarn: true
   directories:
-    - ~/.cache # Cypress binaries and Firebase emulators
-    - .next/cache # Next.js build
+    - $HOME/.cache/Cypress
+    - $HOME/.cache/firebase/emulators
+    - .next/cache
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_d8d0a41d2890_key -iv $encrypted_d8d0a41d2890_iv -in firebase/functions/.runtimeconfig.json.enc -out firebase/functions/.runtimeconfig.json -d
