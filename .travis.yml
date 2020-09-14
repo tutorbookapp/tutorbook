@@ -1,20 +1,19 @@
-language: node_js
+os: linux
+dist: focal
 
-node_js:
-  - 12.18.3
+language: node_js
+node_js: 12.18.3
 
 addons:
   apt:
     packages:
-      # Required dependency for running Cypress tests.
-      # @see {@link https://docs.cypress.io/guides/guides/continuous-integration.html#Example-travis-yml-config-file}
-      - libgconf-2.4
+      - libgconf-2.4 # Required by Cypress
 
 cache:
   yarn: true
   directories:
-    # Cache the Cypress binary.
-    - ~/.cache
+    - ~/.cache # Cypress binary
+    - .next/cache # Next.js build
 
 install:
   - yarn
@@ -24,9 +23,9 @@ install:
 before_script:
   - npm run build
   - cd ../../
+  - yarn start:firebase &>/dev/null & yarn wait-on http://localhost:8080
   - yarn build:ci
 
 script:
-  - yarn start:firebase &>/dev/null & yarn wait-on http://localhost:8080
-  - yarn start:client &>/dev/null & yarn wait-on http://localhost:3000
+  - yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
   - yarn start:cy
