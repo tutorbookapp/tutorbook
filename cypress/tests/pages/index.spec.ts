@@ -1,4 +1,4 @@
-import user from '../fixtures/user.json';
+import user from 'fixtures/user.json';
 
 describe('Landing page', () => {
   beforeEach(() => {

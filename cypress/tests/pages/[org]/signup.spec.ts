@@ -1,5 +1,5 @@
-import org from '../../fixtures/org.json';
-import user from '../../fixtures/user.json';
+import org from 'fixtures/org.json';
+import user from 'fixtures/user.json';
 
 describe('Signup page', () => {
   beforeEach(() => {

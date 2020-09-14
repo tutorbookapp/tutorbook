@@ -12,7 +12,7 @@ addons:
 cache:
   yarn: true
   directories:
-    - ~/.cache # Cypress binary and Firebase emulators
+    - ~/.cache # Cypress binaries and Firebase emulators
     - .next/cache # Next.js build
 
 before_install:

@@ -1,6 +1,6 @@
-import request from '../../fixtures/request.json';
-import user from '../../fixtures/user.json';
-import org from '../../fixtures/org.json';
+import request from 'fixtures/request.json';
+import user from 'fixtures/user.json';
+import org from 'fixtures/org.json';
 
 describe('Search page', () => {
   beforeEach(() => {
