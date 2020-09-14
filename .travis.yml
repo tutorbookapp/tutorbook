@@ -30,7 +30,8 @@ before_script:
   - yarn build
 
 script:
-  - yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
+  - yarn start:next & yarn wait-on http://localhost:3000
+  - cat package.json
   - yarn start:cy
 
 env:
