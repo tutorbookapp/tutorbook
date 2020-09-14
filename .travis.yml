@@ -38,4 +38,9 @@ after_script:
   - bash <(curl -s https://codecov.io/bash)
 
 env:
-  - NODE_ENV=test
+  global:
+    - NODE_ENV=test
+  jobs:
+    - PARALLEL_IDX=0
+    - PARALLEL_IDX=1
+    - PARALLEL_IDX=3

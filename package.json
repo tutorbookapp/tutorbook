@@ -8,7 +8,7 @@
   "scripts": {
     "start:firebase": "firebase emulators:start --project test-tutorbook",
     "start:next": "cross-env NODE_OPTIONS='--inspect' next start -p 3000",
-    "start:cy": "cypress run --record",
+    "start:cy": "cypress run --record --parallel",
     "start": "concurrently yarn:start:firebase yarn:start:next",
     "dev:firebase": "firebase emulators:start --project development-tutorbook",
     "dev:next": "cross-env NODE_OPTIONS='--inspect' next dev -p 3000",
