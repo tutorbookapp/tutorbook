@@ -31,7 +31,6 @@ before_script:
 
 script:
   - yarn start:next & yarn wait-on http://localhost:3000
-  - cat package.json
   - yarn start:cy
 
 env:
