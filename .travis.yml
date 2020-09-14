@@ -10,10 +10,10 @@ addons:
       - libgconf-2.4 # Required by Cypress
 
 cache:
-  yarn: true
   directories:
     - $HOME/.cache/Cypress
     - $HOME/.cache/firebase/emulators
+    - $HOME/.cache/yarn
     - .next/cache
 
 before_install:
@@ -27,11 +27,11 @@ install:
 before_script:
   - npm run build
   - cd ../../
-  - yarn start:firebase & yarn wait-on http-get://localhost:8080
+  - yarn start:firebase &>/dev/null & yarn wait-on http-get://localhost:8080
   - yarn build
 
 script:
-  - yarn start:next & yarn wait-on http://localhost:3000
+  - yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
   - yarn start:cy
 
 after_script:
