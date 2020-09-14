@@ -31,11 +31,11 @@ defaults: &defaults
   before_script:
     - npm run build
     - cd ../../
-    - yarn start:firebase &>/dev/null & yarn wait-on http-get://localhost:8080
+    - yarn start:firebase & yarn wait-on http-get://localhost:8080
     - yarn build
 
   script:
-    - yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
+    - yarn start:next & yarn wait-on http://localhost:3000
     - yarn cypress run --record --parallel --headless --group $BROWSER -b $BROWSER
 
   after_script:
@@ -55,7 +55,7 @@ firefox: &firefox
 
 electron: &electron
   env:
-    - BROWSER=firefox
+    - BROWSER=electron
 
 jobs:
   include:
