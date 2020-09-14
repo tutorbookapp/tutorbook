@@ -24,6 +24,7 @@ const updateSubjects = require('./update-subjects');
 const progress = require('cli-progress');
 const parse = require('csv-parse/lib/sync');
 const equal = require('fast-deep-equal');
+const to = require('await-to-js');
 const fs = require('fs');
 const admin = require('firebase-admin');
 const app = admin.initializeApp({
@@ -194,7 +195,7 @@ const createUsers = async () => {
     users.map(async (user) => {
       const data = user.data();
       await auth.createUser({
-        uid: data.id,
+        uid: data.id || user.id,
         email: data.email,
         displayName: data.name,
         phoneNumber: data.phone || undefined,
