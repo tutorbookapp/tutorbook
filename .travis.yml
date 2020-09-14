@@ -37,7 +37,7 @@ defaults: &defaults
 
   script:
     - yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
-    - yarn cypress run --record --parallel --headless --group $BROWSER -b $BROWSER
+    - yarn start:cy --record --parallel --headless --group $BROWSER -b $BROWSER
 
   after_script:
     - bash <(curl -s https://codecov.io/bash)
