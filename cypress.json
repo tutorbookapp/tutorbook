@@ -5,6 +5,9 @@
   "supportFile": "cypress/support/index.ts",
   "integrationFolder": "cypress/tests/pages",
   "componentFolder": "cypress/tests/components",
+  "retries": {
+    "runMode": 3
+  },
   "env": {
     "codeCoverage": {
       "url": "/api/coverage"
