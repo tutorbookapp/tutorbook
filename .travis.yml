@@ -27,7 +27,7 @@ before_script:
   - npm run build
   - cd ../../
   - yarn start:firebase & yarn wait-on http-get://localhost:8080
-  - yarn build:ci
+  - yarn build
 
 script:
   - yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
