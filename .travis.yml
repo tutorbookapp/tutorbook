@@ -23,7 +23,7 @@ install:
 before_script:
   - npm run build
   - cd ../../
-  - yarn start:firebase &>/dev/null & yarn wait-on http://localhost:8080
+  - yarn start:firebase & yarn wait-on http-get://localhost:8080
   - yarn build:ci
 
 script:
