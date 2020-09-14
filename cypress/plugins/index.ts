@@ -116,7 +116,6 @@ export default function plugins(
       return null;
     },
     async login(uid?: string): Promise<string> {
-      console.log(`Logging in (${uid || (global.user || {}).id || ''})...`);
       return auth.createCustomToken(uid || (global.user || {}).id || '');
     },
   });
