@@ -33,5 +33,8 @@ script:
   - yarn start:next & yarn wait-on http://localhost:3000
   - yarn start:cy
 
+after_script:
+  - bash <(curl -s https://codecov.io/bash)
+
 env:
   - NODE_ENV=test
