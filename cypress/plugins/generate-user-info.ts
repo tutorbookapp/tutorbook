@@ -33,13 +33,15 @@ declare global {
  * We can't use `Cypress.env` variables because they are local to each test.
  * @see {@link https://docs.cypress.io/api/cypress-api/env.html#Why-is-it-Cypress-env-and-not-cy-env}
  */
-export default function generateUserInfo(): UserInfo {
+export default function generateUserInfo(
+  overrides?: Record<string, unknown>
+): UserInfo {
   const id = randId();
   const phone = `+1${randPhone()}`;
   const email = `${user.name
     .toLowerCase()
     .split(' ')
     .join('-')}-${id}@example.com`;
-  global.user = { id, phone, email };
-  return { id, phone, email };
+  global.user = { id, phone, email, ...overrides };
+  return { id, phone, email, ...overrides };
 }

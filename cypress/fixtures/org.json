@@ -31,6 +31,7 @@
       "url": "https://indiehackers.com/product/tutorbook"
     }
   ],
+  "profiles": ["name", "email", "photo", "bio", "subjects"],
   "domains": [],
   "aspects": ["mentoring", "tutoring"],
   "signup": {

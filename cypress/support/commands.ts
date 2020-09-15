@@ -15,7 +15,7 @@ declare global {
     interface Chainable {
       login: (uid?: string) => Chainable<null>;
       logout: () => Chainable<null>;
-      setup: () => Chainable<undefined>;
+      setup: (overrides?: Record<string, unknown>) => Chainable<undefined>;
     }
   }
 }
@@ -42,13 +42,11 @@ function loginWithToken(token: string): Promise<null> {
 }
 
 function login(uid?: string): Cypress.Chainable<null> {
-  cy.log('logging in');
-  if (firebase.auth().currentUser) throw new Error('User already logged in.');
+  if (firebase.auth().currentUser) cy.logout();
   return cy.task('login', uid).then((token: string) => loginWithToken(token));
 }
 
 function logout(): Cypress.Chainable<null> {
-  cy.log('logging out');
   return cy.wrap(
     new Promise<null>((resolve, reject): void => {
       firebase.auth().onAuthStateChanged((auth: unknown): void => {
@@ -59,8 +57,8 @@ function logout(): Cypress.Chainable<null> {
   );
 }
 
-function setup(): Cypress.Chainable<null> {
-  return cy.task('clear').then(() => cy.task('seed'));
+function setup(overrides?: Record<string, unknown>): Cypress.Chainable<null> {
+  return cy.task('clear').then(() => cy.task('seed', overrides));
 }
 
 Cypress.Commands.add('setup', setup);

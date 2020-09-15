@@ -3,13 +3,31 @@ import org from 'fixtures/org.json';
 import request from 'fixtures/request.json';
 import user from 'fixtures/user.json';
 
+function waitForResults(loggedIn: boolean = true) {
+  cy.wait('@list-users');
+  if (loggedIn) {
+    cy.get('[data-cy=results] li').should('contain', user.name);
+  } else {
+    cy.get('[data-cy=results] li')
+      .should('not.contain', user.name)
+      .and('contain', user.username);
+  }
+  cy.get('[data-cy=results] li')
+    .should('contain', user.bio)
+    .find('img')
+    .should('have.attr', 'src', user.photo);
+}
+
 describe('Search page', () => {
   beforeEach(() => {
-    cy.setup();
-    cy.logout();
+    cy.server();
+    cy.route('GET', '/api/users*').as('list-users');
+    cy.route('GET', '/api/account').as('get-account');
   });
 
-  it('restricts who can see org data', () => {
+  it('prevents unauthorized access to org data', () => {
+    cy.setup();
+    cy.logout();
     cy.visit(`/${gunn.id}/search`, {
       onBeforeLoad(win: Window): void {
         cy.stub(win, 'open');
@@ -20,6 +38,7 @@ describe('Search page', () => {
       .should('have.css', 'cursor', 'not-allowed')
       .and('have.attr', 'disabled');
 
+    cy.wait('@get-account');
     cy.get('.mdc-dialog--open')
       .as('dialog')
       .should('contain', 'Login to Gunn High School');
@@ -28,7 +47,8 @@ describe('Search page', () => {
       .should(
         'have.text',
         'You must be a part of Gunn High School to see these search results. ' +
-          'Please login with your Gunn High School email address and try again.'
+          'Please login with your @pausd.us or @pausd.org email address and ' +
+          'try again.'
       );
 
     cy.get('@dialog').click('left');
@@ -53,7 +73,45 @@ describe('Search page', () => {
 
   // TODO: Create test where the user is already logged in (and then ping
   // SendGrid to ensure that our email notifications were sent).
-  it('searches and requests users', () => {
+  it('allows authorized access to org data', () => {
+    cy.setup();
+    cy.login();
+    cy.visit(`/${gunn.id}/search`);
+
+    cy.wait('@get-account');
+    cy.get('.mdc-dialog--open', { timeout: 0 }).should('not.exist');
+
+    waitForResults();
+
+    cy.get('[data-cy=results] li').first().click();
+    cy.get('.mdc-dialog--open')
+      .should('be.visible')
+      .and('contain', 'Send request')
+      .contains('Your phone number')
+      .should('not.exist');
+  });
+
+  it('collects phone before sending requests', () => {
+    cy.setup({ phone: undefined });
+    cy.login();
+    cy.visit(`/${gunn.id}/search`);
+    cy.wait('@get-account');
+
+    waitForResults();
+
+    cy.get('[data-cy=results] li').first().click();
+    cy.get('.mdc-dialog--open')
+      .should('be.visible')
+      .contains('Your phone number')
+      .find('input')
+      .should('have.value', '')
+      .and('have.attr', 'type', 'tel')
+      .and('have.attr', 'required');
+  });
+
+  it('signs users up and sends requests', () => {
+    cy.setup();
+    cy.logout();
     // TODO: Refactor the `search.spec.ts` into two specs (one for the default
     // search view and one for when a user slug is passed along with the URL).
     cy.visit(`/${org.id}/search`, {
@@ -61,14 +119,9 @@ describe('Search page', () => {
         cy.stub(win, 'open');
       },
     });
+    cy.wait('@get-account');
 
-    cy.get('[data-cy=results] li')
-      .first()
-      .should('not.contain', user.name)
-      .and('contain', user.username)
-      .and('contain', user.bio)
-      .find('img')
-      .should('have.attr', 'src', user.photo);
+    waitForResults(false);
 
     cy.contains('button', 'Any subjects').click();
     cy.focused()
@@ -96,9 +149,10 @@ describe('Search page', () => {
       .children('.mdc-chip')
       .should('have.length', 1)
       .and('contain', 'Computer Science');
-    cy.contains('What specifically do you need help with?').type(
-      request.message
-    );
+    cy.contains('What specifically do you need help with?')
+      .click()
+      .should('have.class', 'mdc-text-field--focused')
+      .type(request.message);
 
     cy.contains('button', 'Signup and send').click().should('be.disabled');
     cy.get('[data-cy=loader]').should('be.visible');

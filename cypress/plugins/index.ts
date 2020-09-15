@@ -62,10 +62,13 @@ declare global {
   /* eslint-disable-next-line @typescript-eslint/no-namespace */
   namespace Cypress {
     interface Chainable {
-      task(event: 'generateUserInfo'): Chainable<UserInfo>;
+      task(
+        event: 'generateUserInfo',
+        overrides?: Record<string, unknown>
+      ): Chainable<UserInfo>;
       task(event: 'clear'): Chainable<null>;
-      task(event: 'seed'): Chainable<null>;
-      task(event: 'login', arg?: string): Chainable<string>;
+      task(event: 'seed', overrides?: Record<string, unknown>): Chainable<null>;
+      task(event: 'login', uid?: string): Chainable<string>;
     }
   }
 }
@@ -83,7 +86,6 @@ export default function plugins(
         const { users } = await auth.getUsers([
           { uid: global.user.id },
           { email: global.user.email },
-          { phoneNumber: global.user.phone },
         ]);
         users.forEach(({ uid }) => userIds.add(uid));
       }
@@ -98,8 +100,9 @@ export default function plugins(
       ]);
       return null;
     },
-    async seed(): Promise<null> {
-      const userData = { ...user, ...generateUserInfo() };
+    async seed(overrides?: Record<string, unknown>): Promise<null> {
+      const info = generateUserInfo(overrides);
+      const userData = { ...user, ...info, ...overrides };
       const userSearchData = { ...userData, objectID: userData.id };
       const gunnData = { ...gunn, members: [userData.id] };
       const orgData = { ...org, members: [userData.id] };
