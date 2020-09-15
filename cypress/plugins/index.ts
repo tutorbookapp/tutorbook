@@ -6,6 +6,7 @@ import axios from 'axios';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
 
+import gunn from '../fixtures/gunn.json';
 import org from '../fixtures/org.json';
 import user from '../fixtures/user.json';
 
@@ -100,6 +101,7 @@ export default function plugins(
     async seed(): Promise<null> {
       const userData = { ...user, ...generateUserInfo() };
       const userSearchData = { ...userData, objectID: userData.id };
+      const gunnData = { ...gunn, members: [userData.id] };
       const orgData = { ...org, members: [userData.id] };
       await Promise.all([
         auth.createUser({
@@ -111,6 +113,7 @@ export default function plugins(
         }),
         index.saveObject(userSearchData),
         db.collection('users').doc(userData.id).set(userData),
+        db.collection('orgs').doc(gunnData.id).set(gunnData),
         db.collection('orgs').doc(orgData.id).set(orgData),
       ]);
       return null;

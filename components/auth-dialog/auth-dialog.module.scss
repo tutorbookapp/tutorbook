@@ -1,0 +1,45 @@
+@use 'sass:map';
+@use 'styles/config';
+@use 'styles/common';
+@use 'styles/typography';
+
+.wrapper {
+  max-height: calc(100vh - 32px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .nav {
+    @include typography.typography('headline6');
+    padding: 24px 48px;
+    border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+    flex: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .form {
+    height: 100%;
+    overflow: auto;
+    max-width: 450px;
+    box-sizing: border-box;
+    margin: 32px auto;
+    padding: 0 48px;
+
+    .body {
+      @include typography.typography('body1');
+      margin: 0;
+    }
+
+    .btn {
+      margin: 24px 0 0;
+      width: 100%;
+    }
+
+    .error {
+      @include common.error;
+    }
+  }
+}

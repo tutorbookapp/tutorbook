@@ -1,12 +1,21 @@
+import gunn from 'fixtures/gunn.json';
+import org from 'fixtures/org.json';
 import request from 'fixtures/request.json';
 import user from 'fixtures/user.json';
-import org from 'fixtures/org.json';
 
 describe('Search page', () => {
   beforeEach(() => {
     cy.setup();
     cy.logout();
+  });
 
+  it.only('restricts who can see org data', () => {
+    cy.visit(`/${gunn.id}/search`);
+  });
+
+  // TODO: Create test where the user is already logged in (and then ping
+  // SendGrid to ensure that our email notifications were sent).
+  it('searches and requests users', () => {
     // TODO: Refactor the `search.spec.ts` into two specs (one for the default
     // search view and one for when a user slug is passed along with the URL).
     cy.visit(`/${org.id}/search`, {
@@ -14,11 +23,7 @@ describe('Search page', () => {
         cy.stub(win, 'open');
       },
     });
-  });
 
-  // TODO: Create test where the user is already logged in (and then ping
-  // SendGrid to ensure that our email notifications were sent).
-  it('searches and requests users', () => {
     cy.get('[data-cy=results] li')
       .first()
       .should('not.contain', user.name)

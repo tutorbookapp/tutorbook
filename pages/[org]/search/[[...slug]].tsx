@@ -5,19 +5,23 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 import equal from 'fast-deep-equal';
+import minimatch from 'minimatch';
 
 import { QueryHeader } from 'components/navigation';
 import Page from 'components/page';
+import AuthDialog from 'components/auth-dialog';
 import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
 import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
 import { db } from 'lib/api/helpers/firebase';
 import { ListUsersRes } from 'lib/api/list-users';
+import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 import Utils from 'lib/utils';
 
 import common from 'locales/en/common.json';
+import login from 'locales/en/login.json';
 import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
 import search from 'locales/en/search.json';
@@ -28,15 +32,46 @@ interface SearchPageProps {
 }
 
 function SearchPage({ org, user }: SearchPageProps): JSX.Element {
+  const { user: currentUser, loggedIn } = useUser();
   const { query: params } = useRouter();
 
   const [query, setQuery] = useState<UsersQuery>(
     UsersQuery.fromURLParams(params)
   );
+  const [auth, setAuth] = useState<boolean>(false);
+  const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
   const [viewing, setViewing] = useState<UserJSON | undefined>(user);
 
-  const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
+  const { data, isValidating } = useSWR<ListUsersRes>(
+    canSearch ? query.endpoint : null
+  );
+
+  /**
+   * If the user isn't a part of this org, attempt to add them using the
+   * `/api/users` endpoint. If that endpoint errors, show an undismissable
+   * dialog explaining the error (includes an org-configurable prompt too).
+   * @see {@link https://github.com/tutorbookapp/tutorbook/issues/115}
+   */
+  useEffect(() => {
+    setCanSearch(() => {
+      if (!org) {
+        console.log('No org. Skipped search.');
+        return false;
+      }
+      if (currentUser.orgs.includes(org.id)) {
+        console.log('Member of org. Started search.');
+        return true;
+      }
+      if (org.domains.some((ptn) => minimatch(currentUser.email, ptn))) {
+        console.log('Email matched domain restrictions. Started search.');
+        return true;
+      }
+      console.log('Not authorized. Showing dialog...');
+      setAuth(true);
+      return false;
+    });
+  }, [loggedIn, currentUser, org]);
 
   useEffect(() => {
     if (!org || !org.id) return;
@@ -79,6 +114,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
         query={query}
         onChange={setQuery}
       />
+      {auth && <AuthDialog org={org} />}
       {viewing && (
         <RequestDialog
           user={User.fromJSON(viewing)}
@@ -125,4 +161,10 @@ export const getStaticPaths: GetStaticPaths<SearchPageQuery> = async () => {
   return { paths, fallback: true };
 };
 
-export default withI18n(SearchPage, { common, search, query3rd, match3rd });
+export default withI18n(SearchPage, {
+  common,
+  login,
+  search,
+  query3rd,
+  match3rd,
+});

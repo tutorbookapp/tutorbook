@@ -18658,6 +18658,7 @@ resolve@1.1.7:
     identity-obj-proxy: ^3.0.0
     istanbul-lib-coverage: ^3.0.0
     jest: ^26.1.0
+    minimatch: ^3.0.4
     nanoid: ^3.1.12
     next: ^9.5.3
     next-images: ^1.4.0

@@ -3,5 +3,8 @@
   "no-results-body": "We couldn't find anyone matching those filters. But here are some suggestions:",
   "any-subjects": "Any subjects",
   "any-availability": "Any availability",
-  "any-langs": "Any languages"
+  "any-langs": "Any languages",
+  "login-header": "Login to {{name}}",
+  "login-body": "You must be a part of {{name}} to see these search results. Please login with your {{name}} email address and try again.",
+  "login-btn": "Login with Google"
 }
