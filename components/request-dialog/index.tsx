@@ -1,4 +1,11 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Dialog } from '@rmwc/dialog';
@@ -22,6 +29,8 @@ import {
   Person,
   SocialInterface,
   User,
+  UserJSON,
+  OrgJSON,
 } from 'lib/model';
 
 import styles from './request-dialog.module.scss';
@@ -31,6 +40,7 @@ export interface RequestDialogProps {
   subjects: string[];
   aspect: Aspect;
   user: User;
+  org?: OrgJSON;
 }
 
 export default function RequestDialog({
@@ -38,6 +48,7 @@ export default function RequestDialog({
   onClosed,
   aspect,
   user,
+  org,
 }: RequestDialogProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
@@ -45,10 +56,11 @@ export default function RequestDialog({
   const [error, setError] = useState<string | undefined>();
 
   const { t } = useTranslation();
-  const { user: currentUser } = useUser();
+  const { user: currentUser, updateUser } = useUser();
 
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
   const [message, setMessage] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
 
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
@@ -80,6 +92,13 @@ export default function RequestDialog({
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setMessage(event.currentTarget.value);
   }, []);
+  const onPhoneChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+    setPhone(event.currentTarget.value);
+  }, []);
+
+  const phoneRequired = useMemo(() => {
+    return org ? org.profiles.includes('phone') : false;
+  }, [org]);
 
   // Signup the user via a Google Popup window if they aren't current logged in
   // **before** sending the request (this will trigger an update app-wide).
@@ -96,6 +115,43 @@ export default function RequestDialog({
           );
           return;
         }
+      } else if (!currentUser.phone && phoneRequired) {
+        const [err, res] = await to<
+          AxiosResponse<UserJSON>,
+          AxiosError<ApiError>
+        >(
+          axios.put(`/api/users/${currentUser.id}`, {
+            ...currentUser.toJSON(),
+            phone,
+          })
+        );
+        if (err && err.response) {
+          setLoading(false);
+          setError(
+            `An error occurred while adding your phone number. ${Utils.period(
+              err.response.data.msg || err.message
+            )}`
+          );
+          return;
+        }
+        if (err && err.request) {
+          setLoading(false);
+          setError(
+            'An error occurred while adding your phone number. Please check ' +
+              'your Internet connection and try again.'
+          );
+          return;
+        }
+        if (err) {
+          setLoading(false);
+          setError(
+            `An error occurred while adding your phone number. ${Utils.period(
+              err.message
+            )} Please check your Internet connection and try again.`
+          );
+          return;
+        }
+        await updateUser(User.fromJSON((res as AxiosResponse<UserJSON>).data));
       }
       const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<ApiError>>(
         axios.post('/api/matches', match.current.toJSON())
@@ -125,7 +181,7 @@ export default function RequestDialog({
         setTimeout(() => setOpen(false), 1000);
       }
     },
-    [currentUser]
+    [currentUser, phoneRequired, phone, updateUser]
   );
 
   return (
@@ -174,6 +230,17 @@ export default function RequestDialog({
           </p>
           <h6 className={styles.header}>{t('common:request')}</h6>
           <form className={styles.form} onSubmit={onSubmit}>
+            {!currentUser.phone && phoneRequired && (
+              <TextField
+                label={t('match3rd:phone')}
+                value={phone}
+                onChange={onPhoneChange}
+                className={styles.field}
+                type='tel'
+                outlined
+                required
+              />
+            )}
             <SubjectSelect
               required
               outlined

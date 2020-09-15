@@ -2,6 +2,7 @@ import * as admin from 'firebase-admin';
 
 import { isAccount, Account, AccountInterface } from './account';
 import { isAspect, Aspect } from './aspect';
+import { UserInterface } from './user';
 import construct from './construct';
 
 type DocumentData = admin.firestore.DocumentData;
@@ -82,16 +83,18 @@ export interface ZoomAccount {
  * @property home - Configuration for the org's unique custom landing homepage.
  * @property domains - Array of valid email domains that can access this org's
  * data (e.g. `pausd.us` and `pausd.org`).
+ * @property profiles - Array of required profile fields (e.g. `phone`).
  * @property [zoom] - This org's Zoom OAuth config. Used to create meetings and
  * (optionally) users.
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
   aspects: Aspect[];
+  domains: string[];
+  profiles: (keyof UserInterface | 'subjects')[];
+  zoom?: ZoomAccount;
   signup: SignupPageConfig;
   home: HomePageConfig;
-  domains: string[];
-  zoom?: ZoomAccount;
 }
 
 export type OrgJSON = Omit<OrgInterface, 'zoom'> & { zoom: ZoomAccount | null };
@@ -111,6 +114,18 @@ export class Org extends Account implements OrgInterface {
   public members: string[] = [];
 
   public aspects: Aspect[] = ['tutoring'];
+
+  public domains: string[] = [];
+
+  public profiles: (keyof UserInterface | 'subjects')[] = [
+    'name',
+    'email',
+    'photo',
+    'bio',
+    'subjects',
+  ];
+
+  public zoom?: ZoomAccount;
 
   public signup: SignupPageConfig = {
     en: {
@@ -148,10 +163,6 @@ export class Org extends Account implements OrgInterface {
         'then set up via email.',
     },
   };
-
-  public domains: string[] = [];
-
-  public zoom?: ZoomAccount;
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);

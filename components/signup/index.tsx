@@ -142,7 +142,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               onChange={onNameChange}
               className={styles.field}
               outlined
-              required
+              required={org ? org.profiles.includes('name') : true}
             />
             <TextField
               label={t('user3rd:email')}
@@ -151,7 +151,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               className={styles.field}
               type='email'
               outlined
-              required
+              required={org ? org.profiles.includes('email') : true}
             />
             <TextField
               label={t('user3rd:phone')}
@@ -160,6 +160,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               className={styles.field}
               type='tel'
               outlined
+              required={org ? org.profiles.includes('phone') : false}
             />
             <PhotoInput
               label={t('user3rd:photo')}
@@ -167,6 +168,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               onChange={onPhotoChange}
               className={styles.field}
               outlined
+              required={org ? org.profiles.includes('photo') : true}
             />
           </div>
           <div className={styles.divider} />
@@ -178,7 +180,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               onChange={onSubjectsChange}
               className={styles.field}
               aspect={aspect}
-              required
+              required={org ? org.profiles.includes('subjects') : true}
               outlined
             />
             <TextField
@@ -187,7 +189,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               value={user.bio}
               onChange={onBioChange}
               className={styles.field}
-              required
+              required={org ? org.profiles.includes('bio') : true}
               outlined
               rows={8}
               textarea
