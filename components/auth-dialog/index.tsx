@@ -1,4 +1,4 @@
-import { useCallback, useState, FormEvent } from 'react';
+import { useCallback, useState } from 'react';
 import { Dialog } from '@rmwc/dialog';
 import { TextFieldHelperText } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
@@ -9,6 +9,7 @@ import Loader from 'components/loader';
 
 import { OrgJSON } from 'lib/model';
 import { signupWithGoogle } from 'lib/account/signup';
+import Utils from 'lib/utils';
 
 import styles from './auth-dialog.module.scss';
 
@@ -23,21 +24,15 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
   const onClick = useCallback(async () => {
     setError(undefined);
     setLoggingIn(true);
-    const [err] = await to(signupWithGoogle());
+    const gsuite = org && org.domains.length;
+    const [err] = await to(signupWithGoogle(undefined, undefined, gsuite));
     if (err) {
       setLoggingIn(false);
       setError(err);
     } else {
       setLoggingIn(false);
     }
-  }, []);
-  const onSubmit = useCallback(
-    (event: FormEvent) => {
-      event.preventDefault();
-      return onClick();
-    },
-    [onClick]
-  );
+  }, [org]);
 
   const { t } = useTranslation();
 
@@ -48,9 +43,17 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
         <div className={styles.nav}>
           {t('search:login-header', { name: org ? org.name : 'Organization' })}
         </div>
-        <form className={styles.form} onSubmit={onSubmit}>
+        <div className={styles.form}>
           <p className={styles.body}>
-            {t('search:login-body', { name: org ? org.name : 'Organization' })}
+            {t('search:login-body', {
+              name: org ? org.name : 'this organization',
+              domains: org
+                ? Utils.join(
+                    org.domains.map((domain) => `@${domain}`),
+                    'or'
+                  )
+                : 'organization',
+            })}
           </p>
           <Button
             className={styles.btn}
@@ -63,6 +66,7 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
           />
           {!!error && (
             <TextFieldHelperText
+              data-cy='error'
               persistent
               validationMsg
               className={styles.error}
@@ -70,7 +74,7 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
               {t('login:error', { error: error.message })}
             </TextFieldHelperText>
           )}
-        </form>
+        </div>
       </div>
     </Dialog>
   );

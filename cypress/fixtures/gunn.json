@@ -23,7 +23,7 @@
       "url": "https://www.linkedin.com/company/henry-m-gunn-senior-high-school"
     }
   ],
-  "domains": ["**@pausd.us", "**@pausd.org"],
+  "domains": ["pausd.us", "pausd.org"],
   "aspects": ["tutoring"],
   "signup": {
     "en": {

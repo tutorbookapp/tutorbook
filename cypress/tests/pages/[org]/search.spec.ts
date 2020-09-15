@@ -9,8 +9,46 @@ describe('Search page', () => {
     cy.logout();
   });
 
-  it.only('restricts who can see org data', () => {
-    cy.visit(`/${gunn.id}/search`);
+  it('restricts who can see org data', () => {
+    cy.visit(`/${gunn.id}/search`, {
+      onBeforeLoad(win: Window): void {
+        cy.stub(win, 'open');
+      },
+    });
+
+    cy.get('[data-cy=results] li')
+      .should('have.css', 'cursor', 'not-allowed')
+      .and('have.attr', 'disabled');
+
+    cy.get('.mdc-dialog--open')
+      .as('dialog')
+      .should('contain', 'Login to Gunn High School');
+    cy.get('@dialog')
+      .find('p')
+      .should(
+        'have.text',
+        'You must be a part of Gunn High School to see these search results. ' +
+          'Please login with your Gunn High School email address and try again.'
+      );
+
+    cy.get('@dialog').click('left');
+    cy.get('@dialog').should('have.class', 'mdc-dialog--open');
+    cy.get('@dialog').trigger('keyup', { keyCode: 27 });
+    cy.get('@dialog').should('have.class', 'mdc-dialog--open');
+
+    cy.contains('button', 'Continue with Google').click().should('be.disabled');
+    cy.get('[data-cy=loader]').should('be.visible');
+
+    cy.window().its('open').should('be.called');
+
+    cy.get('[data-cy=loader]').should('not.be.visible');
+    cy.get('[data-cy=error]')
+      .should('be.visible')
+      .and('contain', 'Unable to establish a connection with the popup.');
+
+    cy.get('[data-cy=results] li')
+      .should('have.css', 'cursor', 'not-allowed')
+      .and('have.attr', 'disabled');
   });
 
   // TODO: Create test where the user is already logged in (and then ping

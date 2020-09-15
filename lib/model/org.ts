@@ -80,8 +80,8 @@ export interface ZoomAccount {
  * focused on `tutoring` or `mentoring`). The first one listed is the default.
  * @property signup - Configuration for the org's unique custom sign-up page.
  * @property home - Configuration for the org's unique custom landing homepage.
- * @property domains - Array of valid email domains (that can access this org's
- * data) in minimatch format (e.g. `**@pausd.us` for PAUSD).
+ * @property domains - Array of valid email domains that can access this org's
+ * data (e.g. `pausd.us` and `pausd.org`).
  * @property [zoom] - This org's Zoom OAuth config. Used to create meetings and
  * (optionally) users.
  */
@@ -149,7 +149,7 @@ export class Org extends Account implements OrgInterface {
     },
   };
 
-  public domains: string[] = ['**'];
+  public domains: string[] = [];
 
   public zoom?: ZoomAccount;
 

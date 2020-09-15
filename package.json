@@ -133,7 +133,6 @@
     "firebase-admin": "^9.0.0",
     "firebase-tools": "^8.10.0",
     "handlebars": "^4.7.6",
-    "minimatch": "^3.0.4",
     "nanoid": "^3.1.12",
     "next": "^9.5.3",
     "next-translate": "^0.17.1",

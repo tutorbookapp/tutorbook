@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 import equal from 'fast-deep-equal';
-import minimatch from 'minimatch';
 
 import { QueryHeader } from 'components/navigation';
 import Page from 'components/page';
@@ -51,26 +50,23 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
    * If the user isn't a part of this org, attempt to add them using the
    * `/api/users` endpoint. If that endpoint errors, show an undismissable
    * dialog explaining the error (includes an org-configurable prompt too).
+   * @todo Add this validation to the back-end as well.
    * @see {@link https://github.com/tutorbookapp/tutorbook/issues/115}
    */
   useEffect(() => {
-    setCanSearch(() => {
-      if (!org) {
-        console.log('No org. Skipped search.');
-        return false;
-      }
-      if (currentUser.orgs.includes(org.id)) {
-        console.log('Member of org. Started search.');
-        return true;
-      }
-      if (org.domains.some((ptn) => minimatch(currentUser.email, ptn))) {
-        console.log('Email matched domain restrictions. Started search.');
-        return true;
-      }
-      console.log('Not authorized. Showing dialog...');
+    if (!org) {
+      setAuth(false);
+      setCanSearch(false);
+    } else if (currentUser.orgs.includes(org.id)) {
+      setAuth(false);
+      setCanSearch(true);
+    } else if (org.domains.some((d) => currentUser.email.endsWith(`@${d}`))) {
+      setAuth(false);
+      setCanSearch(true);
+    } else {
       setAuth(true);
-      return false;
-    });
+      setCanSearch(false);
+    }
   }, [loggedIn, currentUser, org]);
 
   useEffect(() => {

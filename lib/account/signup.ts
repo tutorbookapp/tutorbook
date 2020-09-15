@@ -25,15 +25,26 @@ export async function signup(user: User, parents: User[] = []): Promise<User> {
   return User.fromJSON(data);
 }
 
+/**
+ * @todo Right now, we can only specify a single domain for GSuite users using
+ * Google's OpenID `hd` parameter. That is not enough (e.g. PAUSD uses
+ * `pausd.org` for teachers and `pausd.us` for students), so we merely fallback
+ * to only showing GSuite accounts (guessing that most students and teachers
+ * only have one).
+ * @see {@link https://developers.google.com/identity/protocols/oauth2/openid-connect#authenticationuriparameters}
+ * @see {@link https://firebase.google.com/docs/reference/js/firebase.auth.GoogleAuthProvider#setcustomparameters}
+ */
 export async function signupWithGoogle(
   user?: User,
-  parents?: User[]
+  parents?: User[],
+  gsuite?: boolean
 ): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
 
   const auth = firebase.auth();
   const provider = new firebase.auth.GoogleAuthProvider();
+  if (gsuite) provider.setCustomParameters({ hd: '*' });
   const cred = await auth.signInWithPopup(provider);
 
   if (!cred.user) throw new Error('Did not receive user information.');
