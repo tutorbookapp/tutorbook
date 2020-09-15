@@ -79,6 +79,8 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
       const updated = new UsersQuery({ ...prev });
       if (org && !org.aspects.includes(prev.aspect))
         [updated.aspect] = org.aspects;
+      if (org && prev.orgs.findIndex((o) => o.value === org.id) < 0)
+        updated.orgs.push({ value: org.id, label: org.name });
       if (prev.visible !== true) updated.visible = true;
       if (!equal(prev, updated)) return updated;
       return prev;
