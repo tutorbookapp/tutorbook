@@ -36,7 +36,7 @@ describe('Dashboard page', () => {
       cy.contains('button', 'Account').click();
       cy.get('[data-cy=switcher-list] a')
         .as('accounts')
-        .should('have.length', 2);
+        .should('have.length', 3);
       cy.get('@accounts')
         .eq(0)
         .should('have.text', user.name)
