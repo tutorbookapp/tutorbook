@@ -1,14 +1,8 @@
 import url from 'url';
 
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import to from 'await-to-js';
-
-import { ListUsersRes } from 'lib/api/list-users';
-
 import { Availability, AvailabilityJSON } from '../availability';
-import { Check, User, UserJSON } from '../user';
+import { Check } from '../user';
 import { Aspect } from '../aspect';
-import { ApiError } from '../errors';
 import construct from '../construct';
 
 import { Option, Query, QueryInterface } from './base';

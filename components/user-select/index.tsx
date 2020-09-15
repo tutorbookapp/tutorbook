@@ -6,6 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Select, { SelectControllerProps } from 'components/select';
 
 import { Option, User, UserJSON, UsersQuery } from 'lib/model';
+import { ListUsersRes } from 'lib/api/list-users';
 import { useUser } from 'lib/account';
 
 export interface UserOption extends Option<string> {
@@ -55,25 +56,29 @@ export default function UserSelect({
     return { value: u.id, label: u.name, photo: u.photo };
   }, []);
   const getSuggestions = useCallback(
-    async (query = '') => {
-      const promises: Promise<{ users: User[] }>[] = [];
+    async (query: string = '') => {
+      const promises: Promise<{ data: ListUsersRes }>[] = [];
       if (orgs.length)
         promises.push(
-          new UsersQuery({
-            query,
-            orgs: orgs.map(({ id, name }) => ({ label: name, value: id })),
-          }).search()
+          axios.get<ListUsersRes>(
+            new UsersQuery({
+              query,
+              orgs: orgs.map(({ id, name }) => ({ label: name, value: id })),
+            }).endpoint
+          )
         );
       if (user.id)
         promises.push(
-          new UsersQuery({
-            query,
-            parents: [{ label: user.name, value: user.id }],
-          }).search()
+          axios.get<ListUsersRes>(
+            new UsersQuery({
+              query,
+              parents: [{ label: user.name, value: user.id }],
+            }).endpoint
+          )
         );
       const suggestions: UserOption[] = [];
-      (await Promise.all(promises)).forEach(({ users }) => {
-        users.forEach((u: User) => {
+      (await Promise.all(promises)).forEach(({ data }) => {
+        data.users.forEach((u: UserJSON) => {
           if (suggestions.findIndex(({ value: id }) => id === u.id) < 0)
             suggestions.push(userToOption(u));
         });
