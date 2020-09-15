@@ -122,7 +122,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
       <Search
         query={query}
         results={results}
-        searching={searching}
+        searching={searching || !canSearch}
         onChange={setQuery}
         setViewing={setViewing}
       />
