@@ -58,7 +58,7 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
           <Button
             className={styles.btn}
             onClick={onClick}
-            label={t('login:google')}
+            label={t('search:login-btn')}
             disabled={loggingIn}
             google
             raised
@@ -71,7 +71,7 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
               validationMsg
               className={styles.error}
             >
-              {t('login:error', { error: error.message })}
+              {t('search:login-err', { error: error.message })}
             </TextFieldHelperText>
           )}
         </div>
