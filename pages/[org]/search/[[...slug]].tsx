@@ -20,7 +20,6 @@ import { withI18n } from 'lib/intl';
 import Utils from 'lib/utils';
 
 import common from 'locales/en/common.json';
-import login from 'locales/en/login.json';
 import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
 import search from 'locales/en/search.json';
@@ -54,13 +53,14 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
    * @see {@link https://github.com/tutorbookapp/tutorbook/issues/115}
    */
   useEffect(() => {
-    if (!org) {
+    if (!org || loggedIn === undefined) {
       setAuth(false);
       setCanSearch(false);
-    } else if (currentUser.orgs.includes(org.id)) {
-      setAuth(false);
-      setCanSearch(true);
-    } else if (org.domains.some((d) => currentUser.email.endsWith(`@${d}`))) {
+    } else if (
+      currentUser.orgs.includes(org.id) ||
+      !org.domains.length ||
+      org.domains.some((d: string) => currentUser.email.endsWith(`@${d}`))
+    ) {
       setAuth(false);
       setCanSearch(true);
     } else {
@@ -113,6 +113,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
       {auth && <AuthDialog org={org} />}
       {viewing && (
         <RequestDialog
+          org={org}
           user={User.fromJSON(viewing)}
           aspect={query.aspect}
           onClosed={onClosed}
@@ -157,10 +158,4 @@ export const getStaticPaths: GetStaticPaths<SearchPageQuery> = async () => {
   return { paths, fallback: true };
 };
 
-export default withI18n(SearchPage, {
-  common,
-  login,
-  search,
-  query3rd,
-  match3rd,
-});
+export default withI18n(SearchPage, { common, search, query3rd, match3rd });
