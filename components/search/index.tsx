@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
 import Carousel from 'components/carousel';
 
-import { Callback, User, UsersQuery } from 'lib/model';
+import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
 
 import Form from './form';
 import Result from './result';
@@ -12,10 +12,10 @@ import styles from './search.module.scss';
 
 interface SearchProps {
   onChange: Callback<UsersQuery>;
-  results: ReadonlyArray<User>;
+  results: UserJSON[];
   searching: boolean;
   query: UsersQuery;
-  setViewing: Callback<User | undefined>;
+  setViewing: Callback<UserJSON | undefined>;
 }
 
 export default function Search({
@@ -32,6 +32,8 @@ export default function Search({
   const noResultsQuery = useMemo(() => {
     return new UsersQuery({ aspect: query.aspect, visible: true });
   }, [query.aspect]);
+
+  const onNoResultsClick = useCallback((u: User) => setViewing(u.toJSON()), []);
 
   useEffect(() => {
     const listener = () => {
@@ -60,9 +62,9 @@ export default function Search({
       )}
       {!!results.length && (
         <ul data-cy='results' className={styles.results}>
-          {results.map((res: User) => (
+          {results.map((res: UserJSON) => (
             <Result
-              user={res}
+              user={User.fromJSON(res)}
               key={res.id || uuid()}
               onClick={() => setViewing(res)}
             />
@@ -75,7 +77,7 @@ export default function Search({
             {t('search:no-results-title')}
           </h3>
           <p className={styles.noResultsBody}>{t('search:no-results-body')}</p>
-          <Carousel query={noResultsQuery} onClick={setViewing} />
+          <Carousel query={noResultsQuery} onClick={onNoResultsClick} />
         </div>
       )}
     </div>

@@ -122,28 +122,4 @@ export class UsersQuery extends Query implements UsersQueryInterface {
       availability: Availability.fromJSON(availability),
     });
   }
-
-  public async search(
-    pathname = '/api/users'
-  ): Promise<{ users: User[]; hits: number }> {
-    const [err, res] = await to<
-      AxiosResponse<ListUsersRes>,
-      AxiosError<ApiError>
-    >(axios.get(this.getURL(pathname)));
-    if (err && err.response) {
-      console.error(`[ERROR] Search API responded: ${err.response.data.msg}`);
-      throw new Error(err.response.data.msg);
-    } else if (err && err.request) {
-      console.error('[ERROR] Search API did not respond.');
-      throw new Error('Search API did not respond.');
-    } else if (err) {
-      console.error('[ERROR] While sending request:', err);
-      throw new Error(`While sending request: ${err.message}`);
-    } else {
-      const {
-        data: { users, hits },
-      } = res as AxiosResponse<ListUsersRes>;
-      return { hits, users: users.map((u: UserJSON) => User.fromJSON(u)) };
-    }
-  }
 }
