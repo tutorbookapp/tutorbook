@@ -120,7 +120,6 @@ export class Org extends Account implements OrgInterface {
   public profiles: (keyof UserInterface | 'subjects')[] = [
     'name',
     'email',
-    'photo',
     'bio',
     'subjects',
   ];

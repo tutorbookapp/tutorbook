@@ -168,7 +168,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
               onChange={onPhotoChange}
               className={styles.field}
               outlined
-              required={org ? org.profiles.includes('photo') : true}
+              required={org ? org.profiles.includes('photo') : false}
             />
           </div>
           <div className={styles.divider} />
