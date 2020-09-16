@@ -1,5 +1,5 @@
-import org from 'fixtures/org.json';
-import user from 'fixtures/user.json';
+import org from 'cypress/fixtures/orgs/default.json';
+import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Signup page', () => {
   beforeEach(() => {
@@ -39,86 +39,84 @@ describe('Signup page', () => {
   });
 
   it('signs new volunteers up', () => {
-    cy.task('generateUserInfo').then(({ email, phone }) => {
-      cy.contains('Your name')
-        .children('input')
-        .as('name-input')
-        .type(user.name);
-      cy.contains('Your email address')
-        .children('input')
-        .as('email-input')
-        .should('have.attr', 'type', 'email')
-        .type(email);
-      cy.contains('Your phone number')
-        .children('input')
-        .as('phone-input')
-        .should('have.attr', 'type', 'tel')
-        .type(phone);
+    cy.contains('Your name')
+      .children('input')
+      .as('name-input')
+      .type(volunteer.name);
+    cy.contains('Your email address')
+      .children('input')
+      .as('email-input')
+      .should('have.attr', 'type', 'email')
+      .type(volunteer.email);
+    cy.contains('Your phone number')
+      .children('input')
+      .as('phone-input')
+      .should('have.attr', 'type', 'tel')
+      .type(volunteer.phone);
 
-      cy.contains('Your profile photo')
-        .as('photo-input')
-        .children('input')
-        .should('have.attr', 'type', 'file')
-        .attachFile('user.jpg');
-      cy.get('@photo-input')
-        .next()
-        .as('photo-input-label')
-        .should('have.text', 'Uploading user.jpg...');
+    cy.contains('Your profile photo')
+      .as('photo-input')
+      .children('input')
+      .should('have.attr', 'type', 'file')
+      .attachFile('users/volunteer.jpg');
+    cy.get('@photo-input')
+      .next()
+      .as('photo-input-label')
+      .should('have.text', 'Uploading volunteer.jpg...');
 
-      cy.wait('@upload-photo');
+    cy.wait('@upload-photo');
 
-      cy.get('@photo-input-label').should('have.text', 'Uploaded user.jpg.');
+    cy.get('@photo-input-label').should('have.text', 'Uploaded volunteer.jpg.');
 
-      cy.contains('What are your fields of expertise?')
-        .as('subjects-input')
-        .type('Computer');
+    cy.contains('What are your fields of expertise?')
+      .as('subjects-input')
+      .type('Computer');
 
-      // TODO: Why isn't this `click()` call working? It seems to be working fine
-      // with the `SubjectSelect` controlling the search view.
-      cy.contains('li', 'Computer Science').click({ force: true });
-      cy.get('@subjects-input')
-        .children('.mdc-chip')
-        .should('have.length', 1)
-        .and('contain', 'Computer Science');
+    // TODO: Why isn't this `click()` call working? It seems to be working fine
+    // with the `SubjectSelect` controlling the search view.
+    cy.contains('li', 'Computer Science').click({ force: true });
+    cy.get('@subjects-input')
+      .children('.mdc-chip')
+      .should('have.length', 1)
+      .and('contain', 'Computer Science');
 
-      cy.contains('Qualifications? Interests?').type(user.bio);
+    cy.contains('Qualifications? Interests?').type(volunteer.bio);
 
-      cy.contains('Become a mentor').as('btn').click().should('be.disabled');
-      cy.get('[data-cy=loader]').as('loader').should('be.visible');
+    cy.contains('Become a mentor').as('btn').click().should('be.disabled');
+    cy.get('[data-cy=loader]').as('loader').should('be.visible');
 
-      cy.wait('@create-user');
+    cy.wait('@create-user');
 
-      cy.get('@loader').should('not.be.visible');
-      cy.get('@btn').should('contain', 'Update profile');
+    cy.get('@loader').should('not.be.visible');
+    cy.get('@btn').should('contain', 'Update profile');
 
-      cy.get('header').contains('button', 'Tutors').click();
+    cy.get('header').contains('button', 'Tutors').click();
 
-      cy.get('@name-input').should('have.value', user.name);
-      cy.get('@email-input').should('have.value', email);
-      cy.get('@phone-input').should('have.value', phone);
+    cy.get('@name-input').should('have.value', volunteer.name);
+    cy.get('@email-input').should('have.value', volunteer.email);
+    cy.get('@phone-input').should('have.value', volunteer.phone);
 
-      cy.get('@subjects-input')
-        .should('contain', 'What can you tutor?')
-        .and('have.value', '')
-        .type('Math');
-      cy.contains('li', 'Algebra').click({ force: true });
-      cy.contains('li', 'Geometry').click({ force: true });
-      cy.contains('li', 'Trigonometry').click({ force: true });
-      cy.get('@subjects-input')
-        .children('.mdc-chip')
-        .should('have.length', 3)
-        .and('contain', 'Algebra')
-        .and('contain', 'Geometry')
-        .and('contain', 'Trigonometry');
+    cy.get('@subjects-input')
+      .should('contain', 'What can you tutor?')
+      .and('have.value', '')
+      .type('Math');
+    cy.contains('li', 'Algebra').click({ force: true });
+    cy.contains('li', 'Geometry').click({ force: true });
+    cy.contains('li', 'Trigonometry').click({ force: true });
+    cy.get('@subjects-input')
+      .children('.mdc-chip')
+      .should('have.length', 3)
+      .and('contain', 'Algebra')
+      .and('contain', 'Geometry')
+      .and('contain', 'Trigonometry');
 
-      cy.get('@btn').click().should('be.disabled');
-      cy.get('@loader').should('be.visible');
+    cy.get('@btn').click().should('be.disabled');
+    cy.get('@loader').should('be.visible');
 
-      cy.wait('@update-user');
+    cy.wait('@update-user');
 
-      // TODO: Add assertion(s) that the error message isn't visible (and about
-      // the response status code of the various API calls).
-      cy.get('@loader').should('not.be.visible');
-    });
+    // TODO: Add assertion(s) that the error message isn't visible (and about
+    // the response status code of the various API calls).
+    cy.get('@loader').should('not.be.visible');
   });
 });

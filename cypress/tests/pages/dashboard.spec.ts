@@ -1,5 +1,6 @@
-import org from 'fixtures/org.json';
-import user from 'fixtures/user.json';
+import admin from 'cypress/fixtures/users/admin.json';
+import org from 'cypress/fixtures/orgs/default.json';
+import school from 'cypress/fixtures/orgs/school.json';
 
 describe('Dashboard page', () => {
   beforeEach(() => {
@@ -19,7 +20,7 @@ describe('Dashboard page', () => {
   context('when logged in', () => {
     beforeEach(() => {
       cy.setup();
-      cy.login();
+      cy.login(admin.id);
       cy.visit('/dashboard');
     });
 
@@ -28,7 +29,7 @@ describe('Dashboard page', () => {
       cy.get('[data-cy=title]').should('have.text', 'Overview');
       cy.get('[data-cy=subtitle]').should(
         'have.text',
-        `Analytics dashboard for ${user.name}`
+        `Analytics dashboard for ${admin.name}`
       );
     });
 
@@ -39,12 +40,16 @@ describe('Dashboard page', () => {
         .should('have.length', 3);
       cy.get('@accounts')
         .eq(0)
-        .should('have.text', user.name)
+        .should('have.text', admin.name)
         .and('have.attr', 'href', '/dashboard');
       cy.get('@accounts')
         .eq(1)
         .should('have.text', org.name)
         .and('have.attr', 'href', `/${org.id}/dashboard`);
+      cy.get('@accounts')
+        .eq(2)
+        .should('have.text', school.name)
+        .and('have.attr', 'href', `/${school.id}/dashboard`);
     });
   });
 });

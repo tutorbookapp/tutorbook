@@ -1,4 +1,6 @@
-import user from 'fixtures/user.json';
+import volunteer from 'cypress/fixtures/users/volunteer.json';
+
+import { onlyFirstNameAndLastInitial } from 'lib/api/helpers/truncation';
 
 describe('Landing page', () => {
   beforeEach(() => {
@@ -49,9 +51,11 @@ describe('Landing page', () => {
 
     cy.get('@carousel').find('[data-cy=user-card]').first().as('card');
 
-    cy.get('@card').find('[data-cy=name]').should('have.text', user.username);
-    cy.get('@card').find('[data-cy=bio]').should('have.text', user.bio);
-    cy.get('@card').find('img').should('have.attr', 'src', user.photo);
+    cy.get('@card')
+      .find('[data-cy=name]')
+      .should('have.text', onlyFirstNameAndLastInitial(volunteer.name));
+    cy.get('@card').find('[data-cy=bio]').should('have.text', volunteer.bio);
+    cy.get('@card').find('img').should('have.attr', 'src', volunteer.photo);
 
     // TODO: Remove this `click()` workaround b/c that's a bug in our front-end.
     // cy.get('@carousel').find('button:visible').click();

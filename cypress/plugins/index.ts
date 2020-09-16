@@ -1,16 +1,17 @@
 import path from 'path';
 
-import admin from 'firebase-admin';
 import algoliasearch from 'algoliasearch';
 import axios from 'axios';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
+import firebase from 'firebase-admin';
 
-import gunn from '../fixtures/gunn.json';
-import org from '../fixtures/org.json';
-import user from '../fixtures/user.json';
+import admin from '../fixtures/users/admin.json';
+import student from '../fixtures/users/student.json';
+import volunteer from '../fixtures/users/volunteer.json';
 
-import generateUserInfo, { UserInfo } from './generate-user-info';
+import org from '../fixtures/orgs/default.json';
+import school from '../fixtures/orgs/school.json';
 
 // Right now, we can't use the `baseUrl` Typescript compiler options, so we
 // can't use any of the existing type annotations in our app source code.
@@ -37,8 +38,8 @@ const clientCredentials = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
-const app = admin.initializeApp({
-  credential: admin.credential.cert({
+const app = firebase.initializeApp({
+  credential: firebase.credential.cert({
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     privateKey: (process.env.FIREBASE_ADMIN_KEY || '').replace(/\\n/g, '\n'),
     clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
@@ -62,15 +63,17 @@ declare global {
   /* eslint-disable-next-line @typescript-eslint/no-namespace */
   namespace Cypress {
     interface Chainable {
-      task(
-        event: 'generateUserInfo',
-        overrides?: Record<string, unknown>
-      ): Chainable<UserInfo>;
       task(event: 'clear'): Chainable<null>;
       task(event: 'seed', overrides?: Record<string, unknown>): Chainable<null>;
       task(event: 'login', uid?: string): Chainable<string>;
     }
   }
+}
+
+interface Overrides {
+  volunteer?: Record<string, unknown>;
+  student?: Record<string, unknown>;
+  admin?: Record<string, unknown>;
 }
 
 export default function plugins(
@@ -79,50 +82,58 @@ export default function plugins(
 ): Cypress.ConfigOptions {
   codecov(on, config);
   on('task', {
-    generateUserInfo,
     async clear(): Promise<null> {
       const userIds = new Set<string>();
-      if (global.user) {
-        const { users } = await auth.getUsers([
-          { uid: global.user.id },
-          { email: global.user.email },
-        ]);
-        users.forEach(({ uid }) => userIds.add(uid));
-      }
+      await Promise.all(
+        [volunteer, student, admin].map(async (user) => {
+          const { users } = await auth.getUsers([
+            { uid: user.id },
+            { email: user.email },
+            { phoneNumber: user.phone },
+          ]);
+          users.forEach(({ uid }) => userIds.add(uid));
+        })
+      );
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
         `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
         `databases/(default)/documents`;
       await Promise.all([
         auth.deleteUsers([...userIds]),
-        index.deleteObjects([...userIds]),
+        index.clearObjects(),
         axios.delete(clearFirestoreEndpoint),
       ]);
       return null;
     },
-    async seed(overrides?: Record<string, unknown>): Promise<null> {
-      const info = generateUserInfo(overrides);
-      const userData = { ...user, ...info, ...overrides };
-      const userSearchData = { ...userData, objectID: userData.id };
-      const gunnData = { ...gunn, members: [userData.id] };
-      const orgData = { ...org, members: [userData.id] };
+    async seed(overrides?: Overrides): Promise<null> {
+      const users = [volunteer, student, admin];
+      if (overrides) {
+        users[0] = { ...users[0], ...overrides.volunteer };
+        users[1] = { ...users[1], ...overrides.student };
+        users[2] = { ...users[2], ...overrides.admin };
+      }
+      const userSearchObjs = users.map((u) => ({ ...u, objectID: u.id }));
+      const userRecords = users.map((u) => ({
+        uid: u.id,
+        email: u.email,
+        phoneNumber: u.phone,
+        displayName: u.name,
+        photoURL: u.photo,
+      }));
       await Promise.all([
-        auth.createUser({
-          uid: userData.id,
-          email: userData.email,
-          phoneNumber: userData.phone,
-          displayName: userData.name,
-          photoURL: userData.photo,
-        }),
-        index.saveObject(userSearchData),
-        db.collection('users').doc(userData.id).set(userData),
-        db.collection('orgs').doc(gunnData.id).set(gunnData),
-        db.collection('orgs').doc(orgData.id).set(orgData),
+        auth.importUsers(userRecords),
+        index.saveObjects(userSearchObjs),
+        db.collection('users').doc(users[0].id).set(users[0]),
+        db.collection('users').doc(users[1].id).set(users[1]),
+        db.collection('users').doc(users[2].id).set(users[2]),
+        db.collection('orgs').doc(school.id).set(school),
+        db.collection('orgs').doc(org.id).set(org),
       ]);
       return null;
     },
     async login(uid?: string): Promise<string> {
-      return auth.createCustomToken(uid || (global.user || {}).id || '');
+      const fallbackId = student.id || volunteer.id || admin.id;
+      return auth.createCustomToken(uid || fallbackId);
     },
   });
   return { ...config, env: { ...config.env, ...clientCredentials } };

@@ -1,7 +1,7 @@
 {
   "id": "default",
   "name": "Tutorbook",
-  "photo": "https://assets.tutorbook.app/jpgs/org.jpg",
+  "photo": "https://assets.tutorbook.app/jpgs/default.jpg",
   "email": "team@tutorbook.org",
   "phone": "+16508612723",
   "bio": "Tutorbook is the default (and public) organization for Tutorbook's web app; it can be used by anyone and everyone who needs (or wants to become) a volunteer tutor or mentor. We're connecting K-12 students with volunteer tutors (amidst COVID-19) and 9-12 students with expert mentors to work on cool projects together (also during COVID-19 and beyond).",
@@ -31,6 +31,7 @@
       "url": "https://indiehackers.com/product/tutorbook"
     }
   ],
+  "members": ["admin"],
   "profiles": ["name", "email", "bio", "subjects"],
   "domains": [],
   "aspects": ["mentoring", "tutoring"],

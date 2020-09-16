@@ -1,0 +1,50 @@
+{
+  "id": "student",
+  "name": "Erik Lucatero",
+  "username": "Erik L.",
+  "email": "erik@example.com",
+  "phone": "+16505550175",
+  "photo": "https://assets.tutorbook.app/jpgs/student.jpg",
+  "bio": "I'm a student at Gunn High School passionate about Computer Science and running. I've been learning Python and TensorFlow with dreams of becoming a data scientist. Currently, I'm looking for somebody to help me with my learning!",
+  "socials": [
+    {
+      "type": "website",
+      "url": "https://example.com"
+    },
+    {
+      "type": "instagram",
+      "url": "https://instagram.com/erik"
+    },
+    {
+      "type": "facebook",
+      "url": "https://facebook.com/erik"
+    },
+    {
+      "type": "linkedin",
+      "url": "https://linkedin.com/in/erik"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/erik"
+    },
+    {
+      "type": "indiehackers",
+      "url": "https://indiehackers.com/erik"
+    }
+  ],
+  "orgs": ["gunn"],
+  "zooms": [],
+  "availability": [],
+  "mentoring": {
+    "subjects": [],
+    "searches": ["Computer Science", "Data Science", "Artificial Intelligence"]
+  },
+  "tutoring": {
+    "subjects": ["Computer Science"],
+    "searches": []
+  },
+  "langs": ["en"],
+  "parents": [],
+  "verifications": [],
+  "visible": false
+}

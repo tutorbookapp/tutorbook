@@ -1,4 +1,4 @@
-import org from 'fixtures/org.json';
+import org from 'cypress/fixtures/orgs/default.json';
 
 describe('Org landing page', () => {
   beforeEach(() => {

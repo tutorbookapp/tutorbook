@@ -1,7 +1,7 @@
 {
   "id": "gunn",
   "name": "Gunn High School",
-  "photo": "https://firebasestorage.googleapis.com/v0/b/covid-tutoring.appspot.com/o/default%2Forgs%2Fgunn.png?alt=media&token=74b3a564-9833-4f01-bbd6-147a27eefe57",
+  "photo": "https://assets.tutorbook.app/jpgs/gunn.jpg",
   "email": "psteward@pausd.org",
   "phone": "+16503548271",
   "bio": "Gunn High School's Academic Center is an inclusive support center where all Gunn students can receive tutoring, do homework, study, and work collaboratively on projects. In the AC, students requesting support in their academics can receive free tutoring.",
@@ -23,6 +23,7 @@
       "url": "https://www.linkedin.com/company/henry-m-gunn-senior-high-school"
     }
   ],
+  "members": ["admin"],
   "profiles": ["name", "email", "phone", "bio", "subjects"],
   "domains": ["pausd.us", "pausd.org"],
   "aspects": ["tutoring"],

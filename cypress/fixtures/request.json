@@ -4,7 +4,6 @@
   "subjects": ["Computer Science"],
   "people": [
     {
-      "id": "z49sDtm1UzVcpf1mIAqgaXigW2W2",
       "name": "John Doe",
       "photo": "https://assets.tutorbook.app/jpgs/user.jpg",
       "handle": "94e73eae-687b-4d19-bf01-e1d84cb49248",
@@ -12,7 +11,6 @@
     }
   ],
   "creator": {
-    "id": "z49sDtm1UzVcpf1mIAqgaXigW2W2",
     "name": "John Doe",
     "photo": "https://assets.tutorbook.app/jpgs/user.jpg",
     "handle": "94e73eae-687b-4d19-bf01-e1d84cb49248",

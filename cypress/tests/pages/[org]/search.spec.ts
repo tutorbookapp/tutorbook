@@ -1,21 +1,31 @@
-import gunn from 'fixtures/gunn.json';
-import org from 'fixtures/org.json';
-import request from 'fixtures/request.json';
-import user from 'fixtures/user.json';
+import admin from 'cypress/fixtures/users/admin.json';
+import student from 'cypress/fixtures/users/student.json';
+import volunteer from 'cypress/fixtures/users/volunteer.json';
 
-function waitForResults(loggedIn: boolean = true) {
+import org from 'cypress/fixtures/orgs/default.json';
+import school from 'cypress/fixtures/orgs/school.json';
+
+import request from 'cypress/fixtures/request.json';
+
+import { onlyFirstNameAndLastInitial } from 'lib/api/helpers/truncation';
+
+function waitForResults() {
   cy.wait('@list-users');
-  if (loggedIn) {
-    cy.get('[data-cy=results] li').should('contain', user.name);
-  } else {
-    cy.get('[data-cy=results] li')
-      .should('not.contain', user.name)
-      .and('contain', user.username);
-  }
-  cy.get('[data-cy=results] li')
-    .should('contain', user.bio)
+  cy.get('[data-cy=results] li').should('have.length', 2).as('results');
+  cy.get('@results')
+    .eq(0)
+    .should('not.contain', volunteer.name)
+    .and('contain', onlyFirstNameAndLastInitial(volunteer.name))
+    .and('contain', volunteer.bio)
     .find('img')
-    .should('have.attr', 'src', user.photo);
+    .should('have.attr', 'src', volunteer.photo);
+  cy.get('@results')
+    .eq(1)
+    .should('not.contain', admin.name)
+    .and('contain', onlyFirstNameAndLastInitial(admin.name))
+    .and('contain', admin.bio)
+    .find('img')
+    .should('have.attr', 'src', admin.photo);
 }
 
 describe('Search page', () => {
@@ -23,12 +33,13 @@ describe('Search page', () => {
     cy.server();
     cy.route('GET', '/api/users*').as('list-users');
     cy.route('GET', '/api/account').as('get-account');
+    cy.route('POST', '/api/matches').as('create-match');
   });
 
-  it('prevents unauthorized access to org data', () => {
+  it('restricts access to school data', () => {
     cy.setup();
     cy.logout();
-    cy.visit(`/${gunn.id}/search`, {
+    cy.visit(`/${school.id}/search`, {
       onBeforeLoad(win: Window): void {
         cy.stub(win, 'open');
       },
@@ -41,14 +52,17 @@ describe('Search page', () => {
     cy.wait('@get-account');
     cy.get('.mdc-dialog--open')
       .as('dialog')
-      .should('contain', 'Login to Gunn High School');
+      .should('contain', `Login to ${school.name}`);
     cy.get('@dialog')
       .find('p')
       .should(
         'have.text',
-        'You must be a part of Gunn High School to see these search results. ' +
-          'Please login with your @pausd.us or @pausd.org email address and ' +
-          'try again.'
+        `You must be a part of ${school.name} to see these search results. ` +
+          `Please login with your ` +
+          `${school.domains
+            .map((d) => `@${d}`)
+            .join('or')} email address and ` +
+          `try again.`
       );
 
     cy.get('@dialog').click('left');
@@ -75,8 +89,8 @@ describe('Search page', () => {
   // SendGrid to ensure that our email notifications were sent).
   it('allows authorized access to org data', () => {
     cy.setup();
-    cy.login();
-    cy.visit(`/${gunn.id}/search`);
+    cy.login(student.id);
+    cy.visit(`/${school.id}/search`);
 
     cy.wait('@get-account');
     cy.get('.mdc-dialog--open', { timeout: 0 }).should('not.exist');
@@ -92,9 +106,9 @@ describe('Search page', () => {
   });
 
   it('collects phone before sending requests', () => {
-    cy.setup({ phone: undefined });
-    cy.login();
-    cy.visit(`/${gunn.id}/search`);
+    cy.setup({ student: { phone: null } });
+    cy.login(student.id);
+    cy.visit(`/${school.id}/search`);
     cy.wait('@get-account');
 
     waitForResults();
@@ -102,11 +116,32 @@ describe('Search page', () => {
     cy.get('[data-cy=results] li').first().click();
     cy.get('.mdc-dialog--open')
       .should('be.visible')
+      .as('dialog')
       .contains('Your phone number')
       .find('input')
       .should('have.value', '')
       .and('have.attr', 'type', 'tel')
       .and('have.attr', 'required');
+
+    cy.get('@dialog').contains('Your phone number').type(student.phone);
+    cy.get('@dialog')
+      .contains('What would you like to learn?')
+      .as('subject-input')
+      .type('Chem');
+    cy.contains('No subjects').should('be.visible');
+    cy.get('@subject-input').type('{selectall}{del}Computer');
+    cy.contains('li', 'Computer Science').click();
+    cy.get('@dialog')
+      .contains('What specifically do you need help with?')
+      .type(request.message);
+
+    cy.contains('button', 'Send request').click().should('be.disabled');
+    cy.get('[data-cy=loader]').should('be.visible');
+
+    cy.wait('@create-match');
+
+    cy.get('[data-cy=loader]').should('not.be.visible');
+    cy.get('[data-cy=error]').should('not.exist');
   });
 
   it('signs users up and sends requests', () => {
@@ -121,24 +156,28 @@ describe('Search page', () => {
     });
     cy.wait('@get-account');
 
-    waitForResults(false);
+    waitForResults();
 
     cy.contains('button', 'Any subjects').click();
     cy.focused()
-      .type('Computer')
+      .type('Artificial')
       .closest('label')
       .should('contain', 'What would you like to learn?');
-    cy.contains('li', 'Computer Science').click();
+    cy.contains('li', 'Artificial Intelligence').click();
 
     cy.get('[data-cy=page]').click({ force: true });
     cy.get('[data-cy=results] li').first().should('not.be.disabled').click();
 
-    cy.get('[data-cy=request-dialog]').should('be.visible');
-    cy.get('[data-cy=bio]').should('have.text', user.bio);
-    cy.get('[data-cy=name]').should('have.text', user.username);
-    cy.get('[data-cy=socials] a').should('have.length', user.socials.length);
+    cy.get('[data-cy=request-dialog]').should('be.visible').as('dialog');
+    cy.get('@dialog').find('[data-cy=bio]').should('have.text', volunteer.bio);
+    cy.get('@dialog')
+      .find('[data-cy=name]')
+      .should('have.text', onlyFirstNameAndLastInitial(volunteer.name));
+    cy.get('@dialog')
+      .find('[data-cy=socials] a')
+      .should('have.length', volunteer.socials.length);
 
-    user.socials.forEach((social: Record<string, string>) => {
+    volunteer.socials.forEach((social: Record<string, string>) => {
       cy.get(`[data-cy=${social.type}-social-link]`)
         .should('have.attr', 'href', social.url)
         .and('have.attr', 'target', '_blank')
@@ -148,7 +187,7 @@ describe('Search page', () => {
     cy.contains('What would you like to learn?')
       .children('.mdc-chip')
       .should('have.length', 1)
-      .and('contain', 'Computer Science');
+      .and('have.text', 'Artificial Intelligence');
     cy.contains('What specifically do you need help with?')
       .click()
       .should('have.class', 'mdc-text-field--focused')

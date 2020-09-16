@@ -1,0 +1,59 @@
+{
+  "id": "admin",
+  "name": "Nicholas Chiang",
+  "username": "Nicholas C.",
+  "email": "nicholas@example.com",
+  "phone": "+16505550138",
+  "photo": "https://assets.tutorbook.app/jpgs/admin.jpg",
+  "bio": "I'm currently a junior at Gunn High School interested in artificial intelligence, progressive web development, karate, cello, photography, filmmaking, music, and running.",
+  "socials": [
+    {
+      "type": "website",
+      "url": "https://nicholaschiang.com"
+    },
+    {
+      "type": "instagram",
+      "url": "https://instagram.com/nicholaschiang"
+    },
+    {
+      "type": "facebook",
+      "url": "https://facebook.com/nicholas.heng.chiang"
+    },
+    {
+      "type": "linkedin",
+      "url": "https://linkedin.com/in/nicholaschiang"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/nicholaschiang"
+    },
+    {
+      "type": "indiehackers",
+      "url": "https://indiehackers.com/nicholaschiang"
+    }
+  ],
+  "orgs": ["default", "gunn"],
+  "zooms": [],
+  "availability": [],
+  "mentoring": {
+    "subjects": ["Computer Science"],
+    "searches": []
+  },
+  "tutoring": {
+    "subjects": [
+      "Math",
+      "Algebra",
+      "Geometry",
+      "Trigonometry",
+      "Science",
+      "Computer Science",
+      "Chemistry",
+      "Biology"
+    ],
+    "searches": []
+  },
+  "langs": ["en"],
+  "parents": [],
+  "verifications": [],
+  "visible": true
+}

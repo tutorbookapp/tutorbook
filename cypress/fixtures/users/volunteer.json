@@ -1,7 +1,10 @@
 {
+  "id": "volunteer",
   "name": "John Doe",
   "username": "John D.",
-  "photo": "https://assets.tutorbook.app/jpgs/user.jpg",
+  "email": "john@example.com",
+  "phone": "+16505550137",
+  "photo": "https://assets.tutorbook.app/jpgs/volunteer.jpg",
   "bio": "I'm currently an electrical engineering Ph.D. student at Stanford University who has been volunteering with AmeriCorps (tutoring local high schoolers) for over five years now. I'm passionate about teaching and would love to help you in any way that I can!",
   "socials": [
     {
@@ -33,7 +36,7 @@
   "zooms": [],
   "availability": [],
   "mentoring": {
-    "subjects": ["Computer Science"],
+    "subjects": ["Computer Science", "Artificial Intelligence"],
     "searches": []
   },
   "tutoring": {

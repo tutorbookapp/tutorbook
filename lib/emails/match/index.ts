@@ -150,6 +150,10 @@ export default class MatchEmail implements Email {
       people.map(({ name, roles }) => `${name} as the ${Utils.join(roles)}`)
     )}`;
     const org: Org = new Org({ name: 'Tutorbook' });
+
+    // TODO: We should perform some sort of validation upstream so that
+    // `recipients[0]` is never undefined (because if it is, the user is
+    // requesting him or her self).
     const { roles: recipientRoles, name: recipientName } = recipients[0];
 
     this.to = recipients.map(({ name, email }) => ({ name, email }));
