@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 
-import { Overrides } from '../plugins';
+import { Overrides } from 'cypress/plugins';
 
 import 'firebase/auth';
 import 'firebase/firestore';

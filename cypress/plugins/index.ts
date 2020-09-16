@@ -6,12 +6,12 @@ import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
 import firebase from 'firebase-admin';
 
-import admin from '../fixtures/users/admin.json';
-import student from '../fixtures/users/student.json';
-import volunteer from '../fixtures/users/volunteer.json';
+import admin from 'cypress/fixtures/users/admin.json';
+import student from 'cypress/fixtures/users/student.json';
+import volunteer from 'cypress/fixtures/users/volunteer.json';
 
-import org from '../fixtures/orgs/default.json';
-import school from '../fixtures/orgs/school.json';
+import org from 'cypress/fixtures/orgs/default.json';
+import school from 'cypress/fixtures/orgs/school.json';
 
 // Right now, we can't use the `baseUrl` Typescript compiler options, so we
 // can't use any of the existing type annotations in our app source code.
