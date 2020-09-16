@@ -1,5 +1,7 @@
 import firebase from 'firebase/app';
 
+import { Overrides } from '../plugins';
+
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'cypress-file-upload';
@@ -15,7 +17,7 @@ declare global {
     interface Chainable {
       login: (uid?: string) => Chainable<null>;
       logout: () => Chainable<null>;
-      setup: (overrides?: Record<string, unknown>) => Chainable<undefined>;
+      setup: (overrides?: Overrides) => Chainable<undefined>;
     }
   }
 }
@@ -57,7 +59,7 @@ function logout(): Cypress.Chainable<null> {
   );
 }
 
-function setup(overrides?: Record<string, unknown>): Cypress.Chainable<null> {
+function setup(overrides?: Overrides): Cypress.Chainable<null> {
   return cy.task('clear').then(() => cy.task('seed', overrides));
 }
 

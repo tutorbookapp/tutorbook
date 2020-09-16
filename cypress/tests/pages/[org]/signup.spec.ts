@@ -3,7 +3,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Signup page', () => {
   beforeEach(() => {
-    cy.setup();
+    cy.setup({ volunteer: null });
     cy.logout();
 
     cy.server();
@@ -88,6 +88,7 @@ describe('Signup page', () => {
     cy.wait('@create-user');
 
     cy.get('@loader').should('not.be.visible');
+    cy.get('[data-cy=error]').as('error').should('not.exist');
     cy.get('@btn').should('contain', 'Update profile');
 
     cy.get('header').contains('button', 'Tutors').click();
@@ -118,5 +119,6 @@ describe('Signup page', () => {
     // TODO: Add assertion(s) that the error message isn't visible (and about
     // the response status code of the various API calls).
     cy.get('@loader').should('not.be.visible');
+    cy.get('@error').should('not.exist');
   });
 });

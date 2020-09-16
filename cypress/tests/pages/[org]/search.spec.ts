@@ -58,11 +58,9 @@ describe('Search page', () => {
       .should(
         'have.text',
         `You must be a part of ${school.name} to see these search results. ` +
-          `Please login with your ` +
-          `${school.domains
-            .map((d) => `@${d}`)
-            .join('or')} email address and ` +
-          `try again.`
+          `Please login with your ${school.domains
+            .map((domain: string) => `@${domain}`)
+            .join(' or ')} email address and try again.`
       );
 
     cy.get('@dialog').click('left');
@@ -93,7 +91,7 @@ describe('Search page', () => {
     cy.visit(`/${school.id}/search`);
 
     cy.wait('@get-account');
-    cy.get('.mdc-dialog--open', { timeout: 0 }).should('not.exist');
+    cy.get('.mdc-dialog--open').should('not.exist');
 
     waitForResults();
 
@@ -145,7 +143,7 @@ describe('Search page', () => {
   });
 
   it('signs users up and sends requests', () => {
-    cy.setup();
+    cy.setup({ student: null });
     cy.logout();
     // TODO: Refactor the `search.spec.ts` into two specs (one for the default
     // search view and one for when a user slug is passed along with the URL).

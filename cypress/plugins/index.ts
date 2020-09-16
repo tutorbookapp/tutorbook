@@ -59,21 +59,21 @@ const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const client = algoliasearch(algoliaId, algoliaKey);
 const index = client.initIndex(`${process.env.NODE_ENV || 'test'}-users`);
 
+export interface Overrides {
+  volunteer?: Record<string, unknown> | null;
+  student?: Record<string, unknown> | null;
+  admin?: Record<string, unknown> | null;
+}
+
 declare global {
   /* eslint-disable-next-line @typescript-eslint/no-namespace */
   namespace Cypress {
     interface Chainable {
       task(event: 'clear'): Chainable<null>;
-      task(event: 'seed', overrides?: Record<string, unknown>): Chainable<null>;
+      task(event: 'seed', overrides?: Overrides): Chainable<null>;
       task(event: 'login', uid?: string): Chainable<string>;
     }
   }
-}
-
-interface Overrides {
-  volunteer?: Record<string, unknown>;
-  student?: Record<string, unknown>;
-  admin?: Record<string, unknown>;
 }
 
 export default function plugins(
@@ -111,14 +111,17 @@ export default function plugins(
         users[0] = { ...users[0], ...overrides.volunteer };
         users[1] = { ...users[1], ...overrides.student };
         users[2] = { ...users[2], ...overrides.admin };
+        if (overrides.volunteer === null) delete users[0];
+        if (overrides.student === null) delete users[1];
+        if (overrides.admin === null) delete users[2];
       }
       const userSearchObjs = users.map((u) => ({ ...u, objectID: u.id }));
       const userRecords = users.map((u) => ({
         uid: u.id,
-        email: u.email,
-        phoneNumber: u.phone,
-        displayName: u.name,
-        photoURL: u.photo,
+        email: u.email || undefined,
+        phoneNumber: u.phone || undefined,
+        displayName: u.name || undefined,
+        photoURL: u.photo || undefined,
       }));
       await Promise.all([
         auth.importUsers(userRecords),
