@@ -469,16 +469,24 @@ export default async function createMatch(
           await db.collection('matches').doc(match.id).set(match.toFirestore());
 
           // 4-5. Send out the match email.
-          console.log('[DEBUG] Sending match email...');
-          const [mailErr] = await to(
-            mail.send(new MatchEmail(match, people, creator))
-          );
-          if (mailErr) {
-            const msg = `${mailErr.name} sending email: ${mailErr.message}`;
-            error(res, msg, 500, mailErr);
-          } else {
+          const email = new MatchEmail(match, people, creator);
+          if (
+            process.env.NODE_ENV === 'test' ||
+            process.env.APP_ENV === 'test'
+          ) {
+            console.log('[DEBUG] Skipping email send...');
             res.status(201).json(match.toJSON());
-            console.log('[DEBUG] Created match and sent email.');
+            console.log('[DEBUG] Created match.');
+          } else {
+            console.log('[DEBUG] Sending match email...');
+            const [mailErr] = await to(mail.send(email));
+            if (mailErr) {
+              const msg = `${mailErr.name} sending email: ${mailErr.message}`;
+              error(res, msg, 500, mailErr);
+            } else {
+              res.status(201).json(match.toJSON());
+              console.log('[DEBUG] Created match and sent email.');
+            }
           }
         }
       }
