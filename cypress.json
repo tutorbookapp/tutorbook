@@ -6,7 +6,7 @@
   "integrationFolder": "cypress/tests/pages",
   "componentFolder": "cypress/tests/components",
   "retries": {
-    "runMode": 3
+    "runMode": 2
   },
   "env": {
     "codeCoverage": {
