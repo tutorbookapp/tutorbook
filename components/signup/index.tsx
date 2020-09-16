@@ -215,6 +215,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
             />
             {!!error && (
               <TextFieldHelperText
+                data-cy='error'
                 persistent
                 validationMsg
                 className={styles.error}
