@@ -106,7 +106,7 @@ export default function plugins(
       return null;
     },
     async seed(overrides?: Overrides): Promise<null> {
-      const users = [volunteer, student, admin];
+      let users = [volunteer, student, admin];
       if (overrides) {
         users[0] = { ...users[0], ...overrides.volunteer };
         users[1] = { ...users[1], ...overrides.student };
@@ -114,6 +114,7 @@ export default function plugins(
         if (overrides.volunteer === null) delete users[0];
         if (overrides.student === null) delete users[1];
         if (overrides.admin === null) delete users[2];
+        users = users.filter(Boolean);
       }
       const userSearchObjs = users.map((u) => ({ ...u, objectID: u.id }));
       const userRecords = users.map((u) => ({
@@ -126,9 +127,7 @@ export default function plugins(
       await Promise.all([
         auth.importUsers(userRecords),
         index.saveObjects(userSearchObjs),
-        db.collection('users').doc(users[0].id).set(users[0]),
-        db.collection('users').doc(users[1].id).set(users[1]),
-        db.collection('users').doc(users[2].id).set(users[2]),
+        Promise.all(users.map((u) => db.collection('users').doc(u.id).set(u))),
         db.collection('orgs').doc(school.id).set(school),
         db.collection('orgs').doc(org.id).set(org),
       ]);

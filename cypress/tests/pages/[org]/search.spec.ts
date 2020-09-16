@@ -185,7 +185,7 @@ describe('Search page', () => {
     cy.contains('What would you like to learn?')
       .children('.mdc-chip')
       .should('have.length', 1)
-      .and('have.text', 'Artificial Intelligence');
+      .and('contain', 'Artificial Intelligence');
     cy.contains('What specifically do you need help with?')
       .click()
       .should('have.class', 'mdc-text-field--focused')
