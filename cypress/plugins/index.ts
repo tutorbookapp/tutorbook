@@ -83,23 +83,11 @@ export default function plugins(
   codecov(on, config);
   on('task', {
     async clear(): Promise<null> {
-      const userIds = new Set<string>();
-      await Promise.all(
-        [volunteer, student, admin].map(async (user) => {
-          const { users } = await auth.getUsers([
-            { uid: user.id },
-            { email: user.email },
-            { phoneNumber: user.phone },
-          ]);
-          users.forEach(({ uid }) => userIds.add(uid));
-        })
-      );
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
         `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
         `databases/(default)/documents`;
       await Promise.all([
-        auth.deleteUsers([...userIds]),
         index.clearObjects(),
         axios.delete(clearFirestoreEndpoint),
       ]);
@@ -117,15 +105,7 @@ export default function plugins(
         users = users.filter(Boolean);
       }
       const userSearchObjs = users.map((u) => ({ ...u, objectID: u.id }));
-      const userRecords = users.map((u) => ({
-        uid: u.id,
-        email: u.email || undefined,
-        phoneNumber: u.phone || undefined,
-        displayName: u.name || undefined,
-        photoURL: u.photo || undefined,
-      }));
       await Promise.all([
-        auth.importUsers(userRecords),
         index.saveObjects(userSearchObjs),
         Promise.all(users.map((u) => db.collection('users').doc(u.id).set(u))),
         db.collection('orgs').doc(school.id).set(school),
