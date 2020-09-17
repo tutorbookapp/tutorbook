@@ -9,7 +9,9 @@
 [![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
 
 **[Tutorbook](https://tutorbook.org) is the best way to manage tutoring and
-mentoring programs (virtually).**
+mentoring programs (virtually).** See the
+[`ROADMAP`](https://github.com/tutorbookapp/tutorbook/blob/develop/ROADMAP.md)
+for a high-level overview of what's being worked on and what's coming.
 
 It's an online app used by organizations (i.e. nonprofits, K-12 schools) to:
 
