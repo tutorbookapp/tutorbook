@@ -2,9 +2,9 @@ import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Router, { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 import equal from 'fast-deep-equal';
+import Router from 'next/router';
 
 import { QueryHeader } from 'components/navigation';
 import Page from 'components/page';
@@ -31,15 +31,12 @@ interface SearchPageProps {
 
 function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   const { user: currentUser, loggedIn } = useUser();
-  const { query: params } = useRouter();
 
-  const [query, setQuery] = useState<UsersQuery>(
-    UsersQuery.fromURLParams(params)
-  );
+  const [query, setQuery] = useState<UsersQuery>(new UsersQuery());
   const [auth, setAuth] = useState<boolean>(false);
   const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
-  const [viewing, setViewing] = useState<UserJSON | undefined>(user);
+  const [viewing, setViewing] = useState<UserJSON>();
 
   const { data, isValidating } = useSWR<ListUsersRes>(
     canSearch ? query.endpoint : null
@@ -69,10 +66,16 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     }
   }, [loggedIn, currentUser, org]);
 
+  useEffect(() => setViewing(user), [user]);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    setQuery(UsersQuery.fromURLParams(Object.fromEntries(params.entries())));
+  }, []);
   useEffect(() => {
     if (!org || !org.id) return;
     const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
-    void Router.push('/[org]/search/[[...slug]]', url, { shallow: true });
+    void Router.replace('/[org]/search/[[...slug]]', url, { shallow: true });
   }, [org, query, viewing]);
   useEffect(() => {
     setQuery((prev: UsersQuery) => {
