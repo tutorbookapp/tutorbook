@@ -1,10 +1,11 @@
 describe('Login page', () => {
   beforeEach(() => {
     cy.logout();
-    cy.visit('/login');
   });
 
   it('contains greeting and links', () => {
+    cy.visit('/login');
+
     cy.contains('h1', 'Login to Tutorbook');
 
     cy.contains('Signup here').should('have.attr', 'href', '/default/signup');
@@ -15,7 +16,7 @@ describe('Login page', () => {
   it('navigates to dashboard on successful login', () => {
     cy.setup();
     cy.login();
-    cy.reload();
+    cy.visit('/login');
     cy.url({ timeout: 60000 }).should('contain', '/dashboard');
   });
 });
