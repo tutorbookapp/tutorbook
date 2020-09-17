@@ -5,6 +5,10 @@ import { onlyFirstNameAndLastInitial } from 'lib/api/helpers/truncation';
 describe('Landing page', () => {
   beforeEach(() => {
     cy.setup();
+
+    cy.server();
+    cy.route('GET', '/api/users*').as('list-users');
+
     cy.visit('/');
   });
 
@@ -39,17 +43,21 @@ describe('Landing page', () => {
     // page transition complete" signal (e.g. when the nprogress bar is hidden).
     cy.url({ timeout: 60000 }).should('contain', '/default/search');
 
-    // cy.get('header')
-    // .contains('button', 'Tutors')
-    // .should('have.attr', 'aria-selected', true);
+    cy.get('header')
+      .contains('button', 'Tutors')
+      .should('have.attr', 'aria-selected', 'true');
+    cy.get('header').contains('button', 'Computer Science');
   });
 
   it('shows featured users carousel', () => {
-    cy.get('[data-cy=carousel]').first().as('carousel');
+    cy.wait('@list-users');
 
-    cy.get('@carousel').find('[data-cy=loading-card]').should('not.exist');
-
-    cy.get('@carousel').find('[data-cy=user-card]').first().as('card');
+    cy.get('[data-cy=carousel]')
+      .first()
+      .find('[data-cy=user-card]')
+      .should('have.length', 2)
+      .first()
+      .as('card');
 
     cy.get('@card')
       .find('[data-cy=name]')
