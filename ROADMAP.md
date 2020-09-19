@@ -48,7 +48,7 @@ goal (low-level issues that must be resolved before that goal becomes reality).
   (that are known bugs and have priority 1).
 - Address #116 (restricting profile flow), #69 (select behavior), and #40 (text
   area formatting).
-- Fix #47 (follow the format of [Vercel's 404 page](https://vercel.com/404).
+- Fix #47 (follow the format of [Vercel's 404 page](https://vercel.com/404)).
 
 **Add features**
 
