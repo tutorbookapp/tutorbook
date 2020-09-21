@@ -11,7 +11,6 @@ export default function Signup(): JSX.Element {
   const { t, lang: locale } = useTranslation();
   const { org, setOrg } = useSettings();
 
-  const onSubmit = useCallback((evt: FormEvent) => evt.preventDefault(), []);
   const onHeaderChange = useCallback(
     (evt: FormEvent<HTMLInputElement>, aspect: Aspect) => {
       const header = evt.currentTarget.value;
@@ -53,35 +52,33 @@ export default function Signup(): JSX.Element {
 
   return (
     <div className={styles.card}>
-      <form onSubmit={onSubmit}>
-        {org.aspects.map((aspect: Aspect, idx: number) => (
-          <>
-            {idx > 0 && <div className={styles.divider} />}
-            <div className={styles.inputs}>
-              <TextField
-                label={t(`org:signup-${aspect}-header`)}
-                placeholder={t(`org:signup-${aspect}-header-placeholder`)}
-                value={(org.signup[locale][aspect] || {}).header || ''}
-                onChange={(evt) => onHeaderChange(evt, aspect)}
-                className={styles.field}
-                outlined
-                required
-              />
-              <TextField
-                label={t(`org:signup-${aspect}-body`)}
-                placeholder={t(`org:signup-${aspect}-body-placeholder`)}
-                value={(org.signup[locale][aspect] || {}).body || ''}
-                onChange={(evt) => onBodyChange(evt, aspect)}
-                className={styles.field}
-                outlined
-                required
-                rows={8}
-                textarea
-              />
-            </div>
-          </>
-        ))}
-      </form>
+      {org.aspects.map((aspect: Aspect, idx: number) => (
+        <>
+          {idx > 0 && <div className={styles.divider} />}
+          <div className={styles.inputs}>
+            <TextField
+              label={t(`org:signup-${aspect}-header`)}
+              placeholder={t(`org:signup-${aspect}-header-placeholder`)}
+              value={(org.signup[locale][aspect] || {}).header || ''}
+              onChange={(evt) => onHeaderChange(evt, aspect)}
+              className={styles.field}
+              outlined
+              required
+            />
+            <TextField
+              label={t(`org:signup-${aspect}-body`)}
+              placeholder={t(`org:signup-${aspect}-body-placeholder`)}
+              value={(org.signup[locale][aspect] || {}).body || ''}
+              onChange={(evt) => onBodyChange(evt, aspect)}
+              className={styles.field}
+              outlined
+              required
+              rows={8}
+              textarea
+            />
+          </div>
+        </>
+      ))}
     </div>
   );
 }

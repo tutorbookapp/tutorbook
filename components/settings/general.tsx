@@ -14,7 +14,6 @@ export default function General(): JSX.Element {
   const { t } = useTranslation();
   const { org, setOrg } = useSettings();
 
-  const onSubmit = useCallback((evt: FormEvent) => evt.preventDefault(), []);
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const name = evt.currentTarget.value;
@@ -54,68 +53,66 @@ export default function General(): JSX.Element {
 
   return (
     <div className={styles.card}>
-      <form onSubmit={onSubmit}>
-        <div className={styles.inputs}>
-          <TextField
-            label={t('org:name')}
-            value={org.name}
-            onChange={onNameChange}
-            className={styles.field}
-            required
-            outlined
-          />
-          <TextField
-            label={t('org:email')}
-            value={org.email}
-            onChange={onEmailChange}
-            className={styles.field}
-            type='email'
-            required
-            outlined
-          />
-          <TextField
-            label={t('org:phone')}
-            value={org.phone ? org.phone : undefined}
-            onChange={onPhoneChange}
-            className={styles.field}
-            type='tel'
-            outlined
-          />
-          <PhotoInput
-            label={t('org:photo')}
-            value={org.photo}
-            onChange={onPhotoChange}
-            className={styles.field}
-            outlined
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <TextField
-            label={t('org:bio')}
-            placeholder={t('org:bio-placeholder', {
-              name: org.name || 'Tutorbook',
-            })}
-            value={org.bio}
-            onChange={onBioChange}
-            className={styles.field}
-            outlined
-            required
-            rows={8}
-            textarea
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <TextField {...getSocialProps('website')} />
-          <TextField {...getSocialProps('facebook')} />
-          <TextField {...getSocialProps('instagram')} />
-          <TextField {...getSocialProps('twitter')} />
-          <TextField {...getSocialProps('linkedin')} />
-          <TextField {...getSocialProps('github')} />
-          <TextField {...getSocialProps('indiehackers')} />
-        </div>
-      </form>
+      <div className={styles.inputs}>
+        <TextField
+          label={t('org:name')}
+          value={org.name}
+          onChange={onNameChange}
+          className={styles.field}
+          required
+          outlined
+        />
+        <TextField
+          label={t('org:email')}
+          value={org.email}
+          onChange={onEmailChange}
+          className={styles.field}
+          type='email'
+          required
+          outlined
+        />
+        <TextField
+          label={t('org:phone')}
+          value={org.phone ? org.phone : undefined}
+          onChange={onPhoneChange}
+          className={styles.field}
+          type='tel'
+          outlined
+        />
+        <PhotoInput
+          label={t('org:photo')}
+          value={org.photo}
+          onChange={onPhotoChange}
+          className={styles.field}
+          outlined
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        <TextField
+          label={t('org:bio')}
+          placeholder={t('org:bio-placeholder', {
+            name: org.name || 'Tutorbook',
+          })}
+          value={org.bio}
+          onChange={onBioChange}
+          className={styles.field}
+          outlined
+          required
+          rows={8}
+          textarea
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        <TextField {...getSocialProps('website')} />
+        <TextField {...getSocialProps('facebook')} />
+        <TextField {...getSocialProps('instagram')} />
+        <TextField {...getSocialProps('twitter')} />
+        <TextField {...getSocialProps('linkedin')} />
+        <TextField {...getSocialProps('github')} />
+        <TextField {...getSocialProps('indiehackers')} />
+      </div>
     </div>
   );
 }

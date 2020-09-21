@@ -1,6 +1,5 @@
 {
   "subtitle": "Configure {{name}}'s settings",
-  "placeholder": "COMING SOON",
   "error": "Could not update settings. Retry in {{count}} seconds.",
   "retry": "Retry",
   "general": "General",

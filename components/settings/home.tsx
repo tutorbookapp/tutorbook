@@ -13,7 +13,6 @@ export default function Home(): JSX.Element {
   const { t, lang: locale } = useTranslation();
   const { org, setOrg } = useSettings();
 
-  const onSubmit = useCallback((evt: FormEvent) => evt.preventDefault(), []);
   const onPhotoChange = useCallback(
     (photo: string) => {
       setOrg((prev: Org) => {
@@ -52,40 +51,38 @@ export default function Home(): JSX.Element {
 
   return (
     <div className={styles.card}>
-      <form onSubmit={onSubmit}>
-        <div className={styles.inputs}>
-          <PhotoInput
-            label={t('org:home-photo')}
-            value={org.home[locale].photo || ''}
-            onChange={onPhotoChange}
-            className={styles.field}
-            outlined
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <TextField
-            label={t('org:home-header')}
-            placeholder={t('org:home-header-placeholder')}
-            value={org.home[locale].header}
-            onChange={onHeaderChange}
-            className={styles.field}
-            outlined
-            required
-          />
-          <TextField
-            label={t('org:home-body')}
-            placeholder={t('org:home-body-placeholder')}
-            value={org.home[locale].body}
-            onChange={onBodyChange}
-            className={styles.field}
-            outlined
-            required
-            rows={8}
-            textarea
-          />
-        </div>
-      </form>
+      <div className={styles.inputs}>
+        <PhotoInput
+          label={t('org:home-photo')}
+          value={org.home[locale].photo || ''}
+          onChange={onPhotoChange}
+          className={styles.field}
+          outlined
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        <TextField
+          label={t('org:home-header')}
+          placeholder={t('org:home-header-placeholder')}
+          value={org.home[locale].header}
+          onChange={onHeaderChange}
+          className={styles.field}
+          outlined
+          required
+        />
+        <TextField
+          label={t('org:home-body')}
+          placeholder={t('org:home-body-placeholder')}
+          value={org.home[locale].body}
+          onChange={onBodyChange}
+          className={styles.field}
+          outlined
+          required
+          rows={8}
+          textarea
+        />
+      </div>
     </div>
   );
 }
