@@ -3,16 +3,17 @@ import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import Page from 'components/page';
-import Overview from 'components/overview';
+import Profile from 'components/profile';
 import { TabHeader } from 'components/navigation';
 
 import { withI18n } from 'lib/intl';
 import { useUser } from 'lib/account';
 
-import overview from 'locales/en/overview.json';
 import common from 'locales/en/common.json';
+import profile from 'locales/en/profile.json';
+import user3rd from 'locales/en/user3rd.json';
 
-function DashboardPage(): JSX.Element {
+function ProfilePage(): JSX.Element {
   const { t } = useTranslation();
   const { user, loggedIn } = useUser();
 
@@ -29,19 +30,19 @@ function DashboardPage(): JSX.Element {
         tabs={[
           {
             label: t('common:overview'),
-            active: true,
+            active: false,
             href: '/dashboard',
           },
           {
             label: t('common:profile'),
-            active: false,
+            active: true,
             href: '/profile',
           },
         ]}
       />
-      <Overview account={user} />
+      <Profile />
     </Page>
   );
 }
 
-export default withI18n(DashboardPage, { common, overview });
+export default withI18n(ProfilePage, { common, profile, user3rd });

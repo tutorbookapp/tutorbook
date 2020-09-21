@@ -157,12 +157,7 @@ export default function PopOverMenu({
           >
             {t('common:search')}
           </PopOverLink>
-          <PopOverLink
-            href='/[org]/signup'
-            as={`/${user.orgs[0] || 'default'}/signup`}
-          >
-            {t('common:profile')}
-          </PopOverLink>
+          <PopOverLink href='/profile'>{t('common:profile')}</PopOverLink>
           <PopOverLink href='/dashboard'>{t('common:dashboard')}</PopOverLink>
           {orgs.map((org: Org) => (
             <Fragment key={org.id}>
