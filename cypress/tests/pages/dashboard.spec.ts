@@ -4,17 +4,16 @@ import school from 'cypress/fixtures/orgs/school.json';
 
 describe('Dashboard page', () => {
   beforeEach(() => {
-    cy.logout();
+    cy.server();
+    cy.route('GET', '/api/account').as('get-account');
   });
 
-  context('when logged out', () => {
-    beforeEach(() => {
-      cy.visit('/dashboard');
-    });
+  it('redirects to login page when logged out', () => {
+    cy.logout();
+    cy.visit('/dashboard');
 
-    it('redirects to login page', () => {
-      cy.url({ timeout: 60000 }).should('contain', '/login');
-    });
+    cy.wait('@get-account');
+    cy.url({ timeout: 60000 }).should('contain', '/login');
   });
 
   context('when logged in', () => {
@@ -27,6 +26,7 @@ describe('Dashboard page', () => {
     it('shows placeholders', () => {
       cy.contains('COMING SOON');
       cy.get('[data-cy=title]').should('have.text', 'Overview');
+      cy.wait('@get-account');
       cy.get('[data-cy=subtitle]').should(
         'have.text',
         `Analytics dashboard for ${admin.name}`
@@ -34,6 +34,7 @@ describe('Dashboard page', () => {
     });
 
     it('switches accounts', () => {
+      cy.wait('@get-account');
       cy.contains('button', 'Account').click();
       cy.get('[data-cy=switcher-list] a')
         .as('accounts')
