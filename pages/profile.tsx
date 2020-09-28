@@ -15,7 +15,7 @@ import user3rd from 'locales/en/user3rd.json';
 
 function ProfilePage(): JSX.Element {
   const { t } = useTranslation();
-  const { user, loggedIn } = useUser();
+  const { loggedIn } = useUser();
 
   useEffect(() => {
     if (loggedIn === false) {
