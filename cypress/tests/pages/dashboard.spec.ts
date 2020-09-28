@@ -25,9 +25,9 @@ describe('Dashboard page', () => {
 
     it('shows placeholders', () => {
       cy.contains('COMING SOON');
-      cy.get('[data-cy=title]').should('have.text', 'Overview');
+      cy.getBySel('title').should('have.text', 'Overview');
       cy.wait('@get-account');
-      cy.get('[data-cy=subtitle]').should(
+      cy.getBySel('subtitle').should(
         'have.text',
         `Analytics dashboard for ${admin.name}`
       );
@@ -36,7 +36,8 @@ describe('Dashboard page', () => {
     it('switches accounts', () => {
       cy.wait('@get-account');
       cy.contains('button', 'Account').click();
-      cy.get('[data-cy=switcher-list] a')
+      cy.getBySel('switcher-list')
+        .find('a')
         .as('accounts')
         .should('have.length', 3);
       cy.get('@accounts')

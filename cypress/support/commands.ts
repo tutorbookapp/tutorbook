@@ -18,6 +18,7 @@ declare global {
       login: (uid?: string) => Chainable<null>;
       logout: () => Chainable<null>;
       setup: (overrides?: Overrides) => Chainable<undefined>;
+      getBySel: (selector: string, args?: any) => Chainable<Element>;
     }
   }
 }
@@ -59,10 +60,21 @@ function logout(): Cypress.Chainable<null> {
   );
 }
 
-function setup(overrides?: Overrides): Cypress.Chainable<null> {
-  return cy.task('clear').then(() => cy.task('seed', overrides));
+function setup(overrides?: Overrides): void {
+  cy.task('clear');
+  cy.task('seed', overrides);
+  cy.server();
+  cy.route('GET', '/api/account').as('get-account');
 }
 
-Cypress.Commands.add('setup', setup);
+function getBySel(
+  selector: string,
+  ...args: any
+): Cypress.Chainable<JQuery<HTMLElement>> {
+  return cy.get(`[data-cy=${selector}]`, ...args);
+}
+
 Cypress.Commands.add('login', login);
 Cypress.Commands.add('logout', logout);
+Cypress.Commands.add('setup', setup);
+Cypress.Commands.add('getBySel', getBySel);

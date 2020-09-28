@@ -11,7 +11,7 @@ import { onlyFirstNameAndLastInitial } from 'lib/api/helpers/truncation';
 
 function waitForResults() {
   cy.wait('@list-users');
-  cy.get('[data-cy=results] li').should('have.length', 2).as('results');
+  cy.getBySel('results').find('li').should('have.length', 2).as('results');
   cy.get('@results')
     .eq(0)
     .should('not.contain', volunteer.name)
@@ -45,7 +45,8 @@ describe('Search page', () => {
       },
     });
 
-    cy.get('[data-cy=results] li')
+    cy.getBySel('results')
+      .find('li')
       .should('have.css', 'cursor', 'not-allowed')
       .and('have.attr', 'disabled');
 
@@ -69,16 +70,17 @@ describe('Search page', () => {
     cy.get('@dialog').should('have.class', 'mdc-dialog--open');
 
     cy.contains('button', 'Continue with Google').click().should('be.disabled');
-    cy.get('[data-cy=loader]').should('be.visible');
+    cy.getBySel('loader').should('be.visible');
 
     cy.window().its('open').should('be.called');
 
-    cy.get('[data-cy=loader]').should('not.be.visible');
-    cy.get('[data-cy=error]')
+    cy.getBySel('loader').should('not.be.visible');
+    cy.getBySel('error')
       .should('be.visible')
       .and('contain', 'Unable to establish a connection with the popup.');
 
-    cy.get('[data-cy=results] li')
+    cy.getBySel('results')
+      .find('li')
       .should('have.css', 'cursor', 'not-allowed')
       .and('have.attr', 'disabled');
   });
@@ -95,7 +97,7 @@ describe('Search page', () => {
 
     waitForResults();
 
-    cy.get('[data-cy=results] li').first().click();
+    cy.getBySel('results').find('li').first().click();
     cy.get('.mdc-dialog--open')
       .should('be.visible')
       .and('contain', 'Send request')
@@ -111,7 +113,7 @@ describe('Search page', () => {
 
     waitForResults();
 
-    cy.get('[data-cy=results] li').first().click();
+    cy.getBySel('results').find('li').first().click();
     cy.get('.mdc-dialog--open')
       .should('be.visible')
       .as('dialog')
@@ -134,12 +136,12 @@ describe('Search page', () => {
       .type(request.message);
 
     cy.contains('button', 'Send request').click().should('be.disabled');
-    cy.get('[data-cy=loader]').should('be.visible');
+    cy.getBySel('loader').should('be.visible');
 
     cy.wait('@create-match');
 
-    cy.get('[data-cy=loader]').should('not.be.visible');
-    cy.get('[data-cy=error]').should('not.exist');
+    cy.getBySel('loader').should('not.be.visible');
+    cy.getBySel('error').should('not.exist');
   });
 
   it('signs users up and sends requests', () => {
@@ -163,10 +165,10 @@ describe('Search page', () => {
       .should('contain', 'What would you like to learn?');
     cy.contains('li', 'Artificial Intelligence').click();
 
-    cy.get('[data-cy=page]').click({ force: true });
-    cy.get('[data-cy=results] li').first().should('not.be.disabled').click();
+    cy.getBySel('page').click({ force: true });
+    cy.getBySel('results').find('li').first().should('not.be.disabled').click();
 
-    cy.get('[data-cy=request-dialog]').should('be.visible').as('dialog');
+    cy.getBySel('request-dialog').should('be.visible').as('dialog');
     cy.get('@dialog').find('[data-cy=bio]').should('have.text', volunteer.bio);
     cy.get('@dialog')
       .find('[data-cy=name]')
@@ -176,7 +178,7 @@ describe('Search page', () => {
       .should('have.length', volunteer.socials.length);
 
     volunteer.socials.forEach((social: Record<string, string>) => {
-      cy.get(`[data-cy=${social.type}-social-link]`)
+      cy.getBySel(`${social.type}-social-link`)
         .should('have.attr', 'href', social.url)
         .and('have.attr', 'target', '_blank')
         .and('have.attr', 'rel', 'noreferrer');
@@ -192,14 +194,14 @@ describe('Search page', () => {
       .type(request.message);
 
     cy.contains('button', 'Signup and send').click().should('be.disabled');
-    cy.get('[data-cy=loader]').should('be.visible');
+    cy.getBySel('loader').should('be.visible');
 
     // TODO: Stub out the Google OAuth response using the Google OAuth
     // server-side REST API. That way, we can test this programmatically.
     cy.window().its('open').should('be.called');
 
-    cy.get('[data-cy=loader]').should('not.be.visible');
-    cy.get('[data-cy=error]')
+    cy.getBySel('loader').should('not.be.visible');
+    cy.getBySel('error')
       .should('be.visible')
       .and('contain', 'Unable to establish a connection with the popup.');
   });

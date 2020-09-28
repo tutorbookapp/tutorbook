@@ -19,7 +19,7 @@ describe('Signup page', () => {
   it('validates email addresses', () => {
     cy.contains('Your email address').as('input').type('email');
     cy.contains('Become a mentor').click().should('not.be.disabled');
-    cy.get('[data-cy=loader]').should('not.be.visible');
+    cy.getBySel('loader').should('not.be.visible');
     cy.get('@input')
       .closest('.mdc-text-field')
       .as('text-field')
@@ -83,12 +83,12 @@ describe('Signup page', () => {
     cy.contains('Qualifications? Interests?').type(volunteer.bio);
 
     cy.contains('Become a mentor').as('btn').click().should('be.disabled');
-    cy.get('[data-cy=loader]').as('loader').should('be.visible');
+    cy.getBySel('loader').as('loader').should('be.visible');
 
     cy.wait('@create-user');
 
     cy.get('@loader').should('not.be.visible');
-    cy.get('[data-cy=error]').as('error').should('not.exist');
+    cy.getBySel('error').as('error').should('not.exist');
     cy.get('@btn').should('contain', 'Update profile');
 
     cy.get('header').contains('button', 'Tutors').click();

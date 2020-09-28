@@ -30,23 +30,23 @@ describe('Org landing page', () => {
   });
 
   it('displays org information', () => {
-    cy.get('[data-cy=name]').should('have.text', org.name);
-    cy.get('[data-cy=avatar]')
+    cy.getBySel('name').should('have.text', org.name);
+    cy.getBySel('avatar')
       .should('have.attr', 'src', org.photo)
       .closest('a')
       .should('have.attr', 'href', org.photo);
-    cy.get('[data-cy=socials] a').should('have.length', org.socials.length);
+    cy.getBySel('socials').find('a').should('have.length', org.socials.length);
 
     org.socials.forEach((social: Record<string, string>) => {
-      cy.get(`[data-cy=${social.type}-social-link]`)
+      cy.getBySel(`${social.type}-social-link`)
         .should('have.attr', 'href', social.url)
         .and('have.attr', 'target', '_blank')
         .and('have.attr', 'rel', 'noreferrer');
     });
 
-    cy.get('[data-cy=bio]').should('have.text', org.bio);
-    cy.get('[data-cy=header]').should('have.text', org.home.en.header);
-    cy.get('[data-cy=body]').should('have.text', org.home.en.body);
-    cy.get('[data-cy=backdrop]').should('have.attr', 'src', org.home.en.photo);
+    cy.getBySel('bio').should('have.text', org.bio);
+    cy.getBySel('header').should('have.text', org.home.en.header);
+    cy.getBySel('body').should('have.text', org.home.en.body);
+    cy.getBySel('backdrop').should('have.attr', 'src', org.home.en.photo);
   });
 });

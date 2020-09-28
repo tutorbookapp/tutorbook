@@ -14,16 +14,16 @@ describe('Landing page', () => {
   });
 
   it('has collapsible banner', () => {
-    cy.get('[data-cy=banner]')
+    cy.getBySel('banner')
       .should('be.visible')
       .and('contain', 'We stand with the black community.')
       .find('[role=button]')
       .click();
-    cy.get('[data-cy=banner]').should('not.be.visible');
+    cy.getBySel('banner').should('not.be.visible');
   });
 
   it('leads to search page', () => {
-    cy.get('[data-cy=hero]').first().as('hero');
+    cy.getBySel('hero').first().as('hero');
     cy.get('@hero')
       .find('[data-cy=title]')
       .should('have.text', 'Learn from and work with an expert.');
@@ -53,7 +53,7 @@ describe('Landing page', () => {
   it('shows featured users carousel', () => {
     cy.wait('@list-users');
 
-    cy.get('[data-cy=carousel]')
+    cy.getBySel('carousel')
       .first()
       .find('[data-cy=user-card]')
       .should('have.length', 2)
