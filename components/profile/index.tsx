@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, FormEvent } from 'react';
+import { useCallback, FormEvent } from 'react';
 import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
-import Router from 'next/router';
 import axios from 'axios';
 
 import Header from 'components/header';
