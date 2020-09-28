@@ -4,8 +4,7 @@ import school from 'cypress/fixtures/orgs/school.json';
 
 describe('Dashboard page', () => {
   beforeEach(() => {
-    cy.server();
-    cy.route('GET', '/api/account').as('get-account');
+    cy.setup();
   });
 
   it('redirects to login page when logged out', () => {
@@ -18,7 +17,6 @@ describe('Dashboard page', () => {
 
   context('when logged in', () => {
     beforeEach(() => {
-      cy.setup();
       cy.login(admin.id);
       cy.visit('/dashboard');
     });
