@@ -67,6 +67,11 @@ describe('Profile page', () => {
     cy.getBySel('title').should('have.text', 'Profile');
     cy.getBySel('subtitle').should('have.text', 'Update your profile');
 
+    cy.contains('a', 'View profile').should(
+      'have.attr',
+      'href',
+      `/default/search/${volunteer.id}`
+    );
     cy.contains('Your name')
       .find('input')
       .type('{selectall}{del}John')

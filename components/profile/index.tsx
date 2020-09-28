@@ -65,16 +65,6 @@ export default function Profile(): JSX.Element {
 
   const getSocialProps = useSocialProps(user, setUser, styles.field, 'user3rd');
 
-  const url = useMemo(() => {
-    return `/${user.orgs[0] || 'default'}/search/${user.id}`;
-  }, [user]);
-  const viewProfile = useCallback(() => {
-    return Router.push('/[org]/[[...slug]]', url);
-  }, [url]);
-  useEffect(() => {
-    void Router.prefetch('/[org]/search/[[...slug]]', url);
-  }, [url]);
-
   return (
     <>
       {error && (
@@ -93,7 +83,8 @@ export default function Profile(): JSX.Element {
         actions={[
           {
             label: t('profile:view-profile'),
-            onClick: viewProfile,
+            href: '/[org]/[[...slug]]',
+            as: `/${user.orgs[0] || 'default'}/search/${user.id}`,
           },
         ]}
       />
