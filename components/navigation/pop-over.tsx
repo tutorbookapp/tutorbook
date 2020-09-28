@@ -96,7 +96,7 @@ export function PopOverAccountHeader({
   account,
 }: PopOverAccountProps): JSX.Element {
   return (
-    <div className={`${styles.item} ${styles.header}`}>
+    <div data-cy='account-header' className={`${styles.item} ${styles.header}`}>
       <div className={styles.avatar}>
         <Avatar src={account.photo} />
       </div>
