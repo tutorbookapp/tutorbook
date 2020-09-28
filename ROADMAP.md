@@ -6,26 +6,18 @@ goal (low-level issues that must be resolved before that goal becomes reality).
 
 ## September 2020
 
-**Officially onboard PAUSD**
-
-- Finalize legal documents (Privacy Policy, TOS) in compliance with CSDPA V2.
-- Meet with Derek Moore (CTO), Brent Kline (Paly's Principal), and Wendy
-  Stratton (Gunn's Principal) to discuss use case and legalities.
-- Train Pam Steward (and Paly's peer-tutoring supervisor) on how to use the new
-  app.
-- Public (district-wide) communication to parents, students, and teachers about
-  the app as a resource.
-
-**Officially onboard EPATT**
-
-- Fix #100 (Zoom Integration) and #99 (time selection) in order to replace
-  current workflow.
-- Meet with Adrian Amaral to discuss updated use case and new features.
-
 **Start Americorps pilot**
 
 - Follow up with Tara Baltzley on plans to run pilot program in one CA
   Americorps branch.
+
+**Fix known bugs**
+
+- Fix all of [these issues](https://github.com/tutorbookapp/tutorbook/issues?q=is%3Aissue+is%3Aopen+label%3Atype%3Abug)
+  (that are known bugs and have priority 1).
+- Address #116 (restricting profile flow), #69 (select behavior), and #40 (text
+  area formatting).
+- Fix #47 (follow the format of [Vercel's 404 page](https://vercel.com/404)).
 
 **Increase quality and maintainability**
 
@@ -42,13 +34,23 @@ goal (low-level issues that must be resolved before that goal becomes reality).
 - Run Cypress UI tests on multiple operating systems and browsers (further
   multiply Travis CI build matrix).
 
-**Fix known bugs**
+## October 2020
 
-- Fix all of [these issues](https://github.com/tutorbookapp/tutorbook/issues?q=is%3Aissue+is%3Aopen+label%3Atype%3Abug)
-  (that are known bugs and have priority 1).
-- Address #116 (restricting profile flow), #69 (select behavior), and #40 (text
-  area formatting).
-- Fix #47 (follow the format of [Vercel's 404 page](https://vercel.com/404)).
+**Officially onboard PAUSD**
+
+- Finalize legal documents (Privacy Policy, TOS) in compliance with CSDPA V2.
+- Meet with Derek Moore (CTO), Brent Kline (Paly's Principal), and Wendy
+  Stratton (Gunn's Principal) to discuss use case and legalities.
+- Train Pam Steward (and Paly's peer-tutoring supervisor) on how to use the new
+  app.
+- Public (district-wide) communication to parents, students, and teachers about
+  the app as a resource.
+
+**Officially onboard EPATT**
+
+- Fix #100 (Zoom Integration) and #99 (time selection) in order to replace
+  current workflow.
+- Meet with Adrian Amaral to discuss updated use case and new features.
 
 **Add features**
 
