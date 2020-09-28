@@ -71,6 +71,7 @@ export default function Switcher(): JSX.Element {
         <button
           type='button'
           onClick={() => setOpen(true)}
+          data-cy='switcher-btn'
           aria-expanded={open}
           aria-haspopup
           className={styles.button}
