@@ -25,6 +25,8 @@
   align-items: center;
   padding: 0 24px;
   box-sizing: border-box;
+  overflow: auto;
+  scrollbar-width: none;
 }
 
 .formWidth .header {
