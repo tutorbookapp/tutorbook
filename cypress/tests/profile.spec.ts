@@ -87,9 +87,14 @@ describe('Profile page', () => {
 
     cy.contains('Your email address')
       .children('input')
+      .should('be.disabled')
+      .and('have.attr', 'type', 'email');
+
+    cy.contains('Your phone number')
+      .children('input')
       .click({ force: true })
       .should('be.focused')
-      .and('have.attr', 'type', 'email');
+      .and('have.attr', 'type', 'tel');
 
     cy.contains('Your profile photo')
       .as('photo-input')

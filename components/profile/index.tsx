@@ -34,13 +34,6 @@ export default function Profile(): JSX.Element {
     },
     [setUser]
   );
-  const onEmailChange = useCallback(
-    (evt: FormEvent<HTMLInputElement>) => {
-      const email = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, email }));
-    },
-    [setUser]
-  );
   const onPhoneChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const phone = evt.currentTarget.value;
@@ -101,9 +94,10 @@ export default function Profile(): JSX.Element {
             <TextField
               label={t('user3rd:email')}
               value={user.email}
-              onChange={onEmailChange}
               className={styles.field}
               type='email'
+              disabled
+              readOnly
               required
               outlined
             />
