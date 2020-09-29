@@ -19,4 +19,11 @@ describe('Login page', () => {
     cy.visit('/login');
     cy.url({ timeout: 60000 }).should('contain', '/dashboard');
   });
+
+  it('navigates to specified redirect destination', () => {
+    cy.setup();
+    cy.login();
+    cy.visit('/login?redirect=profile');
+    cy.url({ timeout: 60000 }).should('contain', '/profile');
+  });
 });

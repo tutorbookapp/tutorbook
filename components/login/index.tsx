@@ -14,19 +14,28 @@ import styles from './login.module.scss';
 
 export default function Login(): JSX.Element {
   const { loggedIn } = useUser();
-  const { t } = useTranslation();
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<Error>();
 
+  const { t } = useTranslation();
+  const [error, setError] = useState<Error>();
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [redirect, setRedirect] = useState<string>('/dashboard');
+
+  useEffect(() => {
+    // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
+    // URL query parameters, but right now, it doesn't seem to be working.
+    // @see {@link https://github.com/vercel/next.js/issues/17112}
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    setRedirect((prev: string) => params.get('redirect') || prev);
+  }, []);
   useEffect(() => {
     if (loggedIn) {
-      void Router.push('/dashboard');
+      void Router.push(redirect);
     }
-  }, [loggedIn]);
-
+  }, [redirect, loggedIn]);
   useEffect(() => {
-    void Router.prefetch('/dashboard');
-  }, []);
+    void Router.prefetch(redirect);
+  }, [redirect]);
 
   const onClick = useCallback(async () => {
     setError(undefined);
@@ -36,10 +45,10 @@ export default function Login(): JSX.Element {
       setSubmitting(false);
       setError(err);
     } else {
-      await Router.push('/dashboard');
+      await Router.push(redirect);
       setSubmitting(false);
     }
-  }, []);
+  }, [redirect]);
 
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
