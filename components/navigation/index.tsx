@@ -75,53 +75,6 @@ function Logo(): JSX.Element {
   );
 }
 
-function MobileNav(): JSX.Element {
-  const { user } = useUser();
-  const { t } = useTranslation();
-  const [active, setActive] = useState<boolean>(false);
-  const toggleMobileMenu = useCallback(() => {
-    setActive((prev: boolean) => {
-      const menuActive = !prev;
-      if (menuActive) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
-      return menuActive;
-    });
-  }, []);
-  return (
-    /* eslint-disable jsx-a11y/anchor-is-valid */
-    <>
-      <div
-        className={styles.mobileToggle}
-        onClick={toggleMobileMenu}
-        role='button'
-      >
-        <div
-          className={styles.toggle + (active ? ` ${styles.toggleActive}` : '')}
-        />
-      </div>
-      <nav
-        className={
-          styles.mobileNav + (active ? ` ${styles.mobileNavActive}` : '')
-        }
-      >
-        <ul className={styles.mobileLinks}>
-          <Link href='/[org]/signup' as='/default/signup'>
-            <a className={styles.mobileLink}>
-              <li className={styles.mobileLinkItem}>
-                {user.id ? t('common:profile') : t('common:signup')}
-              </li>
-            </a>
-          </Link>
-        </ul>
-      </nav>
-    </>
-    /* eslint-enable jsx-a11y/anchor-is-valid */
-  );
-}
-
 function DesktopNav(): JSX.Element {
   const { user, loggedIn } = useUser();
   const { t } = useTranslation();
@@ -136,7 +89,7 @@ function DesktopNav(): JSX.Element {
               {t('common:login')}
             </a>
           </Link>
-          <Link href='/[org]/signup' as='/default/signup'>
+          <Link href='/login' as='/login?href=profile'>
             <a className={`${styles.desktopLink} ${styles.signupLink}`}>
               {t('common:signup')}
             </a>
@@ -199,7 +152,6 @@ export function EmptyHeader({ formWidth }: EmptyHeaderProps): JSX.Element {
           <Logo />
         </div>
         <div className={styles.right}>
-          <MobileNav />
           <DesktopNav />
         </div>
       </header>
@@ -225,7 +177,6 @@ export function AspectHeader({
           <DesktopTabs aspect={aspect} onChange={onChange} />
         </div>
         <div className={styles.right}>
-          <MobileNav />
           <DesktopNav />
         </div>
       </header>
@@ -263,7 +214,6 @@ export function QueryHeader({
           <FilterForm query={query} onChange={onChange} thirdPerson />
         </div>
         <div className={styles.right}>
-          <MobileNav />
           <DesktopNav />
         </div>
       </header>

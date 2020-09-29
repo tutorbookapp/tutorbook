@@ -12,7 +12,7 @@ describe('Dashboard page', () => {
     cy.visit('/dashboard');
 
     cy.wait('@get-account');
-    cy.url({ timeout: 60000 }).should('contain', '/login');
+    cy.url({ timeout: 60000 }).should('contain', '/login?href=dashboard');
   });
 
   context('when logged in', () => {

@@ -1,26 +1,21 @@
-import { useEffect } from 'react';
-import Router from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import Page from 'components/page';
 import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
-import { withI18n } from 'lib/intl';
+import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/account';
+import { withI18n } from 'lib/intl';
 
 import overview from 'locales/en/overview.json';
 import common from 'locales/en/common.json';
 
 function DashboardPage(): JSX.Element {
   const { t } = useTranslation();
-  const { user, loggedIn } = useUser();
+  const { user } = useUser();
 
-  useEffect(() => {
-    if (loggedIn === false) {
-      void Router.push('/login');
-    }
-  }, [loggedIn]);
+  useLoggedIn('dashboard');
 
   return (
     <Page>

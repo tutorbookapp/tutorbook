@@ -16,7 +16,7 @@ describe('Profile page', () => {
     cy.visit('/profile');
     cy.wait('@get-account');
 
-    cy.url({ timeout: 60000 }).should('contain', '/login');
+    cy.url({ timeout: 60000 }).should('contain', '/login?href=profile');
   });
 
   it('retries failed update requests', () => {

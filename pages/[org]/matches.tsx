@@ -1,12 +1,13 @@
 import ErrorPage from 'next/error';
-import { useEffect, useMemo } from 'react';
-import Router, { useRouter } from 'next/router';
+import { useMemo } from 'react';
+import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import Page from 'components/page';
 import Matches from 'components/matches';
 import { TabHeader } from 'components/navigation';
 
+import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 
@@ -24,11 +25,7 @@ function MatchesPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  useEffect(() => {
-    if (loggedIn === false) {
-      void Router.push('/login');
-    }
-  }, [loggedIn]);
+  useLoggedIn('/[org]/matches', `/${query.org as string}/matches`);
 
   return (
     <>

@@ -12,7 +12,11 @@ describe('Org settings page', () => {
     cy.visit(`/${org.id}/settings`);
     cy.wait('@get-account');
 
-    cy.url({ timeout: 60000 }).should('contain', '/login');
+    const href = encodeURIComponent('/[org]/settings');
+    const as = encodeURIComponent(`/${org.id}/settings`);
+    const url = `/login?href=${href}&as=${as}`;
+
+    cy.url({ timeout: 60000 }).should('contain', url);
   });
 
   it('shows error when not member of org', () => {

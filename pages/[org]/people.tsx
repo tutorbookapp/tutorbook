@@ -1,14 +1,15 @@
 import ErrorPage from 'next/error';
-import { useEffect, useMemo } from 'react';
-import Router, { useRouter } from 'next/router';
+import { useMemo } from 'react';
+import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import { TabHeader } from 'components/navigation';
 import People from 'components/people';
 import Page from 'components/page';
 
-import { withI18n } from 'lib/intl';
+import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/account';
+import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
 import people from 'locales/en/people.json';
@@ -29,11 +30,7 @@ function PeoplePage(): JSX.Element {
     return orgs[idx];
   }, [orgs, params.org]);
 
-  useEffect(() => {
-    if (loggedIn === false) {
-      void Router.push('/login');
-    }
-  }, [loggedIn]);
+  useLoggedIn('/[org]/people', `/${params.org as string}/people`);
 
   return (
     <>

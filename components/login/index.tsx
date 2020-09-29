@@ -12,13 +12,18 @@ import Link from 'lib/intl/link';
 
 import styles from './login.module.scss';
 
+export interface Redirect {
+  href: string;
+  as?: string;
+}
+
 export default function Login(): JSX.Element {
   const { loggedIn } = useUser();
 
   const { t } = useTranslation();
   const [error, setError] = useState<Error>();
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [redirect, setRedirect] = useState<string>('/dashboard');
+  const [redirect, setRedirect] = useState<Redirect>({ href: '/dashboard' });
 
   useEffect(() => {
     // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
@@ -26,15 +31,19 @@ export default function Login(): JSX.Element {
     // @see {@link https://github.com/vercel/next.js/issues/17112}
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
-    setRedirect((prev: string) => params.get('redirect') || prev);
+    const paramsObj = Object.fromEntries(params.entries());
+    setRedirect((prev: Redirect) => ({
+      href: paramsObj.href ? encodeURIComponent(paramsObj.href) : prev.href,
+      as: paramsObj.as ? decodeURIComponent(paramsObj.as) : prev.as,
+    }));
   }, []);
   useEffect(() => {
     if (loggedIn) {
-      void Router.push(redirect);
+      void Router.push(redirect.href, redirect.as);
     }
   }, [redirect, loggedIn]);
   useEffect(() => {
-    void Router.prefetch(redirect);
+    void Router.prefetch(redirect.href, redirect.as);
   }, [redirect]);
 
   const onClick = useCallback(async () => {

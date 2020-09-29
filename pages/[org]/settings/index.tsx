@@ -1,6 +1,6 @@
 import ErrorPage from 'next/error';
-import { useEffect, useMemo } from 'react';
-import Router, { useRouter } from 'next/router';
+import { useMemo } from 'react';
+import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import Page from 'components/page';
@@ -8,6 +8,7 @@ import Settings from 'components/settings';
 import General from 'components/settings/general';
 import { TabHeader } from 'components/navigation';
 
+import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 
@@ -26,11 +27,7 @@ function SettingsPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  useEffect(() => {
-    if (loggedIn === false) {
-      void Router.push('/login');
-    }
-  }, [loggedIn]);
+  useLoggedIn('/[org]/settings', `/${query.org as string}/settings`);
 
   return (
     <>
