@@ -20,7 +20,6 @@ function DashboardPage(): JSX.Element {
   return (
     <Page>
       <TabHeader
-        links
         tabs={[
           {
             label: t('common:overview'),

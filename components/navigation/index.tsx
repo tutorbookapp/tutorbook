@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -36,29 +36,6 @@ function DesktopTabs({ aspect, onChange }: DesktopTabsProps): JSX.Element {
         },
       ]}
     />
-  );
-}
-
-function DesktopTabLinks(): JSX.Element {
-  const { t } = useTranslation();
-  const { user } = useUser();
-  return (
-    /* eslint-disable jsx-a11y/anchor-is-valid */
-    <div className={styles.desktopLinks}>
-      <Link
-        href='/[org]/search/[[...slug]]'
-        as={`/${user.orgs[0] || 'default'}/search?aspect=mentoring`}
-      >
-        <a className={styles.desktopLink}>{t('common:mentors')}</a>
-      </Link>
-      <Link
-        href='/[org]/search/[[...slug]]'
-        as={`/${user.orgs[0] || 'default'}/search?aspect=tutoring`}
-      >
-        <a className={styles.desktopLink}>{t('common:tutors')}</a>
-      </Link>
-    </div>
-    /* eslint-enable jsx-a11y/anchor-is-valid */
   );
 }
 
@@ -118,21 +95,16 @@ function DesktopNav(): JSX.Element {
   );
 }
 
-interface TabHeaderProps extends TabsProps {
-  links?: boolean;
-}
-
-export function TabHeader({ links, ...tabProps }: TabHeaderProps): JSX.Element {
+export function TabHeader(props: TabsProps): JSX.Element {
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
           <Switcher />
-          <Tabs {...tabProps} />
+          <Tabs {...props} />
         </div>
         <div className={styles.right}>
-          {links && <DesktopTabLinks />}
           <DesktopNav />
         </div>
       </header>
