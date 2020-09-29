@@ -59,7 +59,12 @@
       .inputs {
         max-width: 500px;
         margin: 32px auto;
-        padding: 0 48px;
+        padding: 0 16px;
+
+        @media (max-width: 600px) {
+          margin: 0 auto;
+          padding: 16px;
+        }
 
         .field {
           @include common.field;
