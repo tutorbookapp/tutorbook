@@ -68,6 +68,9 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
 
   useEffect(() => setViewing(user), [user]);
   useEffect(() => {
+    // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
+    // URL query parameters, but right now, it doesn't seem to be working.
+    // @see {@link https://github.com/vercel/next.js/issues/17112}
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     setQuery(UsersQuery.fromURLParams(Object.fromEntries(params.entries())));
