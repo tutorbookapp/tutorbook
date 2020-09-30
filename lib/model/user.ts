@@ -7,6 +7,7 @@ import {
   AvailabilitySearchHit,
 } from './availability';
 import { Account, AccountInterface } from './account';
+import { Aspect } from './aspect';
 import { Resource } from './resource';
 import construct from './construct';
 
@@ -96,6 +97,7 @@ export interface ZoomUser extends Resource {
  * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property visible - Whether or not this user appears in search results.
+ * @property featured - Aspects in which this user is first in search results.
  * @property token - The user's Firebase Authentication JWT `idToken`.
  * @todo Add a `zoom` prop that contains the user's personal Zoom OAuth token
  * (e.g. for freelancers who want to user their own Zoom account when creating
@@ -111,6 +113,7 @@ export interface UserInterface extends AccountInterface {
   parents: string[];
   verifications: Verification[];
   visible: boolean;
+  featured: Aspect[];
   token?: string;
 }
 
@@ -158,6 +161,8 @@ export class User extends Account implements UserInterface {
   public verifications: Verification[] = [];
 
   public visible = false;
+
+  public featured: Aspect[] = [];
 
   public token?: string;
 

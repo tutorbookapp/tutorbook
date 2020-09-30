@@ -27,6 +27,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 
 import {
+  Aspect,
   Check,
   SocialInterface,
   TCallback,
@@ -89,7 +90,18 @@ export default memo(function DisplayPage({
   );
   const onVisibilityChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
-      onChange({ ...user, visible: evt.currentTarget.checked });
+      return onChange({ ...user, visible: evt.currentTarget.checked });
+    },
+    [onChange, user]
+  );
+
+  const onFeaturedChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const featured: Aspect[] = [];
+      if (!evt.currentTarget.checked) return onChange({ ...user, featured });
+      if (user.tutoring.subjects.length) featured.push('tutoring');
+      if (user.mentoring.subjects.length) featured.push('mentoring');
+      return onChange({ ...user, featured });
     },
     [onChange, user]
   );
@@ -259,6 +271,15 @@ export default memo(function DisplayPage({
             label={t('user:visible')}
             checked={user.visible}
             onChange={onVisibilityChange}
+          />
+          <Switch
+            className={styles.switch}
+            label={t('user:featured')}
+            checked={!!user.featured.length}
+            onChange={onFeaturedChange}
+            disabled={
+              !user.tutoring.subjects.length && !user.mentoring.subjects.length
+            }
           />
         </div>
       </div>
