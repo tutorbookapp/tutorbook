@@ -53,7 +53,7 @@ export default function Search({
       <Form query={query} onChange={onChange} />
       {searching && !results.length && (
         <ul data-cy='results' className={styles.results}>
-          {Array(5)
+          {Array(20)
             .fill(null)
             .map(() => (
               <Result loading key={uuid()} />
