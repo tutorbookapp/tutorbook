@@ -32,6 +32,7 @@
       "url": "https://indiehackers.com/johndoe"
     }
   ],
+  "featured": ["mentoring", "tutoring"],
   "orgs": ["default", "gunn"],
   "zooms": [],
   "availability": [],

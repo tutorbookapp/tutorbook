@@ -53,7 +53,7 @@ export default memo(function ResultsList({
   const props = useSpring({ config, marginLeft: open ? width : 0 });
 
   return (
-    <animated.div className={styles.wrapper} style={props}>
+    <animated.div data-cy='results' className={styles.wrapper} style={props}>
       {!searching &&
         (data ? data.users : []).map((user: UserJSON) => (
           <Result

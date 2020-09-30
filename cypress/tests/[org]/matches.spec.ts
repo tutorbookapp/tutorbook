@@ -1,7 +1,7 @@
-import org from 'cypress/fixtures/orgs/default.json';
 import admin from 'cypress/fixtures/users/admin.json';
+import org from 'cypress/fixtures/orgs/default.json';
 
-describe('Matches page', () => {
+describe('Matches dashboard page', () => {
   beforeEach(() => {
     cy.setup();
     cy.login(admin.id);

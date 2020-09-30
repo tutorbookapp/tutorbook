@@ -65,6 +65,7 @@ function setup(overrides?: Overrides): void {
   cy.task('seed', overrides);
   cy.server();
   cy.route('GET', '/api/account').as('get-account');
+  cy.route('GET', '/api/users*').as('list-users');
 }
 
 function getBySel(

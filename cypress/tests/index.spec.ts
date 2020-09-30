@@ -6,10 +6,6 @@ describe('Landing page', () => {
   beforeEach(() => {
     cy.setup();
     cy.logout();
-
-    cy.server();
-    cy.route('GET', '/api/users*').as('list-users');
-
     cy.visit('/');
   });
 

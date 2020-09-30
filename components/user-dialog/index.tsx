@@ -160,7 +160,12 @@ export default function UserDialog({
   const closeDialog = useCallback(() => setOpen(false), []);
 
   return (
-    <Dialog open={open} onClosed={onClosed} className={styles.dialog}>
+    <Dialog
+      data-cy='user-dialog'
+      open={open}
+      onClosed={onClosed}
+      className={styles.dialog}
+    >
       <div
         className={cn(styles.page, { [styles.active]: active === 'display' })}
         ref={displayRef as RefObject<HTMLDivElement>}
