@@ -1,6 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import { Snackbar } from '@rmwc/snackbar';
 import useTranslation from 'next-translate/useTranslation';
+import to from 'await-to-js';
 
 import { IntercomAPI } from 'components/react-intercom';
 import TitleHeader from 'components/header';
@@ -39,7 +40,8 @@ function fallbackCopyTextToClipboard(text: string): void {
 
 async function copyTextToClipboard(text: string): Promise<void> {
   if (!navigator.clipboard) return fallbackCopyTextToClipboard(text);
-  return navigator.clipboard.writeText(text);
+  const [err] = await to(navigator.clipboard.writeText(text));
+  if (err) return fallbackCopyTextToClipboard(text);
 }
 
 export default memo(function Header({
