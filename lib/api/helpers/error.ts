@@ -1,3 +1,5 @@
+import { NextApiResponse as Res } from 'next';
+
 /**
  * Custom `Error` class that contains an HTTP status code property.
  * @typedef {Object} APIError
@@ -7,8 +9,14 @@
  * allows our front-end to know exactly what error has occurred (e.g. a `code`
  * indicating that the user's JWT is invalid could be `auth/no-jwt`).
  */
-export default class APIError extends Error {
+export class APIError extends Error {
   public constructor(message: string, public readonly code: number = 400) {
     super(message);
   }
+}
+
+export function handle(e: unknown, res: Res): void {
+  if (e instanceof APIError) res.status(e.code).end(e.message);
+  if (e instanceof Error) res.status(500).end(e.message);
+  if (typeof e === 'string') res.status(500).end(e);
 }

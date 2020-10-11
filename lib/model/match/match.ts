@@ -78,6 +78,10 @@ export type MatchSearchHit = ObjectWithObjectID &
     request?: RequestSearchHit;
   };
 
+export function isMatchJSON(json: any): json is MatchJSON {
+  return false;
+}
+
 export class Match extends Base implements MatchInterface {
   public request?: Request;
 
