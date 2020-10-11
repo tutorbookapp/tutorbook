@@ -54,6 +54,9 @@ export default function useContinuous<T extends { id: string }>(
 
   const timeout = useMemo(() => {
     // Exponential backoff equation taken from the @vercel/swr source code.
+    // TODO: Use existing retry libraries instead (don't reinvent the wheel).
+    // @see {@link https://github.com/vercel/async-retry}
+    // @see {@link https://github.com/tim-kos/node-retry}
     const count = Math.min(retryCount, 8);
     // eslint-disable-next-line no-bitwise
     const backoff = ~~((Math.random() + 0.5) * (1 << count)) * initialTimeout;
