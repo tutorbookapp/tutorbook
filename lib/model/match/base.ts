@@ -43,6 +43,19 @@ export type BaseJSON = Omit<BaseInterface, 'times'> & {
 export type BaseSearchHit = ObjectWithObjectID &
   Omit<BaseInterface, 'times'> & { times?: AvailabilitySearchHit };
 
+export function isBaseJSON(json: any): json is BaseJSON {
+  if (typeof json.org !== 'string') return false;
+  if (!(json.subjects instanceof Array)) return false;
+  if (json.subjects.some((s) => typeof s !== 'string')) return false;
+  if (!(json.people instanceof Array)) return false;
+  if (json.people.some((p) => !isPerson(p))) return false;
+  if (!isPerson(json.creator)) return false;
+  if (typeof json.message !== 'string') return false;
+  if (json.times && !isAvailabilityJSON(json.times)) return false;
+  if (typeof json.id !== 'string') return false;
+  return true;
+}
+
 // TODO: Why can't I use the `static` modifier with the `abstract` modifier? I
 // want to be able to create a super `Base` data model class that ensures each
 // data model class includes certain transformation functions (e.g. `fromJSON`).

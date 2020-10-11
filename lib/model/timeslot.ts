@@ -74,6 +74,15 @@ export type TimeslotFirestore = TimeslotBase<Timestamp>;
 export type TimeslotJSON = TimeslotBase<string>;
 export type TimeslotSearchHit = TimeslotBase<number>;
 
+export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
+  if (typeof json !== 'object' || json === null) return false;
+  if (typeof json.from !== 'string') return false;
+  if (typeof json.to !== 'string') return false;
+  if (new Date(json.from).toString() === 'Invalid Date') return false;
+  if (new Date(json.to).toString() === 'Invalid Date') return false;
+  return true;
+}
+
 /**
  * Class that represents a time opening or slot where tutoring can take place
  * (or where tutoring is taking place in the case of a booking). This provides

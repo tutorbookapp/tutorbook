@@ -1,8 +1,8 @@
 import to from 'await-to-js';
 
 import { Match, Venue } from 'lib/model';
+import { APIError } from 'lib/api/helpers/error';
 import { db } from 'lib/api/helpers/firebase';
-import APIError from 'lib/api/helpers/error';
 import clone from 'lib/utils/clone';
 
 /**
@@ -15,14 +15,12 @@ export default async function createMatchDoc(
   match: Match,
   venue: Venue
 ): Promise<Match> {
-  const copy = new Match(clone({ ...match, venue }));
   const ref = db.collection('matches').doc();
+  const copy = new Match(clone({ ...match, venue, id: ref.id }));
   const [err] = await to(ref.set(copy.toFirestore()));
-  if (err)
-    throw new APIError(
-      `${err.name} saving match to database: ${err.message}`,
-      500
-    );
-  copy.id = ref.id;
+  if (err) {
+    const msg = `${err.name} saving match (${match.toString()}) to database`;
+    throw new APIError(`${msg}: ${err.message}`, 500);
+  }
   return copy;
 }

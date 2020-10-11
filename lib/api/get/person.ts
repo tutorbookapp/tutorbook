@@ -1,6 +1,6 @@
 import { Person, Role, User, UserWithRoles } from 'lib/model';
+import { APIError } from 'lib/api/helpers/error';
 import { db } from 'lib/api/helpers/firebase';
-import APIError from 'lib/api/helpers/error';
 import clone from 'lib/utils/clone';
 
 function addRoles(user: User, roles: Role[]): UserWithRoles {
@@ -22,16 +22,19 @@ export default async function getPerson(
   person: Person,
   people: UserWithRoles[] = []
 ): Promise<UserWithRoles> {
-  if (!person.id)
-    throw new APIError(`${person.name || 'Person'} does not have uID`);
+  if (!person.id) {
+    const msg = `${person.name || 'Person'} does not have uID`;
+    throw new APIError(msg, 400);
+  }
 
   const prefetched = people[people.findIndex((p) => p.id === person.id)];
   if (prefetched) return addRoles(prefetched, prefetched.roles);
 
   const doc = await db.collection('users').doc(person.id).get();
-  if (!doc.exists)
-    throw new APIError(
-      `${person.name || 'Person'} (${person.id}) does not exist`
-    );
+  if (!doc.exists) {
+    const msg = `${person.name || 'Person'} (${person.id}) does not exist`;
+    throw new APIError(msg, 400);
+  }
+
   return addRoles(User.fromFirestore(doc), person.roles);
 }

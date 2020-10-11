@@ -1,6 +1,7 @@
 import { TimeUtils } from 'lib/utils';
 
 import {
+  isTimeslotJSON,
   DayAlias,
   Timeslot,
   TimeslotFirestore,
@@ -25,6 +26,12 @@ export type AvailabilityAlias = TimeslotInterface[];
 export type AvailabilityJSON = TimeslotJSON[];
 export type AvailabilityFirestore = TimeslotFirestore[];
 export type AvailabilitySearchHit = TimeslotSearchHit[];
+
+export function isAvailabilityJSON(json: unknown): json is AvailabilityJSON {
+  if (!(json instanceof Array)) return false;
+  if (json.some((t) => !isTimeslotJSON(t))) return false;
+  return true;
+}
 
 /**
  * Class that contains a bunch of time slots or openings that represents a

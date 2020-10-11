@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, MatchJSON, isMatchJSON } from 'lib/model';
-import APIError from 'lib/api/helpers/error';
+import { handle } from 'lib/api/helpers/error';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createZoom from 'lib/api/create/zoom';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
@@ -21,7 +21,10 @@ import verifyTimesInAvailability from 'lib/api/verify/times-in-availability';
  * (or, even better, add this timeslot to their availability and then remove it
  * during post-creation logic).
  */
-export default async function createMatch(req: Req, res: Res): Promise<void> {
+export default async function createMatch(
+  req: Req,
+  res: Res<MatchJSON>
+): Promise<void> {
   try {
     const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);
     const people = await getPeople(body.people);
@@ -45,8 +48,6 @@ export default async function createMatch(req: Req, res: Res): Promise<void> {
 
     res.status(201).json(match.toJSON());
   } catch (e) {
-    if (e instanceof APIError) res.status(e.code).end(e.message);
-    if (e instanceof Error) res.status(500).end(e.message);
-    if (typeof e === 'string') res.status(500).end(e);
+    handle(e, res);
   }
 }
