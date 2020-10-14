@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { ApiError } from 'lib/model';
-import fetchOrg, { FetchOrgRes } from 'lib/api/fetch-org';
-import updateOrg, { UpdateOrgRes } from 'lib/api/update-org';
+import { APIError } from 'lib/api/error';
+import fetchOrg, { FetchOrgRes } from 'lib/api/routes/orgs/fetch';
+import updateOrg, { UpdateOrgRes } from 'lib/api/routes/orgs/update';
 
 /**
  * GET - Fetches the org's profile document.
@@ -12,7 +12,7 @@ import updateOrg, { UpdateOrgRes } from 'lib/api/update-org';
  */
 export default async function org(
   req: NextApiRequest,
-  res: NextApiResponse<FetchOrgRes | UpdateOrgRes | ApiError>
+  res: NextApiResponse<FetchOrgRes | UpdateOrgRes | APIError>
 ): Promise<void> {
   switch (req.method) {
     case 'GET': // Fetch the org's profile document.

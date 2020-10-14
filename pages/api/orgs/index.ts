@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { ApiError } from 'lib/model';
-import listOrgs, { ListOrgsRes } from 'lib/api/list-orgs';
+import { APIError } from 'lib/api/error';
+import listOrgs, { ListOrgsRes } from 'lib/api/routes/orgs/list';
 
 /**
  * GET - Lists the orgs that the given user is a member of.
@@ -10,7 +10,7 @@ import listOrgs, { ListOrgsRes } from 'lib/api/list-orgs';
  */
 export default async function orgs(
   req: NextApiRequest,
-  res: NextApiResponse<ListOrgsRes | ApiError>
+  res: NextApiResponse<ListOrgsRes | APIError>
 ): Promise<void> {
   switch (req.method) {
     case 'GET': // Fetch the org's profile document.

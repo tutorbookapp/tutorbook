@@ -6,6 +6,8 @@ import getOrg from 'lib/api/get/org';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
+export type FetchOrgRes = OrgJSON;
+
 /**
  * Fetches the requested org data.
  * @todo Why was this API endpoint restricted in the first place? Can't anyone
@@ -13,7 +15,7 @@ import verifyQueryId from 'lib/api/verify/query-id';
  */
 export default async function fetchOrg(
   req: Req,
-  res: Res<OrgJSON>
+  res: Res<FetchOrgRes>
 ): Promise<void> {
   try {
     const id = verifyQueryId(req.query);

@@ -14,6 +14,8 @@ import verifyOrgs from 'lib/api/verify/orgs';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimesInAvailability from 'lib/api/verify/times-in-availability';
 
+export type CreateMatchRes = MatchJSON;
+
 /**
  * Creates a new match: A pairing of people (typically between a student and a
  * tutor/mentor).
@@ -23,7 +25,7 @@ import verifyTimesInAvailability from 'lib/api/verify/times-in-availability';
  */
 export default async function createMatch(
   req: Req,
-  res: Res<MatchJSON>
+  res: Res<CreateMatchRes>
 ): Promise<void> {
   try {
     const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);

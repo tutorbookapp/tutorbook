@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { ApiError } from 'lib/model';
-import listUsers, { ListUsersRes } from 'lib/api/list-users';
-import createUser, { CreateUserRes } from 'lib/api/create-user';
+import { APIError } from 'lib/api/error';
+import listUsers, { ListUsersRes } from 'lib/api/routes/users/list';
+import createUser, { CreateUserRes } from 'lib/api/routes/users/create';
 
 /**
  * GET - Lists all of Tutorbook's users (applying the given filters).
@@ -14,7 +14,7 @@ import createUser, { CreateUserRes } from 'lib/api/create-user';
  */
 export default async function users(
   req: NextApiRequest,
-  res: NextApiResponse<ListUsersRes | CreateUserRes | ApiError>
+  res: NextApiResponse<ListUsersRes | CreateUserRes | APIError>
 ): Promise<void> {
   switch (req.method) {
     case 'GET': // List all of Tutorbook's users (applying filters).
