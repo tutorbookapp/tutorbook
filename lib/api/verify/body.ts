@@ -1,4 +1,4 @@
-import APIError from 'lib/api/helpers/error';
+import APIError from 'lib/api/error';
 
 interface ModelConstructor<Model, ModelJSON> {
   new (param: Record<string, unknown>): Model;

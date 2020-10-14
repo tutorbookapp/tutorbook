@@ -14,7 +14,7 @@ import {
   Venue,
   ZoomUser,
 } from 'lib/model';
-import { db } from 'lib/api/helpers/firebase';
+import { db } from 'lib/api/firebase';
 import Utils from 'lib/utils';
 
 function getJitsi(matchId: string): Promise<JitsiVenue> {

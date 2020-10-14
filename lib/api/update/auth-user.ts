@@ -6,19 +6,23 @@ import { User } from 'lib/model';
 import clone from 'lib/utils/clone';
 
 /**
- * Creates the Firebase Authentication account for the given user.
- * @param user - The user to create the account for.
- * @return Promise that resolves to the created user; throws an `APIError` if we
- * were unable to create the Firebase Authentication account.
+ * Updates the Firebase Authentication account for the given user.
+ * @param user - The user to update the account for.
+ * @return Promise that resolves to the updated user; throws an `APIError` if we
+ * were unable to update the Firebase Authentication account.
  * @todo Perhaps remove the `validatePhone` method as it isn't used anywhere
  * else besides here.
  * @todo Handle common Firebase Authentication errors such as
  * `auth/phone-number-already-exists` or `auth/email-already-exists`.
+ * @todo Remove code duplication from the `createAuthUser` component fx.
+ * @todo Previously (before this massive API refactor), we prevented the user
+ * from removing essential data (e.g. email) from their account. Do we want to
+ * add this functionality again?
  */
-export default async function createAuthUser(user: User): Promise<User> {
+export default async function updateAuthUser(user: User): Promise<User> {
   await user.validatePhone();
   const [err, userRecord] = await to<UserRecord, FirebaseError>(
-    auth.createUser({
+    auth.updateUser(user.id, {
       disabled: false,
       email: user.email,
       emailVerified: false,
@@ -31,11 +35,11 @@ export default async function createAuthUser(user: User): Promise<User> {
     throw new APIError(
       `${err.name} (${
         err.code
-      }) creating auth account for ${user.toString()}: ${err.message}`,
+      }) updating auth account for ${user.toString()}: ${err.message}`,
       500
     );
   const record = userRecord as UserRecord;
-  const createdUser = new User(
+  const updatedUser = new User(
     clone({
       ...user,
       email: record.email,
@@ -45,5 +49,5 @@ export default async function createAuthUser(user: User): Promise<User> {
       id: record.uid,
     })
   );
-  return createdUser;
+  return updatedUser;
 }

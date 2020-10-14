@@ -1,8 +1,8 @@
 import to from 'await-to-js';
 
-import { APIError } from 'lib/api/helpers/error';
+import { APIError } from 'lib/api/error';
 import { User } from 'lib/model';
-import { db } from 'lib/api/helpers/firebase';
+import { db } from 'lib/api/firebase';
 import clone from 'lib/utils/clone';
 
 /**
@@ -18,12 +18,10 @@ export default async function createUserDoc(user: User): Promise<User> {
     const msg = `User (${user.toString()}) already exists in database`;
     throw new APIError(msg, 400);
   }
-
   const [err] = await to(doc.ref.set(copy.toFirestore()));
   if (err) {
     const msg = `${err.name} saving user (${user.toString()}) in database`;
     throw new APIError(`${msg}: ${err.message}`, 500);
   }
-
   return copy;
 }

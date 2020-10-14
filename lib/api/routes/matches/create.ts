@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, MatchJSON, isMatchJSON } from 'lib/model';
-import { handle } from 'lib/api/helpers/error';
+import { handle } from 'lib/api/error';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createZoom from 'lib/api/create/zoom';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';

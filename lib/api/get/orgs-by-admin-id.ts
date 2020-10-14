@@ -1,4 +1,4 @@
-import { DocumentSnapshot, db } from 'lib/api/helpers/firebase';
+import { DocumentSnapshot, db } from 'lib/api/firebase';
 import { Org } from 'lib/model';
 
 /**
