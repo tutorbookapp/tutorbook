@@ -59,8 +59,8 @@ type Intercom =
 
 declare global {
   interface Window {
-    Intercom: Intercom;
-    intercomSettings: IntercomSettings;
+    Intercom?: Intercom;
+    intercomSettings?: IntercomSettings;
   }
 }
 
