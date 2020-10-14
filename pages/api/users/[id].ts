@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { ApiError } from 'lib/model';
-import fetchUser, { FetchUserRes } from 'lib/api/fetch-user';
-import updateUser, { UpdateUserRes } from 'lib/api/update-user';
+import { APIError } from 'lib/api/error';
+import fetchUser, { FetchUserRes } from 'lib/api/routes/users/fetch';
+import updateUser, { UpdateUserRes } from 'lib/api/routes/users/update';
 
 /**
  * GET - Fetches the user's profile document.
@@ -14,7 +14,7 @@ import updateUser, { UpdateUserRes } from 'lib/api/update-user';
  */
 export default async function user(
   req: NextApiRequest,
-  res: NextApiResponse<FetchUserRes | UpdateUserRes | ApiError>
+  res: NextApiResponse<FetchUserRes | UpdateUserRes | APIError>
 ): Promise<void> {
   switch (req.method) {
     case 'GET': // Fetch the user's profile document.

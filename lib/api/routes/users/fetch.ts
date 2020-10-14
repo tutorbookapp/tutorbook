@@ -6,6 +6,8 @@ import getPerson from 'lib/api/get/person';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
+export type FetchUserRes = UserJSON;
+
 /**
  * Fetches data for the requested user.
  * @todo Send truncated data instead of completely erroring when the user
@@ -15,7 +17,7 @@ import verifyQueryId from 'lib/api/verify/query-id';
  */
 export default async function fetchUser(
   req: Req,
-  res: Res<UserJSON>
+  res: Res<FetchUserRes>
 ): Promise<void> {
   try {
     const id = verifyQueryId(req.query);

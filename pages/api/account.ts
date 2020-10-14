@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import to from 'await-to-js';
 
-import { ApiError } from 'lib/model';
+import { APIError } from 'lib/api/error';
 import { DecodedIdToken, auth } from 'lib/api/helpers/firebase';
 import error from 'lib/api/helpers/error';
 
@@ -12,7 +12,7 @@ import error from 'lib/api/helpers/error';
  */
 export default async function account(
   req: NextApiRequest,
-  res: NextApiResponse<ApiError | void>
+  res: NextApiResponse<APIError | void>
 ): Promise<void> {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);

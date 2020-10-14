@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { ApiError } from 'lib/model';
-import createMatch, { CreateMatchRes } from 'lib/api/create-match';
-import listMatches, { ListMatchesRes } from 'lib/api/list-matches';
+import { APIError } from 'lib/api/error';
+import createMatch, { CreateMatchRes } from 'lib/api/routes/matches/create';
+import listMatches, { ListMatchesRes } from 'lib/api/routes/matches/list';
 
 /**
  * GET - Lists the user's, their children's, or their org's matches.
@@ -12,7 +12,7 @@ import listMatches, { ListMatchesRes } from 'lib/api/list-matches';
  */
 export default async function matches(
   req: NextApiRequest,
-  res: NextApiResponse<ListMatchesRes | CreateMatchRes | ApiError>
+  res: NextApiResponse<ListMatchesRes | CreateMatchRes | APIError>
 ): Promise<void> {
   switch (req.method) {
     case 'GET': // List the user's, their children's, and their org's matches.

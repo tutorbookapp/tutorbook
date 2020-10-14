@@ -7,12 +7,16 @@ import createUserDoc from 'lib/api/create/user-doc';
 import createUserNotification from 'lib/api/create/user-notification';
 import verifyBody from 'lib/api/verify/body';
 
+export type CreateUserRes = UserJSON;
+
 /**
  * Creates a new user.
+ * @todo Add a `code` property to the `APIError` class so that the client can
+ * intelligently show i18n messages for specific errors.
  */
 export default async function createUser(
   req: Req,
-  res: Res<UserJSON>
+  res: Res<CreateUserRes>
 ): Promise<void> {
   try {
     const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
