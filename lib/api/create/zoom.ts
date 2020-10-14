@@ -17,7 +17,7 @@ import {
 import { db } from 'lib/api/firebase';
 import Utils from 'lib/utils';
 
-function getJitsi(matchId: string): Promise<JitsiVenue> {
+function getJitsi(matchId: string): JitsiVenue {
   return {
     type: 'jitsi',
     url: `https://meet.jit.si/${matchId}`,

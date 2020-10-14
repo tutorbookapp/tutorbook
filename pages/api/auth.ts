@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import axios, { AxiosResponse } from 'axios';
 import to from 'await-to-js';
 
-import { db, DocumentSnapshot } from 'lib/api/helpers/firebase';
-import error from 'lib/api/helpers/error';
+import { APIError, handle } from 'lib/api/error';
+import { DocumentSnapshot, db } from 'lib/api/firebase';
 
 interface ZoomToken {
   access_token: string;
@@ -33,16 +33,13 @@ interface ZoomUser {
  * @see {@link https://marketplace.zoom.us/docs/api-reference/using-zoom-apis#using-oauth}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
  */
-async function authorize(
-  req: NextApiRequest,
-  res: NextApiResponse<void>
-): Promise<void> {
+async function authorize(req: Req, res: Res<void>): Promise<void> {
   if (typeof req.query.org !== 'string') {
-    error(res, 'You must provide an org ID using the `org` query param.');
+    throw new APIError('Missing org ID in the `org` query param.', 400);
   } else if (typeof req.query.code !== 'string') {
-    error(res, 'You must provide an OAuth code using the `code` query param.');
+    throw new APIError('Missing OAuth code in the `code` query param.', 400);
   } else if (!req.headers.host || !req.url) {
-    error(res, 'No request hostname nor URL to derive the Zoom redirect link.');
+    throw new APIError('Missing Zoom redirect link in host and url.', 400);
   } else {
     // 1. Request an access token using the Zoom OAuth code.
     const redirect = new URL(req.url, `http://${req.headers.host}/`);
@@ -60,7 +57,7 @@ async function authorize(
       })
     );
     if (err) {
-      error(res, `${err.name} calling Zoom OAuth API: ${err.message}`, 500);
+      throw new APIError(`${err.name} calling OAuth API: ${err.message}`, 500);
     } else {
       // 2. Get the Zoom account ID by fetching the user's Zoom data.
       const {
@@ -73,7 +70,7 @@ async function authorize(
         })
       );
       if (e) {
-        error(res, `${e.name} calling Zoom User API: ${e.message}`, 500);
+        throw new APIError(`${e.name} calling User API: ${e.message}`, 500);
       } else {
         // 3. Store the Zoom refresh token in the org's Firestore document.
         const { account_id: accountId } = (user as AxiosResponse<
@@ -130,15 +127,12 @@ function isZoomEvent(evt: any): evt is ZoomEvent {
  * @see {@link https://marketplace.zoom.us/docs/guides/auth/deauthorization}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
  */
-async function deauthorize(
-  req: NextApiRequest,
-  res: NextApiResponse<void>
-): Promise<void> {
+async function deauthorize(req: Req, res: Res<void>): Promise<void> {
   if (req.headers.authorization !== process.env.ZOOM_TOKEN) {
     // 1. Verify that the request actually came from Zoom.
-    error(res, 'Invalid authorization header.', 401);
+    throw new APIError('Invalid authorization header.', 401);
   } else if (!isZoomEvent(req.body)) {
-    error(res, 'You must provide a request body w/ a deauthorization event.');
+    throw new APIError('Missing request body w/ a deauthorization event.', 400);
   } else {
     // 2. Remove the Zoom refresh token from org data.
     const orgs = (
@@ -173,7 +167,10 @@ async function deauthorize(
       })
     );
     if (err) {
-      error(res, `${err.name} calling Zoom Compliance API: ${err.message}`);
+      throw new APIError(
+        `${err.name} calling Compliance API: ${err.message}`,
+        500
+      );
     } else {
       res.status(200).end();
     }
@@ -187,19 +184,20 @@ async function deauthorize(
  * Currently, this doesn't require any authentication claims. We might add a JWT
  * requirement for the GET endpoint... but there isn't one right now.
  */
-export default async function auth(
-  req: NextApiRequest,
-  res: NextApiResponse<void>
-): Promise<void> {
-  switch (req.method) {
-    case 'GET': // Add a new Zoom OAuth refresh token to an org's account.
-      await authorize(req, res);
-      break;
-    case 'POST': // Remove a Zoom OAuth refresh token from an org's account.
-      await deauthorize(req, res);
-      break;
-    default:
-      res.setHeader('Allow', ['GET', 'POST']);
-      res.status(405).end(`Method ${req.method as string} Not Allowed`);
+export default async function auth(req: Req, res: Res<void>): Promise<void> {
+  try {
+    switch (req.method) {
+      case 'GET': // Add a new Zoom OAuth refresh token to an org's account.
+        await authorize(req, res);
+        break;
+      case 'POST': // Remove a Zoom OAuth refresh token from an org's account.
+        await deauthorize(req, res);
+        break;
+      default:
+        res.setHeader('Allow', ['GET', 'POST']);
+        res.status(405).end(`Method ${req.method as string} Not Allowed`);
+    }
+  } catch (e) {
+    handle(e, res);
   }
 }

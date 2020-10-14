@@ -13,8 +13,8 @@ import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
 import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
-import { db } from 'lib/api/helpers/firebase';
-import { ListUsersRes } from 'lib/api/list-users';
+import { db } from 'lib/api/firebase';
+import { ListUsersRes } from 'lib/api/routes/users/list';
 import { useUser } from 'lib/account';
 import { withI18n } from 'lib/intl';
 import Utils from 'lib/utils';

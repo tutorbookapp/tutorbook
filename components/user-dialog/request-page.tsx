@@ -20,7 +20,7 @@ import Button from 'components/button';
 import Result from 'components/search/result';
 import SubjectSelect, { SubjectOption } from 'components/subject-select';
 
-import { ListRequestsRes } from 'lib/api/list-requests';
+import { ListRequestsRes } from 'lib/api/routes/requests/list';
 import { useUser } from 'lib/account';
 import Utils from 'lib/utils';
 import {

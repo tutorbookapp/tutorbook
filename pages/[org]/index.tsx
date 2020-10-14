@@ -8,7 +8,7 @@ import Page from 'components/page';
 
 import { Org, OrgJSON } from 'lib/model';
 import { withI18n } from 'lib/intl';
-import { db } from 'lib/api/helpers/firebase';
+import { db } from 'lib/api/firebase';
 
 import home from 'locales/en/home.json';
 import common from 'locales/en/common.json';
