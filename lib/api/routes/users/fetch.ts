@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { UserJSON } from 'lib/model';
-import { handle } from 'lib/api/helpers/error';
+import { handle } from 'lib/api/error';
 import getPerson from 'lib/api/get/person';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';

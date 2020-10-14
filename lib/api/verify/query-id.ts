@@ -1,4 +1,4 @@
-import { APIError } from 'lib/api/helpers/error';
+import { APIError } from 'lib/api/error';
 
 /**
  * Verifies that the given query object contains an ID param.

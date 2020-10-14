@@ -1,7 +1,7 @@
 import mail from '@sendgrid/mail';
 import to from 'await-to-js';
 
-import { APIError } from 'lib/api/helpers/error';
+import { APIError } from 'lib/api/error';
 import { SignUpEmail } from 'lib/emails';
 import { User } from 'lib/model';
 

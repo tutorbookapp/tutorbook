@@ -36,6 +36,11 @@ export type UsersQueryJSON = Omit<UsersQueryInterface, 'availability'> & {
 
 export type UsersQueryURL = { [key in keyof UsersQueryInterface]?: string };
 
+// TODO: Implement this to actually verify that the given JSON is valid.
+export function isUsersQueryJSON(json: unknown): json is UsersQueryJSON {
+  return true;
+}
+
 export class UsersQuery extends Query implements UsersQueryInterface {
   public aspect: Aspect = 'tutoring';
 

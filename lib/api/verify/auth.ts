@@ -2,9 +2,9 @@ import { IncomingHttpHeaders } from 'http';
 
 import to from 'await-to-js';
 
-import { DecodedIdToken, auth } from 'lib/api/helpers/firebase';
-import APIError from 'lib/api/helpers/error';
-import fetchOrgsByAdminId from 'lib/api/fetch/orgs-by-admin-id';
+import { DecodedIdToken, auth } from 'lib/api/firebase';
+import { APIError } from 'lib/api/error';
+import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
 
 /**
  * Verifies the authorization header by:
@@ -14,8 +14,8 @@ import fetchOrgsByAdminId from 'lib/api/fetch/orgs-by-admin-id';
  * @param headers - The request headers to verify.
  * @param [options] - Specify if the JWT must belong to a certain user OR to an
  * admin access of any one of the specified orgs.
- * @return Promise that resolves to nothing; throws an `APIError` if the user is
- * unauthenticated.
+ * @return Promise that resolves to the authenticated user's uID; throws an
+ * `APIError` if the user is unauthenticated.
  * @example
  * // Verify request is from a logged-in user.
  * await verifyAuth(req.headers);
@@ -27,7 +27,7 @@ import fetchOrgsByAdminId from 'lib/api/fetch/orgs-by-admin-id';
 export default async function verifyAuth(
   headers: IncomingHttpHeaders,
   options?: { userId?: string; orgIds?: string[] }
-): Promise<void> {
+): Promise<string> {
   if (typeof headers.authorization !== 'string')
     throw new APIError('You must provide a valid authorization header', 401);
   if (!headers.authorization.startsWith('Bearer '))
@@ -40,11 +40,11 @@ export default async function verifyAuth(
 
   // Check if JWT belongs to `userId` OR an admin to any one of the `orgIds`
   const { uid } = token as DecodedIdToken;
-  if (!options) return;
-  if (options && options.userId && uid === options.userId) return;
+  if (!options) return uid;
+  if (options && options.userId && uid === options.userId) return uid;
   if (options && options.orgIds && options.orgIds.length) {
-    const orgIds = (await fetchOrgsByAdminId(uid)).map((o) => o.id);
-    if (options.orgIds.some((orgId) => orgIds.includes(orgId))) return;
+    const orgIds = (await getOrgsByAdminId(uid)).map((o) => o.id);
+    if (options.orgIds.some((orgId) => orgIds.includes(orgId))) return uid;
   }
   throw new APIError('You are not authorized to perform this action', 401);
 }

@@ -1,6 +1,6 @@
 import { Person, Role, User, UserWithRoles } from 'lib/model';
-import { APIError } from 'lib/api/helpers/error';
-import { db } from 'lib/api/helpers/firebase';
+import { APIError } from 'lib/api/error';
+import { db } from 'lib/api/firebase';
 import clone from 'lib/utils/clone';
 
 function addRoles(user: User, roles: Role[]): UserWithRoles {

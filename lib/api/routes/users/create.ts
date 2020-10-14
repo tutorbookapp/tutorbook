@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { User, UserJSON, isUserJSON } from 'lib/model';
-import { handle } from 'lib/api/helpers/error';
+import { handle } from 'lib/api/error';
 import createAuthUser from 'lib/api/create/auth-user';
 import createUserDoc from 'lib/api/create/user-doc';
 import createUserNotification from 'lib/api/create/user-notification';

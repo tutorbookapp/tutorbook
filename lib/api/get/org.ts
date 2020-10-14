@@ -1,6 +1,6 @@
-import { APIError } from 'lib/api/helpers/error';
+import { APIError } from 'lib/api/error';
 import { Org } from 'lib/model';
-import { db } from 'lib/api/helpers/firebase';
+import { db } from 'lib/api/firebase';
 
 /**
  * Gets the complete data for a given org ID.

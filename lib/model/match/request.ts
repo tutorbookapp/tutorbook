@@ -42,6 +42,11 @@ export type RequestJSON = Omit<RequestInterface, 'times'> & {
 export type RequestSearchHit = ObjectWithObjectID &
   Omit<RequestInterface, 'times'> & { times?: AvailabilitySearchHit };
 
+// TODO: Implement this to actually verify that the given JSON is valid.
+export function isRequestJSON(json: unknown): json is RequestJSON {
+  return true;
+}
+
 export class Request extends Base implements RequestInterface {
   public status: RequestStatus = 'created';
 
