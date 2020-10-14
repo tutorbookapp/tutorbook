@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 
 import { DAYS } from './constants';
+import isJSON from './is-json';
 
 /**
  * Number representing the day of the week. Follows the ECMAScript Date
@@ -75,7 +76,7 @@ export type TimeslotJSON = TimeslotBase<string>;
 export type TimeslotSearchHit = TimeslotBase<number>;
 
 export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
-  if (typeof json !== 'object' || json === null) return false;
+  if (!isJSON(json)) return false;
   if (typeof json.from !== 'string') return false;
   if (typeof json.to !== 'string') return false;
   if (new Date(json.from).toString() === 'Invalid Date') return false;

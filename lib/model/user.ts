@@ -129,6 +129,7 @@ export type UserJSON = Omit<UserInterface, 'availability'> & {
   availability: AvailabilityJSON;
 };
 
+// TODO: Actually implement this so that it checks the validity of API requests.
 export function isUserJSON(json: any): json is UserJSON {
   return (json as UserJSON).availability !== undefined;
 }

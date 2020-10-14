@@ -15,7 +15,7 @@ import {
   RequestJSON,
   UsersQuery,
 } from 'lib/model';
-import { ListRequestsRes } from 'lib/api/list-requests';
+import { ListRequestsRes } from 'lib/api/routes/requests/list';
 
 import { config, width } from './spring-animation';
 import RequestItem from './request-item';

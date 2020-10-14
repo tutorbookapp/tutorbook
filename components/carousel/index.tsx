@@ -3,7 +3,7 @@ import useSWR, { mutate } from 'swr';
 import { v4 as uuid } from 'uuid';
 
 import { User, UserJSON, UsersQuery } from 'lib/model';
-import { ListUsersRes } from 'lib/api/list-users';
+import { ListUsersRes } from 'lib/api/routes/users/list';
 
 import Carousel from './carousel';
 import { LoadingCard, UserCard } from './cards';

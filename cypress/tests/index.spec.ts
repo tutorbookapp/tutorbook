@@ -1,6 +1,6 @@
 import volunteer from 'cypress/fixtures/users/volunteer.json';
 
-import { onlyFirstNameAndLastInitial } from 'lib/api/helpers/truncation';
+import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
 
 describe('Landing page', () => {
   beforeEach(() => {

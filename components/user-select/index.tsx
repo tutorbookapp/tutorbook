@@ -6,7 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Select, { SelectControllerProps } from 'components/select';
 
 import { Option, User, UserJSON, UsersQuery } from 'lib/model';
-import { ListUsersRes } from 'lib/api/list-users';
+import { ListUsersRes } from 'lib/api/routes/users/list';
 import { useUser } from 'lib/account';
 
 export interface UserOption extends Option<string> {

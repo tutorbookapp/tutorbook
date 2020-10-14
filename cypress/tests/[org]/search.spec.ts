@@ -7,7 +7,7 @@ import school from 'cypress/fixtures/orgs/school.json';
 
 import request from 'cypress/fixtures/request.json';
 
-import { onlyFirstNameAndLastInitial } from 'lib/api/helpers/truncation';
+import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
 
 function waitForResults() {
   cy.wait('@list-users');

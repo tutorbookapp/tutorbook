@@ -1,34 +1,25 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import to from 'await-to-js';
+import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { APIError } from 'lib/api/error';
-import { DecodedIdToken, auth } from 'lib/api/helpers/firebase';
-import error from 'lib/api/helpers/error';
+import { handle } from 'lib/api/error';
+import verifyAuth from 'lib/api/verify/auth';
 
 /**
  * GET - Fetches the profile data of the user who own's the given JWT.
  *
  * Requires a JWT; will return the profile data of that user.
  */
-export default async function account(
-  req: NextApiRequest,
-  res: NextApiResponse<APIError | void>
-): Promise<void> {
+export default async function account(req: Req, res: Res): Promise<void> {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
     res.status(405).end(`Method ${req.method as string} Not Allowed`);
-  } else if (typeof req.headers.authorization !== 'string') {
-    error(res, 'You must provide a valid Firebase Auth JWT.', 401);
   } else {
-    const [err, token] = await to<DecodedIdToken>(
-      auth.verifyIdToken(req.headers.authorization.replace('Bearer ', ''), true)
-    );
-    if (err) {
-      error(res, `Your Firebase Auth JWT is invalid: ${err.message}`, 401, err);
-    } else {
+    try {
+      const uid = await verifyAuth(req.headers);
       res.statusCode = 302;
-      res.setHeader('Location', `/api/users/${(token as DecodedIdToken).uid}`);
+      res.setHeader('Location', `/api/users/${uid}`);
       res.end();
+    } catch (e) {
+      handle(e, res);
     }
   }
 }

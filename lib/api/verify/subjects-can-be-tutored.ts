@@ -1,5 +1,5 @@
+import { APIError } from 'lib/api/error';
 import { UserWithRoles } from 'lib/model';
-import APIError from 'lib/api/error';
 
 /**
  * Verifies that the given subjects can be tutored/mentored by all the mentors

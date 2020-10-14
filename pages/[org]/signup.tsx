@@ -10,7 +10,7 @@ import Page from 'components/page';
 
 import { withI18n } from 'lib/intl';
 import { isAspect, Aspect, Org, OrgJSON } from 'lib/model';
-import { db } from 'lib/api/helpers/firebase';
+import { db } from 'lib/api/firebase';
 
 import user3rd from 'locales/en/user3rd.json';
 import signup from 'locales/en/signup.json';

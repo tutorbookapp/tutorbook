@@ -8,7 +8,7 @@ import Placeholder from 'components/placeholder';
 import Result from 'components/search/result';
 
 import { Callback, TCallback, User, UserJSON, UsersQuery } from 'lib/model';
-import { ListUsersRes } from 'lib/api/list-users';
+import { ListUsersRes } from 'lib/api/routes/users/list';
 
 import { config, width } from './spring-animation';
 import styles from './results-list.module.scss';

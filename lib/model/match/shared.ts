@@ -1,6 +1,12 @@
 import { User } from '../user';
+import isJSON from '../is-json';
 
 export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
+
+export function isRole(param: unknown): param is Role {
+  if (typeof param !== 'string') return false;
+  return ['parent', 'tutor', 'tutee', 'mentor', 'mentee'].includes(param);
+}
 
 export type UserWithRoles = User & { roles: Role[] };
 
@@ -26,4 +32,15 @@ export interface Person {
   photo?: string;
   handle: string;
   roles: Role[];
+}
+
+export function isPerson(json: unknown): json is Person {
+  if (!isJSON(json)) return false;
+  if (typeof json.id !== 'string') return false;
+  if (json.name && typeof json.name !== 'string') return false;
+  if (json.photo && typeof json.photo !== 'string') return false;
+  if (typeof json.handle !== 'string') return false;
+  if (!(json.roles instanceof Array)) return false;
+  if (json.roles.some((r) => !isRole(r))) return false;
+  return true;
 }

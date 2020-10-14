@@ -2,15 +2,17 @@ import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
-import { Aspect } from '../aspect';
 import {
   Availability,
   AvailabilityJSON,
   AvailabilitySearchHit,
+  isAvailabilityJSON,
 } from '../availability';
+import { Aspect } from '../aspect';
 import construct from '../construct';
+import isJSON from '../is-json';
 
-import { Person } from './shared';
+import { Person, isPerson } from './shared';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentReference = admin.firestore.DocumentReference;
@@ -43,7 +45,8 @@ export type BaseJSON = Omit<BaseInterface, 'times'> & {
 export type BaseSearchHit = ObjectWithObjectID &
   Omit<BaseInterface, 'times'> & { times?: AvailabilitySearchHit };
 
-export function isBaseJSON(json: any): json is BaseJSON {
+export function isBaseJSON(json: unknown): json is BaseJSON {
+  if (!isJSON(json)) return false;
   if (typeof json.org !== 'string') return false;
   if (!(json.subjects instanceof Array)) return false;
   if (json.subjects.some((s) => typeof s !== 'string')) return false;

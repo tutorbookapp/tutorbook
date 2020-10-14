@@ -18,7 +18,7 @@ import Placeholder from 'components/placeholder';
 import { IntercomAPI } from 'components/react-intercom';
 import Header from 'components/header';
 
-import { ListMatchesRes } from 'lib/api/list-matches';
+import { ListMatchesRes } from 'lib/api/routes/matches/list';
 import { MatchesQuery, Org } from 'lib/model';
 
 import styles from './matches.module.scss';
