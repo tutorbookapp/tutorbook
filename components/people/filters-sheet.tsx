@@ -46,6 +46,8 @@ export default memo(function FiltersSheet({
   );
 
   const { t } = useTranslation();
+
+  // TODO: Use the `RequestsQuery` class to filter this API by the current org.
   const { isValidating, data } = useSWR<ListRequestsRes>('/api/requests');
 
   useEffect(() => {
