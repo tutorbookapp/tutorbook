@@ -25,7 +25,7 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
     setError(undefined);
     setLoggingIn(true);
     const gsuite = !!org && !!org.domains.length;
-    const [err] = await to(signupWithGoogle(undefined, undefined, gsuite));
+    const [err] = await to(signupWithGoogle(undefined, gsuite));
     if (err) {
       setLoggingIn(false);
       setError(err);
