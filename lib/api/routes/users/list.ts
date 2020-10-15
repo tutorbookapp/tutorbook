@@ -11,7 +11,7 @@ import { handle } from 'lib/api/error';
 import getTruncatedUsers from 'lib/api/get/truncated-users';
 import getUsers from 'lib/api/get/users';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyBody from 'lib/api/verify/body';
+import verifyQuery from 'lib/api/verify/query';
 
 export interface ListUsersRes {
   users: UserJSON[];
@@ -23,7 +23,7 @@ export default async function listUsers(
   res: Res<ListUsersRes>
 ): Promise<void> {
   try {
-    const query = verifyBody<UsersQuery, UsersQueryJSON>(
+    const query = verifyQuery<UsersQuery, UsersQueryJSON>(
       req.query,
       isUsersQueryJSON,
       UsersQuery

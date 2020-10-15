@@ -9,7 +9,7 @@ import {
 import { handle } from 'lib/api/error';
 import getMatches from 'lib/api/get/matches';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyBody from 'lib/api/verify/body';
+import verifyQuery from 'lib/api/verify/query';
 
 export interface ListMatchesRes {
   matches: MatchJSON[];
@@ -21,7 +21,7 @@ export default async function listMatches(
   res: Res<ListMatchesRes>
 ): Promise<void> {
   try {
-    const query = verifyBody<MatchesQuery, MatchesQueryJSON>(
+    const query = verifyQuery<MatchesQuery, MatchesQueryJSON>(
       req.query,
       isMatchesQueryJSON,
       MatchesQuery
