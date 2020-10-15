@@ -4,8 +4,8 @@ These directories contain the core of our back-end API implementation:
 
 1. The actual API route definitions are housed in the `routes/` directory.
 2. All API route logic is packaged neatly into reusable "component" functions
-   which are organized into the `create/`, `verify/`, or `get/` directories
-   (depending on the component type; see below for more info).
+   which are organized into the `update/`, `create/`, `verify/`, or `get/`
+   directories (depending on the component type; see below for more info).
 
 ## API Route Definitions
 
@@ -53,10 +53,16 @@ different reusable actions:
 Again, like all API route components, these will throw an `APIError` if anything
 invalid is detected.
 
+### `update`
+
+These route components update (modify) existing resources (e.g. a user's
+database document and Algolia search index object).
+
 ### `create`
 
 These route components create resources or enact other side-effects (e.g.
 sending notification emails like the example included above).
 
-**Note:** These are the only route components that should create lasting
-side-effects (e.g. storing data or sending emails).
+**Note:** These are the only route components (along with the `update` route
+components) that should create lasting side-effects (e.g. storing data or
+sending emails).
