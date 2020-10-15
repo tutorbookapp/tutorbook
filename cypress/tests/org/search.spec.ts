@@ -138,6 +138,8 @@ describe('Search page', () => {
     cy.contains('button', 'Send request').click().should('be.disabled');
     cy.getBySel('loader').should('be.visible');
 
+    // TODO: Make assertions about the content within our Firestore database
+    // simulator to ensure that it matches what we submitted.
     cy.wait('@create-match');
 
     cy.getBySel('loader').should('not.be.visible');

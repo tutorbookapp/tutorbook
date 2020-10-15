@@ -34,7 +34,7 @@ export default memo(function EditPage({
 
   const updateRemote = useCallback(async (updated: User) => {
     if (updated.id.startsWith('temp')) {
-      const json = { user: { ...updated.toJSON(), id: '' } };
+      const json = { ...updated.toJSON(), id: '' };
       const { data } = await axios.post<UserJSON>('/api/users', json);
       return User.fromJSON(data);
     }
