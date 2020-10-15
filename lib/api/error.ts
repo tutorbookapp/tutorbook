@@ -16,6 +16,7 @@ export class APIError extends Error {
 }
 
 export function handle(e: unknown, res: Res): void {
+  console.error('API endpoint encountered error:', e);
   if (e instanceof APIError) res.status(e.code).end(e.message);
   if (e instanceof Error) res.status(500).end(e.message);
   if (typeof e === 'string') res.status(500).end(e);

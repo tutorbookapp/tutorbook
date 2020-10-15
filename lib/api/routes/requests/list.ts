@@ -9,7 +9,7 @@ import {
 import { handle } from 'lib/api/error';
 import getRequests from 'lib/api/get/requests';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyBody from 'lib/api/verify/body';
+import verifyQuery from 'lib/api/verify/query';
 
 export interface ListRequestsRes {
   requests: RequestJSON[];
@@ -23,7 +23,7 @@ export default async function listRequests(
   res: Res<ListRequestsRes>
 ): Promise<void> {
   try {
-    const query = verifyBody<RequestsQuery, RequestsQueryJSON>(
+    const query = verifyQuery<RequestsQuery, RequestsQueryJSON>(
       req.query,
       isRequestsQueryJSON,
       RequestsQuery
