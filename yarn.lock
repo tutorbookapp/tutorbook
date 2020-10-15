@@ -3731,9 +3731,9 @@ __metadata:
   linkType: hard
 
 "@types/sinonjs__fake-timers@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "@types/sinonjs__fake-timers@npm:6.0.1"
-  checksum: 3eb0f869c4793269df636e87b3664990bf5f7c56496e6cd8607881288f0308aba8cefae4d1cc76bf340aa6a386f9bb99e5790a9ff7ec24206b9c425fd61314e3
+  version: 6.0.2
+  resolution: "@types/sinonjs__fake-timers@npm:6.0.2"
+  checksum: 1dd1b391904c2a2972318b753026f615784c14a827c12ba21f67707ca6565f3cea195790a1c64178f2208e330eec4ab9c78823c99019384b9a01b02cc6987071
   languageName: node
   linkType: hard
 
@@ -12469,9 +12469,9 @@ fsevents@~2.1.2:
   linkType: hard
 
 "moment@npm:^2.27.0":
-  version: 2.27.0
-  resolution: "moment@npm:2.27.0"
-  checksum: 72d9a7d8dba59e3d538440cdc0b59fa895b123361e370be231896478aaf157a484355ce32bd8daf6f731d6d1636d3a67ecb67531e536e093ca18b43e0cbae194
+  version: 2.29.1
+  resolution: "moment@npm:2.29.1"
+  checksum: 86729013febf7160de5b93da69273dd304d674b0224f9544b3abd09a87671ddd2cdd57598261ce57588910d63747ffd5590965e83c790d8bf327083c0e0a06e0
   languageName: node
   linkType: hard
 
@@ -15270,21 +15270,21 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^6.3.3, rxjs@npm:^6.4.0, rxjs@npm:^6.5.2":
-  version: 6.6.2
-  resolution: "rxjs@npm:6.6.2"
-  dependencies:
-    tslib: ^1.9.0
-  checksum: 9b16cd36093b87ce454726f14783e204b80431e6657d36191877e4d9d4b0713c73e5ee8b45be336b081d47b10cd016b3812ea3bd4b27bf87942b1410aa18ee04
-  languageName: node
-  linkType: hard
-
-"rxjs@npm:^6.5.5":
+"rxjs@npm:^6.3.3, rxjs@npm:^6.5.5":
   version: 6.6.3
   resolution: "rxjs@npm:6.6.3"
   dependencies:
     tslib: ^1.9.0
   checksum: 61a3da6db947f69b7d805df3a619d8f60678b7372c4d571dd63e45ef3532be984a88307ea0aa2cd8d2578b62c3c022186e8da9dca47c9c1b8c9ecba6f5581deb
+  languageName: node
+  linkType: hard
+
+"rxjs@npm:^6.4.0, rxjs@npm:^6.5.2":
+  version: 6.6.2
+  resolution: "rxjs@npm:6.6.2"
+  dependencies:
+    tslib: ^1.9.0
+  checksum: 9b16cd36093b87ce454726f14783e204b80431e6657d36191877e4d9d4b0713c73e5ee8b45be336b081d47b10cd016b3812ea3bd4b27bf87942b1410aa18ee04
   languageName: node
   linkType: hard
 
