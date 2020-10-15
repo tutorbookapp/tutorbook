@@ -36,8 +36,8 @@ export type UsersQueryJSON = Omit<UsersQueryInterface, 'availability'> & {
 
 export type UsersQueryURL = { [key in keyof UsersQueryInterface]?: string };
 
-// TODO: Implement this to actually verify that the given JSON is valid.
-export function isUsersQueryJSON(json: unknown): json is UsersQueryJSON {
+// TODO: Implement this to verify that the given query params are valid.
+export function isUsersQueryURL(query: unknown): query is UsersQueryURL {
   return true;
 }
 

@@ -3,8 +3,8 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import {
   MatchJSON,
   MatchesQuery,
-  MatchesQueryJSON,
-  isMatchesQueryJSON,
+  MatchesQueryURL,
+  isMatchesQueryURL,
 } from 'lib/model';
 import { handle } from 'lib/api/error';
 import getMatches from 'lib/api/get/matches';
@@ -21,9 +21,9 @@ export default async function listMatches(
   res: Res<ListMatchesRes>
 ): Promise<void> {
   try {
-    const query = verifyQuery<MatchesQuery, MatchesQueryJSON>(
+    const query = verifyQuery<MatchesQuery, MatchesQueryURL>(
       req.query,
-      isMatchesQueryJSON,
+      isMatchesQueryURL,
       MatchesQuery
     );
     const { matches, hits } = await getMatches(query);

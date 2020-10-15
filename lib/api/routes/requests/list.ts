@@ -3,8 +3,8 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import {
   RequestJSON,
   RequestsQuery,
-  RequestsQueryJSON,
-  isRequestsQueryJSON,
+  RequestsQueryURL,
+  isRequestsQueryURL,
 } from 'lib/model';
 import { handle } from 'lib/api/error';
 import getRequests from 'lib/api/get/requests';
@@ -23,9 +23,9 @@ export default async function listRequests(
   res: Res<ListRequestsRes>
 ): Promise<void> {
   try {
-    const query = verifyQuery<RequestsQuery, RequestsQueryJSON>(
+    const query = verifyQuery<RequestsQuery, RequestsQueryURL>(
       req.query,
-      isRequestsQueryJSON,
+      isRequestsQueryURL,
       RequestsQuery
     );
     const { requests, hits } = await getRequests(query);

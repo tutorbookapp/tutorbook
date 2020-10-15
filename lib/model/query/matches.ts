@@ -6,8 +6,8 @@ export type MatchesQueryJSON = QueryJSON;
 
 export type MatchesQueryURL = QueryURL;
 
-// TODO: Implement this to actually verify that the given JSON is valid.
-export function isMatchesQueryJSON(json: unknown): json is MatchesQueryJSON {
+// TODO: Implement this to verify that the given query params are valid.
+export function isMatchesQueryURL(query: unknown): query is MatchesQueryURL {
   return true;
 }
 
