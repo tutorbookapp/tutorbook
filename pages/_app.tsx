@@ -2,16 +2,15 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { SWRConfig, mutate } from 'swr';
 import { AppProps } from 'next/app';
-import NProgress from 'nprogress';
 import Router from 'next/router';
 import to from 'await-to-js';
+
+import NProgress from 'components/nprogress';
 
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/account';
 import { ApiError, Org, OrgJSON, User, UserJSON } from 'lib/model';
 
 import 'styles/global.scss';
-
-NProgress.configure({ trickleSpeed: 500, minimum: 0.2, showSpinner: false });
 
 async function fetcher<T>(url: string): Promise<T> {
   const [err, res] = await to<AxiosResponse<T>, AxiosError<ApiError>>(
@@ -120,19 +119,12 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     void initFirebaseAndAnalytics();
   }, []);
 
-  // Show NProgress loader during client-side page navigations. In the future,
-  // we'll probably use an indeterminate MWC linear progress bar (like Google).
-  Object.entries({
-    routeChangeStart: () => NProgress.start(),
-    routeChangeComplete: () => NProgress.done(),
-    routeChangeError: () => NProgress.done(),
-  }).forEach(([event, action]) => Router.events.on(event, action));
-
   return (
     <SWRConfig value={{ fetcher }}>
       <UserContext.Provider
         value={{ user, orgs, updateUser, updateOrg, loggedIn }}
       >
+        <NProgress />
         <div id='portal' />
         <Component {...pageProps} />
       </UserContext.Provider>
