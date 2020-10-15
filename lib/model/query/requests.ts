@@ -6,8 +6,8 @@ export type RequestsQueryJSON = QueryJSON;
 
 export type RequestsQueryURL = QueryURL;
 
-// TODO: Implement this to actually verify that the given JSON is valid.
-export function isRequestsQueryJSON(json: unknown): json is RequestsQueryJSON {
+// TODO: Implement this to verify that the given query params are valid.
+export function isRequestsQueryURL(query: unknown): query is RequestsQueryURL {
   return true;
 }
 

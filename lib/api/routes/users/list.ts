@@ -4,8 +4,8 @@ import to from 'await-to-js';
 import {
   UserJSON,
   UsersQuery,
-  UsersQueryJSON,
-  isUsersQueryJSON,
+  UsersQueryURL,
+  isUsersQueryURL,
 } from 'lib/model';
 import { handle } from 'lib/api/error';
 import getTruncatedUsers from 'lib/api/get/truncated-users';
@@ -23,9 +23,9 @@ export default async function listUsers(
   res: Res<ListUsersRes>
 ): Promise<void> {
   try {
-    const query = verifyQuery<UsersQuery, UsersQueryJSON>(
+    const query = verifyQuery<UsersQuery, UsersQueryURL>(
       req.query,
-      isUsersQueryJSON,
+      isUsersQueryURL,
       UsersQuery
     );
     const { users, hits } = await getUsers(query);
