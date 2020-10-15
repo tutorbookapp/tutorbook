@@ -19,7 +19,7 @@ interface HomePageProps {
 
 function HomePage({ org }: HomePageProps): JSX.Element {
   return (
-    <Page formWidth>
+    <Page title={`${org?.name || 'Loading'} - Tutorbook`} formWidth>
       <EmptyHeader formWidth />
       <Home org={org} />
     </Page>

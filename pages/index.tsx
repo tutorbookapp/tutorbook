@@ -18,7 +18,7 @@ import common from 'locales/en/common.json';
 function IndexPage(): JSX.Element {
   const [aspect, setAspect] = useState<Aspect>('mentoring');
   return (
-    <Page>
+    <Page title='Support at scale - Tutorbook'>
       <Banner />
       <AspectHeader
         aspect={aspect}

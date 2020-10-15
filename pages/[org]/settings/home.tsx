@@ -35,7 +35,7 @@ function HomeSettingsPage(): JSX.Element {
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
       {!!org && (
-        <Page>
+        <Page title={`${org.name} - Home - Settings - Tutorbook`}>
           <TabHeader
             tabs={[
               {

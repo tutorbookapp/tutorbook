@@ -1,12 +1,10 @@
-import { AppProps } from 'next/app';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { SWRConfig, mutate } from 'swr';
-import to from 'await-to-js';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import Router from 'next/router';
+import { AppProps } from 'next/app';
 import NProgress from 'nprogress';
-
-import CovidHead from 'components/doc-head';
+import Router from 'next/router';
+import to from 'await-to-js';
 
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/account';
 import { ApiError, Org, OrgJSON, User, UserJSON } from 'lib/model';
@@ -136,7 +134,6 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
         value={{ user, orgs, updateUser, updateOrg, loggedIn }}
       >
         <div id='portal' />
-        <CovidHead />
         <Component {...pageProps} />
       </UserContext.Provider>
     </SWRConfig>

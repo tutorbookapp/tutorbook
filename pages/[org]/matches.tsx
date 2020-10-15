@@ -33,7 +33,7 @@ function MatchesPage(): JSX.Element {
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
       {!!org && (
-        <Page>
+        <Page title={`${org.name} - Matches - Tutorbook`}>
           <TabHeader
             tabs={[
               {
