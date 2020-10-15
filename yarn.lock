@@ -3637,6 +3637,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mixpanel-browser@npm:^2.35.4":
+  version: 2.35.4
+  resolution: "@types/mixpanel-browser@npm:2.35.4"
+  checksum: 7295ea9dd149ce68dc75b91880bd655c104004c25ac28a985230aa37a59ec136c4bd4a9ea6173e4033f5f25b0c3d4b20ecfd58d0e73f4143285d0a9c6eaa1587
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*, @types/node@npm:^14.0.26":
   version: 14.0.27
   resolution: "@types/node@npm:14.0.27"
@@ -12412,6 +12419,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"mixpanel-browser@npm:^2.39.0":
+  version: 2.39.0
+  resolution: "mixpanel-browser@npm:2.39.0"
+  checksum: 954e7b78206e1a6e82068e3f1a8198d8b00f8806ab403ae60dd4542dacd59ffaf35d78b1aacbb63f0eeead73ee0af160bca080c05da90ecdf588a7cc21cec7d8
+  languageName: node
+  linkType: hard
+
 "mkdirp@npm:0.5.3":
   version: 0.5.3
   resolution: "mkdirp@npm:0.5.3"
@@ -16266,7 +16280,7 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"styled-jsx@npm:3.3.0":
+"styled-jsx@npm:3.3.0, styled-jsx@npm:^3.3.0":
   version: 3.3.0
   resolution: "styled-jsx@npm:3.3.0"
   dependencies:
@@ -17014,6 +17028,7 @@ resolve@1.1.7:
     "@sendgrid/helpers": ^7.2.0
     "@sendgrid/mail": ^7.2.2
     "@types/accept-language-parser": ^1.5.1
+    "@types/mixpanel-browser": ^2.35.4
     "@types/node": ^14.0.26
     "@types/nprogress": ^0.2.0
     "@types/phone": ^2.4.0
@@ -17055,6 +17070,7 @@ resolve@1.1.7:
     handlebars: ^4.7.6
     husky: ^4.2.5
     istanbul-lib-coverage: ^3.0.0
+    mixpanel-browser: ^2.39.0
     nanoid: ^3.1.12
     next: ^9.5.3
     next-images: ^1.4.0
@@ -17080,6 +17096,7 @@ resolve@1.1.7:
     rrule: ^2.6.4
     sass: ^1.26.10
     source-map-support: ^0.5.19
+    styled-jsx: ^3.3.0
     svg-url-loader: ^6.0.0
     swr: ^0.3.0
     terser-webpack-plugin: ^3.0.7
