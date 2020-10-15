@@ -1,6 +1,7 @@
 // TODO: Refactor this file (it's much too long right now for an API component)
 // and make `createZoom` throw `APIError`s.
 
+import { nanoid } from 'nanoid';
 import axios, { AxiosResponse } from 'axios';
 import generatePassword from 'password-generator';
 import to from 'await-to-js';
@@ -17,10 +18,10 @@ import {
 import { db } from 'lib/api/firebase';
 import Utils from 'lib/utils';
 
-function getJitsi(matchId: string): JitsiVenue {
+function getJitsi(): JitsiVenue {
   return {
     type: 'jitsi',
-    url: `https://meet.jit.si/${matchId}`,
+    url: `https://meet.jit.si/TB-${nanoid(10)}`,
     created: new Date(),
     updated: new Date(),
   };
@@ -237,7 +238,7 @@ export default async function createZoom(
   }
 
   // 4. Fallback to using Jitsi.
-  if (!meeting) return getJitsi(match.id);
+  if (!meeting) return getJitsi();
 
   return {
     type: 'zoom',

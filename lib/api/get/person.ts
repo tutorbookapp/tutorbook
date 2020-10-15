@@ -6,7 +6,7 @@ import clone from 'lib/utils/clone';
 function addRoles(user: User, roles: Role[]): UserWithRoles {
   const userWithRoles = new User(clone(user));
   (userWithRoles as UserWithRoles).roles = roles;
-  return user as UserWithRoles;
+  return userWithRoles as UserWithRoles;
 }
 
 /**

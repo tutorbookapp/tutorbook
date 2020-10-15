@@ -40,8 +40,8 @@
     "searches": ["Computer Science", "Data Science", "Artificial Intelligence"]
   },
   "tutoring": {
-    "subjects": ["Computer Science"],
-    "searches": []
+    "subjects": [],
+    "searches": ["Computer Science"]
   },
   "langs": ["en"],
   "parents": [],

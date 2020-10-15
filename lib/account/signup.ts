@@ -4,14 +4,13 @@ import to from 'await-to-js';
 
 import { ApiError, User, UserInterface, UserJSON } from 'lib/model';
 
-export async function signup(user: User, parents: User[] = []): Promise<User> {
+export async function signup(user: User): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
 
   const auth = firebase.auth();
-  const json = { user: user.toJSON(), parents: parents.map((p) => p.toJSON()) };
   const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
-    axios.post('/api/users', json)
+    axios.post('/api/users', user.toJSON())
   );
 
   if (err && err.response) throw new Error(err.response.data.msg);
@@ -36,7 +35,6 @@ export async function signup(user: User, parents: User[] = []): Promise<User> {
  */
 export async function signupWithGoogle(
   user?: User,
-  parents?: User[],
   gsuite?: boolean
 ): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
@@ -60,7 +58,7 @@ export async function signupWithGoogle(
 
   await mutate('/api/account', signedInUser.toJSON(), false);
 
-  const [err, res] = await to<User>(signup(signedInUser, parents));
+  const [err, res] = await to<User>(signup(signedInUser));
 
   if (err && err.message.includes('already exists')) return signedInUser;
   if (err) throw new Error(err.message);

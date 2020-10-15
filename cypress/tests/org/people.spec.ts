@@ -34,7 +34,7 @@ describe('People dashboard page', () => {
   });
 
   // TODO: Add tests for the matching functionality of this people dashboard.
-  it.only('creates, edits, and matches people', () => {
+  it('creates, edits, and matches people', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/people`);
     cy.wait('@get-account');
@@ -70,9 +70,8 @@ describe('People dashboard page', () => {
 
     // TODO: Assert about the data sent in the `/api/user/${id}` PUT requests to
     // ensure that the front-end is properly updating data.
-    cy.getBySel('user-dialog', { timeout: 60000 })
-      .should('be.visible')
-      .as('dialog');
+    cy.getBySel('user-dialog', { timeout: 60000 }).should('be.visible');
+    cy.getBySel('user-dialog').as('dialog');
 
     // TODO: Why do we have to `force` this click?
     cy.get('@dialog')

@@ -78,8 +78,9 @@ export type MatchSearchHit = ObjectWithObjectID &
     request?: RequestSearchHit;
   };
 
-export function isMatchJSON(json: any): json is MatchJSON {
-  return false;
+// TODO: Implement this to actually verify that the given JSON is valid.
+export function isMatchJSON(json: unknown): json is MatchJSON {
+  return true;
 }
 
 export class Match extends Base implements MatchInterface {
