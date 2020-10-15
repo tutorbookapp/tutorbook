@@ -9,7 +9,7 @@ import common from 'locales/en/common.json';
 
 function LoginPage(): JSX.Element {
   return (
-    <Page>
+    <Page title='Login - Tutorbook'>
       <EmptyHeader />
       <Login />
     </Page>

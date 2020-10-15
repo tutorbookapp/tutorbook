@@ -36,7 +36,7 @@ function SignupPage({ org }: SignupPageProps): JSX.Element {
   }, [org, query]);
 
   return (
-    <Page formWidth>
+    <Page title={`${org?.name || 'Loading'} - Signup - Tutorbook`} formWidth>
       {(!org || org.aspects.length === 2) && (
         <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
       )}

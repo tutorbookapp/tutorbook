@@ -17,7 +17,7 @@ function ProfilePage(): JSX.Element {
   useLoggedIn('profile');
 
   return (
-    <Page>
+    <Page title='Profile - Tutorbook'>
       <TabHeader
         tabs={[
           {

@@ -112,7 +112,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   }, [viewing, query.aspect, query.subjects]);
 
   return (
-    <Page>
+    <Page title={`${org?.name || 'Loading'} - Search - Tutorbook`}>
       <QueryHeader
         aspects={org ? org.aspects : ['mentoring', 'tutoring']}
         query={query}

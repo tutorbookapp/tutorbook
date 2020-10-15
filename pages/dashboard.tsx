@@ -18,7 +18,7 @@ function DashboardPage(): JSX.Element {
   useLoggedIn('dashboard');
 
   return (
-    <Page>
+    <Page title='Dashboard - Tutorbook'>
       <TabHeader
         tabs={[
           {
