@@ -10,6 +10,7 @@ import { Account, AccountInterface } from './account';
 import { Aspect } from './aspect';
 import { Resource } from './resource';
 import construct from './construct';
+import firestoreVals from './firestore-vals';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -265,9 +266,11 @@ export class User extends Account implements UserInterface {
    * @see {@link https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter}
    */
   public toFirestore(): DocumentData {
-    const base = super.toFirestore();
-    delete base.token;
-    return { ...base, availability: this.availability.toFirestore() };
+    return firestoreVals({
+      ...super.toFirestore(),
+      availability: this.availability.toFirestore(),
+      token: undefined,
+    });
   }
 
   public static fromJSON(json: UserJSON): User {

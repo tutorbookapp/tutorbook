@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 
 import construct from './construct';
+import firestoreVals from './firestore-vals';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentReference = admin.firestore.DocumentReference;
@@ -161,18 +162,7 @@ export class Account implements AccountInterface {
   }
 
   public toFirestore(): DocumentData {
-    const { ref, ...rest } = this;
-    const allDefinedValues = Object.fromEntries(
-      Object.entries(rest).filter(([_, val]) => val !== undefined)
-    );
-    const allFilledValues = Object.fromEntries(
-      Object.entries(allDefinedValues).filter(([_, val]) => {
-        if (!val) return false;
-        if (typeof val === 'object' && !Object.keys(val).length) return false;
-        return true;
-      })
-    );
-    return allFilledValues;
+    return firestoreVals({ ...this, ref: undefined });
   }
 
   public toString(): string {

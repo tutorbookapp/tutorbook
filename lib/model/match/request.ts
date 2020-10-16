@@ -7,6 +7,7 @@ import {
   AvailabilitySearchHit,
 } from '../availability';
 import construct from '../construct';
+import firestoreVals from '../firestore-vals';
 
 import { Base, BaseInterface } from './base';
 
@@ -70,8 +71,10 @@ export class Request extends Base implements RequestInterface {
 
   public toFirestore(): DocumentData {
     const { times, ref, id, ...rest } = this;
-    if (times) return { ...rest, times: times.toFirestore() };
-    return rest;
+    return firestoreVals({
+      ...rest,
+      times: times ? times.toFirestore() : undefined,
+    });
   }
 
   public static fromFirestore(snapshot: DocumentSnapshot): Request {

@@ -9,6 +9,7 @@ import {
 } from '../availability';
 import { Resource } from '../resource';
 import construct from '../construct';
+import firestoreVals from '../firestore-vals';
 
 import { Base, BaseInterface } from './base';
 import { Request, RequestJSON, RequestSearchHit } from './request';
@@ -122,11 +123,11 @@ export class Match extends Base implements MatchInterface {
 
   public toFirestore(): DocumentData {
     const { times, request, ref, id, ...rest } = this;
-    return {
+    return firestoreVals({
       ...rest,
       times: times ? times.toFirestore() : undefined,
       request: request ? request.toFirestore() : undefined,
-    };
+    });
   }
 
   public static fromFirestore(snapshot: DocumentSnapshot): Match {
