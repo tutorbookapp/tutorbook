@@ -17,13 +17,6 @@ import verifyTimesInAvailability from 'lib/api/verify/times-in-availability';
 
 export type UpdateMatchRes = MatchJSON;
 
-/**
- * Updates a new match: A pairing of people (typically between a student and a
- * tutor/mentor).
- * @todo Don't error when a creator is unavailable during the requested times
- * (or, even better, add this timeslot to their availability and then remove it
- * during post-creation logic).
- */
 export default async function updateMatch(
   req: Req,
   res: Res<UpdateMatchRes>
@@ -45,6 +38,9 @@ export default async function updateMatch(
     // a) The student him/herself OR;
     // b) Admin of the student's org (e.g. Gunn High School).
     const students = getStudents(people);
+
+    // TODO: Ensure that this isn't performing a duplicate request that the
+    // `verifyAuth` route component already performed.
     const orgIds = (await getOrgsByAdminId(creator.id)).map((o) => o.id);
     students.forEach((s) => s.id !== creator.id && verifyOrgs(s, orgIds));
 
