@@ -28,8 +28,10 @@ export default async function listRequests(
       isRequestsQueryURL,
       RequestsQuery
     );
-    const { requests, hits } = await getRequests(query);
+    // TODO: Rewrite the `RequestsQuery` class such that it only specifies a
+    // single `org` instead of multiple (like the `api/matches` endpoint).
     await verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) });
+    const { requests, hits } = await getRequests(query);
     res.status(200).json({ hits, requests: requests.map((r) => r.toJSON()) });
   } catch (e) {
     handle(e, res);

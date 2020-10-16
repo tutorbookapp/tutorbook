@@ -4,7 +4,8 @@ import { DocumentSnapshot, Person } from './types';
 
 /**
  * Adds a `peopleIds` property to requests and matches for convenient
- * server-side querying capabilities.
+ * server-side querying capabilities when syncing user names.
+ * @see syncUserNames - The sync-user-names Firebase function uses this field.
  * @todo Perhaps switch over to a different database b/c Firestore is kind of
  * hard to work with (and I don't like data duplication).
  */
