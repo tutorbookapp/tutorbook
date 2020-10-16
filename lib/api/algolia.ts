@@ -1,4 +1,5 @@
 import {
+  DeleteResponse,
   SaveObjectResponse,
   SetSettingsResponse,
 } from '@algolia/client-search';
@@ -37,6 +38,14 @@ export function updateFilterableAttrs(
   return (idx.setSettings({ attributesForFaceting }) as unknown) as Promise<
     SetSettingsResponse
   >;
+}
+
+export function deleteObj(
+  indexId: string,
+  objId: string
+): Promise<DeleteResponse> {
+  const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
+  return (idx.deleteObject(objId) as unknown) as Promise<DeleteResponse>;
 }
 
 export default function index<T extends { id: string }>(
