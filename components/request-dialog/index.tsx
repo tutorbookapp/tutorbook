@@ -84,9 +84,10 @@ export default function RequestDialog({
       creator,
       message,
       subjects,
+      org: org?.id || 'default',
       people: [target, creator],
     });
-  }, [currentUser, user, aspect, message, subjects]);
+  }, [currentUser, user, aspect, message, subjects, org?.id]);
 
   const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {

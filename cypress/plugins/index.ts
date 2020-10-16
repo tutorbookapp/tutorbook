@@ -13,6 +13,8 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
 
+import match from 'cypress/fixtures/match.json';
+
 // Right now, we can't use the `baseUrl` Typescript compiler options, so we
 // can't use any of the existing type annotations in our app source code.
 // @see {@link https://github.com/cypress-io/cypress/issues/7188}
@@ -57,7 +59,10 @@ db.settings({ ignoreUndefinedProperties: true });
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const client = algoliasearch(algoliaId, algoliaKey);
-const index = client.initIndex(`${process.env.NODE_ENV || 'test'}-users`);
+
+const partition = process.env.NODE_ENV || 'test';
+const usersIdx = client.initIndex(`${partition}-users`);
+const matchesIdx = client.initIndex(`${partition}-matches`);
 
 export interface Overrides {
   volunteer?: Record<string, unknown> | null;
@@ -88,7 +93,8 @@ export default function plugins(
         `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
         `databases/(default)/documents`;
       await Promise.all([
-        index.clearObjects(),
+        usersIdx.clearObjects(),
+        matchesIdx.clearObjects(),
         axios.delete(clearFirestoreEndpoint),
       ]);
       return null;
@@ -106,8 +112,10 @@ export default function plugins(
       }
       const userSearchObjs = users.map((u) => ({ ...u, objectID: u.id }));
       await Promise.all([
-        index.saveObjects(userSearchObjs),
+        usersIdx.saveObjects(userSearchObjs),
+        matchesIdx.saveObject({ ...match, objectID: match.id }),
         Promise.all(users.map((u) => db.collection('users').doc(u.id).set(u))),
+        db.collection('matches').doc(match.id).set(match),
         db.collection('orgs').doc(school.id).set(school),
         db.collection('orgs').doc(org.id).set(org),
       ]);

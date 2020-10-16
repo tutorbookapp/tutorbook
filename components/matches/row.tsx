@@ -20,7 +20,7 @@ export const MatchRow = memo(
     const diff = match.people.length - names.length;
     if (diff > 0) names.push(`${diff} more`);
     return (
-      <DataTableRow>
+      <DataTableRow data-cy='match-row'>
         <DataTableCell className={styles.people}>
           {Utils.join(names)}
         </DataTableCell>

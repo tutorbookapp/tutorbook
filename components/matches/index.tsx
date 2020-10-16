@@ -43,10 +43,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
   const [valid, setValid] = useState<boolean>(true);
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MatchesQuery>(
-    new MatchesQuery({
-      orgs: [{ label: org.name, value: org.id }],
-      hitsPerPage: 10,
-    })
+    new MatchesQuery({ org: org.id, hitsPerPage: 10 })
   );
 
   const loadingRows: JSX.Element[] = useMemo(
@@ -66,12 +63,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
   });
 
   useEffect(() => {
-    setQuery((prev: MatchesQuery) => {
-      return new MatchesQuery({
-        ...prev,
-        orgs: [{ label: org.name, value: org.id }],
-      });
-    });
+    setQuery((prev) => new MatchesQuery({ ...prev, org: org.id }));
   }, [org]);
   useEffect(() => {
     void mutate(query.endpoint);

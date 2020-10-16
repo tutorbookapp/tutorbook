@@ -26,8 +26,8 @@ export default async function listMatches(
       isMatchesQueryURL,
       MatchesQuery
     );
+    await verifyAuth(req.headers, { orgIds: [query.org] });
     const { matches, hits } = await getMatches(query);
-    await verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) });
     res.status(200).json({ hits, matches: matches.map((m) => m.toJSON()) });
   } catch (e) {
     handle(e, res);

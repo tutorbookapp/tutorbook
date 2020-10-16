@@ -3,6 +3,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { Request, RequestJSON, isRequestJSON } from 'lib/model';
 import { handle } from 'lib/api/error';
 import createRequestDoc from 'lib/api/create/request-doc';
+import createRequestSearchObj from 'lib/api/create/request-search-obj';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
@@ -49,6 +50,7 @@ export default async function createRequest(
     students.forEach((s) => s.id !== creator.id && verifyOrgs(s, orgIds));
 
     const request = await createRequestDoc(body);
+    await createRequestSearchObj(request);
 
     res.status(201).json(request.toJSON());
   } catch (e) {
