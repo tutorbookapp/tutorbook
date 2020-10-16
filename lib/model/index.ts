@@ -7,5 +7,5 @@ export * from './timeslot';
 export * from './availability';
 export * from './errors';
 export * from './constants';
+export * from './match';
 export * from './query/index';
-export * from './match/index';

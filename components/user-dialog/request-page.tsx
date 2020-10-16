@@ -105,7 +105,6 @@ export default memo(function RequestPage({
         roles: [],
         handle: uuid(),
       },
-      status: 'queued',
     });
   }, [value, user, subjects, message]);
 
