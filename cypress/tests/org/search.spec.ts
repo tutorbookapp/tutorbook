@@ -72,6 +72,9 @@ describe('Search page', () => {
     cy.contains('button', 'Continue with Google').click().should('be.disabled');
     cy.getBySel('loader').should('be.visible');
 
+    // TODO: Find some way to trick the application into thinking that it was
+    // logged in successfully so we can make assertions about the user being
+    // created and subsequently logged in.
     cy.window().its('open').should('be.called');
 
     cy.getBySel('loader').should('not.be.visible');
