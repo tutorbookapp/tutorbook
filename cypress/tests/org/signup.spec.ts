@@ -38,7 +38,7 @@ describe('Signup page', () => {
     cy.get('@text-field').should('have.class', 'mdc-text-field--invalid');
   });
 
-  it('signs new volunteers up', () => {
+  it.only('signs new volunteers up', () => {
     cy.contains('Your name')
       .children('input')
       .as('name-input')
@@ -64,6 +64,8 @@ describe('Signup page', () => {
       .as('photo-input-label')
       .should('have.text', 'Uploading volunteer.jpg...');
 
+    // TODO: Don't call our production data storage APIs (as this will
+    // eventually incur costs after storing an image for each test).
     cy.wait('@upload-photo');
 
     cy.get('@photo-input-label').should('have.text', 'Uploaded volunteer.jpg.');
@@ -87,7 +89,10 @@ describe('Signup page', () => {
 
     cy.wait('@create-user');
 
-    cy.get('@loader').should('not.be.visible');
+    // TODO: Right now, it takes a second for our app to update the local data
+    // after receiving the API response. We should account for that instead of
+    // just arbitrarily waiting 60secs before our assertion fails.
+    cy.get('@loader', { timeout: 60000 }).should('not.be.visible');
     cy.getBySel('error').as('error').should('not.exist');
     cy.get('@btn').should('contain', 'Update profile');
 
@@ -118,7 +123,7 @@ describe('Signup page', () => {
 
     // TODO: Add assertion(s) that the error message isn't visible (and about
     // the response status code of the various API calls).
-    cy.get('@loader').should('not.be.visible');
+    cy.get('@loader', { timeout: 60000 }).should('not.be.visible');
     cy.get('@error').should('not.exist');
   });
 });
