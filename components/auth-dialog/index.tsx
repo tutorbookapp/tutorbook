@@ -7,7 +7,7 @@ import to from 'await-to-js';
 import Button from 'components/button';
 import Loader from 'components/loader';
 
-import { OrgJSON } from 'lib/model';
+import { OrgJSON, User } from 'lib/model';
 import { signupWithGoogle } from 'lib/account/signup';
 import Utils from 'lib/utils';
 
@@ -24,8 +24,9 @@ export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
   const onClick = useCallback(async () => {
     setError(undefined);
     setLoggingIn(true);
+    const user = new User({ orgs: org ? [org.id] : ['default'] });
     const gsuite = !!org && !!org.domains.length;
-    const [err] = await to(signupWithGoogle(undefined, gsuite));
+    const [err] = await to(signupWithGoogle(user, gsuite));
     if (err) {
       setLoggingIn(false);
       setError(err);
