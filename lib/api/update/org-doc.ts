@@ -9,13 +9,12 @@ import { db } from 'lib/api/firebase';
  * @param org - The org whose document we want to update.
  * @return Promise that resolves to the updated org; throws an `APIError` if we
  * were unable to update the Firestore document.
- * @todo Inspect the Firestore documentation to ensure that `update()` behaves
- * the way that we want to.
- * @todo Reduce code duplication with the `updateUserDoc` component fx.
+ * @todo This won't error if the given document doesn't exist; we must use the
+ * `DocumentReference#set` method in order to remove data. Should we error?
  */
 export default async function updateOrgDoc(org: Org): Promise<Org> {
   const ref = db.collection('orgs').doc(org.id);
-  const [err] = await to(ref.update(org.toFirestore()));
+  const [err] = await to(ref.set(org.toFirestore()));
   if (err) {
     const msg = `${err.name} updating org (${org.toString()}) in database`;
     throw new APIError(`${msg}: ${err.message}`, 500);

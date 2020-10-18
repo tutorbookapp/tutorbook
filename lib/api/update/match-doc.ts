@@ -10,6 +10,8 @@ import clone from 'lib/utils/clone';
  * @param match - The match to update a document for.
  * @return Promise that resolves to the updated match; throws an `APIError` if
  * we were unable to update the Firestore document.
+ * @todo This won't error if the given document doesn't exist; we must use the
+ * `DocumentReference#set` method in order to remove data. Should we error?
  */
 export default async function updateMatchDoc(
   match: Match,
@@ -17,8 +19,7 @@ export default async function updateMatchDoc(
 ): Promise<Match> {
   const ref = db.collection('matches').doc(match.id);
   const copy = new Match(clone({ ...match, venue }));
-  console.log('Saving match doc:', copy.toFirestore());
-  const [err] = await to(ref.update(copy.toFirestore()));
+  const [err] = await to(ref.set(copy.toFirestore()));
   if (err) {
     const msg = `${err.name} updating match (${match.toString()}) in database`;
     throw new APIError(`${msg}: ${err.message}`, 500);

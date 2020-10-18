@@ -1,19 +1,21 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { dequal } from 'dequal';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 
-import { ApiError, User, UserInterface, UserJSON } from 'lib/model';
+import { User, UserInterface, UserJSON } from 'lib/model';
+import { APIError } from 'lib/api/error';
 
 export async function signup(user: User): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
 
   const auth = firebase.auth();
-  const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<ApiError>>(
+  const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<APIError>>(
     axios.post('/api/users', user.toJSON())
   );
 
-  if (err && err.response) throw new Error(err.response.data.msg);
+  if (err && err.response) throw new Error(err.response.data.message);
   if (err && err.request) throw new Error('Users API did not respond.');
   if (err) throw new Error(`Error calling user API: ${err.message}`);
 
@@ -58,9 +60,20 @@ export async function signupWithGoogle(
 
   await mutate('/api/account', signedInUser.toJSON(), false);
 
-  const [err, res] = await to<User>(signup(signedInUser));
+  // Create the Firestore profile document (we cannot call the `POST /api/users`
+  // endpoint because the Firebase Authentication account already exists).
+  const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<APIError>>(
+    axios.put(`/api/users/${signedInUser.id}`, signedInUser.toJSON())
+  );
 
-  if (err && err.message.includes('already exists')) return signedInUser;
-  if (err) throw new Error(err.message);
-  return res || signedInUser;
+  if (err && err.response) throw new Error(err.response.data.message);
+  if (err && err.request) throw new Error('Users API did not respond.');
+  if (err) throw new Error(`Error calling user API: ${err.message}`);
+
+  const { data } = res as AxiosResponse<UserJSON>;
+  if (!dequal(data, signedInUser.toJSON())) {
+    await mutate('/api/account', data, false);
+  }
+
+  return User.fromJSON(data);
 }

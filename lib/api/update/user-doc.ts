@@ -9,12 +9,12 @@ import { db } from 'lib/api/firebase';
  * @param user - The user whose document we want to update.
  * @return Promise that resolves to the updated user; throws an `APIError` if we
  * were unable to update the Firestore document.
- * @todo Inspect the Firestore documentation to ensure that `update()` behaves
- * the way that we want to.
+ * @todo This won't error if the given document doesn't exist; we must use the
+ * `DocumentReference#set` method in order to remove data. Should we error?
  */
 export default async function updateUserDoc(user: User): Promise<User> {
   const ref = db.collection('users').doc(user.id);
-  const [err] = await to(ref.update(user.toFirestore()));
+  const [err] = await to(ref.set(user.toFirestore()));
   if (err) {
     const msg = `${err.name} updating user (${user.toString()}) in database`;
     throw new APIError(`${msg}: ${err.message}`, 500);
