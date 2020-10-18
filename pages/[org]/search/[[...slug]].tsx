@@ -3,7 +3,7 @@ import { ParsedUrlQuery } from 'querystring';
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import equal from 'fast-deep-equal';
+import { dequal } from 'dequal';
 import Router from 'next/router';
 
 import { QueryHeader } from 'components/navigation';
@@ -88,7 +88,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
       if (org && prev.orgs.findIndex((o) => o.value === org.id) < 0)
         updated.orgs.push({ value: org.id, label: org.name });
       if (prev.visible !== true) updated.visible = true;
-      if (!equal(prev, updated)) return updated;
+      if (!dequal(prev, updated)) return updated;
       return prev;
     });
   }, [org, query]);

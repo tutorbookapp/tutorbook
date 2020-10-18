@@ -1,8 +1,8 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import algoliasearch from 'algoliasearch/lite';
+import { dequal } from 'dequal';
 import useTranslation from 'next-translate/useTranslation';
-import equal from 'fast-deep-equal';
 
 import Select, { SelectControllerProps } from 'components/select';
 
@@ -102,7 +102,7 @@ export default function SubjectSelect({
       // If they already match, do nothing.
       if (!value) return prev;
       if (
-        equal(
+        dequal(
           prev.map(({ value: val }) => val),
           value
         )
@@ -120,7 +120,7 @@ export default function SubjectSelect({
   // Expose API surface to directly control the `selectedOptions` state.
   useEffect(() => {
     setSelectedOptions((prev: SubjectOption[]) => {
-      if (!selected || equal(prev, selected)) return prev;
+      if (!selected || dequal(prev, selected)) return prev;
       return selected;
     });
   }, [selected]);
@@ -129,7 +129,7 @@ export default function SubjectSelect({
   useEffect(() => {
     setSelectedOptions((prev: SubjectOption[]) => {
       const os = prev.filter((s) => !options || options.includes(s.value));
-      if (equal(os, prev)) return prev;
+      if (dequal(os, prev)) return prev;
       if (onSelectedChange) onSelectedChange(os);
       if (onChange) onChange(os.map(({ value: val }) => val));
       return os;
@@ -146,7 +146,7 @@ export default function SubjectSelect({
       onChange={onSelectedOptionsChange}
       getSuggestions={getSuggestions}
       noResultsMessage={t('common:no-subjects')}
-      forceUpdateSuggestions={!equal(prevOptions, options)}
+      forceUpdateSuggestions={!dequal(prevOptions, options)}
     />
   );
 }

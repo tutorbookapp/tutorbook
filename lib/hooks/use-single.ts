@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, FormEvent } from 'react';
-import equal from 'fast-deep-equal';
+import { dequal } from 'dequal';
 import to from 'await-to-js';
 
 import { Callback } from 'lib/model';
@@ -55,7 +55,7 @@ export default function useSingle<T extends { id: string }>(
       } else {
         // Otherwise, mutate local data with the server's response.
         prevData.current = res as T;
-        if (!equal(res, data)) {
+        if (!dequal(res, data)) {
           setData(res as T);
           if (updateLocal) await updateLocal(res as T);
         }
@@ -70,7 +70,7 @@ export default function useSingle<T extends { id: string }>(
   useEffect(() => {
     // Initial data takes precedence over local component-scoped data (e.g. when
     // editing a profile that can be updated from multiple locations).
-    setData((prev: T) => (equal(prev, initialData) ? prev : initialData));
+    setData((prev: T) => (dequal(prev, initialData) ? prev : initialData));
   }, [initialData]);
 
   return { data, setData, onSubmit, error, loading, checked };

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import equal from 'fast-deep-equal';
+import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 
 import { Callback } from 'lib/model';
@@ -15,7 +15,7 @@ interface ContinuousProps<T> {
 }
 
 /**
- * React hook that implements the continuous update form data flow.
+ * React hook that implements the continuous update form data flow. On change:
  * 1. Immediately mutate local data.
  * 2. Set a timeout to update the remote data. Clear any existing timeouts.
  * 3. Update the remote data with a POST or PUT API request.
@@ -45,7 +45,7 @@ export default function useContinuous<T extends { id: string }>(
     } else {
       setError(undefined);
       setRetryCount(0);
-      if (!equal(res, data)) {
+      if (!dequal(res, data)) {
         lastReceivedResponse.current = res as T;
         setData(res as T);
       }
@@ -68,7 +68,7 @@ export default function useContinuous<T extends { id: string }>(
     // Don't update remote data for unidentified resource.
     if (!data.id || !prevData.id) return;
     // Don't update remote with the response the remote sent us.
-    if (equal(lastReceivedResponse.current, data)) return;
+    if (dequal(lastReceivedResponse.current, data)) return;
     const timeoutId = setTimeout(() => {
       void retry();
     }, timeout);
@@ -85,7 +85,7 @@ export default function useContinuous<T extends { id: string }>(
   useEffect(() => {
     // Initial data takes precedence over local component-scoped data (e.g. when
     // editing a profile that can be updated from multiple locations).
-    setData((prev: T) => (equal(prev, initialData) ? prev : initialData));
+    setData((prev: T) => (dequal(prev, initialData) ? prev : initialData));
   }, [initialData]);
 
   return { error, retry, timeout, data, setData };

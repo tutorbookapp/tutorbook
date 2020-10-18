@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import equal from 'fast-deep-equal';
+import { dequal } from 'dequal';
 import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
@@ -95,7 +95,7 @@ export default function UserSelect({
       // If they already match, do nothing.
       if (!value) return prev;
       if (
-        equal(
+        dequal(
           prev.map(({ value: val }) => val),
           value
         )
@@ -125,7 +125,7 @@ export default function UserSelect({
   // Expose API surface to directly control the `selectedOptions` state.
   useEffect(() => {
     setSelectedOptions((prev: UserOption[]) => {
-      if (!selected || equal(prev, selected)) return prev;
+      if (!selected || dequal(prev, selected)) return prev;
       return selected;
     });
   }, [selected]);

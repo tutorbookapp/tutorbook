@@ -1,7 +1,7 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import algoliasearch from 'algoliasearch/lite';
-import equal from 'fast-deep-equal';
+import { dequal } from 'dequal';
 import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
@@ -79,7 +79,7 @@ export default function LangSelect({
       // If they already match, do nothing.
       if (!value) return prev;
       if (
-        equal(
+        dequal(
           prev.map(({ value: val }) => val),
           value
         )
@@ -105,7 +105,7 @@ export default function LangSelect({
   // Expose API surface to directly control the `selectedOptions` state.
   useEffect(() => {
     setSelectedOptions((prev: Option<string>[]) => {
-      if (!selected || equal(prev, selected)) return prev;
+      if (!selected || dequal(prev, selected)) return prev;
       return selected;
     });
   }, [selected]);
