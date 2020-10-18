@@ -227,6 +227,9 @@ trying to contribute; it'll save your reputation and a lot of time):
 - [Next.js](https://nextjs.org) - To easily support
   [SSR](https://nextjs.org/docs/basic-features/pages#server-side-rendering) and
   other performance [PWA](https://web.dev/progressive-web-apps/) features.
+- [SWR](https://swr.vercel.app) - Used to manage global state. SWR fetches data
+  from our back-end, stores it in a global cache, and allows local mutations of
+  that cache (with or without automatic revalidation).
 
 #### Tooling
 
