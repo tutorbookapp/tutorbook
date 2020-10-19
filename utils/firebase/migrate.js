@@ -20,6 +20,7 @@ console.log(
   )
 );
 
+const { nanoid } = require('nanoid');
 const axios = require('axios');
 const updateSubjects = require('./update-subjects');
 const prompt = require('prompt-sync')();
@@ -287,40 +288,62 @@ const addOrgIdToMatches = async () => {
   await Promise.all(
     matches.map(async (match) => {
       const data = match.data();
+      if (data.org) return;
       let org = '';
       const question =
         `Org for match (${match.id}) \n With subjects ` +
         `(${data.subjects.join(', ')}) \n And people ` +
         `(${data.people.map((p) => p.name || p.id).join(', ')})?`;
       console.log(question);
-      while (!orgs.includes(org)) {
-        org = prompt(`(${orgs.join(', ')}) `);
+      while (![...orgs, 'delete'].includes(org)) {
+        org = prompt(`(${orgs.join(', ')}, delete) `);
       }
-      const timesJSON = (data.times || []).map((timeslot) => ({
-        to: timeslot.to.toDate().toJSON(),
-        from: timeslot.from.toDate().toJSON(),
-        recur: timeslot.recur,
-      }));
-      const venueJSON = {
-        ...data.venue,
-        created: data.venue.created.toDate().toJSON(),
-        updated: data.venue.updated.toDate().toJSON(),
-      };
-      const matchJSON = {
-        ...data,
-        org,
-        id: match.id,
-        venue: venueJSON,
-        times: timesJSON,
-      };
-      const [err] = await to(
-        axios.put(`${endpoint}/${match.id}`, matchJSON, { headers })
-      );
-      if (err)
-        console.error(
-          `${err.name} updating match (${match.id}): ${err.message}`,
-          matchJSON
+      if (org === 'delete') {
+        const [err] = await to(
+          axios.delete(`${endpoint}/${match.id}`, { headers })
         );
+        if (err)
+          console.error(
+            `${err.name} deleting match (${match.id}): ${err.message}`
+          );
+      } else {
+        const timesJSON = (data.times || []).map((timeslot) => ({
+          to: timeslot.to.toDate().toJSON(),
+          from: timeslot.from.toDate().toJSON(),
+          recur: timeslot.recur,
+        }));
+        const venueJSON = data.venue
+          ? {
+              ...data.venue,
+              created: data.venue.created.toDate().toJSON(),
+              updated: data.venue.updated.toDate().toJSON(),
+            }
+          : {
+              type: 'jitsi',
+              url: `https://meet.jit.si/TB-${nanoid(10)}`,
+              created: new Date().toJSON(),
+              updated: new Date().toJSON(),
+            };
+        const matchJSON = {
+          org,
+          status: data.status || 'new',
+          subjects: data.subjects || [],
+          people: data.people || [],
+          creator: data.creator || (data.people || [])[0] || {},
+          message: data.message || '',
+          venue: venueJSON,
+          times: timesJSON,
+          id: match.id,
+        };
+        const [err] = await to(
+          axios.put(`${endpoint}/${match.id}`, matchJSON, { headers })
+        );
+        if (err)
+          console.error(
+            `${err.name} updating match (${match.id}): ${err.message}`,
+            matchJSON
+          );
+      }
     })
   );
 };
