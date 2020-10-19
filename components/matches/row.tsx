@@ -1,28 +1,94 @@
 import { DataTableCell, DataTableRow } from '@rmwc/data-table';
-import { memo } from 'react';
-import equal from 'fast-deep-equal';
+import { memo, useCallback, useMemo } from 'react';
+import axios from 'axios';
+import { dequal } from 'dequal';
+import { responseInterface } from 'swr/dist/types';
 
-import { MatchJSON, Person } from 'lib/model';
+import { Callback, MatchJSON, MatchStatus, Person } from 'lib/model';
+import { ListMatchesRes } from 'lib/api/routes/matches/list';
 import Utils from 'lib/utils';
+import { useContinuous } from 'lib/hooks';
 
 import styles from './matches.module.scss';
 
 interface MatchRowProps {
   match: MatchJSON;
+  mutate: responseInterface<ListMatchesRes | undefined, Error>['mutate'];
+  setDataEdited: Callback<boolean>;
 }
 
 export const MatchRow = memo(
-  function MatchRow({ match }: MatchRowProps) {
-    const names: string[] = [];
-    match.people.forEach((p: Person) => {
-      if (p.name) names.push(`${p.name} (${Utils.join(p.roles) || 'other'})`);
-    });
-    const diff = match.people.length - names.length;
-    if (diff > 0) names.push(`${diff} more`);
+  function MatchRow({ match: local, mutate, setDataEdited }: MatchRowProps) {
+    const updateRemote = useCallback(
+      async (updated: MatchJSON) => {
+        const { data } = await axios.put<MatchJSON>(
+          `/api/matches/${updated.id}`,
+          updated
+        );
+        setDataEdited(false);
+        return data;
+      },
+      [setDataEdited]
+    );
+
+    const updateLocal = useCallback(
+      async (updated: MatchJSON) => {
+        setDataEdited(true);
+        await mutate((prev?: ListMatchesRes) => {
+          if (!prev) return prev;
+          const idx = prev.matches.findIndex((m) => m.id === updated.id);
+          if (idx < 0) return prev;
+          const matches = [
+            ...prev.matches.slice(0, idx),
+            updated,
+            ...prev.matches.slice(idx + 1),
+          ];
+          return { ...prev, matches };
+        }, false);
+      },
+      [mutate, setDataEdited]
+    );
+
+    const { data: match, setData: setMatch } = useContinuous<MatchJSON>(
+      local,
+      updateRemote,
+      updateLocal
+    );
+
+    const toggleStatus = useCallback(() => {
+      setMatch((prev) => {
+        const status = ({
+          new: 'active',
+          active: 'stale',
+          stale: 'new',
+        } as Record<MatchStatus, MatchStatus>)[prev.status];
+        return { ...prev, status };
+      });
+    }, [setMatch]);
+
+    const peopleNames = useMemo(() => {
+      const names: string[] = [];
+      match.people.forEach((p: Person) => {
+        if (p.name) names.push(`${p.name} (${Utils.join(p.roles) || 'other'})`);
+      });
+      const diff = match.people.length - names.length;
+      if (diff > 0) names.push(`${diff} more`);
+      return names;
+    }, [match.people]);
+
     return (
       <DataTableRow data-cy='match-row'>
+        <DataTableCell className={styles.status}>
+          <button
+            className={styles[match.status]}
+            onClick={toggleStatus}
+            type='button'
+          >
+            {Utils.caps(match.status)}
+          </button>
+        </DataTableCell>
         <DataTableCell className={styles.people}>
-          {Utils.join(names)}
+          {Utils.join(peopleNames)}
         </DataTableCell>
         <DataTableCell className={styles.subjects}>
           {Utils.join(match.subjects)}
@@ -34,13 +100,14 @@ export const MatchRow = memo(
     );
   },
   (prevProps: MatchRowProps, nextProps: MatchRowProps) => {
-    return equal(prevProps.match, nextProps.match);
+    return dequal(prevProps.match, nextProps.match);
   }
 );
 
 export const LoadingRow = memo(function LoadingRow(): JSX.Element {
   return (
     <DataTableRow>
+      <DataTableCell className={styles.status} />
       <DataTableCell className={styles.people} />
       <DataTableCell className={styles.subjects} />
       <DataTableCell className={styles.message} />

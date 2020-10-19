@@ -4,8 +4,6 @@ import to from 'await-to-js';
 
 import { Callback } from 'lib/model';
 
-import usePrevious from './use-previous';
-
 interface ContinuousProps<T> {
   data: T;
   setData: Callback<T>;
@@ -23,6 +21,8 @@ interface ContinuousProps<T> {
  *    backoff to continually retry the request. Local data stays mutated.
  * 5. Otherwise, mutate local data with the server's response.
  * @see {@link https://github.com/tutorbookapp/tutorbook#forms-and-data-mutation}
+ * @todo Find some way to skip the initial update (when the `data` state is what
+ * we just fetched from our back-end API).
  */
 export default function useContinuous<T extends { id: string }>(
   initialData: T,
@@ -34,7 +34,6 @@ export default function useContinuous<T extends { id: string }>(
   const [error, setError] = useState<Error>();
   const [retryCount, setRetryCount] = useState<number>(0);
 
-  const prevData = usePrevious<T>(data);
   const lastReceivedResponse = useRef<T>();
 
   const retry = useCallback(async () => {
@@ -66,21 +65,22 @@ export default function useContinuous<T extends { id: string }>(
 
   useEffect(() => {
     // Don't update remote data for unidentified resource.
-    if (!data.id || !prevData.id) return;
+    if (!data.id) return;
     // Don't update remote with the response the remote sent us.
     if (dequal(lastReceivedResponse.current, data)) return;
+    // Update the remote data after a period of no change.
     const timeoutId = setTimeout(() => {
       void retry();
     }, timeout);
     return () => clearTimeout(timeoutId);
-  }, [data, prevData, retry, timeout]);
+  }, [data, retry, timeout]);
 
   useEffect(() => {
     // Immediately mutate local data.
-    if (data.id && prevData.id && updateLocal) {
+    if (data.id && updateLocal) {
       void updateLocal(data);
     }
-  }, [updateLocal, data, prevData]);
+  }, [updateLocal, data]);
 
   useEffect(() => {
     // Initial data takes precedence over local component-scoped data (e.g. when

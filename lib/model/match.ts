@@ -116,8 +116,24 @@ export function isVenue(json: unknown): json is Venue {
 }
 
 /**
+ * The different states of a match or request.
+ * @enum {string} MatchStatus
+ * @property new - When the match is first created; a match stays in the `new`
+ * state for at least a week after it's been created until it is either moved to
+ * `active` or `stale`.
+ * @property active - When the people in the match are actively meeting on a
+ * regular, recurring basis (e.g once a week, they have tutoring lessons after
+ * school for ~60mins). This is the ideal state of the match.
+ * @property stale - When the people in the match have not met or have ceased
+ * communications for over a week. A stale match needs re-engagement or should
+ * be deleted.
+ */
+export type MatchStatus = 'new' | 'active' | 'stale';
+
+/**
  * Represents a tutoring lesson or mentoring appointment.
  * @typedef {Object} MatchInterface
+ * @property status - The status of the match (`new`, `active`, or `stale`).
  * @property org - The ID of the organization that owns this request or match.
  * @property subjects - The subjects that this match is about (e.g. AP CS).
  * @property people - The people involved in this match (i.e. pupil and tutor).
@@ -128,6 +144,7 @@ export function isVenue(json: unknown): json is Venue {
  * @property [request] - The request that was fulfilled by this match (if any).
  */
 export interface MatchInterface {
+  status: MatchStatus;
   org: string;
   subjects: string[];
   people: Person[];
@@ -151,9 +168,10 @@ export type MatchSearchHit = ObjectWithObjectID &
     request?: MatchSearchHit;
   };
 
-// TODO: Implement this to actually verify that the given JSON is valid.
 export function isMatchJSON(json: unknown): json is MatchJSON {
   if (!isJSON(json)) return false;
+  if (typeof json.status !== 'string') return false;
+  if (!['new', 'active', 'stale'].includes(json.status)) return false;
   if (typeof json.org !== 'string') return false;
   if (!(json.subjects instanceof Array)) return false;
   if (json.subjects.some((s) => typeof s !== 'string')) return false;
@@ -169,6 +187,8 @@ export function isMatchJSON(json: unknown): json is MatchJSON {
 }
 
 export class Match implements MatchInterface {
+  public status: MatchStatus = 'new';
+
   public org = 'default';
 
   public subjects: string[] = [];
@@ -209,6 +229,19 @@ export class Match implements MatchInterface {
     const isTutee = (a: Person) => a.roles.indexOf('tutee') >= 0;
     if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
     return 'mentoring';
+  }
+
+  public get nextStatus(): MatchStatus {
+    switch (this.status) {
+      case 'new':
+        return 'active';
+      case 'active':
+        return 'stale';
+      case 'stale':
+        return 'active';
+      default:
+        return 'active';
+    }
   }
 
   public toJSON(): MatchJSON {

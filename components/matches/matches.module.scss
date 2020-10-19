@@ -137,8 +137,40 @@ $filters-height: 56px;
       padding-right: 0;
     }
 
+    &.status {
+      min-width: 85px;
+
+      button {
+        color: white;
+        text-align: center;
+        font-size: 0.75rem;
+        border: 1px solid;
+        border-radius: 4px;
+        outline: none;
+        font: inherit;
+        padding: 0 4px;
+        margin: 0;
+        cursor: pointer;
+
+        &.new {
+          border-color: map.get(config.$colors, 'success');
+          background-color: map.get(config.$colors, 'success');
+        }
+
+        &.active {
+          border-color: map.get(config.$colors, 'accents-5');
+          background-color: map.get(config.$colors, 'accents-5');
+        }
+
+        &.stale {
+          border-color: map.get(config.$colors, 'warning-dark');
+          background-color: map.get(config.$colors, 'warning-dark');
+        }
+      }
+    }
+
     &.people {
-      min-width: 500px;
+      min-width: 400px;
     }
 
     &.subjects {
@@ -146,7 +178,7 @@ $filters-height: 56px;
     }
 
     &.message {
-      min-width: 900px;
+      min-width: 500px;
     }
   }
 }

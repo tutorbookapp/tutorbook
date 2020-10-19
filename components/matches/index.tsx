@@ -6,23 +6,23 @@ import {
   DataTableHeadCell,
   DataTableRow,
 } from '@rmwc/data-table';
-import useSWR, { mutate } from 'swr';
-import { IconButton } from '@rmwc/icon-button';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { IconButton } from '@rmwc/icon-button';
 import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
+import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
-import Placeholder from 'components/placeholder';
-import { IntercomAPI } from 'components/react-intercom';
 import Header from 'components/header';
+import { IntercomAPI } from 'components/react-intercom';
+import Placeholder from 'components/placeholder';
 
+import { MatchStatus, MatchesQuery, Org } from 'lib/model';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
-import { MatchesQuery, Org } from 'lib/model';
 
-import styles from './matches.module.scss';
 import { LoadingRow, MatchRow } from './row';
+import styles from './matches.module.scss';
 
 interface MatchesProps {
   org: Org;
@@ -32,48 +32,44 @@ interface MatchesProps {
  * The "Matches" view is a heterogenous combination of live-updating filtered
  * results and editability (similar to Google Sheets):
  * - Data automatically re-validates when filters are valid.
- * - Filters become invalid when data is edited or new users are being created.
- * - Creating new users locally updates the SWR data and calls the `/api/users`
- * API endpoint when the user has a valid email address.
- * - Local edits are pushed to remote after 5secs of no change.
+ * - Filters become invalid when data is edited.
+ * - Local edits are pushed to remote after 5 secs of no change.
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/87}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function Matches({ org }: MatchesProps): JSX.Element {
-  const [valid, setValid] = useState<boolean>(true);
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MatchesQuery>(
     new MatchesQuery({ org: org.id, hitsPerPage: 10 })
   );
 
-  const loadingRows: JSX.Element[] = useMemo(
-    () =>
-      Array(query.hitsPerPage)
-        .fill(null)
-        .map(() => <LoadingRow key={uuid()} />),
-    [query.hitsPerPage]
-  );
-
-  const { t } = useTranslation();
-  // TODO: Control the re-validation using the `valid` state variable.
-  // See: https://github.com/vercel/swr/issues/529
-  const { data, isValidating } = useSWR<ListMatchesRes>(query.endpoint, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
-
   useEffect(() => {
     setQuery((prev) => new MatchesQuery({ ...prev, org: org.id }));
   }, [org]);
-  useEffect(() => {
-    void mutate(query.endpoint);
-  }, [query]);
+
+  const [dataEdited, setDataEdited] = useState<boolean>(false);
+
+  // Don't revalidate when data has been edited locally but not updated in the
+  // remote (i.e. the back-end) yet. Doing so would erase those local changes.
+  // @see {@link https://github.com/vercel/swr/issues/529}
+  const { data, isValidating, mutate } = useSWR<ListMatchesRes>(
+    query.endpoint,
+    {
+      revalidateOnFocus: !dataEdited,
+      revalidateOnReconnect: !dataEdited,
+    }
+  );
+
   useEffect(() => {
     setSearching((prev: boolean) => prev && (isValidating || !data));
   }, [isValidating, data]);
-  useEffect(() => {
-    setValid((prev: boolean) => prev || searching);
-  }, [searching]);
+
+  const loadingRows: JSX.Element[] = useMemo(() => {
+    const arr = Array(query.hitsPerPage).fill(null);
+    return arr.map(() => <LoadingRow key={uuid()} />);
+  }, [query.hitsPerPage]);
+
+  const { t } = useTranslation();
 
   return (
     <>
@@ -94,7 +90,6 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
           <div className={styles.right}>
             <TextField
               outlined
-              invalid={!valid && !!query.query}
               placeholder={t('matches:search-placeholder')}
               className={styles.searchField}
               value={query.query}
@@ -111,6 +106,9 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
             <DataTableContent>
               <DataTableHead className={styles.header}>
                 <DataTableRow>
+                  <DataTableHeadCell className={styles.status}>
+                    {t('common:status')}
+                  </DataTableHeadCell>
                   <DataTableHeadCell className={styles.people}>
                     {t('common:people')}
                   </DataTableHeadCell>
@@ -125,7 +123,12 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               <DataTableBody>
                 {!searching &&
                   (data ? data.matches : []).map((match) => (
-                    <MatchRow key={match.id} match={match} />
+                    <MatchRow
+                      match={match}
+                      key={match.id}
+                      mutate={mutate}
+                      setDataEdited={setDataEdited}
+                    />
                   ))}
                 {searching && loadingRows}
               </DataTableBody>

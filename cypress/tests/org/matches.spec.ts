@@ -15,10 +15,15 @@ describe('Matches dashboard page', () => {
   beforeEach(() => {
     cy.setup();
     cy.login(admin.id);
+
+    cy.server();
+    cy.route('PUT', '/api/matches/*').as('update-match');
+
     cy.visit(`/${school.id}/matches`);
   });
 
-  it('shows matches', () => {
+  // TODO: Assert about SWR re-validation by dispatching window focus events.
+  it('updates status on matches', () => {
     cy.wait('@get-account');
 
     cy.getBySel('title').should('have.text', 'Matches');
@@ -32,9 +37,20 @@ describe('Matches dashboard page', () => {
     cy.wait('@list-matches');
     matchIsListed();
 
-    cy.get('[placeholder="Search matches"]').type('Computer Science');
+    cy.get('[placeholder="Search matches"]').type('Computer');
 
     cy.wait('@list-matches');
     matchIsListed();
+
+    cy.getBySel('match-row')
+      .contains('button', 'New')
+      .click()
+      .should('have.text', 'Active')
+      .click()
+      .should('have.text', 'Stale')
+      .click()
+      .should('have.text', 'New');
+    cy.wait(5000);
+    cy.wait('@update-match');
   });
 });
