@@ -3,6 +3,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { Match, MatchJSON, isMatchJSON } from 'lib/model';
 import { handle } from 'lib/api/error';
 import createMatchDoc from 'lib/api/create/match-doc';
+import createMatchNotification from 'lib/api/create/match-notification';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createZoom from 'lib/api/create/zoom';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
@@ -49,6 +50,7 @@ export default async function createMatch(
     const zoom = await createZoom(body, people);
     const match = await createMatchDoc(body, zoom);
     await createMatchSearchObj(match);
+    await createMatchNotification(match, people, creator);
 
     res.status(201).json(match.toJSON());
   } catch (e) {
