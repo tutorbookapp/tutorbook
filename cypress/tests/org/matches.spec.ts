@@ -15,10 +15,6 @@ describe('Matches dashboard page', () => {
   beforeEach(() => {
     cy.setup();
     cy.login(admin.id);
-
-    cy.server();
-    cy.route('PUT', '/api/matches/*').as('update-match');
-
     cy.visit(`/${school.id}/matches`);
   });
 

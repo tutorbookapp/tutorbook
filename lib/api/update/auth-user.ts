@@ -36,7 +36,7 @@ export default async function updateAuthUser(user: User): Promise<User> {
     // have to add these error handling exceptions. Ideally, I should be able to
     // manipulate the state of my authentication backend during tests.
     if (
-      process.env.NODE_ENV === 'test' &&
+      process.env.APP_ENV === 'test' &&
       [
         'auth/email-already-exists',
         'auth/phone-number-already-exists',

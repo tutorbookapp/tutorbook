@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 
 import { Overrides } from 'cypress/plugins';
+import photo from 'cypress/fixtures/users/volunteer.jpg.json';
 
 import 'firebase/auth';
 import 'firebase/firestore';
@@ -63,11 +64,31 @@ function logout(): Cypress.Chainable<null> {
 function setup(overrides?: Overrides): void {
   cy.task('clear');
   cy.task('seed', overrides);
+
   cy.server();
+
   cy.route('GET', '/api/account').as('get-account');
+
   cy.route('GET', '/api/requests*').as('list-requests');
+
+  cy.route('POST', '/api/matches').as('create-match');
   cy.route('GET', '/api/matches*').as('list-matches');
+  cy.route('PUT', '/api/matches/*').as('update-match');
+
+  cy.route('POST', '/api/users').as('create-user');
   cy.route('GET', '/api/users*').as('list-users');
+  cy.route('PUT', '/api/users/*').as('update-user');
+
+  cy.route({
+    method: 'POST',
+    url: 'https://firebasestorage.googleapis.com/**',
+    response: photo,
+  }).as('upload-photo');
+  cy.route({
+    method: 'GET',
+    url: 'https://firebasestorage.googleapis.com/**',
+    response: photo,
+  }).as('get-photo');
 }
 
 function getBySel(

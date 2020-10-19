@@ -29,13 +29,6 @@ function waitForResults() {
 }
 
 describe('Search page', () => {
-  beforeEach(() => {
-    cy.server();
-    cy.route('GET', '/api/users*').as('list-users');
-    cy.route('GET', '/api/account').as('get-account');
-    cy.route('POST', '/api/matches').as('create-match');
-  });
-
   it('restricts access to school data', () => {
     cy.setup();
     cy.logout();
@@ -88,31 +81,14 @@ describe('Search page', () => {
       .and('have.attr', 'disabled');
   });
 
-  // TODO: Create test where the user is already logged in (and then ping
-  // SendGrid to ensure that our email notifications were sent).
-  it('allows authorized access to org data', () => {
-    cy.setup();
+  // TODO: Ping SendGrid to ensure that our email notifications were sent.
+  it('collects phone before sending requests', () => {
+    cy.setup({ student: { phone: null } });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);
 
     cy.wait('@get-account');
     cy.get('.mdc-dialog--open').should('not.exist');
-
-    waitForResults();
-
-    cy.getBySel('results').find('li').first().click();
-    cy.get('.mdc-dialog--open')
-      .should('be.visible')
-      .and('contain', 'Send request')
-      .contains('Your phone number')
-      .should('not.exist');
-  });
-
-  it('collects phone before sending requests', () => {
-    cy.setup({ student: { phone: null } });
-    cy.login(student.id);
-    cy.visit(`/${school.id}/search`);
-    cy.wait('@get-account');
 
     waitForResults();
 
@@ -171,7 +147,13 @@ describe('Search page', () => {
     cy.contains('li', 'Artificial Intelligence').click();
 
     cy.getBySel('page').click({ force: true });
-    cy.getBySel('results').find('li').first().should('not.be.disabled').click();
+    cy.wait('@list-users');
+    cy.getBySel('results')
+      .find('li')
+      .should('have.length', 1)
+      .first()
+      .should('not.have.attr', 'disabled', '')
+      .click();
 
     cy.getBySel('request-dialog').should('be.visible').as('dialog');
     cy.get('@dialog').find('[data-cy=bio]').should('have.text', volunteer.bio);

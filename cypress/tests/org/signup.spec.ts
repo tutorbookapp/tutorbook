@@ -5,14 +5,6 @@ describe('Signup page', () => {
   beforeEach(() => {
     cy.setup({ volunteer: null });
     cy.logout();
-
-    cy.server();
-    cy.route('POST', '/api/users').as('create-user');
-    cy.route('PUT', '/api/users/*').as('update-user');
-    cy.route('POST', 'https://firebasestorage.googleapis.com/**').as(
-      'upload-photo'
-    );
-
     cy.visit(`/${org.id}/signup`);
   });
 
@@ -38,7 +30,7 @@ describe('Signup page', () => {
     cy.get('@text-field').should('have.class', 'mdc-text-field--invalid');
   });
 
-  it.only('signs new volunteers up', () => {
+  it('signs new volunteers up', () => {
     cy.contains('Your name')
       .children('input')
       .as('name-input')

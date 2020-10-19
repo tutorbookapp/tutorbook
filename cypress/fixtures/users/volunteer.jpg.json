@@ -1,0 +1,17 @@
+{
+  "name": "volunteer.jpg",
+  "bucket": "test-tutorbook.appspot.com",
+  "generation": "1603128910382225",
+  "metageneration": "1",
+  "contentType": "image/jpeg",
+  "timeCreated": "2020-10-19T18:27:14.832Z",
+  "updated": "2020-10-19T18:27:14.832Z",
+  "storageClass": "STANDARD",
+  "size": "74450",
+  "md5Hash": "vdph8s5jFFclDcfeIyK0qg==",
+  "contentEncoding": "identity",
+  "contentDisposition": "inline; filename*=utf-8\"\"volunteer.jpg",
+  "crc32c": "triA3Q==",
+  "etag": "CJGJ7smYwewCEAE=",
+  "downloadTokens": "05089c57-f0e9-4720-845b-73eee9413a49"
+}

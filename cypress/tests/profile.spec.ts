@@ -3,12 +3,6 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 describe('Profile page', () => {
   beforeEach(() => {
     cy.setup();
-
-    cy.server();
-    cy.route('PUT', '/api/users/*').as('update-user');
-    cy.route('POST', 'https://firebasestorage.googleapis.com/**').as(
-      'upload-photo'
-    );
   });
 
   it('redirects to login page when logged out', () => {
