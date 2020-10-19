@@ -13,7 +13,7 @@ import styles from './matches.module.scss';
 
 interface MatchRowProps {
   match: MatchJSON;
-  mutate: responseInterface<ListMatchesRes | undefined, Error>['mutate'];
+  mutate: responseInterface<ListMatchesRes, Error>['mutate'];
   setDataEdited: Callback<boolean>;
 }
 
@@ -34,7 +34,7 @@ export const MatchRow = memo(
     const updateLocal = useCallback(
       async (updated: MatchJSON) => {
         setDataEdited(true);
-        await mutate((prev?: ListMatchesRes) => {
+        await mutate((prev: ListMatchesRes) => {
           if (!prev) return prev;
           const idx = prev.matches.findIndex((m) => m.id === updated.id);
           if (idx < 0) return prev;

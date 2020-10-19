@@ -18,7 +18,7 @@ import Header from 'components/header';
 import { IntercomAPI } from 'components/react-intercom';
 import Placeholder from 'components/placeholder';
 
-import { MatchStatus, MatchesQuery, Org } from 'lib/model';
+import { MatchesQuery, Org } from 'lib/model';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
 
 import { LoadingRow, MatchRow } from './row';
