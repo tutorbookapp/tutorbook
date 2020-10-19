@@ -21,7 +21,6 @@ import Loader from 'components/loader';
 import Result from 'components/search/result';
 
 import {
-  ApiError,
   Aspect,
   Callback,
   Person,
@@ -30,6 +29,7 @@ import {
   User,
   UserJSON,
 } from 'lib/model';
+import { APIError } from 'lib/api/error';
 import { ListRequestsRes } from 'lib/api/routes/requests/list';
 import Utils from 'lib/utils';
 import { useOrg } from 'lib/context/org';
@@ -133,14 +133,14 @@ export default memo(function RequestPage({
 
       const [err, res] = await to<
         AxiosResponse<RequestJSON>,
-        AxiosError<ApiError>
+        AxiosError<APIError>
       >(axios.post('/api/requests', request.toJSON()));
 
       if (err && err.response) {
         setLoading(false);
         setError(
           `An error occurred while creating your request. ${Utils.period(
-            err.response.data.msg || err.message
+            (err.response.data || err).message
           )}`
         );
       } else if (err && err.request) {

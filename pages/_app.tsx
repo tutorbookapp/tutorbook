@@ -7,19 +7,20 @@ import to from 'await-to-js';
 import NProgress from 'components/nprogress';
 
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
-import { ApiError, Org, OrgJSON, User, UserJSON } from 'lib/model';
+import { Org, OrgJSON, User, UserJSON } from 'lib/model';
+import { APIError } from 'lib/api/error';
 
 import 'styles/global.scss';
 
 async function fetcher<T>(url: string): Promise<T> {
-  const [err, res] = await to<AxiosResponse<T>, AxiosError<ApiError>>(
+  const [err, res] = await to<AxiosResponse<T>, AxiosError<APIError>>(
     axios.get<T>(url)
   );
   const error: (description: string) => never = (description: string) => {
     throw new Error(description);
   };
   if (err && err.response) {
-    error(`API (${url}) responded with error: ${err.response.data.msg}`);
+    error(`API (${url}) responded with error: ${err.response.data.message}`);
   } else if (err && err.request) {
     error(`API (${url}) did not respond.`);
   } else if (err) {

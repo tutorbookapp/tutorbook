@@ -21,7 +21,6 @@ import Loader from 'components/loader';
 import Result from 'components/search/result';
 
 import {
-  ApiError,
   Aspect,
   Match,
   MatchJSON,
@@ -30,6 +29,7 @@ import {
   User,
   UserJSON,
 } from 'lib/model';
+import { APIError } from 'lib/api/error';
 import Utils from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
@@ -168,14 +168,14 @@ export default memo(function MatchPage({
     async (event: FormEvent) => {
       event.preventDefault();
       setLoading(true);
-      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<ApiError>>(
+      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<APIError>>(
         axios.post('/api/matches', match.toJSON())
       );
       if (err && err.response) {
         setLoading(false);
         setError(
           `An error occurred while creating your match. ${Utils.period(
-            err.response.data.msg || err.message
+            (err.response.data || err).message
           )}`
         );
       } else if (err && err.request) {

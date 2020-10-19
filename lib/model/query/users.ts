@@ -1,11 +1,10 @@
 import url from 'url';
 
-import { Availability, AvailabilityJSON } from '../availability';
-import { Check } from '../user';
-import { Aspect } from '../aspect';
-import construct from '../construct';
-
-import { Option, Query, QueryInterface } from './base';
+import { Availability, AvailabilityJSON } from 'lib/model/availability';
+import { Option, Query, QueryInterface } from 'lib/model/query/base';
+import { Check } from 'lib/model/user';
+import { Aspect } from 'lib/model/aspect';
+import construct from 'lib/model/construct';
 
 /**
  * All the supported filters for the search view.

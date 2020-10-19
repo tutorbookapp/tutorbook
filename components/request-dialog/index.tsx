@@ -18,12 +18,7 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
 
-import Utils from 'lib/utils';
-import { signupWithGoogle } from 'lib/firebase/signup';
-import { useUser } from 'lib/context/user';
-import { useOrg } from 'lib/context/org';
 import {
-  ApiError,
   Aspect,
   Match,
   MatchJSON,
@@ -32,6 +27,11 @@ import {
   User,
   UserJSON,
 } from 'lib/model';
+import { APIError } from 'lib/api/error';
+import Utils from 'lib/utils';
+import { signupWithGoogle } from 'lib/firebase/signup';
+import { useUser } from 'lib/context/user';
+import { useOrg } from 'lib/context/org';
 
 import styles from './request-dialog.module.scss';
 
@@ -119,7 +119,7 @@ export default function RequestDialog({
       } else if (!currentUser.phone && phoneRequired) {
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
-          AxiosError<ApiError>
+          AxiosError<APIError>
         >(
           axios.put(`/api/users/${currentUser.id}`, {
             ...currentUser.toJSON(),
@@ -130,7 +130,7 @@ export default function RequestDialog({
           setLoading(false);
           setError(
             `An error occurred while adding your phone number. ${Utils.period(
-              err.response.data.msg || err.message
+              (err.response.data || err).message
             )}`
           );
           return;
@@ -154,14 +154,14 @@ export default function RequestDialog({
         }
         await updateUser(User.fromJSON((res as AxiosResponse<UserJSON>).data));
       }
-      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<ApiError>>(
+      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<APIError>>(
         axios.post('/api/matches', match.current.toJSON())
       );
       if (err && err.response) {
         setLoading(false);
         setError(
           `An error occurred while sending your request. ${Utils.period(
-            err.response.data.msg || err.message
+            (err.response.data || err).message
           )}`
         );
       } else if (err && err.request) {

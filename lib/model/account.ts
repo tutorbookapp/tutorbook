@@ -1,7 +1,8 @@
 import * as admin from 'firebase-admin';
 
-import construct from './construct';
-import firestoreVals from './firestore-vals';
+import construct from 'lib/model/construct';
+import firestoreVals from 'lib/model/firestore-vals';
+import { isJSON } from 'lib/model/json';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentReference = admin.firestore.DocumentReference;
@@ -38,21 +39,21 @@ export interface SocialInterface {
   url: string;
 }
 
-export function isSocial(obj: any): obj is SocialInterface {
-  if (!obj || typeof obj !== 'object' || !obj) return false;
-  if (
-    ![
-      'website',
-      'linkedin',
-      'twitter',
-      'facebook',
-      'instagram',
-      'github',
-      'indiehackers',
-    ].includes(obj.type)
-  )
-    return false;
-  if (typeof obj.url !== 'string') return false;
+export function isSocial(json: unknown): json is SocialInterface {
+  const socialTypes = [
+    'website',
+    'linkedin',
+    'twitter',
+    'facebook',
+    'instagram',
+    'github',
+    'indiehackers',
+  ];
+
+  if (!isJSON(json)) return false;
+  if (typeof json.type !== 'string') return false;
+  if (!socialTypes.includes(json.type)) return false;
+  if (typeof json.url !== 'string') return false;
   return true;
 }
 
@@ -72,18 +73,15 @@ export interface AccountInterface {
   ref?: DocumentReference;
 }
 
-export type Extendable<T> = T & Record<string, unknown>;
+export type AccountJSON = AccountInterface;
 
-export function isAccount(obj: any): obj is Extendable<AccountInterface> {
-  if (!obj || typeof obj !== 'object') return false;
-  if (
-    !['id', 'name', 'photo', 'email', 'phone', 'bio'].every(
-      (key: string) => typeof obj[key] === 'string'
-    )
-  )
-    return false;
-  if (!(obj.socials instanceof Array)) return false;
-  if (!obj.socials.every((social: any) => isSocial(social))) return false;
+export function isAccountJSON(json: unknown): json is AccountJSON {
+  const stringFields = ['id', 'name', 'photo', 'email', 'phone', 'bio'];
+
+  if (!isJSON(json)) return false;
+  if (stringFields.some((key) => typeof json[key] !== 'string')) return false;
+  if (!(json.socials instanceof Array)) return false;
+  if (json.socials.some((social) => !isSocial(social))) return false;
   return true;
 }
 

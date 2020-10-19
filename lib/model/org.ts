@@ -1,19 +1,13 @@
 import * as admin from 'firebase-admin';
 
-import { isAccount, Account, AccountInterface } from './account';
-import { isAspect, Aspect } from './aspect';
-import { UserInterface } from './user';
-import construct from './construct';
+import { Account, AccountInterface, isAccountJSON } from 'lib/model/account';
+import { Aspect, isAspect } from 'lib/model/aspect';
+import { UserInterface } from 'lib/model/user';
+import construct from 'lib/model/construct';
+import { isJSON } from 'lib/model/json';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-
-/**
- * Duplicate definition from the `lib/react-intercom` package. These are
- * all the valid datatypes for custom Intercom user attributes.
- * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
- */
-type IntercomCustomAttribute = string | boolean | number | Date;
 
 type PageConfig<T> = { [locale: string]: T };
 type AspectPageConfig<T> = PageConfig<{ [key in Aspect]?: T }>;
@@ -25,13 +19,15 @@ type HomePageConfig = PageConfig<{
   photo?: string;
 }>;
 
-export function isSignupPageConfig(config: any): config is SignupPageConfig {
-  if (!config || typeof config !== 'object') return false;
-  return Object.values(config).every((localeConfig: any) => {
-    if (!localeConfig || typeof localeConfig !== 'object') return false;
-    if (!Object.keys(localeConfig).every((k: any) => isAspect(k))) return false;
-    return Object.values(localeConfig).every((aspectConfig: any) => {
-      if (!aspectConfig || typeof aspectConfig !== 'object') return false;
+export function isSignupPageConfig(
+  config: unknown
+): config is SignupPageConfig {
+  if (!isJSON(config)) return false;
+  return Object.values(config).every((localeConfig) => {
+    if (!isJSON(localeConfig)) return false;
+    if (!Object.keys(localeConfig).every((k) => isAspect(k))) return false;
+    return Object.values(localeConfig).every((aspectConfig) => {
+      if (!isJSON(aspectConfig)) return false;
       if (typeof aspectConfig.header !== 'string') return false;
       if (typeof aspectConfig.body !== 'string') return false;
       return true;
@@ -39,10 +35,10 @@ export function isSignupPageConfig(config: any): config is SignupPageConfig {
   });
 }
 
-export function isHomePageConfig(config: any): config is SignupPageConfig {
-  if (!config || typeof config !== 'object') return false;
+export function isHomePageConfig(config: unknown): config is SignupPageConfig {
+  if (!isJSON(config)) return false;
   return Object.values(config).every((localeConfig: any) => {
-    if (!localeConfig || typeof localeConfig !== 'object') return false;
+    if (!isJSON(localeConfig)) return false;
     if (typeof localeConfig.header !== 'string') return false;
     if (typeof localeConfig.body !== 'string') return false;
     return true;
@@ -99,12 +95,13 @@ export interface OrgInterface extends AccountInterface {
 
 export type OrgJSON = Omit<OrgInterface, 'zoom'> & { zoom: ZoomAccount | null };
 
-export function isOrgJSON(json: any): json is OrgJSON {
-  if (!isAccount(json)) return false;
+export function isOrgJSON(json: unknown): json is OrgJSON {
+  if (!isAccountJSON(json)) return false;
+  if (!isJSON(json)) return false;
   if (!(json.members instanceof Array)) return false;
-  if (!json.members.every((m: any) => typeof m === 'string')) return false;
+  if (json.members.some((m) => typeof m !== 'string')) return false;
   if (!(json.domains instanceof Array)) return false;
-  if (!json.domains.every((m: any) => typeof m === 'string')) return false;
+  if (json.domains.some((m) => typeof m !== 'string')) return false;
   if (!isSignupPageConfig(json.signup)) return false;
   if (!isHomePageConfig(json.home)) return false;
   return true;
@@ -166,44 +163,6 @@ export class Org extends Account implements OrgInterface {
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
     construct<OrgInterface, AccountInterface>(this, org, new Account());
-  }
-
-  /**
-   * Converts this `Org` object into a `Record<string, any>` that Intercom
-   * can understand.
-   * @see {@link https://developers.intercom.com/installing-intercom/docs/javascript-api-attributes-objects#section-data-attributes}
-   */
-  public toIntercom(): Record<string, IntercomCustomAttribute> {
-    const { id, photo, ref, ...rest } = this;
-    const isFilled: (val: any) => boolean = (val: any) => {
-      switch (typeof val) {
-        case 'string':
-          return val !== '';
-        case 'boolean':
-          return true;
-        case 'number':
-          return true;
-        case 'undefined':
-          return false;
-        case 'object':
-          return Object.values(val).filter(isFilled).length > 0;
-        default:
-          return !!val;
-      }
-    };
-    const isValid: (val: any) => boolean = (val: any) => {
-      if (typeof val === 'string') return true;
-      if (typeof val === 'boolean') return true;
-      if (typeof val === 'number') return true;
-      if (val instanceof Date) return true;
-      return false;
-    };
-    const intercomValues: Record<string, any> = Object.fromEntries(
-      Object.entries(rest)
-        .filter(([_, val]) => isFilled(val))
-        .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
-    );
-    return { ...intercomValues, ...super.toIntercom() };
   }
 
   public static fromFirestore(snapshot: DocumentSnapshot): Org {

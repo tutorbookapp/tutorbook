@@ -1,4 +1,9 @@
-import { Query, QueryInterface, QueryJSON, QueryURL } from './base';
+import {
+  Query,
+  QueryInterface,
+  QueryJSON,
+  QueryURL,
+} from 'lib/model/query/base';
 
 export type RequestsQueryInterface = QueryInterface;
 

@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 
-import { DAYS } from './constants';
-import isJSON from './is-json';
+import { DAYS } from 'lib/model/constants';
+import { isJSON } from 'lib/model/json';
 
 /**
  * Number representing the day of the week. Follows the ECMAScript Date

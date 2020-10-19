@@ -5,12 +5,14 @@ import {
   Availability,
   AvailabilityJSON,
   AvailabilitySearchHit,
-} from './availability';
-import { Account, AccountInterface } from './account';
-import { Aspect } from './aspect';
-import { Resource } from './resource';
-import construct from './construct';
-import firestoreVals from './firestore-vals';
+  isAvailabilityJSON,
+} from 'lib/model/availability';
+import { AccountInterface, Account, isAccountJSON } from 'lib/model/account';
+import { Aspect, isAspect } from 'lib/model/aspect';
+import { Resource, isResourceJSON } from 'lib/model/resource';
+import { isArray, isJSON, isStringArray } from 'lib/model/json';
+import construct from 'lib/model/construct';
+import firestoreVals from 'lib/model/firestore-vals';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -45,6 +47,20 @@ export type Check =
   | 'training'
   | 'interview';
 
+export function isCheck(json: unknown): json is Check {
+  const checks = [
+    'email',
+    'background-check',
+    'academic-email',
+    'training',
+    'interview',
+  ];
+
+  if (typeof json !== 'string') return false;
+  if (!checks.includes(json)) return false;
+  return true;
+}
+
 /**
  * Various tags that are added to the Algolia users search during indexing (via
  * the `firebase/functions/src/algolia.ts` GCP serverless function).
@@ -69,6 +85,16 @@ export interface Verification extends Resource {
   checks: Check[];
 }
 
+export function isVerification(json: unknown): json is Verification {
+  if (!isResourceJSON(json)) return false;
+  if (!isJSON(json)) return false;
+  if (typeof json.user !== 'string') return false;
+  if (typeof json.org !== 'string') return false;
+  if (typeof json.notes !== 'string') return false;
+  if (!isArray(json.checks, isCheck)) return false;
+  return true;
+}
+
 /**
  * A user's Zoom account that belongs to a certain org.
  * @typedef {Object} ZoomUser
@@ -81,6 +107,23 @@ export interface ZoomUser extends Resource {
   id: string;
   email: string;
   org: string;
+}
+
+export function isZoomUser(json: unknown): json is ZoomUser {
+  if (!isJSON(json)) return false;
+  if (typeof json.id !== 'string') return false;
+  if (typeof json.email !== 'string') return false;
+  if (typeof json.org !== 'string') return false;
+  return true;
+}
+
+export type Subjects = { subjects: string[]; searches: string[] };
+
+export function isSubjects(json: unknown): json is Subjects {
+  if (!isJSON(json)) return false;
+  if (!isStringArray(json.subjects)) return false;
+  if (!isStringArray(json.searches)) return false;
+  return true;
 }
 
 /**
@@ -130,8 +173,21 @@ export type UserJSON = Omit<UserInterface, 'availability'> & {
   availability: AvailabilityJSON;
 };
 
-// TODO: Actually implement this so that it checks the validity of API requests.
 export function isUserJSON(json: unknown): json is UserJSON {
+  if (!isAccountJSON(json)) return false;
+  if (!isJSON(json)) return false;
+  if (!isStringArray(json.orgs)) return false;
+  if (!(json.zooms instanceof Array)) return false;
+  if (json.zooms.some((zoom) => !isZoomUser(zoom))) return false;
+  if (!isAvailabilityJSON(json.availability)) return false;
+  if (!isSubjects(json.mentoring)) return false;
+  if (!isSubjects(json.tutoring)) return false;
+  if (!isStringArray(json.langs)) return false;
+  if (!isStringArray(json.parents)) return false;
+  if (!isArray(json.verifications, isVerification)) return false;
+  if (typeof json.visible !== 'boolean') return false;
+  if (!isArray(json.featured, isAspect)) return false;
+  if (json.token && typeof json.token !== 'string') return false;
   return true;
 }
 

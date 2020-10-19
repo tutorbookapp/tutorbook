@@ -1,7 +1,7 @@
 import url from 'url';
 
-import { Check, Tag } from '../user';
-import construct from '../construct';
+import { Check, Tag } from 'lib/model/user';
+import construct from 'lib/model/construct';
 
 export interface Option<T> {
   label: string;

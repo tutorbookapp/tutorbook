@@ -14,7 +14,7 @@ import { Resource } from 'lib/model/resource';
 import { User } from 'lib/model/user';
 import construct from 'lib/model/construct';
 import firestoreVals from 'lib/model/firestore-vals';
-import isJSON from 'lib/model/is-json';
+import { isJSON } from 'lib/model/json';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;

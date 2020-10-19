@@ -1,5 +1,3 @@
-import { TimeUtils } from 'lib/utils';
-
 import {
   isTimeslotJSON,
   DayAlias,
@@ -8,7 +6,8 @@ import {
   TimeslotInterface,
   TimeslotJSON,
   TimeslotSearchHit,
-} from './timeslot';
+} from 'lib/model/timeslot';
+import { TimeUtils } from 'lib/utils';
 
 /**
  * One's schedule contains all your booked timeslots (the inverse of one's

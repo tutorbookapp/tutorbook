@@ -1,8 +1,13 @@
 import url from 'url';
 
-import construct from '../construct';
-
-import { Option, Query, QueryInterface, QueryJSON, QueryURL } from './base';
+import {
+  Option,
+  Query,
+  QueryInterface,
+  QueryJSON,
+  QueryURL,
+} from 'lib/model/query/base';
+import construct from 'lib/model/construct';
 
 export interface MatchesQueryInterface extends QueryInterface {
   org: string;
