@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 const appId = process.env.NEXT_PUBLIC_INTERCOM_APP_ID as string;
 const canUseDOM = !!(

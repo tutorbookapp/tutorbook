@@ -6,7 +6,7 @@ import Button from 'components/button';
 import SubjectSelect from 'components/subject-select';
 
 import { Aspect, Option, UsersQuery } from 'lib/model';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import styles from './search-form.module.scss';
 

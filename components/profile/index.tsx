@@ -9,7 +9,7 @@ import PhotoInput from 'components/photo-input';
 
 import { User, UserJSON } from 'lib/model';
 import { useContinuous, useSocialProps } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import styles from './profile.module.scss';
 

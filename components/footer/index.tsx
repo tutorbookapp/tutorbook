@@ -2,7 +2,7 @@ import useTranslation from 'next-translate/useTranslation';
 import cn from 'classnames';
 
 import Link from 'lib/intl/link';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import styles from './footer.module.scss';
 

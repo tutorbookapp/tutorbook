@@ -34,7 +34,7 @@ import {
   UserJSON,
   Verification,
 } from 'lib/model';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import styles from './display-page.module.scss';
 

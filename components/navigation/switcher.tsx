@@ -6,7 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { IntercomAPI } from 'components/react-intercom';
 
 import { Org } from 'lib/model';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import { PopOverAccountLink, PopOverButton } from './pop-over';
 import styles from './pop-over.module.scss';

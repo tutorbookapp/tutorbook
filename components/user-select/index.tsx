@@ -7,7 +7,7 @@ import Select, { SelectControllerProps } from 'components/select';
 
 import { Option, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 export interface UserOption extends Option<string> {
   photo?: string;

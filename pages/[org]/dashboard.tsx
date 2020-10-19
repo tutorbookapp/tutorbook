@@ -7,8 +7,9 @@ import Page from 'components/page';
 import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
+import { OrgContext } from 'lib/context/org';
 import { useLoggedIn } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import overview from 'locales/en/overview.json';
@@ -28,7 +29,7 @@ function DashboardPage(): JSX.Element {
   useLoggedIn('/[org]/dashboard', `/${query.org}/dashboard`);
 
   return (
-    <>
+    <OrgContext.Provider value={{ org }}>
       {!!loggedIn && !org && (
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
@@ -65,7 +66,7 @@ function DashboardPage(): JSX.Element {
           <Overview account={org} />
         </Page>
       )}
-    </>
+    </OrgContext.Provider>
   );
 }
 

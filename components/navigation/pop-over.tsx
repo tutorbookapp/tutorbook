@@ -10,7 +10,7 @@ import Avatar from 'components/avatar';
 
 import Link from 'lib/intl/link';
 import { AccountInterface, Org, User } from 'lib/model';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import styles from './pop-over.module.scss';
 

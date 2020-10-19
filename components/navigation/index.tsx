@@ -7,7 +7,7 @@ import FilterForm from 'components/filter-form';
 
 import { Aspect, Callback, TCallback, UsersQuery } from 'lib/model';
 import Link from 'lib/intl/link';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import Tabs, { TabsProps } from './tabs';
 import PopOver from './pop-over';

@@ -8,8 +8,9 @@ import { AspectHeader, EmptyHeader } from 'components/navigation';
 import Signup from 'components/signup';
 import Page from 'components/page';
 
-import { withI18n } from 'lib/intl';
 import { isAspect, Aspect, Org, OrgJSON } from 'lib/model';
+import { OrgContext } from 'lib/context/org';
+import { withI18n } from 'lib/intl';
 import { db } from 'lib/api/firebase';
 
 import user3rd from 'locales/en/user3rd.json';
@@ -36,13 +37,15 @@ function SignupPage({ org }: SignupPageProps): JSX.Element {
   }, [org, query]);
 
   return (
-    <Page title={`${org?.name || 'Loading'} - Signup - Tutorbook`} formWidth>
-      {(!org || org.aspects.length === 2) && (
-        <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
-      )}
-      {!!org && org.aspects.length !== 2 && <EmptyHeader formWidth />}
-      <Signup aspect={aspect} org={org} />
-    </Page>
+    <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
+      <Page title={`${org?.name || 'Loading'} - Signup - Tutorbook`} formWidth>
+        {(!org || org.aspects.length === 2) && (
+          <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
+        )}
+        {!!org && org.aspects.length !== 2 && <EmptyHeader formWidth />}
+        <Signup aspect={aspect} />
+      </Page>
+    </OrgContext.Provider>
   );
 }
 

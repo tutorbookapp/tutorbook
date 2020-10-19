@@ -7,8 +7,9 @@ import Page from 'components/page';
 import Matches from 'components/matches';
 import { TabHeader } from 'components/navigation';
 
+import { OrgContext } from 'lib/context/org';
 import { useLoggedIn } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import matches from 'locales/en/matches.json';
@@ -28,7 +29,7 @@ function MatchesPage(): JSX.Element {
   useLoggedIn('/[org]/matches', `/${query.org as string}/matches`);
 
   return (
-    <>
+    <OrgContext.Provider value={{ org }}>
       {!!loggedIn && !org && (
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
@@ -65,7 +66,7 @@ function MatchesPage(): JSX.Element {
           <Matches org={org} />
         </Page>
       )}
-    </>
+    </OrgContext.Provider>
   );
 }
 

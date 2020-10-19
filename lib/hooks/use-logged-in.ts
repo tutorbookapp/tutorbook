@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import Router from 'next/router';
 
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 /**
  * Custom hook that redirects to the login page if a user isn't currently

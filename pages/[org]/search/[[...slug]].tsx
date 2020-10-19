@@ -3,21 +3,22 @@ import { ParsedUrlQuery } from 'querystring';
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { dequal } from 'dequal';
 import Router from 'next/router';
+import { dequal } from 'dequal';
 
-import { QueryHeader } from 'components/navigation';
-import Page from 'components/page';
 import AuthDialog from 'components/auth-dialog';
+import Page from 'components/page';
+import { QueryHeader } from 'components/navigation';
 import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
 import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
-import { db } from 'lib/api/firebase';
 import { ListUsersRes } from 'lib/api/routes/users/list';
-import { useUser } from 'lib/account';
-import { withI18n } from 'lib/intl';
+import { OrgContext } from 'lib/context/org';
 import Utils from 'lib/utils';
+import { db } from 'lib/api/firebase';
+import { useUser } from 'lib/context/user';
+import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
 import match3rd from 'locales/en/match3rd.json';
@@ -112,30 +113,31 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   }, [viewing, query.aspect, query.subjects]);
 
   return (
-    <Page title={`${org?.name || 'Loading'} - Search - Tutorbook`}>
-      <QueryHeader
-        aspects={org ? org.aspects : ['mentoring', 'tutoring']}
-        query={query}
-        onChange={setQuery}
-      />
-      {auth && <AuthDialog org={org} />}
-      {viewing && (
-        <RequestDialog
-          org={org}
-          user={User.fromJSON(viewing)}
-          aspect={query.aspect}
-          onClosed={onClosed}
-          subjects={subjects}
+    <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
+      <Page title={`${org?.name || 'Loading'} - Search - Tutorbook`}>
+        <QueryHeader
+          aspects={org ? org.aspects : ['mentoring', 'tutoring']}
+          query={query}
+          onChange={setQuery}
         />
-      )}
-      <Search
-        query={query}
-        results={results}
-        searching={searching || !canSearch}
-        onChange={setQuery}
-        setViewing={setViewing}
-      />
-    </Page>
+        {auth && <AuthDialog />}
+        {viewing && (
+          <RequestDialog
+            user={User.fromJSON(viewing)}
+            aspect={query.aspect}
+            onClosed={onClosed}
+            subjects={subjects}
+          />
+        )}
+        <Search
+          query={query}
+          results={results}
+          searching={searching || !canSearch}
+          onChange={setQuery}
+          setViewing={setViewing}
+        />
+      </Page>
+    </OrgContext.Provider>
   );
 }
 

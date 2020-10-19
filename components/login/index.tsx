@@ -6,8 +6,8 @@ import Router from 'next/router';
 
 import Button from 'components/button';
 
-import { useUser } from 'lib/account';
-import { signupWithGoogle } from 'lib/account/signup';
+import { useUser } from 'lib/context/user';
+import { signupWithGoogle } from 'lib/firebase/signup';
 import Link from 'lib/intl/link';
 
 import styles from './login.module.scss';

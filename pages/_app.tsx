@@ -6,7 +6,7 @@ import to from 'await-to-js';
 
 import NProgress from 'components/nprogress';
 
-import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/account';
+import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { ApiError, Org, OrgJSON, User, UserJSON } from 'lib/model';
 
 import 'styles/global.scss';

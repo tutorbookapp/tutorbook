@@ -7,19 +7,18 @@ import to from 'await-to-js';
 import Button from 'components/button';
 import Loader from 'components/loader';
 
-import { OrgJSON, User } from 'lib/model';
-import { signupWithGoogle } from 'lib/account/signup';
+import { User } from 'lib/model';
+import { signupWithGoogle } from 'lib/firebase/signup';
+import { useOrg } from 'lib/context/org';
 import Utils from 'lib/utils';
 
 import styles from './auth-dialog.module.scss';
 
-export interface AuthDialogProps {
-  org?: OrgJSON;
-}
-
-export default function AuthDialog({ org }: AuthDialogProps): JSX.Element {
+export default function AuthDialog(): JSX.Element {
   const [loggingIn, setLoggingIn] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
+
+  const { org } = useOrg();
 
   const onClick = useCallback(async () => {
     setError(undefined);

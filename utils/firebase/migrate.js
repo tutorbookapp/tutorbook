@@ -348,4 +348,9 @@ const addOrgIdToMatches = async () => {
   );
 };
 
-addOrgIdToMatches();
+const deleteUser = async (uid) => {
+  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const [err] = await to(axios.delete(`${endpoint}/${uid}`, { headers }));
+  if (err) console.error(`${err.name} deleting user (${uid}): ${err.message}`);
+};

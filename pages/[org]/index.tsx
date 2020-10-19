@@ -7,6 +7,7 @@ import Home from 'components/home';
 import Page from 'components/page';
 
 import { Org, OrgJSON } from 'lib/model';
+import { OrgContext } from 'lib/context/org';
 import { withI18n } from 'lib/intl';
 import { db } from 'lib/api/firebase';
 
@@ -19,10 +20,12 @@ interface HomePageProps {
 
 function HomePage({ org }: HomePageProps): JSX.Element {
   return (
-    <Page title={`${org?.name || 'Loading'} - Tutorbook`} formWidth>
-      <EmptyHeader formWidth />
-      <Home org={org} />
-    </Page>
+    <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
+      <Page title={`${org?.name || 'Loading'} - Tutorbook`} formWidth>
+        <EmptyHeader formWidth />
+        <Home org={org} />
+      </Page>
+    </OrgContext.Provider>
   );
 }
 

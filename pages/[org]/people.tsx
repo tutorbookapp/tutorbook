@@ -7,8 +7,9 @@ import { TabHeader } from 'components/navigation';
 import People from 'components/people';
 import Page from 'components/page';
 
+import { OrgContext } from 'lib/context/org';
 import { useLoggedIn } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
@@ -33,7 +34,7 @@ function PeoplePage(): JSX.Element {
   useLoggedIn('/[org]/people', `/${params.org as string}/people`);
 
   return (
-    <>
+    <OrgContext.Provider value={{ org }}>
       {!!loggedIn && !org && (
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
@@ -70,7 +71,7 @@ function PeoplePage(): JSX.Element {
           <People org={org} />
         </Page>
       )}
-    </>
+    </OrgContext.Provider>
   );
 }
 

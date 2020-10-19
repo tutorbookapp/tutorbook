@@ -8,8 +8,9 @@ import Settings from 'components/settings';
 import Home from 'components/settings/home';
 import { TabHeader } from 'components/navigation';
 
+import { OrgContext } from 'lib/context/org';
 import { useLoggedIn } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import orgIntl from 'locales/en/org.json';
@@ -30,7 +31,7 @@ function HomeSettingsPage(): JSX.Element {
   useLoggedIn('/[org]/settings/home', `/${query.org as string}/settings/home`);
 
   return (
-    <>
+    <OrgContext.Provider value={{ org }}>
       {!!loggedIn && !org && (
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
@@ -69,7 +70,7 @@ function HomeSettingsPage(): JSX.Element {
           </Settings>
         </Page>
       )}
-    </>
+    </OrgContext.Provider>
   );
 }
 

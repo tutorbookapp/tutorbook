@@ -15,14 +15,11 @@ import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
-import Loader from 'components/loader';
-import Button from 'components/button';
-import Result from 'components/search/result';
 import SubjectSelect, { SubjectOption } from 'components/subject-select';
+import Button from 'components/button';
+import Loader from 'components/loader';
+import Result from 'components/search/result';
 
-import { ListRequestsRes } from 'lib/api/routes/requests/list';
-import { useUser } from 'lib/account';
-import Utils from 'lib/utils';
 import {
   ApiError,
   Aspect,
@@ -33,6 +30,10 @@ import {
   User,
   UserJSON,
 } from 'lib/model';
+import { ListRequestsRes } from 'lib/api/routes/requests/list';
+import Utils from 'lib/utils';
+import { useOrg } from 'lib/context/org';
+import { useUser } from 'lib/context/user';
 
 import styles from './form-page.module.scss';
 
@@ -49,6 +50,7 @@ export default memo(function RequestPage({
   setMatching,
   closeDialog,
 }: RequestPageProps): JSX.Element {
+  const { org } = useOrg();
   const { user } = useUser();
   const { t } = useTranslation();
 
@@ -97,6 +99,7 @@ export default memo(function RequestPage({
       id: `temp-${uuid()}`,
       message,
       people: [person],
+      org: org?.id || 'default',
       subjects: subjects.map((s) => s.value),
       creator: {
         id: user.id,
@@ -106,7 +109,7 @@ export default memo(function RequestPage({
         handle: uuid(),
       },
     });
-  }, [value, user, subjects, message]);
+  }, [value, user, subjects, message, org?.id]);
 
   const onSubmit = useCallback(
     async (event: FormEvent) => {

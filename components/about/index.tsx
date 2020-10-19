@@ -2,7 +2,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import SpotlightMsg from 'components/spotlight-msg';
 
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import OrgVetsVolunteer from './gifs/org-vets-volunteer.gif';
 import StudentRequests from './gifs/student-requests.gif';

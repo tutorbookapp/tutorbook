@@ -5,7 +5,7 @@ import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
 import { useLoggedIn } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import overview from 'locales/en/overview.json';

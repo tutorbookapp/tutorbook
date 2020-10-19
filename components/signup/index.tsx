@@ -11,19 +11,19 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 import Title from 'components/title';
 
-import { Aspect, OrgJSON, User, UserJSON } from 'lib/model';
+import { Aspect, User, UserJSON } from 'lib/model';
 import { useSocialProps, useSingle } from 'lib/hooks';
-import { signup } from 'lib/account/signup';
-import { useUser } from 'lib/account';
+import { signup } from 'lib/firebase/signup';
+import { useOrg } from 'lib/context/org';
+import { useUser } from 'lib/context/user';
 
 import styles from './signup.module.scss';
 
 interface SignupProps {
   aspect: Aspect;
-  org?: OrgJSON;
 }
 
-export default function Signup({ aspect, org }: SignupProps): JSX.Element {
+export default function Signup({ aspect }: SignupProps): JSX.Element {
   const updateRemote = useCallback(async (updated: User) => {
     if (!updated.id) return signup(updated);
     const url = `/api/users/${updated.id}`;
@@ -31,6 +31,7 @@ export default function Signup({ aspect, org }: SignupProps): JSX.Element {
     return User.fromJSON(data);
   }, []);
 
+  const { org } = useOrg();
   const { t, lang: locale } = useTranslation();
   const { user: local, updateUser: updateLocal } = useUser();
   const {

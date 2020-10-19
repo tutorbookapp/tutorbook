@@ -9,7 +9,7 @@ import Header from 'components/header';
 
 import { Org, OrgJSON } from 'lib/model';
 import { useContinuous } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 
 import { SettingsContext } from './context';
 import styles from './settings.module.scss';

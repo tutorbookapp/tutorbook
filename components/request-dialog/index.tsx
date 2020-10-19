@@ -19,8 +19,9 @@ import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
 
 import Utils from 'lib/utils';
-import { signupWithGoogle } from 'lib/account/signup';
-import { useUser } from 'lib/account';
+import { signupWithGoogle } from 'lib/firebase/signup';
+import { useUser } from 'lib/context/user';
+import { useOrg } from 'lib/context/org';
 import {
   ApiError,
   Aspect,
@@ -30,7 +31,6 @@ import {
   SocialInterface,
   User,
   UserJSON,
-  OrgJSON,
 } from 'lib/model';
 
 import styles from './request-dialog.module.scss';
@@ -40,7 +40,6 @@ export interface RequestDialogProps {
   subjects: string[];
   aspect: Aspect;
   user: User;
-  org?: OrgJSON;
 }
 
 export default function RequestDialog({
@@ -48,7 +47,6 @@ export default function RequestDialog({
   onClosed,
   aspect,
   user,
-  org,
 }: RequestDialogProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
@@ -56,6 +54,8 @@ export default function RequestDialog({
   const [error, setError] = useState<string | undefined>();
 
   const { t } = useTranslation();
+
+  const { org } = useOrg();
   const { user: currentUser, updateUser } = useUser();
 
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);

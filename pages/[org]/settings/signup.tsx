@@ -8,8 +8,9 @@ import Settings from 'components/settings';
 import Signup from 'components/settings/signup';
 import { TabHeader } from 'components/navigation';
 
+import { OrgContext } from 'lib/context/org';
 import { useLoggedIn } from 'lib/hooks';
-import { useUser } from 'lib/account';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import orgIntl from 'locales/en/org.json';
@@ -33,7 +34,7 @@ function SignupSettingsPage(): JSX.Element {
   );
 
   return (
-    <>
+    <OrgContext.Provider value={{ org }}>
       {!!loggedIn && !org && (
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
@@ -72,7 +73,7 @@ function SignupSettingsPage(): JSX.Element {
           </Settings>
         </Page>
       )}
-    </>
+    </OrgContext.Provider>
   );
 }
 
