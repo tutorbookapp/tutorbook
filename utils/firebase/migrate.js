@@ -354,3 +354,32 @@ const deleteUser = async (uid) => {
   const [err] = await to(axios.delete(`${endpoint}/${uid}`, { headers }));
   if (err) console.error(`${err.name} deleting user (${uid}): ${err.message}`);
 };
+
+const convertToUserJSON = (userData) => {
+  const availabilityJSON = (userData.availability || []).map((timeslot) => ({
+    to: timeslot.to.toDate().toJSON(),
+    from: timeslot.from.toDate().toJSON(),
+    recur: timeslot.recur,
+  }));
+  const userJSON = {
+    ...userData,
+    availability: availabilityJSON,
+  };
+};
+
+const updateUser = async (uid) => {
+  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const headers = { authorization: `Bearer ${await createToken()}` };
+
+  const user = (await db.collection('users').doc(uid).get()).data();
+  convertToUserJSON(user);
+
+  const [err] = await to(
+    axios.put(`${endpoint}/${uid}`, userJSON, { headers })
+  );
+  if (err)
+    console.error(
+      `${err.name} updating user (${uid}): ${err.message}`,
+      userJSON
+    );
+};
