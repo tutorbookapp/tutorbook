@@ -1,8 +1,127 @@
+@use '@material/icon-button/_index.scss' as icon-button;
+@use 'styles/typography';
+
 .field {
   width: 100%;
 }
 
+// TODO: Ensure that the `useMeasure` hook only takes that measurement after the
+// `mdc-menu-surface` finishes animating open.
+.surface {
+  transform: scale(1);
+}
+
+// The date selection portion of this component is styled according to the
+// Material Design date picker specs.
+// @see {@link https://material.io/components/date-pickers#specs}
 .wrapper {
-  width: 500px;
-  height: 300px;
+  display: flex;
+
+  .month,
+  .day {
+    @include typography.typography('body2');
+    white-space: nowrap;
+    font-weight: 500;
+    align-items: center;
+    display: flex;
+    margin: 0;
+  }
+
+  .dateSelect {
+    flex: none;
+
+    .pagination {
+      display: flex;
+      padding: 16px 18px 12px 24px;
+      justify-content: space-between;
+
+      .navigation {
+        height: 24px;
+
+        button {
+          @include icon-button.icon-size(18px);
+          @include icon-button.size(24px);
+        }
+      }
+    }
+
+    .weekdays,
+    .dates {
+      display: grid;
+      grid-template-columns: repeat(7, 32px);
+
+      .weekday,
+      .date {
+        @include typography.typography('body2');
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .weekdays {
+      padding: 0px 16px;
+
+      .weekday {
+        font-weight: 500;
+        width: 28px;
+        height: 18px;
+      }
+    }
+
+    .dates {
+      padding: 8px 16px;
+
+      .date {
+        @include icon-button.size(28px);
+
+        &:first-child {
+          grid-column: 6;
+        }
+
+        &.active {
+          color: white;
+          border-radius: 50%;
+          background: var(--geist-success);
+        }
+      }
+    }
+  }
+
+  .timeslotSelectWrapper {
+    position: relative;
+    overflow: hidden;
+
+    .timeslotSelect {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-left: 1px solid var(--accents-2);
+      flex: none;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .day {
+        padding: 16px 24px 12px;
+        line-height: 24px;
+      }
+
+      .times {
+        flex: 1 1 100px;
+        padding: 0 24px;
+        height: 100%;
+        overflow: auto;
+
+        .time {
+          width: 100%;
+          margin-bottom: 8px;
+
+          &:last-of-type {
+            margin-bottom: 12px;
+          }
+        }
+      }
+    }
+  }
 }

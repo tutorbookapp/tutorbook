@@ -1,5 +1,4 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import {
   SyntheticEvent,
   useCallback,
@@ -7,6 +6,13 @@ import {
   useRef,
   useState,
 } from 'react';
+import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
+import { animated, useSpring } from 'react-spring';
+import { Button } from '@rmwc/button';
+import { IconButton } from '@rmwc/icon-button';
+import { Ripple } from '@rmwc/ripple';
+import cn from 'classnames';
+import useMeasure from 'react-use-measure';
 
 import { Availability, Callback } from 'lib/model';
 
@@ -37,12 +43,6 @@ export type TimesSelectProps = Omit<
   Omit<TextFieldProps, keyof Props | OverridenProps> &
   Props;
 
-/**
- * The `TimesSelect` emulates the drag-and-resize interface of Google
- * Calendar's event creation UI but on a much smaller scale. We use `react-rnd`
- * within an RMWC `MenuSurface` to craft our UX.
- * @see {@link https://github.com/tutorbookapp/tutorbook/issues/50}
- */
 export default function TimesSelect({
   value,
   onChange,
@@ -75,6 +75,17 @@ export default function TimesSelect({
     timeoutId.current = setTimeout(() => setMenuOpen(false), 0);
   }, []);
 
+  const [ref, { width }] = useMeasure();
+  const [timeslotSelectOpen, setTimeslotSelectOpen] = useState<boolean>(false);
+  const toggleTimeslotSelect = useCallback(
+    () => setTimeslotSelectOpen((prev) => !prev),
+    []
+  );
+  const props = useSpring({
+    width: timeslotSelectOpen ? width : 0,
+    tension: 200,
+  });
+
   return (
     <MenuSurfaceAnchor className={className}>
       <MenuSurface
@@ -85,10 +96,58 @@ export default function TimesSelect({
           event.stopPropagation();
           if (inputRef.current) inputRef.current.focus();
         }}
+        className={styles.surface}
         anchorCorner='bottomStart'
         renderToPortal={renderToPortal ? '#portal' : false}
       >
-        <div className={styles.wrapper} />
+        <div className={styles.wrapper}>
+          <div className={styles.dateSelect}>
+            <div className={styles.pagination}>
+              <h6 className={styles.month}>October 2020</h6>
+              <div className={styles.navigation}>
+                <IconButton icon='chevron_left' />
+                <IconButton icon='chevron_right' />
+              </div>
+            </div>
+            <div className={styles.weekdays}>
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+                <div className={styles.weekday} key={idx}>
+                  {day}
+                </div>
+              ))}
+            </div>
+            <div className={styles.dates}>
+              {Array(28)
+                .fill(null)
+                .map((_, idx) => (
+                  <IconButton
+                    type='button'
+                    onClick={toggleTimeslotSelect}
+                    className={cn(styles.date, { [styles.active]: idx === 21 })}
+                    icon={idx + 1}
+                  />
+                ))}
+            </div>
+          </div>
+          <animated.div style={props} className={styles.timeslotSelectWrapper}>
+            <div ref={ref} className={styles.timeslotSelect}>
+              <h6 className={styles.day}>Thursday, October 22</h6>
+              <div className={styles.times}>
+                {[
+                  '9:00 am',
+                  '10:00 am',
+                  '11:00 am',
+                  '1:00 pm',
+                  '2:00 pm',
+                  '3:00 pm',
+                  '4:00 pm',
+                ].map((time) => (
+                  <Button className={styles.time} outlined label={time} />
+                ))}
+              </div>
+            </div>
+          </animated.div>
+        </div>
       </MenuSurface>
       <TextField
         {...textFieldProps}
