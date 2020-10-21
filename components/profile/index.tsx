@@ -7,7 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Header from 'components/header';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
-import TimesSelect from 'components/times-select';
+import AvailabilitySelect from 'components/availability-select';
 
 import { Availability, User, UserJSON } from 'lib/model';
 import { useContinuous, useSocialProps } from 'lib/hooks';
@@ -163,7 +163,7 @@ export default function Profile(): JSX.Element {
               aspect='mentoring'
               outlined
             />
-            <TimesSelect
+            <AvailabilitySelect
               className={styles.field}
               label={t('user3rd:availability')}
               onChange={onAvailabilityChange}

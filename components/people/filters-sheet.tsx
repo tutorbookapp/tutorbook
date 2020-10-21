@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import LangSelect from 'components/lang-select';
 import Placeholder from 'components/placeholder';
 import SubjectSelect from 'components/subject-select';
-import TimesSelect from 'components/times-select';
+import AvailabilitySelect from 'components/availability-select';
 
 import {
   Availability,
@@ -93,7 +93,7 @@ export default memo(function FiltersSheet({
             className={styles.field}
             outlined
           />
-          <TimesSelect
+          <AvailabilitySelect
             label={t('query:availability')}
             onChange={onAvailabilityChange}
             value={query.availability}

@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
-import TimesSelect from 'components/times-select';
+import AvailabilitySelect from 'components/availability-select';
 
 import { Availability, Option, Callback, UsersQuery } from 'lib/model';
 
@@ -120,7 +120,7 @@ export default function FilterForm({
             aspect={query.aspect}
             outlined
           />
-          <TimesSelect
+          <AvailabilitySelect
             className={styles.field}
             focused={focused === 'availability'}
             label={t(`query${thirdPerson ? '3rd' : ''}:availability`)}
