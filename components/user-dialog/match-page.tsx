@@ -19,7 +19,7 @@ import UserSelect, { UserOption } from 'components/user-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import Result from 'components/search/result';
-import TimesSelect from 'components/times-select';
+import AvailabilitySelect from 'components/availability-select';
 
 import {
   Aspect,
@@ -234,7 +234,7 @@ export default memo(function MatchPage({
             renderToPortal
             outlined
           />
-          <TimesSelect
+          <AvailabilitySelect
             required
             label={t('common:times')}
             onChange={setTimes}

@@ -6,7 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
-import TimesSelect from 'components/times-select';
+import AvailabilitySelect from 'components/availability-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 
@@ -183,7 +183,7 @@ export default memo(function EditPage({
         </div>
         <div className={styles.divider} />
         <div className={styles.inputs}>
-          <TimesSelect
+          <AvailabilitySelect
             label={t('user:availability')}
             value={user.availability}
             onChange={onAvailabilityChange}

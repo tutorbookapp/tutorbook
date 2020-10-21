@@ -9,7 +9,7 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
-import TimesSelect from 'components/times-select';
+import AvailabilitySelect from 'components/availability-select';
 import Title from 'components/title';
 
 import { Aspect, Availability, User, UserJSON } from 'lib/model';
@@ -190,7 +190,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               required={org ? org.profiles.includes('subjects') : true}
               outlined
             />
-            <TimesSelect
+            <AvailabilitySelect
               className={styles.field}
               label={t('user3rd:availability')}
               onChange={onAvailabilityChange}
