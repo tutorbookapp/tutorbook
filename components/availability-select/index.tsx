@@ -1,6 +1,7 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import {
   MouseEvent,
+  SyntheticEvent,
   useCallback,
   useLayoutEffect,
   useRef,
@@ -112,8 +113,11 @@ export default function AvailabilitySelect({
       <MenuSurface
         tabIndex={-1}
         open={menuOpen}
-        onFocus={openMenu}
-        onBlur={closeMenu}
+        onFocus={(event: SyntheticEvent<HTMLDivElement>) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (inputRef.current) inputRef.current.focus();
+        }}
         anchorCorner='bottomStart'
         className={styles.menuSurface}
         renderToPortal={renderToPortal ? '#portal' : false}
