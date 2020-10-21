@@ -95,7 +95,6 @@ export default function RequestDialog({
     });
   }, [currentUser, user, aspect, message, subjects, times, org?.id]);
 
-  const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setMessage(event.currentTarget.value);
   }, []);
@@ -255,7 +254,7 @@ export default function RequestDialog({
               renderToPortal
               label={t('match3rd:subjects')}
               className={styles.field}
-              onChange={onSubjectsChange}
+              onChange={setSubjects}
               value={subjects}
               options={user[aspect].subjects}
               aspect={aspect}
