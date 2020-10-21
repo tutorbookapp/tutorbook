@@ -17,9 +17,11 @@ import Avatar from 'components/avatar';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
+import TimesSelect from 'components/times-select';
 
 import {
   Aspect,
+  Availability,
   Match,
   MatchJSON,
   Person,
@@ -37,12 +39,14 @@ import styles from './request-dialog.module.scss';
 
 export interface RequestDialogProps {
   onClosed: () => void;
+  times: Availability;
   subjects: string[];
   aspect: Aspect;
   user: User;
 }
 
 export default function RequestDialog({
+  times: initialTimes,
   subjects: initialSubjects,
   onClosed,
   aspect,
@@ -59,6 +63,7 @@ export default function RequestDialog({
   const { user: currentUser, updateUser } = useUser();
 
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
+  const [times, setTimes] = useState<Availability>(initialTimes);
   const [message, setMessage] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
 
@@ -81,13 +86,14 @@ export default function RequestDialog({
       roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
     };
     match.current = new Match({
+      times,
       creator,
       message,
       subjects,
       org: org?.id || 'default',
       people: [target, creator],
     });
-  }, [currentUser, user, aspect, message, subjects, org?.id]);
+  }, [currentUser, user, aspect, message, subjects, times, org?.id]);
 
   const onSubjectsChange = useCallback((s: string[]) => setSubjects(s), []);
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
@@ -253,6 +259,15 @@ export default function RequestDialog({
               value={subjects}
               options={user[aspect].subjects}
               aspect={aspect}
+            />
+            <TimesSelect
+              required
+              outlined
+              renderToPortal
+              label={t('match3rd:times')}
+              className={styles.field}
+              onChange={setTimes}
+              value={times}
             />
             <TextField
               outlined

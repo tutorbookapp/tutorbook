@@ -1,14 +1,16 @@
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { animated, useSpring } from 'react-spring';
-import { v4 as uuid } from 'uuid';
-import useTranslation from 'next-translate/useTranslation';
 import useSWR from 'swr';
+import useTranslation from 'next-translate/useTranslation';
+import { v4 as uuid } from 'uuid';
 
-import Placeholder from 'components/placeholder';
 import LangSelect from 'components/lang-select';
+import Placeholder from 'components/placeholder';
 import SubjectSelect from 'components/subject-select';
+import TimesSelect from 'components/times-select';
 
 import {
+  Availability,
   Callback,
   CallbackParam,
   Option,
@@ -60,13 +62,19 @@ export default memo(function FiltersSheet({
 
   const onSubjectsChange = useCallback(
     (subjects: Option<string>[]) => {
-      setQuery((prev: UsersQuery) => new UsersQuery({ ...prev, subjects }));
+      setQuery((prev) => new UsersQuery({ ...prev, subjects }));
+    },
+    [setQuery]
+  );
+  const onAvailabilityChange = useCallback(
+    (availability: Availability) => {
+      setQuery((prev) => new UsersQuery({ ...prev, availability }));
     },
     [setQuery]
   );
   const onLangsChange = useCallback(
     (langs: Option<string>[]) => {
-      setQuery((prev: UsersQuery) => new UsersQuery({ ...prev, langs }));
+      setQuery((prev) => new UsersQuery({ ...prev, langs }));
     },
     [setQuery]
   );
@@ -82,6 +90,13 @@ export default memo(function FiltersSheet({
             selected={query.subjects}
             placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
             aspect={query.aspect}
+            className={styles.field}
+            outlined
+          />
+          <TimesSelect
+            label={t('query:availability')}
+            onChange={onAvailabilityChange}
+            value={query.availability}
             className={styles.field}
             outlined
           />

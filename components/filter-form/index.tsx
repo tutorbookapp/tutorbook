@@ -5,8 +5,9 @@ import useTranslation from 'next-translate/useTranslation';
 
 import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
+import TimesSelect from 'components/times-select';
 
-import { Option, Callback, UsersQuery } from 'lib/model';
+import { Availability, Option, Callback, UsersQuery } from 'lib/model';
 
 import styles from './filter-form.module.scss';
 
@@ -35,7 +36,7 @@ interface FilterFormProps {
   thirdPerson?: boolean;
 }
 
-type FocusTarget = 'subjects' | 'langs';
+type FocusTarget = 'subjects' | 'availability' | 'langs';
 
 export default function FilterForm({
   query,
@@ -75,18 +76,25 @@ export default function FilterForm({
   }, []);
   const onSubjectsChange = useCallback(
     (subjects: Option<string>[]) => {
-      onChange((prev: UsersQuery) => new UsersQuery({ ...prev, subjects }));
+      onChange((prev) => new UsersQuery({ ...prev, subjects }));
+    },
+    [onChange]
+  );
+  const onAvailabilityChange = useCallback(
+    (availability: Availability) => {
+      onChange((prev) => new UsersQuery({ ...prev, availability }));
     },
     [onChange]
   );
   const onLangsChange = useCallback(
     (langs: Option<string>[]) => {
-      onChange((prev: UsersQuery) => new UsersQuery({ ...prev, langs }));
+      onChange((prev) => new UsersQuery({ ...prev, langs }));
     },
     [onChange]
   );
 
   const focusSubjects = useCallback(() => setFocused('subjects'), []);
+  const focusAvailability = useCallback(() => setFocused('availability'), []);
   const focusLangs = useCallback(() => setFocused('langs'), []);
   const focusNothing = useCallback(() => setFocused(undefined), []);
 
@@ -112,6 +120,16 @@ export default function FilterForm({
             aspect={query.aspect}
             outlined
           />
+          <TimesSelect
+            className={styles.field}
+            focused={focused === 'availability'}
+            label={t(`query${thirdPerson ? '3rd' : ''}:availability`)}
+            onFocused={focusAvailability}
+            onBlurred={focusNothing}
+            onChange={onAvailabilityChange}
+            value={query.availability}
+            outlined
+          />
           <LangSelect
             className={styles.field}
             focused={focused === 'langs'}
@@ -129,6 +147,10 @@ export default function FilterForm({
           {join(query.subjects) || t('search:any-subjects')}
         </SearchButton>
         <span className={styles.searchDivider} />
+        <SearchButton onClick={focusAvailability}>
+          {query.availability.toString() || t('search:any-availability')}
+        </SearchButton>
+        <span className={styles.searchDivider} />
         <SearchButton onClick={focusLangs}>
           {join(query.langs) || t('search:any-langs')}
         </SearchButton>
@@ -136,5 +158,3 @@ export default function FilterForm({
     </>
   );
 }
-
-FilterForm.defaultProps = { thirdPerson: false };

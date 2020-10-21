@@ -82,7 +82,7 @@ describe('Search page', () => {
   });
 
   // TODO: Ping SendGrid to ensure that our email notifications were sent.
-  it('collects phone before sending requests', () => {
+  it.only('collects phone before sending requests', () => {
     cy.setup({ student: { phone: null } });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);

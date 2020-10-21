@@ -12,7 +12,15 @@ import { QueryHeader } from 'components/navigation';
 import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
-import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
+import {
+  Availability,
+  Option,
+  Org,
+  OrgJSON,
+  User,
+  UserJSON,
+  UsersQuery,
+} from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import Utils from 'lib/utils';
@@ -112,6 +120,10 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     );
   }, [viewing, query.aspect, query.subjects]);
 
+  // TODO: Create a reasonable selection of times based on the intersection of
+  // the student's current filters and the times that the tutor is available.
+  const times = useMemo(() => new Availability(), []);
+
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page title={`${org?.name || 'Loading'} - Search - Tutorbook`}>
@@ -127,6 +139,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
             aspect={query.aspect}
             onClosed={onClosed}
             subjects={subjects}
+            times={times}
           />
         )}
         <Search

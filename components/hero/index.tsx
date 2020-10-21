@@ -6,7 +6,7 @@ import Carousel from 'components/carousel';
 import { RequestDialogProps } from 'components/request-dialog';
 import Title from 'components/title';
 
-import { Aspect, User, UsersQuery } from 'lib/model';
+import { Aspect, Availability, User, UsersQuery } from 'lib/model';
 
 import SearchForm from './search-form';
 import styles from './hero.module.scss';
@@ -20,6 +20,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
   const [viewing, setViewing] = useState<User | undefined>();
   const onClosed = useCallback(() => setViewing(undefined), []);
   const subjects = useMemo(() => [], []);
+  const times = useMemo(() => new Availability(), []);
   const query = useMemo(() => {
     return new UsersQuery({ aspect, visible: true });
   }, [aspect]);
@@ -32,6 +33,7 @@ export default function Hero({ aspect }: { aspect: Aspect }): JSX.Element {
             aspect={aspect}
             onClosed={onClosed}
             subjects={subjects}
+            times={times}
           />
         )}
         <div className={styles.title}>
