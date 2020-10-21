@@ -1,6 +1,12 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import {
+  SyntheticEvent,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { Availability, Callback } from 'lib/model';
 
@@ -74,8 +80,11 @@ export default function TimesSelect({
       <MenuSurface
         tabIndex={-1}
         open={menuOpen}
-        onFocus={openMenu}
-        onBlur={closeMenu}
+        onFocus={(event: SyntheticEvent<HTMLDivElement>) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (inputRef.current) inputRef.current.focus();
+        }}
         anchorCorner='bottomStart'
         renderToPortal={renderToPortal ? '#portal' : false}
       >
