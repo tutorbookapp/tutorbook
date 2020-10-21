@@ -1,18 +1,19 @@
 import { FormEvent, useCallback, useEffect } from 'react';
-import { animated, useSpring } from 'react-spring';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
+import { animated, useSpring } from 'react-spring';
 import axios from 'axios';
-import useTranslation from 'next-translate/useTranslation';
 import cn from 'classnames';
+import useTranslation from 'next-translate/useTranslation';
 
-import PhotoInput from 'components/photo-input';
-import SubjectSelect from 'components/subject-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
+import PhotoInput from 'components/photo-input';
+import SubjectSelect from 'components/subject-select';
+import TimesSelect from 'components/times-select';
 import Title from 'components/title';
 
-import { Aspect, User, UserJSON } from 'lib/model';
-import { useSocialProps, useSingle } from 'lib/hooks';
+import { Aspect, Availability, User, UserJSON } from 'lib/model';
+import { useSingle, useSocialProps } from 'lib/hooks';
 import { signup } from 'lib/firebase/signup';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
@@ -47,7 +48,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
 
   useEffect(() => {
     if (!org) return;
-    setUser((prev: User) => {
+    setUser((prev) => {
       const orgs = new Set(prev.orgs);
       orgs.add(org.id);
       return new User({ ...prev, orgs: [...orgs] });
@@ -70,45 +71,50 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const name = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, name }));
+      setUser((prev) => new User({ ...prev, name }));
     },
     [setUser]
   );
   const onEmailChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const email = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, email }));
+      setUser((prev) => new User({ ...prev, email }));
     },
     [setUser]
   );
   const onPhoneChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const phone = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, phone }));
+      setUser((prev) => new User({ ...prev, phone }));
     },
     [setUser]
   );
   const onPhotoChange = useCallback(
     (photo: string) => {
-      setUser((prev: User) => new User({ ...prev, photo }));
+      setUser((prev) => new User({ ...prev, photo }));
     },
     [setUser]
   );
   const onBioChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const bio = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, bio }));
+      setUser((prev) => new User({ ...prev, bio }));
     },
     [setUser]
   );
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
       setUser(
-        (prev: User) =>
-          new User({ ...prev, [aspect]: { ...prev[aspect], subjects } })
+        (prev) => new User({ ...prev, [aspect]: { ...prev[aspect], subjects } })
       );
     },
     [setUser, aspect]
+  );
+  const onAvailabilityChange = useCallback(
+    (availability: Availability) => {
+      setUser((prev) => new User({ ...prev, availability }));
+    },
+    [setUser]
   );
 
   return (
@@ -182,6 +188,14 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               className={styles.field}
               aspect={aspect}
               required={org ? org.profiles.includes('subjects') : true}
+              outlined
+            />
+            <TimesSelect
+              className={styles.field}
+              label={t('user3rd:availability')}
+              onChange={onAvailabilityChange}
+              value={user.availability}
+              required={org ? org.profiles.includes('availability') : true}
               outlined
             />
             <TextField

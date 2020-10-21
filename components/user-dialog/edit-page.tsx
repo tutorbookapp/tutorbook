@@ -6,10 +6,11 @@ import useTranslation from 'next-translate/useTranslation';
 
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
+import TimesSelect from 'components/times-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 
-import { TCallback, User, UserJSON } from 'lib/model';
+import { Availability, TCallback, User, UserJSON } from 'lib/model';
 import { usePrevious, useSingle, useSocialProps } from 'lib/hooks';
 
 import styles from './edit-page.module.scss';
@@ -66,41 +67,46 @@ export default memo(function EditPage({
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const name = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, name }));
+      setUser((prev) => new User({ ...prev, name }));
     },
     [setUser]
   );
   const onEmailChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const email = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, email }));
+      setUser((prev) => new User({ ...prev, email }));
     },
     [setUser]
   );
   const onPhoneChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const phone = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, phone }));
+      setUser((prev) => new User({ ...prev, phone }));
     },
     [setUser]
   );
   const onPhotoChange = useCallback(
     (photo: string) => {
-      setUser((prev: User) => new User({ ...prev, photo }));
+      setUser((prev) => new User({ ...prev, photo }));
     },
+    [setUser]
+  );
+  const onAvailabilityChange = useCallback(
+    (availability: Availability) =>
+      setUser((prev) => new User({ ...prev, availability })),
     [setUser]
   );
   const onBioChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const bio = evt.currentTarget.value;
-      setUser((prev: User) => new User({ ...prev, bio }));
+      setUser((prev) => new User({ ...prev, bio }));
     },
     [setUser]
   );
   const onMentoringSubjectsChange = useCallback(
     (subjects: string[]) => {
       setUser(
-        (prev: User) =>
+        (prev) =>
           new User({ ...prev, mentoring: { ...prev.mentoring, subjects } })
       );
     },
@@ -109,7 +115,7 @@ export default memo(function EditPage({
   const onMentoringSearchesChange = useCallback(
     (searches: string[]) => {
       setUser(
-        (prev: User) =>
+        (prev) =>
           new User({ ...prev, mentoring: { ...prev.mentoring, searches } })
       );
     },
@@ -118,7 +124,7 @@ export default memo(function EditPage({
   const onTutoringSubjectsChange = useCallback(
     (subjects: string[]) => {
       setUser(
-        (prev: User) =>
+        (prev) =>
           new User({ ...prev, tutoring: { ...prev.tutoring, subjects } })
       );
     },
@@ -127,7 +133,7 @@ export default memo(function EditPage({
   const onTutoringSearchesChange = useCallback(
     (searches: string[]) => {
       setUser(
-        (prev: User) =>
+        (prev) =>
           new User({ ...prev, tutoring: { ...prev.tutoring, searches } })
       );
     },
@@ -177,13 +183,19 @@ export default memo(function EditPage({
         </div>
         <div className={styles.divider} />
         <div className={styles.inputs}>
+          <TimesSelect
+            label={t('user:availability')}
+            value={user.availability}
+            onChange={onAvailabilityChange}
+            className={styles.field}
+            outlined
+          />
           <TextField
             label={t('user:bio')}
             placeholder={t('user:bio-placeholder')}
             value={user.bio}
             onChange={onBioChange}
             className={styles.field}
-            required
             outlined
             rows={8}
             textarea

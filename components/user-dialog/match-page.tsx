@@ -19,9 +19,11 @@ import UserSelect, { UserOption } from 'components/user-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import Result from 'components/search/result';
+import TimesSelect from 'components/times-select';
 
 import {
   Aspect,
+  Availability,
   Match,
   MatchJSON,
   Person,
@@ -59,6 +61,7 @@ export default memo(function MatchPage({
   const [students, setStudents] = useState<UserOption[]>([]);
   const [subjects, setSubjects] = useState<SubjectOption[]>([]);
   const [message, setMessage] = useState<string>('');
+  const [times, setTimes] = useState<Availability>(new Availability());
 
   const msgPlaceholder = useMemo(
     () =>
@@ -150,6 +153,7 @@ export default memo(function MatchPage({
       }),
     ];
     return new Match({
+      times,
       people,
       message,
       org: org?.id || 'default',
@@ -162,7 +166,7 @@ export default memo(function MatchPage({
         handle: uuid(),
       },
     });
-  }, [value, user, students, subjects, message, org?.id]);
+  }, [value, user, students, subjects, message, times, org?.id]);
 
   const onSubmit = useCallback(
     async (event: FormEvent) => {
@@ -226,6 +230,15 @@ export default memo(function MatchPage({
             label={t('common:subjects')}
             onSelectedChange={setSubjects}
             selected={subjects}
+            className={styles.field}
+            renderToPortal
+            outlined
+          />
+          <TimesSelect
+            required
+            label={t('common:times')}
+            onChange={setTimes}
+            value={times}
             className={styles.field}
             renderToPortal
             outlined
