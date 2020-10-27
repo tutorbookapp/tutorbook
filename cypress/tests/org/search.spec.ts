@@ -5,7 +5,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
 
-import request from 'cypress/fixtures/request.json';
+import match from 'cypress/fixtures/match.json';
 
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
 
@@ -82,8 +82,8 @@ describe('Search page', () => {
   });
 
   // TODO: Ping SendGrid to ensure that our email notifications were sent.
-  it.only('collects phone before sending requests', () => {
-    cy.setup({ student: { phone: null } });
+  it.only('collects phone before sending matchs', () => {
+    cy.setup({ student: { phone: undefined } });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);
 
@@ -112,9 +112,9 @@ describe('Search page', () => {
     cy.contains('li', 'Computer Science').click();
     cy.get('@dialog')
       .contains('What specifically do you need help with?')
-      .type(request.message);
+      .type(match.message);
 
-    cy.contains('button', 'Send request').click().should('be.disabled');
+    cy.contains('button', 'Send match').click().should('be.disabled');
     cy.getBySel('loader').should('be.visible');
 
     // TODO: Make assertions about the content within our Firestore database
@@ -125,8 +125,8 @@ describe('Search page', () => {
     cy.getBySel('error').should('not.exist');
   });
 
-  it('signs users up and sends requests', () => {
-    cy.setup({ student: null });
+  it('signs users up and sends matchs', () => {
+    cy.setup({ student: null, match: null });
     cy.logout();
     // TODO: Refactor the `search.spec.ts` into two specs (one for the default
     // search view and one for when a user slug is passed along with the URL).
@@ -155,7 +155,7 @@ describe('Search page', () => {
       .should('not.have.attr', 'disabled', '')
       .click();
 
-    cy.getBySel('request-dialog').should('be.visible').as('dialog');
+    cy.getBySel('match-dialog').should('be.visible').as('dialog');
     cy.get('@dialog').find('[data-cy=bio]').should('have.text', volunteer.bio);
     cy.get('@dialog')
       .find('[data-cy=name]')
@@ -178,7 +178,7 @@ describe('Search page', () => {
     cy.contains('What specifically do you need help with?')
       .click()
       .should('have.class', 'mdc-text-field--focused')
-      .type(request.message);
+      .type(match.message);
 
     cy.contains('button', 'Signup and send').click().should('be.disabled');
     cy.getBySel('loader').should('be.visible');

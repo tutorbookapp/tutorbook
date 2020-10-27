@@ -3,7 +3,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Signup page', () => {
   beforeEach(() => {
-    cy.setup({ volunteer: null });
+    cy.setup({ volunteer: null, match: null });
     cy.logout();
     cy.visit(`/${org.id}/signup`);
   });

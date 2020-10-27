@@ -1,7 +1,6 @@
 {
   "id": "admin",
   "name": "Nicholas Chiang",
-  "username": "Nicholas C.",
   "email": "nicholas@example.com",
   "phone": "+16505550138",
   "photo": "https://assets.tutorbook.app/jpgs/admin.jpg",
@@ -32,6 +31,7 @@
       "url": "https://indiehackers.com/nicholaschiang"
     }
   ],
+  "featured": [],
   "orgs": ["default", "gunn"],
   "zooms": [],
   "availability": [],
