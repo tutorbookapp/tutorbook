@@ -1,5 +1,6 @@
 {
   "id": "match",
+  "status": "new",
   "venue": {
     "created": "2020-10-15T19:04:10",
     "type": "jitsi",
@@ -7,11 +8,11 @@
     "updated": "2020-10-15T19:04:10"
   },
   "creator": {
-    "roles": ["tutee"],
-    "photo": "https://assets.tutorbook.app/jpgs/student.jpg",
-    "handle": "5481564b-e29d-4241-a1dd-01456834f65d",
-    "name": "Erik Lucatero",
-    "id": "student"
+    "roles": [],
+    "photo": "https://assets.tutorbook.app/jpgs/admin.jpg",
+    "handle": "e3eea549-b5a2-4395-889b-a63928874c3d",
+    "name": "Nicholas Chiang",
+    "id": "admin"
   },
   "org": "gunn",
   "subjects": ["Computer Science"],

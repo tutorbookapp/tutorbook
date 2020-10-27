@@ -1,19 +1,21 @@
 import path from 'path';
 
+import 'firebase/auth';
 import algoliasearch from 'algoliasearch';
 import axios from 'axios';
+import client from 'firebase/app';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
 import firebase from 'firebase-admin';
 
-import admin from 'cypress/fixtures/users/admin.json';
-import student from 'cypress/fixtures/users/student.json';
-import volunteer from 'cypress/fixtures/users/volunteer.json';
+import { MatchJSON, OrgJSON, UserJSON } from 'lib/model';
 
+import admin from 'cypress/fixtures/users/admin.json';
+import match from 'cypress/fixtures/match.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
-
-import match from 'cypress/fixtures/match.json';
+import student from 'cypress/fixtures/users/student.json';
+import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 // Right now, we can't use the `baseUrl` Typescript compiler options, so we
 // can't use any of the existing type annotations in our app source code.
@@ -40,6 +42,8 @@ const clientCredentials = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+if (!client.apps.length) client.initializeApp(clientCredentials);
+
 const app = firebase.initializeApp({
   credential: firebase.credential.cert({
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -58,16 +62,19 @@ db.settings({ ignoreUndefinedProperties: true });
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
-const client = algoliasearch(algoliaId, algoliaKey);
+const search = algoliasearch(algoliaId, algoliaKey);
 
 const partition = process.env.NODE_ENV || 'test';
-const usersIdx = client.initIndex(`${partition}-users`);
-const matchesIdx = client.initIndex(`${partition}-matches`);
+const usersIdx = search.initIndex(`${partition}-users`);
+const matchesIdx = search.initIndex(`${partition}-matches`);
 
 export interface Overrides {
-  volunteer?: Record<string, unknown> | null;
-  student?: Record<string, unknown> | null;
-  admin?: Record<string, unknown> | null;
+  match?: MatchJSON | null;
+  org?: OrgJSON | null;
+  school?: OrgJSON | null;
+  volunteer?: UserJSON | null;
+  student?: UserJSON | null;
+  admin?: UserJSON | null;
 }
 
 declare global {
@@ -79,6 +86,14 @@ declare global {
       task(event: 'login', uid?: string): Chainable<string>;
     }
   }
+}
+
+async function getHeaders(uid: string): Promise<{ authorization: string }> {
+  const token = await auth.createCustomToken(uid);
+  await client.auth().signInWithCustomToken(token);
+  const jwt = await client.auth().currentUser?.getIdToken(true);
+  await client.auth().signOut();
+  return { authorization: `Bearer ${jwt || ''}` };
 }
 
 export default function plugins(
@@ -100,25 +115,41 @@ export default function plugins(
       return null;
     },
     async seed(overrides?: Overrides): Promise<null> {
-      let users = [volunteer, student, admin];
+      let matches: MatchJSON[] = [];
+      let users: UserJSON[] = [];
+      let orgs: OrgJSON[] = [];
+
       if (overrides) {
-        users[0] = { ...users[0], ...overrides.volunteer };
-        users[1] = { ...users[1], ...overrides.student };
-        users[2] = { ...users[2], ...overrides.admin };
+        matches.push({ ...(match as MatchJSON), ...overrides.match });
+        if (overrides.match === null) delete matches[0];
+        matches = matches.filter(Boolean);
+
+        orgs.push({ ...(org as OrgJSON), ...overrides.org });
+        orgs.push({ ...(school as OrgJSON), ...overrides.school });
+        if (overrides.org === null) delete orgs[0];
+        if (overrides.school === null) delete orgs[1];
+        orgs = orgs.filter(Boolean);
+
+        users.push({ ...(volunteer as UserJSON), ...overrides.volunteer });
+        users.push({ ...(student as UserJSON), ...overrides.student });
+        users.push({ ...(admin as UserJSON), ...overrides.admin });
         if (overrides.volunteer === null) delete users[0];
         if (overrides.student === null) delete users[1];
         if (overrides.admin === null) delete users[2];
         users = users.filter(Boolean);
       }
-      const userSearchObjs = users.map((u) => ({ ...u, objectID: u.id }));
-      await Promise.all([
-        usersIdx.saveObjects(userSearchObjs),
-        matchesIdx.saveObject({ ...match, objectID: match.id }),
-        Promise.all(users.map((u) => db.collection('users').doc(u.id).set(u))),
-        db.collection('matches').doc(match.id).set(match),
-        db.collection('orgs').doc(school.id).set(school),
-        db.collection('orgs').doc(org.id).set(org),
-      ]);
+
+      const rconfig = { headers: await getHeaders(admin.id) };
+
+      async function create(route: string, data: unknown[]): Promise<void> {
+        const endpoint = `http://localhost:3000/api/${route}`;
+        await Promise.all(data.map((d) => axios.post(endpoint, d, rconfig)));
+      }
+
+      await create('users', users);
+      await create('orgs', orgs);
+      await create('matches', matches);
+
       return null;
     },
     async login(uid?: string): Promise<string> {

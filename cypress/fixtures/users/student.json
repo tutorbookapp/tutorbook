@@ -1,7 +1,6 @@
 {
   "id": "student",
   "name": "Erik Lucatero",
-  "username": "Erik L.",
   "email": "erik@example.com",
   "phone": "+16505550175",
   "photo": "https://assets.tutorbook.app/jpgs/student.jpg",
@@ -32,6 +31,7 @@
       "url": "https://indiehackers.com/erik"
     }
   ],
+  "featured": [],
   "orgs": ["gunn"],
   "zooms": [],
   "availability": [],
