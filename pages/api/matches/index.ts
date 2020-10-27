@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { APIError } from 'lib/api/error';
 import createMatch, { CreateMatchRes } from 'lib/api/routes/matches/create';
 import listMatches, { ListMatchesRes } from 'lib/api/routes/matches/list';
+import { APIError } from 'lib/api/error';
 
 /**
  * GET - Lists the user's, their children's, or their org's matches.
