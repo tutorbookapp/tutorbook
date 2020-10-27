@@ -16,6 +16,7 @@
 // @see {@link https://material.io/components/date-pickers#specs}
 .wrapper {
   display: flex;
+  overflow: hidden;
 
   .month,
   .day {
@@ -70,14 +71,10 @@
     }
 
     .dates {
-      padding: 8px 16px;
+      padding: 8px 16px 16px;
 
       .date {
         @include icon-button.size(28px);
-
-        &:first-child {
-          grid-column: 6;
-        }
 
         &.active {
           color: white;
@@ -118,7 +115,7 @@
           margin-bottom: 8px;
 
           &:last-of-type {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
           }
         }
       }
