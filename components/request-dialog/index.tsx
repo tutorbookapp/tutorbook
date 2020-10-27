@@ -26,6 +26,7 @@ import {
   MatchJSON,
   Person,
   SocialInterface,
+  Timeslot,
   User,
   UserJSON,
 } from 'lib/model';
@@ -39,14 +40,12 @@ import styles from './request-dialog.module.scss';
 
 export interface RequestDialogProps {
   onClosed: () => void;
-  times: Availability;
   subjects: string[];
   aspect: Aspect;
   user: User;
 }
 
 export default function RequestDialog({
-  times: initialTimes,
   subjects: initialSubjects,
   onClosed,
   aspect,
@@ -63,9 +62,9 @@ export default function RequestDialog({
   const { user: currentUser, updateUser } = useUser();
 
   const [subjects, setSubjects] = useState<string[]>(initialSubjects);
-  const [times, setTimes] = useState<Availability>(initialTimes);
   const [message, setMessage] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+  const [time, setTime] = useState<Timeslot>();
 
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
@@ -86,14 +85,14 @@ export default function RequestDialog({
       roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
     };
     match.current = new Match({
-      times,
       creator,
       message,
       subjects,
       org: org?.id || 'default',
       people: [target, creator],
+      times: time ? new Availability(time) : new Availability(),
     });
-  }, [currentUser, user, aspect, message, subjects, times, org?.id]);
+  }, [currentUser, user, aspect, message, subjects, time, org?.id]);
 
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setMessage(event.currentTarget.value);
@@ -263,10 +262,11 @@ export default function RequestDialog({
               required
               outlined
               renderToPortal
+              availability={user.availability}
               label={t('match3rd:times')}
               className={styles.field}
-              onChange={setTimes}
-              value={times}
+              onChange={setTime}
+              value={time}
             />
             <TextField
               outlined

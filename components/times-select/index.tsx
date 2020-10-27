@@ -2,19 +2,22 @@ import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import {
   SyntheticEvent,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
+  useMemo,
   useState,
 } from 'react';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { animated, useSpring } from 'react-spring';
 import { Button } from '@rmwc/button';
 import { IconButton } from '@rmwc/icon-button';
-import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 import useMeasure from 'react-use-measure';
+import useTranslation from 'next-translate/useTranslation';
 
-import { Availability, Callback } from 'lib/model';
+import { Availability, Timeslot, Callback } from 'lib/model';
+import { getDate, getDaysInMonth, getWeekdayOfFirst } from 'lib/utils/time';
 
 import styles from './times-select.module.scss';
 
@@ -26,9 +29,9 @@ type OverridenProps =
   | 'inputRef'
   | 'className';
 interface Props {
-  value: Availability;
-  onChange: Callback<Availability>;
-  options?: Availability;
+  value?: Timeslot;
+  onChange: Callback<Timeslot | undefined>;
+  availability: Availability;
   renderToPortal?: boolean;
   focused?: boolean;
   onFocused?: () => any;
@@ -46,7 +49,7 @@ export type TimesSelectProps = Omit<
 export default function TimesSelect({
   value,
   onChange,
-  options,
+  availability,
   renderToPortal,
   focused,
   onFocused,
@@ -77,14 +80,37 @@ export default function TimesSelect({
 
   const [ref, { width }] = useMeasure();
   const [timeslotSelectOpen, setTimeslotSelectOpen] = useState<boolean>(false);
-  const toggleTimeslotSelect = useCallback(
-    () => setTimeslotSelectOpen((prev) => !prev),
-    []
-  );
   const props = useSpring({
     width: timeslotSelectOpen ? width : 0,
     tension: 200,
   });
+
+  const { t } = useTranslation();
+
+  const [date, setDate] = useState<number>(
+    (value?.from || new Date()).getDate()
+  );
+  const [month, setMonth] = useState<number>(
+    (value?.from || new Date()).getMonth()
+  );
+  const viewPrevMonth = useCallback(() => setMonth((prev) => prev - 1), []);
+  const viewNextMonth = useCallback(() => setMonth((prev) => prev + 1), []);
+  const dte = useMemo(() => {
+    return value?.from || new Date(new Date().getFullYear(), month, date);
+  }, [value?.from, month, date]);
+
+  const availabilityOnDate = useMemo(() => {
+    return availability.onDate(dte);
+  }, [dte, availability]);
+  const availableOnDates = useMemo(() => {
+    return Array(getDaysInMonth)
+      .fill(null)
+      .map((_, idx) =>
+        availability.hasDate(
+          new Date(dte.getFullYear(), dte.getMonth(), idx + 1)
+        )
+      );
+  }, [dte, availability]);
 
   return (
     <MenuSurfaceAnchor className={className}>
@@ -103,46 +129,68 @@ export default function TimesSelect({
         <div className={styles.wrapper}>
           <div className={styles.dateSelect}>
             <div className={styles.pagination}>
-              <h6 className={styles.month}>October 2020</h6>
+              <h6 className={styles.month}>
+                {`${t(`common:mo-${dte.getMonth()}`)} ${dte.getFullYear()}`}
+              </h6>
               <div className={styles.navigation}>
-                <IconButton icon='chevron_left' />
-                <IconButton icon='chevron_right' />
+                <IconButton onClick={viewPrevMonth} icon='chevron_left' />
+                <IconButton onClick={viewNextMonth} icon='chevron_right' />
               </div>
             </div>
             <div className={styles.weekdays}>
-              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
-                <div className={styles.weekday} key={idx}>
-                  {day}
-                </div>
-              ))}
+              {Array(7)
+                .fill(null)
+                .map((_, idx) => (
+                  <div className={styles.weekday} key={`day-${idx}`}>
+                    {t(`common:dy-${idx}`)[0]}
+                  </div>
+                ))}
             </div>
             <div className={styles.dates}>
-              {Array(28)
+              {Array(getDaysInMonth(dte.getMonth()))
                 .fill(null)
                 .map((_, idx) => (
                   <IconButton
                     type='button'
-                    onClick={toggleTimeslotSelect}
-                    className={cn(styles.date, { [styles.active]: idx === 21 })}
                     icon={idx + 1}
+                    key={`date-${idx}`}
+                    disabled={!availableOnDates[idx]}
+                    className={cn(styles.date, {
+                      [styles.active]: idx + 1 === dte.getDate(),
+                    })}
+                    style={{
+                      gridColumn:
+                        idx === 0
+                          ? getWeekdayOfFirst(dte.getMonth()) + 1
+                          : undefined,
+                    }}
+                    onClick={() => {
+                      setDate(idx + 1);
+                      setTimeslotSelectOpen(true);
+                    }}
                   />
                 ))}
             </div>
           </div>
           <animated.div style={props} className={styles.timeslotSelectWrapper}>
             <div ref={ref} className={styles.timeslotSelect}>
-              <h6 className={styles.day}>Thursday, October 22</h6>
+              <h6 className={styles.day}>
+                {`${t(`common:dy-${dte.getDay()}`)}, ${t(
+                  `common:mo-${dte.getMonth()}`
+                )} ${dte.getDate()}`}
+              </h6>
               <div className={styles.times}>
-                {[
-                  '9:00 am',
-                  '10:00 am',
-                  '11:00 am',
-                  '1:00 pm',
-                  '2:00 pm',
-                  '3:00 pm',
-                  '4:00 pm',
-                ].map((time) => (
-                  <Button className={styles.time} outlined label={time} />
+                {availabilityOnDate.map((timeslot) => (
+                  <Button
+                    outlined
+                    className={styles.time}
+                    key={timeslot.from.toJSON()}
+                    label={timeslot.from.toLocaleString('en-US', {
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true,
+                    })}
+                  />
                 ))}
               </div>
             </div>
@@ -154,7 +202,7 @@ export default function TimesSelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={value.toString()}
+        value={value?.toString() || ''}
         className={styles.field}
         onFocus={() => {
           if (onFocused) onFocused();
