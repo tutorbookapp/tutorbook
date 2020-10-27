@@ -2,9 +2,9 @@ import * as admin from 'firebase-admin';
 
 import { Account, AccountInterface, isAccountJSON } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
+import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { UserInterface } from 'lib/model/user';
 import construct from 'lib/model/construct';
-import { isJSON } from 'lib/model/json';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -37,7 +37,7 @@ export function isSignupPageConfig(
 
 export function isHomePageConfig(config: unknown): config is SignupPageConfig {
   if (!isJSON(config)) return false;
-  return Object.values(config).every((localeConfig: any) => {
+  return Object.values(config).every((localeConfig) => {
     if (!isJSON(localeConfig)) return false;
     if (typeof localeConfig.header !== 'string') return false;
     if (typeof localeConfig.body !== 'string') return false;
@@ -51,6 +51,11 @@ export function isHomePageConfig(config: unknown): config is SignupPageConfig {
  * @see {@link https://marketplace.zoom.us/docs/guides/auth/oauth/oauth-scopes}
  */
 export type ZoomScope = 'meeting:write:admin' | 'user:write:admin';
+
+export function isZoomScope(json: unknown): json is ZoomScope {
+  if (typeof json !== 'string') return false;
+  return ['meeting:write:admin', 'user:write:admin'].includes(json);
+}
 
 /**
  * An authentication config for a certain Zoom account. This enables us to call
@@ -66,6 +71,14 @@ export interface ZoomAccount {
   id: string;
   token: string;
   scopes: ZoomScope[];
+}
+
+export function isZoomAccount(json: unknown): json is ZoomAccount {
+  if (!isJSON(json)) return false;
+  if (typeof json.id !== 'string') return false;
+  if (typeof json.token !== 'string') return false;
+  if (!isArray(json.scopes, isZoomScope)) return false;
+  return true;
 }
 
 /**
@@ -95,13 +108,15 @@ export interface OrgInterface extends AccountInterface {
 
 export type OrgJSON = Omit<OrgInterface, 'zoom'> & { zoom: ZoomAccount | null };
 
+// TODO: Check that the `profiles` key only contains keys of the `User` object.
 export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isAccountJSON(json)) return false;
   if (!isJSON(json)) return false;
-  if (!(json.members instanceof Array)) return false;
-  if (json.members.some((m) => typeof m !== 'string')) return false;
-  if (!(json.domains instanceof Array)) return false;
-  if (json.domains.some((m) => typeof m !== 'string')) return false;
+  if (!isStringArray(json.members)) return false;
+  if (!isArray(json.aspects, isAspect)) return false;
+  if (!isStringArray(json.domains)) return false;
+  if (!isStringArray(json.profiles)) return false;
+  if (json.zoom && !isZoomAccount(json.zoom)) return false;
   if (!isSignupPageConfig(json.signup)) return false;
   if (!isHomePageConfig(json.home)) return false;
   return true;
@@ -182,12 +197,11 @@ export class Org extends Account implements OrgInterface {
   }
 
   public static fromJSON(json: OrgJSON): Org {
-    const { zoom, ...rest } = json;
-    return new Org({ zoom: zoom || undefined, ...rest });
+    return new Org({ ...json, zoom: json.zoom || undefined });
   }
 
   public toJSON(): OrgJSON {
     const { ref, zoom, ...rest } = this;
-    return { zoom: zoom || null, ...rest };
+    return { ...rest, zoom: zoom || null };
   }
 }
