@@ -14,8 +14,8 @@ import { v4 as uuid } from 'uuid';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
-import { TimeUtils } from 'lib/utils';
 import { Availability, DayAlias, TCallback, Timeslot } from 'lib/model';
+import { getNextDateWithDay, getDateWithTime } from 'lib/utils/time';
 
 import OptionRnd from './option-rnd';
 import TimeslotRnd from './timeslot-rnd';
@@ -126,11 +126,11 @@ export default function AvailabilitySelect({
           <div className={styles.space} />
           {Array(7)
             .fill(null)
-            .map((_: null, weekday: number) => (
+            .map((_, weekday) => (
               <div key={weekday} className={styles.headerWrapper}>
                 <h2 className={styles.headerContent}>
                   <div className={styles.day}>
-                    {TimeUtils.getNextDateWithDay(weekday as DayAlias)
+                    {getNextDateWithDay(weekday as DayAlias)
                       .toLocaleString(locale, { weekday: 'long' })
                       .substr(0, 3)}
                   </div>
@@ -156,12 +156,12 @@ export default function AvailabilitySelect({
                   <div className={styles.times}>
                     {Array(24)
                       .fill(null)
-                      .map((_: null, hour: number) => (
+                      .map((_, hour) => (
                         <div key={hour} className={styles.timeWrapper}>
                           <span className={styles.timeLabel}>
-                            {TimeUtils.getDateWithTime(
-                              hour
-                            ).toLocaleString(locale, { hour: '2-digit' })}
+                            {getDateWithTime(hour).toLocaleString(locale, {
+                              hour: '2-digit',
+                            })}
                           </span>
                         </div>
                       ))}

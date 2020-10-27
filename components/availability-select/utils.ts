@@ -1,5 +1,5 @@
 import { DayAlias, Timeslot } from 'lib/model';
-import { TimeUtils } from 'lib/utils';
+import { getDate } from 'lib/utils/time';
 
 interface Position {
   x: number;
@@ -42,7 +42,7 @@ export function getTimeslot(
 
   const hours = Math.floor(minsFromMidnight / 60);
   const mins = minsFromMidnight % 60;
-  const start = TimeUtils.getDate(weekday, hours, mins);
+  const start = getDate(weekday, hours, mins);
   const end = new Date(start.valueOf() + minsDuration * 60000);
 
   return new Timeslot(start, end);
