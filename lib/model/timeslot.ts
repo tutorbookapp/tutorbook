@@ -1,3 +1,4 @@
+import { RRule } from 'rrule';
 import * as admin from 'firebase-admin';
 
 import { DAYS } from 'lib/model/constants';
@@ -84,34 +85,65 @@ export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   return true;
 }
 
-/**
- * Class that represents a time opening or slot where tutoring can take place
- * (or where tutoring is taking place in the case of a booking). This provides
- * some useful methods for comparison and a better `toString` representation
- * than `[Object object]`.
- */
-export class Timeslot implements TimeslotBase<Date> {
-  public recur = 'RRULE:FREQ=WEEKLY';
-
+export class Timeslot implements TimeslotInterface {
   /**
    * Constructor that takes advantage of Typescript's shorthand assignment.
    * @see {@link https://bit.ly/2XjNmB5}
    */
-  public constructor(public from: Date, public to: Date, recur?: string) {
-    if (recur) this.recur = recur;
+  public constructor(
+    public from: Date,
+    public to: Date,
+    public recur: string = 'RRULE:FREQ=WEEKLY'
+  ) {}
+
+  /**
+   * @return The duration of this timeslot in milliseconds.
+   * @todo Re-design the API of these timeslots to be a DTSTART time (i.e. the
+   * FROM time), a DURATION (i.e. the value returned by this method), and a
+   * RECUR rule.
+   */
+  public get duration(): number {
+    return this.to.valueOf() - this.from.valueOf();
   }
 
   /**
-   * Returns if this timeslot contains another timeslot (i.e. the starting time
-   * of the other timeslot is equal to or after the starting time of this
-   * timeslot **and** the ending time of the other timeslot is equal to or
-   * before the ending time of this timeslot).
-   * @todo Check the `recur` value as well.
+   * Under the hood, I'm using `rrule` to take advantage of the recurrance rules
+   * detailed in RFC 5545 to store timeslot data.
+   * @return The `RRule` that represents this timeslot's start time.
    */
-  public contains(other: Timeslot): boolean {
+  public get rrule(): RRule {
+    return new RRule({
+      ...RRule.parseString(this.recur),
+      dtstart: this.from,
+    });
+  }
+
+  /**
+   * Returns whether or not this timeslot contains the given timeslot.
+   * @param other - The timeslot to check is within this timeslot.
+   * @return Whether the starting time of this timeslot is before the starting
+   * time of the other timeslot AND the ending time of this timeslot is after
+   * the ending time of the other timeslot.
+   */
+  public contains(other: TimeslotInterface): boolean {
+    const closestFrom = this.rrule.before(other.from, true);
     return (
-      other.from.valueOf() >= this.from.valueOf() &&
-      other.to.valueOf() <= this.to.valueOf()
+      closestFrom.valueOf() <= other.from.valueOf() &&
+      closestFrom.valueOf() + this.duration >= other.to.valueOf()
+    );
+  }
+
+  /**
+   * Returns whether or not this timeslot is equal to another.
+   * @param other - The timeslot to check is equal to this one.
+   * @return Whether the other timeslot is equal to this one.
+   * @deprecated Just use a `dequal` instead.
+   */
+  public equalTo(other: TimeslotInterface): boolean {
+    return (
+      other.recur === this.recur &&
+      other.to.valueOf() === this.to.valueOf() &&
+      other.from.valueOf() === this.from.valueOf()
     );
   }
 
@@ -140,24 +172,6 @@ export class Timeslot implements TimeslotBase<Date> {
     return str;
   }
 
-  public equalTo(timeslot: TimeslotInterface): boolean {
-    return (
-      timeslot.recur === this.recur &&
-      timeslot.to.valueOf() === this.to.valueOf() &&
-      timeslot.from.valueOf() === this.from.valueOf()
-    );
-  }
-
-  /**
-   * Converts this object into a `TimeslotFirestoreI` (i.e. instead of `Date`s
-   * we use `Timestamp`s).
-   * @todo Right now, this isn't really doing anything besides some sketchy
-   * type assertions b/c the Firebase Admin Node.js SDK `Timestamp` type doesn't
-   * match the client-side `firebase/app` library `Timestamp` type. We want to
-   * somehow return a `Timestamp` type that can be used by both (but I can't
-   * figure out how to do this, so I'm just returning `Date`s which are
-   * converted into the *correct* `Timestamp` type by the Firebase SDK itself).
-   */
   public toFirestore(): TimeslotFirestore {
     const { from, to, ...rest } = this;
     return {
@@ -167,9 +181,6 @@ export class Timeslot implements TimeslotBase<Date> {
     };
   }
 
-  /**
-   * Takes in a Firestore timeslot record and returns a new `Timeslot` object.
-   */
   public static fromFirestore(data: TimeslotFirestore): Timeslot {
     return new Timeslot(data.from.toDate(), data.to.toDate(), data.recur);
   }
