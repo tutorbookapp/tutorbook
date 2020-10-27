@@ -3,8 +3,6 @@ import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch/lite';
 
 import { Option } from 'lib/model';
 
-export { default as TimeUtils } from './time';
-
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
 
