@@ -13,12 +13,16 @@ const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 
 const client = algoliasearch(algoliaId, algoliaKey);
 
+// TODO: Create `toSearchHit` methods for the `Availability` objects and use
+// those instead of creating these helper functions during indexing.
 function getIdxTimes(times: Availability): AvailabilitySearchHit {
-  return times.map((time) => ({
-    from: time.from.valueOf(),
-    to: time.to.valueOf(),
-    recur: time.recur,
-  }));
+  return Array.from(
+    times.map((time) => ({
+      from: time.from.valueOf(),
+      to: time.to.valueOf(),
+      recur: time.recur,
+    }))
+  );
 }
 
 // TODO: Remove all of these ugly Typescript workarounds.
