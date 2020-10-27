@@ -160,6 +160,11 @@ module.exports = {
             group: 'internal',
             position: 'after',
           },
+          {
+            pattern: 'cypress/**',
+            group: 'internal',
+            position: 'after',
+          },
         ],
         pathGroupsExcludedImportTypes: ['builtin'],
         'newlines-between': 'always',
