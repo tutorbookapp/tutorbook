@@ -1,15 +1,21 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
+import { Account, AccountInterface, isAccountJSON } from 'lib/model/account';
+import { Aspect, isAspect } from 'lib/model/aspect';
 import {
   Availability,
   AvailabilityJSON,
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
-import { AccountInterface, Account, isAccountJSON } from 'lib/model/account';
-import { Aspect, isAspect } from 'lib/model/aspect';
-import { Resource, isResourceJSON } from 'lib/model/resource';
+import {
+  Resource,
+  ResourceJSON,
+  isResourceJSON,
+  resourceFromJSON,
+  resourceToJSON,
+} from 'lib/model/resource';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import construct from 'lib/model/construct';
 import firestoreVals from 'lib/model/firestore-vals';
@@ -85,7 +91,10 @@ export interface Verification extends Resource {
   checks: Check[];
 }
 
-export function isVerification(json: unknown): json is Verification {
+export type VerificationJSON = Omit<Verification, keyof Resource> &
+  ResourceJSON;
+
+export function isVerificationJSON(json: unknown): json is VerificationJSON {
   if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (typeof json.user !== 'string') return false;
@@ -93,6 +102,14 @@ export function isVerification(json: unknown): json is Verification {
   if (typeof json.notes !== 'string') return false;
   if (!isArray(json.checks, isCheck)) return false;
   return true;
+}
+
+function verificationToJSON(verification: Verification): VerificationJSON {
+  return { ...verification, ...resourceToJSON(verification) };
+}
+
+function verificationFromJSON(json: VerificationJSON): Verification {
+  return { ...json, ...resourceFromJSON(json) };
 }
 
 /**
@@ -169,8 +186,9 @@ export type UserSearchHit = ObjectWithObjectID &
     availability: AvailabilitySearchHit;
   };
 
-export type UserJSON = Omit<UserInterface, 'availability'> & {
+export type UserJSON = Omit<UserInterface, 'availability' | 'verifications'> & {
   availability: AvailabilityJSON;
+  verifications: VerificationJSON[];
 };
 
 export function isUserJSON(json: unknown): json is UserJSON {
@@ -184,7 +202,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isSubjects(json.tutoring)) return false;
   if (!isStringArray(json.langs)) return false;
   if (!isStringArray(json.parents)) return false;
-  if (!isArray(json.verifications, isVerification)) return false;
+  if (!isArray(json.verifications, isVerificationJSON)) return false;
   if (typeof json.visible !== 'boolean') return false;
   if (!isArray(json.featured, isAspect)) return false;
   if (json.token && typeof json.token !== 'string') return false;
@@ -252,11 +270,11 @@ export class User extends Account implements UserInterface {
   /**
    * Converts this `User` object into a `Record<string, any>` that Intercom can
    * understand.
-   * @see {@link https://developers.intercom.com/installing-intercom/docs/javascript-api-attributes-objects#section-data-attributes}
+   * @see {@link https://bit.ly/3ksWc8B}
    */
   public toIntercom(): Record<string, IntercomCustomAttribute> {
     const { id, photo, token, ref, ...rest } = this;
-    const isFilled: (val: any) => boolean = (val: any) => {
+    const isFilled = (val: unknown): boolean => {
       switch (typeof val) {
         case 'string':
           return val !== '';
@@ -267,24 +285,24 @@ export class User extends Account implements UserInterface {
         case 'undefined':
           return false;
         case 'object':
+          if (val === null) return false;
           return Object.values(val).filter(isFilled).length > 0;
         default:
           return !!val;
       }
     };
-    const isValid: (val: any) => boolean = (val: any) => {
+    const isValid = (val: unknown): boolean => {
       if (typeof val === 'string') return true;
       if (typeof val === 'boolean') return true;
       if (typeof val === 'number') return true;
       if (val instanceof Date) return true;
       return false;
     };
-    const intercomValues: Record<string, any> = Object.fromEntries(
+    return Object.fromEntries(
       Object.entries(rest)
         .filter(([_, val]) => isFilled(val))
         .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
-    return { ...intercomValues, ...super.toIntercom() };
   }
 
   public static fromSearchHit(hit: UserSearchHit): User {
@@ -330,15 +348,20 @@ export class User extends Account implements UserInterface {
   }
 
   public static fromJSON(json: UserJSON): User {
-    const { availability, ...rest } = json;
+    const { availability, verifications, ...rest } = json;
     return new User({
       ...rest,
       availability: Availability.fromJSON(availability),
+      verifications: verifications.map(verificationFromJSON),
     });
   }
 
   public toJSON(): UserJSON {
-    const { availability, ref, token, ...rest } = this;
-    return { ...rest, availability: availability.toJSON() };
+    const { availability, verifications, ref, token, ...rest } = this;
+    return {
+      ...rest,
+      availability: availability.toJSON(),
+      verifications: verifications.map(verificationToJSON),
+    };
   }
 }

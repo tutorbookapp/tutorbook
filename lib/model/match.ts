@@ -9,8 +9,14 @@ import {
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
+import {
+  Resource,
+  ResourceJSON,
+  isResourceJSON,
+  resourceFromJSON,
+  resourceToJSON,
+} from 'lib/model/resource';
 import { Aspect } from 'lib/model/aspect';
-import { Resource } from 'lib/model/resource';
 import { User } from 'lib/model/user';
 import construct from 'lib/model/construct';
 import firestoreVals from 'lib/model/firestore-vals';
@@ -102,8 +108,12 @@ export interface ZoomVenue extends BaseVenue {
 }
 
 export type Venue = ZoomVenue | JitsiVenue;
+export type VenueJSON =
+  | (Omit<ZoomVenue, keyof Resource> & ResourceJSON)
+  | (Omit<JitsiVenue, keyof Resource> & ResourceJSON);
 
-export function isVenue(json: unknown): json is Venue {
+export function isVenueJSON(json: unknown): json is VenueJSON {
+  if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (typeof json.url !== 'string') return false;
   if (json.type === 'zoom') {
@@ -157,9 +167,10 @@ export interface MatchInterface {
   id: string;
 }
 
-export type MatchJSON = Omit<MatchInterface, 'times' | 'request'> & {
+export type MatchJSON = Omit<MatchInterface, 'times' | 'request' | 'venue'> & {
   times?: AvailabilityJSON;
   request?: MatchJSON;
+  venue: VenueJSON;
 };
 
 export type MatchSearchHit = ObjectWithObjectID &
@@ -179,7 +190,7 @@ export function isMatchJSON(json: unknown): json is MatchJSON {
   if (json.people.some((p) => !isPerson(p))) return false;
   if (!isPerson(json.creator)) return false;
   if (typeof json.message !== 'string') return false;
-  if (!isVenue(json.venue)) return false;
+  if (!isVenueJSON(json.venue)) return false;
   if (json.times && !isAvailabilityJSON(json.times)) return false;
   if (json.request && !isMatchJSON(json.request)) return false;
   if (typeof json.id !== 'string') return false;
@@ -245,20 +256,22 @@ export class Match implements MatchInterface {
   }
 
   public toJSON(): MatchJSON {
-    const { times, request, ...rest } = this;
+    const { times, request, venue, ...rest } = this;
     return {
       ...rest,
       times: times ? times.toJSON() : undefined,
       request: request ? request.toJSON() : undefined,
+      venue: { ...venue, ...resourceToJSON(venue) },
     };
   }
 
   public static fromJSON(json: MatchJSON): Match {
-    const { times, request, ...rest } = json;
+    const { times, request, venue, ...rest } = json;
     return new Match({
       ...rest,
       times: times ? Availability.fromJSON(times) : undefined,
       request: request ? Match.fromJSON(request) : undefined,
+      venue: { ...venue, ...resourceFromJSON(venue) },
     });
   }
 
