@@ -33,14 +33,14 @@ export default async function createAuthUser(user: User): Promise<User> {
     // have to add these error handling exceptions. Ideally, I should be able to
     // manipulate the state of my authentication backend during tests.
     if (
-      process.env.APP_ENV === 'test' &&
+      ['development', 'test'].includes(process.env.APP_ENV as string) &&
       [
         'auth/email-already-exists',
         'auth/phone-number-already-exists',
       ].includes(err.code)
     ) {
       console.warn(`[WARNING] Skipping error (${err.code}) during tests...`);
-      return new User(clone({ ...user, id: uuid() }));
+      return new User(clone({ ...user, id: user.id || uuid() }));
     }
     const msg = `${err.name} (${err.code}) creating auth account`;
     throw new APIError(`${msg} for ${user.toString()}: ${err.message}`, 500);

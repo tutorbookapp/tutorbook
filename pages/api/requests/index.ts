@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { APIError } from 'lib/api/error';
 import createRequest, {
   CreateRequestRes,
 } from 'lib/api/routes/requests/create';
 import listRequests, { ListRequestsRes } from 'lib/api/routes/requests/list';
+import { APIError } from 'lib/api/error';
 
 /**
  * GET - Lists the user's, their children's, or their org's requests.
