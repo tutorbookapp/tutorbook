@@ -15232,16 +15232,16 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"rrule@npm:^2.6.4":
-  version: 2.6.4
-  resolution: "rrule@npm:2.6.4"
+"rrule@npm:^2.6.6":
+  version: 2.6.6
+  resolution: "rrule@npm:2.6.6"
   dependencies:
     luxon: ^1.21.3
     tslib: ^1.10.0
   dependenciesMeta:
     luxon:
       optional: true
-  checksum: a866618f0603fc66a852ea18dd93653e1fa5635c8117922dcb8fa442d0eb53d0a76187e66fc52923054bc112699436f69562db8dcf8c7177219ba9509ba9cac4
+  checksum: 6f81bc5e7385b58e86daa80d0d4bf8f979d51018e73d445625b06adbec6676149db0935a259ec3b8e231e27213c485a633b03eb67fb8972fc80b821111d77ac2
   languageName: node
   linkType: hard
 
@@ -17093,7 +17093,7 @@ resolve@1.1.7:
     react-use-measure: ^2.0.1
     release: ^6.3.0
     rfdc: ^1.1.4
-    rrule: ^2.6.4
+    rrule: ^2.6.6
     sass: ^1.26.10
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.0
