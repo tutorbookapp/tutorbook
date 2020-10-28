@@ -17,7 +17,7 @@ import Avatar from 'components/avatar';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
-import TimesSelect from 'components/times-select';
+import TimeSelect from 'components/time-select';
 
 import {
   Aspect,
@@ -258,7 +258,7 @@ export default function RequestDialog({
               options={user[aspect].subjects}
               aspect={aspect}
             />
-            <TimesSelect
+            <TimeSelect
               required
               outlined
               renderToPortal
