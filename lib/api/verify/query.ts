@@ -1,7 +1,6 @@
 import { APIError } from 'lib/api/error';
 
 interface ModelConstructor<Model, ModelURLParams> {
-  new (param: Record<string, unknown>): Model;
   fromURLParams: (json: ModelURLParams) => Model;
 }
 
