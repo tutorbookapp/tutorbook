@@ -19,7 +19,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { Availability, Timeslot, Callback } from 'lib/model';
 import { getDate, getDaysInMonth, getWeekdayOfFirst } from 'lib/utils/time';
 
-import styles from './times-select.module.scss';
+import styles from './time-select.module.scss';
 
 type OverridenProps =
   | 'textarea'
@@ -39,14 +39,14 @@ interface Props {
   className?: string;
 }
 
-export type TimesSelectProps = Omit<
+export type TimeSelectProps = Omit<
   TextFieldHTMLProps,
   keyof Props | OverridenProps
 > &
   Omit<TextFieldProps, keyof Props | OverridenProps> &
   Props;
 
-export default function TimesSelect({
+export default function TimeSelect({
   value,
   onChange,
   availability,
@@ -56,7 +56,7 @@ export default function TimesSelect({
   onBlurred,
   className,
   ...textFieldProps
-}: TimesSelectProps): JSX.Element {
+}: TimeSelectProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement | null>(null);
   useLayoutEffect(() => {
     if (focused && inputRef.current) inputRef.current.focus();
