@@ -1,5 +1,5 @@
-import { RRule } from 'rrule';
 import * as admin from 'firebase-admin';
+import { RRule } from 'rrule';
 
 import { DAYS } from 'lib/model/constants';
 import { isJSON } from 'lib/model/json';
@@ -61,6 +61,7 @@ export interface TimeslotBase<T> {
  * right now, we just assume that these are recurring weekly.
  */
 export type TimeslotInterface = TimeslotBase<Date>;
+export type TimeslotURL = { [key in keyof TimeslotInterface]: string };
 
 /**
  * Interface that represents how `Timeslot`s are stored in our Firestore
@@ -82,6 +83,11 @@ export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   if (typeof json.to !== 'string') return false;
   if (new Date(json.from).toString() === 'Invalid Date') return false;
   if (new Date(json.to).toString() === 'Invalid Date') return false;
+  return true;
+}
+
+// TODO: Implement this to verify that the given query params are valid.
+export function isTimeslotURL(query: unknown): query is TimeslotURL {
   return true;
 }
 
@@ -208,6 +214,22 @@ export class Timeslot implements TimeslotInterface {
       new Date(params.get('from') as string),
       new Date(params.get('to') as string),
       params.get('recur') || undefined
+    );
+  }
+
+  public toURLParams(): TimeslotURL {
+    return {
+      from: encodeURIComponent(this.from.toJSON()),
+      to: encodeURIComponent(this.to.toJSON()),
+      recur: encodeURIComponent(this.recur),
+    };
+  }
+
+  public static fromURLParams(params: TimeslotURL): Timeslot {
+    return new Timeslot(
+      new Date(decodeURIComponent(params.from)),
+      new Date(decodeURIComponent(params.to)),
+      decodeURIComponent(params.recur)
     );
   }
 }

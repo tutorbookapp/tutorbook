@@ -4,7 +4,7 @@ import { handle } from 'lib/api/error';
 import deleteAuthUser from 'lib/api/delete/auth-user';
 import deleteUserDoc from 'lib/api/delete/user-doc';
 import deleteUserSearchObj from 'lib/api/delete/user-search-obj';
-import getPerson from 'lib/api/get/person';
+import getUser from 'lib/api/get/user';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
@@ -16,7 +16,7 @@ export default async function deleteUser(
 ): Promise<void> {
   try {
     const id = verifyQueryId(req.query);
-    const user = await getPerson({ id, roles: [], handle: '' });
+    const user = await getUser(id);
 
     await verifyAuth(req.headers, { userId: user.id, orgIds: user.orgs });
 
