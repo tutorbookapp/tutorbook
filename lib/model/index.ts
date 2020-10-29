@@ -5,6 +5,5 @@ export * from './org';
 export * from './user';
 export * from './timeslot';
 export * from './availability';
-export * from './constants';
 export * from './match';
 export * from './query/index';

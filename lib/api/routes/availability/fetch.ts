@@ -1,14 +1,9 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import {
-  AvailabilityJSON,
-  Timeslot,
-  TimeslotURL,
-  isTimeslotURL,
-} from 'lib/model';
+import { AvailabilityJSON } from 'lib/model';
 import { handle } from 'lib/api/error';
 import getAvailability from 'lib/api/get/availability';
-import verifyQuery from 'lib/api/verify/query';
+import verifyAvailabilityQuery from 'lib/api/verify/availability-query';
 import verifyQueryId from 'lib/api/verify/query-id';
 
 export type FetchAvailabilityRes = AvailabilityJSON;
@@ -23,12 +18,8 @@ export default async function fetchAvailability(
 ): Promise<void> {
   try {
     const id = verifyQueryId(req.query);
-    const range = verifyQuery<Timeslot, TimeslotURL>(
-      req.query,
-      isTimeslotURL,
-      Timeslot
-    );
-    const availability = await getAvailability(id, range.from, range.to);
+    const { month, year } = verifyAvailabilityQuery(req.query);
+    const availability = await getAvailability(id, month, year);
     res.status(200).json(availability.toJSON());
   } catch (e) {
     handle(e, res);

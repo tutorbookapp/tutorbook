@@ -262,11 +262,11 @@ export default function RequestDialog({
               required
               outlined
               renderToPortal
-              availability={user.availability}
               label={t('match3rd:times')}
               className={styles.field}
               onChange={setTime}
               value={time}
+              uid={user.id}
             />
             <TextField
               outlined
