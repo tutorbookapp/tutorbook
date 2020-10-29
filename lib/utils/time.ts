@@ -1,3 +1,5 @@
+import { Timeslot } from 'lib/model/timeslot';
+
 /**
  * Checks if a date occurs on the same date as another.
  * @param date - The base date to compare against.

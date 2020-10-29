@@ -1,5 +1,4 @@
 import { Chip, ChipSet } from '@rmwc/chip';
-import { Switch } from '@rmwc/switch';
 import {
   DataTable,
   DataTableBody,
@@ -9,31 +8,22 @@ import {
   DataTableHeadCell,
   DataTableRow,
 } from '@rmwc/data-table';
-import {
-  FormEvent,
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FormEvent, memo, useCallback, useMemo } from 'react';
 import { Checkbox } from '@rmwc/checkbox';
 import { IconButton } from '@rmwc/icon-button';
+import { Switch } from '@rmwc/switch';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import cn from 'classnames';
+import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
-import {
-  Aspect,
-  Check,
-  SocialInterface,
-  TCallback,
-  UserJSON,
-  Verification,
-} from 'lib/model';
+import { Aspect, Check, SocialInterface, UserJSON } from 'lib/model';
+import clone from 'lib/utils/clone';
+import { useContinuous } from 'lib/hooks';
+import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
 import styles from './display-page.module.scss';
@@ -48,7 +38,7 @@ const checks: Check[] = [
 
 export interface DisplayPageProps {
   value: UserJSON;
-  onChange: TCallback<UserJSON>;
+  onChange: (updated: UserJSON) => Promise<void>;
   openEdit: () => Promise<void>;
   openMatch: () => Promise<void>;
   openRequest: () => Promise<void>;
@@ -57,53 +47,54 @@ export interface DisplayPageProps {
 
 export default memo(function DisplayPage({
   value,
-  onChange: onFinalChange,
+  onChange,
   openEdit,
   openMatch,
   openRequest,
   closeDialog,
 }: DisplayPageProps): JSX.Element {
   const { t } = useTranslation();
-  const { user: currentUser } = useUser();
-  const [user, setUser] = useState<UserJSON>(value);
+  const { org } = useOrg();
+  const {
+    user: { id: currentUserId },
+  } = useUser();
 
-  useEffect(() => setUser(value), [value]);
-
-  const timeoutId = useRef<ReturnType<typeof setTimeout>>();
-  const onChange = useCallback(
-    (updated: UserJSON) => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
-        timeoutId.current = undefined;
-      }
-      setUser(updated);
-      const updateRemote = async () => {
-        const url = `/api/users/${updated.id}`;
-        const { data: remoteUpdated } = await axios.put<UserJSON>(url, updated);
-        onFinalChange(remoteUpdated);
-      };
-      timeoutId.current = setTimeout(() => {
-        void updateRemote();
-      }, 5000);
+  const updateRemote = useCallback(
+    async (updated: UserJSON) => {
+      const url = `/api/users/${updated.id}`;
+      await onChange(updated);
+      const { data } = await axios.put<UserJSON>(url, updated);
+      if (!dequal(data, updated)) await onChange(data);
+      return data;
     },
-    [onFinalChange]
+    [onChange]
   );
+
+  const { data: user, setData: setUser } = useContinuous<UserJSON>(
+    value,
+    updateRemote
+  );
+
   const onVisibilityChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
-      return onChange({ ...user, visible: evt.currentTarget.checked });
+      const visible = evt.currentTarget.checked;
+      return setUser((prev) => ({ ...prev, visible }));
     },
-    [onChange, user]
+    [setUser]
   );
 
   const onFeaturedChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
-      const featured: Aspect[] = [];
-      if (!evt.currentTarget.checked) return onChange({ ...user, featured });
-      if (user.tutoring.subjects.length) featured.push('tutoring');
-      if (user.mentoring.subjects.length) featured.push('mentoring');
-      return onChange({ ...user, featured });
+      const { checked } = evt.currentTarget;
+      return setUser((prev) => {
+        const featured: Aspect[] = [];
+        if (!checked) return { ...prev, featured };
+        if (prev.tutoring.subjects.length) featured.push('tutoring');
+        if (prev.mentoring.subjects.length) featured.push('mentoring');
+        return { ...prev, featured };
+      });
     },
-    [onChange, user]
+    [setUser]
   );
 
   const openEmail = useCallback(() => {
@@ -111,77 +102,104 @@ export default memo(function DisplayPage({
     window.open(`mailto:${url}`);
   }, [user.name, user.email]);
 
-  // Deep copy the array of `Verification` objects.
-  // @see {@link https://stackoverflow.com/a/40283265/10023158}
-  const clone = (vs: Verification[]) => vs.map((v: Verification) => ({ ...v }));
-  const getIndex = (check: Check) =>
-    user.verifications.findIndex((v) => v.checks.indexOf(check) >= 0);
-
-  const getChecked = (check: Check) => getIndex(check) >= 0;
-  const setChecked = (event: FormEvent<HTMLInputElement>, check: Check) => {
-    const updated: Verification[] = clone(user.verifications);
-    if (getIndex(check) >= 0 && !event.currentTarget.checked) {
-      updated.splice(getIndex(check), 1);
-    } else {
-      updated.push({
-        user: currentUser.id,
-        org: currentUser.id,
-        checks: [check],
-        notes: '',
-        created: new Date(),
-        updated: new Date(),
+  const getChecked = useCallback(
+    (c: Check) => {
+      return user.verifications.some((v) => v.checks.includes(c));
+    },
+    [user.verifications]
+  );
+  const setChecked = useCallback(
+    (evt: FormEvent<HTMLInputElement>, c: Check) => {
+      const { checked } = evt.currentTarget;
+      return setUser((prev) => {
+        const verifications = clone(prev.verifications);
+        const idx = verifications.findIndex((v) => v.checks.includes(c));
+        if (idx < 0 && checked) {
+          verifications.push({
+            user: currentUserId,
+            org: org?.id || 'default',
+            checks: [c],
+            notes: '',
+            created: new Date().toJSON(),
+            updated: new Date().toJSON(),
+          });
+        } else if (idx >= 0 && !checked) {
+          verifications.splice(idx, 1);
+        }
+        return { ...prev, verifications };
       });
-    }
-    return onChange({ ...user, verifications: updated });
-  };
+    },
+    [currentUserId, org?.id, setUser]
+  );
 
-  const getSomeChecked = () =>
-    user.verifications.length > 0 && user.verifications.length < checks.length;
-  const getAllChecked = () => checks.every((c) => getChecked(c));
-  const setAllChecked = (event: FormEvent<HTMLInputElement>) => {
-    if (!event.currentTarget.checked)
-      return onChange({ ...user, verifications: [] });
-    const updated: Verification[] = clone(user.verifications);
-    const checked: Check[] = Object.values(user.verifications).reduce(
-      (acc, cur) => {
-        return acc.concat(cur.checks);
-      },
-      [] as Check[]
-    );
-    const stillNeedsToBeChecked: Check[] = checks.filter(
-      (c) => checked.indexOf(c) < 0
-    );
-    stillNeedsToBeChecked.forEach((check: Check) =>
-      updated.push({
-        user: currentUser.id,
-        org: currentUser.id,
-        checks: [check],
-        notes: '',
-        created: new Date(),
-        updated: new Date(),
-      })
-    );
-    return onChange({ ...user, verifications: updated });
-  };
+  const someChecked = useMemo(() => {
+    return user.verifications.length > 0;
+  }, [user.verifications]);
+  const allChecked = useMemo(() => {
+    return checks.every((c) => {
+      return user.verifications.some((v) => v.checks.includes(c));
+    });
+  }, [user.verifications]);
 
-  const getValue = (check: Check) =>
-    (user.verifications[getIndex(check)] || {}).notes || '';
-  const setValue = (event: FormEvent<HTMLInputElement>, check: Check) => {
-    const updated: Verification[] = clone(user.verifications);
-    if (getIndex(check) >= 0) {
-      updated[getIndex(check)].notes = event.currentTarget.value;
-    } else {
-      updated.push({
-        user: currentUser.id,
-        org: currentUser.id,
-        checks: [check],
-        notes: event.currentTarget.value,
-        created: new Date(),
-        updated: new Date(),
+  const toggleAll = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const { checked } = evt.currentTarget;
+      return setUser((prev) => {
+        if (!checked) return { ...prev, verifications: [] };
+        const verifications = clone(prev.verifications);
+        const isChecked = verifications.reduce(
+          (a, c) => a.concat(c.checks),
+          [] as Check[]
+        );
+        const notChecked = checks.filter((c) => !isChecked.includes(c));
+        notChecked.forEach((check) =>
+          verifications.push({
+            user: currentUserId,
+            org: org?.id || 'default',
+            checks: [check],
+            notes: '',
+            created: new Date().toJSON(),
+            updated: new Date().toJSON(),
+          })
+        );
+        return { ...prev, verifications };
       });
-    }
-    return onChange({ ...user, verifications: updated });
-  };
+    },
+    [currentUserId, org?.id, setUser]
+  );
+
+  const getValue = useCallback(
+    (c: Check) => {
+      const idx = user.verifications.findIndex((v) => v.checks.includes(c));
+      if (idx < 0) return '';
+      return user.verifications[idx].notes;
+    },
+    [user.verifications]
+  );
+  const setValue = useCallback(
+    (evt: FormEvent<HTMLInputElement>, c: Check) => {
+      const { value: notes } = evt.currentTarget;
+      return setUser((prev) => {
+        const verifications = clone(prev.verifications);
+        const idx = verifications.findIndex((v) => v.checks.includes(c));
+        if (idx < 0) {
+          verifications.push({
+            notes,
+            user: currentUserId,
+            org: org?.id || 'default',
+            checks: [c],
+            created: new Date().toJSON(),
+            updated: new Date().toJSON(),
+          });
+        } else {
+          verifications[idx].notes = notes;
+          verifications[idx].updated = new Date().toJSON();
+        }
+        return { ...prev, verifications };
+      });
+    },
+    [currentUserId, org?.id, setUser]
+  );
 
   return (
     <div className={styles.wrapper}>
@@ -225,9 +243,9 @@ export default memo(function DisplayPage({
                 <DataTableRow>
                   <DataTableHeadCell hasFormControl>
                     <Checkbox
-                      checked={getAllChecked()}
-                      indeterminate={getSomeChecked()}
-                      onChange={setAllChecked}
+                      checked={allChecked}
+                      indeterminate={someChecked && !allChecked}
+                      onChange={toggleAll}
                     />
                   </DataTableHeadCell>
                   <DataTableHeadCell>

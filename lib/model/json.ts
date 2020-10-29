@@ -4,9 +4,10 @@ export function isJSON(json: unknown): json is Record<string, unknown> {
 
 export function isArray<T>(
   json: unknown,
-  isType: (json: unknown) => json is T
+  isType?: (json: unknown) => json is T
 ): json is T[] {
   if (!(json instanceof Array)) return false;
+  if (!isType) return true;
   if (json.some((val) => !isType(val))) return false;
   return true;
 }

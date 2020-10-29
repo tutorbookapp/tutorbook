@@ -1,5 +1,3 @@
-import { RRuleSet } from 'rrule';
-
 import {
   DayAlias,
   Timeslot,
@@ -42,20 +40,6 @@ export function isAvailabilityJSON(json: unknown): json is AvailabilityJSON {
  * `[Object object]`.
  */
 export class Availability extends Array<Timeslot> implements AvailabilityAlias {
-  private rruleset: RRuleSet = new RRuleSet();
-
-  /**
-   * Under the hood, I'm using `rrule` to take advantage of the recurrance rules
-   * detailed in RFC 5545 and store a user's availability with the least amount
-   * of data possible.
-   * @return The `RRuleSet` that corresponds with this availability.
-   */
-  private get ruleset(): RRuleSet {
-    if (this.rruleset.rrules.length === this.length) return this.rruleset;
-    this.forEach((timeslot) => this.rruleset.rrule(timeslot.rrule));
-    return this.rruleset;
-  }
-
   /**
    * Sorts this availability (in-place) from the earliest to the latest timeslot
    * start time and returns the sorted list.
@@ -129,13 +113,10 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * timeslot.
    * @deprecated I'm not sure where I would need to use this, but whereever I do
    * it should be removed.
+   * @todo Account for recurrance rules.
    */
   public contains(timeslot: Timeslot): boolean {
-    const closestFrom = this.ruleset.before(timeslot.from, true);
-    return (
-      closestFrom.valueOf() <= timeslot.from.valueOf() &&
-      closestFrom.valueOf() + 18e5 >= timeslot.to.valueOf()
-    );
+    return this.some((t) => t.contains(timeslot));
   }
 
   /**
@@ -207,18 +188,8 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return true;
   }
 
-  /**
-   * Converts this `Availability` into a comma-separated string of all of it's
-   * constituent timeslots.
-   * @deprecated We're going to put these into strings within the React tree so
-   * that we can use `react-intl` for better i18n support (e.g. we'll set the
-   * localization in the `pages/_app.tsx` top-level component and all children
-   * components will render their `Date`s properly for that locale).
-   */
-  public toString(showDay = true): string {
-    return this.length > 0
-      ? this.map((timeslot: Timeslot) => timeslot.toString(showDay)).join(', ')
-      : '';
+  public toString(locale = 'en'): string {
+    return this.map((t) => t.toString(locale)).join(', ');
   }
 
   public toFirestore(): AvailabilityFirestore {
