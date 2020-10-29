@@ -12,7 +12,7 @@
     "start": "cross-env NODE_ENV=test concurrently yarn:start:db yarn:start:next yarn:start:cy",
     "dev:db": "firebase emulators:start --project development-tutorbook --only firestore",
     "dev:next": "cross-env NODE_OPTIONS='--inspect' next dev -p 3000",
-    "dev:cy": "cypress open",
+    "dev:cy": "cross-env NODE_ENV=development cypress open",
     "dev": "cross-env NODE_ENV=development concurrently yarn:dev:db yarn:dev:next yarn:dev:cy",
     "build:sw": "cd sw && webpack",
     "build:next": "next build",
