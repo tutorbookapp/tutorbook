@@ -8,7 +8,7 @@
 // TODO: Ensure that the `useMeasure` hook only takes that measurement after the
 // `mdc-menu-surface` finishes animating open.
 .surface {
-  transform: scale(1);
+  transform: none;
 }
 
 // The date selection portion of this component is styled according to the

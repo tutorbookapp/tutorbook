@@ -4,8 +4,8 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useRef,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
@@ -14,9 +14,16 @@ import { Button } from '@rmwc/button';
 import { IconButton } from '@rmwc/icon-button';
 import cn from 'classnames';
 import useMeasure from 'react-use-measure';
+import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Availability, Timeslot, Callback } from 'lib/model';
+import {
+  Availability,
+  AvailabilityJSON,
+  Callback,
+  DayAlias,
+  Timeslot,
+} from 'lib/model';
 import { getDate, getDaysInMonth, getWeekdayOfFirst } from 'lib/utils/time';
 
 import styles from './time-select.module.scss';
@@ -29,9 +36,9 @@ type OverridenProps =
   | 'inputRef'
   | 'className';
 interface Props {
+  uid: string;
   value?: Timeslot;
   onChange: Callback<Timeslot | undefined>;
-  availability: Availability;
   renderToPortal?: boolean;
   focused?: boolean;
   onFocused?: () => any;
@@ -47,9 +54,9 @@ export type TimeSelectProps = Omit<
   Props;
 
 export default function TimeSelect({
+  uid,
   value,
   onChange,
-  availability,
   renderToPortal,
   focused,
   onFocused,
@@ -59,7 +66,7 @@ export default function TimeSelect({
 }: TimeSelectProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement | null>(null);
   useLayoutEffect(() => {
-    if (focused && inputRef.current) inputRef.current.focus();
+    if (focused) inputRef.current?.focus();
   }, [focused]);
 
   // We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
@@ -79,38 +86,59 @@ export default function TimeSelect({
   }, []);
 
   const [ref, { width }] = useMeasure();
-  const [timeslotSelectOpen, setTimeslotSelectOpen] = useState<boolean>(false);
+  const [timeslotSelectOpen, setTimeslotSelectOpen] = useState<boolean>(
+    !!value
+  );
   const props = useSpring({
     width: timeslotSelectOpen ? width : 0,
     tension: 200,
   });
 
-  const { t } = useTranslation();
+  const { lang: locale } = useTranslation();
 
   const [date, setDate] = useState<number>(
     (value?.from || new Date()).getDate()
   );
+  const [year, setYear] = useState<number>(
+    (value?.from || new Date()).getFullYear()
+  );
   const [month, setMonth] = useState<number>(
     (value?.from || new Date()).getMonth()
   );
+
   const viewPrevMonth = useCallback(() => setMonth((prev) => prev - 1), []);
   const viewNextMonth = useCallback(() => setMonth((prev) => prev + 1), []);
-  const dte = useMemo(() => {
-    return value?.from || new Date(new Date().getFullYear(), month, date);
-  }, [value?.from, month, date]);
+  const selected = useMemo(() => new Date(year, month, date), [
+    year,
+    month,
+    date,
+  ]);
 
-  const availabilityOnDate = useMemo(() => {
-    return availability.onDate(dte);
-  }, [dte, availability]);
-  const availableOnDates = useMemo(() => {
-    return Array(getDaysInMonth)
-      .fill(null)
-      .map((_, idx) =>
-        availability.hasDate(
-          new Date(dte.getFullYear(), dte.getMonth(), idx + 1)
-        )
-      );
-  }, [dte, availability]);
+  useEffect(() => {
+    if (month < 0 || month > 11) {
+      setMonth(month < 0 ? (month % 12) + 12 : month % 12);
+      setYear((prev) => prev + Math.floor(month / 12));
+    }
+  }, [month]);
+
+  const { data } = useSWR<AvailabilityJSON>(
+    `/api/users/${uid}/availability?month=${month}&year=${year}`
+  );
+  const availability = useMemo(
+    () => (data ? Availability.fromJSON(data) : new Availability()),
+    [data]
+  );
+  const availabilityOnSelected = useMemo(() => availability.onDate(selected), [
+    selected,
+    availability,
+  ]);
+  const dateAvailability = useMemo(
+    () =>
+      Array(getDaysInMonth(month))
+        .fill(null)
+        .map((_, idx) => availability.hasDate(new Date(year, month, idx + 1))),
+    [year, month, availability]
+  );
 
   return (
     <MenuSurfaceAnchor className={className}>
@@ -120,7 +148,7 @@ export default function TimeSelect({
         onFocus={(event: SyntheticEvent<HTMLDivElement>) => {
           event.preventDefault();
           event.stopPropagation();
-          if (inputRef.current) inputRef.current.focus();
+          inputRef.current?.focus();
         }}
         className={styles.surface}
         anchorCorner='bottomStart'
@@ -130,7 +158,10 @@ export default function TimeSelect({
           <div className={styles.dateSelect}>
             <div className={styles.pagination}>
               <h6 className={styles.month}>
-                {`${t(`common:mo-${dte.getMonth()}`)} ${dte.getFullYear()}`}
+                {selected.toLocaleDateString(locale, {
+                  month: 'long',
+                  year: 'numeric',
+                })}
               </h6>
               <div className={styles.navigation}>
                 <IconButton onClick={viewPrevMonth} icon='chevron_left' />
@@ -142,26 +173,28 @@ export default function TimeSelect({
                 .fill(null)
                 .map((_, idx) => (
                   <div className={styles.weekday} key={`day-${idx}`}>
-                    {t(`common:dy-${idx}`)[0]}
+                    {getDate(idx as DayAlias, 0).toLocaleDateString(locale, {
+                      weekday: 'narrow',
+                    })}
                   </div>
                 ))}
             </div>
             <div className={styles.dates}>
-              {Array(getDaysInMonth(dte.getMonth()))
+              {Array(getDaysInMonth(selected.getMonth()))
                 .fill(null)
                 .map((_, idx) => (
                   <IconButton
                     type='button'
                     icon={idx + 1}
                     key={`date-${idx}`}
-                    disabled={!availableOnDates[idx]}
+                    disabled={!dateAvailability[idx]}
                     className={cn(styles.date, {
-                      [styles.active]: idx + 1 === dte.getDate(),
+                      [styles.active]: idx + 1 === selected.getDate(),
                     })}
                     style={{
                       gridColumn:
                         idx === 0
-                          ? getWeekdayOfFirst(dte.getMonth()) + 1
+                          ? getWeekdayOfFirst(selected.getMonth()) + 1
                           : undefined,
                     }}
                     onClick={() => {
@@ -175,21 +208,27 @@ export default function TimeSelect({
           <animated.div style={props} className={styles.timeslotSelectWrapper}>
             <div ref={ref} className={styles.timeslotSelect}>
               <h6 className={styles.day}>
-                {`${t(`common:dy-${dte.getDay()}`)}, ${t(
-                  `common:mo-${dte.getMonth()}`
-                )} ${dte.getDate()}`}
+                {selected.toLocaleDateString(locale, {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                })}
               </h6>
               <div className={styles.times}>
-                {availabilityOnDate.map((timeslot) => (
+                {availabilityOnSelected.map((timeslot) => (
                   <Button
                     outlined
                     className={styles.time}
                     key={timeslot.from.toJSON()}
-                    label={timeslot.from.toLocaleString('en-US', {
+                    label={timeslot.from.toLocaleString(locale, {
                       hour: 'numeric',
                       minute: 'numeric',
                       hour12: true,
                     })}
+                    onClick={() => {
+                      onChange(timeslot);
+                      inputRef.current?.blur();
+                    }}
                   />
                 ))}
               </div>
@@ -202,7 +241,7 @@ export default function TimeSelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={value?.toString() || ''}
+        value={value?.toString(locale) || ''}
         className={styles.field}
         onFocus={() => {
           if (onFocused) onFocused();

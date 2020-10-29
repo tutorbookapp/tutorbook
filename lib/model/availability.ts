@@ -9,7 +9,7 @@ import {
   TimeslotSearchHit,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import { getDate } from 'lib/utils/time';
+import { getDate, timeslotOnDate } from 'lib/utils/time';
 
 /**
  * One's schedule contains all your booked timeslots (the inverse of one's
@@ -57,6 +57,19 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   }
 
   /**
+   * Sorts this availability (in-place) from the earliest to the latest timeslot
+   * start time and returns the sorted list.
+   * @example
+   * const avail = new Availability(future, past, now);
+   * avail.sort(); // Returns [past, now, future] sort.
+   */
+  public sort(): this {
+    return super.sort((timeslotA, timeslotB) => {
+      return timeslotA.from.valueOf() - timeslotB.from.valueOf();
+    });
+  }
+
+  /**
    * Returns a "full" availability (everyday, from 12am to 11pm). This is the
    * default for new tutors and when sending requests. This ignores the date
    * information and is only useful operating on times and weekdays.
@@ -83,47 +96,21 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * Returns whether or not there is any availability on a given date.
    * @param date - The JavaScript `Date` object from which we determine the
    * date (e.g. 1st or 31st), month, and year.
-   * @param [duration] - The minimum duration of an open timeslot for there to
-   * be considered "availability" on the given date in milliseconds.
    * @return Whether or not there is any available on the given date.
    */
-  public hasDate(date: Date, duration = 18e5): boolean {
-    console.log(`Checking if availability has date (${date.toString()})...`);
-    return true;
-    //const timeslot = new Timeslot(date, new Date(date.valueOf() + duration));
-    //return this.contains(timeslot);
+  public hasDate(date: Date): boolean {
+    return this.some((t) => timeslotOnDate(t, date));
   }
 
   /**
-   * Returns the timeslots (of a requested duration) that are available on a
-   * given date.
+   * Returns the timeslots that are available on a given date.
    * @param date - The JavaScript `Date` object from which we determine the
    * date (e.g. 1st or 31st), month, and year.
-   * @param [duration] - The timeslot duration in milliseconds; default 30 mins.
    * @return An array of timeslots of the requested duration that are available
    * on the given date.
    */
-  public onDate(date: Date, duration = 18e5): Availability {
-    console.log(`Collecting open timeslots for date (${date.toString()})...`);
-    // Construct an array of 15min time increments (12am, 12:15am . . . 11:45pm)
-    // that occur on the given date and are within this availability.
-    const timeslots = Array(24 * 4)
-      .fill(null)
-      .map((_, idx) => {
-        const hour = Math.floor(idx / 4);
-        const mins = [0, 15, 30, 45][idx % 4];
-        const from = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          hour,
-          mins
-        );
-        const to = new Date(from.valueOf() + duration);
-        return new Timeslot(from, to);
-      })
-      .filter((timeslot) => this.contains(timeslot));
-    return new Availability(...timeslots);
+  public onDate(date: Date): Availability {
+    return new Availability(...this.filter((t) => timeslotOnDate(t, date)));
   }
 
   /**
@@ -132,7 +119,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * it should be removed.
    */
   public hasTimeslot(timeslot: TimeslotInterface): boolean {
-    return !!this.filter((t) => t.equalTo(timeslot)).length;
+    return this.some((t) => t.equalTo(timeslot));
   }
 
   /**
@@ -144,13 +131,11 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * it should be removed.
    */
   public contains(timeslot: Timeslot): boolean {
-    console.log('Checking if availability contains timeslot...', timeslot);
-    return true;
-    //const closestFrom = this.ruleset.before(timeslot.from, true);
-    //return (
-    //closestFrom.valueOf() <= timeslot.from.valueOf() &&
-    //closestFrom.valueOf() + 18e5 >= timeslot.to.valueOf()
-    //);
+    const closestFrom = this.ruleset.before(timeslot.from, true);
+    return (
+      closestFrom.valueOf() <= timeslot.from.valueOf() &&
+      closestFrom.valueOf() + 18e5 >= timeslot.to.valueOf()
+    );
   }
 
   /**

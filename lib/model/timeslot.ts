@@ -1,7 +1,6 @@
 import * as admin from 'firebase-admin';
 import { RRule } from 'rrule';
 
-import { DAYS } from 'lib/model/constants';
 import { isJSON } from 'lib/model/json';
 
 /**
@@ -61,7 +60,6 @@ export interface TimeslotBase<T> {
  * right now, we just assume that these are recurring weekly.
  */
 export type TimeslotInterface = TimeslotBase<Date>;
-export type TimeslotURL = { [key in keyof TimeslotInterface]: string };
 
 /**
  * Interface that represents how `Timeslot`s are stored in our Firestore
@@ -83,11 +81,6 @@ export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   if (typeof json.to !== 'string') return false;
   if (new Date(json.from).toString() === 'Invalid Date') return false;
   if (new Date(json.to).toString() === 'Invalid Date') return false;
-  return true;
-}
-
-// TODO: Implement this to verify that the given query params are valid.
-export function isTimeslotURL(query: unknown): query is TimeslotURL {
   return true;
 }
 
@@ -153,29 +146,24 @@ export class Timeslot implements TimeslotInterface {
     );
   }
 
-  /**
-   * Puts the time slot into string form.
-   * @example
-   * // Where `dateAtTwoPM` and `dateAtThreePM` are on Mondays.
-   * const timeslot = new Timeslot(dateAtTwoPM, dateAtThreePM);
-   * assert(timeslot.toString() === 'Mondays from 2pm to 3pm');
-   * @deprecated We're going to put these into strings within the React tree so
-   * that we can use `react-intl` for better i18n support (e.g. we'll set the
-   * localization in the `pages/_app.tsx` top-level component and all children
-   * components will render their `Date`s properly for that locale).
-   */
-  public toString(showDay = true): string {
-    let str = `${this.from.toLocaleTimeString()} - ${this.to.toLocaleTimeString()}`;
-    if (showDay) {
-      if (this.from.getDay() === this.to.getDay()) {
-        str = `${DAYS[this.from.getDay()]} ${str}`;
-      } else {
-        str = `${DAYS[this.from.getDay()]} ${str.split(' - ')[0]} - ${
-          DAYS[this.to.getDay()]
-        } ${str.split(' - ')[1]}`;
-      }
-    }
-    return str;
+  public toString(locale = 'en'): string {
+    const showSecondDate =
+      this.from.getDate() !== this.to.getDate() ||
+      this.from.getMonth() !== this.to.getMonth() ||
+      this.from.getFullYear() !== this.to.getFullYear();
+    return `${this.from.toLocaleString(locale, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    })} - ${this.to.toLocaleString(locale, {
+      weekday: showSecondDate ? 'long' : undefined,
+      month: showSecondDate ? 'long' : undefined,
+      day: showSecondDate ? 'numeric' : undefined,
+      hour: 'numeric',
+      minute: 'numeric',
+    })}`;
   }
 
   public toFirestore(): TimeslotFirestore {
@@ -214,22 +202,6 @@ export class Timeslot implements TimeslotInterface {
       new Date(params.get('from') as string),
       new Date(params.get('to') as string),
       params.get('recur') || undefined
-    );
-  }
-
-  public toURLParams(): TimeslotURL {
-    return {
-      from: encodeURIComponent(this.from.toJSON()),
-      to: encodeURIComponent(this.to.toJSON()),
-      recur: encodeURIComponent(this.recur),
-    };
-  }
-
-  public static fromURLParams(params: TimeslotURL): Timeslot {
-    return new Timeslot(
-      new Date(decodeURIComponent(params.from)),
-      new Date(decodeURIComponent(params.to)),
-      decodeURIComponent(params.recur)
     );
   }
 }

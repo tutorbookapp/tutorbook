@@ -1,4 +1,28 @@
 /**
+ * Checks if a date occurs on the same date as another.
+ * @param date - The base date to compare against.
+ * @param other - The other date to compare.
+ * @return Whether or not the dates occur on the same year, month, and date.
+ */
+export function sameDate(date: Date, other: Date): boolean {
+  return (
+    date.getFullYear() === other.getFullYear() &&
+    date.getMonth() === other.getMonth() &&
+    date.getDate() === other.getDate()
+  );
+}
+
+/**
+ * Checks if a timeslot occurs on a given date.
+ * @param timeslot - The timeslot to check.
+ * @param date - The date which we expect the timeslot to be on.
+ * @return Whether or not the timeslot occurs on the given date.
+ */
+export function timeslotOnDate(timeslot: Timeslot, date: Date): boolean {
+  return sameDate(timeslot.from, date) && sameDate(timeslot.to, date);
+}
+
+/**
  * Number representing the day of the week. Follows the ECMAScript Date
  * convention where 0 denotes Sunday, 1 denotes Monday, etc.
  * @see {@link https://mzl.la/34l2dN6}

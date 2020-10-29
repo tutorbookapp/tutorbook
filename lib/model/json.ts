@@ -20,3 +20,9 @@ export function isDateJSON(json: unknown): json is string {
   if (new Date(json).toString() === 'Invalid Date') return false;
   return true;
 }
+
+export function isNumberJSON(json: unknown): json is string {
+  if (typeof json !== 'string') return false;
+  if (Number(json).toString() !== json) return false;
+  return true;
+}
