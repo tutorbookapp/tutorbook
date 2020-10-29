@@ -10,12 +10,17 @@ import {
   isAvailabilityJSON,
 } from 'lib/model/availability';
 import {
-  Resource,
-  ResourceJSON,
-  isResourceJSON,
-  resourceFromJSON,
-  resourceToJSON,
-} from 'lib/model/resource';
+  Verification,
+  VerificationJSON,
+  isVerificationJSON,
+  verificationsFromFirestore,
+} from 'lib/model/verification';
+import {
+  ZoomUser,
+  ZoomUserJSON,
+  isZoomUserJSON,
+  zoomsFromFirestore,
+} from 'lib/model/zoom-user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import construct from 'lib/model/construct';
 import firestoreVals from 'lib/model/firestore-vals';
@@ -38,102 +43,6 @@ type IntercomCustomAttribute = string | boolean | number | Date;
  */
 export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
-/**
- * A check is a single aspect of a verification.
- * @example
- * - A verified university email address (e.g. `@stanford.edu`).
- * - A verified normal email address.
- * - A verified social (@see {@link SocialTypeAlias}) account (e.g. LinkedIn).
- * - A DBS check on file.
- */
-export type Check =
-  | 'email'
-  | 'background-check'
-  | 'academic-email'
-  | 'training'
-  | 'interview';
-
-export function isCheck(json: unknown): json is Check {
-  const checks = [
-    'email',
-    'background-check',
-    'academic-email',
-    'training',
-    'interview',
-  ];
-
-  if (typeof json !== 'string') return false;
-  if (!checks.includes(json)) return false;
-  return true;
-}
-
-/**
- * Various tags that are added to the Algolia users search during indexing (via
- * the `firebase/functions/src/algolia.ts` GCP serverless function).
- */
-export type Tag = 'not-vetted';
-
-/**
- * A verification is run by a non-profit organization (the `org`) by a member of
- * that organization (the `user`). The non-profit takes full responsibility for
- * their verification and liability for the user's actions.
- * @typedef {Object} Verification
- * @extends Resource
- * @property user - The uID of the user who ran the verification.
- * @property org - The id of the non-profit org that the `user` belongs to.
- * @property notes - Any notes about the verification (e.g. what happened).
- * @property checks - An array of checks (@see {@link Check}) passed.
- */
-export interface Verification extends Resource {
-  user: string;
-  org: string;
-  notes: string;
-  checks: Check[];
-}
-
-export type VerificationJSON = Omit<Verification, keyof Resource> &
-  ResourceJSON;
-
-export function isVerificationJSON(json: unknown): json is VerificationJSON {
-  if (!isResourceJSON(json)) return false;
-  if (!isJSON(json)) return false;
-  if (typeof json.user !== 'string') return false;
-  if (typeof json.org !== 'string') return false;
-  if (typeof json.notes !== 'string') return false;
-  if (!isArray(json.checks, isCheck)) return false;
-  return true;
-}
-
-function verificationToJSON(verification: Verification): VerificationJSON {
-  return { ...verification, ...resourceToJSON(verification) };
-}
-
-function verificationFromJSON(json: VerificationJSON): Verification {
-  return { ...json, ...resourceFromJSON(json) };
-}
-
-/**
- * A user's Zoom account that belongs to a certain org.
- * @typedef {Object} ZoomUser
- * @extends Resource
- * @property id - The Zoom-assigned user ID.
- * @property email - The email address used with the Zoom user account.
- * @property org - The ID of the TB org under which this Zoom user belongs.
- */
-export interface ZoomUser extends Resource {
-  id: string;
-  email: string;
-  org: string;
-}
-
-export function isZoomUser(json: unknown): json is ZoomUser {
-  if (!isJSON(json)) return false;
-  if (typeof json.id !== 'string') return false;
-  if (typeof json.email !== 'string') return false;
-  if (typeof json.org !== 'string') return false;
-  return true;
-}
-
 export type Subjects = { subjects: string[]; searches: string[] };
 
 export function isSubjects(json: unknown): json is Subjects {
@@ -142,6 +51,12 @@ export function isSubjects(json: unknown): json is Subjects {
   if (!isStringArray(json.searches)) return false;
   return true;
 }
+
+/**
+ * Various tags that are added to the Algolia users search during indexing (via
+ * the `firebase/functions/src/algolia.ts` GCP serverless function).
+ */
+export type Tag = 'not-vetted';
 
 /**
  * A user object (that is stored in their Firestore profile document by uID).
@@ -186,9 +101,13 @@ export type UserSearchHit = ObjectWithObjectID &
     availability: AvailabilitySearchHit;
   };
 
-export type UserJSON = Omit<UserInterface, 'availability' | 'verifications'> & {
+export type UserJSON = Omit<
+  UserInterface,
+  'availability' | 'verifications' | 'zooms'
+> & {
   availability: AvailabilityJSON;
   verifications: VerificationJSON[];
+  zooms: ZoomUserJSON[];
 };
 
 export function isUserJSON(json: unknown): json is UserJSON {
@@ -196,7 +115,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isJSON(json)) return false;
   if (!isStringArray(json.orgs)) return false;
   if (!(json.zooms instanceof Array)) return false;
-  if (json.zooms.some((zoom) => !isZoomUser(zoom))) return false;
+  if (json.zooms.some((zoom) => !isZoomUserJSON(zoom))) return false;
   if (!isAvailabilityJSON(json.availability)) return false;
   if (!isSubjects(json.mentoring)) return false;
   if (!isSubjects(json.tutoring)) return false;
@@ -318,10 +237,12 @@ export class User extends Account implements UserInterface {
   public static fromFirestore(snapshot: DocumentSnapshot): User {
     const userData: DocumentData | undefined = snapshot.data();
     if (userData) {
-      const { availability, ...rest } = userData;
+      const { availability, verifications, zooms, ...rest } = userData;
       return new User({
         ...rest,
         availability: Availability.fromFirestore(availability),
+        verifications: verificationsFromFirestore(verifications),
+        zooms: zoomsFromFirestore(zooms),
         ref: snapshot.ref,
         id: snapshot.id,
       });
@@ -333,12 +254,6 @@ export class User extends Account implements UserInterface {
     return new User();
   }
 
-  /**
-   * Converts a `User` object into a JSON-like format for adding to a
-   * Firestore document.
-   * @see {@link https://firebase.google.com/docs/firestore/manage-data/add-data#custom_objects}
-   * @see {@link https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter}
-   */
   public toFirestore(): DocumentData {
     return firestoreVals({
       ...super.toFirestore(),
@@ -348,20 +263,22 @@ export class User extends Account implements UserInterface {
   }
 
   public static fromJSON(json: UserJSON): User {
-    const { availability, verifications, ...rest } = json;
+    const { availability, verifications, zooms, ...rest } = json;
     return new User({
       ...rest,
       availability: Availability.fromJSON(availability),
-      verifications: verifications.map(verificationFromJSON),
+      verifications: verifications.map((v) => Verification.fromJSON(v)),
+      zooms: zooms.map((z) => ZoomUser.fromJSON(z)),
     });
   }
 
   public toJSON(): UserJSON {
-    const { availability, verifications, ref, token, ...rest } = this;
+    const { availability, verifications, zooms, ref, token, ...rest } = this;
     return {
       ...rest,
       availability: availability.toJSON(),
-      verifications: verifications.map(verificationToJSON),
+      verifications: verifications.map((v) => v.toJSON()),
+      zooms: zooms.map((z) => z.toJSON()),
     };
   }
 }

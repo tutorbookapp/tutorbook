@@ -12033,13 +12033,6 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"luxon@npm:^1.21.3":
-  version: 1.24.1
-  resolution: "luxon@npm:1.24.1"
-  checksum: 3e5a9599e1fb49d2b5e9c6f6d42ce4e4d05d785310785ac8a67ef2ccd26477dd123eb688057366330be847ef400bb2503f77ac26cb7560c09f32846c7973ee34
-  languageName: node
-  linkType: hard
-
 "make-dir@npm:^1.0.0":
   version: 1.3.0
   resolution: "make-dir@npm:1.3.0"
@@ -15232,19 +15225,6 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"rrule@npm:^2.6.6":
-  version: 2.6.6
-  resolution: "rrule@npm:2.6.6"
-  dependencies:
-    luxon: ^1.21.3
-    tslib: ^1.10.0
-  dependenciesMeta:
-    luxon:
-      optional: true
-  checksum: 6f81bc5e7385b58e86daa80d0d4bf8f979d51018e73d445625b06adbec6676149db0935a259ec3b8e231e27213c485a633b03eb67fb8972fc80b821111d77ac2
-  languageName: node
-  linkType: hard
-
 "rsvp@npm:^3.6.2":
   version: 3.6.2
   resolution: "rsvp@npm:3.6.2"
@@ -17093,7 +17073,6 @@ resolve@1.1.7:
     react-use-measure: ^2.0.1
     release: ^6.3.0
     rfdc: ^1.1.4
-    rrule: ^2.6.6
     sass: ^1.26.10
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.0

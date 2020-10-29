@@ -1,4 +1,9 @@
+import * as admin from 'firebase-admin';
+
 import { isDateJSON, isJSON } from 'lib/model/json';
+import construct from 'lib/model/construct';
+
+type Timestamp = admin.firestore.Timestamp;
 
 /**
  * The base interface for all of our data models.
@@ -6,7 +11,7 @@ import { isDateJSON, isJSON } from 'lib/model/json';
  * @property created - When the resource was first created.
  * @property updated - The last time the resource was updated.
  */
-export interface Resource {
+export interface ResourceInterface {
   created: Date;
   updated: Date;
 }
@@ -16,6 +21,11 @@ export interface ResourceJSON {
   updated: string;
 }
 
+export interface ResourceFirestore {
+  created: Timestamp;
+  updated: Timestamp;
+}
+
 export function isResourceJSON(json: unknown): json is ResourceJSON {
   if (!isJSON(json)) return false;
   if (!isDateJSON(json.created)) return false;
@@ -23,18 +33,33 @@ export function isResourceJSON(json: unknown): json is ResourceJSON {
   return true;
 }
 
-// TODO: Implement a class that has `toJSON` and `fromJSON` methods instead of
-// these helper functions.
-export function resourceToJSON(resource: Resource): ResourceJSON {
-  return {
-    created: resource.created.toJSON(),
-    updated: resource.updated.toJSON(),
-  };
-}
+export class Resource implements ResourceInterface {
+  public created: Date = new Date();
 
-export function resourceFromJSON(json: ResourceJSON): Resource {
-  return {
-    created: new Date(json.created),
-    updated: new Date(json.updated),
-  };
+  public updated: Date = new Date();
+
+  public constructor(resource: Partial<ResourceInterface> = {}) {
+    construct<ResourceInterface>(this, resource);
+  }
+
+  public toJSON(): ResourceJSON {
+    return {
+      created: this.created.toJSON(),
+      updated: this.updated.toJSON(),
+    };
+  }
+
+  public static fromJSON(json: ResourceJSON): Resource {
+    return new Resource({
+      created: new Date(json.created),
+      updated: new Date(json.updated),
+    });
+  }
+
+  public static fromFirestore(data: ResourceFirestore): Resource {
+    return new Resource({
+      created: data.created.toDate(),
+      updated: data.updated.toDate(),
+    });
+  }
 }

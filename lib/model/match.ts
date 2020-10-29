@@ -1,21 +1,15 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
-import { nanoid } from 'nanoid';
 import { v4 as uuid } from 'uuid';
 
 import {
   Availability,
+  AvailabilityFirestore,
   AvailabilityJSON,
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
-import {
-  Resource,
-  ResourceJSON,
-  isResourceJSON,
-  resourceFromJSON,
-  resourceToJSON,
-} from 'lib/model/resource';
+import { Venue, VenueFirestore, VenueJSON, isVenueJSON } from 'lib/model/venue';
 import { Aspect } from 'lib/model/aspect';
 import { User } from 'lib/model/user';
 import construct from 'lib/model/construct';
@@ -67,61 +61,6 @@ export function isPerson(json: unknown): json is Person {
   if (typeof json.handle !== 'string') return false;
   if (!(json.roles instanceof Array)) return false;
   if (json.roles.some((r) => !isRole(r))) return false;
-  return true;
-}
-
-/**
- * A venue for a tutoring or mentoring match to occur (e.g. Zoom or Jitsi).
- * @typedef {Object} Venue
- * @extends Resource
- * @property type - The type of venue (currently only Zoom or Jitsi).
- * @property url - The URL of the venue (right now, all venues are online and
- * thus have a definitive URL).
- */
-export interface BaseVenue extends Resource {
-  type: 'zoom' | 'jitsi';
-  url: string;
-}
-
-/**
- * An anonymous Jitsi video conferencing room. Jitsi is an open-source software
- * that has a room for every single Zoom meeting venue.
- * @typedef {Object} JitsiVenue
- * @extends BaseVenue
- */
-export interface JitsiVenue extends BaseVenue {
-  type: 'jitsi';
-}
-
-/**
- * A recurring, non-scheduled Zoom meeting venue.
- * @typedef {Object} ZoomVenue
- * @extends BaseVenue
- * @property id - The Zoom meeting ID.
- * @property invite - The Zoom meeting invitation (that includes the meeting
- * URL, telephony audio phone numbers, the meeting topic, etc).
- */
-export interface ZoomVenue extends BaseVenue {
-  type: 'zoom';
-  id: string;
-  invite: string;
-}
-
-export type Venue = ZoomVenue | JitsiVenue;
-export type VenueJSON =
-  | (Omit<ZoomVenue, keyof Resource> & ResourceJSON)
-  | (Omit<JitsiVenue, keyof Resource> & ResourceJSON);
-
-export function isVenueJSON(json: unknown): json is VenueJSON {
-  if (!isResourceJSON(json)) return false;
-  if (!isJSON(json)) return false;
-  if (typeof json.url !== 'string') return false;
-  if (json.type === 'zoom') {
-    if (typeof json.id !== 'string') return false;
-    if (typeof json.invite !== 'string') return false;
-  } else if (json.type !== 'jitsi') {
-    return false;
-  }
   return true;
 }
 
@@ -179,6 +118,15 @@ export type MatchSearchHit = ObjectWithObjectID &
     request?: MatchSearchHit;
   };
 
+export type MatchFirestore = Omit<
+  MatchInterface,
+  'times' | 'request' | 'venue'
+> & {
+  times?: AvailabilityFirestore;
+  request?: MatchFirestore;
+  venue: VenueFirestore;
+};
+
 export function isMatchJSON(json: unknown): json is MatchJSON {
   if (!isJSON(json)) return false;
   if (typeof json.status !== 'string') return false;
@@ -216,12 +164,7 @@ export class Match implements MatchInterface {
 
   public message = '';
 
-  public venue: Venue = {
-    type: 'jitsi',
-    url: `https://meet.jit.si/TB-${nanoid(10)}`,
-    created: new Date(),
-    updated: new Date(),
-  };
+  public venue: Venue = new Venue();
 
   public times?: Availability;
 
@@ -261,7 +204,7 @@ export class Match implements MatchInterface {
       ...rest,
       times: times ? times.toJSON() : undefined,
       request: request ? request.toJSON() : undefined,
-      venue: { ...venue, ...resourceToJSON(venue) },
+      venue: venue.toJSON(),
     };
   }
 
@@ -271,7 +214,7 @@ export class Match implements MatchInterface {
       ...rest,
       times: times ? Availability.fromJSON(times) : undefined,
       request: request ? Match.fromJSON(request) : undefined,
-      venue: { ...venue, ...resourceFromJSON(venue) },
+      venue: Venue.fromJSON(venue),
     });
   }
 
@@ -287,11 +230,12 @@ export class Match implements MatchInterface {
   public static fromFirestore(snapshot: DocumentSnapshot): Match {
     const matchData: DocumentData | undefined = snapshot.data();
     if (matchData) {
-      const { times, request, ...rest } = matchData;
+      const { times, request, venue, ...rest } = matchData;
       return new Match({
         ...rest,
         times: times ? Availability.fromFirestore(times) : undefined,
         request: request ? Match.fromJSON(request) : undefined,
+        venue: Venue.fromFirestore(venue),
         ref: snapshot.ref,
         id: snapshot.id,
       });

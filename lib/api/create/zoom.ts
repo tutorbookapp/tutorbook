@@ -1,31 +1,13 @@
 // TODO: Refactor this file (it's much too long right now for an API component)
 // and make `createZoom` throw `APIError`s.
 
-import { nanoid } from 'nanoid';
 import axios, { AxiosResponse } from 'axios';
 import generatePassword from 'password-generator';
 import to from 'await-to-js';
 
-import {
-  Aspect,
-  JitsiVenue,
-  Match,
-  Org,
-  UserWithRoles,
-  Venue,
-  ZoomUser,
-} from 'lib/model';
-import { db } from 'lib/api/firebase';
+import { Aspect, Match, Org, UserWithRoles, Venue, ZoomUser } from 'lib/model';
 import Utils from 'lib/utils';
-
-function getJitsi(): JitsiVenue {
-  return {
-    type: 'jitsi',
-    url: `https://meet.jit.si/TB-${nanoid(10)}`,
-    created: new Date(),
-    updated: new Date(),
-  };
-}
+import { db } from 'lib/api/firebase';
 
 /**
  * The Zoom meeting object returned by the Zoom Create Meeting REST API.
@@ -194,13 +176,11 @@ export default async function createZoom(
     );
     if (err) throw new Error(`${err.name} creating Zoom user: ${err.message}`);
     const { data } = res as AxiosResponse<ZoomUserRes>;
-    const zoomUser: ZoomUser = {
+    const zoomUser = new ZoomUser({
       org: org.id,
       id: data.id,
       email: data.email,
-      created: new Date(),
-      updated: new Date(),
-    };
+    });
     await db
       .collection('users')
       .doc(user.id)
@@ -238,14 +218,14 @@ export default async function createZoom(
   }
 
   // 4. Fallback to using Jitsi.
-  if (!meeting) return getJitsi();
+  if (!meeting) return new Venue();
 
-  return {
+  return new Venue({
     type: 'zoom',
     id: meeting.id,
     url: meeting.join_url,
     invite: '',
     created: new Date(meeting.created_at),
     updated: new Date(meeting.created_at),
-  };
+  });
 }

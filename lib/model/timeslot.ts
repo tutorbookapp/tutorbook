@@ -1,5 +1,4 @@
 import * as admin from 'firebase-admin';
-import { RRule } from 'rrule';
 
 import { isJSON } from 'lib/model/json';
 
@@ -106,29 +105,17 @@ export class Timeslot implements TimeslotInterface {
   }
 
   /**
-   * Under the hood, I'm using `rrule` to take advantage of the recurrance rules
-   * detailed in RFC 5545 to store timeslot data.
-   * @return The `RRule` that represents this timeslot's start time.
-   */
-  public get rrule(): RRule {
-    return new RRule({
-      ...RRule.parseString(this.recur),
-      dtstart: this.from,
-    });
-  }
-
-  /**
    * Returns whether or not this timeslot contains the given timeslot.
    * @param other - The timeslot to check is within this timeslot.
    * @return Whether the starting time of this timeslot is before the starting
    * time of the other timeslot AND the ending time of this timeslot is after
    * the ending time of the other timeslot.
+   * @todo Account for recurrance rules.
    */
   public contains(other: TimeslotInterface): boolean {
-    const closestFrom = this.rrule.before(other.from, true);
     return (
-      closestFrom.valueOf() <= other.from.valueOf() &&
-      closestFrom.valueOf() + this.duration >= other.to.valueOf()
+      this.from.valueOf() <= other.from.valueOf() &&
+      this.from.valueOf() + this.duration >= other.to.valueOf()
     );
   }
 

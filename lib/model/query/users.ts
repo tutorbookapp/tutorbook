@@ -2,8 +2,8 @@ import url from 'url';
 
 import { Availability, AvailabilityJSON } from 'lib/model/availability';
 import { Option, Query, QueryInterface } from 'lib/model/query/base';
-import { Check } from 'lib/model/user';
 import { Aspect } from 'lib/model/aspect';
+import { Check } from 'lib/model/verification';
 import construct from 'lib/model/construct';
 
 /**

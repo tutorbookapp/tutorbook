@@ -1,6 +1,7 @@
 import url from 'url';
 
-import { Check, Tag } from 'lib/model/user';
+import { Check } from 'lib/model/verification';
+import { Tag } from 'lib/model/user';
 import construct from 'lib/model/construct';
 
 export interface Option<T> {
