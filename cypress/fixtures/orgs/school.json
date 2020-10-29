@@ -27,6 +27,7 @@
   "profiles": ["name", "email", "phone", "bio", "subjects"],
   "domains": ["pausd.us", "pausd.org"],
   "aspects": ["tutoring"],
+  "zoom": null,
   "signup": {
     "en": {
       "tutoring": {

@@ -114,30 +114,27 @@ export default function plugins(
       ]);
       return null;
     },
-    async seed(overrides?: Overrides): Promise<null> {
+    async seed(overrides: Overrides = {}): Promise<null> {
       let matches: MatchJSON[] = [];
-      let users: UserJSON[] = [];
+      matches.push({ ...(match as MatchJSON), ...overrides.match });
+      if (overrides.match === null) delete matches[0];
+      matches = matches.filter(Boolean);
+
       let orgs: OrgJSON[] = [];
+      orgs.push({ ...(org as OrgJSON), ...overrides.org });
+      orgs.push({ ...(school as OrgJSON), ...overrides.school });
+      if (overrides.org === null) delete orgs[0];
+      if (overrides.school === null) delete orgs[1];
+      orgs = orgs.filter(Boolean);
 
-      if (overrides) {
-        matches.push({ ...(match as MatchJSON), ...overrides.match });
-        if (overrides.match === null) delete matches[0];
-        matches = matches.filter(Boolean);
-
-        orgs.push({ ...(org as OrgJSON), ...overrides.org });
-        orgs.push({ ...(school as OrgJSON), ...overrides.school });
-        if (overrides.org === null) delete orgs[0];
-        if (overrides.school === null) delete orgs[1];
-        orgs = orgs.filter(Boolean);
-
-        users.push({ ...(volunteer as UserJSON), ...overrides.volunteer });
-        users.push({ ...(student as UserJSON), ...overrides.student });
-        users.push({ ...(admin as UserJSON), ...overrides.admin });
-        if (overrides.volunteer === null) delete users[0];
-        if (overrides.student === null) delete users[1];
-        if (overrides.admin === null) delete users[2];
-        users = users.filter(Boolean);
-      }
+      let users: UserJSON[] = [];
+      users.push({ ...(volunteer as UserJSON), ...overrides.volunteer });
+      users.push({ ...(student as UserJSON), ...overrides.student });
+      users.push({ ...(admin as UserJSON), ...overrides.admin });
+      if (overrides.volunteer === null) delete users[0];
+      if (overrides.student === null) delete users[1];
+      if (overrides.admin === null) delete users[2];
+      users = users.filter(Boolean);
 
       const rconfig = { headers: await getHeaders(admin.id) };
 

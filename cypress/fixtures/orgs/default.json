@@ -35,6 +35,7 @@
   "profiles": ["name", "email", "bio", "subjects"],
   "domains": [],
   "aspects": ["mentoring", "tutoring"],
+  "zoom": null,
   "signup": {
     "en": {
       "mentoring": {
