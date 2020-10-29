@@ -63,6 +63,10 @@ export class ZoomUser extends Resource implements ZoomUserInterface {
     return new ZoomUser({ ...json, ...Resource.fromJSON(json) });
   }
 
+  public toFirestore(): ZoomUserFirestore {
+    return { ...this, ...super.toFirestore() };
+  }
+
   public static fromFirestore(data: ZoomUserFirestore): ZoomUser {
     return new ZoomUser({ ...data, ...Resource.fromFirestore(data) });
   }
