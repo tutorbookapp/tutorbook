@@ -219,11 +219,12 @@ export class Match implements MatchInterface {
   }
 
   public toFirestore(): DocumentData {
-    const { times, request, ref, id, ...rest } = this;
+    const { times, request, venue, ref, id, ...rest } = this;
     return firestoreVals({
       ...rest,
       times: times ? times.toFirestore() : undefined,
       request: request ? request.toFirestore() : undefined,
+      venue: venue.toFirestore(),
     });
   }
 

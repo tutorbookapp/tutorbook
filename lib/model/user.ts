@@ -258,6 +258,8 @@ export class User extends Account implements UserInterface {
     return firestoreVals({
       ...super.toFirestore(),
       availability: this.availability.toFirestore(),
+      verifications: this.verifications.map((v) => v.toFirestore()),
+      zooms: this.zooms.map((z) => z.toFirestore()),
       token: undefined,
     });
   }

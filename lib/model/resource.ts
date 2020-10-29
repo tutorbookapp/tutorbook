@@ -56,6 +56,13 @@ export class Resource implements ResourceInterface {
     });
   }
 
+  public toFirestore(): ResourceFirestore {
+    return {
+      created: (this.created as unknown) as Timestamp,
+      updated: (this.updated as unknown) as Timestamp,
+    };
+  }
+
   public static fromFirestore(data: ResourceFirestore): Resource {
     return new Resource({
       created: data.created.toDate(),

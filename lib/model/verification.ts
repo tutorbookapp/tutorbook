@@ -109,6 +109,10 @@ export class Verification extends Resource implements VerificationInterface {
     return new Verification({ ...json, ...Resource.fromJSON(json) });
   }
 
+  public toFirestore(): VerificationFirestore {
+    return { ...this, ...super.toFirestore() };
+  }
+
   public static fromFirestore(data: VerificationFirestore): Verification {
     return new Verification({ ...data, ...Resource.fromFirestore(data) });
   }

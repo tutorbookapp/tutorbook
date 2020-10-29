@@ -67,6 +67,10 @@ export class Venue extends Resource implements VenueInterface {
     return new Venue({ ...json, ...Resource.fromJSON(json) });
   }
 
+  public toFirestore(): VenueFirestore {
+    return { ...this, ...super.toFirestore() };
+  }
+
   public static fromFirestore(data: VenueFirestore): Venue {
     return new Venue({ ...data, ...Resource.fromFirestore(data) });
   }
