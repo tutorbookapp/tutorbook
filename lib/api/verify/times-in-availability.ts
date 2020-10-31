@@ -1,5 +1,4 @@
-import { Availability, Timeslot, User } from 'lib/model';
-import { APIError } from 'lib/api/error';
+import { Availability, User } from 'lib/model';
 
 /**
  * Verifies that the given times are included within the given people's
