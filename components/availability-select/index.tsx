@@ -111,7 +111,7 @@ export default function AvailabilitySelect({
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const onClick = useCallback(
     (event: MouseEvent) => {
-      const position = { x: event.pageX - x, y: event.pageY - y };
+      const position = { x: event.clientX - x, y: event.clientY - y };
       setData(
         (prev) => new Availability(...prev, getTimeslot(48, position, nanoid()))
       );
@@ -296,7 +296,23 @@ export default function AvailabilitySelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={data.toString()}
+        value={data
+          .map((t) => {
+            const showSecondDate =
+              t.from.getDate() !== t.to.getDate() ||
+              t.from.getMonth() !== t.to.getMonth() ||
+              t.from.getFullYear() !== t.to.getFullYear();
+            return `${t.from.toLocaleString(locale, {
+              weekday: 'long',
+              hour: 'numeric',
+              minute: 'numeric',
+            })} - ${t.to.toLocaleString(locale, {
+              weekday: showSecondDate ? 'long' : undefined,
+              hour: 'numeric',
+              minute: 'numeric',
+            })}`;
+          })
+          .join(', ')}
         className={styles.textField}
         onFocus={() => {
           if (onFocused) onFocused();
