@@ -35,6 +35,7 @@ export default async function createRequest(
     );
     const people = await getPeople(body.people);
 
+    // TODO: Update the time verification logic to account for recur rules.
     if (body.times) verifyTimesInAvailability(body.times, people);
     verifySubjectsCanBeTutored(body.subjects, people);
 
