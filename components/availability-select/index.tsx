@@ -1,23 +1,26 @@
-import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import {
+  FocusEvent,
   MouseEvent,
-  SyntheticEvent,
+  UIEvent,
   useCallback,
+  useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
-import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
+import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
-import { v4 as uuid } from 'uuid';
+import { dequal } from 'dequal';
+import { nanoid } from 'nanoid';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Availability, DayAlias, TCallback, Timeslot } from 'lib/model';
-import { getNextDateWithDay, getDateWithTime } from 'lib/utils/time';
+import { getDateWithTime, getNextDateWithDay } from 'lib/utils/time';
+import { useContinuous } from 'lib/hooks';
 
-import OptionRnd from './option-rnd';
 import TimeslotRnd from './timeslot-rnd';
 import { getTimeslot } from './utils';
 import styles from './availability-select.module.scss';
@@ -32,11 +35,10 @@ type OverridenProps =
 interface Props {
   value: Availability;
   onChange: TCallback<Availability>;
-  options?: Availability;
   renderToPortal?: boolean;
   focused?: boolean;
-  onFocused?: () => any;
-  onBlurred?: () => any;
+  onFocused?: () => void;
+  onBlurred?: () => void;
   className?: string;
 }
 
@@ -56,7 +58,6 @@ export type AvailabilitySelectProps = Omit<
 export default function AvailabilitySelect({
   value,
   onChange,
-  options = Availability.full(),
   renderToPortal,
   focused,
   onFocused,
@@ -66,16 +67,22 @@ export default function AvailabilitySelect({
 }: AvailabilitySelectProps): JSX.Element {
   const { lang: locale } = useTranslation();
 
-  const rowsRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const timeoutId = useRef<ReturnType<typeof setTimeout>>();
+  const headerRef = useRef<HTMLDivElement>(null);
+  const timesRef = useRef<HTMLDivElement>(null);
+  const rowsRef = useRef<HTMLDivElement>(null);
+  const ticking = useRef<boolean>(false);
 
   const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
+  // We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
+  // before toggling which ensures the user hasn't re-opened the menu.
+  // @see {@link https:bit.ly/2x9eM27}
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timeoutId = useRef<ReturnType<typeof setTimeout>>();
   useLayoutEffect(() => {
-    if (focused && inputRef.current) inputRef.current.focus();
+    if (focused) inputRef.current?.focus();
   }, [focused]);
 
   useLayoutEffect(() => {
@@ -83,37 +90,110 @@ export default function AvailabilitySelect({
     if (rowsRef.current && !scrolled) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, [scrolled, menuOpen]);
 
-  // We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
-  // before toggling which ensures the user hasn't re-opened the menu.
-  // @see {@link https:bit.ly/2x9eM27}
-  const openMenu = useCallback(() => {
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current);
-      timeoutId.current = undefined;
-    }
-    setMenuOpen(true);
-  }, []);
-  const closeMenu = useCallback(() => {
-    timeoutId.current = setTimeout(() => setMenuOpen(false), 0);
-  }, []);
+  const updateRemote = useCallback(
+    async (updated: Availability) => {
+      onChange(updated);
+    },
+    [onChange]
+  );
+  const { data, setData } = useContinuous(value, updateRemote);
+
+  // Ensure that all of the timeslots have valid React keys.
+  useEffect(() => {
+    setData((prev) => {
+      const ids = prev.map((t) => new Timeslot({ ...t, id: t.id || nanoid() }));
+      if (!dequal(ids, prev)) return new Availability(...ids);
+      return prev;
+    });
+  }, [value, setData]);
 
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const onClick = useCallback(
     (event: MouseEvent) => {
       const position = { x: event.pageX - x, y: event.pageY - y };
-      onChange(new Availability(...value, getTimeslot(48, position)));
+      setData(
+        (prev) => new Availability(...prev, getTimeslot(48, position, nanoid()))
+      );
     },
-    [x, y, onChange, value]
+    [x, y, setData]
   );
-  const onScroll = useCallback(() => setScrolled(true), []);
+  const onScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollLeft } = event.currentTarget;
+    if (!ticking.current) {
+      requestAnimationFrame(() => {
+        if (timesRef.current) timesRef.current.scrollTop = scrollTop;
+        if (headerRef.current) headerRef.current.scrollLeft = scrollLeft;
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
+    setScrolled(true);
+  }, []);
+
+  const weekdayCells = useMemo(
+    () =>
+      Array(7)
+        .fill(null)
+        .map((_, weekday) => (
+          <div key={nanoid()} className={styles.titleWrapper}>
+            <h2 className={styles.titleContent}>
+              <div className={styles.day}>
+                {getNextDateWithDay(weekday as DayAlias).toLocaleString(
+                  locale,
+                  {
+                    weekday: 'long',
+                  }
+                )}
+              </div>
+            </h2>
+          </div>
+        )),
+    [locale]
+  );
+  const timeCells = useMemo(
+    () =>
+      Array(24)
+        .fill(null)
+        .map((_, hour) => (
+          <div key={nanoid()} className={styles.timeWrapper}>
+            <span className={styles.timeLabel}>
+              {getDateWithTime(hour).toLocaleString(locale, {
+                hour: '2-digit',
+              })}
+            </span>
+          </div>
+        )),
+    [locale]
+  );
+  const headerCells = useMemo(
+    () =>
+      Array(7)
+        .fill(null)
+        .map(() => <div key={nanoid()} className={styles.headerCell} />),
+    []
+  );
+  const lineCells = useMemo(
+    () =>
+      Array(24)
+        .fill(null)
+        .map(() => <div key={nanoid()} className={styles.line} />),
+    []
+  );
+  const dayCells = useMemo(
+    () =>
+      Array(7)
+        .fill(null)
+        .map(() => <div key={nanoid()} className={styles.cell} />),
+    []
+  );
 
   return (
     <MenuSurfaceAnchor className={className}>
       <MenuSurface
+        open
         tabIndex={-1}
-        open={menuOpen}
-        onFocus={(event: SyntheticEvent<HTMLDivElement>) => {
+        onFocus={(event: FocusEvent<HTMLDivElement>) => {
           event.preventDefault();
           event.stopPropagation();
           if (inputRef.current) inputRef.current.focus();
@@ -122,101 +202,93 @@ export default function AvailabilitySelect({
         className={styles.menuSurface}
         renderToPortal={renderToPortal ? '#portal' : false}
       >
-        <div className={styles.headers}>
-          <div className={styles.space} />
-          {Array(7)
-            .fill(null)
-            .map((_, weekday) => (
-              <div key={weekday} className={styles.headerWrapper}>
-                <h2 className={styles.headerContent}>
-                  <div className={styles.day}>
-                    {getNextDateWithDay(weekday as DayAlias)
-                      .toLocaleString(locale, { weekday: 'long' })
-                      .substr(0, 3)}
-                  </div>
-                </h2>
-              </div>
-            ))}
-          <div className={styles.scroller} />
-        </div>
-        <div className={styles.headerCells}>
-          <div className={styles.space} />
-          {Array(7)
-            .fill(null)
-            .map(() => (
-              <div key={uuid()} className={styles.headerCell} />
-            ))}
-          <div className={styles.scroller} />
+        <div ref={headerRef} className={styles.headerWrapper}>
+          <div className={styles.headers}>
+            <div className={styles.space} />
+            {weekdayCells}
+            <div className={styles.scroller} />
+          </div>
+          <div className={styles.headerCells}>
+            <div className={styles.space} />
+            {headerCells}
+            <div className={styles.scroller} />
+          </div>
         </div>
         <div className={styles.gridWrapper}>
-          <ScrollSync>
-            <div className={styles.grid}>
-              <ScrollSyncPane>
-                <div className={styles.timesWrapper}>
-                  <div className={styles.times}>
-                    {Array(24)
-                      .fill(null)
-                      .map((_, hour) => (
-                        <div key={hour} className={styles.timeWrapper}>
-                          <span className={styles.timeLabel}>
-                            {getDateWithTime(hour).toLocaleString(locale, {
-                              hour: '2-digit',
-                            })}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </ScrollSyncPane>
-              <ScrollSyncPane>
-                <div
-                  className={styles.rowsWrapper}
-                  ref={rowsRef}
-                  onScroll={onScroll}
-                >
-                  <div className={styles.rows}>
-                    <div className={styles.lines}>
-                      {Array(24)
-                        .fill(null)
-                        .map(() => (
-                          <div key={uuid()} className={styles.line} />
-                        ))}
-                    </div>
-                    <div className={styles.space} />
-                    <div
-                      className={styles.cells}
-                      onClick={onClick}
-                      ref={cellsRef}
-                    >
-                      {options.map((timeslot: Timeslot) => (
-                        <OptionRnd key={uuid()} value={timeslot} />
-                      ))}
-                      {value.map((timeslot: Timeslot, idx: number) => (
-                        <TimeslotRnd
-                          key={uuid()}
-                          value={timeslot}
-                          onChange={(updated: Timeslot) => {
-                            onChange(
-                              new Availability(
-                                ...value.slice(0, idx),
-                                updated,
-                                ...value.slice(idx + 1)
-                              )
-                            );
-                          }}
-                        />
-                      ))}
-                      {Array(7)
-                        .fill(null)
-                        .map(() => (
-                          <div key={uuid()} className={styles.cell} />
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              </ScrollSyncPane>
+          <div className={styles.grid}>
+            <div className={styles.timesWrapper} ref={timesRef}>
+              <div className={styles.times}>{timeCells}</div>
             </div>
-          </ScrollSync>
+            <div
+              className={styles.rowsWrapper}
+              onScroll={onScroll}
+              ref={rowsRef}
+            >
+              <div className={styles.rows}>
+                <div className={styles.lines}>{lineCells}</div>
+                <div className={styles.space} />
+                <div className={styles.cells} onClick={onClick} ref={cellsRef}>
+                  {data.map((timeslot: Timeslot, origIdx: number) => (
+                    <TimeslotRnd
+                      key={timeslot.id || nanoid()}
+                      value={timeslot}
+                      onChange={(updated?: Timeslot) => {
+                        setData((prev) => {
+                          if (!updated)
+                            return new Availability(
+                              ...prev.slice(0, origIdx),
+                              ...prev.slice(origIdx + 1)
+                            );
+                          const avail = new Availability(
+                            ...prev.slice(0, origIdx),
+                            updated,
+                            ...prev.slice(origIdx + 1)
+                          ).sort();
+                          const idx = avail.findIndex(
+                            (t) => t.id === updated.id
+                          );
+                          // Contained within another timeslot.
+                          const last = avail[idx - 1];
+                          if (
+                            last &&
+                            last.from.getDay() === updated.from.getDay()
+                          ) {
+                            if (last.to.valueOf() >= updated.to.valueOf())
+                              return new Availability(
+                                ...avail.slice(0, idx),
+                                ...avail.slice(idx + 1)
+                              );
+                            // Overlapping with end of another timeslot.
+                            if (last.to.valueOf() >= updated.from.valueOf())
+                              return new Availability(
+                                ...avail.slice(0, idx - 1),
+                                new Timeslot({ ...last, to: updated.to }),
+                                ...avail.slice(idx + 1)
+                              );
+                          }
+                          // Overlapping with start of another timeslot.
+                          const next = avail[idx + 1];
+                          if (
+                            next &&
+                            next.from.getDay() === updated.from.getDay()
+                          ) {
+                            if (next.from.valueOf() <= updated.to.valueOf())
+                              return new Availability(
+                                ...avail.slice(0, idx),
+                                new Timeslot({ ...next, from: updated.from }),
+                                ...avail.slice(idx + 2)
+                              );
+                          }
+                          return avail;
+                        });
+                      }}
+                    />
+                  ))}
+                  {dayCells}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </MenuSurface>
       <TextField
@@ -224,15 +296,19 @@ export default function AvailabilitySelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={value.toString()}
+        value={data.toString()}
         className={styles.textField}
         onFocus={() => {
           if (onFocused) onFocused();
-          openMenu();
+          if (timeoutId.current) {
+            clearTimeout(timeoutId.current);
+            timeoutId.current = undefined;
+          }
+          setMenuOpen(true);
         }}
         onBlur={() => {
           if (onBlurred) onBlurred();
-          closeMenu();
+          timeoutId.current = setTimeout(() => setMenuOpen(false), 0);
         }}
       />
     </MenuSurfaceAnchor>
