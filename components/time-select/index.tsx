@@ -64,7 +64,7 @@ export default function TimeSelect({
   className,
   ...textFieldProps
 }: TimeSelectProps): JSX.Element {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useLayoutEffect(() => {
     if (focused) inputRef.current?.focus();
   }, [focused]);
@@ -74,16 +74,6 @@ export default function TimeSelect({
   // @see {@link https:bit.ly/2x9eM27}
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
-  const openMenu = useCallback(() => {
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current);
-      timeoutId.current = undefined;
-    }
-    setMenuOpen(true);
-  }, []);
-  const closeMenu = useCallback(() => {
-    timeoutId.current = setTimeout(() => setMenuOpen(false), 0);
-  }, []);
 
   const [ref, { width }] = useMeasure();
   const [timeslotSelectOpen, setTimeslotSelectOpen] = useState<boolean>(
@@ -245,11 +235,15 @@ export default function TimeSelect({
         className={styles.field}
         onFocus={() => {
           if (onFocused) onFocused();
-          openMenu();
+          if (timeoutId.current) {
+            clearTimeout(timeoutId.current);
+            timeoutId.current = undefined;
+          }
+          setMenuOpen(true);
         }}
         onBlur={() => {
           if (onBlurred) onBlurred();
-          closeMenu();
+          timeoutId.current = setTimeout(() => setMenuOpen(false), 0);
         }}
       />
     </MenuSurfaceAnchor>
