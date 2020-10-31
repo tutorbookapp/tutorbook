@@ -98,6 +98,57 @@ export default function AvailabilitySelect({
   );
   const { data, setData } = useContinuous(value, updateRemote);
 
+  const updateTimeslot = useCallback(
+    (origIdx: number, updated?: Timeslot) => {
+      setData((prev) => {
+        if (!updated)
+          return new Availability(
+            ...prev.slice(0, origIdx),
+            ...prev.slice(origIdx + 1)
+          );
+        let avail: Availability;
+        if (origIdx < 0) {
+          avail = new Availability(...prev, updated).sort();
+        } else {
+          avail = new Availability(
+            ...prev.slice(0, origIdx),
+            updated,
+            ...prev.slice(origIdx + 1)
+          ).sort();
+        }
+        const idx = avail.findIndex((t) => t.id === updated.id);
+        const last = avail[idx - 1];
+        if (last && last.from.getDay() === updated.from.getDay()) {
+          // Contained within another timeslot.
+          if (last.to.valueOf() >= updated.to.valueOf())
+            return new Availability(
+              ...avail.slice(0, idx),
+              ...avail.slice(idx + 1)
+            );
+          // Overlapping with end of another timeslot.
+          if (last.to.valueOf() >= updated.from.valueOf())
+            return new Availability(
+              ...avail.slice(0, idx - 1),
+              new Timeslot({ ...last, to: updated.to }),
+              ...avail.slice(idx + 1)
+            );
+        }
+        const next = avail[idx + 1];
+        if (next && next.from.getDay() === updated.from.getDay()) {
+          // Overlapping with start of another timeslot.
+          if (next.from.valueOf() <= updated.to.valueOf())
+            return new Availability(
+              ...avail.slice(0, idx),
+              new Timeslot({ ...next, from: updated.from }),
+              ...avail.slice(idx + 2)
+            );
+        }
+        return avail;
+      });
+    },
+    [setData]
+  );
+
   // Ensure that all of the timeslots have valid React keys.
   useEffect(() => {
     setData((prev) => {
@@ -112,12 +163,14 @@ export default function AvailabilitySelect({
   const onClick = useCallback(
     (event: MouseEvent) => {
       const position = { x: event.clientX - x, y: event.clientY - y };
-      setData(
-        (prev) => new Availability(...prev, getTimeslot(48, position, nanoid()))
-      );
+      updateTimeslot(-1, getTimeslot(48, position, nanoid()));
     },
-    [x, y, setData]
+    [x, y, updateTimeslot]
   );
+
+  // Sync the scroll position of the main cell grid and the static headers. This
+  // was inspired by the way that Google Calendar's UI is currently setup.
+  // @see {@link https://mzl.la/35OIC9y}
   const onScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollLeft } = event.currentTarget;
     if (!ticking.current) {
@@ -232,56 +285,7 @@ export default function AvailabilitySelect({
                     <TimeslotRnd
                       key={timeslot.id || nanoid()}
                       value={timeslot}
-                      onChange={(updated?: Timeslot) => {
-                        setData((prev) => {
-                          if (!updated)
-                            return new Availability(
-                              ...prev.slice(0, origIdx),
-                              ...prev.slice(origIdx + 1)
-                            );
-                          const avail = new Availability(
-                            ...prev.slice(0, origIdx),
-                            updated,
-                            ...prev.slice(origIdx + 1)
-                          ).sort();
-                          const idx = avail.findIndex(
-                            (t) => t.id === updated.id
-                          );
-                          // Contained within another timeslot.
-                          const last = avail[idx - 1];
-                          if (
-                            last &&
-                            last.from.getDay() === updated.from.getDay()
-                          ) {
-                            if (last.to.valueOf() >= updated.to.valueOf())
-                              return new Availability(
-                                ...avail.slice(0, idx),
-                                ...avail.slice(idx + 1)
-                              );
-                            // Overlapping with end of another timeslot.
-                            if (last.to.valueOf() >= updated.from.valueOf())
-                              return new Availability(
-                                ...avail.slice(0, idx - 1),
-                                new Timeslot({ ...last, to: updated.to }),
-                                ...avail.slice(idx + 1)
-                              );
-                          }
-                          // Overlapping with start of another timeslot.
-                          const next = avail[idx + 1];
-                          if (
-                            next &&
-                            next.from.getDay() === updated.from.getDay()
-                          ) {
-                            if (next.from.valueOf() <= updated.to.valueOf())
-                              return new Availability(
-                                ...avail.slice(0, idx),
-                                new Timeslot({ ...next, from: updated.from }),
-                                ...avail.slice(idx + 2)
-                              );
-                          }
-                          return avail;
-                        });
-                      }}
+                      onChange={(updated) => updateTimeslot(origIdx, updated)}
                     />
                   ))}
                   {dayCells}
