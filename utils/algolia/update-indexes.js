@@ -1,9 +1,15 @@
 const path = require('path');
+const dotenv = require('dotenv');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+const env = process.env.NODE_ENV || 'test';
+console.log(`Loading ${env} environment variables...`);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}`) });
+dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}.local`) });
 
 const client = require('algoliasearch')(
-  process.env.ALGOLIA_APP_ID,
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
   process.env.ALGOLIA_ADMIN_KEY
 );
 const to = require('await-to-js').default;
@@ -12,7 +18,11 @@ const fs = require('fs');
 
 const subjects = async (id) => {
   const index = client.initIndex(id);
-  await index.clearObjects();
+  const [err] = await to(index.clearObjects());
+  if (err) {
+    console.error(`${err.name} clearing index (${id}):`, err);
+    debugger;
+  }
   index.setSettings({
     attributesForFaceting: ['filterOnly(grades)', 'filterOnly(name)'],
   });
@@ -28,18 +38,17 @@ const subjects = async (id) => {
       return subject;
     })
     .filter((subject) => !!subject.name);
-  const [err, res] = await to(
+  const [e, res] = await to(
     index.saveObjects(subjects, {
       autoGenerateObjectIDIfNotExist: true,
     })
   );
-  if (err) {
-    console.error(`[ERROR] While saving ${id}:`, err);
+  if (e) {
+    console.error(`${e.name} updating index (${id}):`, e);
     debugger;
   }
 };
 
-subjects('tutoring');
 subjects('mentoring');
 
 const langs = async () => {
