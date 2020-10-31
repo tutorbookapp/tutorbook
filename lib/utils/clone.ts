@@ -11,7 +11,7 @@ import {
 const deepClone = rfdc();
 
 function cloneTime(time: Timeslot): Timeslot {
-  return new Timeslot(time.from, time.to, time.recur);
+  return new Timeslot(deepClone(time));
 }
 
 function cloneTimes(times: Availability): Availability {

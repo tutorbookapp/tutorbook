@@ -71,7 +71,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
         while (start.valueOf() > end.valueOf()) {
           end = new Date(end.valueOf() + 86400000 * 7);
         }
-        full.push(new Timeslot(start, end));
+        full.push(new Timeslot({ from: start, to: end }));
       });
     return full;
   }
@@ -127,7 +127,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * are no timeslots that overlap with the given timeslot.
    */
   public remove(timeslot: Timeslot): void {
-    const a = new Timeslot(timeslot.from, timeslot.to, timeslot.recur);
+    const a = new Timeslot(timeslot);
     const updated = new Availability();
     const aFrom = a.from.valueOf();
     const aTo = a.to.valueOf();
@@ -141,14 +141,14 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
         // - B's close time is before A's close time AND;
         // - B's close time is after A's open time.
         // Adjust B such that its close time is equal to A's open time.
-        updated.push(new Timeslot(b.from, new Date(aFrom), b.recur));
+        updated.push(new Timeslot({ ...b, to: new Date(aFrom) }));
       } else if (bTo > aTo && bFrom < aTo && bFrom > aFrom) {
         // 2. If (B's open time is contained w/in A; opposite of scenario #1):
         // - B's close time is after A's close time AND;
         // - B's open time is before A's close time AND;
         // - B's open time is after A's open time.
         // Adjust B such that its open time is equal to A's close time.
-        updated.push(new Timeslot(new Date(aTo), b.to, b.recur));
+        updated.push(new Timeslot({ ...b, from: new Date(aTo) }));
       } else if (a.contains(b)) {
         // 3. If (A contains B):
         // - B's open time is after A's open time AND;
@@ -161,8 +161,18 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
         // Split B into two timeslots (i.e. essentially cutting out A):
         // - One timeslot will be `{ from: B.from, to: A.from }`
         // - The other timeslot will be `{ from: A.to, to: B.to }`
-        updated.push(new Timeslot(new Date(bFrom), new Date(aFrom)));
-        updated.push(new Timeslot(new Date(aTo), new Date(bTo)));
+        updated.push(
+          new Timeslot({
+            from: new Date(bFrom),
+            to: new Date(aFrom),
+          })
+        );
+        updated.push(
+          new Timeslot({
+            from: new Date(aTo),
+            to: new Date(bTo),
+          })
+        );
       } else if (a.equalTo(b)) {
         // 5. If B and A are equal, we just remove B altogether (by not adding
         // it to `updated`).
