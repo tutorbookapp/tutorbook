@@ -191,8 +191,8 @@ export default function AvailabilitySelect({
   return (
     <MenuSurfaceAnchor className={className}>
       <MenuSurface
-        open
         tabIndex={-1}
+        open={menuOpen}
         onFocus={(event: FocusEvent<HTMLDivElement>) => {
           event.preventDefault();
           event.stopPropagation();

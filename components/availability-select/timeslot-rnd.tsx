@@ -1,4 +1,4 @@
-import { DraggableData, Position, ResizableDelta, Rnd } from 'react-rnd';
+import { DraggableData, Position, Props, ResizableDelta } from 'react-rnd';
 import {
   ElementRef,
   MouseEvent as ReactMouseEvent,
@@ -9,12 +9,15 @@ import {
 } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import { ResizeDirection } from 're-resizable';
+import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
 import { TCallback, Timeslot } from 'lib/model';
 
 import { WIDTH, getHeight, getPosition, getTimeslot } from './utils';
 import styles from './timeslot-rnd.module.scss';
+
+const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
 interface TimeslotRndProps {
   value: Timeslot;
