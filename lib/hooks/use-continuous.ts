@@ -24,7 +24,7 @@ interface ContinuousProps<T> {
  * @todo Find some way to skip the initial update (when the `data` state is what
  * we just fetched from our back-end API).
  */
-export default function useContinuous<T extends { id: string }>(
+export default function useContinuous<T>(
   initialData: T,
   updateRemote: (data: T) => Promise<T | void>,
   updateLocal?: (data: T) => Promise<void>,
@@ -44,9 +44,9 @@ export default function useContinuous<T extends { id: string }>(
     } else {
       setError(undefined);
       setRetryCount(0);
-      if (!dequal(res, data)) {
-        lastReceivedResponse.current = res as T;
-        setData(res as T);
+      if (res && !dequal(res, data)) {
+        lastReceivedResponse.current = res;
+        setData(res);
       }
     }
   }, [updateRemote, data]);
@@ -65,7 +65,7 @@ export default function useContinuous<T extends { id: string }>(
 
   useEffect(() => {
     // Don't update remote data for unidentified resource.
-    if (!data.id) return;
+    if (((data as unknown) as { id: string })?.id === '') return;
     // Don't update remote with the response the remote sent us.
     if (dequal(lastReceivedResponse.current, data)) return;
     // Update the remote data after a period of no change.
@@ -77,7 +77,7 @@ export default function useContinuous<T extends { id: string }>(
 
   useEffect(() => {
     // Immediately mutate local data.
-    if (data.id && updateLocal) {
+    if (((data as unknown) as { id: string })?.id !== '' && updateLocal) {
       void updateLocal(data);
     }
   }, [updateLocal, data]);
