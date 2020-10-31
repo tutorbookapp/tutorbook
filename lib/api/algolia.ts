@@ -18,9 +18,9 @@ const client = algoliasearch(algoliaId, algoliaKey);
 function getIdxTimes(times: Availability): AvailabilitySearchHit {
   return Array.from(
     times.map((time) => ({
+      ...time,
       from: time.from.valueOf(),
       to: time.to.valueOf(),
-      recur: time.recur,
     }))
   );
 }
