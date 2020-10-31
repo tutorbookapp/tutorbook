@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 
+import construct from 'lib/model/construct';
 import { isJSON } from 'lib/model/json';
 
 /**
@@ -39,19 +40,22 @@ type Timestamp = admin.firestore.Timestamp;
 /**
  * A timeslot is a window of time and provides all the necessary scheduling data
  * for any scenario.
- * @property from - The start time and date of this timeslot (typically
- * represented by a `Date`, `Timestamp`, or UTC date string).
- * @property to - The end time and date of this timeslot (represented in the
- * same format as the `from` property).
+ * @property id - A unique identifier for this timeslot (used as React keys and
+ * thus only stored client-side as we have no use for this on our server).
  * @property [recur] - The recurrance of this timeslot as specified in
  * [RFC 5545]{@link https://tools.ietf.org/html/rfc5545#section-3.8.5}. The
  * DTSTART is ignored as it should always be the `from` value. Default value is
  * always weekly.
+ * @property from - The start time and date of this timeslot (typically
+ * represented by a `Date`, `Timestamp`, or UTC date string).
+ * @property to - The end time and date of this timeslot (represented in the
+ * same format as the `from` property).
  */
 export interface TimeslotBase<T> {
+  id: string;
+  recur: string;
   from: T;
   to: T;
-  recur: string;
 }
 
 /**
@@ -84,15 +88,21 @@ export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
 }
 
 export class Timeslot implements TimeslotInterface {
+  public id = '';
+
+  public recur = 'RRULE:FREQ=WEEKLY';
+
+  public from: Date = new Date();
+
+  public to: Date = new Date();
+
   /**
    * Constructor that takes advantage of Typescript's shorthand assignment.
    * @see {@link https://bit.ly/2XjNmB5}
    */
-  public constructor(
-    public from: Date,
-    public to: Date,
-    public recur: string = 'RRULE:FREQ=WEEKLY'
-  ) {}
+  public constructor(timeslot: Partial<TimeslotInterface> = {}) {
+    construct<TimeslotInterface>(this, timeslot);
+  }
 
   /**
    * @return The duration of this timeslot in milliseconds.
@@ -163,7 +173,11 @@ export class Timeslot implements TimeslotInterface {
   }
 
   public static fromFirestore(data: TimeslotFirestore): Timeslot {
-    return new Timeslot(data.from.toDate(), data.to.toDate(), data.recur);
+    return new Timeslot({
+      ...data,
+      from: data.from.toDate(),
+      to: data.to.toDate(),
+    });
   }
 
   public toJSON(): TimeslotJSON {
@@ -172,11 +186,19 @@ export class Timeslot implements TimeslotInterface {
   }
 
   public static fromJSON(json: TimeslotJSON): Timeslot {
-    return new Timeslot(new Date(json.from), new Date(json.to), json.recur);
+    return new Timeslot({
+      ...json,
+      from: new Date(json.from),
+      to: new Date(json.to),
+    });
   }
 
   public static fromSearchHit(hit: TimeslotSearchHit): Timeslot {
-    return new Timeslot(new Date(hit.from), new Date(hit.to), hit.recur);
+    return new Timeslot({
+      ...hit,
+      from: new Date(hit.from),
+      to: new Date(hit.to),
+    });
   }
 
   public toURLParam(): string {
@@ -185,10 +207,11 @@ export class Timeslot implements TimeslotInterface {
 
   public static fromURLParam(param: string): Timeslot {
     const params: URLSearchParams = new URLSearchParams(param);
-    return new Timeslot(
-      new Date(params.get('from') as string),
-      new Date(params.get('to') as string),
-      params.get('recur') || undefined
-    );
+    return new Timeslot({
+      from: new Date(params.get('from') as string),
+      to: new Date(params.get('to') as string),
+      recur: params.get('recur') || undefined,
+      id: params.get('id') || undefined,
+    });
   }
 }

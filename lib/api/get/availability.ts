@@ -41,7 +41,7 @@ export function getTimeslots(
   let from = roundStartTime(start, interval);
   while (from.valueOf() <= end.valueOf() - duration * 6e4) {
     const to = new Date(from.valueOf() + duration * 6e4);
-    timeslots.push(new Timeslot(from, to));
+    timeslots.push(new Timeslot({ from, to }));
     from = new Date(from.valueOf() + interval * 6e4);
   }
   return timeslots;
@@ -65,8 +65,8 @@ export default async function getAvailability(
 ): Promise<Availability> {
   const interval = 15;
   const duration = 30;
-  const days = getDaysInMonth(month, year);
-  const offset = new Date(year, month, 1).getDay();
+  const daysInMonth = getDaysInMonth(month, year);
+  const weekdayOffset = new Date(year, month, 1).getDay();
 
   // 1. Start with a baseline weekly recurring availability.
   const { availability: baseline } = await getUser(uid);
@@ -89,13 +89,13 @@ export default async function getAvailability(
       const toMins = to.getMinutes();
       // 4. Clone those weekly recurring timeslots into the month's date range.
       let date = 1;
-      while (date <= days) {
-        if (((date + offset) % 7) - 1 === weekday)
+      while (date <= daysInMonth) {
+        if (((date + weekdayOffset) % 7) - 1 === weekday)
           timeslots.push(
-            new Timeslot(
-              new Date(year, month, date, fromHrs, fromMins),
-              new Date(year, month, date, toHrs, toMins)
-            )
+            new Timeslot({
+              from: new Date(year, month, date, fromHrs, fromMins),
+              to: new Date(year, month, date, toHrs, toMins),
+            })
           );
         date += 1;
       }
