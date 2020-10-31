@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 
 const env = process.env.NODE_ENV || 'test';
 console.log(`Loading ${env} environment variables...`);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}`) });
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}.local`) });
 
@@ -383,3 +385,67 @@ const updateUser = async (uid) => {
       userJSON
     );
 };
+
+const createOrg = async (org) => {
+  const endpoint =
+    'https://covid-tutoring-git-filters.tutorbook.now.sh/api/orgs';
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const [err] = await to(axios.post(endpoint, org, { headers }));
+  if (err) console.log('Error creating org:', err);
+};
+
+const createUser = async (user) => {
+  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const [err] = await to(axios.post(endpoint, user));
+  if (err) console.log('Error creating user:', err);
+};
+
+createOrg({
+  id: 'paly',
+  name: 'Paly High School',
+  photo: '',
+  email: 'palyarc@pausd.org',
+  phone: '+16503293701',
+  bio:
+    "Paly High School's Peer Tutoring Center is a welcoming place for all students to receive tutoring help, collaborate with other students, study quietly, and borrow books.",
+  socials: [
+    {
+      type: 'website',
+      url: 'https://www.paly.net/learning/peer-tutoring-center',
+    },
+    {
+      type: 'instagram',
+      url: 'https://www.instagram.com/palyasb',
+    },
+    {
+      type: 'linkedin',
+      url: 'https://www.linkedin.com/school/palo-alto-high-school/about/',
+    },
+    {
+      type: 'facebook',
+      url:
+        'https://www.facebook.com/pages/Palo%20Alto%20High%20School/112734332072619/',
+    },
+  ],
+  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
+  profiles: ['name', 'email', 'phone', 'bio', 'subjects'],
+  domains: ['pausd.us', 'pausd.org'],
+  aspects: ['tutoring'],
+  zoom: null,
+  signup: {
+    en: {
+      tutoring: {
+        body:
+          "We encourage AP students and others who feel competent to tutor specific subjects by filling out the form below. Once you've been matched with a student who has the same availability, you'll receive an email notification and will start meeting with your student via Zoom.",
+        header: "Become a peer tutor at Paly's Tutoring Center",
+      },
+    },
+  },
+  home: {
+    en: {
+      body:
+        'Students are invited to simply click on the "Search Tutors" button, filter by subjects and availability, and request a qualified peer or adult volunteer. Most students meet once or twice a week with their tutors. Food is allowed in the room, so lunchtime is popular!',
+      header: 'How to get a tutor',
+    },
+  },
+});
