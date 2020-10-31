@@ -10,7 +10,7 @@ $cell-width: 100px;
 }
 
 .menuSurface {
-  max-width: 500px;
+  max-width: min(#{config.$default-width}, calc(-32px + 100vw));
   overflow: hidden;
   display: flex;
   visibility: hidden;
