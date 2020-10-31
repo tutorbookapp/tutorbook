@@ -14512,17 +14512,6 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"react-scroll-sync@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "react-scroll-sync@npm:0.8.0"
-  peerDependencies:
-    prop-types: 15.x
-    react: 0.14.x || 15.x || 16.x
-    react-dom: 0.14.x || 15.x || 16.x
-  checksum: 634c2e9f769da8ececb9ca7914d8a8b5979cf9eb92e18c4bd4ffbed2a4f912a2085c0f6d52958b18b3ed13f120d82c75237f69bfab46121ad707616b62362873
-  languageName: node
-  linkType: hard
-
 "react-spring@npm:^8.0.27":
   version: 8.0.27
   resolution: "react-spring@npm:8.0.27"
@@ -17067,7 +17056,6 @@ resolve@1.1.7:
     react: ^16.13.1
     react-dom: ^16.13.1
     react-rnd: ^10.2.1
-    react-scroll-sync: ^0.8.0
     react-spring: ^8.0.27
     react-test-renderer: ^16.13.1
     react-use-measure: ^2.0.1

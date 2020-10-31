@@ -7,18 +7,19 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { IconButton } from '@rmwc/icon-button';
 import { ResizeDirection } from 're-resizable';
 import useTranslation from 'next-translate/useTranslation';
 
 import { TCallback, Timeslot } from 'lib/model';
 
-import { getHeight, getPosition, getTimeslot } from './utils';
+import { WIDTH, getHeight, getPosition, getTimeslot } from './utils';
 import styles from './timeslot-rnd.module.scss';
 
 interface TimeslotRndProps {
   value: Timeslot;
   width?: number;
-  onChange: TCallback<Timeslot>;
+  onChange: TCallback<Timeslot | undefined>;
 }
 
 /**
@@ -31,7 +32,7 @@ interface TimeslotRndProps {
 export default function TimeslotRnd({
   value,
   onChange,
-  width = 82,
+  width = WIDTH,
 }: TimeslotRndProps): JSX.Element {
   const { lang: locale } = useTranslation();
 
@@ -43,11 +44,12 @@ export default function TimeslotRnd({
   const position = useMemo(() => getPosition(value, width), [value, width]);
   const height = useMemo(() => getHeight(value), [value]);
 
+  const remove = useCallback(() => onChange(undefined), [onChange]);
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
-      onChange(getTimeslot(newHeight, newPosition, width));
+      onChange(getTimeslot(newHeight, newPosition, value.id, width));
     },
-    [onChange, width]
+    [width, onChange, value.id]
   );
 
   const onClick = useCallback((e: ReactMouseEvent) => e.stopPropagation(), []);
@@ -92,6 +94,7 @@ export default function TimeslotRnd({
     <Rnd
       className={styles.timeslot}
       position={position}
+      minHeight={12 * 4}
       size={{ width: width - 12, height }}
       onResizeStop={onResizeStop}
       onResize={onResize}
@@ -111,13 +114,23 @@ export default function TimeslotRnd({
         topRight: false,
       }}
     >
-      {`${value.from.toLocaleString(locale, {
-        hour: '2-digit',
-        minute: '2-digit',
-      })} - ${value.to.toLocaleString(locale, {
-        hour: '2-digit',
-        minute: '2-digit',
-      })}`}
+      <div className={styles.wrapper}>
+        <IconButton className={styles.btn} icon='close' onClick={remove} />
+        <div className={styles.content}>
+          <div>
+            {value.from.toLocaleString(locale, {
+              hour: 'numeric',
+              minute: 'numeric',
+            })}
+          </div>
+          <div>
+            {value.to.toLocaleString(locale, {
+              hour: 'numeric',
+              minute: 'numeric',
+            })}
+          </div>
+        </div>
+      </div>
     </Rnd>
   );
 }

@@ -1,12 +1,17 @@
 @use 'sass:map';
 @use 'sass:color';
 @use 'styles/config';
+@use 'styles/typography';
+
+$cell-width: 100px;
 
 .textField {
   width: 100%;
 }
 
 .menuSurface {
+  max-width: 500px;
+  overflow: hidden;
   display: flex;
   visibility: hidden;
   flex-direction: column;
@@ -18,42 +23,41 @@
   }
 }
 
+.headerWrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
 .headers {
   flex: none;
   display: flex;
-  overflow: hidden;
 
   .space {
-    min-width: 40px + 9px;
+    min-width: $cell-width / 2 + 9px;
     flex: none;
   }
 
-  .headerWrapper {
-    width: 81px;
-    min-width: 81px;
+  .titleWrapper {
+    width: $cell-width + 1px;
+    min-width: $cell-width + 1px;
     flex: 1 0 auto;
     overflow: hidden;
     box-sizing: border-box;
     display: flex;
 
-    .headerContent {
+    .titleContent {
       margin: 0;
       text-align: center;
       width: 100%;
 
       .day {
+        @include typography.typography('body2');
+        font-weight: 500;
         line-height: 32px;
-        position: relative;
-        z-index: 2;
-        color: map.get(config.$colors, 'accents-5');
-        font-size: 11px;
-        font-weight: 600;
-        font-family: map.get(config.$fonts, 'sans');
-        letter-spacing: 0.8px;
-        margin-left: 0;
         margin-top: 8px;
-        text-indent: 0.8px;
-        text-transform: uppercase;
       }
 
       .num {
@@ -100,13 +104,13 @@
   flex: none;
 
   .space {
-    width: 40px + 9px;
+    width: $cell-width / 2 + 9px;
     flex: none;
   }
 
   .headerCell {
-    width: 81px;
-    min-width: 81px;
+    width: $cell-width + 1px;
+    min-width: $cell-width + 1px;
     flex: 1 0 auto;
     border-right: #dadce0 1px solid;
 
@@ -128,6 +132,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  max-height: calc(48px * 8 + 24px);
 
   .grid {
     display: flex;
@@ -151,24 +156,17 @@
       height: 2px;
       position: absolute;
       right: 16px;
-      width: 80px;
+      width: $cell-width;
       z-index: 505;
     }
 
     .timesWrapper {
-      overflow-y: scroll;
-      overflow-x: hidden;
-      -ms-scrollbar-width: none;
-      scrollbar-width: none;
+      overflow-y: hidden;
       flex: none;
       display: flex;
       align-items: flex-start;
-      min-width: 40px;
+      min-width: $cell-width / 2;
       height: auto;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
 
       &::before {
         background-image: linear-gradient(
@@ -179,7 +177,7 @@
         content: '';
         height: 2px;
         position: absolute;
-        width: 80px;
+        width: $cell-width;
         z-index: 505;
       }
 
@@ -257,19 +255,22 @@
           flex: 1 1 auto;
           box-sizing: border-box;
           position: relative;
-          $dark-strip: color.adjust(#dadce0, $lightness: 5%);
-          $light-strip: color.adjust($dark-strip, $lightness: 5%);
-          background: repeating-linear-gradient(
-            45deg,
-            $light-strip,
-            $light-strip 10px,
-            $dark-strip 10px,
-            $dark-strip 20px
-          );
+
+          &.checkered {
+            $dark-strip: color.adjust(#dadce0, $lightness: 5%);
+            $light-strip: color.adjust($dark-strip, $lightness: 5%);
+            background: repeating-linear-gradient(
+              45deg,
+              $light-strip,
+              $light-strip 10px,
+              $dark-strip 10px,
+              $dark-strip 20px
+            );
+          }
 
           .cell {
-            width: 81px;
-            min-width: 81px;
+            width: $cell-width + 1px;
+            min-width: $cell-width + 1px;
             flex: 1 0 auto;
             border-right: #dadce0 1px solid;
 

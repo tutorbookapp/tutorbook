@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { Timeslot } from 'lib/model';
 
-import { getHeight, getPosition } from './utils';
+import { WIDTH, getHeight, getPosition } from './utils';
 import styles from './option-rnd.module.scss';
 
 interface OptionRndProps {
@@ -12,7 +12,7 @@ interface OptionRndProps {
 
 export default function OptionRnd({
   value,
-  width = 82,
+  width = WIDTH,
 }: OptionRndProps): JSX.Element {
   const position = useMemo(() => getPosition(value, width), [value, width]);
   const height = useMemo(() => getHeight(value), [value]);

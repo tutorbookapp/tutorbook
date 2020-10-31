@@ -2,15 +2,35 @@
 @use 'styles/config';
 @use 'styles/typography';
 @use '@material/elevation';
+@use '@material/icon-button/_index.scss' as icon-button;
 
 .timeslot {
   @include elevation.elevation(4);
-  @include typography.typography('body2');
   background: map.get(config.$colors, 'primary');
   border-radius: 2px;
-  padding: 4px;
   font-weight: 500;
   font-size: 12px;
   color: white;
   z-index: 4;
+
+  .wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+
+    .btn {
+      @include icon-button.icon-size(12px);
+      @include icon-button.size(24px);
+      flex: none;
+      margin-left: -6px;
+    }
+
+    .content {
+      @include typography.typography('body2');
+      font-size: 12px;
+      line-height: 12px;
+    }
+  }
 }
