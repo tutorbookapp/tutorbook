@@ -65,7 +65,7 @@ export function getDateWithTime(
     minutes,
     seconds,
     milliseconds,
-    new Date('1970-01-01T00:00:00Z')
+    new Date(0)
   );
 }
 
