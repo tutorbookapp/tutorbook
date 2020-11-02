@@ -114,8 +114,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isAccountJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (!isStringArray(json.orgs)) return false;
-  if (!(json.zooms instanceof Array)) return false;
-  if (json.zooms.some((zoom) => !isZoomUserJSON(zoom))) return false;
+  if (!isArray(json.zooms, isZoomUserJSON)) return false;
   if (!isAvailabilityJSON(json.availability)) return false;
   if (!isSubjects(json.mentoring)) return false;
   if (!isSubjects(json.tutoring)) return false;

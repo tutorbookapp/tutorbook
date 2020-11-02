@@ -1,5 +1,3 @@
-import { Timeslot } from 'lib/model/timeslot';
-
 /**
  * Checks if a date occurs on the same date as another.
  * @param date - The base date to compare against.
@@ -12,16 +10,6 @@ export function sameDate(date: Date, other: Date): boolean {
     date.getMonth() === other.getMonth() &&
     date.getDate() === other.getDate()
   );
-}
-
-/**
- * Checks if a timeslot occurs on a given date.
- * @param timeslot - The timeslot to check.
- * @param date - The date which we expect the timeslot to be on.
- * @return Whether or not the timeslot occurs on the given date.
- */
-export function timeslotOnDate(timeslot: Timeslot, date: Date): boolean {
-  return sameDate(timeslot.from, date) && sameDate(timeslot.to, date);
 }
 
 /**

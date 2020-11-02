@@ -185,19 +185,6 @@ export class Match implements MatchInterface {
     return 'mentoring';
   }
 
-  public get nextStatus(): MatchStatus {
-    switch (this.status) {
-      case 'new':
-        return 'active';
-      case 'active':
-        return 'stale';
-      case 'stale':
-        return 'active';
-      default:
-        return 'active';
-    }
-  }
-
   public toJSON(): MatchJSON {
     const { times, request, venue, ...rest } = this;
     return {

@@ -95,6 +95,7 @@ export default function TimeslotRnd({
 
   return (
     <Rnd
+      data-cy='timeslot-rnd'
       className={styles.timeslot}
       position={position}
       minHeight={12 * 4}

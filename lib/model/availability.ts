@@ -7,7 +7,7 @@ import {
   TimeslotSearchHit,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import { getDate, timeslotOnDate } from 'lib/utils/time';
+import { getDate, sameDate } from 'lib/utils/time';
 
 /**
  * One's schedule contains all your booked timeslots (the inverse of one's
@@ -30,6 +30,16 @@ export function isAvailabilityJSON(json: unknown): json is AvailabilityJSON {
   if (!(json instanceof Array)) return false;
   if (json.some((t) => !isTimeslotJSON(t))) return false;
   return true;
+}
+
+/**
+ * Checks if a timeslot occurs on a given date.
+ * @param timeslot - The timeslot to check.
+ * @param date - The date which we expect the timeslot to be on.
+ * @return Whether or not the timeslot occurs on the given date.
+ */
+export function timeslotOnDate(timeslot: Timeslot, date: Date): boolean {
+  return sameDate(timeslot.from, date) && sameDate(timeslot.to, date);
 }
 
 /**

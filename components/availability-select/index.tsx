@@ -73,7 +73,6 @@ export default function AvailabilitySelect({
   const ticking = useRef<boolean>(false);
 
   const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
-  const [scrolled, setScrolled] = useState<boolean>(false);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   // We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
@@ -85,10 +84,10 @@ export default function AvailabilitySelect({
     if (focused) inputRef.current?.focus();
   }, [focused]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     // Scroll to 8:30am by default (assumes 48px per hour).
-    if (rowsRef.current && !scrolled) rowsRef.current.scrollTop = 48 * 8 + 24;
-  }, [scrolled, menuOpen]);
+    if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
+  }, []);
 
   const updateRemote = useCallback(
     async (updated: Availability) => {
@@ -181,7 +180,6 @@ export default function AvailabilitySelect({
       });
       ticking.current = true;
     }
-    setScrolled(true);
   }, []);
 
   const weekdayCells = useMemo(
@@ -254,6 +252,7 @@ export default function AvailabilitySelect({
         anchorCorner='bottomStart'
         className={styles.menuSurface}
         renderToPortal={renderToPortal ? '#portal' : false}
+        data-cy='availability-select-surface'
       >
         <div ref={headerRef} className={styles.headerWrapper}>
           <div className={styles.headers}>

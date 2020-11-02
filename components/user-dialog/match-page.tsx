@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import axios, { AxiosError, AxiosResponse } from 'axios';
 import { TextField, TextFieldHelperText } from '@rmwc/textfield';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { IconButton } from '@rmwc/icon-button';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
@@ -19,7 +19,7 @@ import UserSelect, { UserOption } from 'components/user-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import Result from 'components/search/result';
-import AvailabilitySelect from 'components/availability-select';
+import TimeSelect from 'components/time-select';
 
 import {
   Aspect,
@@ -28,6 +28,7 @@ import {
   MatchJSON,
   Person,
   RequestJSON,
+  Timeslot,
   User,
   UserJSON,
 } from 'lib/model';
@@ -61,7 +62,7 @@ export default memo(function MatchPage({
   const [students, setStudents] = useState<UserOption[]>([]);
   const [subjects, setSubjects] = useState<SubjectOption[]>([]);
   const [message, setMessage] = useState<string>('');
-  const [times, setTimes] = useState<Availability>(new Availability());
+  const [time, setTime] = useState<Timeslot>();
 
   const msgPlaceholder = useMemo(
     () =>
@@ -153,7 +154,6 @@ export default memo(function MatchPage({
       }),
     ];
     return new Match({
-      times,
       people,
       message,
       org: org?.id || 'default',
@@ -165,8 +165,9 @@ export default memo(function MatchPage({
         roles: [],
         handle: uuid(),
       },
+      times: time ? new Availability(time) : new Availability(),
     });
-  }, [value, user, students, subjects, message, times, org?.id]);
+  }, [value, user, students, subjects, message, time, org?.id]);
 
   const onSubmit = useCallback(
     async (event: FormEvent) => {
@@ -234,11 +235,12 @@ export default memo(function MatchPage({
             renderToPortal
             outlined
           />
-          <AvailabilitySelect
+          <TimeSelect
             required
+            uid={value.id}
             label={t('common:times')}
-            onChange={setTimes}
-            value={times}
+            onChange={setTime}
+            value={time}
             className={styles.field}
             renderToPortal
             outlined

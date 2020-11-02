@@ -1,3 +1,5 @@
+import { TimeslotJSON } from 'lib/model';
+
 import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Profile page', () => {
@@ -86,7 +88,7 @@ describe('Profile page', () => {
 
     cy.contains('Your phone number')
       .children('input')
-      .click({ force: true })
+      .click()
       .should('be.focused')
       .and('have.attr', 'type', 'tel');
 
@@ -113,6 +115,57 @@ describe('Profile page', () => {
           expect(src as string).to.not.equal(originalSrc as string);
         });
       });
+
+    cy.contains('What can you tutor?')
+      .children('.mdc-chip')
+      .should('have.length', volunteer.tutoring.subjects.length)
+      .as('tutoring-subjects');
+    volunteer.tutoring.subjects.forEach((subject: string, idx: number) => {
+      cy.get('@tutoring-subjects').eq(idx).should('contain', subject);
+    });
+
+    cy.contains('What are your fields of expertise?')
+      .children('.mdc-chip')
+      .should('have.length', volunteer.mentoring.subjects.length)
+      .as('mentoring-subjects');
+    volunteer.mentoring.subjects.forEach((subject: string, idx: number) => {
+      cy.get('@mentoring-subjects').eq(idx).should('contain', subject);
+    });
+
+    // TODO: Do we want to dynamically generate this from the static fixture?
+    const availabilityString =
+      'Sunday 9:00 AM - 12:00 PM, Sunday 1:00 PM - 4:00 PM, ' +
+      'Tuesday 1:00 PM - 4:00 PM, Friday 7:00 AM - 11:00 AM';
+
+    cy.contains('When are you available?')
+      .children('input')
+      .should('have.value', availabilityString)
+      .focus();
+    cy.getBySel('availability-select-surface').should('be.visible');
+    cy.getBySel('timeslot-rnd')
+      .should('have.length', volunteer.availability.length)
+      .and('be.visible')
+      .as('timeslots');
+
+    // Drag-and-drop the timeslots and assert that their content changes.
+    // @see {@link https://bit.ly/2TIuE3i}
+    volunteer.availability.forEach((timeslot: TimeslotJSON, idx: number) => {
+      const config = { hour: 'numeric', minute: 'numeric' };
+      const from = new Date(timeslot.from);
+      const to = new Date(timeslot.to);
+      cy.get('@timeslots')
+        .eq(idx)
+        .should('contain', from.toLocaleString('en', config))
+        .and('contain', to.toLocaleString('en', config))
+        .then((timeslotEl: JQuery<HTMLElement>) => {
+          // TODO: Make sure these drag-and-drop tests actually work.
+          const { x, y } = timeslotEl[0].getBoundingClientRect();
+          timeslotEl
+            .trigger('mousedown', { which: 1 })
+            .trigger('mousemove', { clientX: x, clientY: y + 200 })
+            .trigger('mouseup', { force: true });
+        });
+    });
 
     // Override the default clock so we can test the continuous updating system
     // that automatically saves changes after 5secs of no change.

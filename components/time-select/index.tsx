@@ -76,11 +76,9 @@ export default function TimeSelect({
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
 
   const [ref, { width }] = useMeasure();
-  const [timeslotSelectOpen, setTimeslotSelectOpen] = useState<boolean>(
-    !!value
-  );
+  const [selectOpen, setSelectOpen] = useState<boolean>(!!value);
   const props = useSpring({
-    width: timeslotSelectOpen ? width : 0,
+    width: selectOpen ? width : 0,
     tension: 200,
   });
 
@@ -143,12 +141,13 @@ export default function TimeSelect({
         className={styles.surface}
         anchorCorner='bottomStart'
         renderToPortal={renderToPortal ? '#portal' : false}
+        data-cy='time-select-surface'
       >
         <div className={styles.wrapper}>
           <div className={styles.dateSelect}>
             <div className={styles.pagination}>
-              <h6 className={styles.month}>
-                {selected.toLocaleDateString(locale, {
+              <h6 data-cy='selected-month' className={styles.month}>
+                {selected.toLocaleString(locale, {
                   month: 'long',
                   year: 'numeric',
                 })}
@@ -163,7 +162,7 @@ export default function TimeSelect({
                 .fill(null)
                 .map((_, idx) => (
                   <div className={styles.weekday} key={`day-${idx}`}>
-                    {getDate(idx as DayAlias, 0).toLocaleDateString(locale, {
+                    {getDate(idx as DayAlias, 0).toLocaleString(locale, {
                       weekday: 'narrow',
                     })}
                   </div>
@@ -175,6 +174,7 @@ export default function TimeSelect({
                 .map((_, idx) => (
                   <IconButton
                     type='button'
+                    data-cy='day-button'
                     icon={idx + 1}
                     key={`date-${idx}`}
                     disabled={!dateAvailability[idx]}
@@ -189,16 +189,17 @@ export default function TimeSelect({
                     }}
                     onClick={() => {
                       setDate(idx + 1);
-                      setTimeslotSelectOpen(true);
+                      setSelectOpen(true);
                     }}
+                    aria-selected={idx + 1 === selected.getDate()}
                   />
                 ))}
             </div>
           </div>
           <animated.div style={props} className={styles.timeslotSelectWrapper}>
             <div ref={ref} className={styles.timeslotSelect}>
-              <h6 className={styles.day}>
-                {selected.toLocaleDateString(locale, {
+              <h6 data-cy='selected-day' className={styles.day}>
+                {selected.toLocaleString(locale, {
                   weekday: 'long',
                   month: 'long',
                   day: 'numeric',
@@ -208,6 +209,7 @@ export default function TimeSelect({
                 {availabilityOnSelected.map((timeslot) => (
                   <Button
                     outlined
+                    data-cy='time-button'
                     className={styles.time}
                     key={timeslot.from.toJSON()}
                     label={timeslot.from.toLocaleString(locale, {

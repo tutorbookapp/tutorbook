@@ -1,13 +1,12 @@
-import admin from 'cypress/fixtures/users/admin.json';
-import student from 'cypress/fixtures/users/student.json';
-import volunteer from 'cypress/fixtures/users/volunteer.json';
+import { DayAlias, getDaysInMonth, getNextDateWithDay } from 'lib/utils/time';
+import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
 
+import admin from 'cypress/fixtures/users/admin.json';
+import match from 'cypress/fixtures/match.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
-
-import match from 'cypress/fixtures/match.json';
-
-import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
+import student from 'cypress/fixtures/users/student.json';
+import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 function waitForResults() {
   cy.wait('@list-users');
@@ -26,6 +25,93 @@ function waitForResults() {
     .and('contain', admin.bio)
     .find('img')
     .should('have.attr', 'src', admin.photo);
+}
+
+function selectTime() {
+  cy.contains('When would you like to meet?')
+    .children('input')
+    .as('time-input')
+    .focus();
+  cy.getBySel('time-select-surface').should('be.visible').as('select');
+
+  const now = new Date();
+  cy.get('@select')
+    .getBySel('selected-month')
+    .should(
+      'have.text',
+      now.toLocaleString('en', {
+        month: 'long',
+        year: 'numeric',
+      })
+    );
+  cy.get('@select')
+    .getBySel('day-button')
+    .as('days')
+    .should('have.length', getDaysInMonth(now.getMonth()))
+    .eq(now.getDay())
+    .should('have.attr', 'aria-selected', 'true')
+    .and('have.css', 'background-color', 'rgb(0, 112, 243)');
+
+  function dayIdx(day: DayAlias): number {
+    return getNextDateWithDay(day, now).getDate() - 1;
+  }
+
+  // Only the days when John Doe is available should be clickable.
+  cy.get('@days').eq(dayIdx(0)).should('not.be.disabled');
+  cy.get('@days').eq(dayIdx(1)).should('be.disabled');
+  cy.get('@days').eq(dayIdx(2)).should('not.be.disabled');
+  cy.get('@days').eq(dayIdx(3)).should('be.disabled');
+  cy.get('@days').eq(dayIdx(4)).should('be.disabled');
+  cy.get('@days').eq(dayIdx(5)).should('not.be.disabled');
+  cy.get('@days').eq(dayIdx(6)).should('be.disabled');
+
+  const selected = getNextDateWithDay(0, now);
+  selected.setHours(9, 0, 0, 0);
+  cy.get('@days')
+    .eq(selected.getDate() - 1)
+    .click()
+    .should('have.attr', 'aria-selected', 'true')
+    .and('have.css', 'background-color', 'rgb(0, 112, 243)');
+  cy.get('@select')
+    .getBySel('selected-day')
+    .should('be.visible')
+    .and(
+      'have.text',
+      selected.toLocaleString('en', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      })
+    );
+
+  // John Doe is available on Sundays 9am-12pm and 1-4pm. These are the times
+  // that should be shown to the user (30min timeslots in 15min intervals).
+  [
+    ['9:00 AM', '9:15 AM', '9:30 AM', '9:45 AM', '10:00 AM', '10:15 AM'],
+    ['10:30 AM', '10:45 AM', '11:00 AM', '11:15 AM', '11:30 AM', '1:00 PM'],
+    ['1:15 PM', '1:30 PM', '1:45 PM', '2:00 PM', '2:15 PM', '2:30 PM'],
+    ['2:45 PM', '3:00 PM', '3:15 PM', '3:30 PM'],
+  ]
+    .reduce((a, c) => a.concat(c))
+    .forEach((time: string, idx: number) => {
+      cy.get('@select')
+        .getBySel('time-button')
+        .eq(idx)
+        .should('have.text', time);
+    });
+  cy.get('@select').getBySel('time-button').first().click();
+  cy.get('@time-input')
+    .should('not.be.focused')
+    .and(
+      'have.value',
+      `${selected.toLocaleString('en', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      })} - 9:30 AM`
+    );
 }
 
 describe('Search page', () => {
@@ -82,8 +168,8 @@ describe('Search page', () => {
   });
 
   // TODO: Ping SendGrid to ensure that our email notifications were sent.
-  it.only('collects phone before sending matchs', () => {
-    cy.setup({ student: { phone: undefined } });
+  it('collects phone before sending matches', () => {
+    cy.setup({ student: { phone: '' } });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);
 
@@ -103,6 +189,7 @@ describe('Search page', () => {
       .and('have.attr', 'required');
 
     cy.get('@dialog').contains('Your phone number').type(student.phone);
+
     cy.get('@dialog')
       .contains('What would you like to learn?')
       .as('subject-input')
@@ -110,6 +197,9 @@ describe('Search page', () => {
     cy.contains('No subjects').should('be.visible');
     cy.get('@subject-input').type('{selectall}{del}Computer');
     cy.contains('li', 'Computer Science').click();
+
+    selectTime();
+
     cy.get('@dialog')
       .contains('What specifically do you need help with?')
       .type(match.message);
@@ -125,7 +215,7 @@ describe('Search page', () => {
     cy.getBySel('error').should('not.exist');
   });
 
-  it('signs users up and sends matchs', () => {
+  it('signs users up and sends matches', () => {
     cy.setup({ student: null, match: null });
     cy.logout();
     // TODO: Refactor the `search.spec.ts` into two specs (one for the default
@@ -175,6 +265,9 @@ describe('Search page', () => {
       .children('.mdc-chip')
       .should('have.length', 1)
       .and('contain', 'Artificial Intelligence');
+
+    selectTime();
+
     cy.contains('What specifically do you need help with?')
       .click()
       .should('have.class', 'mdc-text-field--focused')

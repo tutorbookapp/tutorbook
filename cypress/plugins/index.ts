@@ -69,12 +69,12 @@ const usersIdx = search.initIndex(`${partition}-users`);
 const matchesIdx = search.initIndex(`${partition}-matches`);
 
 export interface Overrides {
-  match?: MatchJSON | null;
-  org?: OrgJSON | null;
-  school?: OrgJSON | null;
-  volunteer?: UserJSON | null;
-  student?: UserJSON | null;
-  admin?: UserJSON | null;
+  match?: Partial<MatchJSON> | null;
+  org?: Partial<OrgJSON> | null;
+  school?: Partial<OrgJSON> | null;
+  volunteer?: Partial<UserJSON> | null;
+  student?: Partial<UserJSON> | null;
+  admin?: Partial<UserJSON> | null;
 }
 
 declare global {
