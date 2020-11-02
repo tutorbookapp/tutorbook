@@ -5,11 +5,11 @@ import axios from 'axios';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
+import AvailabilitySelect from 'components/availability-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
-import AvailabilitySelect from 'components/availability-select';
 import Title from 'components/title';
 
 import { Aspect, Availability, User, UserJSON } from 'lib/model';
