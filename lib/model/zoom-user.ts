@@ -3,6 +3,7 @@ import {
   ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
+  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
@@ -26,6 +27,8 @@ export type ZoomUserJSON = Omit<ZoomUserInterface, keyof Resource> &
   ResourceJSON;
 export type ZoomUserFirestore = Omit<ZoomUserInterface, keyof Resource> &
   ResourceFirestore;
+export type ZoomUserSearchHit = Omit<ZoomUserInterface, keyof Resource> &
+  ResourceSearchHit;
 
 export function isZoomUserJSON(json: unknown): json is ZoomUserJSON {
   if (!isResourceJSON(json)) return false;
@@ -69,5 +72,9 @@ export class ZoomUser extends Resource implements ZoomUserInterface {
 
   public static fromFirestore(data: ZoomUserFirestore): ZoomUser {
     return new ZoomUser({ ...data, ...Resource.fromFirestore(data) });
+  }
+
+  public static fromSearchHit(data: ZoomUserSearchHit): ZoomUser {
+    return new ZoomUser({ ...data, ...Resource.fromSearchHit(data) });
   }
 }

@@ -12,12 +12,14 @@ import {
 import {
   Verification,
   VerificationJSON,
+  VerificationSearchHit,
   isVerificationJSON,
   verificationsFromFirestore,
 } from 'lib/model/verification';
 import {
   ZoomUser,
   ZoomUserJSON,
+  ZoomUserSearchHit,
   isZoomUserJSON,
   zoomsFromFirestore,
 } from 'lib/model/zoom-user';
@@ -97,8 +99,10 @@ export interface UserInterface extends AccountInterface {
  * What results from searching our users Algolia index.
  */
 export type UserSearchHit = ObjectWithObjectID &
-  Omit<UserInterface, 'availability'> & {
+  Omit<UserInterface, 'availability' | 'verifications' | 'zooms'> & {
     availability: AvailabilitySearchHit;
+    verifications: VerificationSearchHit[];
+    zooms: ZoomUserSearchHit[];
   };
 
 export type UserJSON = Omit<
@@ -224,10 +228,12 @@ export class User extends Account implements UserInterface {
   }
 
   public static fromSearchHit(hit: UserSearchHit): User {
-    const { availability, objectID, ...rest } = hit;
+    const { availability, verifications, zooms, objectID, ...rest } = hit;
     const user: Partial<UserInterface> = {
       ...rest,
       availability: Availability.fromSearchHit(availability),
+      verifications: verifications.map((v) => Verification.fromSearchHit(v)),
+      zooms: zooms.map((z) => ZoomUser.fromSearchHit(z)),
       id: objectID,
     };
     return new User(user);

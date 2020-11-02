@@ -9,7 +9,13 @@ import {
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
-import { Venue, VenueFirestore, VenueJSON, isVenueJSON } from 'lib/model/venue';
+import {
+  Venue,
+  VenueFirestore,
+  VenueJSON,
+  VenueSearchHit,
+  isVenueJSON,
+} from 'lib/model/venue';
 import { Aspect } from 'lib/model/aspect';
 import { User } from 'lib/model/user';
 import construct from 'lib/model/construct';
@@ -113,9 +119,10 @@ export type MatchJSON = Omit<MatchInterface, 'times' | 'request' | 'venue'> & {
 };
 
 export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, 'times' | 'request'> & {
+  Omit<MatchInterface, 'times' | 'request' | 'venue'> & {
     times?: AvailabilitySearchHit;
     request?: MatchSearchHit;
+    venue: VenueSearchHit;
   };
 
 export type MatchFirestore = Omit<
@@ -236,11 +243,12 @@ export class Match implements MatchInterface {
   }
 
   public static fromSearchHit(hit: MatchSearchHit): Match {
-    const { times, request, objectID, ...rest } = hit;
+    const { times, request, venue, objectID, ...rest } = hit;
     return new Match({
       ...rest,
       times: times ? Availability.fromSearchHit(times) : undefined,
       request: request ? Match.fromSearchHit(request) : undefined,
+      venue: Venue.fromSearchHit(venue),
       id: objectID,
     });
   }

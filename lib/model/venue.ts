@@ -5,6 +5,7 @@ import {
   ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
+  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
 import construct from 'lib/model/construct';
@@ -28,9 +29,10 @@ export interface VenueInterface extends ResourceInterface {
 }
 
 export type VenueJSON = Omit<VenueInterface, keyof Resource> & ResourceJSON;
-
 export type VenueFirestore = Omit<VenueInterface, keyof Resource> &
   ResourceFirestore;
+export type VenueSearchHit = Omit<VenueInterface, keyof Resource> &
+  ResourceSearchHit;
 
 export function isVenueJSON(json: unknown): json is VenueJSON {
   if (!isResourceJSON(json)) return false;
@@ -73,5 +75,9 @@ export class Venue extends Resource implements VenueInterface {
 
   public static fromFirestore(data: VenueFirestore): Venue {
     return new Venue({ ...data, ...Resource.fromFirestore(data) });
+  }
+
+  public static fromSearchHit(hit: VenueSearchHit): Venue {
+    return new Venue({ ...hit, ...Resource.fromSearchHit(hit) });
   }
 }
