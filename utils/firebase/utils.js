@@ -204,30 +204,6 @@ const removePAUSDFromDefault = async () => {
   );
 };
 
-const createUsers = async () => {
-  console.log('Fetching users...');
-  const users = (await db.collection('users').get()).docs;
-  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
-  console.log(`Creating ${users.length} users...`);
-  let count = 0;
-  bar.start(users.length, count);
-  await Promise.all(
-    users.map(async (user) => {
-      const data = user.data();
-      await auth.createUser({
-        uid: data.id || user.id,
-        email: data.email,
-        displayName: data.name,
-        phoneNumber: data.phone || undefined,
-        photoURL: data.photo || undefined,
-      });
-      count++;
-      bar.update(count);
-    })
-  );
-  console.log(`Created ${users.length} users.`);
-};
-
 const createToken = async () => {
   const token = await auth.createCustomToken('1j0tRKGtpjSX33gLsLnalxvd1Tl2');
   await firebase.auth().signInWithCustomToken(token);
@@ -400,14 +376,146 @@ const createUser = async (user) => {
   if (err) console.log('Error creating user:', err);
 };
 
-updateUser({
-  id: 'kZhm0wUFB8eq8i3D9eCfUJdsPV52',
-  photo: '',
-  bio:
-    'My piano journey began when I was 5 and have completed piano exams given by abrsm with merit. I am now 16, which puts me at 11 years of experience. I work as a tutor at my Highschool for math and have the experience to teach. I have a 5 year old brother at home which has given me experience on how to work better with younger children and break down more complex concepts into rudimentary steps that are more comprehensible for kids.',
-  orgs: ['gunn', 'quarantunes'],
-  socials: [],
-  mentoring: { subjects: ['Piano'], searches: [] },
-  featured: [],
-  zooms: [],
-});
+const addAvailabilityToUsers = async () => {
+  const availability = [
+    {
+      recur: 'RRULE:FREQ=WEEKLY',
+      from: '1970-01-05T17:00:00.000Z',
+      to: '1970-01-06T01:00:00.000Z',
+      id: 'mtb-1zab_TV8Y2BmG08xu',
+    },
+    {
+      recur: 'RRULE:FREQ=WEEKLY',
+      from: '1970-01-06T17:00:00.000Z',
+      to: '1970-01-07T01:00:00.000Z',
+      id: 'klOS8vyIy61mucuAOdeeC',
+    },
+    {
+      recur: 'RRULE:FREQ=WEEKLY',
+      from: '1969-12-31T17:00:00.000Z',
+      to: '1970-01-01T01:00:00.000Z',
+      id: 'l9NJ6v6ug_UkB0RFNRuBH',
+    },
+    {
+      recur: 'RRULE:FREQ=WEEKLY',
+      from: '1970-01-01T17:00:00.000Z',
+      to: '1970-01-02T01:00:00.000Z',
+      id: 'mnevP-6V6iP-yKvYa_vwM',
+    },
+    {
+      recur: 'RRULE:FREQ=WEEKLY',
+      from: '1970-01-02T17:00:00.000Z',
+      to: '1970-01-03T01:00:00.000Z',
+      id: 'o2xS_pxE7I_v5MNK_dO3q',
+    },
+  ];
+
+  const empty = {
+    id: '',
+    name: '',
+    email: '',
+    phone: '',
+    photo: '',
+    bio: '',
+    socials: [],
+    featured: [],
+    orgs: ['default'],
+    zooms: [],
+    availability: [],
+    mentoring: { subjects: [], searches: [] },
+    tutoring: { subjects: [], searches: [] },
+    langs: ['en'],
+    parents: [],
+    verifications: [],
+    visible: false,
+  };
+
+  const convertToJSON = (date) => {
+    switch (typeof date) {
+      case 'string':
+        return new Date(date).toJSON();
+      case 'object':
+        return date.toDate().toJSON();
+      default:
+        return new Date().toJSON();
+    }
+  };
+
+  const resourcesFromFirestore = (resources = []) => {
+    return resources.map((resource) => ({
+      ...resource,
+      created: convertToJSON(resource.created),
+      updated: convertToJSON(resource.updated),
+    }));
+  };
+
+  console.log('Fetching users...');
+  const { docs } = await db.collection('users').get();
+
+  console.log(`Parsing ${docs.length} docs...`);
+  const users = docs.map((doc) => {
+    const data = doc.data();
+    return {
+      ...empty,
+      ...data,
+      availability,
+      verifications: resourcesFromFirestore(data.verifications),
+      zooms: resourcesFromFirestore(data.zooms),
+      id: doc.id,
+    };
+  });
+
+  console.log(`Updating ${users.length} users...`);
+  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  const failed = [];
+  let count = 0;
+  bar.start(users.length, count);
+  await Promise.all(
+    users.map(async (user) => {
+      const url = `https://develop.tutorbook.app/api/users/${user.id}`;
+      const [err] = await to(axios.put(url, user, { headers }));
+      if (err) {
+        console.error(
+          `\n${err.name} updating user (${user.name} <${user.id}>): ${err.message}`
+        );
+        failed.push(user);
+        fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
+        debugger;
+      }
+      bar.update((count += 1));
+    })
+  );
+  fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
+};
+
+const retryFailures = async () => {
+  const users = require('./failed.json');
+
+  console.log(`Updating ${users.length} users...`);
+  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  const failed = [];
+  let count = 0;
+  bar.start(users.length, count);
+  await Promise.all(
+    users.map(async (user) => {
+      const url = `https://develop.tutorbook.app/api/users/${user.id}`;
+      const [err] = await to(axios.put(url, user, { headers }));
+      if (err) {
+        console.error(
+          `\n${err.name} updating user (${user.name} <${user.id}>): ${err.message}`
+        );
+        failed.push(user);
+        fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
+        debugger;
+      }
+      bar.update((count += 1));
+    })
+  );
+  fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
+};
+
+retryFailures();
