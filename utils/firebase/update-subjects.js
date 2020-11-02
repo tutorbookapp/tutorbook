@@ -41,25 +41,34 @@ const SUFFIXES = [
 const cache = require('./cache.json');
 const updateSubjects = (subjects, validSubjects) => {
   const all = new Set(
-    subjects.map((subject) => {
-      const idx = validSubjects.findIndex((s) => {
-        const synonyms = s.synonyms.split(', ');
-        const valid = (name) => s.name === name || synonyms.includes(name);
-        if (valid(subject)) return true;
-        for (const prefix of PREFIXES) {
-          if (valid(subject.replace(`${prefix} `, ''))) return true;
-          if (valid(`${prefix} ${subject}`)) return true;
+    subjects
+      .filter((subject) => !!subject)
+      .map((subject) => {
+        const idx = validSubjects.findIndex((s) => {
+          const synonyms = s.synonyms.split(', ');
+          const valid = (name) => s.name === name || synonyms.includes(name);
+          if (valid(subject)) return true;
+          for (const prefix of PREFIXES) {
+            if (valid(subject.replace(`${prefix} `, ''))) return true;
+            if (valid(`${prefix} ${subject}`)) return true;
+          }
+          for (const suffix of SUFFIXES) {
+            if (valid(subject.replace(` ${suffix}`, ''))) return true;
+            if (valid(`${subject} ${suffix}`)) return true;
+          }
+          return false;
+        });
+        if (idx < 0 && cache[subject] === undefined) {
+          const validSubjectNames = validSubjects.map((s) => s.name);
+          cache[subject] = prompt(`What subject is "${subject}"? `).split(', ');
+          while (cache[subject].some((s) => !validSubjectNames.includes(s)))
+            cache[subject] = prompt(`What subject is "${subject}"? `).split(
+              ', '
+            );
         }
-        for (const suffix of SUFFIXES) {
-          if (valid(subject.replace(` ${suffix}`, ''))) return true;
-          if (valid(`${subject} ${suffix}`)) return true;
-        }
-        return false;
-      });
-      if (idx < 0 && cache[subject] === undefined)
-        cache[subject] = prompt(`What subject is "${subject}"? `);
-      return idx >= 0 ? validSubjects[idx].name : cache[subject];
-    })
+        return idx >= 0 ? [validSubjects[idx].name] : cache[subject];
+      })
+      .flat()
   );
   fs.writeFileSync('./cache.json', JSON.stringify(cache, null, 2));
   return [...all].filter((s) => !!s);

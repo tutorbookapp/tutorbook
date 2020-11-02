@@ -358,32 +358,32 @@ const deleteUser = async (uid) => {
 };
 
 const convertToUserJSON = (userData) => {
-  const availabilityJSON = (userData.availability || []).map((timeslot) => ({
+  const availability = (userData.availability || []).map((timeslot) => ({
     to: timeslot.to.toDate().toJSON(),
     from: timeslot.from.toDate().toJSON(),
     recur: timeslot.recur,
   }));
-  const userJSON = {
-    ...userData,
-    availability: availabilityJSON,
-  };
+  return { ...userData, availability };
 };
 
-const updateUser = async (uid) => {
+const updateUser = async (updated) => {
   const endpoint = 'https://develop.tutorbook.app/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
 
-  const user = (await db.collection('users').doc(uid).get()).data();
-  convertToUserJSON(user);
+  console.log(`Fetching user (${updated.id})...`);
+
+  const data = (await db.collection('users').doc(updated.id).get()).data();
+  const user = { ...convertToUserJSON(data), ...updated };
+
+  console.log(`Updating user (${user.name})...`, user);
 
   const [err] = await to(
-    axios.put(`${endpoint}/${uid}`, userJSON, { headers })
+    axios.put(`${endpoint}/${updated.id}`, user, { headers })
   );
-  if (err)
-    console.error(
-      `${err.name} updating user (${uid}): ${err.message}`,
-      userJSON
-    );
+  if (err) {
+    console.error(`${err.name} updating user (${user.name}): ${err.message}`);
+    debugger;
+  }
 };
 
 const createOrg = async (org) => {
@@ -400,52 +400,14 @@ const createUser = async (user) => {
   if (err) console.log('Error creating user:', err);
 };
 
-createOrg({
-  id: 'paly',
-  name: 'Paly High School',
+updateUser({
+  id: 'kZhm0wUFB8eq8i3D9eCfUJdsPV52',
   photo: '',
-  email: 'palyarc@pausd.org',
-  phone: '+16503293701',
   bio:
-    "Paly High School's Peer Tutoring Center is a welcoming place for all students to receive tutoring help, collaborate with other students, study quietly, and borrow books.",
-  socials: [
-    {
-      type: 'website',
-      url: 'https://www.paly.net/learning/peer-tutoring-center',
-    },
-    {
-      type: 'instagram',
-      url: 'https://www.instagram.com/palyasb',
-    },
-    {
-      type: 'linkedin',
-      url: 'https://www.linkedin.com/school/palo-alto-high-school/about/',
-    },
-    {
-      type: 'facebook',
-      url:
-        'https://www.facebook.com/pages/Palo%20Alto%20High%20School/112734332072619/',
-    },
-  ],
-  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
-  profiles: ['name', 'email', 'phone', 'bio', 'subjects'],
-  domains: ['pausd.us', 'pausd.org'],
-  aspects: ['tutoring'],
-  zoom: null,
-  signup: {
-    en: {
-      tutoring: {
-        body:
-          "We encourage AP students and others who feel competent to tutor specific subjects by filling out the form below. Once you've been matched with a student who has the same availability, you'll receive an email notification and will start meeting with your student via Zoom.",
-        header: "Become a peer tutor at Paly's Tutoring Center",
-      },
-    },
-  },
-  home: {
-    en: {
-      body:
-        'Students are invited to simply click on the "Search Tutors" button, filter by subjects and availability, and request a qualified peer or adult volunteer. Most students meet once or twice a week with their tutors. Food is allowed in the room, so lunchtime is popular!',
-      header: 'How to get a tutor',
-    },
-  },
+    'My piano journey began when I was 5 and have completed piano exams given by abrsm with merit. I am now 16, which puts me at 11 years of experience. I work as a tutor at my Highschool for math and have the experience to teach. I have a 5 year old brother at home which has given me experience on how to work better with younger children and break down more complex concepts into rudimentary steps that are more comprehensible for kids.',
+  orgs: ['gunn', 'quarantunes'],
+  socials: [],
+  mentoring: { subjects: ['Piano'], searches: [] },
+  featured: [],
+  zooms: [],
 });
