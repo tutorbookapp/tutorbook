@@ -55,12 +55,18 @@ export default memo(function EditPage({
     error,
   } = useSingle(initialUser, updateRemote, updateLocal);
 
-  const getSocialProps = useSocialProps(user, setUser, styles.field, 'user');
+  const getSocialProps = useSocialProps(
+    user,
+    setUser,
+    styles.field,
+    'user',
+    User
+  );
 
   const prevLoading = usePrevious(loading);
   useLayoutEffect(() => {
-    if (prevLoading && !loading) void openDisplay();
-  }, [prevLoading, loading, openDisplay]);
+    if (prevLoading && !loading && !error) void openDisplay();
+  }, [prevLoading, loading, error, openDisplay]);
 
   const { t } = useTranslation();
 
@@ -140,6 +146,10 @@ export default memo(function EditPage({
     [setUser]
   );
 
+  const action = useMemo(() => {
+    return user.id.startsWith('temp') ? 'create' : 'update';
+  }, [user.id]);
+
   return (
     <div className={styles.wrapper}>
       <Loader active={loading} checked={checked} />
@@ -188,6 +198,7 @@ export default memo(function EditPage({
             value={user.availability}
             onChange={onAvailabilityChange}
             className={styles.field}
+            renderToPortal
             outlined
           />
           <TextField
@@ -210,15 +221,17 @@ export default memo(function EditPage({
             onChange={onMentoringSubjectsChange}
             aspect='mentoring'
             className={styles.field}
+            renderToPortal
             outlined
           />
           <SubjectSelect
             label={t('user:mentoring-searches')}
-            placeholder={t('common:mentoring-searches-placeholder')}
+            placeholder={t('common:mentoring-subjects-placeholder')}
             value={user.mentoring.searches}
             onChange={onMentoringSearchesChange}
             aspect='mentoring'
             className={styles.field}
+            renderToPortal
             outlined
           />
           <SubjectSelect
@@ -228,15 +241,17 @@ export default memo(function EditPage({
             onChange={onTutoringSubjectsChange}
             aspect='tutoring'
             className={styles.field}
+            renderToPortal
             outlined
           />
           <SubjectSelect
             label={t('user:tutoring-searches')}
-            placeholder={t('common:tutoring-searches-placeholder')}
+            placeholder={t('common:tutoring-subjects-placeholder')}
             value={user.tutoring.searches}
             onChange={onTutoringSearchesChange}
             aspect='tutoring'
             className={styles.field}
+            renderToPortal
             outlined
           />
         </div>
@@ -251,9 +266,7 @@ export default memo(function EditPage({
           <TextField {...getSocialProps('indiehackers')} />
           <Button
             className={styles.btn}
-            label={t(
-              user.id.startsWith('temp') ? 'user:create-btn' : 'user:update-btn'
-            )}
+            label={t(`user:${action}-btn`)}
             disabled={loading}
             raised
             arrow
@@ -264,7 +277,7 @@ export default memo(function EditPage({
               validationMsg
               className={styles.error}
             >
-              {t('user:error', { error: error.message })}
+              {t(`user:${action}-error`, { error: error.message })}
             </TextFieldHelperText>
           )}
         </div>

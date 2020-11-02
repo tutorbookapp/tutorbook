@@ -81,7 +81,13 @@ export default function Profile(): JSX.Element {
     [setUser]
   );
 
-  const getSocialProps = useSocialProps(user, setUser, styles.field, 'user3rd');
+  const getSocialProps = useSocialProps(
+    user,
+    setUser,
+    styles.field,
+    'user3rd',
+    User
+  );
 
   return (
     <>

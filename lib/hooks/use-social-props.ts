@@ -15,11 +15,16 @@ function getPlaceholder(type: SocialTypeAlias, username: string): string {
   }
 }
 
+interface Constructor<T> {
+  new (param: Partial<T>): T;
+}
+
 export default function useSocialProps<T extends Account>(
   data: T,
   setData: Callback<T>,
   className: string,
-  labelKey: string
+  labelKey: string,
+  Model: Constructor<T>
 ): (type: SocialTypeAlias) => TextFieldProps & TextFieldHTMLProps {
   const { t } = useTranslation();
 
@@ -35,7 +40,7 @@ export default function useSocialProps<T extends Account>(
         } else {
           updated.push({ type, url });
         }
-        setData((prev: T) => ({ ...prev, socials: updated }));
+        setData((prev: T) => new Model({ ...prev, socials: updated }));
       }
 
       return {
@@ -52,6 +57,6 @@ export default function useSocialProps<T extends Account>(
         },
       };
     },
-    [data.name, data.socials, setData, className, labelKey, t]
+    [data.name, data.socials, setData, className, labelKey, t, Model]
   );
 }

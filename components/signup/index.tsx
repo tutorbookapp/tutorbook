@@ -44,7 +44,13 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     checked,
   } = useSingle(local, updateRemote, updateLocal);
 
-  const getSocialProps = useSocialProps(user, setUser, styles.field, 'user3rd');
+  const getSocialProps = useSocialProps(
+    user,
+    setUser,
+    styles.field,
+    'user3rd',
+    User
+  );
 
   useEffect(() => {
     if (!org) return;
@@ -116,6 +122,8 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     },
     [setUser]
   );
+
+  const action = useMemo(() => (user.id ? 'update' : 'create'), [user.id]);
 
   return (
     <div className={styles.wrapper}>
@@ -221,9 +229,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             <TextField {...getSocialProps('indiehackers')} />
             <Button
               className={styles.btn}
-              label={t(
-                user.id ? 'user3rd:update-btn' : `user3rd:${aspect}-btn`
-              )}
+              label={t(`user3rd:${action}-btn`)}
               disabled={loading}
               raised
               arrow
@@ -235,7 +241,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
                 validationMsg
                 className={styles.error}
               >
-                {t('user3rd:error', { error: error.message })}
+                {t(`user3rd:${action}-error`, { error: error.message })}
               </TextFieldHelperText>
             )}
           </div>

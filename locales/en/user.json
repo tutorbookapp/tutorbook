@@ -1,6 +1,8 @@
 {
   "update-btn": "Update user",
   "create-btn": "Create user",
+  "update-error": "An error occurred while updating profile. {{error}}",
+  "create-error": "An error occurred while creating profile. {{error}}",
   "visible": "Visible in search results",
   "featured": "Featured result",
   "name": "Name",
