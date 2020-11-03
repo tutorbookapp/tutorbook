@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+import Image from 'next/image';
 import cn from 'classnames';
+import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 import Button from 'components/button';
 
-import { SocialInterface, OrgJSON } from 'lib/model';
+import { OrgJSON, SocialInterface } from 'lib/model';
 import Link from 'lib/intl/link';
 import { join } from 'lib/utils';
 
@@ -37,9 +38,11 @@ export default function Home({ org }: HomeProps): JSX.Element {
     <div className={cn({ [styles.loading]: !org })}>
       {(!org || org.home[locale].photo) && (
         <div className={styles.background}>
-          <img
+          <Image
+            unsized
+            quality={100}
             data-cy='backdrop'
-            src={org && org.home[locale].photo}
+            src={org?.home[locale].photo || ''}
             alt={`Background of ${org ? org.name : 'Organization'}`}
           />
         </div>
@@ -54,7 +57,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
               rel='noreferrer'
               tabIndex={-1}
             >
-              <Avatar loading={!org} src={org && org.photo} />
+              <Avatar size={120} loading={!org} src={org && org.photo} />
             </a>
             <div>
               <h1 data-cy='name' className={styles.name}>

@@ -34,7 +34,7 @@ export default function Result({
       >
         {avatar && (
           <div className={styles.img}>
-            <Avatar loading={loading} src={(user || {}).photo} />
+            <Avatar size={85} loading={loading} src={(user || {}).photo} />
           </div>
         )}
         <div className={styles.name}>{user && user.name}</div>

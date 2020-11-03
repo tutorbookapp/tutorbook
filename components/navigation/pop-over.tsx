@@ -84,7 +84,7 @@ export function PopOverAccountButton({
     <Ripple>
       <button type='button' onClick={onClick} className={styles.item}>
         <div className={styles.avatar}>
-          <Avatar src={account.photo} />
+          <Avatar size={24} src={account.photo} />
         </div>
         <span className={styles.label}>{account.name}</span>
       </button>
@@ -98,7 +98,7 @@ export function PopOverAccountHeader({
   return (
     <div data-cy='account-header' className={`${styles.item} ${styles.header}`}>
       <div className={styles.avatar}>
-        <Avatar src={account.photo} />
+        <Avatar size={24} src={account.photo} />
       </div>
       <span className={styles.label}>{account.name}</span>
     </div>
@@ -117,7 +117,7 @@ export function PopOverAccountLink({
         <Link href={href} as={as}>
           <a className={styles.itemLink}>
             <div className={styles.avatar}>
-              <Avatar src={account.photo} />
+              <Avatar size={24} src={account.photo} />
             </div>
             <span className={styles.label}>{account.name}</span>
           </a>
@@ -145,7 +145,7 @@ export default function PopOverMenu({
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
 
   return (
-    <MenuSurfaceAnchor>
+    <MenuSurfaceAnchor className={styles.anchor}>
       {children}
       <MenuSurface open={open} onClose={onClose}>
         <div className={styles.picker}>

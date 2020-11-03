@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 import CTALink, { CTALinkProps } from './cta-link';
 import styles from './spotlight-msg.module.scss';
@@ -46,7 +47,6 @@ export default function SpotlightMsg({
             }
           >
             <div className={styles.featureSpotlightIconWrapper}>
-              {/* <img className={styles.featureSpotlightIcon} src={icon} /> */}
               <div className={styles.featureSpotlightIconText}>
                 <span>{label}</span>
               </div>
@@ -65,13 +65,14 @@ export default function SpotlightMsg({
           </div>
           <div
             ref={imgRef}
-            style={{ backgroundImage: `url(${img}` }}
             className={
               styles.featureSpotlightMedia +
               (flipped ? ` ${styles.featureSpotlightMediaFlipped}` : '')
             }
           >
-            <img
+            <Image
+              width={645}
+              height={485}
               className={styles.featureSpotlightMediaImg}
               alt={body}
               src={img}

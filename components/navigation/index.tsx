@@ -75,7 +75,7 @@ function DesktopNav(): JSX.Element {
       )}
       {loggedIn === undefined && (
         <div className={styles.avatar}>
-          <Avatar loading />
+          <Avatar size={40} loading />
         </div>
       )}
       {loggedIn === true && (
@@ -86,7 +86,7 @@ function DesktopNav(): JSX.Element {
             className={styles.avatar}
             onClick={() => setOpen(true)}
           >
-            <Avatar src={user.photo} />
+            <Avatar size={40} src={user.photo} />
           </button>
         </PopOver>
       )}

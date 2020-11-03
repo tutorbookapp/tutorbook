@@ -110,15 +110,17 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  width: 100%;
+
+  img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .featureSpotlightMedia:hover {
   @include elevation.elevation(8);
-}
-
-.featureSpotlightMediaImg {
-  max-width: 100%;
-  opacity: 0;
 }
 
 .featureSpotlightMediaPlayerWrapper {
@@ -200,19 +202,15 @@
   }
 
   .featureSpotlightMedia {
-    display: grid;
+    display: flex;
     grid-row: 1 / span 2;
     grid-column: 7 / span 6;
     align-items: center;
+    width: 100%;
   }
 
   .featureSpotlightMediaFlipped {
     grid-column: 1 / span 6;
-  }
-
-  .featureSpotlightMediaImg {
-    max-width: 100%;
-    margin-top: 0;
   }
 
   .featureSpotlightCTA {

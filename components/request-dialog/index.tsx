@@ -33,8 +33,8 @@ import {
 import { APIError } from 'lib/api/error';
 import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
-import { useUser } from 'lib/context/user';
 import { useOrg } from 'lib/context/org';
+import { useUser } from 'lib/context/user';
 
 import styles from './request-dialog.module.scss';
 
@@ -206,7 +206,7 @@ export default function RequestDialog({
             rel='noreferrer'
             tabIndex={-1}
           >
-            <Avatar src={user.photo} />
+            <Avatar size={260} src={user.photo} />
           </a>
           <h4 data-cy='name' className={styles.name}>
             {user.name}

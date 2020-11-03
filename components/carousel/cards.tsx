@@ -25,7 +25,7 @@ export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
         role='gridcell'
       >
         <div className={styles.img}>
-          <Avatar src={user.photo} />
+          <Avatar size={160} src={user.photo} />
         </div>
         <div data-cy='name' className={styles.name}>
           {user.name}
@@ -46,7 +46,7 @@ export function LoadingCard(): JSX.Element {
         className={`${styles.card} ${styles.disabled}`}
       >
         <div className={styles.img}>
-          <Avatar loading />
+          <Avatar size={160} loading />
         </div>
         <div className={`${styles.name} ${styles.loading}`} />
         <div className={`${styles.bio} ${styles.loading}`} />

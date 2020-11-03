@@ -215,7 +215,7 @@ export default memo(function DisplayPage({
             rel='noreferrer'
             tabIndex={-1}
           >
-            <Avatar src={user.photo} />
+            <Avatar size={260} src={user.photo} />
           </a>
           <h4 className={styles.name}>{user.name}</h4>
           {user.socials && !!user.socials.length && (

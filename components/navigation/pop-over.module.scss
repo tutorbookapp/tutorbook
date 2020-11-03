@@ -3,6 +3,10 @@
 @use 'styles/config';
 @use 'styles/typography';
 
+.anchor {
+  height: 40px;
+}
+
 .picker {
   padding: 8px 0;
   box-sizing: border-box;
@@ -67,8 +71,8 @@
     }
 
     .avatar {
-      min-width: 24px;
       margin-right: 10px;
+      width: 24px;
     }
 
     .label {

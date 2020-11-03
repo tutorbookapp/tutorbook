@@ -1,5 +1,8 @@
+import Image from 'next/image';
 import { TooltipProps } from '@rmwc/tooltip';
+import cn from 'classnames';
 import dynamic from 'next/dynamic';
+import useTranslation from 'next-translate/useTranslation';
 
 import styles from './avatar.module.scss';
 
@@ -11,6 +14,7 @@ interface AvatarProps {
   src?: string;
   loading?: boolean;
   verified?: string;
+  size?: number;
 }
 
 /**
@@ -20,25 +24,32 @@ interface AvatarProps {
  * is rendered as a gray square with the text 'No Photo' centered within.
  */
 export default function Avatar({
-  src,
-  loading,
+  src = '',
+  loading = false,
+  size = 500,
   verified,
 }: AvatarProps): JSX.Element {
+  const { t } = useTranslation();
+
   return (
-    <div className={styles.wrapper + (loading ? ` ${styles.loading}` : '')}>
+    <div className={cn(styles.wrapper, { [styles.loading]: loading })}>
       {verified && (
         <Tooltip
           content={<div className={styles.verifiedHover}>{verified}</div>}
           align='right'
           showArrow
         >
-          <div className={styles.verifiedText}>Verified</div>
+          <div className={styles.verifiedText}>{t('common:verified')}</div>
         </Tooltip>
       )}
-      {!loading && (
-        <img data-cy='avatar' className={styles.img} src={src} alt='' />
+      {!loading && !!src && (
+        <Image data-cy='avatar' height={size} width={size} src={src} alt='' />
       )}
-      {!src && !loading && <div className={styles.noImg}>No Photo</div>}
+      {!src && !loading && (
+        <div className={styles.noPhotoWrapper}>
+          <div className={styles.noPhoto}>{t('common:no-photo')}</div>
+        </div>
+      )}
     </div>
   );
 }

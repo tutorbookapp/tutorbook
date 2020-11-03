@@ -10,6 +10,14 @@ module.exports = withImages({
       path.resolve(__dirname, 'src/*/node_modules'),
     ],
   },
+  images: {
+    domains: [
+      'assets.tutorbook.app',
+      'firebasestorage.googleapis.com',
+      'lh3.googleusercontent.com',
+    ],
+    imageSizes: [260, 160, 120, 85, 40, 24],
+  },
   async redirects() {
     return [
       {
