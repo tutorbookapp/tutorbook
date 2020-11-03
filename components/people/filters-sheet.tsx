@@ -7,10 +7,8 @@ import { v4 as uuid } from 'uuid';
 import LangSelect from 'components/lang-select';
 import Placeholder from 'components/placeholder';
 import SubjectSelect from 'components/subject-select';
-import AvailabilitySelect from 'components/availability-select';
 
 import {
-  Availability,
   Callback,
   CallbackParam,
   Option,
@@ -66,12 +64,6 @@ export default memo(function FiltersSheet({
     },
     [setQuery]
   );
-  const onAvailabilityChange = useCallback(
-    (availability: Availability) => {
-      setQuery((prev) => new UsersQuery({ ...prev, availability }));
-    },
-    [setQuery]
-  );
   const onLangsChange = useCallback(
     (langs: Option<string>[]) => {
       setQuery((prev) => new UsersQuery({ ...prev, langs }));
@@ -90,13 +82,6 @@ export default memo(function FiltersSheet({
             selected={query.subjects}
             placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
             aspect={query.aspect}
-            className={styles.field}
-            outlined
-          />
-          <AvailabilitySelect
-            label={t('query:availability')}
-            onChange={onAvailabilityChange}
-            value={query.availability}
             className={styles.field}
             outlined
           />
