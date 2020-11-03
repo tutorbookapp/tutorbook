@@ -52,7 +52,7 @@ export class Venue extends Resource implements VenueInterface {
 
   public url = `https://meet.jit.si/TB-${this.id}`;
 
-  public invite = `Go to ${this.url} to join your meeting.`;
+  public invite = `Open ${this.url} to join your meeting.`;
 
   public type: VenueType = 'jitsi';
 
