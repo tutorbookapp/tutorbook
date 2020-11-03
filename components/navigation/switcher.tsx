@@ -49,8 +49,7 @@ export default function Switcher(): JSX.Element {
                 <PopOverAccountLink
                   key={org.id}
                   account={org}
-                  href={`/[org]/${destination}`}
-                  as={`/${org.id}/${destination}`}
+                  href={`/${org.id}/${destination}`}
                 />
               ))}
             </>

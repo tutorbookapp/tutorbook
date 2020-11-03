@@ -12,26 +12,20 @@ import { useUser } from 'lib/context/user';
  *   useLoggedIn('/dashboard');
  * }
  */
-export default function useLoggedIn(href?: string, as?: string): void {
+export default function useLoggedIn(href?: string): void {
   const { loggedIn } = useUser();
 
   const url = useMemo(() => {
-    let uri = '/login';
-    if (href && as) {
-      uri += `?href=${encodeURIComponent(href)}&as=${encodeURIComponent(as)}`;
-    } else if (href) {
-      uri += `?href=${encodeURIComponent(href)}`;
-    }
-    return uri;
-  }, [href, as]);
+    return href ? `/login?href=${encodeURIComponent(href)}` : '/login';
+  }, [href]);
 
   useEffect(() => {
-    void Router.prefetch('/login', url);
+    void Router.prefetch(url);
   }, [url]);
 
   useEffect(() => {
     if (loggedIn === false) {
-      void Router.push('/login', url);
+      void Router.push(url);
     }
   }, [loggedIn, url]);
 }

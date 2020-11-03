@@ -33,8 +33,7 @@ export default function About(): JSX.Element {
           img={VolunteerRegisters}
           cta={{
             label: t('about:step-one-cta'),
-            href: '/[org]/signup',
-            as: `/${user.orgs[0] || 'default'}/signup`,
+            href: `/${user.orgs[0] || 'default'}/signup`,
           }}
           flipped
         />
@@ -56,8 +55,7 @@ export default function About(): JSX.Element {
           img={StudentRequests}
           cta={{
             label: t('about:step-three-cta'),
-            href: '/[org]/search/[[...slug]]',
-            as: `/${user.orgs[0] || 'default'}/search`,
+            href: `/${user.orgs[0] || 'default'}/search`,
           }}
           flipped
         />

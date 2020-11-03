@@ -26,7 +26,7 @@ function MatchesPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  useLoggedIn('/[org]/matches', `/${query.org as string}/matches`);
+  useLoggedIn(`/${query.org as string}/matches`);
 
   return (
     <OrgContext.Provider value={{ org }}>
@@ -40,26 +40,22 @@ function MatchesPage(): JSX.Element {
               {
                 label: t('common:overview'),
                 active: false,
-                href: '/[org]/dashboard',
-                as: `/${query.org as string}/dashboard`,
+                href: `/${query.org as string}/dashboard`,
               },
               {
                 label: t('common:people'),
                 active: false,
-                href: '/[org]/people',
-                as: `/${query.org as string}/people`,
+                href: `/${query.org as string}/people`,
               },
               {
                 label: t('common:matches'),
                 active: true,
-                href: '/[org]/matches',
-                as: `/${query.org as string}/matches`,
+                href: `/${query.org as string}/matches`,
               },
               {
                 label: t('common:settings'),
                 active: false,
-                href: '/[org]/settings',
-                as: `/${query.org as string}/settings`,
+                href: `/${query.org as string}/settings`,
               },
             ]}
           />

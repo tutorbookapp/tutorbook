@@ -107,8 +107,7 @@ export default function Profile(): JSX.Element {
         actions={[
           {
             label: t('profile:view-profile'),
-            href: '/[org]/[[...slug]]',
-            as: `/${user.orgs[0] || 'default'}/search/${user.id}`,
+            href: `/${user.orgs[0] || 'default'}/search/${user.id}`,
           },
         ]}
       />

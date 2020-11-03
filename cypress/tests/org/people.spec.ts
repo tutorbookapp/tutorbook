@@ -26,9 +26,7 @@ describe('People dashboard page', () => {
     // TODO: Refactor these assertions into reusable functions as they're used
     // on every single "login required" page. Or, just test them once and assume
     // that they work on every page.
-    const href = encodeURIComponent('/[org]/people');
-    const as = encodeURIComponent(`/${school.id}/people`);
-    const url = `/login?href=${href}&as=${as}`;
+    const url = `/login?href=${encodeURIComponent(`/${school.id}/people`)}`;
 
     cy.url({ timeout: 60000 }).should('contain', url);
   });

@@ -12,9 +12,7 @@ describe('Org settings page', () => {
     cy.visit(`/${org.id}/settings`);
     cy.wait('@get-account');
 
-    const href = encodeURIComponent('/[org]/settings');
-    const as = encodeURIComponent(`/${org.id}/settings`);
-    const url = `/login?href=${href}&as=${as}`;
+    const url = `/login?href=${encodeURIComponent(`/${org.id}/settings`)}`;
 
     cy.url({ timeout: 60000 }).should('contain', url);
   });

@@ -97,10 +97,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
           <div className={styles.actions}>
             {(org ? org.aspects : ['tutoring', 'mentoring']).map((aspect) => (
               <div key={aspect} className={styles.card}>
-                <Link
-                  href='/[org]/search/[[...slug]]'
-                  as={`/${org ? org.id : 'default'}/search?aspect=${aspect}`}
-                >
+                <Link href={`/${org?.id || 'default'}/search?aspect=${aspect}`}>
                   <a>
                     <Button
                       className={styles.btn}
@@ -110,10 +107,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
                     />
                   </a>
                 </Link>
-                <Link
-                  href='/[org]/signup'
-                  as={`/${org ? org.id : 'default'}/signup?aspect=${aspect}`}
-                >
+                <Link href={`/${org?.id || 'default'}/signup?aspect=${aspect}`}>
                   <a>
                     <Button
                       className={styles.btn}

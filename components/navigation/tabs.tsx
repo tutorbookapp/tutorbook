@@ -30,14 +30,13 @@ function TabButton({ label, onClick, active }: TabButtonProps): JSX.Element {
 
 interface TabLinkProps extends TabProps {
   href: string;
-  as?: string;
 }
 
-function TabLink({ label, href, as, active }: TabLinkProps): JSX.Element {
+function TabLink({ label, href, active }: TabLinkProps): JSX.Element {
   if (href.indexOf('http') < 0)
     return (
       /* eslint-disable jsx-a11y/anchor-is-valid */
-      <Link href={href} as={as}>
+      <Link href={href}>
         <a className={cn(styles.tab, { [styles.active]: active })}>{label}</a>
       </Link>
       /* eslint-enable jsx-a11y/anchor-is-valid */

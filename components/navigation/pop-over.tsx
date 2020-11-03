@@ -16,14 +16,12 @@ import styles from './pop-over.module.scss';
 
 interface PopOverLinkProps {
   href: string;
-  as?: string;
   children: string;
   icon?: string;
 }
 
 export function PopOverLink({
   href,
-  as,
   children,
   icon,
 }: PopOverLinkProps): JSX.Element {
@@ -36,7 +34,7 @@ export function PopOverLink({
             <Icon icon={icon} />
           </div>
         )}
-        <Link href={href} as={as}>
+        <Link href={href}>
           <a className={styles.itemLink}>{children}</a>
         </Link>
       </div>
@@ -108,13 +106,12 @@ export function PopOverAccountHeader({
 export function PopOverAccountLink({
   account,
   href,
-  as,
-}: { href: string; as?: string } & PopOverAccountProps): JSX.Element {
+}: { href: string } & PopOverAccountProps): JSX.Element {
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <Ripple>
       <div className={styles.item}>
-        <Link href={href} as={as}>
+        <Link href={href}>
           <a className={styles.itemLink}>
             <div className={styles.avatar}>
               <Avatar size={24} src={account.photo} />
@@ -151,10 +148,7 @@ export default function PopOverMenu({
         <div className={styles.picker}>
           <PopOverAccountHeader account={user} />
           <PopOverLink href='/'>{t('common:home')}</PopOverLink>
-          <PopOverLink
-            href='/[org]/search/[[...slug]]'
-            as={`/${user.orgs[0] || 'default'}/search`}
-          >
+          <PopOverLink href={`/${user.orgs[0] || 'default'}/search`}>
             {t('common:search')}
           </PopOverLink>
           <PopOverLink href='/profile'>{t('common:profile')}</PopOverLink>
@@ -163,19 +157,14 @@ export default function PopOverMenu({
             <Fragment key={org.id}>
               <div className={styles.line} />
               <PopOverAccountHeader account={org} />
-              <PopOverLink href='/[org]' as={`/${org.id}`}>
-                {t('common:home')}
-              </PopOverLink>
-              <PopOverLink
-                href='/[org]/search/[[...slug]]'
-                as={`/${org.id}/search`}
-              >
+              <PopOverLink href={`/${org.id}`}>{t('common:home')}</PopOverLink>
+              <PopOverLink href={`/${org.id}/search`}>
                 {t('common:search')}
               </PopOverLink>
-              <PopOverLink href='/[org]/people' as={`/${org.id}/people`}>
+              <PopOverLink href={`/${org.id}/people`}>
                 {t('common:people')}
               </PopOverLink>
-              <PopOverLink href='/[org]/matches' as={`/${org.id}/matches`}>
+              <PopOverLink href={`/${org.id}/matches`}>
                 {t('common:matches')}
               </PopOverLink>
             </Fragment>

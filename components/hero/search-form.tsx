@@ -39,14 +39,14 @@ export default function SearchForm({ aspect }: SearchFormProps): JSX.Element {
   }, [aspect]);
 
   useEffect(() => {
-    void Router.prefetch('/[org]/search/[[...slug]]', url);
+    void Router.prefetch(url);
   }, [url]);
 
   const onSubmit = useCallback(
     async (evt: FormEvent<HTMLFormElement>) => {
       evt.preventDefault();
       setSubmitting(true);
-      await Router.push('/[org]/search/[[...slug]]', url);
+      await Router.push(url);
     },
     [url]
   );

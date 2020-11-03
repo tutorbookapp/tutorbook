@@ -18,13 +18,12 @@ function ActionButton({ label, onClick }: ActionButtonProps): JSX.Element {
 interface ActionLinkProps {
   label: string;
   href: string;
-  as: string;
 }
 
-function ActionLink({ label, href, as }: ActionLinkProps): JSX.Element {
+function ActionLink({ label, href }: ActionLinkProps): JSX.Element {
   return (
     /* eslint-disable jsx-a11y/anchor-is-valid */
-    <Link href={href} as={as}>
+    <Link href={href}>
       <a className={styles.button}>{label}</a>
     </Link>
     /* eslint-enable jsx-a11y/anchor-is-valid */
@@ -34,16 +33,13 @@ function ActionLink({ label, href, as }: ActionLinkProps): JSX.Element {
 interface ActionProps {
   label: string;
   href?: string;
-  as?: string;
   onClick?: () => void;
 }
 
-function Action({ label, href, as, onClick }: ActionProps): JSX.Element {
-  if (href && as) return <ActionLink label={label} href={href} as={as} />;
+function Action({ label, href, onClick }: ActionProps): JSX.Element {
+  if (href) return <ActionLink label={label} href={href} />;
   return <ActionButton label={label} onClick={onClick || (() => {})} />;
 }
-
-Action.defaultProps = { href: '', as: undefined, onClick: () => {} };
 
 interface TitleProps {
   header: string;

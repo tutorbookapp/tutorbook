@@ -22,7 +22,6 @@ function Arrow(): JSX.Element {
 export interface CTALinkProps {
   label: string;
   href: string;
-  as?: string;
   small?: boolean;
   wide?: boolean;
 }
@@ -30,9 +29,8 @@ export interface CTALinkProps {
 export default function CTALink({
   label,
   href,
-  as,
-  small,
-  wide,
+  small = false,
+  wide = false,
 }: CTALinkProps): JSX.Element {
   const className =
     `${styles.link} ${styles.black}${small ? ` ${styles.small}` : ''}` +
@@ -40,7 +38,7 @@ export default function CTALink({
   if (href.indexOf('http') < 0)
     return (
       /* eslint-disable jsx-a11y/anchor-is-valid */
-      <Link href={href} as={as}>
+      <Link href={href}>
         <a className={className}>
           {label}
           <Arrow />
@@ -55,5 +53,3 @@ export default function CTALink({
     </a>
   );
 }
-
-CTALink.defaultProps = { small: false, wide: false };

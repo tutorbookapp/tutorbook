@@ -79,7 +79,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   useEffect(() => {
     if (!org || !org.id) return;
     const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
-    void Router.replace('/[org]/search/[[...slug]]', url, { shallow: true });
+    void Router.replace(url, undefined, { shallow: true });
   }, [org, query, viewing]);
   useEffect(() => {
     setQuery((prev: UsersQuery) => {

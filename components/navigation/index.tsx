@@ -66,7 +66,7 @@ function DesktopNav(): JSX.Element {
               {t('common:login')}
             </a>
           </Link>
-          <Link href='/login' as='/login?href=profile'>
+          <Link href='/login?href=profile'>
             <a className={`${styles.desktopLink} ${styles.signupLink}`}>
               {t('common:signup')}
             </a>

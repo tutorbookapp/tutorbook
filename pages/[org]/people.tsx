@@ -31,7 +31,7 @@ function PeoplePage(): JSX.Element {
     return orgs[idx];
   }, [orgs, params.org]);
 
-  useLoggedIn('/[org]/people', `/${params.org as string}/people`);
+  useLoggedIn(`/${params.org as string}/people`);
 
   return (
     <OrgContext.Provider value={{ org }}>
@@ -45,26 +45,22 @@ function PeoplePage(): JSX.Element {
               {
                 label: t('common:overview'),
                 active: false,
-                href: '/[org]/dashboard',
-                as: `/${params.org as string}/dashboard`,
+                href: `/${params.org as string}/dashboard`,
               },
               {
                 label: t('common:people'),
                 active: true,
-                href: '/[org]/people',
-                as: `/${params.org as string}/people`,
+                href: `/${params.org as string}/people`,
               },
               {
                 label: t('common:matches'),
                 active: false,
-                href: '/[org]/matches',
-                as: `/${params.org as string}/matches`,
+                href: `/${params.org as string}/matches`,
               },
               {
                 label: t('common:settings'),
                 active: false,
-                href: '/[org]/settings',
-                as: `/${params.org as string}/settings`,
+                href: `/${params.org as string}/settings`,
               },
             ]}
           />

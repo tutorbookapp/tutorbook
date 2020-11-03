@@ -60,13 +60,11 @@ import styles from './footer.module.scss';
  */
 
 interface LinkProps {
-  as?: string;
   href: string;
   label: string;
 }
 
 function NavLink({
-  as,
   href,
   label,
   className,
@@ -74,7 +72,7 @@ function NavLink({
   /* eslint-disable jsx-a11y/anchor-is-valid */
   if (href.indexOf('http') < 0 && href.indexOf('mailto') < 0)
     return (
-      <Link href={href} as={as}>
+      <Link href={href}>
         <a className={className}>{label}</a>
       </Link>
     );
@@ -142,13 +140,11 @@ export default function Footer({
             header={t('common:footer-useful-links')}
             links={[
               {
-                href: '/[org]/signup',
-                as: `/${user.orgs[0] || 'default'}/signup`,
+                href: `/${user.orgs[0] || 'default'}/signup`,
                 label: t('common:footer-signup'),
               },
               {
-                href: '/[org]/search/[[...slug]]',
-                as: `/${user.orgs[0] || 'default'}/search`,
+                href: `/${user.orgs[0] || 'default'}/search`,
                 label: t('common:footer-search'),
               },
               {

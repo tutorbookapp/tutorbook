@@ -72,20 +72,17 @@ export default function Settings({
       <div className={styles.wrapper}>
         <div className={styles.left}>
           <div className={styles.links}>
-            <Link href='/[org]/settings' as={`/${orgId}/settings`}>
+            <Link href={`/${orgId}/settings`}>
               <a className={cn({ [styles.active]: active === 'general' })}>
                 {t('settings:general')}
               </a>
             </Link>
-            <Link href='/[org]/settings/home' as={`/${orgId}/settings/home`}>
+            <Link href={`/${orgId}/settings/home`}>
               <a className={cn({ [styles.active]: active === 'home' })}>
                 {t('settings:home')}
               </a>
             </Link>
-            <Link
-              href='/[org]/settings/signup'
-              as={`/${orgId}/settings/signup`}
-            >
+            <Link href={`/${orgId}/settings/signup`}>
               <a className={cn({ [styles.active]: active === 'signup' })}>
                 {t('settings:signup')}
               </a>

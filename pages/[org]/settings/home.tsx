@@ -28,7 +28,7 @@ function HomeSettingsPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  useLoggedIn('/[org]/settings/home', `/${query.org as string}/settings/home`);
+  useLoggedIn(`/${query.org as string}/settings/home`);
 
   return (
     <OrgContext.Provider value={{ org }}>
@@ -42,26 +42,22 @@ function HomeSettingsPage(): JSX.Element {
               {
                 label: t('common:overview'),
                 active: false,
-                href: '/[org]/dashboard',
-                as: `/${query.org as string}/dashboard`,
+                href: `/${query.org as string}/dashboard`,
               },
               {
                 label: t('common:people'),
                 active: false,
-                href: '/[org]/people',
-                as: `/${query.org as string}/people`,
+                href: `/${query.org as string}/people`,
               },
               {
                 label: t('common:matches'),
                 active: false,
-                href: '/[org]/matches',
-                as: `/${query.org as string}/matches`,
+                href: `/${query.org as string}/matches`,
               },
               {
                 label: t('common:settings'),
                 active: true,
-                href: '/[org]/settings',
-                as: `/${query.org as string}/settings`,
+                href: `/${query.org as string}/settings`,
               },
             ]}
           />
