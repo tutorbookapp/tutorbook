@@ -1,5 +1,5 @@
-import Utils from 'lib/utils';
 import { Match, Org, Role, User, UserWithRoles } from 'lib/model';
+import { join } from 'lib/utils';
 
 import { Email } from '../common';
 import Handlebars from '../handlebars';
@@ -146,8 +146,8 @@ export default class MatchEmail implements Email {
       email,
       url: `mailto:${encodeURIComponent(`"${name}"<${email}>`)}`,
     }));
-    const rolesDescription = `with ${Utils.join(
-      people.map(({ name, roles }) => `${name} as the ${Utils.join(roles)}`)
+    const rolesDescription = `with ${join(
+      people.map(({ name, roles }) => `${name} as the ${join(roles)}`)
     )}`;
     const org: Org = new Org({ name: 'Tutorbook' });
 
@@ -158,9 +158,7 @@ export default class MatchEmail implements Email {
 
     this.to = recipients.map(({ name, email }) => ({ name, email }));
     this.replyTo = { name: creator.name, email: creatorEmail };
-    this.subject = `New ${Utils.join(
-      match.subjects
-    )} appointment on Tutorbook.`;
+    this.subject = `New ${join(match.subjects)} appointment on Tutorbook.`;
 
     if (recipients.length === 1) {
       this.html = generic({
@@ -174,7 +172,7 @@ export default class MatchEmail implements Email {
       this.text = 
 `Hi ${recipientName},
 
-${creator.name} wants you as a ${Utils.join(recipientRoles)} for ${Utils.join(match.subjects)}:
+${creator.name} wants you as a ${join(recipientRoles)} for ${join(match.subjects)}:
 
 > "${match.message}"
 > —${creator.name} 
@@ -197,9 +195,9 @@ Tutorbook - tutorbook.org`;
       });
       /* prettier-ignore */
       this.text =
-`Hi ${Utils.join(personNames)},
+`Hi ${join(personNames)},
 
-You have a new tutoring lesson for ${Utils.join(match.subjects)} (${rolesDescription}).
+You have a new tutoring lesson for ${join(match.subjects)} (${rolesDescription}).
 
 Please reply to this email stating when you're available to join your first lesson.
 
@@ -230,9 +228,9 @@ Tutorbook - tutorbook.org`;
       });
       /* prettier-ignore */
       this.text =
-`Hi ${Utils.join(personNames)},
+`Hi ${join(personNames)},
 
-You have a new mentoring match for ${Utils.join(match.subjects)} (${rolesDescription}).
+You have a new mentoring match for ${join(match.subjects)} (${rolesDescription}).
 
 Please reply to this email stating when you're available to join your first video call.
 

@@ -5,8 +5,8 @@ import { dequal } from 'dequal';
 import { responseInterface } from 'swr/dist/types';
 
 import { Callback, MatchJSON, MatchStatus, Person } from 'lib/model';
+import { caps, join } from 'lib/utils';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
-import Utils from 'lib/utils';
 import { useContinuous } from 'lib/hooks';
 
 import styles from './matches.module.scss';
@@ -69,7 +69,7 @@ export const MatchRow = memo(
     const peopleNames = useMemo(() => {
       const names: string[] = [];
       match.people.forEach((p: Person) => {
-        if (p.name) names.push(`${p.name} (${Utils.join(p.roles) || 'other'})`);
+        if (p.name) names.push(`${p.name} (${join(p.roles) || 'other'})`);
       });
       const diff = match.people.length - names.length;
       if (diff > 0) names.push(`${diff} more`);
@@ -84,14 +84,14 @@ export const MatchRow = memo(
             onClick={toggleStatus}
             type='button'
           >
-            {Utils.caps(match.status)}
+            {caps(match.status)}
           </button>
         </DataTableCell>
         <DataTableCell className={styles.people}>
-          {Utils.join(peopleNames)}
+          {join(peopleNames)}
         </DataTableCell>
         <DataTableCell className={styles.subjects}>
-          {Utils.join(match.subjects)}
+          {join(match.subjects)}
         </DataTableCell>
         <DataTableCell className={styles.message}>
           {match.message}

@@ -5,8 +5,8 @@ import { Ripple } from '@rmwc/ripple';
 import { Icon } from '@rmwc/icon';
 import cn from 'classnames';
 
-import Utils from 'lib/utils';
 import { Callback, RequestJSON } from 'lib/model';
+import { join } from 'lib/utils';
 
 import styles from './request-item.module.scss';
 
@@ -44,7 +44,7 @@ export default function RequestItem({
       <Ripple disabled={loading} onClick={onClick}>
         <animated.div style={props} className={styles.display}>
           <div className={styles.name}>
-            {request && Utils.join(request.people.map((p) => p.name))}
+            {request && join(request.people.map((p) => p.name))}
           </div>
           <div className={styles.bio}>{request && request.message}</div>
           <div className={styles.subjectsScroller}>

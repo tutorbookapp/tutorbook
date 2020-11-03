@@ -7,7 +7,7 @@ import Button from 'components/button';
 
 import { SocialInterface, OrgJSON } from 'lib/model';
 import Link from 'lib/intl/link';
-import Utils from 'lib/utils';
+import { join } from 'lib/utils';
 
 import styles from './home.module.scss';
 
@@ -30,7 +30,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
       people += ' and mentors';
     }
     const name = org ? org.name : 'This organization';
-    return t('home:about', { name, person, people, aspects: Utils.join(as) });
+    return t('home:about', { name, person, people, aspects: join(as) });
   }, [org, t]);
 
   return (

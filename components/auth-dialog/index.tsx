@@ -8,9 +8,9 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 
 import { User } from 'lib/model';
+import { join } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useOrg } from 'lib/context/org';
-import Utils from 'lib/utils';
 
 import styles from './auth-dialog.module.scss';
 
@@ -48,7 +48,7 @@ export default function AuthDialog(): JSX.Element {
             {t('search:login-body', {
               name: org ? org.name : 'this organization',
               domains: org
-                ? Utils.join(
+                ? join(
                     org.domains.map((domain) => `@${domain}`),
                     'or'
                   )

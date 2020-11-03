@@ -31,7 +31,7 @@ import {
   UserJSON,
 } from 'lib/model';
 import { APIError } from 'lib/api/error';
-import Utils from 'lib/utils';
+import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useUser } from 'lib/context/user';
 import { useOrg } from 'lib/context/org';
@@ -133,7 +133,7 @@ export default function RequestDialog({
         if (err && err.response) {
           setLoading(false);
           setError(
-            `An error occurred while adding your phone number. ${Utils.period(
+            `An error occurred while adding your phone number. ${period(
               (err.response.data || err).message
             )}`
           );
@@ -150,7 +150,7 @@ export default function RequestDialog({
         if (err) {
           setLoading(false);
           setError(
-            `An error occurred while adding your phone number. ${Utils.period(
+            `An error occurred while adding your phone number. ${period(
               err.message
             )} Please check your Internet connection and try again.`
           );
@@ -164,7 +164,7 @@ export default function RequestDialog({
       if (err && err.response) {
         setLoading(false);
         setError(
-          `An error occurred while sending your request. ${Utils.period(
+          `An error occurred while sending your request. ${period(
             (err.response.data || err).message
           )}`
         );
@@ -177,7 +177,7 @@ export default function RequestDialog({
       } else if (err) {
         setLoading(false);
         setError(
-          `An error occurred while sending your request. ${Utils.period(
+          `An error occurred while sending your request. ${period(
             err.message
           )} Please check your Internet connection and try again.`
         );

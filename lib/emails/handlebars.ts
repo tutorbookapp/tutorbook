@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars';
 
-import Utils from 'lib/utils';
+import { caps, join } from 'lib/utils';
 
 import Check from './shared/check.hbs';
 import Cross from './shared/cross.hbs';
@@ -17,13 +17,13 @@ Handlebars.registerPartial('profile', Profile);
  * assert(join(['A', 'B', 'C', 'D']) === 'A, B, C and D');
  */
 Handlebars.registerHelper('join', function join(array: string[]): string {
-  return Utils.join(array);
+  return join(array);
 });
 
 Handlebars.registerHelper('joinCaps', function joinCaps(
   array: string[]
 ): string {
-  return Utils.join(array.map((item: string) => Utils.caps(item)));
+  return join(array.map((item: string) => caps(item)));
 });
 
 /**

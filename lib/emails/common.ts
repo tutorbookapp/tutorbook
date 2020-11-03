@@ -1,7 +1,7 @@
 import { MailData } from '@sendgrid/helpers/classes/mail';
 
-import Utils from 'lib/utils';
 import { SocialInterface, SocialTypeAlias, UserWithRoles } from 'lib/model';
+import { caps } from 'lib/utils';
 
 export interface Email extends MailData {
   readonly html: string;
@@ -28,7 +28,7 @@ export function addVerifications(
     verifications: Object.fromEntries(
       user.socials.map((social: SocialInterface) => {
         const { type, ...rest } = social;
-        return [type, { label: Utils.caps(type), ...rest }];
+        return [type, { label: caps(type), ...rest }];
       })
     ),
   } as UserWithRolesAndVerifications;

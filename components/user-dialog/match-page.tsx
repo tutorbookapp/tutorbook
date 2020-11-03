@@ -33,7 +33,7 @@ import {
   UserJSON,
 } from 'lib/model';
 import { APIError } from 'lib/api/error';
-import Utils from 'lib/utils';
+import { period } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -179,7 +179,7 @@ export default memo(function MatchPage({
       if (err && err.response) {
         setLoading(false);
         setError(
-          `An error occurred while creating your match. ${Utils.period(
+          `An error occurred while creating your match. ${period(
             (err.response.data || err).message
           )}`
         );
@@ -192,7 +192,7 @@ export default memo(function MatchPage({
       } else if (err) {
         setLoading(false);
         setError(
-          `An error occurred while creating your match. ${Utils.period(
+          `An error occurred while creating your match. ${period(
             err.message
           )} Please check your Internet connection and try again.`
         );

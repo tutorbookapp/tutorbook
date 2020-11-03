@@ -31,7 +31,7 @@ import {
 } from 'lib/model';
 import { APIError } from 'lib/api/error';
 import { ListRequestsRes } from 'lib/api/routes/requests/list';
-import Utils from 'lib/utils';
+import { period } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -139,7 +139,7 @@ export default memo(function RequestPage({
       if (err && err.response) {
         setLoading(false);
         setError(
-          `An error occurred while creating your request. ${Utils.period(
+          `An error occurred while creating your request. ${period(
             (err.response.data || err).message
           )}`
         );
@@ -152,7 +152,7 @@ export default memo(function RequestPage({
       } else if (err) {
         setLoading(false);
         setError(
-          `An error occurred while creating your request. ${Utils.period(
+          `An error occurred while creating your request. ${period(
             err.message
           )} Please check your Internet connection and try again.`
         );

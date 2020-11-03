@@ -6,8 +6,8 @@ import generatePassword from 'password-generator';
 import to from 'await-to-js';
 
 import { Aspect, Match, Org, UserWithRoles, Venue, ZoomUser } from 'lib/model';
-import Utils from 'lib/utils';
 import { db } from 'lib/api/firebase';
+import { join } from 'lib/utils';
 
 /**
  * The Zoom meeting object returned by the Zoom Create Meeting REST API.
@@ -98,9 +98,7 @@ export default async function createZoom(
         method: 'post',
         url: `https://api.zoom.us/users/${hostId}/meetings`,
         data: {
-          topic: `${Utils.join(match.subjects)} ${Utils.join([
-            ...aspects,
-          ])} match`,
+          topic: `${join(match.subjects)} ${join([...aspects])} match`,
           type: 3, // Recurring meeting w/ no fixed time.
           password: generatePassword(10), // Passwords no longer than 10 chars.
           settings: {

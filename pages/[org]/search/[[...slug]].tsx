@@ -15,8 +15,8 @@ import Search from 'components/search';
 import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
-import Utils from 'lib/utils';
 import { db } from 'lib/api/firebase';
+import { intersection } from 'lib/utils';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -105,7 +105,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   const onClosed = useCallback(() => setViewing(undefined), []);
   const subjects = useMemo(() => {
     if (!viewing) return [];
-    return Utils.intersection<string, Option<string>>(
+    return intersection<string, Option<string>>(
       viewing[query.aspect].subjects,
       query.subjects,
       (a: string, b: Option<string>) => a === b.value
