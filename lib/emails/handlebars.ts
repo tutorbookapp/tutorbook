@@ -16,7 +16,7 @@ Handlebars.registerPartial('profile', Profile);
  * assert(join(['Chemistry', 'Chemistry H']) === 'Chemistry and Chemistry H');
  * assert(join(['A', 'B', 'C', 'D']) === 'A, B, C and D');
  */
-Handlebars.registerHelper('join', function join(array: string[]): string {
+Handlebars.registerHelper('join', function joinHelper(array: string[]): string {
   return join(array);
 });
 
