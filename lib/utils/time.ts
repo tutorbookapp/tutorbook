@@ -1,4 +1,16 @@
 /**
+ * Checks if two dates are a certain number of months apart.
+ * @param date - One of the dates to compare.
+ * @param [other] - The other date to compare (defaults to now).
+ * @return The number of months `date` is from `other` (can be negative).
+ */
+export function getMonthsApart(date: Date, other: Date = new Date()): number {
+  const yearDiff = date.getFullYear() - other.getFullYear();
+  const monthDiff = date.getMonth() - other.getMonth();
+  return monthDiff + 12 * yearDiff;
+}
+
+/**
  * Checks if a date occurs on the same date as another.
  * @param date - The base date to compare against.
  * @param other - The other date to compare.
@@ -45,31 +57,6 @@ export function getWeekdayOfFirst(month: number, year?: number): number {
 }
 
 /**
- * Returns the next date from 1970-01-01T00:00:00Z (the origin of the Unix
- * timestamp) that has the given times.
- * @see {@link https://en.wikipedia.org/wiki/Unix_time}
- * @param hours - The hours that the returned date should have.
- * @param [minutes=0] - The minutes that the returned date should have.
- * @param [seconds=0] - The seconds that the returned date should have.
- * @param [milliseconds=0] - The milliseconds that the returned date should
- * have.
- */
-export function getDateWithTime(
-  hours: number,
-  minutes = 0,
-  seconds = 0,
-  milliseconds = 0
-): Date {
-  return getNextDateWithTime(
-    hours,
-    minutes,
-    seconds,
-    milliseconds,
-    new Date(0)
-  );
-}
-
-/**
  * Returns the next date (from now or from a given date) that has the given
  * times.
  * @param hours - The hours that the returned date should have.
@@ -93,6 +80,31 @@ export function getNextDateWithTime(
     minutes,
     seconds,
     milliseconds
+  );
+}
+
+/**
+ * Returns the next date from 1970-01-01T00:00:00Z (the origin of the Unix
+ * timestamp) that has the given times.
+ * @see {@link https://en.wikipedia.org/wiki/Unix_time}
+ * @param hours - The hours that the returned date should have.
+ * @param [minutes=0] - The minutes that the returned date should have.
+ * @param [seconds=0] - The seconds that the returned date should have.
+ * @param [milliseconds=0] - The milliseconds that the returned date should
+ * have.
+ */
+export function getDateWithTime(
+  hours: number,
+  minutes = 0,
+  seconds = 0,
+  milliseconds = 0
+): Date {
+  return getNextDateWithTime(
+    hours,
+    minutes,
+    seconds,
+    milliseconds,
+    new Date(0)
   );
 }
 

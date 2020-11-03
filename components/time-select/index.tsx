@@ -24,7 +24,12 @@ import {
   DayAlias,
   Timeslot,
 } from 'lib/model';
-import { getDate, getDaysInMonth, getWeekdayOfFirst } from 'lib/utils/time';
+import {
+  getDate,
+  getDaysInMonth,
+  getMonthsApart,
+  getWeekdayOfFirst,
+} from 'lib/utils/time';
 
 import styles from './time-select.module.scss';
 
@@ -153,8 +158,18 @@ export default function TimeSelect({
                 })}
               </h6>
               <div className={styles.navigation}>
-                <IconButton onClick={viewPrevMonth} icon='chevron_left' />
-                <IconButton onClick={viewNextMonth} icon='chevron_right' />
+                <IconButton
+                  icon='chevron_left'
+                  onClick={viewPrevMonth}
+                  disabled={getMonthsApart(selected) <= 0}
+                  data-cy='prev-month-button'
+                />
+                <IconButton
+                  icon='chevron_right'
+                  onClick={viewNextMonth}
+                  disabled={getMonthsApart(selected) >= 3}
+                  data-cy='next-month-button'
+                />
               </div>
             </div>
             <div className={styles.weekdays}>
@@ -169,7 +184,7 @@ export default function TimeSelect({
                 ))}
             </div>
             <div className={styles.dates}>
-              {Array(getDaysInMonth(selected.getMonth()))
+              {Array(getDaysInMonth(month))
                 .fill(null)
                 .map((_, idx) => (
                   <IconButton
@@ -179,19 +194,19 @@ export default function TimeSelect({
                     key={`date-${idx}`}
                     disabled={!dateAvailability[idx]}
                     className={cn(styles.date, {
-                      [styles.active]: idx + 1 === selected.getDate(),
+                      [styles.active]: idx + 1 === date,
                     })}
                     style={{
                       gridColumn:
                         idx === 0
-                          ? getWeekdayOfFirst(selected.getMonth()) + 1
+                          ? getWeekdayOfFirst(month, year) + 1
                           : undefined,
                     }}
                     onClick={() => {
                       setDate(idx + 1);
                       setSelectOpen(true);
                     }}
-                    aria-selected={idx + 1 === selected.getDate()}
+                    aria-selected={idx + 1 === date}
                   />
                 ))}
             </div>

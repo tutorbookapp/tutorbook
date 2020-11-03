@@ -32,20 +32,25 @@ function selectTime() {
     .children('input')
     .as('time-input')
     .focus();
-  cy.getBySel('time-select-surface').should('be.visible').as('select');
+  cy.getBySel('time-select-surface').should('be.visible');
+
+  cy.getBySel('prev-month-button').should('be.disabled');
+  cy.getBySel('next-month-button')
+    .click()
+    .click()
+    .click()
+    .should('be.disabled');
+  cy.getBySel('prev-month-button').click().click().click();
 
   const now = new Date();
-  cy.get('@select')
-    .getBySel('selected-month')
-    .should(
-      'have.text',
-      now.toLocaleString('en', {
-        month: 'long',
-        year: 'numeric',
-      })
-    );
-  cy.get('@select')
-    .getBySel('day-button')
+  cy.getBySel('selected-month').should(
+    'have.text',
+    now.toLocaleString('en', {
+      month: 'long',
+      year: 'numeric',
+    })
+  );
+  cy.getBySel('day-button')
     .as('days')
     .should('have.length', getDaysInMonth(now.getMonth()))
     .eq(now.getDay())
@@ -72,8 +77,7 @@ function selectTime() {
     .click()
     .should('have.attr', 'aria-selected', 'true')
     .and('have.css', 'background-color', 'rgb(0, 112, 243)');
-  cy.get('@select')
-    .getBySel('selected-day')
+  cy.getBySel('selected-day')
     .should('be.visible')
     .and(
       'have.text',
@@ -94,12 +98,9 @@ function selectTime() {
   ]
     .reduce((a, c) => a.concat(c))
     .forEach((time: string, idx: number) => {
-      cy.get('@select')
-        .getBySel('time-button')
-        .eq(idx)
-        .should('have.text', time);
+      cy.getBySel('time-button').eq(idx).should('have.text', time);
     });
-  cy.get('@select').getBySel('time-button').first().click();
+  cy.getBySel('time-button').first().click();
   cy.get('@time-input')
     .should('not.be.focused')
     .and(
@@ -229,6 +230,7 @@ describe('Search page', () => {
 
     waitForResults();
 
+    // TODO: Add tests for filtering by languages and availability as well.
     cy.contains('button', 'Any subjects').click();
     cy.focused()
       .type('Artificial')
