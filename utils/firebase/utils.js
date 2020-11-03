@@ -22,6 +22,7 @@ console.log(
   )
 );
 
+const { v4: uuid } = require('uuid');
 const { nanoid } = require('nanoid');
 const axios = require('axios');
 const updateSubjects = require('./update-subjects');
@@ -518,4 +519,70 @@ const retryFailures = async () => {
   fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
 };
 
-retryFailures();
+const changeDateJSONToDates = async () => {
+  const empty = {
+    status: 'new',
+    org: 'default',
+    subjects: [],
+    people: [],
+    creator: {
+      id: '',
+      name: '',
+      photo: '',
+      handle: uuid(),
+      roles: [],
+    },
+    message: '',
+    id: '',
+  };
+
+  console.log('Fetching matches...');
+  const { docs } = await db.collection('matches').get();
+
+  console.log(`Normalizing ${docs.length} matches...`);
+  const matches = docs.map((doc) => {
+    const data = doc.data();
+    const venueId = nanoid(10);
+    const venue = {
+      id: venueId,
+      url: `https://meet.jit.si/TB-${venueId}`,
+      invite: `Open https://meet.jit.si/TB-${venueId} to join your meeting.`,
+      type: 'jitsi',
+      created: new Date().toJSON(),
+      updated: new Date().toJSON(),
+    };
+    return {
+      ...empty,
+      ...data,
+      venue,
+      id: doc.id,
+    };
+  });
+  debugger;
+
+  console.log(`Updating ${matches.length} matches...`);
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  const failed = [];
+  let count = 0;
+  bar.start(matches.length, count);
+  await Promise.all(
+    matches.map(async (match) => {
+      const url = `https://develop.tutorbook.app/api/matches/${match.id}`;
+      const [err] = await to(axios.put(url, match, { headers }));
+      if (err) {
+        console.error(
+          `\n${err.name} updating match (${match.id}): ${
+            err.response.data || err.message
+          }`
+        );
+        failed.push(match);
+        fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
+      }
+      bar.update((count += 1));
+    })
+  );
+  fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
+};
+
+changeDateJSONToDates();
