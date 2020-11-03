@@ -137,7 +137,7 @@ describe('Profile page', () => {
       'Sunday 9:00 AM - 12:00 PM, Sunday 1:00 PM - 4:00 PM, ' +
       'Tuesday 1:00 PM - 4:00 PM, Friday 7:00 AM - 11:00 AM';
 
-    cy.contains('When are you available?')
+    cy.contains('What is your weekly availability?')
       .children('input')
       .should('have.value', availabilityString)
       .focus();
