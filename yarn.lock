@@ -16477,14 +16477,14 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"swr@npm:^0.3.5":
-  version: 0.3.5
-  resolution: "swr@npm:0.3.5"
+"swr@npm:^0.3.8":
+  version: 0.3.8
+  resolution: "swr@npm:0.3.8"
   dependencies:
     dequal: 2.0.2
   peerDependencies:
-    react: ^16.11.0
-  checksum: c0747ebb2e1dce32686de3e3bbdcd2db8d29522af4b0b188c8cb9726e3dc97cd74c0a58acb715df972bb8a56904dd75e7e5df542220ff389ec0c0887b527884e
+    react: ^16.11.0 || ^17.0.0
+  checksum: 2a971d44de4191b5fe4d523f2e18d7d022cb7c6a6c4d83b3ac3a922cfd4baac947a768cb0ee7514154d4c7dadd765de6ef8c9fcd2fe0b92b061927d18d692b1f
   languageName: node
   linkType: hard
 
@@ -17191,7 +17191,7 @@ resolve@1.1.7:
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.0
     svg-url-loader: ^6.0.0
-    swr: ^0.3.5
+    swr: ^0.3.8
     terser-webpack-plugin: ^3.0.7
     ts-loader: ^7.0.5
     ts-node: ^9.0.0

@@ -89,7 +89,10 @@ export default function UserDialog({
   // @see {@link https://github.com/vercel/swr/issues/576}
   if (!initialData.id) initialData.id = `temp-${uuid()}`;
   const [id, setId] = useState<string>(initialData.id);
-  const { data } = useSWR<UserJSON>(`/api/users/${id}`, { initialData });
+  const { data } = useSWR<UserJSON>(`/api/users/${id}`, {
+    initialData,
+    revalidateOnMount: true,
+  });
   const user = data as UserJSON;
 
   const onChange = useCallback(async (updated: UserJSON) => {
