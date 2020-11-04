@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Router, { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
 import { UserDialogProps } from 'components/user-dialog';
@@ -7,6 +8,7 @@ import {
   Availability,
   Org,
   RequestJSON,
+  User,
   UserJSON,
   UsersQuery,
 } from 'lib/model';
@@ -48,8 +50,15 @@ export default function People({ org }: PeopleProps): JSX.Element {
     })
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
-  const [viewing, setViewing] = useState<UserJSON>();
   const [matching, setMatching] = useState<RequestJSON[]>([]);
+
+  const {
+    query: { slug },
+  } = useRouter();
+  const [viewing, setViewing] = useState<UserJSON | undefined>(() => {
+    if (!slug || !slug[0]) return;
+    return new User({ id: slug[0] }).toJSON();
+  });
 
   const onViewingClosed = useCallback(() => setViewing(undefined), []);
 
@@ -82,6 +91,10 @@ export default function People({ org }: PeopleProps): JSX.Element {
         })
     );
   }, [matching]);
+  useEffect(() => {
+    const url = `/${org.id}/people/${viewing?.id || ''}`;
+    void Router.replace(url, undefined, { shallow: true });
+  }, [org.id, viewing?.id]);
 
   const initialPage = useMemo(() => {
     if (!viewing || !viewing.id || viewing.id.startsWith('temp')) return 'edit';

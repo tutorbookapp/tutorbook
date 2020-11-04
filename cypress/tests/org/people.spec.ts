@@ -31,6 +31,20 @@ describe('People dashboard page', () => {
     cy.url({ timeout: 60000 }).should('contain', url);
   });
 
+  it('opens directly to user dialog', () => {
+    cy.route('GET', `/api/users/${volunteer.id}`).as('get-volunteer');
+
+    cy.login(admin.id);
+    cy.visit(`/${school.id}/people/${volunteer.id}`);
+    cy.wait('@get-account');
+
+    cy.getBySel('user-dialog').should('be.visible');
+    cy.wait('@get-volunteer');
+    cy.getBySel('user-dialog')
+      .should('contain', volunteer.name)
+      .and('contain', volunteer.bio);
+  });
+
   // TODO: Add tests for the matching functionality of this people dashboard.
   it('creates, edits, and matches people', () => {
     cy.login(admin.id);
@@ -65,6 +79,7 @@ describe('People dashboard page', () => {
       .first()
       .should('contain', volunteer.name)
       .click();
+    cy.url().should('contain', `/${school.id}/people/${volunteer.id}`);
 
     // TODO: Assert about the data sent in the `/api/user/${id}` PUT requests to
     // ensure that the front-end is properly updating data.
@@ -90,6 +105,7 @@ describe('People dashboard page', () => {
     cy.get('@dialog').should('not.exist');
 
     cy.get('@results').eq(1).should('contain', student.name).click();
+    cy.url().should('contain', `/${school.id}/people/${student.id}`);
 
     cy.getBySel('user-dialog')
       .should('be.visible')
