@@ -1,18 +1,19 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, MatchJSON, isMatchJSON } from 'lib/model';
-import { handle } from 'lib/api/error';
 import createMatchDoc from 'lib/api/create/match-doc';
-import createMatchNotification from 'lib/api/create/match-notification';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createZoom from 'lib/api/create/zoom';
-import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
+import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
+import getUser from 'lib/api/get/user';
+import { handle } from 'lib/api/error';
+import sendEmails from 'lib/mail/matches/create';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
-import verifyOrgs from 'lib/api/verify/orgs';
+import verifyOrgAdminsInclude from 'lib/api/verify/org-admins-include';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
@@ -43,15 +44,18 @@ export default async function createMatch(
 
     // Verify the creator is:
     // a) The student him/herself OR;
-    // b) Admin of the student's org (e.g. Gunn High School).
+    // b) Admin of the match's org (e.g. Gunn High School).
     const students = getStudents(people);
-    const orgIds = (await getOrgsByAdminId(creator.id)).map((o) => o.id);
-    students.forEach((s) => s.id !== creator.id && verifyOrgs(s, orgIds));
+    const org = await getOrg(body.org);
+    if (!students.some((s) => s.id === creator.id))
+      verifyOrgAdminsInclude(org, creator.id);
 
     const zoom = await createZoom(body, people);
     const match = await createMatchDoc(body, zoom);
     await createMatchSearchObj(match);
-    await createMatchNotification(match, people, creator);
+
+    const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));
+    await sendEmails(match, people, creator, org, orgAdmins);
 
     res.status(201).json(match.toJSON());
   } catch (e) {

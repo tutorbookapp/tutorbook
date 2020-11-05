@@ -98,6 +98,18 @@ function getBySel(
   return cy.get(`[data-cy=${selector}]`, ...args);
 }
 
+chai.Assertion.addMethod('img', function img(src: string, w = 1200, q = 75) {
+  new chai.Assertion(this._obj).to.exist;
+  const expected = `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${q}`;
+  this.assert(
+    this._obj.attr('src') === expected,
+    'expected #{this} to have Next.js image source #{exp}, but the source was #{act}',
+    'expected #{this} not to have Next.js image source #{exp}',
+    expected,
+    this._obj.attr('src')
+  );
+});
+
 Cypress.Commands.add('login', login);
 Cypress.Commands.add('logout', logout);
 Cypress.Commands.add('setup', setup);

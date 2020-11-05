@@ -3760,6 +3760,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dom@npm:^16.9.9":
+  version: 16.9.9
+  resolution: "@types/react-dom@npm:16.9.9"
+  dependencies:
+    "@types/react": "*"
+  checksum: d92c166f5bcd483f175311eec9c472893216d486106a5b5402eb293840c0b0d1aafb484a3fe3f0f4622ae1f6dff46c9fe970873d4dac7fdf70a50931d3cab4a0
+  languageName: node
+  linkType: hard
+
 "@types/react-test-renderer@npm:^16.9.2":
   version: 16.9.2
   resolution: "@types/react-test-renderer@npm:16.9.2"
@@ -17125,6 +17134,7 @@ resolve@1.1.7:
     "@types/nprogress": ^0.2.0
     "@types/phone": ^2.4.0
     "@types/react": ^16.9.43
+    "@types/react-dom": ^16.9.9
     "@types/react-test-renderer": ^16.9.2
     "@types/react-window": ^1.8.2
     "@types/rfdc": ^1.1.0

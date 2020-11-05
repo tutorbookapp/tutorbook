@@ -32,7 +32,7 @@ describe('Org landing page', () => {
   it('displays org information', () => {
     cy.getBySel('name').should('have.text', org.name);
     cy.getBySel('avatar')
-      .should('have.attr', 'src', org.photo)
+      .should('have.img', org.photo, 120)
       .closest('a')
       .should('have.attr', 'href', org.photo);
     cy.getBySel('socials').find('a').should('have.length', org.socials.length);
@@ -47,6 +47,6 @@ describe('Org landing page', () => {
     cy.getBySel('bio').should('have.text', org.bio);
     cy.getBySel('header').should('have.text', org.home.en.header);
     cy.getBySel('body').should('have.text', org.home.en.body);
-    cy.getBySel('backdrop').should('have.attr', 'src', org.home.en.photo);
+    cy.getBySel('backdrop').should('have.img', org.home.en.photo);
   });
 });

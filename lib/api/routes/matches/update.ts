@@ -35,6 +35,9 @@ export default async function updateMatch(
     const creator = await getPerson(body.creator, people);
     await verifyAuth(req.headers, { userId: creator.id, orgIds: creator.orgs });
 
+    // TODO: Compare the previous data with the requested updates to ensure that
+    // the creator hasn't changed (if it has, users could bypass these checks).
+
     // Verify the creator is:
     // a) The student him/herself OR;
     // b) Admin of the student's org (e.g. Gunn High School).

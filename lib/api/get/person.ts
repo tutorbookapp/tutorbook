@@ -1,13 +1,7 @@
 import { Person, Role, User, UserWithRoles } from 'lib/model';
 import { APIError } from 'lib/api/error';
-import clone from 'lib/utils/clone';
+import { addRoles } from 'lib/utils';
 import getUser from 'lib/api/get/user';
-
-function addRoles(user: User, roles: Role[]): UserWithRoles {
-  const userWithRoles = new User(clone(user));
-  (userWithRoles as UserWithRoles).roles = roles;
-  return userWithRoles as UserWithRoles;
-}
 
 /**
  * Fetches the person's complete user data. First, tries to fetch the data from
