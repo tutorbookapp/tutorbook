@@ -8,6 +8,7 @@ import {
   Availability,
   Org,
   RequestJSON,
+  Timeslot,
   User,
   UserJSON,
   UsersQuery,
@@ -77,8 +78,8 @@ export default function People({ org }: PeopleProps): JSX.Element {
       return acc;
     }, new Set<string>());
     const availability = matching.reduce((a, c) => {
-      if (!c.times) return a;
-      return new Availability(...a, ...Availability.fromJSON(c.times));
+      if (!c.time) return a;
+      return new Availability(...a, Timeslot.fromJSON(c.time));
     }, new Availability());
     setQuery(
       (prev: UsersQuery) =>

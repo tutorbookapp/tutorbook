@@ -3,7 +3,7 @@
   "phone": "Your phone number",
   "people": "Who is this for?",
   "subjects": "What would you like to learn?",
-  "times": "When would you like to meet?",
+  "time": "When would you like to meet?",
   "message": "What specifically do you need help with?",
   "message-placeholder": "Ex: I could really use your help with my {{subject}} project...",
   "send-btn": "Send request",

@@ -1,4 +1,4 @@
-import { Availability, User } from 'lib/model';
+import { Timeslot, User } from 'lib/model';
 
 /**
  * Verifies that the given times are included within the given people's
@@ -11,17 +11,6 @@ import { Availability, User } from 'lib/model';
  * @todo Update this verification to account for recur times.
  */
 export default function verifyTimesInAvailability(
-  times: Availability,
+  time: Timeslot,
   people: User[]
-): void {
-  /*
-   *people.forEach((person: User) => {
-   *  times.forEach((time: Timeslot) => {
-   *    if (!person.availability.contains(time))
-   *      throw new APIError(
-   *        `${person.toString()} is not available ${time.toString()}`
-   *      );
-   *  });
-   *});
-   */
-}
+): void {}

@@ -23,7 +23,6 @@ import TimeSelect from 'components/time-select';
 
 import {
   Aspect,
-  Availability,
   Match,
   MatchJSON,
   Person,
@@ -154,6 +153,7 @@ export default memo(function MatchPage({
       }),
     ];
     return new Match({
+      time,
       people,
       message,
       org: org?.id || 'default',
@@ -165,7 +165,6 @@ export default memo(function MatchPage({
         roles: [],
         handle: uuid(),
       },
-      times: time ? new Availability(time) : new Availability(),
     });
   }, [value, user, students, subjects, message, time, org?.id]);
 
@@ -238,7 +237,7 @@ export default memo(function MatchPage({
           <TimeSelect
             required
             uid={value.id}
-            label={t('common:times')}
+            label={t('common:time')}
             onChange={setTime}
             value={time}
             className={styles.field}
