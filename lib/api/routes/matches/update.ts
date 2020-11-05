@@ -13,7 +13,7 @@ import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyOrgs from 'lib/api/verify/orgs';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
-import verifyTimesInAvailability from 'lib/api/verify/times-in-availability';
+import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
 export type UpdateMatchRes = MatchJSON;
 
@@ -26,7 +26,7 @@ export default async function updateMatch(
     const people = await getPeople(body.people);
 
     // TODO: Update the time verification logic to account for recur rules.
-    if (body.times) verifyTimesInAvailability(body.times, people);
+    if (body.time) verifyTimeInAvailability(body.time, people);
     verifySubjectsCanBeTutored(body.subjects, people);
 
     // Verify the creator exists and that the one sending the request is:

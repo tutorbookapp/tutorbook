@@ -73,7 +73,7 @@ export default async function getAvailability(
 
   // 2. Remove the weekly recurring match times from that availability.
   const matches = await getUserMatches(uid);
-  matches.forEach((m) => m.times?.forEach((t) => baseline.remove(t)));
+  matches.forEach((m) => (m.time ? baseline.remove(m.time) : undefined));
 
   // 3. Split each of the availability timeslots into 30 min timeslots in 15 min
   // intervals. This assumes there is no overlap between the baseline timeslots.

@@ -3,12 +3,12 @@ import { ObjectWithObjectID } from '@algolia/client-search';
 import { v4 as uuid } from 'uuid';
 
 import {
-  Availability,
-  AvailabilityFirestore,
-  AvailabilityJSON,
-  AvailabilitySearchHit,
-  isAvailabilityJSON,
-} from 'lib/model/availability';
+  Timeslot,
+  TimeslotFirestore,
+  TimeslotJSON,
+  TimeslotSearchHit,
+  isTimeslotJSON,
+} from 'lib/model/timeslot';
 import {
   Venue,
   VenueFirestore,
@@ -106,30 +106,30 @@ export interface MatchInterface {
   creator: Person;
   message: string;
   venue: Venue;
-  times?: Availability;
+  time?: Timeslot;
   request?: Match;
   ref?: DocumentReference;
   id: string;
 }
 
-export type MatchJSON = Omit<MatchInterface, 'times' | 'request' | 'venue'> & {
-  times?: AvailabilityJSON;
+export type MatchJSON = Omit<MatchInterface, 'time' | 'request' | 'venue'> & {
+  time?: TimeslotJSON;
   request?: MatchJSON;
   venue: VenueJSON;
 };
 
 export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, 'times' | 'request' | 'venue'> & {
-    times?: AvailabilitySearchHit;
+  Omit<MatchInterface, 'time' | 'request' | 'venue'> & {
+    time?: TimeslotSearchHit;
     request?: MatchSearchHit;
     venue: VenueSearchHit;
   };
 
 export type MatchFirestore = Omit<
   MatchInterface,
-  'times' | 'request' | 'venue'
+  'time' | 'request' | 'venue'
 > & {
-  times?: AvailabilityFirestore;
+  time?: TimeslotFirestore;
   request?: MatchFirestore;
   venue: VenueFirestore;
 };
@@ -146,7 +146,7 @@ export function isMatchJSON(json: unknown): json is MatchJSON {
   if (!isPerson(json.creator)) return false;
   if (typeof json.message !== 'string') return false;
   if (!isVenueJSON(json.venue)) return false;
-  if (json.times && !isAvailabilityJSON(json.times)) return false;
+  if (json.time && !isTimeslotJSON(json.time)) return false;
   if (json.request && !isMatchJSON(json.request)) return false;
   if (typeof json.id !== 'string') return false;
   return true;
@@ -173,7 +173,7 @@ export class Match implements MatchInterface {
 
   public venue: Venue = new Venue();
 
-  public times?: Availability;
+  public time?: Timeslot;
 
   public request?: Match;
 
@@ -193,30 +193,30 @@ export class Match implements MatchInterface {
   }
 
   public toJSON(): MatchJSON {
-    const { times, request, venue, ...rest } = this;
+    const { time, request, venue, ...rest } = this;
     return {
       ...rest,
-      times: times ? times.toJSON() : undefined,
+      time: time ? time.toJSON() : undefined,
       request: request ? request.toJSON() : undefined,
       venue: venue.toJSON(),
     };
   }
 
   public static fromJSON(json: MatchJSON): Match {
-    const { times, request, venue, ...rest } = json;
+    const { time, request, venue, ...rest } = json;
     return new Match({
       ...rest,
-      times: times ? Availability.fromJSON(times) : undefined,
+      time: time ? Timeslot.fromJSON(time) : undefined,
       request: request ? Match.fromJSON(request) : undefined,
       venue: Venue.fromJSON(venue),
     });
   }
 
   public toFirestore(): DocumentData {
-    const { times, request, venue, ref, id, ...rest } = this;
+    const { time, request, venue, ref, id, ...rest } = this;
     return firestoreVals({
       ...rest,
-      times: times ? times.toFirestore() : undefined,
+      time: time ? time.toFirestore() : undefined,
       request: request ? request.toFirestore() : undefined,
       venue: venue.toFirestore(),
     });
@@ -225,10 +225,10 @@ export class Match implements MatchInterface {
   public static fromFirestore(snapshot: DocumentSnapshot): Match {
     const matchData: DocumentData | undefined = snapshot.data();
     if (matchData) {
-      const { times, request, venue, ...rest } = matchData;
+      const { time, request, venue, ...rest } = matchData;
       return new Match({
         ...rest,
-        times: times ? Availability.fromFirestore(times) : undefined,
+        time: time ? Timeslot.fromFirestore(time) : undefined,
         request: request ? Match.fromJSON(request) : undefined,
         venue: Venue.fromFirestore(venue),
         ref: snapshot.ref,
@@ -243,10 +243,10 @@ export class Match implements MatchInterface {
   }
 
   public static fromSearchHit(hit: MatchSearchHit): Match {
-    const { times, request, venue, objectID, ...rest } = hit;
+    const { time, request, venue, objectID, ...rest } = hit;
     return new Match({
       ...rest,
-      times: times ? Availability.fromSearchHit(times) : undefined,
+      time: time ? Timeslot.fromSearchHit(time) : undefined,
       request: request ? Match.fromSearchHit(request) : undefined,
       venue: Venue.fromSearchHit(venue),
       id: objectID,

@@ -14,14 +14,14 @@ import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyOrgs from 'lib/api/verify/orgs';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
-import verifyTimesInAvailability from 'lib/api/verify/times-in-availability';
+import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
 export type CreateMatchRes = MatchJSON;
 
 /**
  * Creates a new match: A pairing of people (typically between a student and a
  * tutor/mentor).
- * @todo Don't error when a creator is unavailable during the requested times
+ * @todo Don't error when a creator is unavailable during the requested time
  * (or, even better, add this timeslot to their availability and then remove it
  * during post-creation logic).
  */
@@ -34,7 +34,7 @@ export default async function createMatch(
     const people = await getPeople(body.people);
 
     // TODO: Update the time verification logic to account for recur rules.
-    if (body.times) verifyTimesInAvailability(body.times, people);
+    if (body.time) verifyTimeInAvailability(body.time, people);
     verifySubjectsCanBeTutored(body.subjects, people);
 
     // Verify the creator exists and is sending an authorized request.

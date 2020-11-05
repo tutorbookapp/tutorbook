@@ -21,7 +21,6 @@ import TimeSelect from 'components/time-select';
 
 import {
   Aspect,
-  Availability,
   Match,
   MatchJSON,
   Person,
@@ -85,12 +84,12 @@ export default function RequestDialog({
       roles: [aspect === 'tutoring' ? 'tutor' : 'mentor'],
     };
     match.current = new Match({
+      time,
       creator,
       message,
       subjects,
       org: org?.id || 'default',
       people: [target, creator],
-      times: time ? new Availability(time) : new Availability(),
     });
   }, [currentUser, user, aspect, message, subjects, time, org?.id]);
 
@@ -262,7 +261,7 @@ export default function RequestDialog({
               required
               outlined
               renderToPortal
-              label={t('match3rd:times')}
+              label={t('match3rd:time')}
               className={styles.field}
               onChange={setTime}
               value={time}

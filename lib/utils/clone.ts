@@ -33,7 +33,7 @@ function cloneZoomUser(user: ZoomUser): ZoomUser {
 
 interface Temp {
   availability: Availability;
-  times: Availability;
+  time: Timeslot;
   venue: Venue;
   zooms: ZoomUser[];
   verifications: Verification[];
@@ -44,7 +44,7 @@ export default function clone<T>(obj: T): T {
   const copy = (deepClone(obj) as unknown) as Temp;
   const orig = (obj as unknown) as Temp;
   if (orig.availability) copy.availability = cloneTimes(orig.availability);
-  if (orig.times) copy.times = cloneTimes(orig.times);
+  if (orig.time) copy.time = cloneTime(orig.time);
   if (orig.venue) copy.venue = cloneVenue(orig.venue);
   if (orig.zooms) copy.zooms = orig.zooms.map(cloneZoomUser);
   if (orig.verifications)
