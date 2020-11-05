@@ -143,8 +143,8 @@ export default function plugins(
         await Promise.all(data.map((d) => axios.post(endpoint, d, rconfig)));
       }
 
-      await create('users', users);
       await create('orgs', orgs);
+      await create('users', users);
       await create('matches', matches);
 
       return null;

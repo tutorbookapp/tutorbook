@@ -17,14 +17,14 @@ function waitForResults() {
     .and('contain', onlyFirstNameAndLastInitial(volunteer.name))
     .and('contain', volunteer.bio)
     .find('img')
-    .should('have.attr', 'src', volunteer.photo);
+    .should('have.img', volunteer.photo, 85);
   cy.get('@results')
     .eq(1)
     .should('not.contain', admin.name)
     .and('contain', onlyFirstNameAndLastInitial(admin.name))
     .and('contain', admin.bio)
     .find('img')
-    .should('have.attr', 'src', admin.photo);
+    .should('have.img', admin.photo, 85);
 }
 
 function selectTime() {
@@ -100,7 +100,7 @@ function selectTime() {
     .forEach((time: string, idx: number) => {
       cy.getBySel('time-button').eq(idx).should('have.text', time);
     });
-  cy.getBySel('time-button').first().click();
+  cy.getBySel('time-button').first().click({ force: true });
   cy.get('@time-input')
     .should('not.be.focused')
     .and(

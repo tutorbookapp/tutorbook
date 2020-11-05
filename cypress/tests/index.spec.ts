@@ -60,7 +60,7 @@ describe('Landing page', () => {
       .find('[data-cy=name]')
       .should('have.text', onlyFirstNameAndLastInitial(volunteer.name));
     cy.get('@card').find('[data-cy=bio]').should('have.text', volunteer.bio);
-    cy.get('@card').find('img').should('have.attr', 'src', volunteer.photo);
+    cy.get('@card').find('img').should('have.img', volunteer.photo, 160);
 
     // TODO: Remove this `click()` workaround b/c that's a bug in our front-end.
     // cy.get('@carousel').find('button:visible').click();

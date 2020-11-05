@@ -1,7 +1,8 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import algoliasearch from 'algoliasearch/lite';
 
-import { Option } from 'lib/model';
+import { Option, Role, User, UserWithRoles } from 'lib/model';
+import clone from 'lib/utils/clone';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
@@ -12,6 +13,18 @@ const searchIndex = client.initIndex('langs');
 type LangHit = ObjectWithObjectID & {
   [key: string]: { name: string; synonyms: string[] };
 };
+
+/**
+ * Adds roles to a given user object.
+ * @param user - The user to add roles to.
+ * @param roles - The roles to add.
+ * @return A `UserWithRoles` object that contains all data combined.
+ */
+export function addRoles(user: User, roles: Role[]): UserWithRoles {
+  const userWithRoles = new User(clone(user));
+  (userWithRoles as UserWithRoles).roles = roles;
+  return userWithRoles as UserWithRoles;
+}
 
 /**
  * Converts a given array of locale codes into an array of `Option<string>`
