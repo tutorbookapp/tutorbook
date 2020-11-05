@@ -205,7 +205,7 @@ describe('Search page', () => {
       .contains('What specifically do you need help with?')
       .type(match.message);
 
-    cy.contains('button', 'Send match').click().should('be.disabled');
+    cy.contains('button', 'Send request').click().should('be.disabled');
     cy.getBySel('loader').should('be.visible');
 
     // TODO: Make assertions about the content within our Firestore database
