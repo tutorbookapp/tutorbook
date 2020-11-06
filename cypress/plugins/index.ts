@@ -144,7 +144,18 @@ export default function plugins(
       }
 
       await create('orgs', orgs);
-      await create('users', users);
+
+      // We have to create the admin first because TB's back-end will try to
+      // fetch his data when sending user creation notification emails.
+      await create(
+        'users',
+        users.filter((u) => u.id === 'admin')
+      );
+      await create(
+        'users',
+        users.filter((u) => u.id !== 'admin')
+      );
+
       await create('matches', matches);
 
       return null;
