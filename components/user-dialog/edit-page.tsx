@@ -273,7 +273,7 @@ export default memo(function EditPage({
           />
           {!!error && (
             <div className={styles.error}>
-              {t(`user:${action}-error`, { error: error.message })}
+              {t(`user:${action}-error`, { error })}
             </div>
           )}
         </div>
