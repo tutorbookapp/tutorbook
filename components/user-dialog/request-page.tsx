@@ -8,8 +8,8 @@ import {
   useState,
 } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { IconButton } from '@rmwc/icon-button';
+import { TextField } from '@rmwc/textfield';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
@@ -227,15 +227,7 @@ export default memo(function RequestPage({
             raised
             arrow
           />
-          {!!error && (
-            <TextFieldHelperText
-              persistent
-              validationMsg
-              className={styles.error}
-            >
-              {error}
-            </TextFieldHelperText>
-          )}
+          {!!error && <div className={styles.error}>{error}</div>}
         </form>
       </div>
     </div>

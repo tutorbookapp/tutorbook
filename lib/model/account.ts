@@ -114,6 +114,6 @@ export class Account implements AccountInterface {
   }
 
   public toString(): string {
-    return `${this.name} (${this.id})`;
+    return `${this.name}${this.id ? ` (${this.id})` : ''}`;
   }
 }

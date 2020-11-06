@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useMemo } from 'react';
-import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import { animated, useSpring } from 'react-spring';
+import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
@@ -39,9 +39,9 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     data: user,
     setData: setUser,
     onSubmit,
-    error,
     loading,
     checked,
+    error,
   } = useSingle(local, updateRemote, updateLocal);
 
   const getSocialProps = useSocialProps(
@@ -235,14 +235,9 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               arrow
             />
             {!!error && (
-              <TextFieldHelperText
-                data-cy='error'
-                persistent
-                validationMsg
-                className={styles.error}
-              >
-                {t(`user3rd:${action}-error`, { error: error.message })}
-              </TextFieldHelperText>
+              <div data-cy='error' className={styles.error}>
+                {t(`user3rd:${action}-error`, { error })}
+              </div>
             )}
           </div>
         </form>

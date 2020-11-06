@@ -1,7 +1,7 @@
 import { memo, useCallback, useLayoutEffect, useMemo, FormEvent } from 'react';
-import { TextField, TextFieldHelperText } from '@rmwc/textfield';
-import axios from 'axios';
 import { IconButton } from '@rmwc/icon-button';
+import { TextField } from '@rmwc/textfield';
+import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
 import PhotoInput from 'components/photo-input';
@@ -272,13 +272,9 @@ export default memo(function EditPage({
             arrow
           />
           {!!error && (
-            <TextFieldHelperText
-              persistent
-              validationMsg
-              className={styles.error}
-            >
+            <div className={styles.error}>
               {t(`user:${action}-error`, { error: error.message })}
-            </TextFieldHelperText>
+            </div>
           )}
         </div>
       </form>

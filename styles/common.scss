@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'styles/config';
+@use 'styles/typography';
 @use '@material/elevation';
 
 @mixin wrapper($width: config.$default-width) {
@@ -62,7 +63,9 @@
 }
 
 @mixin error {
+  @include typography.typography('body2');
   color: map.get(config.$colors, 'error');
   font-weight: 450;
+  font-size: 12px;
   margin-top: 16px;
 }

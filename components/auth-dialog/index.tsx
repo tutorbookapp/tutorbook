@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { Dialog } from '@rmwc/dialog';
-import { TextFieldHelperText } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
 
@@ -65,14 +64,9 @@ export default function AuthDialog(): JSX.Element {
             arrow
           />
           {!!error && (
-            <TextFieldHelperText
-              data-cy='error'
-              persistent
-              validationMsg
-              className={styles.error}
-            >
+            <div data-cy='error' className={styles.error}>
               {t('search:login-err', { error: error.message })}
-            </TextFieldHelperText>
+            </div>
           )}
         </div>
       </div>

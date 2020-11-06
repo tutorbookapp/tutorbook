@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { TextFieldHelperText } from '@rmwc/textfield';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 import Router from 'next/router';
@@ -65,13 +64,9 @@ export default function Login(): JSX.Element {
             arrow
           />
           {!!error && (
-            <TextFieldHelperText
-              persistent
-              validationMsg
-              className={styles.error}
-            >
+            <div className={styles.error}>
               {t('login:error', { error: error.message })}
-            </TextFieldHelperText>
+            </div>
           )}
         </div>
       </div>

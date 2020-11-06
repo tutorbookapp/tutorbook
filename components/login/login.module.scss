@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'styles/config';
+@use 'styles/common';
 @use 'styles/typography';
 
 .wrapper {
@@ -45,12 +46,10 @@
       }
 
       .error {
+        @include common.error;
         text-align: initial;
-        color: map.get(config.$colors, 'error');
-        font-weight: 450;
-        margin-top: 16px;
-        width: $width;
         position: absolute;
+        width: $width;
       }
     }
   }

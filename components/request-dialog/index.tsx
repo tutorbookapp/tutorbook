@@ -6,9 +6,9 @@ import {
   useRef,
   useState,
 } from 'react';
-import { TextField, TextFieldHelperText } from '@rmwc/textfield';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Dialog } from '@rmwc/dialog';
+import { TextField } from '@rmwc/textfield';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
@@ -29,7 +29,7 @@ import {
   User,
   UserJSON,
 } from 'lib/model';
-import { APIError } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/api/error';
 import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useOrg } from 'lib/context/org';
@@ -122,7 +122,7 @@ export default function RequestDialog({
       } else if (!currentUser.phone && phoneRequired) {
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
-          AxiosError<APIError>
+          AxiosError<APIErrorJSON>
         >(
           axios.put(`/api/users/${currentUser.id}`, {
             ...currentUser.toJSON(),
@@ -157,9 +157,10 @@ export default function RequestDialog({
         }
         await updateUser(User.fromJSON((res as AxiosResponse<UserJSON>).data));
       }
-      const [err] = await to<AxiosResponse<MatchJSON>, AxiosError<APIError>>(
-        axios.post('/api/matches', match.current.toJSON())
-      );
+      const [err] = await to<
+        AxiosResponse<MatchJSON>,
+        AxiosError<APIErrorJSON>
+      >(axios.post('/api/matches', match.current.toJSON()));
       if (err && err.response) {
         setLoading(false);
         setError(
@@ -295,14 +296,9 @@ export default function RequestDialog({
               arrow
             />
             {!!error && (
-              <TextFieldHelperText
-                data-cy='error'
-                persistent
-                validationMsg
-                className={styles.error}
-              >
+              <div data-cy='error' className={styles.error}>
                 {error}
-              </TextFieldHelperText>
+              </div>
             )}
           </form>
         </div>

@@ -20,7 +20,7 @@ export default async function updatePhoto(account: Account): Promise<void> {
   if (validPhoto(account.photo)) {
     // Ensure that filename is in the proper location. Ensure that the photo is
     // cropped to a square (1:1) ratio.
-  } else {
+  } else if (account.photo) {
     // Download the image, crop it to a square (1:1) ratio, and upload the final
     // result to the proper location in our GCP Storage bucket.
     const [err, res] = await to(

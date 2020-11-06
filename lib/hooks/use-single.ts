@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useRef, useState, FormEvent } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { AxiosError } from 'axios';
 import { dequal } from 'dequal';
 import to from 'await-to-js';
 
+import { APIErrorJSON } from 'lib/api/error';
 import { Callback } from 'lib/model';
 
 interface SingleProps<T> {
   data: T;
   setData: Callback<T>;
   onSubmit: (evt?: FormEvent) => Promise<void>;
-  error?: Error;
   loading: boolean;
   checked: boolean;
+  error: string;
 }
 
 /**
@@ -30,7 +32,7 @@ export default function useSingle<T extends { id: string }>(
   updateLocal?: (data: T) => Promise<void> | void
 ): SingleProps<T> {
   const [data, setData] = useState<T>(initialData);
-  const [error, setError] = useState<Error>();
+  const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
 
@@ -40,7 +42,7 @@ export default function useSingle<T extends { id: string }>(
     async (evt?: FormEvent) => {
       if (evt) evt.preventDefault();
       // Show a loading state.
-      setError(undefined);
+      setError('');
       setChecked(false);
       setLoading(true);
       // Immediately mutate local data.
@@ -49,7 +51,8 @@ export default function useSingle<T extends { id: string }>(
       const [err, res] = await to(updateRemote(data));
       if (err) {
         // If the server sends an error, show error message.
-        setError(err);
+        const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
+        setError(e.message);
         // Hide the loading state, error has been received.
         setLoading(false);
       } else {
