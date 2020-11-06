@@ -20,6 +20,9 @@ export default async function deleteUser(
 
     await verifyAuth(req.headers, { userId: user.id, orgIds: user.orgs });
 
+    // TODO: Once we get our GCP Storage buckets organized, I should also delete
+    // all of the user-uploaded media (e.g. profile photos, banner images).
+
     await deleteAuthUser(user.id);
     await deleteUserDoc(user.id);
     await deleteUserSearchObj(user.id);

@@ -11,11 +11,7 @@ module.exports = withImages({
     ],
   },
   images: {
-    domains: [
-      'assets.tutorbook.app',
-      'firebasestorage.googleapis.com',
-      'lh3.googleusercontent.com',
-    ],
+    domains: ['assets.tutorbook.app', 'firebasestorage.googleapis.com'],
     imageSizes: [260, 160, 120, 85, 40, 24],
   },
   async redirects() {

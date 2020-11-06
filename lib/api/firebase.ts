@@ -31,7 +31,7 @@ export type App = admin.app.App;
  * @see {@link https://stackoverflow.com/a/41044630/10023158}
  * @see {@link https://stackoverflow.com/a/50376092/10023158}
  */
-const firebase: App = admin.initializeApp(
+const firebase = admin.initializeApp(
   {
     credential: admin.credential.cert({
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -47,7 +47,8 @@ const firebase: App = admin.initializeApp(
   uuid()
 );
 
-export const auth: Auth = firebase.auth();
-export const db: Firestore = firebase.firestore();
+export const auth = firebase.auth();
+export const db = firebase.firestore();
+export const bucket = firebase.storage().bucket();
 
 db.settings({ ignoreUndefinedProperties: true });

@@ -4,6 +4,8 @@ import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
+import { getPhotoFilename } from 'lib/utils';
+
 import styles from './avatar.module.scss';
 
 const Tooltip = dynamic<TooltipProps>(() =>
@@ -42,7 +44,10 @@ export default function Avatar({
           <div className={styles.verifiedText}>{t('common:verified')}</div>
         </Tooltip>
       )}
-      {!loading && !!src && (
+      {!loading && !!src && !getPhotoFilename(src) && (
+        <img data-cy='avatar' src={src} alt='' />
+      )}
+      {!loading && !!src && !!getPhotoFilename(src) && (
         <Image data-cy='avatar' height={size} width={size} src={src} alt='' />
       )}
       {!src && !loading && (
@@ -53,5 +58,3 @@ export default function Avatar({
     </div>
   );
 }
-
-Avatar.defaultProps = { src: undefined, loading: false, verified: undefined };
