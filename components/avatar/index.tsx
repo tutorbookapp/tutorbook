@@ -4,7 +4,7 @@ import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { getPhotoFilename } from 'lib/utils';
+import { validPhoto } from 'lib/utils';
 
 import styles from './avatar.module.scss';
 
@@ -46,12 +46,12 @@ export default function Avatar({
           <div className={styles.verifiedText}>{t('common:verified')}</div>
         </Tooltip>
       )}
-      {!loading && !!src && !getPhotoFilename(src) && (
+      {!loading && !!src && !validPhoto(src) && (
         <div className={styles.photoWrapper}>
           <img className={styles.photo} data-cy='avatar' src={src} alt='' />
         </div>
       )}
-      {!loading && !!src && !!getPhotoFilename(src) && (
+      {!loading && !!src && validPhoto(src) && (
         <Image data-cy='avatar' height={size} width={size} src={src} alt='' />
       )}
       {!src && !loading && (

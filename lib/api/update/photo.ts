@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { APIError } from 'lib/api/error';
 import { Account } from 'lib/model';
 import { bucket } from 'lib/api/firebase';
-import { getPhotoFilename } from 'lib/utils';
+import { validPhoto } from 'lib/utils';
 
 /**
  * Ensures that the account's photo is stored in our GCP Storage bucket, is
@@ -17,8 +17,7 @@ import { getPhotoFilename } from 'lib/utils';
  * @return Nothing; this performs side effects on the original account object.
  */
 export default async function updatePhoto(account: Account): Promise<void> {
-  const filename = getPhotoFilename(account.photo);
-  if (filename) {
+  if (validPhoto(account.photo)) {
     // Ensure that filename is in the proper location. Ensure that the photo is
     // cropped to a square (1:1) ratio.
   } else {
