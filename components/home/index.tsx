@@ -77,6 +77,19 @@ export default function Home({ org }: HomeProps): JSX.Element {
                       {social.type}
                     </a>
                   ))}
+                  {!!org?.email && (
+                    <a
+                      data-cy='email-social-link'
+                      target='_blank'
+                      rel='noreferrer'
+                      href={`mailto:${encodeURIComponent(
+                        `"${org.name}"<${org.email}>`
+                      )}`}
+                      className={`${styles.socialLink} ${styles.email}`}
+                    >
+                      {org.email}
+                    </a>
+                  )}
                 </div>
               )}
             </div>
