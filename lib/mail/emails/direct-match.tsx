@@ -1,11 +1,7 @@
 import {
-  Button,
-  Cite,
-  ContactsTable,
   Email,
   Footer,
   Header,
-  I,
   Item,
   Link,
   P,
@@ -29,7 +25,7 @@ export default function DirectMatchEmail({
   match,
   recipient,
   creator,
-}: MatchEmailProps): JSX.Element {
+}: DirectMatchEmailProps): JSX.Element {
   return (
     <Email>
       <Header />

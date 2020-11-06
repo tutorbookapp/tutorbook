@@ -1,4 +1,4 @@
-import { Person, Role, User, UserWithRoles } from 'lib/model';
+import { Person, UserWithRoles } from 'lib/model';
 import { APIError } from 'lib/api/error';
 import { addRoles } from 'lib/utils';
 import getUser from 'lib/api/get/user';
