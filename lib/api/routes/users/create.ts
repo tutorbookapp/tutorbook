@@ -9,6 +9,7 @@ import getOrg from 'lib/api/get/org';
 import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';
 import sendEmails from 'lib/mail/users/create';
+import updatePhoto from 'lib/api/update/photo';
 import verifyBody from 'lib/api/verify/body';
 
 export type CreateUserRes = UserJSON;
@@ -26,6 +27,12 @@ export default async function createUser(
 ): Promise<void> {
   try {
     const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
+
+    // TODO: Update the photo after creating the auth user ID so that we can
+    // organize our GCP Storage bucket by user (that would require two calls to
+    // the auth API, however, so not ideal... perhaps I should assign uIDs).
+    await updatePhoto(body);
+
     const user = await createUserDoc(await createAuthUser(body));
     await createUserSearchObj(user);
 

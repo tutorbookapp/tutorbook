@@ -15,6 +15,24 @@ type LangHit = ObjectWithObjectID & {
 };
 
 /**
+ * Checks if a given URL is a valid GCP Storage item and, if so, returns the
+ * filename within the default GCP Storage bucket.
+ * @param url - The URL to check (typically a profile photo URL).
+ * @return An empty string (when given an invalid URL) or the filename.
+ */
+export function getPhotoFilename(url: string): string {
+  const env =
+    process.env.APP_ENV ||
+    process.env.NODE_ENV ||
+    '(?:production|test|development)';
+  const rgx = new RegExp(
+    `https:\\/\\/firebasestorage\\.googleapis\\.com\\/v0\\/b\\/${env}-` +
+      `tutorbook\\.appspot\\.com\\/o\\/(.*)\\?alt=media&token=(.*)`
+  );
+  return decodeURIComponent((rgx.exec(url) || [])[1] || '');
+}
+
+/**
  * Adds roles to a given user object.
  * @param user - The user to add roles to.
  * @param roles - The roles to add.
