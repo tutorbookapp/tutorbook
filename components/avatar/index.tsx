@@ -24,6 +24,8 @@ interface AvatarProps {
  * smaller) while maintaining a 1:1 aspect ratio. It will then scale, center and
  * crop the given image to fit that 1:1 area. If no image is given, the `Avatar`
  * is rendered as a gray square with the text 'No Photo' centered within.
+ * @todo Perhaps make the image verification less strict and only check if it is
+ * able to be optimized instead of it is one of the newest GCP Storage buckets.
  */
 export default function Avatar({
   src = '',
@@ -45,7 +47,9 @@ export default function Avatar({
         </Tooltip>
       )}
       {!loading && !!src && !getPhotoFilename(src) && (
-        <img data-cy='avatar' src={src} alt='' />
+        <div className={styles.photoWrapper}>
+          <img className={styles.photo} data-cy='avatar' src={src} alt='' />
+        </div>
       )}
       {!loading && !!src && !!getPhotoFilename(src) && (
         <Image data-cy='avatar' height={size} width={size} src={src} alt='' />

@@ -21,6 +21,20 @@
     }
   }
 
+  .photoWrapper {
+    position: relative;
+    padding-bottom: 100%;
+
+    .photo {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+  }
+
   .noPhotoWrapper {
     position: relative;
     padding-bottom: 100%;
@@ -38,6 +52,8 @@
       line-height: 1;
       width: 100%;
       height: 100%;
+      left: 0;
+      top: 0;
     }
   }
 }
