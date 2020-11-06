@@ -35,7 +35,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
   }, [org, t]);
 
   return (
-    <div className={cn({ [styles.loading]: !org })}>
+    <div data-cy='org-home' className={cn({ [styles.loading]: !org })}>
       {(!org || org.home[locale].photo) && (
         <div className={styles.background}>
           <Image

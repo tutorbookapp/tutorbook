@@ -6,7 +6,7 @@ describe('Org landing page', () => {
     cy.visit(`/${org.id}`);
   });
 
-  it('links to the search and signup pages', () => {
+  it('displays org info and actions', () => {
     cy.contains('a', 'Search tutors').should(
       'have.attr',
       'href',
@@ -27,26 +27,34 @@ describe('Org landing page', () => {
       'href',
       `/${org.id}/signup?aspect=mentoring`
     );
-  });
 
-  it('displays org information', () => {
-    cy.getBySel('name').should('have.text', org.name);
-    cy.getBySel('avatar')
+    cy.getBySel('org-home').as('home').should('be.visible');
+
+    cy.get('@home').getBySel('name').should('have.text', org.name);
+    cy.get('@home')
+      .getBySel('avatar')
       .should('have.img', org.photo, 120)
       .closest('a')
       .should('have.attr', 'href', org.photo);
-    cy.getBySel('socials').find('a').should('have.length', org.socials.length);
+    cy.get('@home')
+      .getBySel('socials')
+      .children('a')
+      .should('have.length', org.socials.length);
 
     org.socials.forEach((social: Record<string, string>) => {
-      cy.getBySel(`${social.type}-social-link`)
+      cy.get('@home')
+        .getBySel(`${social.type}-social-link`)
         .should('have.attr', 'href', social.url)
         .and('have.attr', 'target', '_blank')
         .and('have.attr', 'rel', 'noreferrer');
     });
 
-    cy.getBySel('bio').should('have.text', org.bio);
-    cy.getBySel('header').should('have.text', org.home.en.header);
-    cy.getBySel('body').should('have.text', org.home.en.body);
-    cy.getBySel('backdrop').should('have.img', org.home.en.photo);
+    cy.get('@home').getBySel('bio').should('have.text', org.bio);
+    cy.get('@home').getBySel('header').should('have.text', org.home.en.header);
+    cy.get('@home').getBySel('body').should('have.text', org.home.en.body);
+    cy.get('@home')
+      .getBySel('backdrop')
+      .should('be.visible')
+      .and('have.img', org.home.en.photo, 1200, 100);
   });
 });
