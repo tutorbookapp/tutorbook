@@ -142,14 +142,10 @@ describe('Profile page', () => {
           from.getFullYear() !== to.getFullYear();
         return `${from.toLocaleString('en', {
           weekday: 'long',
-          month: 'long',
-          day: 'numeric',
           hour: 'numeric',
           minute: 'numeric',
         })} - ${to.toLocaleString('en', {
           weekday: showSecondDate ? 'long' : undefined,
-          month: showSecondDate ? 'long' : undefined,
-          day: showSecondDate ? 'numeric' : undefined,
           hour: 'numeric',
           minute: 'numeric',
         })}`;
