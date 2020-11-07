@@ -133,7 +133,9 @@ describe('Profile page', () => {
     });
 
     const availabilityString = volunteer.availability
-      .map(({ from, to }) => {
+      .map((timeslot: TimeslotJSON) => {
+        const from = new Date(timeslot.from);
+        const to = new Date(timeslot.to);
         const showSecondDate =
           from.getDate() !== to.getDate() ||
           from.getMonth() !== to.getMonth() ||
@@ -144,7 +146,7 @@ describe('Profile page', () => {
           day: 'numeric',
           hour: 'numeric',
           minute: 'numeric',
-        })} - ${to.toLocaleString(locale, {
+        })} - ${to.toLocaleString('en', {
           weekday: showSecondDate ? 'long' : undefined,
           month: showSecondDate ? 'long' : undefined,
           day: showSecondDate ? 'numeric' : undefined,

@@ -98,7 +98,11 @@ function getBySel(
   return cy.get(`[data-cy=${selector}]`, ...args);
 }
 
-chai.Assertion.addMethod('img', function img(src: string, w = 1200, q = 75) {
+chai.Assertion.addMethod('img', function img(
+  src: string,
+  w: number = 1200,
+  q: number = 75
+): void {
   new chai.Assertion(this._obj).to.exist;
   const expected = `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${q}`;
   this.assert(
