@@ -122,8 +122,11 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     setSearching(true);
     void mutate(query.endpoint);
   }, [query]);
+
+  // TODO: Debug issues where `searching` stays true even after we receive data
+  // when the user continuously clicks the pagination buttons.
   useEffect(() => {
-    setSearching((prev: boolean) => prev && (isValidating || !data));
+    setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
 
   const results = useMemo(() => (data ? data.users : []), [data]);

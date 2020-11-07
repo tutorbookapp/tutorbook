@@ -66,7 +66,7 @@ export default memo(function ResultsList({
   return (
     <animated.div data-cy='results' className={styles.wrapper} style={props}>
       {!searching &&
-        (data ? data.users : []).map((user: UserJSON) => (
+        (data?.users || []).map((user: UserJSON) => (
           <Result
             onClick={() => setViewing(user)}
             user={User.fromJSON(user)}
@@ -74,7 +74,7 @@ export default memo(function ResultsList({
             key={user.id}
           />
         ))}
-      {!searching && !(data ? data.users : []).length && (
+      {!searching && !(data?.users || []).length && (
         <div className={styles.empty}>
           <Placeholder>{t('people:empty')}</Placeholder>
         </div>
