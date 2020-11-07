@@ -167,6 +167,9 @@ export default function PopOverMenu({
               <PopOverLink href={`/${org.id}/matches`}>
                 {t('common:matches')}
               </PopOverLink>
+              <PopOverLink href={`/${org.id}/settings`}>
+                {t('common:settings')}
+              </PopOverLink>
             </Fragment>
           ))}
           <div className={styles.line} />
