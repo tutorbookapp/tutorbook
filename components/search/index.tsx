@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { nanoid } from 'nanoid';
 import useTranslation from 'next-translate/useTranslation';
-import { v4 as uuid } from 'uuid';
 
 import Carousel from 'components/carousel';
+import Pagination from 'components/pagination';
 
 import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
 
@@ -13,6 +14,7 @@ import styles from './search.module.scss';
 interface SearchProps {
   onChange: Callback<UsersQuery>;
   results: UserJSON[];
+  hits: number;
   searching: boolean;
   query: UsersQuery;
   setViewing: Callback<UserJSON | undefined>;
@@ -21,6 +23,7 @@ interface SearchProps {
 export default function Search({
   query,
   results,
+  hits,
   searching,
   onChange,
   setViewing,
@@ -33,7 +36,15 @@ export default function Search({
     return new UsersQuery({ aspect: query.aspect, visible: true });
   }, [query.aspect]);
 
-  const onNoResultsClick = useCallback((u: User) => setViewing(u.toJSON()), []);
+  const loadingResults = useMemo(() => {
+    return Array(query.hitsPerPage)
+      .fill(null)
+      .map(() => <Result loading key={nanoid()} />);
+  }, [query.hitsPerPage]);
+
+  const onNoResultsClick = useCallback((u: User) => setViewing(u.toJSON()), [
+    setViewing,
+  ]);
 
   useEffect(() => {
     const listener = () => {
@@ -51,25 +62,21 @@ export default function Search({
   return (
     <div className={styles.wrapper}>
       <Form query={query} onChange={onChange} />
-      {searching && !results.length && (
-        <ul data-cy='results' className={styles.results}>
-          {Array(20)
-            .fill(null)
-            .map(() => (
-              <Result loading key={uuid()} />
-            ))}
-        </ul>
-      )}
-      {!!results.length && (
-        <ul data-cy='results' className={styles.results}>
-          {results.map((res: UserJSON) => (
-            <Result
-              user={User.fromJSON(res)}
-              key={res.id || uuid()}
-              onClick={() => setViewing(res)}
-            />
-          ))}
-        </ul>
+      {(searching || !!results.length) && (
+        <>
+          <ul data-cy='results' className={styles.results}>
+            {searching && loadingResults}
+            {!searching &&
+              results.map((res) => (
+                <Result
+                  user={User.fromJSON(res)}
+                  key={res.id || nanoid()}
+                  onClick={() => setViewing(res)}
+                />
+              ))}
+          </ul>
+          <Pagination query={query} setQuery={onChange} hits={hits} />
+        </>
       )}
       {!searching && !results.length && (
         <div data-cy='no-results' className={styles.noResults}>

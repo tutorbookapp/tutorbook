@@ -3,6 +3,7 @@ import Router, { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
 import { UserDialogProps } from 'components/user-dialog';
+import Pagination from 'components/pagination';
 
 import {
   Availability,
@@ -18,7 +19,6 @@ import FiltersSheet from './filters-sheet';
 import Header from './header';
 import ResultsList from './results-list';
 import SearchBar from './search-bar';
-import Pagination from './pagination';
 import styles from './people.module.scss';
 
 const UserDialog = dynamic<UserDialogProps>(() =>

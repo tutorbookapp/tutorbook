@@ -132,6 +132,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
         <Search
           query={query}
           results={results}
+          hits={data?.hits || query.hitsPerPage}
           searching={searching || !canSearch}
           onChange={setQuery}
           setViewing={setViewing}
