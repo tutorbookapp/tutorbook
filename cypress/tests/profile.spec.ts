@@ -132,10 +132,27 @@ describe('Profile page', () => {
       cy.get('@mentoring-subjects').eq(idx).should('contain', subject);
     });
 
-    // TODO: Do we want to dynamically generate this from the static fixture?
-    const availabilityString =
-      'Sunday 9:00 AM - 12:00 PM, Sunday 1:00 PM - 4:00 PM, ' +
-      'Tuesday 1:00 PM - 4:00 PM, Friday 7:00 AM - 11:00 AM';
+    const availabilityString = volunteer.availability
+      .map(({ from, to }) => {
+        const showSecondDate =
+          from.getDate() !== to.getDate() ||
+          from.getMonth() !== to.getMonth() ||
+          from.getFullYear() !== to.getFullYear();
+        return `${from.toLocaleString('en', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        })} - ${to.toLocaleString(locale, {
+          weekday: showSecondDate ? 'long' : undefined,
+          month: showSecondDate ? 'long' : undefined,
+          day: showSecondDate ? 'numeric' : undefined,
+          hour: 'numeric',
+          minute: 'numeric',
+        })}`;
+      })
+      .join(', ');
 
     cy.contains('What is your weekly availability?')
       .children('input')
