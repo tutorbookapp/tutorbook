@@ -45,6 +45,7 @@ export default function SubjectSelect({
   selected,
   onSelectedChange,
   options: subjectOptions,
+  placeholder: subjectPlaceholder,
   aspect,
   grade,
   ...props
@@ -71,6 +72,10 @@ export default function SubjectSelect({
     if (org?.subjects) return intersection(org?.subjects, subjectOptions);
     return subjectOptions;
   }, [org?.subjects, subjectOptions]);
+  const placeholder = useMemo(() => {
+    if (!options || !options.length) return subjectPlaceholder;
+    return `Ex: ${options.slice(0, 2).join(' or ')}`;
+  }, [options, subjectPlaceholder]);
 
   // Search the Algolia index (filtering by options and grade) to get select
   // options/suggestions (for the drop-down menu).
@@ -154,6 +159,7 @@ export default function SubjectSelect({
     <Select
       {...props}
       value={selectedOptions}
+      placeholder={placeholder}
       onChange={onSelectedOptionsChange}
       getSuggestions={getSuggestions}
       noResultsMessage={t('common:no-subjects')}
