@@ -15,7 +15,6 @@ const Tooltip = dynamic<TooltipProps>(() =>
 interface AvatarProps {
   src?: string;
   loading?: boolean;
-  verified?: string;
   size?: number;
 }
 
@@ -31,21 +30,11 @@ export default function Avatar({
   src = '',
   loading = false,
   size = 500,
-  verified,
 }: AvatarProps): JSX.Element {
   const { t } = useTranslation();
 
   return (
     <div className={cn(styles.wrapper, { [styles.loading]: loading })}>
-      {verified && (
-        <Tooltip
-          content={<div className={styles.verifiedHover}>{verified}</div>}
-          align='right'
-          showArrow
-        >
-          <div className={styles.verifiedText}>{t('common:verified')}</div>
-        </Tooltip>
-      )}
       {!loading && !!src && !validPhoto(src) && (
         <div className={styles.photoWrapper}>
           <img className={styles.photo} data-cy='avatar' src={src} alt='' />
