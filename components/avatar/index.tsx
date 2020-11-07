@@ -52,7 +52,14 @@ export default function Avatar({
         </div>
       )}
       {!loading && !!src && validPhoto(src) && (
-        <Image data-cy='avatar' height={size} width={size} src={src} alt='' />
+        <Image
+          data-cy='avatar'
+          layout='fixed'
+          height={size}
+          width={size}
+          src={src}
+          alt=''
+        />
       )}
       {!src && !loading && (
         <div className={styles.noPhotoWrapper}>

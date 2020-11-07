@@ -2954,23 +2954,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:10.0.0":
-  version: 10.0.0
-  resolution: "@next/env@npm:10.0.0"
-  checksum: 60be51da6f386c00e1946c4a40b3ff5cf23099e7f4e7f6d906cf41c4cc497d1aae29be6e5cb9e4ddd547cea8d1cd92eb26ff329aea3bd59e3cb55297744e5b7f
+"@next/env@npm:10.0.1":
+  version: 10.0.1
+  resolution: "@next/env@npm:10.0.1"
+  checksum: c7166e15ddbde96419824727afe6405819abc62abde6177fe36ac91b85fadd1a5a558a7769feefad43e3b99373087df47362941cebef3781612f1168f87bc7cf
   languageName: node
   linkType: hard
 
-"@next/polyfill-module@npm:10.0.0":
-  version: 10.0.0
-  resolution: "@next/polyfill-module@npm:10.0.0"
-  checksum: baf0beb0d82ed01a7e0841a4d7ca5bf3f11efebf6daeaf88709d4cea2255eef8a28e958b7f335c4d506dbf76970a6fa0bb4a9fcc323b6ae2fc3faec0022ff897
+"@next/polyfill-module@npm:10.0.1":
+  version: 10.0.1
+  resolution: "@next/polyfill-module@npm:10.0.1"
+  checksum: 7b1cc2ef213cd693c419089c6f89872faf171dae32c8ce5cc2c070ed37362d43f47768c7ec89354720ed37dff20e839133283461afdd60136495686f4fa41c64
   languageName: node
   linkType: hard
 
-"@next/react-dev-overlay@npm:10.0.0":
-  version: 10.0.0
-  resolution: "@next/react-dev-overlay@npm:10.0.0"
+"@next/react-dev-overlay@npm:10.0.1":
+  version: 10.0.1
+  resolution: "@next/react-dev-overlay@npm:10.0.1"
   dependencies:
     "@babel/code-frame": 7.10.4
     ally.js: 1.4.1
@@ -2986,17 +2986,17 @@ __metadata:
     react: ^16.9.0 || ^17
     react-dom: ^16.9.0 || ^17
     webpack: ^4 || ^5
-  checksum: f38cbe7f6933df9aff2ec848d8a383da1e3f744c7d4ae2f6dd48109a72e031081dd656db4a86c4a60f07667777bb80ccebba6ed52cfbbe0ec397673180d4a7ba
+  checksum: cae695bd36f5eed59ce58872a38993248d5155598f7f4ed2be669899a6375cd49fc096c407159faa683b533ab2daca6c97fc14f7484cdbeff8df25d870a31f05
   languageName: node
   linkType: hard
 
-"@next/react-refresh-utils@npm:10.0.0":
-  version: 10.0.0
-  resolution: "@next/react-refresh-utils@npm:10.0.0"
+"@next/react-refresh-utils@npm:10.0.1":
+  version: 10.0.1
+  resolution: "@next/react-refresh-utils@npm:10.0.1"
   peerDependencies:
     react-refresh: 0.8.3
     webpack: ^4 || ^5
-  checksum: 76dc9ac753b53411f43e0fcbe4137342e22a34501a2760dd976b0d62659059798a16e095b459af8314642494583396b7825efb02f3bd6daab9562c2a36c6ca81
+  checksum: ad753a0fa209b5aea042be4645be9aa16bb4843c41bc85c813af2ef7e50f9df07bda2d654c393c6e3aabe083d7d1af11d1ddaaf554e68fb23e2a37f4109283a4
   languageName: node
   linkType: hard
 
@@ -12756,9 +12756,9 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"next@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "next@npm:10.0.0"
+"next@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "next@npm:10.0.1"
   dependencies:
     "@ampproject/toolbox-optimizer": 2.7.0-alpha.1
     "@babel/code-frame": 7.10.4
@@ -12779,10 +12779,10 @@ fsevents@~2.1.2:
     "@babel/runtime": 7.11.2
     "@babel/types": 7.11.5
     "@hapi/accept": 5.0.1
-    "@next/env": 10.0.0
-    "@next/polyfill-module": 10.0.0
-    "@next/react-dev-overlay": 10.0.0
-    "@next/react-refresh-utils": 10.0.0
+    "@next/env": 10.0.1
+    "@next/polyfill-module": 10.0.1
+    "@next/react-dev-overlay": 10.0.1
+    "@next/react-refresh-utils": 10.0.1
     ast-types: 0.13.2
     babel-plugin-transform-define: 2.0.0
     babel-plugin-transform-react-remove-prop-types: 0.4.24
@@ -12829,7 +12829,7 @@ fsevents@~2.1.2:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: c01b177cb2e2aec07bb75f685f07e42af8db088b44827b1f482bbb0c5a0f3c4989dfe537d4cc55eac373f6645c9d67ac7d3ffb0f52c4bd8c8a3b2a62ea102bb6
+  checksum: 796153c72ebe0ecb8b138a622a5fe54f5a5f0b0f74b65cdbf0b4718dc44525d7b71c547f3d39213476e92c2c1224db8eb8e5d6cd3177225ef69dfb474cb03f4a
   languageName: node
   linkType: hard
 
@@ -17176,7 +17176,7 @@ resolve@1.1.7:
     istanbul-lib-coverage: ^3.0.0
     mixpanel-browser: ^2.39.0
     nanoid: ^3.1.12
-    next: ^10.0.0
+    next: ^10.0.1
     next-images: ^1.6.2
     next-translate: ^0.17.1
     nprogress: ^0.2.0

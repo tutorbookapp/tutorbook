@@ -73,6 +73,7 @@ export default function SpotlightMsg({
             <Image
               width={645}
               height={485}
+              layout='intrinsic'
               className={styles.featureSpotlightMediaImg}
               src={img}
               alt=''
