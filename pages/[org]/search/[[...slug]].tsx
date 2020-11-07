@@ -15,10 +15,12 @@ import Search from 'components/search';
 import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
+import clone from 'lib/utils/clone';
 import { db } from 'lib/api/firebase';
 import { intersection } from 'lib/utils';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
+import { prefetch } from 'lib/fetch';
 
 import common from 'locales/en/common.json';
 import match3rd from 'locales/en/match3rd.json';
@@ -68,8 +70,22 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     }
   }, [loggedIn, currentUser, org]);
 
+  // Save the number of hits from the last successful request.
   useEffect(() => setHits((prev) => data?.hits || prev), [data?.hits]);
+
+  // Open the user dialog once our updated `getStaticProps` has resolved.
+  // @see {@link https://nextjs.org/docs/basic-features/data-fetching}
   useEffect(() => setViewing(user), [user]);
+
+  // Prefetch the next page of results (using SWR's global cache).
+  // @see {@link https://swr.vercel.app/docs/prefetching}
+  useEffect(() => {
+    const nextPageQuery = new UsersQuery(
+      clone({ ...query, page: query.page + 1 })
+    );
+    void prefetch(nextPageQuery.endpoint);
+  }, [query]);
+
   useEffect(() => {
     // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
     // URL query parameters, but right now, it doesn't seem to be working.
@@ -78,11 +94,15 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     const params = new URLSearchParams(window.location.search);
     setQuery(UsersQuery.fromURLParams(Object.fromEntries(params.entries())));
   }, []);
+
+  // TODO: Use the built-in Next.js router hook to manage this query state and
+  // show the `NProgress` loader when the results are coming in.
   useEffect(() => {
     if (!org || !org.id) return;
     const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
     void Router.replace(url, undefined, { shallow: true });
   }, [org, query, viewing]);
+
   useEffect(() => {
     setQuery((prev: UsersQuery) => {
       const updated = new UsersQuery({ ...prev });
@@ -95,6 +115,9 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
       return prev;
     });
   }, [org, query]);
+
+  // TODO: Investigate why I'm still using this `useSWR` refresh workaround. I
+  // should get rid of it when updating the `Query` object definitions.
   useEffect(() => {
     setSearching(true);
     void mutate(query.endpoint);

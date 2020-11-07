@@ -1,33 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { SWRConfig, mutate } from 'swr';
 import { AppProps } from 'next/app';
-import to from 'await-to-js';
 
 import NProgress from 'components/nprogress';
 
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { Org, OrgJSON, User, UserJSON } from 'lib/model';
-import { APIError } from 'lib/api/error';
+import { fetcher } from 'lib/fetch';
 
 import 'styles/global.scss';
-
-async function fetcher<T>(url: string): Promise<T> {
-  const [err, res] = await to<AxiosResponse<T>, AxiosError<APIError>>(
-    axios.get<T>(url)
-  );
-  const error: (description: string) => never = (description: string) => {
-    throw new Error(description);
-  };
-  if (err && err.response) {
-    error(`API (${url}) responded with error: ${err.response.data.message}`);
-  } else if (err && err.request) {
-    error(`API (${url}) did not respond.`);
-  } else if (err) {
-    error(`${err.name} calling API (${url}): ${err.message}`);
-  }
-  return (res as AxiosResponse<T>).data;
-}
 
 // Installs a service worker and triggers an `/api/account` re-validation once
 // the service worker has been activated and is control of this page (i.e. once

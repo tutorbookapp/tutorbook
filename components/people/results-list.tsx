@@ -9,6 +9,8 @@ import Result from 'components/search/result';
 
 import { Callback, TCallback, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import clone from 'lib/utils/clone';
+import { prefetch } from 'lib/fetch';
 
 import { config, width } from './spring-animation';
 import styles from './results-list.module.scss';
@@ -31,6 +33,17 @@ export default memo(function ResultsList({
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
+  // Prefetch the next page of results (using SWR's global cache).
+  // @see {@link https://swr.vercel.app/docs/prefetching}
+  useEffect(() => {
+    const nextPageQuery = new UsersQuery(
+      clone({ ...query, page: query.page + 1 })
+    );
+    void prefetch(nextPageQuery.endpoint);
+  }, [query]);
+
+  // TODO: Avoid code duplication from the main search page by porting over all
+  // of this logic into custom hooks or a shared lib directory.
   useEffect(() => setHits((prev) => data?.hits || prev), [setHits, data?.hits]);
   useEffect(() => {
     setSearching(true);
