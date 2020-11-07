@@ -1,16 +1,10 @@
 import Image from 'next/image';
-import { TooltipProps } from '@rmwc/tooltip';
 import cn from 'classnames';
-import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
 import { validPhoto } from 'lib/utils';
 
 import styles from './avatar.module.scss';
-
-const Tooltip = dynamic<TooltipProps>(() =>
-  import('@rmwc/tooltip').then((m) => m.Tooltip)
-);
 
 interface AvatarProps {
   src?: string;
