@@ -7,6 +7,8 @@ import useTranslation from 'next-translate/useTranslation';
 import Select, { SelectControllerProps } from 'components/select';
 
 import { Aspect, GradeAlias, Option } from 'lib/model';
+import { intersection } from 'lib/utils';
+import { useOrg } from 'lib/context/org';
 import { usePrevious } from 'lib/hooks';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
@@ -42,7 +44,7 @@ export default function SubjectSelect({
   onChange,
   selected,
   onSelectedChange,
-  options,
+  options: subjectOptions,
   aspect,
   grade,
   ...props
@@ -60,6 +62,15 @@ export default function SubjectSelect({
     },
     [onSelectedChange, onChange]
   );
+
+  // Only show subjects that fit into both the current org's subjects and the
+  // requested `subjectOptions`.
+  // @see {@link https://github.com/tutorbookapp/tutorbook/issues/133}
+  const { org } = useOrg();
+  const options = useMemo(() => {
+    if (org?.subjects) return intersection(org?.subjects, subjectOptions);
+    return subjectOptions;
+  }, [org?.subjects, subjectOptions]);
 
   // Search the Algolia index (filtering by options and grade) to get select
   // options/suggestions (for the drop-down menu).

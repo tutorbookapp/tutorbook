@@ -9,19 +9,17 @@ import construct from 'lib/model/construct';
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
-type PageConfig<T> = { [locale: string]: T };
-type AspectPageConfig<T> = PageConfig<{ [key in Aspect]?: T }>;
+type Config<T> = { [locale: string]: T };
+type AspectConfig<T> = Config<{ [key in Aspect]?: T }>;
 
-type SignupPageConfig = AspectPageConfig<{ header: string; body: string }>;
-type HomePageConfig = PageConfig<{
+type SignupConfig = AspectConfig<{ header: string; body: string }>;
+type HomeConfig = Config<{
   header: string;
   body: string;
   photo?: string;
 }>;
 
-export function isSignupPageConfig(
-  config: unknown
-): config is SignupPageConfig {
+export function isSignupConfig(config: unknown): config is SignupConfig {
   if (!isJSON(config)) return false;
   return Object.values(config).every((localeConfig) => {
     if (!isJSON(localeConfig)) return false;
@@ -35,7 +33,7 @@ export function isSignupPageConfig(
   });
 }
 
-export function isHomePageConfig(config: unknown): config is SignupPageConfig {
+export function isHomeConfig(config: unknown): config is SignupConfig {
   if (!isJSON(config)) return false;
   return Object.values(config).every((localeConfig) => {
     if (!isJSON(localeConfig)) return false;
@@ -101,12 +99,16 @@ export interface OrgInterface extends AccountInterface {
   aspects: Aspect[];
   domains: string[];
   profiles: (keyof UserInterface | 'subjects')[];
+  subjects?: string[];
   zoom?: ZoomAccount;
-  signup: SignupPageConfig;
-  home: HomePageConfig;
+  signup: SignupConfig;
+  home: HomeConfig;
 }
 
-export type OrgJSON = Omit<OrgInterface, 'zoom'> & { zoom: ZoomAccount | null };
+export type OrgJSON = Omit<OrgInterface, 'subjects' | 'zoom'> & {
+  subjects: string[] | null;
+  zoom: ZoomAccount | null;
+};
 
 // TODO: Check that the `profiles` key only contains keys of the `User` object.
 export function isOrgJSON(json: unknown): json is OrgJSON {
@@ -116,9 +118,10 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isArray(json.aspects, isAspect)) return false;
   if (!isStringArray(json.domains)) return false;
   if (!isStringArray(json.profiles)) return false;
+  if (json.subjects && !isStringArray(json.subjects)) return false;
   if (json.zoom && !isZoomAccount(json.zoom)) return false;
-  if (!isSignupPageConfig(json.signup)) return false;
-  if (!isHomePageConfig(json.home)) return false;
+  if (!isSignupConfig(json.signup)) return false;
+  if (!isHomeConfig(json.home)) return false;
   return true;
 }
 
@@ -136,9 +139,11 @@ export class Org extends Account implements OrgInterface {
     'subjects',
   ];
 
+  public subjects?: string[];
+
   public zoom?: ZoomAccount;
 
-  public signup: SignupPageConfig = {
+  public signup: SignupConfig = {
     en: {
       mentoring: {
         header: 'Guide the next generation',
@@ -160,7 +165,7 @@ export class Org extends Account implements OrgInterface {
     },
   };
 
-  public home: HomePageConfig = {
+  public home: HomeConfig = {
     en: {
       header: 'How it works',
       photo: 'https://assets.tutorbook.app/jpgs/rocky-beach.jpg',
@@ -197,11 +202,15 @@ export class Org extends Account implements OrgInterface {
   }
 
   public static fromJSON(json: OrgJSON): Org {
-    return new Org({ ...json, zoom: json.zoom || undefined });
+    return new Org({
+      ...json,
+      subjects: json.subjects || undefined,
+      zoom: json.zoom || undefined,
+    });
   }
 
   public toJSON(): OrgJSON {
-    const { ref, zoom, ...rest } = this;
-    return { ...rest, zoom: zoom || null };
+    const { ref, subjects, zoom, ...rest } = this;
+    return { ...rest, subjects: subjects || null, zoom: zoom || null };
   }
 }

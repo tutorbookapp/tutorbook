@@ -104,11 +104,12 @@ export function caps(str: string): string {
  * the given `compare` function to check if elements overlap).
  * @see {@link https://stackoverflow.com/a/16227294/10023158}
  */
-export function intersection<A extends any, B extends any>(
+export function intersection<A extends unknown, B extends unknown>(
   arrA: Array<A>,
-  arrB: Array<B>,
+  arrB?: Array<B>,
   compare: (a: A, b: B) => boolean = (a, b) => a === b
 ): Array<A> {
+  if (!arrB) return arrA.filter(Boolean);
   return arrA.filter((itemA: A) => {
     return arrB.findIndex((itemB: B) => compare(itemA, itemB)) > -1;
   });
