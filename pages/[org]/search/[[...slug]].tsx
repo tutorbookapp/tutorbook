@@ -34,6 +34,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   const { user: currentUser, loggedIn } = useUser();
 
   const [query, setQuery] = useState<UsersQuery>(new UsersQuery());
+  const [hits, setHits] = useState<number>(query.hitsPerPage);
   const [auth, setAuth] = useState<boolean>(false);
   const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
@@ -67,6 +68,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     }
   }, [loggedIn, currentUser, org]);
 
+  useEffect(() => setHits((prev) => data?.hits || prev), [data?.hits]);
   useEffect(() => setViewing(user), [user]);
   useEffect(() => {
     // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
@@ -130,9 +132,9 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
           />
         )}
         <Search
+          hits={hits}
           query={query}
           results={results}
-          hits={data?.hits || query.hitsPerPage}
           searching={searching || !canSearch}
           onChange={setQuery}
           setViewing={setViewing}

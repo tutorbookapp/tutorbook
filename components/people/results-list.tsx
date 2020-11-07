@@ -31,15 +31,13 @@ export default memo(function ResultsList({
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
-  useEffect(() => {
-    setHits((prev: number) => (data ? data.hits : prev));
-  }, [setHits, data]);
+  useEffect(() => setHits((prev) => data?.hits || prev), [setHits, data?.hits]);
   useEffect(() => {
     setSearching(true);
     void mutate(query.endpoint);
   }, [query]);
   useEffect(() => {
-    setSearching((prev: boolean) => prev && (isValidating || !data));
+    setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
 
   const loadingRows: JSX.Element[] = useMemo(() => {
