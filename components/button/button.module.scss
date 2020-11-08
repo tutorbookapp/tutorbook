@@ -6,6 +6,11 @@ $height: 56px;
 $padding: 24px;
 $radius: 4px;
 
+.link {
+  display: inline-flex;
+  text-decoration: none;
+}
+
 .button {
   height: $height !important;
   text-overflow: ellipsis;
