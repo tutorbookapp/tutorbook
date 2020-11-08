@@ -20,6 +20,7 @@
   "parents": "Parents",
   "about": "About",
   "request": "Request",
+  "subjects-placeholder": "Ex: Computer Science or Biology",
   "tutoring-subjects-placeholder": "Ex: Math or Science",
   "mentoring-subjects-placeholder": "Ex: Computer Science or Music",
   "import-data": "Import data",

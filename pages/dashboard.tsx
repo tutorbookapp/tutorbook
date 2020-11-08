@@ -20,6 +20,7 @@ function DashboardPage(): JSX.Element {
   return (
     <Page title='Dashboard - Tutorbook'>
       <TabHeader
+        switcher
         tabs={[
           {
             label: t('common:overview'),
@@ -28,7 +29,6 @@ function DashboardPage(): JSX.Element {
           },
           {
             label: t('common:profile'),
-            active: false,
             href: '/profile',
           },
         ]}

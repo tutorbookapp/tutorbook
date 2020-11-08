@@ -1,23 +1,31 @@
-import { EmptyHeader } from 'components/navigation';
-import HeroTitle from 'components/landing/hero-title';
-import Screenshots from 'components/landing/screenshots';
-import UseCases from 'components/landing/use-cases';
-import Spotlight from 'components/landing/spotlight';
 import ContactCTA from 'components/landing/contact-cta';
+import HeroTitle from 'components/landing/hero-title';
 import Page from 'components/page';
+import Screenshots from 'components/landing/screenshots';
+import Spotlight from 'components/landing/spotlight';
+import { TabHeader } from 'components/navigation';
+import UseCases from 'components/landing/use-cases';
 
 import { withI18n } from 'lib/intl';
 
-import about from 'locales/en/about.json';
-import banner from 'locales/en/banner.json';
 import common from 'locales/en/common.json';
-import match3rd from 'locales/en/match3rd.json';
-import query3rd from 'locales/en/query3rd.json';
 
-function IndexPage(): JSX.Element {
+function OrgsPage(): JSX.Element {
   return (
     <Page title='Support at scale - Tutorbook'>
-      <EmptyHeader />
+      <TabHeader
+        tabs={[
+          {
+            label: 'Organizations',
+            active: true,
+            href: '/',
+          },
+          {
+            label: 'Students',
+            href: '/students',
+          },
+        ]}
+      />
       <HeroTitle />
       <Screenshots />
       <UseCases />
@@ -51,10 +59,4 @@ function IndexPage(): JSX.Element {
   );
 }
 
-export default withI18n(IndexPage, {
-  common,
-  about,
-  banner,
-  query3rd,
-  match3rd,
-});
+export default withI18n(OrgsPage, { common });

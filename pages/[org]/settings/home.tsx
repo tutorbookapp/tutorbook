@@ -38,20 +38,18 @@ function HomeSettingsPage(): JSX.Element {
       {!!org && (
         <Page title={`${org.name} - Home - Settings - Tutorbook`}>
           <TabHeader
+            switcher
             tabs={[
               {
                 label: t('common:overview'),
-                active: false,
                 href: `/${query.org as string}/dashboard`,
               },
               {
                 label: t('common:people'),
-                active: false,
                 href: `/${query.org as string}/people`,
               },
               {
                 label: t('common:matches'),
-                active: false,
                 href: `/${query.org as string}/matches`,
               },
               {

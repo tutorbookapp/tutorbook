@@ -36,15 +36,14 @@ function MatchesPage(): JSX.Element {
       {!!org && (
         <Page title={`${org.name} - Matches - Tutorbook`}>
           <TabHeader
+            switcher
             tabs={[
               {
                 label: t('common:overview'),
-                active: false,
                 href: `/${query.org as string}/dashboard`,
               },
               {
                 label: t('common:people'),
-                active: false,
                 href: `/${query.org as string}/people`,
               },
               {
@@ -54,7 +53,6 @@ function MatchesPage(): JSX.Element {
               },
               {
                 label: t('common:settings'),
-                active: false,
                 href: `/${query.org as string}/settings`,
               },
             ]}

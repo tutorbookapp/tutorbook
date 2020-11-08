@@ -36,6 +36,7 @@ function DashboardPage(): JSX.Element {
       {!!org && (
         <Page title={`${org.name} - Dashboard - Tutorbook`}>
           <TabHeader
+            switcher
             tabs={[
               {
                 label: t('common:overview'),
@@ -44,17 +45,14 @@ function DashboardPage(): JSX.Element {
               },
               {
                 label: t('common:people'),
-                active: false,
                 href: `/${query.org as string}/people`,
               },
               {
                 label: t('common:matches'),
-                active: false,
                 href: `/${query.org as string}/matches`,
               },
               {
                 label: t('common:settings'),
-                active: false,
                 href: `/${query.org as string}/settings`,
               },
             ]}

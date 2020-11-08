@@ -19,10 +19,10 @@ function ProfilePage(): JSX.Element {
   return (
     <Page title='Profile - Tutorbook'>
       <TabHeader
+        switcher
         tabs={[
           {
             label: t('common:overview'),
-            active: false,
             href: '/dashboard',
           },
           {

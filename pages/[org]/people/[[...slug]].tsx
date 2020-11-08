@@ -41,10 +41,10 @@ function PeoplePage(): JSX.Element {
       {!!org && (
         <Page title={`${org.name} - People - Tutorbook`}>
           <TabHeader
+            switcher
             tabs={[
               {
                 label: t('common:overview'),
-                active: false,
                 href: `/${params.org as string}/dashboard`,
               },
               {
@@ -54,12 +54,10 @@ function PeoplePage(): JSX.Element {
               },
               {
                 label: t('common:matches'),
-                active: false,
                 href: `/${params.org as string}/matches`,
               },
               {
                 label: t('common:settings'),
-                active: false,
                 href: `/${params.org as string}/settings`,
               },
             ]}
