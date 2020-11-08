@@ -1,0 +1,48 @@
+@use 'styles/common';
+@use 'styles/typography';
+
+.cta {
+  margin-top: 48px;
+  background: var(--geist-primary);
+
+  .wrapper {
+    @include common.wrapper;
+    padding: 72px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      @include typography.typography('headline3');
+      color: var(--geist-foreground);
+      margin: 0 0 8px;
+    }
+
+    p {
+      @include typography.typography('body1');
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 18px;
+      margin: 0;
+    }
+
+    button {
+      margin-left: 24px;
+      background: var(--geist-foreground);
+      color: var(--geist-primary);
+    }
+
+    @media (max-width: 400px) {
+      flex-direction: column;
+
+      a {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+        margin-top: 24px;
+        margin-left: 0;
+      }
+    }
+  }
+}

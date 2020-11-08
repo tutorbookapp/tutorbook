@@ -1,34 +1,52 @@
-import { useState } from 'react';
-
-import { AspectHeader } from 'components/navigation';
-import Banner from 'components/banner';
-import Hero from 'components/hero';
-import About from 'components/about';
+import { EmptyHeader } from 'components/navigation';
+import HeroTitle from 'components/landing/hero-title';
+import Screenshots from 'components/landing/screenshots';
+import UseCases from 'components/landing/use-cases';
+import Spotlight from 'components/landing/spotlight';
+import ContactCTA from 'components/landing/contact-cta';
 import Page from 'components/page';
 
-import { Aspect } from 'lib/model';
 import { withI18n } from 'lib/intl';
 
+import about from 'locales/en/about.json';
+import banner from 'locales/en/banner.json';
+import common from 'locales/en/common.json';
 import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
-import banner from 'locales/en/banner.json';
-import about from 'locales/en/about.json';
-import common from 'locales/en/common.json';
 
 function IndexPage(): JSX.Element {
-  const [aspect, setAspect] = useState<Aspect>('mentoring');
   return (
     <Page title='Support at scale - Tutorbook'>
-      <Banner />
-      <AspectHeader
-        aspect={aspect}
-        onChange={(newAspect: Aspect) => setAspect(newAspect)}
+      <EmptyHeader />
+      <HeroTitle />
+      <Screenshots />
+      <UseCases />
+      <Spotlight
+        num={1}
+        header='Share your landing page'
+        body='Customize a landing page for your organization to share on social media.'
       />
-      <Hero aspect={aspect} />
-      <About />
-      <div style={{ marginBottom: '60px' }}>
-        <Hero aspect={aspect} />
-      </div>
+      <Spotlight
+        num={2}
+        header='Onboard volunteers'
+        body='Onboard new volunteers via a fully customizable signup page.'
+      />
+      <Spotlight
+        num={3}
+        header='Vet new volunteers'
+        body='Meet with new volunteers before adding them to your secure search view.'
+      />
+      <Spotlight
+        num={4}
+        header='Share your search link'
+        body='Students can search your vetted volunteers and send them requests directly.'
+      />
+      <Spotlight
+        num={5}
+        header='Schedule appointments'
+        body='Replace Calendly, Picktime, and Oncehub with this all-in-one solution.'
+      />
+      <ContactCTA />
     </Page>
   );
 }
