@@ -23,6 +23,7 @@
     cursor: pointer;
     background: transparent;
     border: none;
+    white-space: nowrap;
 
     &:hover {
       color: map.get(config.$colors, 'foreground');
