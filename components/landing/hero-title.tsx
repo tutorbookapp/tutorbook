@@ -1,4 +1,3 @@
-import Button from 'components/button';
 import Title from 'components/title';
 
 import styles from './hero-title.module.scss';
