@@ -12,15 +12,6 @@ export default function HeroTitle(): JSX.Element {
           One app to manage everything. Onboard volunteers, match students, and
           scale your organization.
         </h3>
-        <div className={styles.cta}>
-          <Button href='/default' label='Try it now' arrow raised />
-          <Button
-            href='mailto:team@tutorbook.org'
-            label='Contact us'
-            arrow
-            outlined
-          />
-        </div>
       </div>
     </div>
   );

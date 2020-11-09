@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState } from 'react';
 
 import Tabs from 'components/navigation/tabs';
@@ -53,10 +54,15 @@ export default function Screenshots(): JSX.Element {
           <Browser title={active.label} url={active.url} />
         </div>
         <div className={styles.orgs}>
-          <span className={styles.org}>PAUSD</span>
-          <span className={styles.org}>QuaranTunes</span>
-          <span className={styles.org}>EPATT</span>
-          <span className={styles.org}>TopDogTutors</span>
+          <Link href='/gunn'>
+            <a className={styles.org}>Gunn High School</a>
+          </Link>
+          <Link href='/quarantunes'>
+            <a className={styles.org}>QuaranTunes</a>
+          </Link>
+          <Link href='/epatt'>
+            <a className={styles.org}>EPATT</a>
+          </Link>
         </div>
       </div>
     </div>

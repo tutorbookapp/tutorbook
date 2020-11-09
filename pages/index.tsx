@@ -6,6 +6,12 @@ import Spotlight from 'components/landing/spotlight';
 import { TabHeader } from 'components/navigation';
 import UseCases from 'components/landing/use-cases';
 
+import LandingImage from 'components/landing/imgs/landing.png';
+import SignupImage from 'components/landing/imgs/signup.png';
+import VettingImage from 'components/landing/imgs/vetting.png';
+import SearchImage from 'components/landing/imgs/search.png';
+import MatchingImage from 'components/landing/imgs/matching.png';
+
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
@@ -24,14 +30,6 @@ function OrgsPage(): JSX.Element {
             label: 'Students',
             href: '/students',
           },
-          {
-            label: 'Tutors',
-            href: '/tutors',
-          },
-          {
-            label: 'Mentors',
-            href: '/mentors',
-          },
         ]}
       />
       <HeroTitle />
@@ -41,31 +39,36 @@ function OrgsPage(): JSX.Element {
         num={1}
         header='Share your landing page'
         body='Customize a landing page for your organization to share on social media.'
-        demo='landing-page'
+        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        img={LandingImage}
       />
       <Spotlight
         num={2}
         header='Onboard volunteers'
         body='Onboard new volunteers via a fully customizable signup page.'
-        demo='signup-page'
+        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        img={SignupImage}
       />
       <Spotlight
         num={3}
         header='Vet new volunteers'
         body='Meet with new volunteers before adding them to your secure search view.'
-        demo='volunteer-vetting'
+        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        img={VettingImage}
       />
       <Spotlight
         num={4}
         header='Share your search link'
         body='Students can search your vetted volunteers and send them requests directly.'
-        demo='search-and-booking'
+        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        img={SearchImage}
       />
       <Spotlight
         num={5}
         header='Schedule appointments'
         body='Replace Calendly, Picktime, and Oncehub with this all-in-one solution.'
-        demo='matching-two'
+        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        img={MatchingImage}
       />
       <ContactCTA />
     </Page>

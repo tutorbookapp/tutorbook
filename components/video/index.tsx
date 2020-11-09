@@ -40,18 +40,33 @@ function toggleSelection(value: string): void {
   style['-ms-user-select'] = value;
 }
 
+async function loadMedia(video: HTMLVideoElement, src: string): Promise<void> {
+  if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    /* eslint-disable-next-line no-param-reassign */
+    video.src = src;
+  } else {
+    const { default: Hls } = await import('hls.js');
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(src);
+      hls.attachMedia(video);
+    }
+  }
+}
+
 export interface VideoProps {
-  src: string;
+  id: string;
   autoplay?: boolean;
   loop?: boolean;
 }
 
-export default function Video({
-  src,
-  autoplay,
-  loop,
-}: VideoProps): JSX.Element {
+export default function Video({ id, autoplay, loop }: VideoProps): JSX.Element {
   const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    void loadMedia(ref.current, `https://stream.mux.com/${id}.m3u8`);
+  }, [ref, id]);
 
   const [visible, setVisible] = useState<boolean>(false);
   const onEnter = useCallback(() => setVisible(true), []);
@@ -126,7 +141,6 @@ export default function Video({
             loop={loop}
             preload='auto'
             playsInline
-            src={src}
           />
           <div className={cn('controls', { visible })}>
             <button className='play' type='button' onClick={togglePlayback}>
@@ -200,7 +214,7 @@ export default function Video({
         div.container {
           display: flex;
           justify-content: center;
-          padding-bottom: calc(100% / 8 * 5);
+          padding-bottom: calc(100% / 16 * 9);
           background-color: var(--accents-2);
         }
         
