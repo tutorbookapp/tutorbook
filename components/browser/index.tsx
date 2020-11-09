@@ -237,9 +237,9 @@ export default function Window({ url, title }: WindowProps): JSX.Element {
           margin: 0;
           padding: 0;
           border: none;
-          width: calc(100% * 4 / 3);
-          height: calc(100% * 4 / 3);
-          transform: scale(0.75);
+          width: calc(100% * 10 / 8);
+          height: calc(100% * 10 / 8);
+          transform: scale(0.8);
           transform-origin: left top;
           background: white;
         }

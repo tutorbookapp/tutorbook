@@ -92,9 +92,10 @@
 
   .video {
     border: 1px solid var(--accents-2);
+    box-shadow: var(--shadow-large);
     background: var(--accents-1);
     overflow: hidden;
     position: relative;
-    border-radius: 4px;
+    border-radius: 8px;
   }
 }

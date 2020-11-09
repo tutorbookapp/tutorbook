@@ -215,7 +215,7 @@ export default function Video({ id, autoplay, loop }: VideoProps): JSX.Element {
           display: flex;
           justify-content: center;
           padding-bottom: calc(100% / 16 * 9);
-          background-color: var(--accents-2);
+          background-color: var(--accents-1);
         }
         
         .caption {

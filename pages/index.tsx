@@ -39,35 +39,35 @@ function OrgsPage(): JSX.Element {
         num={1}
         header='Share your landing page'
         body='Customize a landing page for your organization to share on social media.'
-        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        mux='6ekBZH01vhyGEFV7yP6nAZpD1xC2Rzwj5ytEQFfmPhJU'
         img={LandingImage}
       />
       <Spotlight
         num={2}
         header='Onboard volunteers'
         body='Onboard new volunteers via a fully customizable signup page.'
-        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        mux='1W8P1kYtbkL2W8oNi7lVNBQ1wVfIpKsrVM55V02Rfrls'
         img={SignupImage}
       />
       <Spotlight
         num={3}
         header='Vet new volunteers'
         body='Meet with new volunteers before adding them to your secure search view.'
-        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        mux='TAYjMLwG3VKpWGur4H00duZAYCyOXMJHIDi00vKnQ51jM'
         img={VettingImage}
       />
       <Spotlight
         num={4}
         header='Share your search link'
         body='Students can search your vetted volunteers and send them requests directly.'
-        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        mux='p00TaXJYAGfvSPs4lkHK4p1Bl00LOTuQqT1ojCJ11Gvow'
         img={SearchImage}
       />
       <Spotlight
         num={5}
         header='Schedule appointments'
         body='Replace Calendly, Picktime, and Oncehub with this all-in-one solution.'
-        mux='53Ohm02d65SHWfDoN1XcdEfS4KKK4rmnpeW02j6zv2okk'
+        mux='4kw5Gx62vsJc00Y01YmpUZ8fZdpNvTUJCV01lGrwPprsGM'
         img={MatchingImage}
       />
       <ContactCTA />
