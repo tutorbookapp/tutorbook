@@ -1,52 +1,57 @@
 import { useState } from 'react';
 
 import Tabs from 'components/navigation/tabs';
+import Browser from 'components/browser';
 
 import styles from './screenshots.module.scss';
 
+interface Preview {
+  label: string;
+  id: string;
+  url: string;
+}
+
+const previews = [
+  {
+    label: 'Landing pages',
+    id: 'landing',
+    url: '/default',
+  },
+  {
+    label: 'Profile forms',
+    id: 'profile',
+    url: '/default/signup',
+  },
+  {
+    label: 'Search views',
+    id: 'search',
+    url: '/default/search',
+  },
+  {
+    label: 'Match scheduling',
+    id: 'scheduling',
+    url: '/default/search/volunteer',
+  },
+];
+
 export default function Screenshots(): JSX.Element {
-  const [active, setActive] = useState<string>('search');
+  const [active, setActive] = useState<Preview>(previews[0]);
 
   return (
     <div className={styles.features}>
       <div className={styles.wrapper}>
         <div className={styles.tabs}>
           <Tabs
-            tabs={[
-              {
-                label: 'Landing pages',
-                onClick: () => setActive('landing'),
-                active: active === 'landing',
-              },
-              {
-                label: 'Profile forms',
-                onClick: () => setActive('onboarding'),
-                active: active === 'onboarding',
-              },
-              {
-                label: 'Volunteer vetting',
-                onClick: () => setActive('vetting'),
-                active: active === 'vetting',
-              },
-              {
-                label: 'Search views',
-                onClick: () => setActive('search'),
-                active: active === 'search',
-              },
-              {
-                label: 'Match scheduling',
-                onClick: () => setActive('scheduling'),
-                active: active === 'scheduling',
-              },
-              {
-                label: 'Admin dashboards',
-                onClick: () => setActive('admin'),
-                active: active === 'admin',
-              },
-            ]}
+            tabs={previews.map((preview) => ({
+              label: preview.label,
+              onClick: () => setActive(preview),
+              active: active.id === preview.id,
+            }))}
           />
         </div>
-        <div className={styles.placeholder} />
+        <div className={styles.window}>
+          <Browser title={active.label} url={active.url} />
+        </div>
         <div className={styles.orgs}>
           <span className={styles.org}>PAUSD</span>
           <span className={styles.org}>QuaranTunes</span>

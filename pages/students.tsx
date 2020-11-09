@@ -25,6 +25,14 @@ function StudentsPage(): JSX.Element {
             active: true,
             href: '/students',
           },
+          {
+            label: 'Tutors',
+            href: '/tutors',
+          },
+          {
+            label: 'Mentors',
+            href: '/mentors',
+          },
         ]}
       />
       <Hero />
