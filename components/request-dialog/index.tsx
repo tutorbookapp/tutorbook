@@ -233,74 +233,87 @@ export default function RequestDialog({
           <p data-cy='bio' className={styles.text}>
             {user.bio}
           </p>
-          <h6 className={styles.header}>{t('common:request')}</h6>
-          <form className={styles.form} onSubmit={onSubmit}>
-            {!currentUser.phone && phoneRequired && (
-              <TextField
-                label={t('match3rd:phone')}
-                value={phone}
-                onChange={onPhoneChange}
-                className={styles.field}
-                type='tel'
-                outlined
-                required
-              />
-            )}
-            <SubjectSelect
-              required
-              outlined
-              autoOpenMenu
-              renderToPortal
-              label={t('match3rd:subjects')}
-              className={styles.field}
-              onChange={setSubjects}
-              value={subjects}
-              options={user[aspect].subjects}
-              aspect={aspect}
-            />
-            <TimeSelect
-              required
-              outlined
-              renderToPortal
-              label={t('match3rd:time')}
-              className={styles.field}
-              onChange={setTime}
-              value={time}
-              uid={user.id}
-            />
-            <TextField
-              outlined
-              textarea
-              rows={4}
-              required
-              characterCount
-              maxLength={500}
-              placeholder={t('match3rd:message-placeholder', {
-                subject: subjects[0] || 'Computer Science',
-              })}
-              label={t('match3rd:message')}
-              className={styles.field}
-              onChange={onMessageChange}
-              value={message}
-            />
+          {!org?.matchURL && (
+            <>
+              <h6 className={styles.header}>{t('common:request')}</h6>
+              <form className={styles.form} onSubmit={onSubmit}>
+                {!currentUser.phone && phoneRequired && (
+                  <TextField
+                    label={t('match3rd:phone')}
+                    value={phone}
+                    onChange={onPhoneChange}
+                    className={styles.field}
+                    type='tel'
+                    outlined
+                    required
+                  />
+                )}
+                <SubjectSelect
+                  required
+                  outlined
+                  autoOpenMenu
+                  renderToPortal
+                  label={t('match3rd:subjects')}
+                  className={styles.field}
+                  onChange={setSubjects}
+                  value={subjects}
+                  options={user[aspect].subjects}
+                  aspect={aspect}
+                />
+                <TimeSelect
+                  required
+                  outlined
+                  renderToPortal
+                  label={t('match3rd:time')}
+                  className={styles.field}
+                  onChange={setTime}
+                  value={time}
+                  uid={user.id}
+                />
+                <TextField
+                  outlined
+                  textarea
+                  rows={4}
+                  required
+                  characterCount
+                  maxLength={500}
+                  placeholder={t('match3rd:message-placeholder', {
+                    subject: subjects[0] || 'Computer Science',
+                  })}
+                  label={t('match3rd:message')}
+                  className={styles.field}
+                  onChange={onMessageChange}
+                  value={message}
+                />
+                <Button
+                  className={styles.button}
+                  label={
+                    !currentUser.id
+                      ? t('match3rd:signup-btn')
+                      : t('match3rd:send-btn')
+                  }
+                  disabled={loading}
+                  google={!currentUser.id}
+                  raised
+                  arrow
+                />
+                {!!error && (
+                  <div data-cy='error' className={styles.error}>
+                    {error}
+                  </div>
+                )}
+              </form>
+            </>
+          )}
+          {!!org?.matchURL && (
             <Button
+              href={org.matchURL}
               className={styles.button}
-              label={
-                !currentUser.id
-                  ? t('match3rd:signup-btn')
-                  : t('match3rd:send-btn')
-              }
-              disabled={loading}
-              google={!currentUser.id}
+              label='Open Picktime'
               raised
               arrow
             />
-            {!!error && (
-              <div data-cy='error' className={styles.error}>
-                {error}
-              </div>
-            )}
-          </form>
+          )}
         </div>
       </div>
     </Dialog>

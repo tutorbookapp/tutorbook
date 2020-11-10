@@ -86,13 +86,16 @@ export function isZoomAccount(json: unknown): json is ZoomAccount {
  * @property members - An array of user UIDs that are members of this org.
  * @property aspects - The supported aspects of a given org (i.e. are they more
  * focused on `tutoring` or `mentoring`). The first one listed is the default.
- * @property signup - Configuration for the org's unique custom sign-up page.
- * @property home - Configuration for the org's unique custom landing homepage.
  * @property domains - Array of valid email domains that can access this org's
  * data (e.g. `pausd.us` and `pausd.org`).
  * @property profiles - Array of required profile fields (e.g. `phone`).
  * @property [zoom] - This org's Zoom OAuth config. Used to create meetings and
  * (optionally) users.
+ * @property signup - Configuration for the org's unique custom sign-up page.
+ * @property home - Configuration for the org's unique custom landing homepage.
+ * @property [matchLink] - Temporary fix for QuaranTunes' need to link to a
+ * Picktime page for scheduling instead of creating matches within TB.
+ * @see {@link https://github.com/tutorbookapp/tutorbook/issues/138}
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
@@ -103,11 +106,13 @@ export interface OrgInterface extends AccountInterface {
   zoom?: ZoomAccount;
   signup: SignupConfig;
   home: HomeConfig;
+  matchURL?: string;
 }
 
-export type OrgJSON = Omit<OrgInterface, 'subjects' | 'zoom'> & {
+export type OrgJSON = Omit<OrgInterface, 'subjects' | 'zoom' | 'matchURL'> & {
   subjects: string[] | null;
   zoom: ZoomAccount | null;
+  matchURL: string | null;
 };
 
 // TODO: Check that the `profiles` key only contains keys of the `User` object.
@@ -122,6 +127,7 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (json.zoom && !isZoomAccount(json.zoom)) return false;
   if (!isSignupConfig(json.signup)) return false;
   if (!isHomeConfig(json.home)) return false;
+  if (json.matchURL && typeof json.matchURL !== 'string') return false;
   return true;
 }
 
@@ -180,6 +186,8 @@ export class Org extends Account implements OrgInterface {
     },
   };
 
+  public matchURL?: string;
+
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
     construct<OrgInterface, AccountInterface>(this, org, new Account());
@@ -204,13 +212,19 @@ export class Org extends Account implements OrgInterface {
   public static fromJSON(json: OrgJSON): Org {
     return new Org({
       ...json,
+      matchURL: json.matchURL || undefined,
       subjects: json.subjects || undefined,
       zoom: json.zoom || undefined,
     });
   }
 
   public toJSON(): OrgJSON {
-    const { ref, subjects, zoom, ...rest } = this;
-    return { ...rest, subjects: subjects || null, zoom: zoom || null };
+    const { ref, matchURL, subjects, zoom, ...rest } = this;
+    return {
+      ...rest,
+      matchURL: matchURL || null,
+      subjects: subjects || null,
+      zoom: zoom || null,
+    };
   }
 }
