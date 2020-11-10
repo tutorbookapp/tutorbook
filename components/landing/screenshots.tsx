@@ -31,7 +31,7 @@ const previews = [
   {
     label: 'Match scheduling',
     id: 'scheduling',
-    url: '/default/search/volunteer',
+    url: '/default/search/2SLcWTl1DxbgJzFGGAUghtcJuAl2',
   },
 ];
 
