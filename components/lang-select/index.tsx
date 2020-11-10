@@ -19,6 +19,20 @@ type LangHit = ObjectWithObjectID & {
 };
 
 /**
+ * Orders the list of `LangHits` to match the order they were originally stored.
+ * @param hits - The list of `LangHits` to order.
+ * @param langs - The list of locale codes that were stored in our database.
+ * @return A list of `LangHits` ordered according to the order in `langs`.
+ */
+function orderLangs(hits: LangHit[], langs: string[]): LangHit[] {
+  return hits.sort((first, second) => {
+    const firstIdx = langs.findIndex((c) => c === first.objectID);
+    const secondIdx = langs.findIndex((c) => c === second.objectID);
+    return firstIdx - secondIdx;
+  });
+}
+
+/**
  * The `LangSelect` is a `Select` controller which means that it:
  * 1. Provides the `value` and `onChange` API surface on which to control the
  * values currently selected (i.e. the selected locale codes).
@@ -37,6 +51,7 @@ export default function LangSelect({
   ...props
 }: SelectControllerProps<string>): JSX.Element {
   // Store a cache of labels fetched (i.e. a map of values and labels).
+  // TODO: Make sure this is globally stored and can be accessed across pages.
   const cache = useRef<Record<string, LangHit>>({});
 
   // Directly control the `Select` component with this internal state.
@@ -91,7 +106,7 @@ export default function LangSelect({
         const res: SearchResponse<LangHit> = await searchIndex.search('', {
           filters: value.map((val) => `objectID:${val}`).join(' OR '),
         });
-        setSelectedOptions(res.hits.map(langHitToOption));
+        setSelectedOptions(orderLangs(res.hits, value).map(langHitToOption));
       };
       void updateLabelsFromAlgolia();
       // Then, temporarily update the options based on locale codes and cache.

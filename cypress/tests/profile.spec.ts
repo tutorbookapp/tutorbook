@@ -132,6 +132,15 @@ describe('Profile page', () => {
       cy.get('@mentoring-subjects').eq(idx).should('contain', subject);
     });
 
+    const langs: Record<string, string> = { en: 'English', es: 'Spanish' };
+    cy.contains('What languages do you speak?')
+      .children('.mdc-chip')
+      .should('have.length', volunteer.langs.length)
+      .as('langs');
+    volunteer.langs.forEach((lang: string, idx: number) => {
+      cy.get('@langs').eq(idx).should('contain', langs[lang]);
+    });
+
     const availabilityString = volunteer.availability
       .map((timeslot: TimeslotJSON) => {
         const from = new Date(timeslot.from);

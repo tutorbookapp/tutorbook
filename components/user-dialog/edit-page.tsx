@@ -4,11 +4,12 @@ import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
-import PhotoInput from 'components/photo-input';
-import SubjectSelect from 'components/subject-select';
 import AvailabilitySelect from 'components/availability-select';
 import Button from 'components/button';
+import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
+import PhotoInput from 'components/photo-input';
+import SubjectSelect from 'components/subject-select';
 
 import { Availability, TCallback, User, UserJSON } from 'lib/model';
 import { usePrevious, useSingle, useSocialProps } from 'lib/hooks';
@@ -145,6 +146,12 @@ export default memo(function EditPage({
     },
     [setUser]
   );
+  const onLangsChange = useCallback(
+    (langs: string[]) => {
+      setUser((prev) => new User({ ...prev, langs }));
+    },
+    [setUser]
+  );
 
   const action = useMemo(() => {
     return user.id.startsWith('temp') ? 'create' : 'update';
@@ -193,6 +200,14 @@ export default memo(function EditPage({
         </div>
         <div className={styles.divider} />
         <div className={styles.inputs}>
+          <LangSelect
+            label={t('user:langs')}
+            value={user.langs}
+            onChange={onLangsChange}
+            className={styles.field}
+            renderToPortal
+            outlined
+          />
           <AvailabilitySelect
             label={t('user:availability')}
             value={user.availability}

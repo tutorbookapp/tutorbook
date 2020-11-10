@@ -5,6 +5,7 @@ import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
 import Header from 'components/header';
+import LangSelect from 'components/lang-select';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 import AvailabilitySelect from 'components/availability-select';
@@ -80,6 +81,12 @@ export default function Profile(): JSX.Element {
     },
     [setUser]
   );
+  const onLangsChange = useCallback(
+    (langs: string[]) => {
+      setUser((prev) => new User({ ...prev, langs }));
+    },
+    [setUser]
+  );
 
   const getSocialProps = useSocialProps(
     user,
@@ -150,22 +157,11 @@ export default function Profile(): JSX.Element {
           </div>
           <div className={styles.divider} />
           <div className={styles.inputs}>
-            <SubjectSelect
+            <LangSelect
               className={styles.field}
-              label={t('user3rd:tutoring-subjects')}
-              onChange={onTutoringSubjectsChange}
-              value={user.tutoring.subjects}
-              placeholder={t('common:tutoring-subjects-placeholder')}
-              aspect='tutoring'
-              outlined
-            />
-            <SubjectSelect
-              className={styles.field}
-              label={t('user3rd:mentoring-subjects')}
-              onChange={onMentoringSubjectsChange}
-              value={user.mentoring.subjects}
-              placeholder={t('common:mentoring-subjects-placeholder')}
-              aspect='mentoring'
+              label={t('user3rd:langs')}
+              onChange={onLangsChange}
+              value={user.langs}
               outlined
             />
             <AvailabilitySelect
@@ -184,9 +180,29 @@ export default function Profile(): JSX.Element {
               onChange={onBioChange}
               className={styles.field}
               outlined
-              required
               rows={8}
               textarea
+            />
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.inputs}>
+            <SubjectSelect
+              className={styles.field}
+              label={t('user3rd:tutoring-subjects')}
+              onChange={onTutoringSubjectsChange}
+              value={user.tutoring.subjects}
+              placeholder={t('common:tutoring-subjects-placeholder')}
+              aspect='tutoring'
+              outlined
+            />
+            <SubjectSelect
+              className={styles.field}
+              label={t('user3rd:mentoring-subjects')}
+              onChange={onMentoringSubjectsChange}
+              value={user.mentoring.subjects}
+              placeholder={t('common:mentoring-subjects-placeholder')}
+              aspect='mentoring'
+              outlined
             />
           </div>
           <div className={styles.divider} />

@@ -7,6 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import AvailabilitySelect from 'components/availability-select';
 import Button from 'components/button';
+import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
@@ -122,6 +123,12 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     },
     [setUser]
   );
+  const onLangsChange = useCallback(
+    (langs: string[]) => {
+      setUser((prev) => new User({ ...prev, langs }));
+    },
+    [setUser]
+  );
 
   const action = useMemo(() => (user.id ? 'update' : 'create'), [user.id]);
 
@@ -196,6 +203,14 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               className={styles.field}
               aspect={aspect}
               required={org ? org.profiles.includes('subjects') : true}
+              outlined
+            />
+            <LangSelect
+              className={styles.field}
+              label={t('user3rd:langs')}
+              onChange={onLangsChange}
+              value={user.langs}
+              required={org ? org.profiles.includes('langs') : true}
               outlined
             />
             <AvailabilitySelect

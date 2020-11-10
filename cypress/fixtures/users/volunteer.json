@@ -68,7 +68,7 @@
     "subjects": ["Computer Science", "Math"],
     "searches": []
   },
-  "langs": ["en"],
+  "langs": ["en", "es"],
   "parents": [],
   "verifications": [],
   "visible": true

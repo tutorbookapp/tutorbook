@@ -62,6 +62,21 @@ describe('Signup page', () => {
 
     cy.get('@photo-input-label').should('have.text', 'Uploaded volunteer.jpg.');
 
+    // TODO: Test this in different locales to ensure that the current locale is
+    // always properly pre-selected.
+    cy.contains('What languages do you speak?')
+      .as('langs-input')
+      .children('.mdc-chip')
+      .should('have.length', 1)
+      .and('contain', 'English');
+    cy.get('@langs-input').type('Span');
+    cy.contains('li', 'Spanish').click({ force: true });
+    cy.get('@langs-input')
+      .children('.mdc-chip')
+      .should('have.length', 2)
+      .last()
+      .should('contain', 'Spanish');
+
     cy.contains('What are your fields of expertise?')
       .as('subjects-input')
       .type('Computer');

@@ -38,7 +38,11 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // reset during client-side page navigation.
   const initialPageLoad = useRef<boolean>(true);
   const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
-  const user = useMemo(() => (data ? User.fromJSON(data) : new User()), [data]);
+  const user = useMemo(() => {
+    // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
+    // effect from within the `withI18n` HOC) to properly set these `langs`.
+    return data ? User.fromJSON(data) : new User({ langs: ['en'] });
+  }, [data]);
   const loggedIn = useMemo(() => {
     if (user.id) {
       initialPageLoad.current = false;
