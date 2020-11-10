@@ -2,6 +2,7 @@ import {
   Dialog as MDCDialog,
   DialogProps as MDCDialogProps,
 } from '@rmwc/dialog';
+import { animated, useSprings } from 'react-spring';
 import { IconButton } from '@rmwc/icon-button';
 import cn from 'classnames';
 import { useState } from 'react';
@@ -27,6 +28,12 @@ export type DialogProps = Omit<MDCDialogProps, 'open'> & UniqueDialogProps;
  * Wrapper around the MDCDialog component that provides multi-page navigation
  * animations using the Web Animations API. All other params not listed below
  * will be passed to the MDCDialog component itself.
+ *
+ * Animations were determined by following Material Design guidelines:
+ * @see {@link https://material.io/design/motion/the-motion-system.html#shared-axis}
+ * @see {@link https://material.io/develop/web/components/animation}
+ * @see {@link https://bit.ly/2EHiyDj}
+ *
  * @param children - The different pages within the app. The first page always
  * has to be the display page (i.e. the page from which you close the dialog).
  * @param loading - Whether or not a loader (that prevents user input) is shown
@@ -43,6 +50,17 @@ export default function Dialog({
   ...rest
 }: DialogProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(true);
+  const springs = useSprings(
+    children.length,
+    children.map((child, idx) => {
+      const transform = idx === 0 ? 'scale(1.1)' : 'scale(0.8)';
+      return {
+        opacity: idx === active ? 1 : 0,
+        transform: idx === active ? 'scale(1.0)' : transform,
+        config: { tension: 400, clamp: true },
+      };
+    })
+  );
 
   return (
     <MDCDialog
@@ -51,7 +69,10 @@ export default function Dialog({
       className={cn(styles.dialog, rest.className)}
     >
       {children.map((page, idx) => (
-        <div className={cn(styles.page, { [styles.active]: active === idx })}>
+        <animated.div
+          style={springs[idx]}
+          className={cn(styles.page, { [styles.active]: active === idx })}
+        >
           <div className={styles.wrapper}>
             <Loader active={!!loading} checked={!!checked} />
             <div className={styles.nav}>
@@ -63,7 +84,7 @@ export default function Dialog({
             </div>
             {page}
           </div>
-        </div>
+        </animated.div>
       ))}
     </MDCDialog>
   );

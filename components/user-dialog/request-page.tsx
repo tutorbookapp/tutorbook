@@ -8,7 +8,6 @@ import {
   useState,
 } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import { mutate } from 'swr';
 import to from 'await-to-js';
@@ -17,7 +16,6 @@ import { v4 as uuid } from 'uuid';
 
 import SubjectSelect, { SubjectOption } from 'components/subject-select';
 import Button from 'components/button';
-import Loader from 'components/loader';
 import Result from 'components/search/result';
 
 import {
@@ -39,23 +37,25 @@ import styles from './form-page.module.scss';
 
 export interface RequestPageProps {
   value: UserJSON;
-  openDisplay: () => Promise<void>;
+  openDisplay: () => void;
   setMatching: Callback<RequestJSON[]>;
-  closeDialog: () => void;
+  loading: boolean;
+  setLoading: Callback<boolean>;
+  setChecked: Callback<boolean>;
 }
 
 export default memo(function RequestPage({
   value,
   openDisplay,
   setMatching,
-  closeDialog,
+  loading,
+  setLoading,
+  setChecked,
 }: RequestPageProps): JSX.Element {
   const { org } = useOrg();
   const { user } = useUser();
   const { t } = useTranslation();
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [checked, setChecked] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   const aspects = useRef<Set<Aspect>>(new Set());
@@ -76,7 +76,7 @@ export default memo(function RequestPage({
   }, []);
   const onMessageFocus = useCallback(() => {
     setMessage((prev: string) => prev || msgPlaceholder.replace('Ex: ', ''));
-  }, [t, subjects, value.name]);
+  }, [msgPlaceholder]);
 
   useEffect(() => {
     subjects.forEach((s) => {
@@ -180,56 +180,53 @@ export default memo(function RequestPage({
         setChecked(true);
         // Wait one sec to show checkmark animation before hiding the loading
         // overlay and letting the user edit their newly created/updated user.
-        setTimeout(closeDialog, 1000);
+        setTimeout(() => {
+          setLoading(false);
+          openDisplay();
+        }, 1000);
       }
     },
-    [request, setMatching, closeDialog]
+    [request, setMatching, openDisplay, setChecked, setLoading]
   );
 
   return (
-    <div className={styles.wrapper}>
-      <Loader active={loading} checked={checked} />
-      <div className={styles.nav}>
-        <IconButton className={styles.btn} icon='close' onClick={openDisplay} />
-      </div>
-      <div className={styles.content}>
-        <Result user={User.fromJSON(value)} className={styles.display} />
-        <form className={styles.form} onSubmit={onSubmit}>
-          <SubjectSelect
-            required
-            autoOpenMenu
-            options={[...value.tutoring.searches, ...value.mentoring.searches]}
-            label={t('common:subjects')}
-            onSelectedChange={setSubjects}
-            selected={subjects}
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-          <TextField
-            textarea
-            rows={4}
-            required
-            characterCount
-            maxLength={700}
-            label={t('common:message')}
-            placeholder={msgPlaceholder}
-            onChange={onMessageChange}
-            onFocus={onMessageFocus}
-            value={message}
-            className={styles.field}
-            outlined
-          />
-          <Button
-            className={styles.btn}
-            label={t('request:create-btn')}
-            disabled={loading}
-            raised
-            arrow
-          />
-          {!!error && <div className={styles.error}>{error}</div>}
-        </form>
-      </div>
+    <div className={styles.content}>
+      <Result user={User.fromJSON(value)} className={styles.display} />
+      <form className={styles.form} onSubmit={onSubmit}>
+        <SubjectSelect
+          required
+          autoOpenMenu
+          options={[...value.tutoring.searches, ...value.mentoring.searches]}
+          label={t('common:subjects')}
+          onSelectedChange={setSubjects}
+          selected={subjects}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <TextField
+          textarea
+          rows={4}
+          required
+          characterCount
+          maxLength={700}
+          label={t('common:message')}
+          placeholder={msgPlaceholder}
+          onChange={onMessageChange}
+          onFocus={onMessageFocus}
+          value={message}
+          className={styles.field}
+          outlined
+        />
+        <Button
+          className={styles.btn}
+          label={t('request:create-btn')}
+          disabled={loading}
+          raised
+          arrow
+        />
+        {!!error && <div className={styles.error}>{error}</div>}
+      </form>
     </div>
   );
 });

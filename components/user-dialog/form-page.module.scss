@@ -1,53 +1,26 @@
-@use 'sass:map';
 @use 'styles/common';
 
-.wrapper {
-  max-height: calc(100vh - 32px);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+.display {
+  max-width: 500px;
+  margin: 32px auto;
+  border-radius: 4px;
+  pointer-events: none;
+}
 
-  .nav {
-    padding: 16px;
-    border-bottom: 1px solid var(--accents-2);
+.form {
+  max-width: 500px;
+  margin: 32px auto;
 
-    .btn {
-      font-size: 18px;
-      padding: 9px;
-      width: 36px;
-      height: 36px;
-    }
+  .field {
+    @include common.field;
   }
 
-  .content {
-    height: 100%;
-    padding: 0 48px;
-    overflow: auto;
+  .btn {
+    margin: 8px 0 0;
+    width: 100%;
+  }
 
-    .display {
-      max-width: 500px;
-      margin: 32px auto;
-      border-radius: 4px;
-      pointer-events: none;
-    }
-
-    .form {
-      max-width: 500px;
-      margin: 32px auto;
-
-      .field {
-        @include common.field;
-      }
-
-      .btn {
-        margin: 8px 0 0;
-        width: 100%;
-      }
-
-      .error {
-        @include common.error;
-      }
-    }
+  .error {
+    @include common.error;
   }
 }

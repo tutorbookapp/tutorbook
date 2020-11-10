@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import Router, { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 
-import { UserDialogProps } from 'components/user-dialog';
+import { Page, UserDialogProps } from 'components/user-dialog';
 import Pagination from 'components/pagination';
 
 import {
@@ -98,9 +98,10 @@ export default function People({ org }: PeopleProps): JSX.Element {
   }, [org.id, viewing?.id]);
 
   const initialPage = useMemo(() => {
-    if (!viewing || !viewing.id || viewing.id.startsWith('temp')) return 'edit';
-    if (matching.length) return 'match';
-    return 'display';
+    if (!viewing || !viewing.id || viewing.id.startsWith('temp'))
+      return Page.Edit;
+    if (matching.length) return Page.Match;
+    return Page.Display;
   }, [viewing, matching.length]);
 
   return (

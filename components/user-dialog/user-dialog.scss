@@ -1,10 +1,8 @@
-@use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 
 @mixin header {
   @include typography.typography('headline6');
-  color: map.get(config.$colors, 'foreground');
+  color: var(--geist-foreground);
   font-weight: 600;
   margin: 24px 0 16px;
 }
@@ -41,7 +39,7 @@
 }
 
 @mixin error {
-  color: map.get(config.$colors, 'error');
+  color: var(--geist-error);
   font-weight: 450;
   margin-top: 16px;
 }

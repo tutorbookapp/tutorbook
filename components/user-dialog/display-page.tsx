@@ -10,7 +10,6 @@ import {
 } from '@rmwc/data-table';
 import { FormEvent, memo, useCallback, useMemo } from 'react';
 import { Checkbox } from '@rmwc/checkbox';
-import { IconButton } from '@rmwc/icon-button';
 import { Switch } from '@rmwc/switch';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
@@ -39,10 +38,9 @@ const checks: Check[] = [
 export interface DisplayPageProps {
   value: UserJSON;
   onChange: (updated: UserJSON) => Promise<void>;
-  openEdit: () => Promise<void>;
-  openMatch: () => Promise<void>;
-  openRequest: () => Promise<void>;
-  closeDialog: () => void;
+  openEdit: () => void;
+  openMatch: () => void;
+  openRequest: () => void;
 }
 
 export default memo(function DisplayPage({
@@ -51,7 +49,6 @@ export default memo(function DisplayPage({
   openEdit,
   openMatch,
   openRequest,
-  closeDialog,
 }: DisplayPageProps): JSX.Element {
   const { t } = useTranslation();
   const { org } = useOrg();
@@ -202,10 +199,7 @@ export default memo(function DisplayPage({
   );
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.nav}>
-        <IconButton className={styles.btn} icon='close' onClick={closeDialog} />
-      </div>
+    <>
       <div className={styles.content}>
         <div className={styles.left}>
           <a
@@ -313,6 +307,6 @@ export default memo(function DisplayPage({
           <Chip icon='edit' label='Edit profile' onClick={openEdit} />
         </ChipSet>
       </div>
-    </div>
+    </>
   );
 });

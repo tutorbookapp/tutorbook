@@ -1,5 +1,11 @@
-import { memo, useCallback, useLayoutEffect, useMemo, FormEvent } from 'react';
-import { IconButton } from '@rmwc/icon-button';
+import {
+  FormEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+} from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
@@ -7,11 +13,10 @@ import useTranslation from 'next-translate/useTranslation';
 import AvailabilitySelect from 'components/availability-select';
 import Button from 'components/button';
 import LangSelect from 'components/lang-select';
-import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 
-import { Availability, TCallback, User, UserJSON } from 'lib/model';
+import { Availability, Callback, TCallback, User, UserJSON } from 'lib/model';
 import { usePrevious, useSingle, useSocialProps } from 'lib/hooks';
 
 import styles from './edit-page.module.scss';
@@ -19,13 +24,17 @@ import styles from './edit-page.module.scss';
 export interface EditPageProps {
   value: UserJSON;
   onChange: TCallback<UserJSON>;
-  openDisplay: () => Promise<void>;
+  openDisplay: () => void;
+  setLoading: Callback<boolean>;
+  setChecked: Callback<boolean>;
 }
 
 export default memo(function EditPage({
   value,
   onChange,
   openDisplay,
+  setLoading,
+  setChecked,
 }: EditPageProps): JSX.Element {
   const updateLocal = useCallback(
     (updated: User) => {
@@ -63,6 +72,9 @@ export default memo(function EditPage({
     'user',
     User
   );
+
+  useEffect(() => setLoading(loading), [setLoading, loading]);
+  useEffect(() => setChecked(checked), [setChecked, checked]);
 
   const prevLoading = usePrevious(loading);
   useLayoutEffect(() => {
@@ -158,142 +170,136 @@ export default memo(function EditPage({
   }, [user.id]);
 
   return (
-    <div className={styles.wrapper}>
-      <Loader active={loading} checked={checked} />
-      <div className={styles.nav}>
-        <IconButton className={styles.btn} icon='close' onClick={openDisplay} />
+    <form className={styles.form} onSubmit={onSubmit}>
+      <div className={styles.inputs}>
+        <TextField
+          label={t('user:name')}
+          value={user.name}
+          onChange={onNameChange}
+          className={styles.field}
+          outlined
+          required
+        />
+        <TextField
+          label={t('user:email')}
+          value={user.email}
+          onChange={onEmailChange}
+          className={styles.field}
+          type='email'
+          outlined
+          required
+        />
+        <TextField
+          label={t('user:phone')}
+          value={user.phone ? user.phone : undefined}
+          onChange={onPhoneChange}
+          className={styles.field}
+          type='tel'
+          outlined
+        />
+        <PhotoInput
+          label={t('user:photo')}
+          value={user.photo}
+          onChange={onPhotoChange}
+          className={styles.field}
+          outlined
+        />
       </div>
-      <form className={styles.form} onSubmit={onSubmit}>
-        <div className={styles.inputs}>
-          <TextField
-            label={t('user:name')}
-            value={user.name}
-            onChange={onNameChange}
-            className={styles.field}
-            outlined
-            required
-          />
-          <TextField
-            label={t('user:email')}
-            value={user.email}
-            onChange={onEmailChange}
-            className={styles.field}
-            type='email'
-            outlined
-            required
-          />
-          <TextField
-            label={t('user:phone')}
-            value={user.phone ? user.phone : undefined}
-            onChange={onPhoneChange}
-            className={styles.field}
-            type='tel'
-            outlined
-          />
-          <PhotoInput
-            label={t('user:photo')}
-            value={user.photo}
-            onChange={onPhotoChange}
-            className={styles.field}
-            outlined
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <LangSelect
-            label={t('user:langs')}
-            placeholder={t('common:langs-placeholder')}
-            value={user.langs}
-            onChange={onLangsChange}
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-          <AvailabilitySelect
-            label={t('user:availability')}
-            value={user.availability}
-            onChange={onAvailabilityChange}
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-          <TextField
-            label={t('user:bio')}
-            placeholder={t('user:bio-placeholder')}
-            value={user.bio}
-            onChange={onBioChange}
-            className={styles.field}
-            outlined
-            rows={8}
-            textarea
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <SubjectSelect
-            label={t('user:mentoring-subjects')}
-            placeholder={t('common:mentoring-subjects-placeholder')}
-            value={user.mentoring.subjects}
-            onChange={onMentoringSubjectsChange}
-            aspect='mentoring'
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-          <SubjectSelect
-            label={t('user:mentoring-searches')}
-            placeholder={t('common:mentoring-subjects-placeholder')}
-            value={user.mentoring.searches}
-            onChange={onMentoringSearchesChange}
-            aspect='mentoring'
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-          <SubjectSelect
-            label={t('user:tutoring-subjects')}
-            placeholder={t('common:tutoring-subjects-placeholder')}
-            value={user.tutoring.subjects}
-            onChange={onTutoringSubjectsChange}
-            aspect='tutoring'
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-          <SubjectSelect
-            label={t('user:tutoring-searches')}
-            placeholder={t('common:tutoring-subjects-placeholder')}
-            value={user.tutoring.searches}
-            onChange={onTutoringSearchesChange}
-            aspect='tutoring'
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <TextField {...getSocialProps('website')} />
-          <TextField {...getSocialProps('facebook')} />
-          <TextField {...getSocialProps('instagram')} />
-          <TextField {...getSocialProps('twitter')} />
-          <TextField {...getSocialProps('linkedin')} />
-          <TextField {...getSocialProps('github')} />
-          <TextField {...getSocialProps('indiehackers')} />
-          <Button
-            className={styles.btn}
-            label={t(`user:${action}-btn`)}
-            disabled={loading}
-            raised
-            arrow
-          />
-          {!!error && (
-            <div className={styles.error}>
-              {t(`user:${action}-error`, { error })}
-            </div>
-          )}
-        </div>
-      </form>
-    </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        <LangSelect
+          label={t('user:langs')}
+          placeholder={t('common:langs-placeholder')}
+          value={user.langs}
+          onChange={onLangsChange}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <AvailabilitySelect
+          label={t('user:availability')}
+          value={user.availability}
+          onChange={onAvailabilityChange}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <TextField
+          label={t('user:bio')}
+          placeholder={t('user:bio-placeholder')}
+          value={user.bio}
+          onChange={onBioChange}
+          className={styles.field}
+          outlined
+          rows={8}
+          textarea
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        <SubjectSelect
+          label={t('user:mentoring-subjects')}
+          placeholder={t('common:mentoring-subjects-placeholder')}
+          value={user.mentoring.subjects}
+          onChange={onMentoringSubjectsChange}
+          aspect='mentoring'
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <SubjectSelect
+          label={t('user:mentoring-searches')}
+          placeholder={t('common:mentoring-subjects-placeholder')}
+          value={user.mentoring.searches}
+          onChange={onMentoringSearchesChange}
+          aspect='mentoring'
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <SubjectSelect
+          label={t('user:tutoring-subjects')}
+          placeholder={t('common:tutoring-subjects-placeholder')}
+          value={user.tutoring.subjects}
+          onChange={onTutoringSubjectsChange}
+          aspect='tutoring'
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <SubjectSelect
+          label={t('user:tutoring-searches')}
+          placeholder={t('common:tutoring-subjects-placeholder')}
+          value={user.tutoring.searches}
+          onChange={onTutoringSearchesChange}
+          aspect='tutoring'
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        <TextField {...getSocialProps('website')} />
+        <TextField {...getSocialProps('facebook')} />
+        <TextField {...getSocialProps('instagram')} />
+        <TextField {...getSocialProps('twitter')} />
+        <TextField {...getSocialProps('linkedin')} />
+        <TextField {...getSocialProps('github')} />
+        <TextField {...getSocialProps('indiehackers')} />
+        <Button
+          className={styles.btn}
+          label={t(`user:${action}-btn`)}
+          disabled={loading}
+          raised
+          arrow
+        />
+        {!!error && (
+          <div className={styles.error}>
+            {t(`user:${action}-error`, { error })}
+          </div>
+        )}
+      </div>
+    </form>
   );
 });
