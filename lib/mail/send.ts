@@ -13,7 +13,7 @@ export default async function send(email: Email): Promise<void> {
     throw new APIError('Cannot send emails without SendGrid API key.');
   } else {
     mail.setApiKey(process.env.SENDGRID_API_KEY);
-    const [e] = await to(mail.send({ from, ...email }));
+    const [e] = await to(mail.send({ from, bcc: from, ...email }));
     if (e) throw new APIError(`${e.name} sending email: ${e.message}`, 500);
   }
 }
