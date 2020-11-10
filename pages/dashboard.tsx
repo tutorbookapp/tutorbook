@@ -18,7 +18,7 @@ function DashboardPage(): JSX.Element {
   useLoggedIn('dashboard');
 
   return (
-    <Page title='Dashboard - Tutorbook'>
+    <Page title='Dashboard - Tutorbook' intercom>
       <TabHeader
         switcher
         tabs={[

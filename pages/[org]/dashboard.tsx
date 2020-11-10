@@ -34,7 +34,7 @@ function DashboardPage(): JSX.Element {
         <ErrorPage statusCode={401} title={t('common:not-org-member')} />
       )}
       {!!org && (
-        <Page title={`${org.name} - Dashboard - Tutorbook`}>
+        <Page title={`${org.name} - Dashboard - Tutorbook`} intercom>
           <TabHeader
             switcher
             tabs={[
