@@ -45,9 +45,7 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.8.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@mux/cli": "^0.4.1",
     "@types/accept-language-parser": "^1.5.1",
-    "@types/hls.js": "^0.13.2",
     "@types/mixpanel-browser": "^2.35.4",
     "@types/node": "^14.0.26",
     "@types/nprogress": "^0.2.0",
@@ -136,7 +134,6 @@
     "firebase-admin": "^9.0.0",
     "firebase-tools": "^8.10.0",
     "handlebars": "^4.7.6",
-    "hls.js": "^0.14.16",
     "mixpanel-browser": "^2.39.0",
     "nanoid": "^3.1.12",
     "next": "^10.0.1",

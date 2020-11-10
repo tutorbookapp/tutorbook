@@ -42,33 +42,18 @@ function toggleSelection(value: string): void {
   style['-ms-user-select'] = value;
 }
 
-async function loadMedia(video: HTMLVideoElement, src: string): Promise<void> {
-  if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    /* eslint-disable-next-line no-param-reassign */
-    video.src = src;
-  } else {
-    const { default: Hls } = await import('hls.js');
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(src);
-      hls.attachMedia(video);
-    }
-  }
-}
-
 export interface VideoProps {
-  id: string;
+  src: string;
   autoplay?: boolean;
   loop?: boolean;
 }
 
-export default function Video({ id, autoplay, loop }: VideoProps): JSX.Element {
+export default function Video({
+  src,
+  autoplay,
+  loop,
+}: VideoProps): JSX.Element {
   const ref = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    void loadMedia(ref.current, `https://stream.mux.com/${id}.m3u8`);
-  }, [ref, id]);
 
   const [visible, setVisible] = useState<boolean>(false);
   const onEnter = useCallback(() => setVisible(true), []);
@@ -146,6 +131,7 @@ export default function Video({ id, autoplay, loop }: VideoProps): JSX.Element {
             autoPlay={autoplay}
             preload='auto'
             loop={loop}
+            src={src}
             playsInline
           />
           <div className={cn(styles.controls, { [styles.visible]: visible })}>

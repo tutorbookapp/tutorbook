@@ -6,7 +6,7 @@ export interface SpotlightProps {
   num: number;
   header: string;
   body: string;
-  mux: string;
+  vid: string;
   img: string;
 }
 
@@ -14,7 +14,7 @@ export default function Spotlight({
   num,
   header,
   body,
-  mux,
+  vid,
   img,
 }: SpotlightProps): JSX.Element {
   return (
@@ -35,7 +35,7 @@ export default function Spotlight({
         </div>
       </div>
       <div className={styles.video}>
-        <Video id={mux} autoplay loop />
+        <Video src={vid} autoplay loop />
       </div>
     </div>
   );
