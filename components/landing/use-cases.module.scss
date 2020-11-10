@@ -2,8 +2,8 @@
 @use 'styles/typography';
 
 .wrapper {
-  $one-breakpoint: 500px;
-  $two-breakpoint: 900px;
+  $list-breakpoint: 600px;
+  $resize-breakpoint: 900px;
   @include common.wrapper;
   text-align: center;
   padding: 96px 24px 48px;
@@ -25,45 +25,38 @@
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 0;
 
-    @media (min-width: $one-breakpoint) and (max-width: $two-breakpoint) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (max-width: $one-breakpoint) {
+    @media (max-width: $list-breakpoint) {
       grid-template-columns: repeat(1, 1fr);
       margin-top: 0;
     }
 
     .item {
-      padding: 24px 0;
+      padding: 24px 12px;
 
-      @media (min-width: $two-breakpoint) {
-        &:last-of-type {
-          border-left: 1px solid var(--accents-2);
-        }
+      &:last-of-type {
+        border-left: 1px solid var(--accents-2);
+      }
 
-        &:first-of-type {
-          border-right: 1px solid var(--accents-2);
+      &:first-of-type {
+        border-right: 1px solid var(--accents-2);
+      }
+
+      @media (min-width: $list-breakpoint) and (max-width: $resize-breakpoint) {
+        p {
+          font-size: 14px;
         }
       }
 
-      @media (min-width: $one-breakpoint) and (max-width: $two-breakpoint) {
-        &:last-of-type {
-          border-top: 1px solid var(--accents-2);
-          grid-column: span 2;
-        }
+      @media (max-width: $list-breakpoint) {
+        padding: 24px 0;
 
-        &:first-of-type {
-          border-right: 1px solid var(--accents-2);
-        }
-      }
-
-      @media (max-width: $one-breakpoint) {
         &:last-of-type {
+          border-left: none;
           border-top: 1px solid var(--accents-2);
         }
 
         &:first-of-type {
+          border-right: none;
           border-bottom: 1px solid var(--accents-2);
         }
       }
