@@ -66,6 +66,10 @@
       &:first-child {
         margin: 0;
       }
+
+      &.picktime {
+        margin: 24px 0 4px;
+      }
     }
 
     .text {
@@ -102,6 +106,14 @@
 
     .button {
       margin: 8px 0 0;
+      width: 100%;
+
+      &.picktime {
+        margin: 16px 0 0;
+      }
+    }
+
+    a {
       width: 100%;
     }
 

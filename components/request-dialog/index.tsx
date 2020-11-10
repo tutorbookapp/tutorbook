@@ -9,6 +9,7 @@ import {
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Dialog } from '@rmwc/dialog';
 import { TextField } from '@rmwc/textfield';
+import cn from 'classnames';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
@@ -306,13 +307,21 @@ export default function RequestDialog({
             </>
           )}
           {!!org?.matchURL && (
-            <Button
-              href={org.matchURL}
-              className={styles.button}
-              label='Open Picktime'
-              raised
-              arrow
-            />
+            <>
+              <h6 className={cn(styles.header, styles.picktime)}>
+                {t('common:request')}
+              </h6>
+              <p className={styles.text}>
+                {t('common:picktime-body', { org: org.name, user: user.name })}
+              </p>
+              <Button
+                href={org.matchURL}
+                className={cn(styles.button, styles.picktime)}
+                label={t('common:picktime-btn')}
+                raised
+                arrow
+              />
+            </>
           )}
         </div>
       </div>

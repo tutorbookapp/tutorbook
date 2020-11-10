@@ -1,4 +1,6 @@
 {
+  "picktime-body": "{{org}} is currently using Picktime for appointment scheduling. Simply click the button below to be taken to their site where you can send {{user}} a lesson request:",
+  "picktime-btn": "Open Picktime",
   "no-photo": "No Photo",
   "verified": "Verified",
   "meta-title": "Tutorbook",

@@ -28,6 +28,7 @@
   "domains": ["pausd.us", "pausd.org"],
   "aspects": ["tutoring"],
   "zoom": null,
+  "matchURL": null,
   "signup": {
     "en": {
       "tutoring": {
