@@ -1,0 +1,91 @@
+.bar {
+  flex: 1 1;
+  color: var(--geist-foreground);
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spacer {
+  flex-basis: 140px;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1 1;
+  background: var(--accents-1);
+  border-radius: 3px;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 var(--geist-gap-half);
+  position: relative;
+}
+
+.url {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.url svg {
+  vertical-align: middle;
+}
+
+.urlDisabled,
+.url a {
+  white-space: nowrap;
+  line-height: 1.25rem;
+  font-size: 0.75rem;
+  flex: 1 1;
+  margin: 0 var(--geist-gap-quarter);
+  max-width: 100%;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lock {
+  color: var(--geist-cyan-dark);
+}
+
+.lockPlaceholder {
+  display: inline-flex;
+  width: 12px;
+}
+
+.bar i {
+  display: inline-flex;
+}
+
+button.refresh {
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+@media (max-width: 600px) {
+  .spacer {
+    flex-basis: 80px;
+  }
+
+  .spacer.end {
+    flex-basis: var(--geist-gap-half);
+  }
+
+  .input {
+    flex: 1 1;
+    overflow: hidden;
+  }
+}

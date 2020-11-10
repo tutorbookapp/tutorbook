@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import Tabs from 'components/navigation/tabs';
-import Browser from 'components/browser';
+import Window from 'components/window';
 
 import styles from './screenshots.module.scss';
 
@@ -36,7 +36,7 @@ const previews = [
 ];
 
 export default function Screenshots(): JSX.Element {
-  const [active, setActive] = useState<Preview>(previews[0]);
+  const [active, setActive] = useState<Preview>(previews[2]);
 
   return (
     <div className={styles.features}>
@@ -51,7 +51,7 @@ export default function Screenshots(): JSX.Element {
           />
         </div>
         <div className={styles.window}>
-          <Browser title={active.label} url={active.url} />
+          <Window title={active.label} url={active.url} />
         </div>
         <div className={styles.orgs}>
           <Link href='/gunn'>

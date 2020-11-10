@@ -5,6 +5,8 @@ import FullScreenIcon from 'components/icons/full-screen';
 import PauseIcon from 'components/icons/pause';
 import PlayIcon from 'components/icons/play';
 
+import styles from './video.module.scss';
+
 /**
  * Pads a given number with leading zeros until it reaches a certain length.
  * @param num - The number to pad.
@@ -130,42 +132,53 @@ export default function Video({ id, autoplay, loop }: VideoProps): JSX.Element {
   );
 
   return (
-    <figure onMouseEnter={onEnter} onMouseLeave={onLeave}>
-      <div className='main'>
-        <div className='container'>
+    <figure
+      className={styles.wrapper}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+    >
+      <div className={styles.main}>
+        <div className={styles.container}>
           <video
             ref={ref}
             onTimeUpdate={updateProgress}
             onDurationChange={updateProgress}
             autoPlay={autoplay}
-            loop={loop}
             preload='auto'
+            loop={loop}
             playsInline
           />
-          <div className={cn('controls', { visible })}>
-            <button className='play' type='button' onClick={togglePlayback}>
+          <div className={cn(styles.controls, { [styles.visible]: visible })}>
+            <button
+              className={styles.play}
+              type='button'
+              onClick={togglePlayback}
+            >
               {playing && <PauseIcon />}
               {!playing && <PlayIcon />}
             </button>
-            <div className='time'>
+            <div className={styles.time}>
               {secondsToTimestamp(ref.current?.currentTime || 0)}
             </div>
-            <div className='progress'>
+            <div className={styles.progress}>
               <div
                 onMouseUp={endDrag}
                 onMouseLeave={endDrag}
                 onMouseDown={startDrag}
                 onMouseMove={updateDrag}
-                className='drag-handler'
+                className={styles.dragHandler}
               />
               <progress value={progress * 100} max='100' />
-              <div style={{ left: `${progress * 100}%` }} className='handle' />
+              <div
+                style={{ left: `${progress * 100}%` }}
+                className={styles.handle}
+              />
             </div>
-            <div className='time'>
+            <div className={styles.time}>
               {secondsToTimestamp(ref.current?.duration || 0)}
             </div>
             <button
-              className='fullscreen'
+              className={styles.fullscreen}
               type='button'
               onClick={toggleFullscreen}
             >
@@ -174,207 +187,6 @@ export default function Video({ id, autoplay, loop }: VideoProps): JSX.Element {
           </div>
         </div>
       </div>
-      <style jsx>{`
-        figure {
-          display: block;
-          text-align: center;
-          margin: 0;
-        }
-        
-        div.main {
-          margin: 0 auto;
-          max-width: 100%;
-          position: relative;
-        }
-        
-        div.controls div {
-          position: relative;
-        }
-        
-        video {
-          height: 100%;
-          left: 0;
-          position: absolute;
-          top: 0;
-          width: 100%;
-          cursor: pointer;
-        }
-        
-        video.radius {
-          border-radius: var(--geist-radius);
-        }
-        
-        video:-webkit-full-screen {
-          width: 100%;
-          height: 100%;
-          max-height: 100%;
-          z-index: 99999999;
-        }
-        
-        div.container {
-          display: flex;
-          justify-content: center;
-          padding-bottom: calc(100% / 16 * 9);
-          background-color: var(--accents-1);
-        }
-        
-        .caption {
-          color: var(--accents-5);
-          font-size: 14px;
-          margin: 0;
-          text-align: center;
-        }
-        
-        div.controls {
-          position: absolute;
-          bottom: 5%;
-          background: var(--geist-background);
-          height: 40px;
-          display: flex;
-          align-items: center;
-          padding: 0 8px;
-          opacity: 0;
-          width: 85%;
-          transform: translate3d(0, 6px, 0);
-          transition: all 0.2s cubic-bezier(0.25, 0.57, 0.45, 0.94);
-        }
-        
-        div.controls.wide {
-          width: 94.5%;
-        }
-       
-        div.controls.visible {
-          opacity: 1;
-          transform: translateZ(0);
-          box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
-          display: flex;
-        }
-
-        button.play {
-          background: transparent;
-          border: 0;
-          height: 40px;
-          width: 40px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          outline: 0;
-          cursor: pointer;
-          flex: 0 0 40px;
-          padding: 0;
-        }
-        
-        div.controls div.progress {
-          position: relative;
-          display: flex;
-          align-items: center;
-          flex: 1 0 auto;
-        }
-
-        div.controls progress {
-          background-color: var(--accents-2);
-          height: 2px;
-          width: 100%;
-          position: absolute;
-          top: calc(50% - 1px);
-          left: 0;
-          pointer-events: none;
-        }
-
-        div.controls progress[value]: :-webkit-progress-bar {
-          background-color: var(--accents-2);
-        }
-
-        div.controls progress[value]: :-webkit-progress-value {
-          background-color: var(--geist-foreground);
-        }
-
-        div.controls div.progress div.handle {
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: var(--geist-foreground);
-          transform: translateX(-4px) translateY(1px) scale(0);
-          transition: width .1s ease,height .1s ease,border-radius .1s ease,transform .1s ease,background-color .1s ease;
-          top: calc(50% - 6px);
-          pointer-events: none;
-        }
-
-        div.controls div.progress div.thumb {
-          position: absolute;
-          background: var(--geist-foreground);
-          box-shadow: 0 4px 9px rgba(0, 0, 0, 0.12);
-          transform: translate3d(0, 40px, 0) scale(0.8, 0);
-          pointer-events: none;
-          opacity: 0;
-          background-size: cover;
-        }
-
-        @media (hover: hover) {
-          div.controls div.progress:hover div.handle {
-            transform: translateX(-4px) translateY(1px) scale(1);
-          }
-          
-          div.controls div.progress div.drag-handler:hover ~ div.thumb {
-            transform: translateZ(0) scaleY(0);
-            opacity: 1;
-          }
-        }
-
-        div.controls div.time {
-          font-size: 12px;
-          font-weight: 600;
-          line-height: 40px;
-          padding: 0 12px;
-          flex: 0 0 auto;
-          width: 60px;
-        }
-       
-        button.play + div.time {
-          padding-left: 0;
-        }
-        
-        @media (max-width: 992px) {
-          div.controls { 
-            opacity: 1;
-            transform: translateZ(0) scaleY(0);
-          }
-
-          div.drag-handler {
-            height: 18px;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .thumb {
-            display: none
-          }
-        }
-
-        button.fullscreen {
-          color: var(--geist-foreground);
-          background: transparent;
-          border: 0;
-          height: 30px;
-          width: 30px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          outline: 0;
-          cursor: pointer;
-          flex: 0 0 40px;
-          padding: 0;
-        }
-
-        div.drag-handler {
-          width: 100%;
-          height: 18px;
-          background: transparent;
-          cursor: pointer;
-        }
-      `}</style>
     </figure>
   );
 }

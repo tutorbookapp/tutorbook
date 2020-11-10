@@ -1,0 +1,144 @@
+.container {
+  max-width: 100%;
+  position: relative;
+  padding-bottom: calc(100% / 16 * 9);
+
+  iframe {
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: calc(100% * 10 / 8);
+    height: calc(100% * 10 / 8);
+    transform: scale(0.8);
+    transform-origin: left top;
+    background: white;
+  }
+
+  span.icon {
+    border-radius: 50%;
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+  }
+
+  span.icon + span.icon {
+    margin-left: 8px;
+  }
+
+  span.close {
+    background-color: #ff5f56;
+  }
+
+  span.minimize {
+    background-color: #ffbd2e;
+  }
+
+  span.fullscreen {
+    background-color: #27c93f;
+  }
+}
+
+.window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--geist-foreground);
+  border-radius: var(--geist-radius);
+  background: var(--geist-background);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-large);
+}
+
+.traffic {
+  display: none;
+  margin-left: var(--geist-gap-half);
+}
+
+.traffic.show {
+  display: block;
+}
+
+.header {
+  width: 100%;
+  flex-basis: 45px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--accents-2);
+}
+
+.body {
+  flex: 1 1;
+  width: 100%;
+  overflow: hidden;
+}
+
+.body.padding {
+  padding-top: var(--geist-gap-half);
+}
+
+.title {
+  color: var(--accents-5);
+  justify-content: center;
+}
+
+.titleRight,
+.title {
+  position: absolute;
+  width: 100%;
+  height: 45px;
+  left: 0;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.titleRight {
+  font-weight: 700;
+  justify-content: flex-end;
+  padding-right: var(--geist-space-4x);
+}
+
+.caret {
+  background: var(--geist-success);
+  display: inline-block;
+  width: 7px;
+  height: 15px;
+  position: relative;
+  bottom: 1px;
+  vertical-align: middle;
+}
+
+.caret.mini {
+  width: 6px;
+  height: 11px;
+}
+
+.caret.blink {
+  animation: blink 1s ease infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.triangle {
+  color: var(--geist-foreground);
+}
+
+.prompt {
+  color: var(--accents-5);
+}
