@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/common';
 
 .wrapper {
@@ -11,7 +10,7 @@
 
   .nav {
     padding: 16px;
-    border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+    border-bottom: 1px solid var(--accents-2);
 
     .btn {
       font-size: 18px;

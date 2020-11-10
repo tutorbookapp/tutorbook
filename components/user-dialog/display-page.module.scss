@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/socials';
 @use 'styles/typography';
 
@@ -16,7 +15,7 @@ $margin: 24px;
 
   .nav {
     padding: 16px;
-    border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+    border-bottom: 1px solid var(--accents-2);
     flex: none;
 
     .btn {
@@ -28,7 +27,7 @@ $margin: 24px;
   }
 
   .actions {
-    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    border-top: 1px solid var(--accents-2);
     overflow: auto;
     display: flex;
     justify-content: flex-end;
@@ -77,7 +76,7 @@ $margin: 24px;
 
       .name {
         @include typography.typography('headline4');
-        color: map.get(config.$colors, 'foreground');
+        color: var(--geist-foreground);
         margin: 12px 0 8px;
       }
 
@@ -95,7 +94,7 @@ $margin: 24px;
 
       .header {
         @include typography.typography('headline6');
-        color: map.get(config.$colors, 'foreground');
+        color: var(--geist-foreground);
         font-weight: 600;
         margin: 16px 0 0;
 
@@ -106,7 +105,7 @@ $margin: 24px;
 
       .text {
         @include typography.typography('body1');
-        color: map.get(config.$colors, 'accents-5');
+        color: var(--accents-5);
         margin: 0;
       }
 
