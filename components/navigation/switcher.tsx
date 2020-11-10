@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import { IntercomAPI } from 'components/react-intercom';
+import { IntercomAPI } from 'components/intercom';
 
 import { Org } from 'lib/model';
 import { useUser } from 'lib/context/user';

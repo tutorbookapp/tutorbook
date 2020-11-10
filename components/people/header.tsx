@@ -3,7 +3,7 @@ import { Snackbar } from '@rmwc/snackbar';
 import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
 
-import { IntercomAPI } from 'components/react-intercom';
+import { IntercomAPI } from 'components/intercom';
 import TitleHeader from 'components/header';
 
 import { TCallback, User, UserJSON } from 'lib/model';

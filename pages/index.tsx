@@ -15,6 +15,7 @@ import VettingImage from 'components/landing/imgs/vetting.png';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
+import landing from 'locales/en/landing.json';
 
 function OrgsPage(): JSX.Element {
   return (
@@ -75,4 +76,5 @@ function OrgsPage(): JSX.Element {
   );
 }
 
-export default withI18n(OrgsPage, { common });
+// TODO: Finish porting over the static text contact into i18n JSON files.
+export default withI18n(OrgsPage, { common, landing });

@@ -3,7 +3,7 @@ import Head from 'next/head';
 import useTranslation from 'next-translate/useTranslation';
 
 import Footer from 'components/footer';
-import Intercom from 'components/react-intercom';
+import Intercom from 'components/intercom';
 
 import styles from './page.module.scss';
 

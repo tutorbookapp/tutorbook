@@ -5,7 +5,7 @@ import { Ripple } from '@rmwc/ripple';
 import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { IntercomAPI } from 'components/react-intercom';
+import { IntercomAPI } from 'components/intercom';
 import Avatar from 'components/avatar';
 
 import Link from 'lib/intl/link';

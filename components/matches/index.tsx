@@ -15,7 +15,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
 import Header from 'components/header';
-import { IntercomAPI } from 'components/react-intercom';
+import { IntercomAPI } from 'components/intercom';
 import Placeholder from 'components/placeholder';
 
 import { MatchesQuery, Org } from 'lib/model';
