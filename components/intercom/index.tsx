@@ -108,7 +108,6 @@ export default function Intercom({ visible }: IntercomProps): null {
 
   useEffect(() => {
     if (!canUseDOM) return;
-    console.log('Updating Intercom:', settings);
     IntercomAPI('update', settings);
   }, [settings]);
 
