@@ -1705,7 +1705,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.8.4":
   version: 7.11.0
   resolution: "@babel/runtime@npm:7.11.0"
   dependencies:
@@ -3836,15 +3836,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/use-deep-compare-effect@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@types/use-deep-compare-effect@npm:1.2.0"
-  dependencies:
-    "@types/react": "*"
-  checksum: 63b0782562e8e8ff4dbb1890509c1824536e9f07c27b6d8e956fcd38083eb7a19a42bf71235ebc682ddcdf06d02ebd198077d7046110820db3477af4beba1d42
-  languageName: node
-  linkType: hard
-
 "@types/uuid@npm:^8.0.0":
   version: 8.0.0
   resolution: "@types/uuid@npm:8.0.0"
@@ -4146,17 +4137,6 @@ __metadata:
     webpack-dev-server:
       optional: true
   checksum: d1dd4fb204a1937a7a2340d466b0e45ab0370fbf933244caa662627bc991893678755779b6d8e8c0775827c9dfb2b58274f58c948799f8c5efa80c83b4eb17b7
-  languageName: node
-  linkType: hard
-
-"@wellyshen/use-web-animations@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "@wellyshen/use-web-animations@npm:0.5.1"
-  dependencies:
-    use-deep-compare-effect: ^1.3.1
-  peerDependencies:
-    react: ">= 16.8.0"
-  checksum: c52d6b6296562a4f3347dda0eb91356db1a29939f5bff671d07b6671494f970b3bd5dbfd021cbfe72c627734964041543469e1107b1a60861c6604365042b19a
   languageName: node
   linkType: hard
 
@@ -7367,13 +7347,6 @@ __metadata:
   version: 2.0.2
   resolution: "dequal@npm:2.0.2"
   checksum: 3b5b019a873da282a25512c632c077e5e8e2a019e71c5b6968836443b861e44176ee3934facfecdc14994d553c1ff4a6c7232278d6aef87baf65e2413d41760c
-  languageName: node
-  linkType: hard
-
-"dequal@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "dequal@npm:1.0.1"
-  checksum: e09b8ab4b71526231a5dcebb9effd907e8bdbf98935124f6e9b902afd972b05b981eea685f4d022e3ac470c61193e5e96735cffd530df64cd2d70cb0402bde00
   languageName: node
   linkType: hard
 
@@ -17238,7 +17211,6 @@ resolve@1.1.7:
     "@types/uuid": ^8.0.0
     "@typescript-eslint/eslint-plugin": ^3.7.0
     "@typescript-eslint/parser": ^3.7.0
-    "@wellyshen/use-web-animations": ^0.5.1
     accept-language-parser: ^1.5.0
     algoliasearch: ^4.3.1
     await-to-js: ^2.1.1
@@ -17739,19 +17711,6 @@ typescript@^4.0.3:
     punycode: 1.3.2
     querystring: 0.2.0
   checksum: 537f785b16f873fdd2b63ccb7a61463b8e41370fdba95385b0102f3ed7b953c300d95b8755ec3b65f3e406372d47d16c3c989e196b25b70f42190da1fc36c56f
-  languageName: node
-  linkType: hard
-
-"use-deep-compare-effect@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "use-deep-compare-effect@npm:1.3.1"
-  dependencies:
-    "@babel/runtime": ^7.7.2
-    "@types/use-deep-compare-effect": ^1.2.0
-    dequal: ^1.0.0
-  peerDependencies:
-    react: ">=16.12"
-  checksum: 249e5401738c838962baf29098e6154048c919bba329da5bdc5970e135b65f7b6874716d7fbf791fd5e52028c3722d2285b0642a7fda847da25dbe7bbc734218
   languageName: node
   linkType: hard
 
