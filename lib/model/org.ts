@@ -143,6 +143,8 @@ export class Org extends Account implements OrgInterface {
     'email',
     'bio',
     'subjects',
+    'langs',
+    'availability',
   ];
 
   public subjects?: string[];
