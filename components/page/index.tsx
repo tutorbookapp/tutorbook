@@ -136,6 +136,7 @@ export default function Page({
           content='/favicon/ms-icon-144x144.png'
         />
         <meta name='msapplication-navbutton-color' content='#0070f3' />
+        <script src='/intercom.js' async />
       </Head>
       <div data-cy='page' className={styles.wrapper}>
         {children}

@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
+import { dequal } from 'dequal';
 import useTranslation from 'next-translate/useTranslation';
 
 import { useUser } from 'lib/context/user';
@@ -46,7 +47,7 @@ type Unread = (
   callback: (unread: number) => void
 ) => void;
 
-type Intercom =
+type IntercomGlobal =
   | Basics
   | Boot
   | NewMsg
@@ -59,8 +60,7 @@ type Intercom =
 
 declare global {
   interface Window {
-    Intercom?: Intercom;
-    intercomSettings?: IntercomSettings;
+    Intercom: IntercomGlobal;
   }
 }
 
@@ -69,12 +69,12 @@ declare global {
  * would otherwise occur during SSR (when `window.Intercom` isn't populated).
  * @see {@link https://developers.intercom.com/installing-intercom/docs/intercom-javascript}
  */
-export function IntercomAPI(...args: Parameters<Intercom>): void {
+export function IntercomAPI(...args: Parameters<IntercomGlobal>): void {
   if (canUseDOM && window.Intercom) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     (window.Intercom as Function)(...args);
   } else if (canUseDOM) {
-    console.warn('[WARNING] Intercom has not been initialized yet.');
+    console.warn('Intercom has not been initialized yet.');
   }
 }
 
@@ -82,59 +82,35 @@ export interface IntercomProps {
   visible?: boolean;
 }
 
-export default function Intercom({ visible }: IntercomProps): JSX.Element {
+export default function Intercom({ visible }: IntercomProps): null {
   const { user } = useUser();
   const { lang: locale } = useTranslation();
 
-  const intercomSettings = useMemo(
-    () => ({
+  const [settings, setSettings] = useState<IntercomSettings>({
+    app_id: appId,
+    language_override: locale,
+    hide_default_launcher: !visible,
+    ...user.toIntercom(),
+  });
+
+  useEffect(() => {
+    const updated = {
       app_id: appId,
       language_override: locale,
       hide_default_launcher: !visible,
       ...user.toIntercom(),
-    }),
-    [locale, user, visible]
-  );
-
-  useEffect(() => {
-    if (canUseDOM) {
-      if (!window.Intercom) {
-        ((w: Window, d: Document, id: string) => {
-          function i(...args: any[]) {
-            i.c(args);
-          }
-          i.q = [] as any[];
-          i.c = (args: any) => i.q.push(args);
-          /* eslint-disable-next-line no-param-reassign */
-          w.Intercom = i;
-          const s: HTMLScriptElement = d.createElement('script');
-          s.async = true;
-          s.src = `https://widget.intercom.io/widget/${id}`;
-          d.head.appendChild(s);
-        })(window, document, appId);
-      }
-      window.intercomSettings = intercomSettings;
-      IntercomAPI('boot', intercomSettings);
-    } else {
-      console.warn('[WARNING] No DOM, skipping Intercom initialization.');
-    }
-    return () => {
-      // Right now, we boot and shutdown Intercom on every page navigation (even
-      // if that navigation occurs client-side).
-      IntercomAPI('shutdown');
-      delete window.Intercom;
-      delete window.intercomSettings;
     };
-  });
+    setSettings((prev) => {
+      if (dequal(updated, prev)) return prev;
+      return updated;
+    });
+  }, [locale, visible, user]);
 
   useEffect(() => {
-    if (!canUseDOM) {
-      console.warn('[WARNING] No DOM, skipping Intercom update.');
-    } else {
-      window.intercomSettings = intercomSettings;
-      IntercomAPI('update', intercomSettings);
-    }
-  }, [intercomSettings]);
+    if (!canUseDOM) return;
+    console.log('Updating Intercom:', settings);
+    IntercomAPI('update', settings);
+  }, [settings]);
 
-  return <></>;
+  return null;
 }

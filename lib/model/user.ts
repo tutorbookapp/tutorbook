@@ -190,8 +190,10 @@ export class User extends Account implements UserInterface {
   }
 
   /**
-   * Converts this `User` object into a `Record<string, any>` that Intercom can
-   * understand.
+   * Converts this user object into a data type that Intercom can understand.
+   * @todo Instead of doing all of this parsing logic, I should just explicitly
+   * list what needs to be sent to Intercom (i.e. only a limited subset of the
+   * entire user profile that can be understood by Intercom's UI).
    * @see {@link https://bit.ly/3ksWc8B}
    */
   public toIntercom(): Record<string, IntercomCustomAttribute> {
