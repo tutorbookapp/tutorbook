@@ -13,7 +13,7 @@ import query3rd from 'locales/en/query3rd.json';
 
 function StudentsPage(): JSX.Element {
   return (
-    <Page title='Support at scale - Tutorbook'>
+    <Page title='Support at scale - Tutorbook' intercom>
       <TabHeader
         tabs={[
           {

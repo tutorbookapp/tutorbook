@@ -78,7 +78,11 @@ export function IntercomAPI(...args: Parameters<Intercom>): void {
   }
 }
 
-export default function Intercom(): JSX.Element {
+export interface IntercomProps {
+  visible?: boolean;
+}
+
+export default function Intercom({ visible }: IntercomProps): JSX.Element {
   const { user } = useUser();
   const { lang: locale } = useTranslation();
 
@@ -86,10 +90,10 @@ export default function Intercom(): JSX.Element {
     () => ({
       app_id: appId,
       language_override: locale,
-      hide_default_launcher: true,
+      hide_default_launcher: !visible,
       ...user.toIntercom(),
     }),
-    [locale, user]
+    [locale, user, visible]
   );
 
   useEffect(() => {

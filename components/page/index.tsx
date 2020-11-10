@@ -12,6 +12,7 @@ export interface PageProps {
   description?: string;
   children: ReactNode;
   formWidth?: boolean;
+  intercom?: boolean;
 }
 
 export default function Page({
@@ -19,6 +20,7 @@ export default function Page({
   description,
   children,
   formWidth,
+  intercom,
 }: PageProps): JSX.Element {
   const { t } = useTranslation();
 
@@ -139,7 +141,7 @@ export default function Page({
         {children}
       </div>
       <Footer formWidth={formWidth} />
-      <Intercom />
+      <Intercom visible={intercom} />
     </>
   );
 }
