@@ -208,6 +208,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             <LangSelect
               className={styles.field}
               label={t('user3rd:langs')}
+              placeholder={t('common:langs-placeholder')}
               onChange={onLangsChange}
               value={user.langs}
               required={org ? org.profiles.includes('langs') : true}

@@ -25,6 +25,7 @@
   "subjects-placeholder": "Ex: Computer Science or Biology",
   "tutoring-subjects-placeholder": "Ex: Math or Science",
   "mentoring-subjects-placeholder": "Ex: Computer Science or Music",
+  "langs-placeholder": "Ex: Spanish or Chinese",
   "import-data": "Import data",
   "signup": "Signup",
   "login": "Login",

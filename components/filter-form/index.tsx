@@ -116,6 +116,7 @@ export default function FilterForm({
             className={styles.field}
             focused={focused === 'langs'}
             label={t(`query${thirdPerson ? '3rd' : ''}:langs`)}
+            placeholder={t('common:langs-placeholder')}
             onFocused={focusLangs}
             onBlurred={focusNothing}
             onSelectedChange={onLangsChange}

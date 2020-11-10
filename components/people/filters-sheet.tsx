@@ -87,6 +87,7 @@ export default memo(function FiltersSheet({
           />
           <LangSelect
             label={t('query:langs')}
+            placeholder={t('common:langs-placeholder')}
             onSelectedChange={onLangsChange}
             selected={query.langs}
             className={styles.field}

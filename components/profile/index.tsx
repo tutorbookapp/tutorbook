@@ -160,6 +160,7 @@ export default function Profile(): JSX.Element {
             <LangSelect
               className={styles.field}
               label={t('user3rd:langs')}
+              placeholder={t('common:langs-placeholder')}
               onChange={onLangsChange}
               value={user.langs}
               outlined

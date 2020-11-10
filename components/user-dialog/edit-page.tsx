@@ -202,6 +202,7 @@ export default memo(function EditPage({
         <div className={styles.inputs}>
           <LangSelect
             label={t('user:langs')}
+            placeholder={t('common:langs-placeholder')}
             value={user.langs}
             onChange={onLangsChange}
             className={styles.field}
