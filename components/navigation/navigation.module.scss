@@ -57,11 +57,18 @@
 .avatar {
   width: config.$nav-height - 24px;
   border-radius: 4px;
-  cursor: pointer;
   background: none;
   border: none;
   padding: 0;
   margin: 0 0 0 20px;
+}
+
+div.avatar {
+  cursor: not-allowed;
+}
+
+button.avatar {
+  cursor: pointer;
 }
 
 .logo {
