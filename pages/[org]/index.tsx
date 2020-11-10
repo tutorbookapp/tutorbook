@@ -21,7 +21,7 @@ interface HomePageProps {
 function HomePage({ org }: HomePageProps): JSX.Element {
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title={`${org?.name || 'Loading'} - Tutorbook`} formWidth>
+      <Page title={`${org?.name || 'Loading'} - Tutorbook`} formWidth intercom>
         <EmptyHeader formWidth />
         <Home org={org} />
       </Page>
