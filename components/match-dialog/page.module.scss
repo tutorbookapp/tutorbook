@@ -1,0 +1,33 @@
+@use 'styles/typography';
+
+.placeholder {
+  @include typography.typography('body1');
+  display: flex;
+  height: 100vh;
+  overflow: auto;
+  padding: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions {
+  border-top: 1px solid var(--accents-2);
+  overflow: auto;
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+
+  .chips {
+    padding: 16px 0;
+    flex-wrap: nowrap;
+    display: inline-flex;
+
+    :global(.mdc-chip:first-child) {
+      margin-left: 16px;
+    }
+
+    :global(.mdc-chip:last-child) {
+      margin-right: 16px;
+    }
+  }
+}

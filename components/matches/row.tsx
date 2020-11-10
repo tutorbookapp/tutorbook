@@ -15,10 +15,16 @@ interface MatchRowProps {
   match: MatchJSON;
   mutate: responseInterface<ListMatchesRes, Error>['mutate'];
   setDataEdited: Callback<boolean>;
+  setViewing: Callback<MatchJSON>;
 }
 
 export const MatchRow = memo(
-  function MatchRow({ match: local, mutate, setDataEdited }: MatchRowProps) {
+  function MatchRow({
+    match: local,
+    mutate,
+    setDataEdited,
+    setViewing,
+  }: MatchRowProps) {
     const updateRemote = useCallback(
       async (updated: MatchJSON) => {
         const { data } = await axios.put<MatchJSON>(
@@ -77,7 +83,7 @@ export const MatchRow = memo(
     }, [match.people]);
 
     return (
-      <DataTableRow data-cy='match-row'>
+      <DataTableRow data-cy='match-row' onClick={() => setViewing(match)}>
         <DataTableCell className={styles.status}>
           <button
             className={styles[match.status]}

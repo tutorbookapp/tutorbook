@@ -16,9 +16,10 @@ import { v4 as uuid } from 'uuid';
 
 import Header from 'components/header';
 import { IntercomAPI } from 'components/intercom';
+import MatchDialog from 'components/match-dialog';
 import Placeholder from 'components/placeholder';
 
-import { MatchesQuery, Org } from 'lib/model';
+import { MatchJSON, MatchesQuery, Org } from 'lib/model';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
 
 import { LoadingRow, MatchRow } from './row';
@@ -38,6 +39,7 @@ interface MatchesProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function Matches({ org }: MatchesProps): JSX.Element {
+  const [viewing, setViewing] = useState<MatchJSON>();
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MatchesQuery>(
     new MatchesQuery({ org: org.id, hitsPerPage: 10 })
@@ -73,6 +75,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
 
   return (
     <>
+      {viewing && <MatchDialog onClosed={() => setViewing(undefined)} />}
       <Header
         header={t('common:matches')}
         body={t('matches:subtitle', { name: org.name })}
@@ -128,6 +131,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
                       key={match.id}
                       mutate={mutate}
                       setDataEdited={setDataEdited}
+                      setViewing={setViewing}
                     />
                   ))}
                 {searching && loadingRows}
