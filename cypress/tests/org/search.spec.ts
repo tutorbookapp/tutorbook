@@ -179,41 +179,57 @@ describe('Search page', () => {
 
     waitForResults();
 
-    cy.getBySel('results').find('li').first().click();
-    cy.get('.mdc-dialog--open')
+    cy.contains('button', 'Any languages').click();
+    cy.focused()
+      .type('Span')
+      .closest('label')
+      .should('contain', 'What languages do you speak?');
+    cy.contains('li', 'Spanish').click();
+
+    cy.getBySel('page').click({ force: true });
+    cy.wait('@list-users');
+    cy.getBySel('results')
+      .find('li')
+      .should('have.length', 1)
+      .first()
+      .should('not.have.attr', 'disabled', '')
+      .click();
+
+    cy.getBySel('match-dialog')
       .should('be.visible')
-      .as('dialog')
-      .contains('Your phone number')
-      .find('input')
-      .should('have.value', '')
-      .and('have.attr', 'type', 'tel')
-      .and('have.attr', 'required');
+      .within(() => {
+        cy.getBySel('bio').should('have.text', volunteer.bio);
 
-    cy.get('@dialog').contains('Your phone number').type(student.phone);
+        cy.contains('Your phone number')
+          .find('input')
+          .should('have.value', '')
+          .and('have.attr', 'type', 'tel')
+          .and('have.attr', 'required', '')
+          .type(student.phone);
 
-    cy.get('@dialog')
-      .contains('What would you like to learn?')
-      .as('subject-input')
-      .type('Chem');
-    cy.contains('No subjects').should('be.visible');
-    cy.get('@subject-input').type('{selectall}{del}Computer');
-    cy.contains('li', 'Computer Science').click();
+        cy.contains('What would you like to learn?')
+          .as('subject-input')
+          .type('Chem');
+        cy.contains('No subjects').should('be.visible');
+        cy.get('@subject-input').type('{selectall}{del}Computer');
+        cy.contains('li', 'Computer Science').click();
 
-    selectTime();
+        selectTime();
 
-    cy.get('@dialog')
-      .contains('What specifically do you need help with?')
-      .type(match.message);
+        cy.contains('What specifically do you need help with?').type(
+          match.message
+        );
 
-    cy.contains('button', 'Send request').click().should('be.disabled');
-    cy.getBySel('loader').should('be.visible');
+        cy.contains('button', 'Send request').click().should('be.disabled');
+        cy.getBySel('loader').should('be.visible');
 
-    // TODO: Make assertions about the content within our Firestore database
-    // simulator to ensure that it matches what we submitted.
-    cy.wait('@create-match');
+        // TODO: Make assertions about the content within our Firestore database
+        // simulator to ensure that it matches what we submitted.
+        cy.wait('@create-match');
 
-    cy.getBySel('loader').should('not.be.visible');
-    cy.getBySel('error').should('not.exist');
+        cy.getBySel('loader').should('not.be.visible');
+        cy.getBySel('error').should('not.exist');
+      });
   });
 
   it('signs users up and sends matches', () => {
@@ -230,7 +246,6 @@ describe('Search page', () => {
 
     waitForResults();
 
-    // TODO: Add tests for filtering by languages and availability as well.
     cy.contains('button', 'Any subjects').click();
     cy.focused()
       .type('Artificial')
@@ -247,44 +262,48 @@ describe('Search page', () => {
       .should('not.have.attr', 'disabled', '')
       .click();
 
-    cy.getBySel('match-dialog').should('be.visible').as('dialog');
-    cy.get('@dialog').find('[data-cy=bio]').should('have.text', volunteer.bio);
-    cy.get('@dialog')
-      .find('[data-cy=name]')
-      .should('have.text', onlyFirstNameAndLastInitial(volunteer.name));
-    cy.get('@dialog')
-      .find('[data-cy=socials] a')
-      .should('have.length', volunteer.socials.length);
-
-    volunteer.socials.forEach((social: Record<string, string>) => {
-      cy.getBySel(`${social.type}-social-link`)
-        .should('have.attr', 'href', social.url)
-        .and('have.attr', 'target', '_blank')
-        .and('have.attr', 'rel', 'noreferrer');
-    });
-
-    cy.contains('What would you like to learn?')
-      .children('.mdc-chip')
-      .should('have.length', 1)
-      .and('contain', 'Artificial Intelligence');
-
-    selectTime();
-
-    cy.contains('What specifically do you need help with?')
-      .click()
-      .should('have.class', 'mdc-text-field--focused')
-      .type(match.message);
-
-    cy.contains('button', 'Signup and send').click().should('be.disabled');
-    cy.getBySel('loader').should('be.visible');
-
-    // TODO: Stub out the Google OAuth response using the Google OAuth
-    // server-side REST API. That way, we can test this programmatically.
-    cy.window().its('open').should('be.called');
-
-    cy.getBySel('loader').should('not.be.visible');
-    cy.getBySel('error')
+    cy.getBySel('match-dialog')
       .should('be.visible')
-      .and('contain', 'Unable to establish a connection with the popup.');
+      .within(() => {
+        cy.getBySel('bio').should('have.text', volunteer.bio);
+        cy.getBySel('name').should(
+          'have.text',
+          onlyFirstNameAndLastInitial(volunteer.name)
+        );
+        cy.getBySel('socials')
+          .find('a')
+          .should('have.length', volunteer.socials.length);
+
+        volunteer.socials.forEach((social: Record<string, string>) => {
+          cy.getBySel(`${social.type}-social-link`)
+            .should('have.attr', 'href', social.url)
+            .and('have.attr', 'target', '_blank')
+            .and('have.attr', 'rel', 'noreferrer');
+        });
+
+        cy.contains('What would you like to learn?')
+          .children('.mdc-chip')
+          .should('have.length', 1)
+          .and('contain', 'Artificial Intelligence');
+
+        selectTime();
+
+        cy.contains('What specifically do you need help with?')
+          .click()
+          .should('have.class', 'mdc-text-field--focused')
+          .type(match.message);
+
+        cy.contains('button', 'Signup and send').click().should('be.disabled');
+        cy.getBySel('loader').should('be.visible');
+
+        // TODO: Stub out the Google OAuth response using the Google OAuth
+        // server-side REST API. That way, we can test this programmatically.
+        cy.window().its('open').should('be.called');
+
+        cy.getBySel('loader').should('not.be.visible');
+        cy.getBySel('error')
+          .should('be.visible')
+          .and('contain', 'Unable to establish a connection with the popup.');
+      });
   });
 });
