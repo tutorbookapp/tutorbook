@@ -377,40 +377,7 @@ const createUser = async (user) => {
   if (err) console.log('Error creating user:', err);
 };
 
-const addAvailabilityToUsers = async () => {
-  const availability = [
-    {
-      recur: 'RRULE:FREQ=WEEKLY',
-      from: '1970-01-05T17:00:00.000Z',
-      to: '1970-01-06T01:00:00.000Z',
-      id: 'mtb-1zab_TV8Y2BmG08xu',
-    },
-    {
-      recur: 'RRULE:FREQ=WEEKLY',
-      from: '1970-01-06T17:00:00.000Z',
-      to: '1970-01-07T01:00:00.000Z',
-      id: 'klOS8vyIy61mucuAOdeeC',
-    },
-    {
-      recur: 'RRULE:FREQ=WEEKLY',
-      from: '1969-12-31T17:00:00.000Z',
-      to: '1970-01-01T01:00:00.000Z',
-      id: 'l9NJ6v6ug_UkB0RFNRuBH',
-    },
-    {
-      recur: 'RRULE:FREQ=WEEKLY',
-      from: '1970-01-01T17:00:00.000Z',
-      to: '1970-01-02T01:00:00.000Z',
-      id: 'mnevP-6V6iP-yKvYa_vwM',
-    },
-    {
-      recur: 'RRULE:FREQ=WEEKLY',
-      from: '1970-01-02T17:00:00.000Z',
-      to: '1970-01-03T01:00:00.000Z',
-      id: 'o2xS_pxE7I_v5MNK_dO3q',
-    },
-  ];
-
+const addLangsToUsers = async () => {
   const empty = {
     id: '',
     name: '',
@@ -450,6 +417,14 @@ const addAvailabilityToUsers = async () => {
     }));
   };
 
+  const availabilityFromFirestore = (availability = []) => {
+    return availability.map((timeslot) => ({
+      ...timeslot,
+      from: convertToJSON(timeslot.from),
+      to: convertToJSON(timeslot.to),
+    }));
+  };
+
   console.log('Fetching users...');
   const { docs } = await db.collection('users').get();
 
@@ -459,7 +434,8 @@ const addAvailabilityToUsers = async () => {
     return {
       ...empty,
       ...data,
-      availability,
+      availability: availabilityFromFirestore(data.availability),
+      langs: (data.langs || []).length ? data.langs : ['en'],
       verifications: resourcesFromFirestore(data.verifications),
       zooms: resourcesFromFirestore(data.zooms),
       id: doc.id,
@@ -518,6 +494,8 @@ const retryFailures = async () => {
   );
   fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
 };
+
+retryFailures();
 
 const changeDateJSONToDates = async () => {
   const empty = {
@@ -584,5 +562,3 @@ const changeDateJSONToDates = async () => {
   );
   fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
 };
-
-changeDateJSONToDates();
