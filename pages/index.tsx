@@ -67,7 +67,7 @@ function OrgsPage(): JSX.Element {
       <Spotlight
         num={5}
         header='Schedule appointments'
-        body='Match students and schedule appointments via your admin dashboard.'
+        body='Match volunteers and schedule meeting times via your admin dashboard.'
         vid='/demos/matching.mp4'
         img={MatchingImage}
       />
