@@ -371,6 +371,44 @@ const createOrg = async (org) => {
   if (err) console.log('Error creating org:', err);
 };
 
+createOrg({
+  id: 'masteryhour',
+  name: 'Mastery Learning Hour',
+  email: 'julie@masteryhour.org',
+  phone: '',
+  photo: '',
+  bio:
+    'Mastery Learning Hour is providing free, on-demand tutoring for all families, students and schools with a focus on math in grades K-12.',
+  socials: [
+    {
+      type: 'website',
+      url: 'https://www.masteryhour.org/',
+    },
+  ],
+  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
+  profiles: ['name', 'email', 'bio', 'subjects', 'availability', 'langs'],
+  domains: [],
+  aspects: ['tutoring'],
+  zoom: null,
+  matchURL: null,
+  signup: {
+    en: {
+      tutoring: {
+        body:
+          "Thank you for your interest in becoming a volunteer tutor with Modulo Mastery Hour! Our goal is to help students adjust and stay ahead in school as they switch to remote learning, and we're doing this by offering tutoring sessions over Zoom, free of charge to the families. As a volunteer tutor, you will be helping bridge the gap that students from many different communities face as kids' education gets impacted by the major change in learning. To become a tutor, simply fill out the application form below and you'll be contacted as soon as a student sends you a lesson request.",
+        header: 'Support students amidst COVID-19',
+      },
+    },
+  },
+  home: {
+    en: {
+      body:
+        'Students join the zoom meeting and are matched with a tutor immediately. Students can ask questions about homework, walk through some lesson concepts, or play some fun learning games with the tutor.',
+      header: 'How it works',
+    },
+  },
+});
+
 const createUser = async (user) => {
   const endpoint = 'https://develop.tutorbook.app/api/users';
   const [err] = await to(axios.post(endpoint, user));
@@ -495,8 +533,6 @@ const retryFailures = async () => {
   fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
 };
 
-retryFailures();
-
 const changeDateJSONToDates = async () => {
   const empty = {
     status: 'new',
@@ -561,4 +597,16 @@ const changeDateJSONToDates = async () => {
     })
   );
   fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
+};
+
+const fetchUsersWithoutPics = async () => {
+  const users = await db
+    .collection('users')
+    .where('orgs', 'array-contains', 'quarantunes')
+    .get();
+  const withoutPics = users.docs
+    .filter((user) => !user.data().photo)
+    .map((user) => `${user.data().name} <${user.data().email}> (${user.id})`);
+  fs.writeFileSync('./without-pic.json', JSON.stringify(withoutPics, null, 2));
+  debugger;
 };
