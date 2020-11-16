@@ -1,13 +1,168 @@
+@use 'styles/common';
 @use 'styles/typography';
 
-.placeholder {
-  @include typography.typography('body1');
+.content {
   display: flex;
-  height: 100vh;
-  overflow: auto;
-  padding: 40px;
-  align-items: center;
-  justify-content: center;
+
+  .display {
+    $padding: 24px;
+    $width: 330px;
+    flex: none;
+    width: $width;
+
+    .people {
+      $gap: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--accents-2);
+      grid-gap: $gap;
+      padding: 12px $padding $padding;
+
+      .person {
+        @include typography.typography('body2');
+        color: var(--geist-secondary);
+        text-align: center;
+
+        .avatar {
+          $size: ($width - 2 * $gap - 2 * $padding) / 3;
+          width: $size;
+          height: $size;
+          text-decoration: none;
+          display: block;
+          outline: none;
+        }
+
+        .name {
+          @include common.link;
+          margin: 8px 0 0;
+          display: block;
+        }
+      }
+    }
+
+    .header {
+      @include typography.typography('subtitle2');
+      padding: $padding $padding 4px;
+    }
+
+    .body {
+      @include typography.typography('body2');
+      color: var(--geist-secondary);
+      padding: 4px $padding $padding;
+      border-bottom: 1px solid var(--accents-2);
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+    }
+
+    a.body {
+      @include common.link;
+      display: block;
+    }
+  }
+
+  .timeline {
+    $timeline-color: var(--accents-2);
+    $text-color: var(--geist-foreground);
+    border-left: 1px solid var(--accents-2);
+    padding: 40px;
+
+    .origin {
+      position: relative;
+      margin-left: 16px;
+      padding: 16px 0;
+
+      &::before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        display: block;
+        width: 2px;
+        content: '';
+        background-color: $timeline-color;
+      }
+
+      .badge {
+        z-index: 1;
+        display: flex;
+        width: 12px;
+        height: 12px;
+        margin-left: -5px;
+        align-items: center;
+        background-color: $timeline-color;
+        border: 2px solid $timeline-color;
+        border-radius: 50%;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      &:first-child {
+        padding-top: 0;
+      }
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+
+    .event {
+      display: flex;
+      position: relative;
+      margin-left: 16px;
+      padding: 36px 0 16px;
+      align-items: center;
+
+      &::before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        display: block;
+        width: 2px;
+        content: '';
+        background-color: $timeline-color;
+      }
+
+      .badge {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        width: 32px;
+        height: 32px;
+        margin-right: 12px;
+        margin-left: -15px;
+        color: $text-color;
+        align-items: center;
+        background-color: $timeline-color;
+        border: 2px solid $timeline-color;
+        border-radius: 50%;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .content {
+        @include typography.typography('body2');
+        color: $text-color;
+        min-width: 0;
+        max-width: 100%;
+        margin-top: -20px;
+        display: block;
+        flex: auto;
+
+        .time {
+          font-size: 12px;
+        }
+
+        a {
+          @include common.link;
+          font-weight: 500;
+          color: $text-color;
+        }
+      }
+    }
+  }
 }
 
 .actions {

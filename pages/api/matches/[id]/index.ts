@@ -1,10 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import deleteMatch, { DeleteMatchRes } from 'lib/api/routes/matches/delete';
+import fetchMatch, { FetchMatchRes } from 'lib/api/routes/matches/fetch';
 import updateMatch, { UpdateMatchRes } from 'lib/api/routes/matches/update';
 import { APIError } from 'lib/api/error';
 
 /**
+ * GET - Fetches the match (from our Firestore database).
  * PUT - Updates the match (in Algolia, Firebase Auth, and Firestore).
  * DELETE - Deletes the match (from Algolia, Firebase Auth, and Firestore).
  *
@@ -14,9 +16,14 @@ import { APIError } from 'lib/api/error';
  */
 export default async function match(
   req: NextApiRequest,
-  res: NextApiResponse<UpdateMatchRes | DeleteMatchRes | APIError>
+  res: NextApiResponse<
+    FetchMatchRes | UpdateMatchRes | DeleteMatchRes | APIError
+  >
 ): Promise<void> {
   switch (req.method) {
+    case 'GET':
+      await fetchMatch(req, res);
+      break;
     case 'PUT':
       await updateMatch(req, res);
       break;

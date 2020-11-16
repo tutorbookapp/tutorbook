@@ -75,7 +75,12 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
 
   return (
     <>
-      {viewing && <MatchDialog onClosed={() => setViewing(undefined)} />}
+      {viewing && (
+        <MatchDialog
+          initialData={viewing}
+          onClosed={() => setViewing(undefined)}
+        />
+      )}
       <Header
         header={t('common:matches')}
         body={t('matches:subtitle', { name: org.name })}

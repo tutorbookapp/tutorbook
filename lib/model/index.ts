@@ -1,3 +1,4 @@
+export * from './event';
 export * from './aspect';
 export * from './callback';
 export * from './account';
