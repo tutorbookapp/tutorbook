@@ -69,3 +69,14 @@
   font-size: 12px;
   margin-top: 16px;
 }
+
+@mixin link {
+  color: var(--accents-5);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  border: none;
+
+  &:hover {
+    color: var(--geist-foreground);
+  }
+}
