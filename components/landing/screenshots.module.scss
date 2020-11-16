@@ -32,18 +32,11 @@
 
       .org {
         @include typography.typography('body1');
-        color: var(--accents-5);
+        @include common.link;
+        white-space: nowrap;
         display: inline-block;
         font-size: 24px;
         margin: $margin-top 16px;
-        text-decoration: none;
-        transition: color 0.2s ease-in-out;
-        white-space: nowrap;
-        border: none;
-
-        &:hover {
-          color: var(--geist-foreground);
-        }
       }
     }
   }

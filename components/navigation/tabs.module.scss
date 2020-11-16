@@ -1,6 +1,3 @@
-@use 'sass:map';
-@use 'styles/config';
-
 .tabs {
   display: flex;
   flex-direction: row;
@@ -14,8 +11,8 @@
   .tab {
     font-size: 14px;
     line-height: 24px;
-    font-family: map.get(config.$fonts, 'sans');
-    color: map.get(config.$colors, 'accents-5');
+    font-family: var(--font-sans);
+    color: var(--accents-5);
     text-decoration: none;
     transition: color 0.2s ease-in-out;
     position: relative;
@@ -26,11 +23,11 @@
     white-space: nowrap;
 
     &:hover {
-      color: map.get(config.$colors, 'foreground');
+      color: var(--geist-foreground);
     }
 
     &.active {
-      color: map.get(config.$colors, 'foreground');
+      color: var(--geist-foreground);
 
       &::before {
         content: '';
