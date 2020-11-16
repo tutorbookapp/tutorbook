@@ -193,7 +193,7 @@ export class Match implements MatchInterface {
   }
 
   public toJSON(): MatchJSON {
-    const { time, request, venue, ...rest } = this;
+    const { time, request, venue, ref, ...rest } = this;
     return {
       ...rest,
       time: time ? time.toJSON() : undefined,
@@ -213,7 +213,7 @@ export class Match implements MatchInterface {
   }
 
   public toFirestore(): DocumentData {
-    const { time, request, venue, ref, id, ...rest } = this;
+    const { time, request, venue, ref, ...rest } = this;
     return firestoreVals({
       ...rest,
       time: time ? time.toFirestore() : undefined,
