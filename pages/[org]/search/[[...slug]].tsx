@@ -88,7 +88,9 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
 
   useEffect(() => {
     // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
-    // URL query parameters, but right now, it doesn't seem to be working.
+    // URL query parameters, but right now, it doesn't seem to be working. Once
+    // we do replace this with the `useRouter` hook, we'll be able to replace
+    // state management with just shallowly updating the URL.
     // @see {@link https://github.com/vercel/next.js/issues/17112}
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
@@ -103,14 +105,14 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     void Router.replace(url, undefined, { shallow: true });
   }, [org, query, viewing]);
 
+  // TODO: Perhaps we should only allow filtering by a single org, as we don't
+  // ever filter by more than one at once.
   useEffect(() => {
     setQuery((prev: UsersQuery) => {
-      const updated = new UsersQuery({ ...prev });
+      const updated = new UsersQuery({ ...prev, visible: true });
       if (org && !org.aspects.includes(prev.aspect))
         [updated.aspect] = org.aspects;
-      if (org && prev.orgs.findIndex((o) => o.value === org.id) < 0)
-        updated.orgs.push({ value: org.id, label: org.name });
-      if (prev.visible !== true) updated.visible = true;
+      if (org) updated.orgs = [{ value: org.id, label: org.name }];
       if (!dequal(prev, updated)) return updated;
       return prev;
     });

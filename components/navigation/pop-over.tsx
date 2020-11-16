@@ -145,7 +145,7 @@ export default function PopOverMenu({
     <MenuSurfaceAnchor className={styles.anchor}>
       {children}
       <MenuSurface open={open} onClose={onClose}>
-        <div className={styles.picker}>
+        <div data-cy='picker' className={styles.picker}>
           <PopOverAccountHeader account={user} />
           <PopOverLink href='/'>{t('common:home')}</PopOverLink>
           <PopOverLink href={`/${user.orgs[0] || 'default'}/search`}>

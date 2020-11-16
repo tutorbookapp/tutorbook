@@ -8,25 +8,6 @@ import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
 import volunteer from 'cypress/fixtures/users/volunteer.json';
 
-function waitForResults() {
-  cy.wait('@list-users');
-  cy.getBySel('results').find('li').should('have.length', 2).as('results');
-  cy.get('@results')
-    .eq(0)
-    .should('not.contain', volunteer.name)
-    .and('contain', onlyFirstNameAndLastInitial(volunteer.name))
-    .and('contain', volunteer.bio)
-    .find('img')
-    .should('have.img', volunteer.photo, 85);
-  cy.get('@results')
-    .eq(1)
-    .should('not.contain', admin.name)
-    .and('contain', onlyFirstNameAndLastInitial(admin.name))
-    .and('contain', admin.bio)
-    .find('img')
-    .should('have.img', admin.photo, 85);
-}
-
 function selectTime() {
   cy.contains('When would you like to meet?')
     .children('input')
@@ -168,6 +149,49 @@ describe('Search page', () => {
       .and('have.attr', 'disabled');
   });
 
+  it('partitions search results by org', () => {
+    cy.setup();
+    cy.login(admin.id);
+    cy.visit(`/${school.id}/search`);
+
+    cy.wait('@list-users');
+    cy.getBySel('results').find('li').should('have.length', 2).as('results');
+    cy.get('@results')
+      .eq(0)
+      .should('contain', volunteer.name)
+      .and('contain', volunteer.bio)
+      .find('img')
+      .should('have.img', volunteer.photo, 85);
+    cy.get('@results')
+      .eq(1)
+      .should('contain', admin.name)
+      .and('contain', admin.bio)
+      .find('img')
+      .should('have.img', admin.photo, 85);
+
+    cy.get('#open-nav').click();
+    cy.getBySel('picker')
+      .get(`[href="/${org.id}/search"]`)
+      .should('have.text', 'Search')
+      .click();
+
+    cy.url({ timeout: 60000 }).should('contain', `/${org.id}/search`);
+    cy.get('header')
+      .contains('button', 'Tutors')
+      .should('have.attr', 'aria-selected', 'true');
+
+    // TODO: Perhaps make assertions about the 'api/users' query to remove this
+    // awkward result item selection timeout workaround.
+    cy.wait('@list-users');
+    cy.get('[data-cy="results"] li', { timeout: 60000 })
+      .should('have.length', 1)
+      .first()
+      .should('contain', volunteer.name)
+      .and('contain', volunteer.bio)
+      .find('img')
+      .should('have.img', volunteer.photo, 85);
+  });
+
   // TODO: Ping SendGrid to ensure that our email notifications were sent.
   it('collects phone before sending matches', () => {
     cy.setup({ student: { phone: '' } });
@@ -177,7 +201,22 @@ describe('Search page', () => {
     cy.wait('@get-account');
     cy.get('.mdc-dialog--open').should('not.exist');
 
-    waitForResults();
+    cy.wait('@list-users');
+    cy.getBySel('results').find('li').should('have.length', 2).as('results');
+    cy.get('@results')
+      .eq(0)
+      .should('not.contain', volunteer.name)
+      .and('contain', onlyFirstNameAndLastInitial(volunteer.name))
+      .and('contain', volunteer.bio)
+      .find('img')
+      .should('have.img', volunteer.photo, 85);
+    cy.get('@results')
+      .eq(1)
+      .should('not.contain', admin.name)
+      .and('contain', onlyFirstNameAndLastInitial(admin.name))
+      .and('contain', admin.bio)
+      .find('img')
+      .should('have.img', admin.photo, 85);
 
     cy.contains('button', 'Any languages').click();
     cy.focused()
@@ -244,7 +283,16 @@ describe('Search page', () => {
     });
     cy.wait('@get-account');
 
-    waitForResults();
+    cy.wait('@list-users');
+    cy.getBySel('results')
+      .find('li')
+      .should('have.length', 1)
+      .first()
+      .should('not.contain', volunteer.name)
+      .and('contain', onlyFirstNameAndLastInitial(volunteer.name))
+      .and('contain', volunteer.bio)
+      .find('img')
+      .should('have.img', volunteer.photo, 85);
 
     cy.contains('button', 'Any subjects').click();
     cy.focused()
