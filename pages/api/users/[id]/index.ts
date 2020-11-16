@@ -6,7 +6,7 @@ import updateUser, { UpdateUserRes } from 'lib/api/routes/users/update';
 import { APIError } from 'lib/api/error';
 
 /**
- * GET - Fetches the user (in Algolia, Firebase Auth, and Firestore).
+ * GET - Fetches the user (from our Firestore database).
  * PUT - Updates the user (in Algolia, Firebase Auth, and Firestore).
  * DELETE - Deletes the user (from Algolia, Firebase Auth, and Firestore);
  *
