@@ -24,7 +24,15 @@
     }
   ],
   "members": ["admin"],
-  "profiles": ["name", "email", "phone", "bio", "subjects"],
+  "profiles": [
+    "name",
+    "email",
+    "phone",
+    "bio",
+    "subjects",
+    "availability",
+    "langs"
+  ],
   "domains": ["pausd.us", "pausd.org"],
   "aspects": ["tutoring"],
   "zoom": null,

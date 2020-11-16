@@ -32,7 +32,7 @@
     }
   ],
   "members": ["admin"],
-  "profiles": ["name", "email", "bio", "subjects"],
+  "profiles": ["name", "email", "bio", "subjects", "availability", "langs"],
   "domains": [],
   "aspects": ["mentoring", "tutoring"],
   "zoom": null,
