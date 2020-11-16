@@ -93,9 +93,10 @@ export default function LangSelect({
     setSelectedOptions((prev: Option<string>[]) => {
       // If they already match, do nothing.
       if (!value) return prev;
+      if (!value.length) return [];
       if (
         dequal(
-          prev.map(({ value: val }) => val),
+          prev.map((o) => o.value),
           value
         )
       )
