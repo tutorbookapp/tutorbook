@@ -1,7 +1,7 @@
 {
   "name": "tutorbook",
   "description": "Web app connecting students with expert mentors and tutors.",
-  "version": "0.19.17",
+  "version": "0.19.18",
   "author": "Nicholas Chiang <nicholas.h.chiang@gmail.com>",
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
