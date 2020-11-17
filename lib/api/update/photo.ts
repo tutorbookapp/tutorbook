@@ -65,7 +65,7 @@ export default async function updatePhoto(account: Account): Promise<void> {
   // Download the image, crop and/or resize it to 500x500 pixels, and upload the
   // final result to the proper location in our GCP Storage bucket.
   const photo = await crop(await downloadPhoto(account.photo));
-  const file = bucket.file(`temp/${getPhotoFilename(account.photo) || uuid()}`);
+  const file = bucket.file(getPhotoFilename(account.photo) || `temp/${uuid()}`);
   const token = uuid();
   const metadata = { metadata: { firebaseStorageDownloadTokens: token } };
   await new Promise((resolve, reject) => {
