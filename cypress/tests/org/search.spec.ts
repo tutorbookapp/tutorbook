@@ -220,7 +220,7 @@ describe('Search page', () => {
 
     cy.contains('button', 'Any languages').click();
     cy.focused()
-      .type('Span')
+      .type('Spa')
       .closest('label')
       .should('contain', 'What languages do you speak?');
     cy.contains('li', 'Spanish').click();
@@ -234,7 +234,7 @@ describe('Search page', () => {
       .should('not.have.attr', 'disabled', '')
       .click();
 
-    cy.getBySel('match-dialog')
+    cy.getBySel('request-dialog')
       .should('be.visible')
       .within(() => {
         cy.getBySel('bio').should('have.text', volunteer.bio);
@@ -310,7 +310,7 @@ describe('Search page', () => {
       .should('not.have.attr', 'disabled', '')
       .click();
 
-    cy.getBySel('match-dialog')
+    cy.getBySel('request-dialog')
       .should('be.visible')
       .within(() => {
         cy.getBySel('bio').should('have.text', volunteer.bio);

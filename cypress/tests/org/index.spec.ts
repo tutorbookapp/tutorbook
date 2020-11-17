@@ -38,7 +38,13 @@ describe('Org landing page', () => {
           .should('have.attr', 'href', org.photo);
         cy.getBySel('socials')
           .children('a')
-          .should('have.length', org.socials.length);
+          .should('have.length', org.socials.length + 1);
+
+        const mailto = encodeURIComponent(`"${org.name}"<${org.email}>`);
+        cy.getBySel('email-social-link')
+          .should('have.attr', 'href', `mailto:${mailto}`)
+          .and('have.attr', 'target', '_blank')
+          .and('have.attr', 'rel', 'noreferrer');
 
         org.socials.forEach((social: Record<string, string>) => {
           cy.getBySel(`${social.type}-social-link`)

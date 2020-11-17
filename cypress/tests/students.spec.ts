@@ -2,21 +2,14 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
 
-describe('Landing page', () => {
+describe('Student landing page', () => {
   beforeEach(() => {
     cy.setup();
     cy.logout();
-    cy.visit('/');
+    cy.visit('/students');
   });
 
-  it('has banner, carousel, and search CTA', () => {
-    cy.getBySel('banner')
-      .should('be.visible')
-      .and('contain', 'We stand with the black community.')
-      .find('[role=button]')
-      .click();
-    cy.getBySel('banner').should('not.be.visible');
-
+  it('has results carousel and search CTA', () => {
     cy.wait('@list-users');
     cy.getBySel('carousel')
       .first()
