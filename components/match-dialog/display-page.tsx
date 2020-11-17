@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import Avatar from 'components/avatar';
 
-import { Callback, MatchJSON, Timeslot } from 'lib/model';
+import { Callback, MatchJSON, Timeslot, User } from 'lib/model';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
 import { join } from 'lib/utils';
 
@@ -42,6 +42,7 @@ export interface DisplayPageProps {
 export default function DisplayPage({
   match,
   setActive,
+  setUser,
 }: DisplayPageProps): JSX.Element {
   return (
     <>
@@ -52,15 +53,19 @@ export default function DisplayPage({
             {match.people.map((person) => (
               <div className={styles.person}>
                 <a href={person.photo} className={styles.avatar}>
-                  <Avatar src={person.photo} size={82} />
+                  <Avatar src={person.photo} size={129} />
                 </a>
-                <Link href={`/gunn/people/${person.id}`}>
-                  <a className={styles.name}>
-                    {`${onlyFirstNameAndLastInitial(person.name)} (${join(
-                      person.roles
-                    )})`}
-                  </a>
-                </Link>
+                <a
+                  onClick={() => {
+                    setUser(new User(person).toJSON());
+                    setActive(1);
+                  }}
+                  className={styles.name}
+                >
+                  {`${onlyFirstNameAndLastInitial(person.name)} (${join(
+                    person.roles
+                  )})`}
+                </a>
               </div>
             ))}
           </div>

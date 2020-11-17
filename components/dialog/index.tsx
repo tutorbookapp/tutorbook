@@ -1,28 +1,22 @@
-import {
-  Dialog as MDCDialog,
-  DialogProps as MDCDialogProps,
-} from '@rmwc/dialog';
 import { animated, useSprings } from 'react-spring';
 import { IconButton } from '@rmwc/icon-button';
 import cn from 'classnames';
-import { useState } from 'react';
 
 import Loader from 'components/loader';
 
 import { Callback } from 'lib/model';
 
+import { NavContext, useNav } from './context';
 import styles from './dialog.module.scss';
 
-interface UniqueDialogProps {
+interface DialogContentProps {
   active: number;
   setActive: Callback<number>;
   loading?: boolean;
   checked?: boolean;
   children: JSX.Element[];
-  className?: string;
+  nestedPages?: number[];
 }
-
-export type DialogProps = Omit<MDCDialogProps, 'open'> & UniqueDialogProps;
 
 /**
  * Wrapper around the MDCDialog component that provides multi-page navigation
@@ -41,15 +35,14 @@ export type DialogProps = Omit<MDCDialogProps, 'open'> & UniqueDialogProps;
  * @param active - The index of the active page. Must be within the range of
  * indices provided by `children`.
  */
-export default function Dialog({
+export default function DialogContent({
   active,
   setActive,
   loading,
   checked,
   children,
-  ...rest
-}: DialogProps): JSX.Element {
-  const [open, setOpen] = useState<boolean>(true);
+  nestedPages = [],
+}: DialogContentProps): JSX.Element {
   const springs = useSprings(
     children.length,
     children.map((child, idx) => {
@@ -61,13 +54,10 @@ export default function Dialog({
       };
     })
   );
+  const nav = useNav();
 
   return (
-    <MDCDialog
-      {...rest}
-      open={open}
-      className={cn(styles.dialog, rest.className)}
-    >
+    <div className={styles.pages}>
       {children.map((page, idx) => (
         <animated.div
           style={springs[idx]}
@@ -75,17 +65,21 @@ export default function Dialog({
         >
           <div className={styles.wrapper}>
             <Loader active={!!loading} checked={!!checked} />
-            <div className={styles.nav}>
-              <IconButton
-                icon='close'
-                className={styles.btn}
-                onClick={() => (idx === 0 ? setOpen(false) : setActive(0))}
-              />
-            </div>
-            {page}
+            {!nestedPages.includes(idx) && (
+              <div className={styles.nav}>
+                <IconButton
+                  icon='close'
+                  className={styles.btn}
+                  onClick={() => (idx === 0 ? nav() : setActive(0))}
+                />
+              </div>
+            )}
+            <NavContext.Provider value={() => setActive(0)}>
+              {page}
+            </NavContext.Provider>
           </div>
         </animated.div>
       ))}
-    </MDCDialog>
+    </div>
   );
 }

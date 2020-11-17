@@ -3,6 +3,8 @@
 
 .content {
   display: flex;
+  height: 100%;
+  overflow: auto;
 
   .display {
     $padding: 24px;
@@ -11,11 +13,10 @@
     width: $width;
 
     .people {
-      $gap: 18px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       border-bottom: 1px solid var(--accents-2);
-      grid-gap: $gap;
+      grid-gap: $padding;
       padding: 12px $padding $padding;
 
       .person {
@@ -24,7 +25,7 @@
         text-align: center;
 
         .avatar {
-          $size: ($width - 2 * $gap - 2 * $padding) / 3;
+          $size: ($width - 3 * $padding) / 2;
           width: $size;
           height: $size;
           text-decoration: none;
@@ -64,7 +65,7 @@
 
   .timeline {
     $timeline-color: var(--accents-2);
-    $text-color: var(--geist-foreground);
+    $text-color: var(--geist-secondary);
     border-left: 1px solid var(--accents-2);
     padding: 40px;
 

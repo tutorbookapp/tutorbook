@@ -12,8 +12,9 @@ import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
-import matches from 'locales/en/matches.json';
 import common from 'locales/en/common.json';
+import matches from 'locales/en/matches.json';
+import user from 'locales/en/user.json';
 
 function MatchesPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
@@ -64,4 +65,4 @@ function MatchesPage(): JSX.Element {
   );
 }
 
-export default withI18n(MatchesPage, { common, matches });
+export default withI18n(MatchesPage, { common, matches, user });

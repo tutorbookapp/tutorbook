@@ -1,0 +1,4 @@
+.dialog :global(.mdc-dialog__surface) {
+  width: calc(100vw - 32px);
+  max-width: 850px;
+}

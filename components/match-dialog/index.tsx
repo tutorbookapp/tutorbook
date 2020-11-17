@@ -1,46 +1,31 @@
-import useSWR from 'swr';
+import { Dialog } from '@rmwc/dialog';
 import { useState } from 'react';
 
-import Dialog from 'components/dialog';
+import { NavContext } from 'components/dialog/context';
 
-import { Match, MatchJSON } from 'lib/model';
+import MatchDialogContent, { MatchDialogContentProps } from './content';
+import styles from './dialog.module.scss';
 
-import DisplayPage from './display-page';
-
-export enum Page {
-  Display = 0,
-}
-
-export interface MatchDialogProps {
+export type MatchDialogProps = Omit<MatchDialogContentProps, 'setOpen'> & {
   onClosed: () => void;
-  initialData?: MatchJSON;
-}
+};
 
 export default function MatchDialog({
   onClosed,
-  initialData = new Match().toJSON(),
+  ...props
 }: MatchDialogProps): JSX.Element {
-  const { data } = useSWR<MatchJSON>(`/api/matches/${initialData.id}`, {
-    initialData,
-    revalidateOnMount: true,
-  });
-  const match = data as MatchJSON;
-
-  const [active, setActive] = useState<number>(Page.Display);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [checked, setChecked] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(true);
 
   return (
     <Dialog
-      active={active}
-      loading={loading}
-      checked={checked}
-      setActive={setActive}
       data-cy='match-dialog'
+      className={styles.dialog}
+      open={open}
       onClosed={onClosed}
     >
-      <DisplayPage match={match} setActive={setActive} />
-      <></>
+      <NavContext.Provider value={() => setOpen(false)}>
+        <MatchDialogContent {...props} />
+      </NavContext.Provider>
     </Dialog>
   );
 }
