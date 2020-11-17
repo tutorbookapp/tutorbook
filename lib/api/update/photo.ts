@@ -61,6 +61,7 @@ async function downloadPhoto(src: string): Promise<Buffer> {
 export default async function updatePhoto(account: Account): Promise<void> {
   // Skip 'assets.tutorbook.app' photos that are used during integration tests.
   if (/https:\/\/assets\.tutorbook\.app\/(.*)/.exec(account.photo)) return;
+  if (!account.photo) return;
 
   // Download the image, crop and/or resize it to 500x500 pixels, and upload the
   // final result to the proper location in our GCP Storage bucket.
