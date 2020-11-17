@@ -371,51 +371,13 @@ const createOrg = async (org) => {
   if (err) console.log('Error creating org:', err);
 };
 
-createOrg({
-  id: 'masteryhour',
-  name: 'Mastery Learning Hour',
-  email: 'julie@masteryhour.org',
-  phone: '',
-  photo: '',
-  bio:
-    'Mastery Learning Hour is providing free, on-demand tutoring for all families, students and schools with a focus on math in grades K-12.',
-  socials: [
-    {
-      type: 'website',
-      url: 'https://www.masteryhour.org/',
-    },
-  ],
-  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
-  profiles: ['name', 'email', 'bio', 'subjects', 'availability', 'langs'],
-  domains: [],
-  aspects: ['tutoring'],
-  zoom: null,
-  matchURL: null,
-  signup: {
-    en: {
-      tutoring: {
-        body:
-          "Thank you for your interest in becoming a volunteer tutor with Modulo Mastery Hour! Our goal is to help students adjust and stay ahead in school as they switch to remote learning, and we're doing this by offering tutoring sessions over Zoom, free of charge to the families. As a volunteer tutor, you will be helping bridge the gap that students from many different communities face as kids' education gets impacted by the major change in learning. To become a tutor, simply fill out the application form below and you'll be contacted as soon as a student sends you a lesson request.",
-        header: 'Support students amidst COVID-19',
-      },
-    },
-  },
-  home: {
-    en: {
-      body:
-        'Students join the zoom meeting and are matched with a tutor immediately. Students can ask questions about homework, walk through some lesson concepts, or play some fun learning games with the tutor.',
-      header: 'How it works',
-    },
-  },
-});
-
 const createUser = async (user) => {
   const endpoint = 'https://develop.tutorbook.app/api/users';
   const [err] = await to(axios.post(endpoint, user));
   if (err) console.log('Error creating user:', err);
 };
 
-const addLangsToUsers = async () => {
+const updatePhotoCrops = async () => {
   const empty = {
     id: '',
     name: '',
@@ -481,7 +443,6 @@ const addLangsToUsers = async () => {
   });
 
   console.log(`Updating ${users.length} users...`);
-  const endpoint = 'https://develop.tutorbook.app/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
   const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
   const failed = [];
@@ -489,7 +450,7 @@ const addLangsToUsers = async () => {
   bar.start(users.length, count);
   await Promise.all(
     users.map(async (user) => {
-      const url = `https://develop.tutorbook.app/api/users/${user.id}`;
+      const url = `https://tutorbook.app/api/users/${user.id}`;
       const [err] = await to(axios.put(url, user, { headers }));
       if (err) {
         console.error(
@@ -509,7 +470,6 @@ const retryFailures = async () => {
   const users = require('./failed.json');
 
   console.log(`Updating ${users.length} users...`);
-  const endpoint = 'https://develop.tutorbook.app/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
   const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
   const failed = [];
@@ -517,7 +477,7 @@ const retryFailures = async () => {
   bar.start(users.length, count);
   await Promise.all(
     users.map(async (user) => {
-      const url = `https://develop.tutorbook.app/api/users/${user.id}`;
+      const url = `https://tutorbook.app/api/users/${user.id}`;
       const [err] = await to(axios.put(url, user, { headers }));
       if (err) {
         console.error(
@@ -532,6 +492,8 @@ const retryFailures = async () => {
   );
   fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
 };
+
+retryFailures();
 
 const changeDateJSONToDates = async () => {
   const empty = {
