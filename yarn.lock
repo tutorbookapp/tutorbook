@@ -3813,6 +3813,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/sharp@npm:^0.26.1":
+  version: 0.26.1
+  resolution: "@types/sharp@npm:0.26.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 703931659d3c3b2a0fcd401baf4c8b30da4ffda2ee149cb254c18dca292f7abcb622b581bd2220ead33959b53ab5b995c5754501ce0e387c8feae10187a15d5a
+  languageName: node
+  linkType: hard
+
 "@types/sinonjs__fake-timers@npm:^6.0.1":
   version: 6.0.2
   resolution: "@types/sinonjs__fake-timers@npm:6.0.2"
@@ -4661,7 +4670,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-flatten@npm:3.0.0":
+"array-flatten@npm:3.0.0, array-flatten@npm:^3.0.0":
   version: 3.0.0
   resolution: "array-flatten@npm:3.0.0"
   checksum: babaee814eb77dac4c402b4bb7584118f50d73caa808c67f5ae4ef3fc34385dcbbf8ed66e0e00b083d2a27c087f826557de76d39108da5c6dab3eaae353b3399
@@ -5146,7 +5155,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bl@npm:^4.0.1":
+"bl@npm:^4.0.1, bl@npm:^4.0.3":
   version: 4.0.3
   resolution: "bl@npm:4.0.3"
   dependencies:
@@ -6249,7 +6258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color@npm:^3.1.2":
+"color@npm:^3.1.2, color@npm:^3.1.3":
   version: 3.1.3
   resolution: "color@npm:3.1.3"
   dependencies:
@@ -14051,6 +14060,31 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"prebuild-install@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "prebuild-install@npm:6.0.0"
+  dependencies:
+    detect-libc: ^1.0.3
+    expand-template: ^2.0.3
+    github-from-package: 0.0.0
+    minimist: ^1.2.3
+    mkdirp-classic: ^0.5.3
+    napi-build-utils: ^1.0.1
+    node-abi: ^2.7.0
+    noop-logger: ^0.1.1
+    npmlog: ^4.0.1
+    pump: ^3.0.0
+    rc: ^1.2.7
+    simple-get: ^3.0.3
+    tar-fs: ^2.0.0
+    tunnel-agent: ^0.6.0
+    which-pm-runs: ^1.0.0
+  bin:
+    prebuild-install: ./bin.js
+  checksum: 02db5ebaf2c45996a5005928996ffcd2cf13ed5daf10386b3b4fc0ea51d27c4d045fa21acaf4359c07474773bed1d4e4f55f8a33b2efb24339566497cbe7d223
+  languageName: node
+  linkType: hard
+
 "prelude-ls@npm:^1.2.1":
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
@@ -15640,6 +15674,25 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
+"sharp@npm:^0.26.3":
+  version: 0.26.3
+  resolution: "sharp@npm:0.26.3"
+  dependencies:
+    array-flatten: ^3.0.0
+    color: ^3.1.3
+    detect-libc: ^1.0.3
+    node-addon-api: ^3.0.2
+    node-gyp: latest
+    npmlog: ^4.1.2
+    prebuild-install: ^6.0.0
+    semver: ^7.3.2
+    simple-get: ^4.0.0
+    tar-fs: ^2.1.1
+    tunnel-agent: ^0.6.0
+  checksum: bda9f3d228007bafd6d0cc8dbd766a9de6d1fb0ecfb662e40daf2a5ee4d71ff4eee662f707bdba324f25bfa7f6a306e93ec622a6e4ba9f0314eed038825838e9
+  languageName: node
+  linkType: hard
+
 "shasum-object@npm:^1.0.0":
   version: 1.0.0
   resolution: "shasum-object@npm:1.0.0"
@@ -15775,6 +15828,24 @@ resolve@1.1.7:
     astral-regex: ^1.0.0
     is-fullwidth-code-point: ^2.0.0
   checksum: 7578393cac91c28f8cb5fa5df36b826ad62c9e66313d2547770db8401570fa8f4aa20cd84ef9244fa054d8e9cc6bfc02578784bb89b238d384b99f2728a35a6d
+  languageName: node
+  linkType: hard
+
+"smartcrop-sharp@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "smartcrop-sharp@npm:2.0.3"
+  dependencies:
+    smartcrop: ^2.0.2
+  peerDependencies:
+    sharp: ^0.20.0
+  checksum: 770c47d8614fee09dd93b24b5a3fdacd77f5c2df73628393e0a2b7c40baa5b7c19349a0816afdfa57dd6d24c754695ed88d07dd55383cdbf414f9cd4f8786934
+  languageName: node
+  linkType: hard
+
+"smartcrop@npm:^2.0.2":
+  version: 2.0.3
+  resolution: "smartcrop@npm:2.0.3"
+  checksum: c85c306040bfa90427dd9482d68245c048c1696c465a68b073aa3e68a7b93b50ae08d44e7269ae42512152943a2c7b259d6e05f3245c8b8212dfccab187914fd
   languageName: node
   linkType: hard
 
@@ -16580,6 +16651,18 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
+"tar-fs@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "tar-fs@npm:2.1.1"
+  dependencies:
+    chownr: ^1.1.1
+    mkdirp-classic: ^0.5.2
+    pump: ^3.0.0
+    tar-stream: ^2.1.4
+  checksum: 4739382487b6ed646670a52cac637c818ecdceb728eb4718847dfdaddd7322d8cce2ea9db160ba8ad2920194034fda7c307b44f4eeb50d244f198bd7e28f2914
+  languageName: node
+  linkType: hard
+
 "tar-stream@npm:^2.0.0, tar-stream@npm:^2.1.0":
   version: 2.1.3
   resolution: "tar-stream@npm:2.1.3"
@@ -16590,6 +16673,19 @@ resolve@1.1.7:
     inherits: ^2.0.3
     readable-stream: ^3.1.1
   checksum: 57d2284615ee76ae5e41bcb8a1cb61c00b9ba514a1b8b86168d53967ea0f45581a3f00c8bdf7653fbd208490edea69ff39caaa845d7e04420cdddd56bea17e92
+  languageName: node
+  linkType: hard
+
+"tar-stream@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "tar-stream@npm:2.1.4"
+  dependencies:
+    bl: ^4.0.3
+    end-of-stream: ^1.4.1
+    fs-constants: ^1.0.0
+    inherits: ^2.0.3
+    readable-stream: ^3.1.1
+  checksum: d0414b07c267d6734bc2c7b689ae13de0216668c8202b883109b5d54e02811f6536bab80c9329f758d098207e1c24375443a89c3bf70199bd3ba5c4692cac193
   languageName: node
   linkType: hard
 
@@ -17138,6 +17234,7 @@ resolve@1.1.7:
     "@types/react-test-renderer": ^16.9.2
     "@types/react-window": ^1.8.2
     "@types/rfdc": ^1.1.0
+    "@types/sharp": ^0.26.1
     "@types/uuid": ^8.0.0
     "@typescript-eslint/eslint-plugin": ^3.7.0
     "@typescript-eslint/parser": ^3.7.0
@@ -17198,6 +17295,8 @@ resolve@1.1.7:
     release: ^6.3.0
     rfdc: ^1.1.4
     sass: ^1.26.10
+    sharp: ^0.26.3
+    smartcrop-sharp: ^2.0.3
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.0
     svg-url-loader: ^6.0.0
