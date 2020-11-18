@@ -1,5 +1,4 @@
 import { isArray, isJSON } from 'lib/model/json';
-import { User } from 'lib/model/user';
 
 export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
@@ -7,8 +6,6 @@ export function isRole(param: unknown): param is Role {
   if (typeof param !== 'string') return false;
   return ['parent', 'tutor', 'tutee', 'mentor', 'mentee'].includes(param);
 }
-
-export type UserWithRoles = User & { roles: Role[] };
 
 /**
  * Represents a person that is involved in a request or match. Here, roles are

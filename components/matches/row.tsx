@@ -1,7 +1,7 @@
 import { DataTableCell, DataTableRow } from '@rmwc/data-table';
 import { memo, useCallback, useMemo } from 'react';
 import axios from 'axios';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 import { responseInterface } from 'swr/dist/types';
 
 import { Callback, MatchJSON, MatchStatus, Person } from 'lib/model';
@@ -15,7 +15,7 @@ interface MatchRowProps {
   match: MatchJSON;
   mutate: responseInterface<ListMatchesRes, Error>['mutate'];
   setDataEdited: Callback<boolean>;
-  setViewing: Callback<MatchJSON>;
+  setViewing: Callback<MatchJSON | undefined>;
 }
 
 export const MatchRow = memo(
@@ -106,7 +106,7 @@ export const MatchRow = memo(
     );
   },
   (prevProps: MatchRowProps, nextProps: MatchRowProps) => {
-    return dequal(prevProps.match, nextProps.match);
+    return dequal(prevProps, nextProps);
   }
 );
 

@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 

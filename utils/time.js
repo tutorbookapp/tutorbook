@@ -1,54 +1,3 @@
-import { Availability, Timeslot } from 'lib/model';
-
-/**
- * Checks if two dates are a certain number of months apart.
- * @param date - One of the dates to compare.
- * @param [other] - The other date to compare (defaults to now).
- * @return The number of months `date` is from `other` (can be negative).
- */
-export function getMonthsApart(date: Date, other: Date = new Date()): number {
-  const yearDiff = date.getFullYear() - other.getFullYear();
-  const monthDiff = date.getMonth() - other.getMonth();
-  return monthDiff + 12 * yearDiff;
-}
-
-/**
- * Checks if a date occurs on the same date as another.
- * @param date - The base date to compare against.
- * @param other - The other date to compare.
- * @return Whether or not the dates occur on the same year, month, and date.
- */
-export function sameDate(date: Date, other: Date): boolean {
-  return (
-    date.getFullYear() === other.getFullYear() &&
-    date.getMonth() === other.getMonth() &&
-    date.getDate() === other.getDate()
-  );
-}
-
-/**
- * Returns the number of days in a given month in a given year.
- * @param month - The month to get the number of days for (0 = January).
- * @param [year] - The year for which we want to inspect. Defaults to the
- * current one.
- * @return The number of days in the given month.
- * @see {@link https://stackoverflow.com/a/1184359}
- */
-export function getDaysInMonth(month: number, year?: number): number {
-  return new Date(year || new Date().getFullYear(), month + 1, 0).getDate();
-}
-
-/**
- * Returns the weekday of the first day of a given month in a given year.
- * @param month - The month to get the weekday of the first day (0 = January).
- * @param [year] - The year for which we want to inspect. Defaults to the
- * current one.
- * @return The weekday of the the first day in the given month (0 = Sunday).
- */
-export function getWeekdayOfFirst(month: number, year?: number): number {
-  return new Date(year || new Date().getFullYear(), month, 1).getDay();
-}
-
 /**
  * Returns the next date (from now or from a given date) that has the given
  * times.
@@ -58,13 +7,13 @@ export function getWeekdayOfFirst(month: number, year?: number): number {
  * @param milliseconds - The milliseconds that the returned date should have.
  * @param [now] - The date we should start from. Default is right now.
  */
-export function getNextDateWithTime(
-  hours: number,
-  minutes: number,
-  seconds: number,
-  milliseconds: number,
-  now: Date = new Date()
-): Date {
+function getNextDateWithTime(
+  hours,
+  minutes,
+  seconds,
+  milliseconds,
+  now = new Date()
+) {
   return new Date(
     now.getFullYear(),
     now.getMonth(),
@@ -86,12 +35,7 @@ export function getNextDateWithTime(
  * @param [milliseconds=0] - The milliseconds that the returned date should
  * have.
  */
-export function getDateWithTime(
-  hours: number,
-  minutes = 0,
-  seconds = 0,
-  milliseconds = 0
-): Date {
+function getDateWithTime(hours, minutes = 0, seconds = 0, milliseconds = 0) {
   return getNextDateWithTime(
     hours,
     minutes,
@@ -110,10 +54,7 @@ export function getDateWithTime(
  * Default is right now.
  * @todo Why do we have a counter (originally from `@tutorboook/utils`)?
  */
-export function getNextDateWithDay(
-  weekday: number,
-  now: Date = new Date()
-): Date {
+function getNextDateWithDay(weekday, now = new Date()) {
   const date = new Date(now.valueOf());
   let count = 0; // TODO: Why did we add this counter in `lib/utils`?
   while (date.getDay() !== weekday && count <= 256) {
@@ -128,15 +69,32 @@ export function getNextDateWithDay(
  * produce a function that returns a `Date` representing a weekly recurring
  * timestamp (i.e. the first occurance of the desired time as a Unix time).
  */
-export function getDate(
-  weekday: number,
-  hours: number,
-  minutes = 0,
-  seconds = 0,
-  milliseconds = 0
-): Date {
-  const time: Date = getDateWithTime(hours, minutes, seconds, milliseconds);
+function getDate(weekday, hours, minutes = 0, seconds = 0, milliseconds = 0) {
+  const time = getDateWithTime(hours, minutes, seconds, milliseconds);
   return getNextDateWithDay(weekday, time);
+}
+
+/**
+ * Returns the number of days in a given month in a given year.
+ * @param month - The month to get the number of days for (0 = January).
+ * @param [year] - The year for which we want to inspect. Defaults to the
+ * current one.
+ * @return The number of days in the given month.
+ * @see {@link https://stackoverflow.com/a/1184359}
+ */
+function getDaysInMonth(month, year) {
+  return new Date(year || new Date().getFullYear(), month + 1, 0).getDate();
+}
+
+/**
+ * Returns the weekday of the first day of a given month in a given year.
+ * @param month - The month to get the weekday of the first day (0 = January).
+ * @param [year] - The year for which we want to inspect. Defaults to the
+ * current one.
+ * @return The weekday of the the first day in the given month (0 = Sunday).
+ */
+function getWeekdayOfFirst(month, year) {
+  return new Date(year || new Date().getFullYear(), month, 1).getDay();
 }
 
 /**
@@ -146,7 +104,7 @@ export function getDate(
  * @param [interval] - The increment to round to in mins; default 15 mins.
  * @return The start time rounded up to the nearest 15 min interval.
  */
-export function roundStartTime(start: Date, interval = 15): Date {
+function roundStartTime(start, interval = 15) {
   return new Date(
     start.getFullYear(),
     start.getMonth(),
@@ -154,33 +112,6 @@ export function roundStartTime(start: Date, interval = 15): Date {
     start.getHours(),
     Math.ceil(start.getMinutes() / interval) * interval
   );
-}
-
-/**
- * Returns an array of timeslots of the given duration (default 30 mins) in the
- * given intervals (default 15 mins) between the given start and end times.
- * @param start - The start of the timeslot range (inclusive); will be rounded
- * to fit into the given interval.
- * @param end - The end of the timeslot range (inclusive).
- * @param [duration] - The timeslot duration in mins; default 30 mins.
- * @param [interval] - The time between each timeslot start time in mins;
- * default 15 mins.
- * @return An array of timeslots.
- */
-export function getTimeslots(
-  start: Date,
-  end: Date,
-  duration = 30,
-  interval = 15
-): Availability {
-  const timeslots = new Availability();
-  let from = roundStartTime(start, interval);
-  while (from.valueOf() <= end.valueOf() - duration * 6e4) {
-    const to = new Date(from.valueOf() + duration * 6e4);
-    timeslots.push(new Timeslot({ from, to }));
-    from = new Date(from.valueOf() + interval * 6e4);
-  }
-  return timeslots;
 }
 
 /**
@@ -193,11 +124,7 @@ export function getTimeslots(
  * @return Availability full of 30 min timeslots in 15 min intervals for the
  * requested month's date range.
  */
-export function getMonthsTimeslots(
-  baseline: Availability,
-  month: number,
-  year: number
-): Availability {
+function getMonthsTimeslots(baseline, month, year) {
   const interval = 15;
   const duration = 30;
   const daysInMonth = getDaysInMonth(month, year);
@@ -205,7 +132,7 @@ export function getMonthsTimeslots(
 
   // Split each of the availability timeslots into 30 min timeslots in 15 min
   // intervals. This assumes there is no overlap between the baseline timeslots.
-  const timeslots = new Availability();
+  const timeslots = [];
   baseline.sort().forEach((timeslot) => {
     let from = roundStartTime(timeslot.from, interval);
     while (from.valueOf() <= timeslot.to.valueOf() - duration * 6e4) {
@@ -219,12 +146,10 @@ export function getMonthsTimeslots(
       let date = 1;
       while (date <= daysInMonth) {
         if ((date - 1 + weekdayOffset) % 7 === weekday)
-          timeslots.push(
-            new Timeslot({
-              from: new Date(year, month, date, fromHrs, fromMins),
-              to: new Date(year, month, date, toHrs, toMins),
-            })
-          );
+          timeslots.push({
+            from: new Date(year, month, date, fromHrs, fromMins),
+            to: new Date(year, month, date, toHrs, toMins),
+          });
         date += 1;
       }
       from = new Date(from.valueOf() + interval * 6e4);
@@ -233,3 +158,24 @@ export function getMonthsTimeslots(
 
   return timeslots;
 }
+
+function full(month, year) {
+  const full = [];
+  Array(7)
+    .fill(null)
+    .forEach((_, idx) =>
+      full.push({
+        from: getDate(idx, 0),
+        to: getDate(idx, 23, 30),
+      })
+    );
+  return getMonthsTimeslots(full, month, year);
+}
+
+module.exports = {
+  full,
+  getMonthsTimeslots,
+  getWeekdayOfFirst,
+  getDaysInMonth,
+  getDate,
+};

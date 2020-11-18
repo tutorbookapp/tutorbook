@@ -4,28 +4,6 @@ import { isDateJSON, isJSON } from 'lib/model/json';
 import construct from 'lib/model/construct';
 
 /**
- * Number representing the day of the week. Follows the ECMAScript Date
- * convention where 0 denotes Sunday, 1 denotes Monday, etc.
- * @see {@link https://mzl.la/34l2dN6}
- */
-export type DayAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6;
-
-/**
- * Enum that makes it easier to work with the integer representations of the
- * various days of the week.
- * @see {@link https://www.typescriptlang.org/docs/handbook/enums.html#numeric-enums}
- */
-export enum Day {
-  Sunday,
-  Monday,
-  Tuesday,
-  Wednesday,
-  Thursday,
-  Friday,
-  Saturday,
-}
-
-/**
  * This is a painful workaround as we then import the entire Firebase library
  * definition while we only want the `Timestamp` object.
  * @todo Only import the `Timestamp` definition.
@@ -141,6 +119,14 @@ export class Timeslot implements TimeslotInterface {
       other.to.valueOf() === this.to.valueOf() &&
       other.from.valueOf() === this.from.valueOf()
     );
+  }
+
+  public toNextWeek(): Timeslot {
+    const from = new Date(this.from.valueOf());
+    const to = new Date(this.to.valueOf());
+    from.setDate(from.getDate() + 7);
+    to.setDate(to.getDate() + 7);
+    return new Timeslot({ ...this, from, to });
   }
 
   public toString(locale = 'en'): string {

@@ -1,4 +1,4 @@
-import { DayAlias, Timeslot } from 'lib/model';
+import { Timeslot } from 'lib/model';
 import { getDate } from 'lib/utils/time';
 
 export const WIDTH = 102;
@@ -31,7 +31,7 @@ export function getTimeslot(
 ): Timeslot {
   // Each column is 82px wide, so we merely divide to figure out which column
   // the `TimeslotRnd` is located (e.g. 0 = Sunday, 1 = Monday, etc).
-  const weekday = Math.floor(position.x / width) as DayAlias;
+  const weekday = Math.floor(position.x / width);
 
   // This RND can represent timeslots not on 15min intervals (e.g. 8:37am to
   // 9:13am), but we snap back to 15min intervals when the RND is moved.

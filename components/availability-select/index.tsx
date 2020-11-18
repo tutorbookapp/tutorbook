@@ -12,12 +12,12 @@ import {
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Availability, DayAlias, TCallback, Timeslot } from 'lib/model';
+import { Availability, TCallback, Timeslot } from 'lib/model';
 import { getDateWithTime, getNextDateWithDay } from 'lib/utils/time';
 import { useContinuous } from 'lib/hooks';
 
@@ -190,12 +190,9 @@ export default function AvailabilitySelect({
           <div key={nanoid()} className={styles.titleWrapper}>
             <h2 className={styles.titleContent}>
               <div className={styles.day}>
-                {getNextDateWithDay(weekday as DayAlias).toLocaleString(
-                  locale,
-                  {
-                    weekday: 'long',
-                  }
-                )}
+                {getNextDateWithDay(weekday).toLocaleString(locale, {
+                  weekday: 'long',
+                })}
               </div>
             </h2>
           </div>

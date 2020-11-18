@@ -1,4 +1,4 @@
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 
 import { APIError } from 'lib/api/error';
 import { Org } from 'lib/model';

@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { AxiosError } from 'axios';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 
 import { APIErrorJSON } from 'lib/api/error';

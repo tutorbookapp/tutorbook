@@ -17,13 +17,7 @@ import useMeasure from 'react-use-measure';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import {
-  Availability,
-  AvailabilityJSON,
-  Callback,
-  DayAlias,
-  Timeslot,
-} from 'lib/model';
+import { Availability, AvailabilityJSON, Callback, Timeslot } from 'lib/model';
 import {
   getDate,
   getDaysInMonth,
@@ -41,7 +35,7 @@ type OverridenProps =
   | 'inputRef'
   | 'className';
 interface Props {
-  uid: string;
+  uid?: string;
   value?: Timeslot;
   onChange: Callback<Timeslot | undefined>;
   renderToPortal?: boolean;
@@ -115,11 +109,11 @@ export default function TimeSelect({
   }, [month]);
 
   const { data } = useSWR<AvailabilityJSON>(
-    `/api/users/${uid}/availability?month=${month}&year=${year}`
+    uid ? `/api/users/${uid}/availability?month=${month}&year=${year}` : null
   );
   const availability = useMemo(
-    () => (data ? Availability.fromJSON(data) : new Availability()),
-    [data]
+    () => (data ? Availability.fromJSON(data) : Availability.full(month, year)),
+    [data, month, year]
   );
   const availabilityOnSelected = useMemo(() => availability.onDate(selected), [
     selected,
@@ -177,7 +171,7 @@ export default function TimeSelect({
                 .fill(null)
                 .map((_, idx) => (
                   <div className={styles.weekday} key={`day-${idx}`}>
-                    {getDate(idx as DayAlias, 0).toLocaleString(locale, {
+                    {getDate(idx, 0).toLocaleString(locale, {
                       weekday: 'narrow',
                     })}
                   </div>

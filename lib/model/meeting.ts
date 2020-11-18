@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 
 import {
@@ -16,8 +17,8 @@ import {
   isTimeslotJSON,
 } from 'lib/model/timeslot';
 import { Person, isPerson } from 'lib/model/person';
-import { isArray, isJSON } from 'lib/model/json';
 import construct from 'lib/model/construct';
+import { isJSON } from 'lib/model/json';
 
 type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -94,27 +95,26 @@ export class Meeting extends Resource implements MeetingInterface {
     return { ...rest, ...super.toJSON(), time: time.toJSON() };
   }
 
-  public static fromJSON(json: MeetingJSON): Meeting {
-    const { time, ...rest } = json;
+  public static fromJSON({ time, ...rest }: MeetingJSON): Meeting {
     return new Meeting({
-      ...json,
-      ...Resource.fromJSON(json),
+      ...rest,
+      ...Resource.fromJSON(rest),
       time: Timeslot.fromJSON(time),
     });
   }
 
-  public toFirestore(): DocumentData {
+  public toFirestore(): MeetingFirestore {
     const { time, ref, ...rest } = this;
     return { ...rest, ...super.toFirestore(), time: time.toFirestore() };
   }
 
-  public static fromFirestore(snapshot: DocumentSnapshot): Meeting {
+  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Meeting {
     const data: DocumentData | undefined = snapshot.data();
     if (data) {
-      const { time, ...rest } = data;
+      const { time, ...rest } = data as MeetingFirestore;
       return new Meeting({
         ...rest,
-        ...Resource.fromFirestore(data),
+        ...Resource.fromFirestore(rest),
         time: Timeslot.fromFirestore(time),
         ref: snapshot.ref,
         id: snapshot.id,
@@ -127,11 +127,18 @@ export class Meeting extends Resource implements MeetingInterface {
     return new Meeting();
   }
 
-  public static fromSearchHit(hit: MeetingSearchHit): Meeting {
-    const { time, ...rest } = hit;
+  public static fromFirestore({ time, ...rest }: MeetingFirestore): Meeting {
     return new Meeting({
       ...rest,
-      ...Resource.fromSearchHit(hit),
+      ...Resource.fromFirestore(rest),
+      time: Timeslot.fromFirestore(time),
+    });
+  }
+
+  public static fromSearchHit({ time, ...rest }: MeetingSearchHit): Meeting {
+    return new Meeting({
+      ...rest,
+      ...Resource.fromSearchHit(rest),
       time: Timeslot.fromSearchHit(time),
     });
   }

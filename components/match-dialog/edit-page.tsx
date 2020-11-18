@@ -102,7 +102,6 @@ export default function EditPage({
         />
         <TimeSelect
           required
-          uid='volunteer'
           label={t('common:time')}
           onChange={onTimeChange}
           value={match.time}

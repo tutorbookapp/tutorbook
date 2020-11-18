@@ -72,7 +72,7 @@ export default function DisplayPage({
 
   const viewPerson = useCallback(
     (person: Person) => {
-      return setActive(people.findIndex((p) => p.id === person.id) + 2);
+      return setActive(people.findIndex((p) => p.id === person.id) + 3);
     },
     [setActive, people]
   );
@@ -84,7 +84,7 @@ export default function DisplayPage({
           <div className={styles.header}>People</div>
           <div className={styles.people}>
             {people.map((person, idx) => (
-              <a onClick={() => setActive(idx + 2)} className={styles.person}>
+              <a onClick={() => setActive(idx + 3)} className={styles.person}>
                 <div className={styles.avatar}>
                   <Avatar src={person.photo} size={129} />
                 </div>
@@ -150,7 +150,11 @@ export default function DisplayPage({
       </div>
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
-          <Chip icon='event_note' label='Log meeting' />
+          <Chip
+            icon='event_note'
+            label='Log meeting'
+            onClick={() => setActive(2)}
+          />
           <Chip icon='event_busy' label='Cancel meeting' />
           <Chip icon='email' label='Send email' />
           <Chip icon='edit' label='Edit match' onClick={() => setActive(1)} />

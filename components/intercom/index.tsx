@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
 import { useUser } from 'lib/context/user';

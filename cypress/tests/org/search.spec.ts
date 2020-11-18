@@ -1,4 +1,4 @@
-import { DayAlias, getDaysInMonth, getNextDateWithDay } from 'lib/utils/time';
+import { getDaysInMonth, getNextDateWithDay } from 'lib/utils/time';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
 
 import admin from 'cypress/fixtures/users/admin.json';
@@ -38,7 +38,7 @@ function selectTime() {
     .should('have.attr', 'aria-selected', 'true')
     .and('have.css', 'background-color', 'rgb(0, 112, 243)');
 
-  function dayIdx(day: DayAlias): number {
+  function dayIdx(day: number): number {
     return getNextDateWithDay(day, now).getDate() - 1;
   }
 

@@ -4,7 +4,7 @@ import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import Router from 'next/router';
-import { dequal } from 'dequal';
+import { dequal } from 'dequal/lite';
 
 import AuthDialog from 'components/auth-dialog';
 import Page from 'components/page';

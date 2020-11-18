@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
+import { v4 as uuid } from 'uuid';
 
 import { Account, AccountInterface, isAccountJSON } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
@@ -9,6 +10,7 @@ import {
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
+import { Person, Role } from 'lib/model/person';
 import {
   Verification,
   VerificationJSON,
@@ -131,6 +133,8 @@ export function isUserJSON(json: unknown): json is UserJSON {
   return true;
 }
 
+export type UserWithRoles = User & { roles: Role[] };
+
 /**
  * Class that provides default values for our `UserInterface` data model.
  * @see {@link https://stackoverflow.com/a/54857125/10023158}
@@ -227,6 +231,16 @@ export class User extends Account implements UserInterface {
         .filter(([_, val]) => isFilled(val))
         .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
     );
+  }
+
+  public toPerson(): Person {
+    return {
+      id: this.id,
+      name: this.name,
+      photo: this.photo,
+      handle: uuid(),
+      roles: [],
+    };
   }
 
   public static fromSearchHit(hit: UserSearchHit): User {

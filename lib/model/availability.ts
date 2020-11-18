@@ -1,5 +1,4 @@
 import {
-  DayAlias,
   Timeslot,
   TimeslotFirestore,
   TimeslotInterface,
@@ -7,7 +6,7 @@ import {
   TimeslotSearchHit,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import { getDate, sameDate } from 'lib/utils/time';
+import { getDate, getMonthsTimeslots, sameDate } from 'lib/utils/time';
 
 /**
  * One's schedule contains all your booked timeslots (the inverse of one's
@@ -63,27 +62,16 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     });
   }
 
-  /**
-   * Returns a "full" availability (everyday, from 12am to 11pm). This is the
-   * default for new tutors and when sending requests. This ignores the date
-   * information and is only useful operating on times and weekdays.
-   * @deprecated I'm not sure where I would need to use this, but whereever I do
-   * it should be removed.
-   */
-  public static full(): Availability {
+  public static full(month: number, year: number): Availability {
     const full = new Availability();
     Array(7)
       .fill(null)
-      .forEach((_: null, day: number) => {
-        const start = getDate(day as DayAlias, 0);
-        const weekday = (day === 6 ? 0 : day + 1) as DayAlias;
-        let end = getDate(weekday, 0);
-        while (start.valueOf() > end.valueOf()) {
-          end = new Date(end.valueOf() + 86400000 * 7);
-        }
-        full.push(new Timeslot({ from: start, to: end }));
-      });
-    return full;
+      .forEach((_, idx) =>
+        full.push(
+          new Timeslot({ from: getDate(idx, 0), to: getDate(idx, 23, 30) })
+        )
+      );
+    return getMonthsTimeslots(full, month, year);
   }
 
   /**
