@@ -1,9 +1,8 @@
 @use 'sass:map';
-@use 'config';
 
 @use '@material/theme' with (
-  $primary: map.get(config.$colors, 'primary'),
-  $secondary: map.get(config.$colors, 'secondary'),
+  $primary: #0070f3,
+  $secondary: #0070f3,
 );
 
 @use 'typography';
@@ -86,6 +85,7 @@
   --geist-page-margin: var(--geist-space-gap);
   --geist-page-width: 1000px;
   --geist-page-width-with-margin: 1048px; /* 1000px + (2 * page margin) */
+  --geist-form-width: 768px;
 
   /* Appearance */
   --geist-radius: 5px;
@@ -127,6 +127,7 @@
   --geist-error-light: #ff1a1a;
   --geist-error: #b00020;
   --geist-error-dark: #c50000;
+  --geist-error-darker: #c00;
   --geist-warning-lighter: #ffefcf;
   --geist-warning-light: #f7b955;
   --geist-warning: #f5a623;

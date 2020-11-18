@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/common';
 
 .wrapper {
@@ -13,22 +12,22 @@
 
     .links {
       position: sticky;
-      top: config.$nav-height + 24px;
+      top: var(--header-height) + 24px;
 
       > a {
         display: block;
         font-size: 14px;
         line-height: 24px;
         margin-bottom: 16px;
-        font-family: map.get(config.$fonts, 'sans');
-        color: map.get(config.$colors, 'accents-5');
+        font-family: var(--fonts-sans);
+        color: var(--accents-5);
         text-decoration: none;
         transition: color 0.2s ease-in-out;
         position: relative;
         cursor: pointer;
 
         &:hover {
-          color: map.get(config.$colors, 'foreground');
+          color: var(--geist-foreground);
         }
 
         &:last-child {
@@ -36,7 +35,7 @@
         }
 
         &.active {
-          color: map.get(config.$colors, 'foreground');
+          color: var(--geist-foreground);
           font-weight: 600;
         }
       }
@@ -48,7 +47,7 @@
     box-sizing: border-box;
 
     .card {
-      border: 1px solid map.get(config.$colors, 'accents-2');
+      border: 1px solid var(--accents-2);
       border-radius: 4px;
       position: relative;
 
@@ -98,7 +97,7 @@
         }
 
         .error {
-          color: map.get(config.$colors, 'error');
+          color: var(--geist-error);
           font-weight: 450;
           margin-top: 16px;
         }
@@ -108,11 +107,11 @@
         display: flex;
         min-height: 54px;
         align-items: center;
-        background-color: map.get(config.$colors, 'accents-1');
+        background-color: var(--accents-1);
         border-bottom-left-radius: 4px;
         border-bottom-right-radius: 4px;
-        border-top: 1px solid map.get(config.$colors, 'accents-2');
-        color: map.get(config.$colors, 'accents-6');
+        border-top: 1px solid var(--accents-2);
+        color: var(--accents-6);
         font-size: 0.875rem;
         box-sizing: border-box;
         line-height: 1.6;
@@ -125,7 +124,7 @@
 
           a {
             cursor: pointer;
-            color: map.get(config.$colors, 'primary');
+            color: var(--geist-primary);
             text-decoration: none;
             display: inline-flex;
             align-items: center;

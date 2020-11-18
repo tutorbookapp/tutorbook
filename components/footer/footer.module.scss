@@ -1,19 +1,18 @@
 @use 'sass:map';
-@use 'styles/config';
 
 .wrapper {
   display: grid;
   grid-template-columns: 1fr [content] 12fr 1fr;
-  background: map.get(config.$colors, 'accents-1');
-  border-top: 1px solid map.get(config.$colors, 'accents-2');
+  background: var(--accents-1);
+  border-top: 1px solid var(--accents-2);
 }
 
 .wrapper * {
   line-height: normal;
-  font-family: map.get(config.$fonts, 'sans');
+  font-family: var(--fonts-sans);
   font-weight: 400;
   font-size: 14px;
-  color: map.get(config.$colors, 'foreground');
+  color: var(--geist-foreground);
 }
 
 .wrapper ul,
@@ -42,7 +41,7 @@
   display: grid;
   grid-gap: 10px;
   grid-template-columns: 1fr;
-  max-width: config.$default-width;
+  max-width: var(--geist-page-width-with-margin);
   width: 100vw;
   margin: 40px auto;
   padding: 0 24px;
@@ -50,7 +49,7 @@
 }
 
 .formWidth .contentWrapper {
-  max-width: config.$form-width;
+  max-width: var(--geist-form-width);
 }
 
 @media (min-width: 768px) {
@@ -104,7 +103,7 @@
 .primaryLink,
 .secondaryLink,
 .langLink {
-  color: map.get(config.$colors, 'accents-5');
+  color: var(--accents-5);
   text-decoration: none;
   transition: color 0.2s ease-in-out;
   outline: none;
@@ -113,7 +112,7 @@
 .primaryLink:hover,
 .secondaryLink:hover,
 .langLink:hover {
-  color: map.get(config.$colors, 'foreground');
+  color: var(--geist-foreground);
 }
 
 .primaryLinkItem {

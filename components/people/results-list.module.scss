@@ -1,10 +1,9 @@
 @use 'sass:map';
-@use 'styles/config';
 
 .wrapper {
   flex: 1 1 auto;
-  border-left: 1px solid map.get(config.$colors, 'accents-2');
-  border-right: 1px solid map.get(config.$colors, 'accents-2');
+  border-left: 1px solid var(--accents-2);
+  border-right: 1px solid var(--accents-2);
   overflow: hidden;
   min-height: 625px;
 

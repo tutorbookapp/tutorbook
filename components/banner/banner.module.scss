@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use 'sass:color';
-@use 'styles/config';
 @use 'styles/typography';
 
 $message-width: 800px;
@@ -13,19 +12,15 @@ $message-width: 800px;
   justify-content: center;
   background: linear-gradient(
     to right,
-    #{color.adjust(
-        map.get(config.$colors, 'primary'),
-        $hue: 10%,
-        $lightness: -10%
-      )} 9.38%,
-    #{color.adjust(map.get(config.$colors, 'primary'), $hue: -15%)} 88.54%
+    #{color.adjust(var(--geist-primary), $hue: 10%, $lightness: -10%)} 9.38%,
+    #{color.adjust(var(--geist-primary), $hue: -15%)} 88.54%
   );
   transform-origin: top center;
   transition: transform 0.2s ease, height 0.3s ease;
   z-index: 102;
   font-size: 14px;
   text-align: center;
-  color: map.get(config.$colors, 'background');
+  color: var(--geist-background);
 }
 
 .hidden {
@@ -50,7 +45,7 @@ $message-width: 800px;
 
 .close {
   display: inline-flex;
-  color: map.get(config.$colors, 'accents-2');
+  color: var(--accents-2);
   position: absolute;
   right: 20px;
   cursor: pointer;

@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use '@material/elevation';
-@use 'styles/config';
 @use 'styles/typography';
 
 .anchor {
@@ -15,16 +14,16 @@
     max-width: 100%;
     padding: 10px 15px;
     text-transform: uppercase;
-    color: map.get(config.$colors, 'accents-5');
+    color: var(--accents-5);
     font-size: 12px;
-    font-family: map.get(config.$fonts, 'sans');
+    font-family: var(--fonts-sans);
     white-space: nowrap;
     line-height: normal;
     box-sizing: border-box;
   }
 
   .line {
-    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    border-top: 1px solid var(--accents-2);
     margin: 8px 0;
     box-sizing: border-box;
   }
@@ -33,7 +32,7 @@
     @include typography.typography('body1');
     position: relative;
     font-size: 14px;
-    color: map.get(config.$colors, 'accents-5');
+    color: var(--accents-5);
     line-height: 20px;
     will-change: color;
     transition: color 0.1s ease 0s, background-color 0.1s ease 0s;
@@ -67,7 +66,7 @@
     }
 
     &:hover:not(.header) {
-      color: map.get(config.$colors, 'foreground');
+      color: var(--geist-foreground);
     }
 
     .avatar {
@@ -162,7 +161,7 @@ $foreground: rgba(0, 0, 0, 0.87);
 
         .selectedText {
           letter-spacing: -0.01125rem;
-          font-family: map.get(config.$fonts, 'sans');
+          font-family: var(--fonts-sans);
           margin-left: 8px;
           max-width: 300px;
           overflow: hidden;

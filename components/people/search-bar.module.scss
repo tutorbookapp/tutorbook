@@ -1,12 +1,11 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 
 $filters-height: 56px;
 
 .filters {
   height: $filters-height;
-  border: 1px solid map.get(config.$colors, 'accents-2');
+  border: 1px solid var(--accents-2);
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   display: flex;
@@ -34,7 +33,7 @@ $filters-height: 56px;
         :global(.mdc-notched-outline__leading),
         :global(.mdc-notched-outline__notch),
         :global(.mdc-notched-outline__trailing) {
-          border-color: map.get(config.$colors, 'accents-2') !important;
+          border-color: var(--accents-2) !important;
         }
       }
 

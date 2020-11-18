@@ -1,13 +1,12 @@
 @use 'sass:map';
 @use 'styles/query-form';
 @use 'styles/typography';
-@use 'styles/config';
 @use '@material/elevation';
 
 .search {
-  border: 1px solid map.get(config.$colors, 'accents-2');
-  background: map.get(config.$colors, 'background');
-  height: config.$nav-height - 24px;
+  border: 1px solid var(--accents-2);
+  background: var(--geist-background);
+  height: var(--header-height) - 24px;
   align-items: center;
   display: inline-flex;
   position: relative;
@@ -22,7 +21,7 @@
   @include typography.typography('body2');
   background: transparent none repeat scroll 0% 0%;
   border: 0px none;
-  color: map.get(config.$colors, 'foreground');
+  color: var(--geist-foreground);
   cursor: pointer;
   display: inline-block;
   margin: 0px;
@@ -55,7 +54,7 @@
   height: 100%;
   width: 1px;
   position: relative;
-  background-color: map.get(config.$colors, 'accents-2');
+  background-color: var(--accents-2);
 }
 
 .form {
@@ -64,7 +63,7 @@
   visibility: hidden;
   position: absolute;
   border-radius: 4px;
-  background: map.get(config.$colors, 'background');
+  background: var(--geist-background);
   transform: translateX(-50%);
   box-sizing: border-box;
   width: 100%;

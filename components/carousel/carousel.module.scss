@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use '@material/elevation';
 
@@ -23,8 +22,8 @@ $margin: 24px;
   position: absolute;
   border-radius: 100%;
   bottom: calc(50% - 24px);
-  background: map.get(config.$colors, 'background');
-  color: map.get(config.$colors, 'foreground');
+  background: var(--geist-background);
+  color: var(--geist-foreground);
   z-index: 2;
 }
 

@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/common';
 @use 'styles/typography';
 
@@ -16,9 +15,9 @@
 }
 
 .summary {
-  border-top: 1px solid map.get(config.$colors, 'accents-2');
-  border-bottom: 1px solid map.get(config.$colors, 'accents-2');
-  background: map.get(config.$colors, 'accents-1');
+  border-top: 1px solid var(--accents-2);
+  border-bottom: 1px solid var(--accents-2);
+  background: var(--accents-1);
 }
 
 .header {

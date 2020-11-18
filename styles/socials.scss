@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 
 @mixin core-styles() {
@@ -14,7 +13,7 @@
       font-weight: normal;
       speak: never;
       font-size: 24px;
-      color: map.get(config.$colors, 'accents-5');
+      color: var(--accents-5);
       text-decoration: none;
       font-variant: normal;
       text-transform: none;
@@ -27,7 +26,7 @@
 
     &:hover:before {
       color: transparent;
-      -webkit-text-stroke: 1px map.get(config.$colors, 'accents-5');
+      -webkit-text-stroke: 1px var(--accents-5);
     }
   }
 
@@ -66,7 +65,7 @@
   .indiehackers:before {
     content: 'IH';
     font-weight: 800;
-    font-family: map.get(config.$fonts, 'sans');
+    font-family: var(--fonts-sans);
     margin: 0 -2px;
   }
 }

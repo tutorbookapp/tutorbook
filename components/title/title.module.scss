@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use 'sass:color';
-@use 'styles/config';
 @use 'styles/typography';
 
 // Update: September 2016, after a lot of grumbling, decided to simplify this.
@@ -50,7 +49,7 @@
 .title {
   @include typography.typography('headline2');
   @include gradient-text(
-    'linear-gradient(to right, #{color.adjust(map.get(config.$colors, 'primary'), $hue: 10%, $lightness: -10%)} 9.38%, #{color.adjust(map.get(config.$colors, 'primary'), $hue: -15%)} 88.54%)',
+    'linear-gradient(to right, #{color.adjust(var(--geist-primary'), $hue: 10%, $lightness: -10%)} 9.38%, #{color.adjust(map.get(config.$colors, 'primary), $hue: -15%)} 88.54%)',
     'light'
   );
   display: inline-block;

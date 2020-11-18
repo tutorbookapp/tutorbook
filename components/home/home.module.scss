@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use 'styles/common';
-@use 'styles/config';
 @use 'styles/loader';
 @use 'styles/socials';
 @use 'styles/typography';
@@ -12,17 +11,17 @@
   justify-content: center;
   border-radius: 0;
   width: 100%;
-  height: calc(40vh + #{config.$nav-height});
+  height: calc(40vh + var(--header-height));
   opacity: 1;
   object-fit: cover;
   object-position: center 50%;
-  margin-top: -#{config.$nav-height};
-  background: map.get(config.$colors, 'accents-2');
+  margin-top: calc(-1 * var(--header-height));
+  background: var(--accents-2);
   font-size: 0;
 }
 
 .content {
-  @include common.wrapper(config.$form-width);
+  @include common.wrapper(var(--geist-form-width));
   display: flex;
   padding: 48px 24px;
 
@@ -53,7 +52,7 @@
 
       .name {
         @include typography.typography('headline4');
-        color: map.get(config.$colors, 'foreground');
+        color: var(--geist-foreground);
         line-height: 2.2rem;
         margin: 0 0 8px;
       }
@@ -67,14 +66,14 @@
 
     .header {
       @include typography.typography('headline6');
-      color: map.get(config.$colors, 'foreground');
+      color: var(--geist-foreground);
       font-weight: 600;
       margin: 24px 0 0;
     }
 
     .body {
       @include typography.typography('body1');
-      color: map.get(config.$colors, 'accents-5');
+      color: var(--accents-5);
       white-space: pre-wrap;
       margin: 0 0 8px;
     }
@@ -85,7 +84,7 @@
 
     .actions {
       position: sticky;
-      top: config.$nav-height + 24px;
+      top: var(--header-height) + 24px;
 
       .card {
         @include common.card;

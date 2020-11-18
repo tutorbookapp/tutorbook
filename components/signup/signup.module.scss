@@ -1,11 +1,10 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/common';
 @use 'styles/loader';
 @use 'styles/typography';
 
 .wrapper {
-  @include common.wrapper(config.$form-width);
+  @include common.wrapper(var(--geist-form-width));
   margin: 60px auto;
   box-sizing: border-box;
 
@@ -39,7 +38,7 @@
 
   .description {
     @include typography.typography('subtitle1');
-    color: map.get(config.$colors, 'accents-5');
+    color: var(--accents-5);
     margin: 0 0 30px;
 
     &.loading div {

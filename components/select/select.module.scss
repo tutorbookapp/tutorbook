@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use '@material/chips/_index.scss' as chips;
 
@@ -50,7 +49,7 @@
   line-height: 30px;
   visibility: hidden;
   position: absolute;
-  font-family: map.get(config.$fonts, 'sans');
+  font-family: var(--fonts-sans);
   font-size: 1rem;
   font-weight: 400;
   letter-spacing: 0.009375em;

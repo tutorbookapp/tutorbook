@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/common';
 @use 'styles/typography';
 
@@ -13,7 +12,7 @@
   .nav {
     @include typography.typography('headline6');
     padding: 24px 48px;
-    border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+    border-bottom: 1px solid var(--accents-2);
     flex: none;
     display: flex;
     justify-content: center;

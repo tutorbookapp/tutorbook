@@ -1,10 +1,9 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use '@material/elevation';
 
 .wrapper {
-  max-width: config.$default-width;
+  max-width: var(--geist-page-width-with-margin);
   margin: 0 auto;
   padding: 48px 24px;
   box-sizing: border-box;
@@ -28,7 +27,7 @@
 
 .noResultsBody {
   @include typography.typography('subtitle1');
-  color: map.get(config.$colors, 'accents-5');
+  color: var(--accents-5);
   margin: 0 0 40px;
 }
 

@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use '@material/snackbar/_index.scss' as snackbar;
 @use '@material/textfield/_index.scss' as textfield;
@@ -32,7 +31,7 @@ $filters-height: 56px;
       overflow: auto;
 
       .invalid {
-        background-color: map.get(config.$colors, 'error-darker');
+        background-color: var(--geist-error-darker);
         color: white;
 
         svg path {
@@ -153,18 +152,18 @@ $filters-height: 56px;
         cursor: pointer;
 
         &.new {
-          border-color: map.get(config.$colors, 'success');
-          background-color: map.get(config.$colors, 'success');
+          border-color: var(--geist-success);
+          background-color: var(--geist-success);
         }
 
         &.active {
-          border-color: map.get(config.$colors, 'accents-5');
-          background-color: map.get(config.$colors, 'accents-5');
+          border-color: var(--accents-5);
+          background-color: var(--accents-5);
         }
 
         &.stale {
-          border-color: map.get(config.$colors, 'warning-dark');
-          background-color: map.get(config.$colors, 'warning-dark');
+          border-color: var(--geist-warning-dark);
+          background-color: var(--geist-warning-dark);
         }
       }
     }
@@ -234,7 +233,7 @@ $filters-height: 56px;
 .wrapper {
   list-style: none;
   padding: 0 24px;
-  max-width: config.$default-width;
+  max-width: var(--geist-page-width-with-margin);
   margin: 48px auto;
   box-sizing: border-box;
 }

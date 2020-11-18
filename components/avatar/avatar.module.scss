@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use 'styles/loader';
 @use '@material/elevation';
@@ -9,7 +8,7 @@
   height: 100%;
   overflow: hidden;
   border-radius: 4px;
-  background-color: map.get(config.$colors, 'accents-2');
+  background-color: var(--accents-2);
 
   // Temporary fix to some Next.js <Image /> component styling issues.
   // @see {@link https://github.com/vercel/next.js/issues/18915}
@@ -47,7 +46,7 @@
 
     .noPhoto {
       @include typography.typography('body2');
-      color: map.get(config.$colors, 'accents-5');
+      color: var(--accents-5);
       position: absolute;
       display: flex;
       align-items: center;

@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 
 .link {
   display: inline-block;
@@ -11,7 +10,7 @@
   cursor: pointer;
   font-size: 15px;
   font-weight: 700;
-  font-family: map.get(config.$fonts, 'sans');
+  font-family: var(--fonts-sans);
   path {
     transition: all 200ms;
   }

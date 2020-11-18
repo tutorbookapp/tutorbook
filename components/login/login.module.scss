@@ -1,10 +1,9 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/common';
 @use 'styles/typography';
 
 .wrapper {
-  min-height: calc(100vh - #{config.$nav-height});
+  min-height: calc(100vh - var(--header-height));
   display: flex;
   flex-direction: column;
   -moz-box-pack: center;
@@ -56,9 +55,9 @@
 
   .signup {
     width: 100%;
-    background: map.get(config.$colors, 'background');
-    border-top: 1px solid map.get(config.$colors, 'accents-2');
-    color: map.get(config.$colors, 'foreground');
+    background: var(--geist-background);
+    border-top: 1px solid var(--accents-2);
+    color: var(--geist-foreground);
     padding: 2em;
     height: 100px;
     display: flex;
@@ -70,7 +69,7 @@
 
     .link {
       @include typography.typography('body1');
-      color: map.get(config.$colors, 'success');
+      color: var(--geist-success);
       text-decoration: none;
     }
   }

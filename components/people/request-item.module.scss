@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use 'styles/loader';
 @use '@material/chips/_index.scss' as chips;
@@ -13,7 +12,7 @@ $space: 20px;
   pointer-events: auto;
   box-sizing: border-box;
   display: grid;
-  background: map.get(config.$colors, 'primary');
+  background: var(--geist-primary);
 }
 
 @mixin foreground {
@@ -24,7 +23,7 @@ $space: 20px;
   font-size: 3em;
   font-weight: 600;
   transition: box-shadow 0.75s;
-  background: map.get(config.$colors, 'background');
+  background: var(--geist-background);
   grid-column: 1;
   grid-row: 1;
   @include elevation.elevation(12);
@@ -49,7 +48,7 @@ $space: 20px;
     max-height: $height;
     flex-direction: column;
     box-sizing: border-box;
-    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    border-top: 1px solid var(--accents-2);
 
     .img {
       flex: none;
@@ -60,7 +59,7 @@ $space: 20px;
       @include typography.typography('body1');
       overflow: hidden;
       text-overflow: ellipsis;
-      color: map.get(config.$colors, 'foreground');
+      color: var(--geist-foreground);
       height: 24px;
       flex: none;
       width: 100%;
@@ -70,7 +69,7 @@ $space: 20px;
       @include typography.typography('body2');
       overflow: hidden;
       text-overflow: ellipsis;
-      color: map.get(config.$colors, 'accents-5');
+      color: var(--accents-5);
       flex: 1 1 auto;
       width: 100%;
     }

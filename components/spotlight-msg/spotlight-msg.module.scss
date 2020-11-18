@@ -1,12 +1,11 @@
 @use 'sass:map';
-@use 'styles/config';
 @use '@material/elevation';
 
 .spotlight {
   margin-top: 60px;
   margin-bottom: 80px;
-  font-family: map.get(config.$fonts, 'sans');
-  color: map.get(config.$colors, 'foreground');
+  font-family: var(--fonts-sans);
+  color: var(--geist-foreground);
 }
 
 .featureSpotlight {
@@ -15,9 +14,9 @@
 }
 
 .featureSpotlightGray {
-  background: map.get(config.$colors, 'accents-1');
-  border-top: 1px solid map.get(config.$colors, 'accents-2');
-  border-bottom: 1px solid map.get(config.$colors, 'accents-2');
+  background: var(--accents-1);
+  border-top: 1px solid var(--accents-2);
+  border-bottom: 1px solid var(--accents-2);
 }
 
 .featureSpotlightBackground {

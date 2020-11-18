@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use 'styles/loader';
 
@@ -9,13 +8,13 @@ $margin: 20px;
 .listItem {
   height: $height;
   position: relative;
-  border: 1px solid map.get(config.$colors, 'accents-2');
+  border: 1px solid var(--accents-2);
   box-sizing: border-box;
   border-top: none;
   cursor: pointer;
 
   &:first-child {
-    border-top: 1px solid map.get(config.$colors, 'accents-2');
+    border-top: 1px solid var(--accents-2);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
   }
@@ -61,7 +60,7 @@ $margin: 20px;
     @include typography.typography('body1');
     overflow: hidden;
     text-overflow: ellipsis;
-    color: map.get(config.$colors, 'foreground');
+    color: var(--geist-foreground);
     display: inline-block;
     position: absolute;
     left: $margin;
@@ -74,7 +73,7 @@ $margin: 20px;
     @include typography.typography('body2');
     overflow: hidden;
     text-overflow: ellipsis;
-    color: map.get(config.$colors, 'accents-5');
+    color: var(--accents-5);
     display: inline-block;
     position: absolute;
     left: $margin;

@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use 'styles/config';
 @use '@material/elevation';
 
 .form {
@@ -11,7 +10,7 @@
   display: none;
   position: sticky;
   z-index: 3;
-  top: config.$nav-height + 12px;
+  top: var(--header-height) + 12px;
   margin-bottom: 24px;
   width: 100%;
 }

@@ -1,12 +1,11 @@
 @use 'sass:map';
-@use 'styles/config';
 @use 'styles/typography';
 @use '@material/elevation';
 @use '@material/icon-button/_index.scss' as icon-button;
 
 .timeslot {
   @include elevation.elevation(4);
-  background: map.get(config.$colors, 'primary');
+  background: var(--geist-primary);
   border-radius: 2px;
   font-weight: 500;
   font-size: 12px;

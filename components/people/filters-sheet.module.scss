@@ -2,7 +2,6 @@
 @use 'styles/typography';
 @use 'styles/query-form';
 @use 'styles/common';
-@use 'styles/config';
 
 .wrapper {
   overflow: hidden;
@@ -10,7 +9,7 @@
   left: 0;
   top: 0;
   height: 100%;
-  border-left: 1px solid map.get(config.$colors, 'accents-2');
+  border-left: 1px solid var(--accents-2);
   box-sizing: border-box;
 
   @include query-form.core-styles(true);

@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use 'sass:color';
-@use 'styles/config';
 @use 'styles/typography';
 
 $cell-width: 100px;
@@ -10,7 +9,7 @@ $cell-width: 100px;
 }
 
 .menuSurface {
-  max-width: min(#{config.$default-width}, calc(-32px + 100vw));
+  max-width: min(#{var(--geist-page-width-with-margin)}, calc(-32px + 100vw));
   overflow: hidden;
   display: flex;
   visibility: hidden;
@@ -73,7 +72,7 @@ $cell-width: 100px;
         border-radius: 100%;
         color: #3c4043;
         font-weight: 400;
-        font-family: map.get(config.$fonts, 'sans');
+        font-family: var(--fonts-sans);
         line-height: 46px;
         height: 46px;
         margin-left: auto;
@@ -197,9 +196,9 @@ $cell-width: 100px;
             display: block;
             position: relative;
             top: -6px;
-            color: map.get(config.$colors, 'accents-5');
+            color: var(--accents-5);
             font-size: 10px;
-            font-family: map.get(config.$fonts, 'sans');
+            font-family: var(--fonts-sans);
           }
 
           &:first-child .timeLabel {

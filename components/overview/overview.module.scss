@@ -1,9 +1,7 @@
-@use 'styles/config';
-
 .wrapper {
   list-style: none;
   padding: 0 24px;
-  max-width: config.$default-width;
+  max-width: var(--geist-page-width-with-margin);
   margin: 48px auto;
   box-sizing: border-box;
 }
