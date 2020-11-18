@@ -1,4 +1,5 @@
-import Link from 'lib/intl/link';
+import Link from 'next/link';
+import cn from 'classnames';
 
 import styles from './cta-link.module.scss';
 
@@ -29,17 +30,20 @@ export interface CTALinkProps {
 export default function CTALink({
   label,
   href,
-  small = false,
-  wide = false,
+  small,
+  wide,
 }: CTALinkProps): JSX.Element {
-  const className =
-    `${styles.link} ${styles.black}${small ? ` ${styles.small}` : ''}` +
-    `${wide ? ` ${styles.wide}` : ''}`;
   if (href.indexOf('http') < 0)
     return (
       /* eslint-disable jsx-a11y/anchor-is-valid */
       <Link href={href}>
-        <a className={className}>
+        <a
+          className={cn(
+            styles.link,
+            { [styles.small]: small },
+            { [styles.wide]: wide }
+          )}
+        >
           {label}
           <Arrow />
         </a>
@@ -47,7 +51,14 @@ export default function CTALink({
       /* eslint-enable jsx-a11y/anchor-is-valid */
     );
   return (
-    <a className={className} href={href}>
+    <a
+      className={cn(
+        styles.link,
+        { [styles.small]: small },
+        { [styles.wide]: wide }
+      )}
+      href={href}
+    >
       {label}
       <Arrow />
     </a>
