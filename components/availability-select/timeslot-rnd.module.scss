@@ -22,12 +22,14 @@
     .btn {
       @include icon-button.icon-size(12px);
       @include icon-button.size(24px);
+      color: var(--on-primary);
       flex: none;
       margin-left: -6px;
     }
 
     .content {
       @include typography.typography('body2');
+      color: var(--on-primary);
       font-size: 12px;
       line-height: 12px;
     }

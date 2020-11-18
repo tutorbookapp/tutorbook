@@ -59,35 +59,6 @@ $border: var(--accents-2);
         line-height: 32px;
         margin-top: 8px;
       }
-
-      .num {
-        position: relative;
-        z-index: 2;
-        font-size: 26px;
-        letter-spacing: -2.6px;
-        text-indent: -2.6px;
-        font-variant: tabular-nums;
-        -moz-font-feature-settings: 'tnum' 1;
-        font-feature-settings: 'tnum' 1;
-        -moz-border-radius: 100%;
-        border-radius: 100%;
-        color: #3c4043;
-        font-weight: 400;
-        font-family: var(--font-sans);
-        line-height: 46px;
-        height: 46px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: -8px;
-        width: 46px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        &:hover {
-          background-color: #f1f3f4;
-        }
-      }
     }
   }
 
