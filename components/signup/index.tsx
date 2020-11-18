@@ -135,12 +135,12 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
   return (
     <div className={styles.wrapper}>
       <div className={cn(styles.header, { [styles.loading]: !org })}>
-        <animated.div style={mentorsHProps}>
+        <animated.div className={styles.title} style={mentorsHProps}>
           <Title>
             {!org ? '' : (org.signup[locale].mentoring || {}).header || ''}
           </Title>
         </animated.div>
-        <animated.div style={tutorsHProps}>
+        <animated.div className={styles.title} style={tutorsHProps}>
           <Title>
             {!org ? '' : (org.signup[locale].tutoring || {}).header || ''}
           </Title>

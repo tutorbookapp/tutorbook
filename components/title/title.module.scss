@@ -61,6 +61,7 @@
   @include typography.typography('headline2');
   display: inline-block;
   padding-bottom: 5px; // Otherwise, words with 'g' and 'y' get cut off.
+  border: 1px solid var(--background); // Otherwise, blue peaks out underneath.
   margin: -1px;
 
   @media (max-width: 800px) {

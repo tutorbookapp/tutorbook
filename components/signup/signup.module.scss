@@ -31,6 +31,10 @@
   .header {
     margin: 0 0 20px;
 
+    .title {
+      background: var(--background);
+    }
+
     &.loading div {
       height: 125px;
     }
