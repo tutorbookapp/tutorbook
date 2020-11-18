@@ -54,7 +54,7 @@
 }
 
 .avatar {
-  width: var(--header-height) - 24px;
+  width: calc(var(--header-height) - 24px);
   border-radius: 4px;
   background: none;
   border: none;
@@ -154,7 +154,7 @@ button.avatar {
   position: fixed;
   right: 0;
   left: 0;
-  top: var(--header-height) - 1px;
+  top: calc(var(--header-height) - 1px);
   bottom: 0;
   overflow-y: scroll;
 }

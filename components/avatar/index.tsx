@@ -21,8 +21,8 @@ interface AvatarProps {
  * able to be optimized instead of it is one of the newest GCP Storage buckets.
  */
 export default function Avatar({
+  loading,
   src = '',
-  loading = false,
   size = 500,
 }: AvatarProps): JSX.Element {
   const { t } = useTranslation();
