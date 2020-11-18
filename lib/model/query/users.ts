@@ -69,23 +69,22 @@ export class UsersQuery extends Query implements UsersQueryInterface {
       return encodeURIComponent(JSON.stringify(p));
     }
 
-    return url.format({
-      pathname,
-      query: {
-        query: encodeURIComponent(this.query),
-        orgs: encode(this.orgs),
-        tags: encode(this.tags),
-        page: this.page,
-        hitsPerPage: this.hitsPerPage,
-        aspect: encodeURIComponent(this.aspect),
-        langs: encode(this.langs),
-        subjects: encode(this.subjects),
-        availability: this.availability.toURLParam(),
-        checks: encode(this.checks),
-        parents: encode(this.parents),
-        visible: this.visible,
-      },
-    });
+    const query: Record<string, string | number | boolean> = {};
+    if (this.query) query.query = encodeURIComponent(this.query);
+    if (this.orgs.length) query.orgs = encode(this.orgs);
+    if (this.tags.length) query.tags = encode(this.tags);
+    if (this.page !== 0) query.page = this.page;
+    if (this.hitsPerPage !== 20) query.hitsPerPage = this.hitsPerPage;
+    if (this.aspect !== 'tutoring') query.aspect = this.aspect;
+    if (this.langs.length) query.langs = encode(this.langs);
+    if (this.subjects.length) query.subjects = encode(this.subjects);
+    if (this.availability.length)
+      query.availability = this.availability.toURLParam();
+    if (this.checks.length) query.checks = encode(this.checks);
+    if (this.parents.length) query.parents = encode(this.parents);
+    if (this.visible) query.visible = this.visible;
+
+    return url.format({ pathname, query });
   }
 
   public static fromURLParams(params: UsersQueryURL): UsersQuery {
@@ -103,7 +102,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
       availability: params.availability
         ? Availability.fromURLParam(params.availability)
         : new Availability(),
-      aspect: decodeURIComponent(params.aspect || 'mentoring') as Aspect,
+      aspect: (params.aspect as Aspect) || 'tutoring',
     });
   }
 

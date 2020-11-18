@@ -12,7 +12,15 @@ import { QueryHeader } from 'components/navigation';
 import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
-import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
+import {
+  CallbackParam,
+  Option,
+  Org,
+  OrgJSON,
+  User,
+  UserJSON,
+  UsersQuery,
+} from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import clone from 'lib/utils/clone';
@@ -88,26 +96,19 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
 
   const { query: params } = useRouter();
   useEffect(() => {
-    console.log('Params:', params);
+    setQuery(UsersQuery.fromURLParams(params));
   }, [params]);
-  useEffect(() => {
-    // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
-    // URL query parameters, but right now, it doesn't seem to be working. Once
-    // we do replace this with the `useRouter` hook, we'll be able to replace
-    // state management with just shallowly updating the URL.
-    // @see {@link https://github.com/vercel/next.js/issues/17112}
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    setQuery(UsersQuery.fromURLParams(Object.fromEntries(params.entries())));
-  }, []);
-
-  // TODO: Use the built-in Next.js router hook to manage this query state and
-  // show the `NProgress` loader when the results are coming in.
-  useEffect(() => {
-    if (!org || !org.id) return;
-    const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
-    void Router.replace(url, undefined, { shallow: true });
-  }, [org, query, viewing]);
+  const onChange = useCallback(
+    (param: CallbackParam<UsersQuery>) => {
+      let updated = query;
+      if (typeof param === 'object') updated = param;
+      if (typeof param === 'function') updated = param(updated);
+      if (!org || !org.id) return;
+      const url = updated.getURL(`/${org.id}/search/${viewing?.id || ''}`);
+      void Router.replace(url, undefined, { shallow: true });
+    },
+    [org, query, viewing?.id]
+  );
 
   // TODO: Perhaps we should only allow filtering by a single org, as we don't
   // ever filter by more than one at once.
@@ -152,7 +153,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
         <QueryHeader
           aspects={org ? org.aspects : ['mentoring', 'tutoring']}
           query={query}
-          onChange={setQuery}
+          onChange={onChange}
         />
         {auth && <AuthDialog />}
         {viewing && (
@@ -168,7 +169,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
           query={query}
           results={results}
           searching={searching || !canSearch}
-          onChange={setQuery}
+          onChange={onChange}
           setViewing={setViewing}
         />
       </Page>
