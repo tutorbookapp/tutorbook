@@ -24,7 +24,7 @@ function addFilter(base: string, filter: string): string {
 }
 
 /**
- * Adds a set of ' OR ' filters to an existing filter string.
+ * Adds a set of ' AND ' filters to an existing filter string.
  * @example
  * const langs = [{
  *  label: 'English',
@@ -45,7 +45,7 @@ function addFilters(
   const addAND = base.length && !base.endsWith(' AND ') && filters.length;
   let filterString = addAND ? `${base} AND ` : base;
   for (let i = 0; i < filters.length; i += 1) {
-    filterString += i === 0 ? '(' : ' OR ';
+    filterString += i === 0 ? '(' : ' AND ';
     filterString += `${attr}:"${filters[i].value}"`;
     if (i === filters.length - 1) filterString += ')';
   }
