@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import useSWR from 'swr';
+import { useCallback, useMemo, useState } from 'react';
+import useSWR, { mutate } from 'swr';
 
 import DialogContent from 'components/dialog';
 import UserDialogContent from 'components/user-dialog/content';
@@ -8,6 +8,7 @@ import { Match, MatchJSON, RequestJSON, User } from 'lib/model';
 import clone from 'lib/utils/clone';
 
 import DisplayPage from './display-page';
+import EditPage from './edit-page';
 
 export interface MatchDialogContentProps {
   initialData?: MatchJSON;
@@ -35,10 +36,21 @@ export default function MatchDialogContent({
     return ppl;
   }, [match.people, match.creator]);
 
+  const onChange = useCallback(async (updated: MatchJSON) => {
+    await mutate(`/api/matches/${updated.id}`, updated, false);
+  }, []);
+
   const content = useMemo(
     () =>
       [
         <DisplayPage match={match} people={people} setActive={setActive} />,
+        <EditPage
+          match={match}
+          onChange={onChange}
+          setLoading={setLoading}
+          setChecked={setChecked}
+          setActive={setActive}
+        />,
         people.map((person) => (
           <UserDialogContent
             initialData={new User(person).toJSON()}
@@ -47,7 +59,7 @@ export default function MatchDialogContent({
           />
         )),
       ].flat(),
-    [match, matching, people]
+    [match, matching, people, onChange]
   );
 
   return (
@@ -56,7 +68,7 @@ export default function MatchDialogContent({
       loading={loading}
       checked={checked}
       setActive={setActive}
-      nestedPages={people.map((_, idx) => idx + 1)}
+      nestedPages={people.map((_, idx) => idx + 2)}
     >
       {content}
     </DialogContent>

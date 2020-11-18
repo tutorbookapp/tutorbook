@@ -78,7 +78,7 @@ export default memo(function EditPage({
 
   const prevLoading = usePrevious(loading);
   useLayoutEffect(() => {
-    if (prevLoading && !loading && !error) void openDisplay();
+    if (prevLoading && !loading && !error) openDisplay();
   }, [prevLoading, loading, error, openDisplay]);
 
   const { t } = useTranslation();

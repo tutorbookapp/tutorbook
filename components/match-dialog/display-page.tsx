@@ -72,7 +72,7 @@ export default function DisplayPage({
 
   const viewPerson = useCallback(
     (person: Person) => {
-      return setActive(people.findIndex((p) => p.id === person.id) + 1);
+      return setActive(people.findIndex((p) => p.id === person.id) + 2);
     },
     [setActive, people]
   );
@@ -84,7 +84,7 @@ export default function DisplayPage({
           <div className={styles.header}>People</div>
           <div className={styles.people}>
             {people.map((person, idx) => (
-              <a onClick={() => setActive(idx + 1)} className={styles.person}>
+              <a onClick={() => setActive(idx + 2)} className={styles.person}>
                 <div className={styles.avatar}>
                   <Avatar src={person.photo} size={129} />
                 </div>
@@ -98,11 +98,13 @@ export default function DisplayPage({
           </div>
           <div className={styles.header}>Subjects</div>
           <div className={styles.body}>{join(match.subjects)}</div>
-          <div className={styles.header}>Next appointment time</div>
+          <div className={styles.header}>Next meeting time</div>
           <div className={styles.body}>
-            {new Timeslot({ from: new Date(), to: new Date() }).toString()}
+            {match.time
+              ? Timeslot.fromJSON(match.time).toString()
+              : 'No scheduled meetings'}
           </div>
-          <div className={styles.header}>Venue</div>
+          <div className={styles.header}>Meeting venue</div>
           <a href={match.venue.url} className={styles.body}>
             {match.venue.url}
           </a>
@@ -151,7 +153,7 @@ export default function DisplayPage({
           <Chip icon='event_note' label='Log meeting' />
           <Chip icon='event_busy' label='Cancel meeting' />
           <Chip icon='email' label='Send email' />
-          <Chip icon='edit' label='Edit match' />
+          <Chip icon='edit' label='Edit match' onClick={() => setActive(1)} />
         </ChipSet>
       </div>
     </>
