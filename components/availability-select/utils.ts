@@ -1,7 +1,7 @@
 import { Timeslot } from 'lib/model';
 import { getDate } from 'lib/utils/time';
 
-export const WIDTH = 102;
+export const WIDTH = 100;
 
 interface Position {
   x: number;

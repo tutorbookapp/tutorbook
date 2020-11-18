@@ -36,13 +36,13 @@ $border: var(--accents-2);
   display: flex;
 
   .space {
-    min-width: $cell-width / 2 + 9px;
+    min-width: $cell-width / 2 + 8px;
     flex: none;
   }
 
   .titleWrapper {
-    width: $cell-width + 1px;
-    min-width: $cell-width + 1px;
+    width: $cell-width;
+    min-width: $cell-width;
     flex: 1 0 auto;
     overflow: hidden;
     box-sizing: border-box;
@@ -75,13 +75,13 @@ $border: var(--accents-2);
   flex: none;
 
   .space {
-    width: $cell-width / 2 + 9px;
+    width: $cell-width / 2 + 8px;
     flex: none;
   }
 
   .headerCell {
-    width: $cell-width + 1px;
-    min-width: $cell-width + 1px;
+    width: $cell-width;
+    min-width: $cell-width;
     flex: 1 0 auto;
     border-right: $border 1px solid;
 
@@ -244,8 +244,8 @@ $border: var(--accents-2);
           }
 
           .cell {
-            width: $cell-width + 1px;
-            min-width: $cell-width + 1px;
+            width: $cell-width;
+            min-width: $cell-width;
             flex: 1 0 auto;
             border-right: $border 1px solid;
 

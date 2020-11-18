@@ -99,7 +99,7 @@ export default function TimeslotRnd({
       className={styles.timeslot}
       position={position}
       minHeight={12 * 4}
-      size={{ width: width - 12, height }}
+      size={{ width: width - 10, height }}
       onResizeStop={onResizeStop}
       onResize={onResize}
       onClick={onClick}
