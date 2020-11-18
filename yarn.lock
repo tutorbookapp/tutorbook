@@ -15404,14 +15404,14 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.26.10":
-  version: 1.26.10
-  resolution: "sass@npm:1.26.10"
+"sass@npm:^1.29.0":
+  version: 1.29.0
+  resolution: "sass@npm:1.29.0"
   dependencies:
     chokidar: ">=2.0.0 <4.0.0"
   bin:
     sass: sass.js
-  checksum: 001da3a0fa57087f92fc48f7fa9a0f832d6c0ac8a4377df485a555c9db4749bba3fe3da8e46eb015439cb4d40bc1add1f704523914152f5a18f2358bd58f51d9
+  checksum: 8114e0c4e73be695d25030f51bff8da0151f335b135869e926d39e21688cd81a6be0368a332caec40425e64df499bd34962aa4ca59926a6bd0e11aa43ac306d9
   languageName: node
   linkType: hard
 
@@ -17280,7 +17280,7 @@ resolve@1.1.7:
     react-use-measure: ^2.0.1
     release: ^6.3.0
     rfdc: ^1.1.4
-    sass: ^1.26.10
+    sass: ^1.29.0
     sharp: ^0.26.3
     smartcrop-sharp: ^2.0.3
     source-map-support: ^0.5.19

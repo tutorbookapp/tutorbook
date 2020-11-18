@@ -22,7 +22,7 @@
       .person {
         @include typography.typography('body2');
         @include common.link;
-        color: var(--secondary);
+        color: var(--accents-5);
         text-align: center;
         display: block;
 
@@ -48,7 +48,7 @@
 
     .body {
       @include typography.typography('body2');
-      color: var(--secondary);
+      color: var(--accents-5);
       padding: 4px $padding $padding;
       border-bottom: 1px solid var(--accents-2);
 
@@ -65,7 +65,7 @@
 
   .timeline {
     $timeline-color: var(--accents-2);
-    $text-color: var(--secondary);
+    $text-color: var(--accents-5);
     border-left: 1px solid var(--accents-2);
     padding: 40px;
 

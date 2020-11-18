@@ -3,7 +3,7 @@
 
 .cta {
   margin-top: 72px;
-  background: var(--primary);
+  background: #0070f3;
 
   .wrapper {
     @include common.wrapper;
@@ -14,7 +14,7 @@
 
     h3 {
       @include typography.typography('headline3');
-      color: var(--on-background);
+      color: white;
       margin: 0 0 8px;
     }
 
@@ -27,8 +27,8 @@
 
     button {
       margin-left: 24px;
-      background: var(--on-background);
-      color: var(--primary);
+      background: #fff;
+      color: #0070f3;
     }
 
     @media (max-width: 400px) {

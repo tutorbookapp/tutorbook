@@ -3,6 +3,7 @@
 @use 'styles/typography';
 
 $cell-width: 100px;
+$border: var(--accents-2);
 
 .textField {
   width: 100%;
@@ -111,7 +112,7 @@ $cell-width: 100px;
     width: $cell-width + 1px;
     min-width: $cell-width + 1px;
     flex: 1 0 auto;
-    border-right: #dadce0 1px solid;
+    border-right: $border 1px solid;
 
     &:last-child {
       border-right: white 1px solid;
@@ -140,8 +141,8 @@ $cell-width: 100px;
     flex: 1 1 auto;
 
     &::before {
-      box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        inset 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+      box-shadow: inset 0 1px 1px 0 rgba(var(--on-background-rgb), 0.14),
+        inset 0 2px 1px -1px rgba(var(--on-background-rgb), 0.12);
       content: '';
       height: 4px;
       position: absolute;
@@ -150,7 +151,11 @@ $cell-width: 100px;
     }
 
     &::after {
-      background-image: linear-gradient(to left, white, rgba(255, 255, 255, 0));
+      background-image: linear-gradient(
+        to left,
+        var(--background),
+        rgba(var(--background-rgb), 0)
+      );
       content: '';
       height: 2px;
       position: absolute;
@@ -170,8 +175,8 @@ $cell-width: 100px;
       &::before {
         background-image: linear-gradient(
           to right,
-          white,
-          rgba(255, 255, 255, 0)
+          var(--background),
+          rgba(var(--background-rgb), 0)
         );
         content: '';
         height: 2px;
@@ -182,7 +187,7 @@ $cell-width: 100px;
 
       .times {
         position: relative;
-        background-color: #fff;
+        background-color: var(--background);
         box-sizing: border-box;
         margin-left: auto;
 
@@ -223,14 +228,14 @@ $cell-width: 100px;
         position: relative;
 
         .lines {
-          border-top: #dadce0 1px solid;
+          border-top: $border 1px solid;
 
           .line {
             height: 48px;
 
             &::after {
               content: '';
-              border-bottom: #dadce0 1px solid;
+              border-bottom: $border 1px solid;
               position: absolute;
               width: 100%;
               margin-top: -1px;
@@ -246,7 +251,7 @@ $cell-width: 100px;
 
         .space {
           width: 8px;
-          border-right: #dadce0 1px solid;
+          border-right: $border 1px solid;
         }
 
         .cells {
@@ -256,8 +261,8 @@ $cell-width: 100px;
           position: relative;
 
           &.checkered {
-            $dark-strip: color.adjust(#dadce0, $lightness: 5%);
-            $light-strip: color.adjust($dark-strip, $lightness: 5%);
+            $dark-strip: var(--accents-2);
+            $light-strip: var(--accents-1);
             background: repeating-linear-gradient(
               45deg,
               $light-strip,
@@ -271,7 +276,7 @@ $cell-width: 100px;
             width: $cell-width + 1px;
             min-width: $cell-width + 1px;
             flex: 1 0 auto;
-            border-right: #dadce0 1px solid;
+            border-right: $border 1px solid;
 
             &:last-child {
               border-right: white 1px solid;

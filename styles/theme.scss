@@ -1,0 +1,117 @@
+@use 'sass:string';
+@use 'sass:color';
+
+$baseline: #0070f3;
+$highlight: #79ffe1;
+
+:root {
+  $primary: $baseline;
+  $background: #fff;
+  $error: #b00020;
+  $on-primary: #fff;
+  $on-background: #000;
+  $on-error: #fff;
+
+  --primary: #{$primary};
+  --background: #{$background};
+  --error: #{$error};
+  --on-primary: #{$on-primary};
+  --on-background: #{$on-background};
+  --on-error: #{$on-error};
+
+  --selection: #{$highlight};
+
+  --background-rgb: 255, 255, 255;
+  --on-background-rgb: 0, 0, 0;
+
+  --on-background-6: #{rgba($on-background, 0.87)};
+  --on-background-5: #{rgba($on-background, 0.6)};
+  --on-background-4: #{rgba($on-background, 0.54)};
+  --on-background-3: #{rgba($on-background, 0.38)};
+  --on-background-2: #{rgba($on-background, 0.12)};
+  --on-background-1: #{rgba($on-background, 0.06)};
+
+  --primary-4: #{rgba($primary, 0.87)};
+
+  --chip-background: #{color.mix($on-background, $background, 12%)};
+
+  --title-left: #{color.adjust($primary, $hue: 10%, $lightness: -10%)};
+  --title-right: #{color.adjust($primary, $hue: -15%)};
+
+  --accents-1: #fafafa;
+  --accents-2: #eaeaea;
+  --accents-3: #999;
+  --accents-4: #888;
+  --accents-5: #666;
+  --accents-6: #444;
+
+  --header-border-bottom: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+  --header-background: rgba(255, 255, 255, 0.8);
+  --shadow-large: 0 30px 60px rgba(0, 0, 0, 0.12);
+
+  .mdc-select__dropdown-icon {
+    background: url('data:image/svg+xml,%3Csvg%20width%3D%2210px%22%20height%3D%225px%22%20viewBox%3D%227%2010%2010%205%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3Cpolygon%20id%3D%22Shape%22%20stroke%3D%22none%22%20fill%3D%22%23#{string.slice(string.unquote("#{$on-background}"), 2)}%22%20fill-rule%3D%22evenodd%22%20opacity%3D%220.54%22%20points%3D%227%2010%2012%2015%2017%2010%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E')
+      no-repeat center;
+  }
+
+  .mdc-select--focused .mdc-select__dropdown-icon {
+    background: url('data:image/svg+xml,%3Csvg%20width%3D%2210px%22%20height%3D%225px%22%20viewBox%3D%227%2010%2010%205%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3Cpolygon%20id%3D%22Shape%22%20stroke%3D%22none%22%20fill%3D%22%23#{string.slice(string.unquote("#{$primary}"), 2)}%22%20fill-rule%3D%22evenodd%22%20opacity%3D%221%22%20points%3D%227%2010%2012%2015%2017%2010%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E')
+      no-repeat center;
+  }
+}
+
+.dark {
+  $primary: color.adjust($baseline, $lightness: 20%);
+  $background: #121212;
+  $error: #cf6679;
+  $on-primary: #000;
+  $on-background: #fff;
+  $on-error: #000;
+
+  --primary: #{$primary};
+  --background: #{$background};
+  --error: #{$error};
+  --on-primary: #{$on-primary};
+  --on-background: #{$on-background};
+  --on-error: #{$on-error};
+
+  --selection: #{color.adjust($highlight, $lightness: -60%)};
+
+  --background-rgb: 18, 18, 18;
+  --on-background-rgb: 255, 255, 255;
+
+  --on-background-6: #{rgba($on-background, 0.87)};
+  --on-background-5: #{rgba($on-background, 0.6)};
+  --on-background-4: #{rgba($on-background, 0.54)};
+  --on-background-3: #{rgba($on-background, 0.38)};
+  --on-background-2: #{rgba($on-background, 0.12)};
+  --on-background-1: #{rgba($on-background, 0.06)};
+
+  --primary-4: #{rgba($primary, 0.87)};
+
+  --chip-background: #{color.mix($on-background, $background, 12%)};
+
+  --title-left: #{color.adjust($primary, $hue: 10%, $lightness: -10%)};
+  --title-right: #{color.adjust($primary, $hue: -15%)};
+
+  --accents-6: #999;
+  --accents-5: #888;
+  --accents-4: #666;
+  --accents-3: #444;
+  --accents-2: #333;
+  --accents-1: #111;
+
+  --header-border-bottom: inset 0 -1px 0 0 hsla(0, 0%, 100%, 0.1);
+  --header-background: rgba(18, 18, 18, 0.5);
+  --shadow-large: 0 0 0 1px var(--accents-2);
+
+  .mdc-select__dropdown-icon {
+    background: url('data:image/svg+xml,%3Csvg%20width%3D%2210px%22%20height%3D%225px%22%20viewBox%3D%227%2010%2010%205%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3Cpolygon%20id%3D%22Shape%22%20stroke%3D%22none%22%20fill%3D%22%23#{string.slice(string.unquote("#{$on-background}"), 2)}%22%20fill-rule%3D%22evenodd%22%20opacity%3D%220.54%22%20points%3D%227%2010%2012%2015%2017%2010%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E')
+      no-repeat center;
+  }
+
+  .mdc-select--focused .mdc-select__dropdown-icon {
+    background: url('data:image/svg+xml,%3Csvg%20width%3D%2210px%22%20height%3D%225px%22%20viewBox%3D%227%2010%2010%205%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3Cpolygon%20id%3D%22Shape%22%20stroke%3D%22none%22%20fill%3D%22%23#{string.slice(string.unquote("#{$primary}"), 2)}%22%20fill-rule%3D%22evenodd%22%20opacity%3D%221%22%20points%3D%227%2010%2012%2015%2017%2010%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E')
+      no-repeat center;
+  }
+}

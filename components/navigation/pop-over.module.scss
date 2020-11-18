@@ -113,11 +113,8 @@
   }
 }
 
-$background: #e0e0e0;
-$on-background: rgba(0, 0, 0, 0.87);
-
 .selector {
-  background-color: $background;
+  background-color: var(--chip-background);
   border-radius: 100px;
   display: flex;
   flex: 1 1 auto;
@@ -140,7 +137,7 @@ $on-background: rgba(0, 0, 0, 0.87);
       position: relative;
 
       .selected {
-        color: $on-background;
+        color: var(--on-background-6);
         align-items: center;
         border-bottom: 0 !important;
         display: flex;
@@ -157,7 +154,7 @@ $on-background: rgba(0, 0, 0, 0.87);
         white-space: nowrap;
 
         .selectedIcon {
-          color: $on-background;
+          color: var(--on-background-6);
           vertical-align: middle;
         }
 
@@ -177,7 +174,7 @@ $on-background: rgba(0, 0, 0, 0.87);
         vertical-align: middle;
 
         .arrow {
-          color: $on-background;
+          color: var(--on-background-6);
           margin: 2px 16px 0 0;
           width: 0;
           height: 0;

@@ -1,5 +1,3 @@
-@use 'sass:map';
-@use 'sass:color';
 @use 'styles/typography';
 
 // Update: September 2016, after a lot of grumbling, decided to simplify this.
@@ -45,13 +43,22 @@
   }
 }
 
-/* prettier-ignore */
-.title {
-  @include typography.typography('headline2');
+:root .title {
   @include gradient-text(
-    'linear-gradient(to right, #{color.adjust(#0070f3, $hue: 10%, $lightness: -10%)} 9.38%, #{color.adjust(#0070f3, $hue: -15%)} 88.54%)',
+    'linear-gradient(to right, var(--title-left) 9.38%, var(--title-right) 88.54%)',
+    'light'
+  );
+}
+
+:global(.dark) .title {
+  @include gradient-text(
+    'linear-gradient(to right, var(--title-left) 9.38%, var(--title-right) 88.54%)',
     'dark'
   );
+}
+
+.title {
+  @include typography.typography('headline2');
   display: inline-block;
   padding-bottom: 5px; // Otherwise, words with 'g' and 'y' get cut off.
   margin: -1px;

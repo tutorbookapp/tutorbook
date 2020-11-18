@@ -19,7 +19,7 @@ import landing from 'locales/en/landing.json';
 
 function OrgsPage(): JSX.Element {
   return (
-    <Page title='Support at scale - Tutorbook' intercom>
+    <Page title='Support at scale - Tutorbook' intercom borderless>
       <TabHeader
         tabs={[
           {

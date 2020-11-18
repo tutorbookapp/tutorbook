@@ -11,7 +11,7 @@ $filters-height: 56px;
 
 .filters {
   height: $filters-height;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--on-background-2);
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   border-bottom: none;
@@ -32,10 +32,10 @@ $filters-height: 56px;
 
       .invalid {
         background-color: var(--error);
-        color: white;
+        color: var(--on-error);
 
         svg path {
-          stroke: white;
+          stroke: var(--on-error);
         }
       }
     }
@@ -54,7 +54,7 @@ $filters-height: 56px;
         :global(.mdc-notched-outline__leading),
         :global(.mdc-notched-outline__notch),
         :global(.mdc-notched-outline__trailing) {
-          border-color: rgba(0, 0, 0, 0.12);
+          border-color: var(--on-background-2);
         }
       }
 
@@ -140,7 +140,7 @@ $filters-height: 56px;
       min-width: 85px;
 
       button {
-        color: white;
+        color: #fff;
         text-align: center;
         font-size: 0.75rem;
         border: 1px solid;
@@ -152,6 +152,7 @@ $filters-height: 56px;
         cursor: pointer;
 
         &.new {
+          color: var(--on-primary);
           border-color: var(--primary);
           background-color: var(--primary);
         }
@@ -184,7 +185,7 @@ $filters-height: 56px;
 
 .pagination {
   height: $filters-height;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--on-background-2);
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   border-top: none;
@@ -241,7 +242,7 @@ $filters-height: 56px;
 .empty {
   margin: 0;
   padding: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--on-background-2);
 }
 
 .snackbar {

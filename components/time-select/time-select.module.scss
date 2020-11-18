@@ -77,9 +77,9 @@
         @include icon-button.size(28px);
 
         &.active {
-          color: white;
+          color: var(--on-primary);
           border-radius: 50%;
-          background: var(--success);
+          background: var(--primary);
         }
       }
     }

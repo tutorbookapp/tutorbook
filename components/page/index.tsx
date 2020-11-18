@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import Head from 'next/head';
+import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Footer from 'components/footer';
@@ -12,6 +13,7 @@ export interface PageProps {
   description?: string;
   children: ReactNode;
   formWidth?: boolean;
+  borderless?: boolean;
   intercom?: boolean;
 }
 
@@ -20,6 +22,7 @@ export default function Page({
   description,
   children,
   formWidth,
+  borderless,
   intercom,
 }: PageProps): JSX.Element {
   const { t } = useTranslation();
@@ -138,7 +141,10 @@ export default function Page({
         <meta name='msapplication-navbutton-color' content='#0070f3' />
         <script src='/intercom.js' async />
       </Head>
-      <div data-cy='page' className={styles.wrapper}>
+      <div
+        data-cy='page'
+        className={cn(styles.wrapper, { [styles.borderless]: borderless })}
+      >
         {children}
       </div>
       <Footer formWidth={formWidth} />

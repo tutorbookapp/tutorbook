@@ -10,44 +10,33 @@
   animation: spinner 0.4s linear infinite;
 }
 
-.checkmarkBlack {
-  stroke: #fff;
+:global(.dark) .checkmark {
+  stroke: var(--background);
 }
 
-.checkmarkChecked {
+.checked {
   animation: fill 0.3s ease-in-out 0.15s forwards,
     scale 0.4s ease-in-out 0.6s both;
 }
 
-.checkmarkCheckedBlack {
-  animation: fillBlack 0.3s ease-in-out 0.15s forwards,
-    scale 0.4s ease-in-out 0.6s both;
-}
-
-.checkmarkChecked .checkmarkCircle,
-.checkmarkCheckedBlack .checkmarkCircle {
+.checked .circle {
   animation: stroke 0.2s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
-.checkmarkChecked .checkmarkCheck,
-.checkmarkCheckedBlack .checkmarkCheck {
+.checked .check {
   animation: stroke 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
 }
 
-.checkmarkCircle {
+.circle {
   stroke-dasharray: 166;
   stroke-dashoffset: 80;
   stroke-width: 3;
   stroke-miterlimit: 10;
-  stroke: #fff;
+  stroke: white;
   fill: none;
 }
 
-.checkmarkCircleBlack {
-  stroke: #000;
-}
-
-.checkmarkCheck {
+.check {
   transform-origin: 50% 50%;
   stroke-dasharray: 50;
   stroke-dashoffset: 50;
@@ -80,12 +69,6 @@
 
 @keyframes fill {
   100% {
-    box-shadow: inset 0px 0px 0px 40px #fff;
-  }
-}
-
-@keyframes fillBlack {
-  100% {
-    box-shadow: inset 0px 0px 0px 40px #000;
+    box-shadow: inset 0px 0px 0px 40px white;
   }
 }

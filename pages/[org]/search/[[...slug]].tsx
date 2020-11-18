@@ -2,8 +2,8 @@ import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Router, { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
-import Router from 'next/router';
 import { dequal } from 'dequal/lite';
 
 import AuthDialog from 'components/auth-dialog';
@@ -18,9 +18,9 @@ import { OrgContext } from 'lib/context/org';
 import clone from 'lib/utils/clone';
 import { db } from 'lib/api/firebase';
 import { intersection } from 'lib/utils';
+import { prefetch } from 'lib/fetch';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
-import { prefetch } from 'lib/fetch';
 
 import common from 'locales/en/common.json';
 import match3rd from 'locales/en/match3rd.json';
@@ -86,6 +86,10 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     void prefetch(nextPageQuery.endpoint);
   }, [query]);
 
+  const { query: params } = useRouter();
+  useEffect(() => {
+    console.log('Params:', params);
+  }, [params]);
   useEffect(() => {
     // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
     // URL query parameters, but right now, it doesn't seem to be working. Once
