@@ -31,7 +31,7 @@ $filters-height: 56px;
       overflow: auto;
 
       .invalid {
-        background-color: var(--geist-error-darker);
+        background-color: var(--error);
         color: white;
 
         svg path {
@@ -152,8 +152,8 @@ $filters-height: 56px;
         cursor: pointer;
 
         &.new {
-          border-color: var(--geist-success);
-          background-color: var(--geist-success);
+          border-color: var(--primary);
+          background-color: var(--primary);
         }
 
         &.active {
@@ -162,8 +162,8 @@ $filters-height: 56px;
         }
 
         &.stale {
-          border-color: var(--geist-warning-dark);
-          background-color: var(--geist-warning-dark);
+          border-color: #ab570a;
+          background-color: #ab570a;
         }
       }
     }
@@ -233,7 +233,7 @@ $filters-height: 56px;
 .wrapper {
   list-style: none;
   padding: 0 24px;
-  max-width: var(--geist-page-width-with-margin);
+  max-width: var(--page-width-with-margin);
   margin: 48px auto;
   box-sizing: border-box;
 }

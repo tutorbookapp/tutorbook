@@ -44,9 +44,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  color: var(--geist-foreground);
-  border-radius: var(--geist-radius);
-  background: var(--geist-background);
+  color: var(--on-background);
+  border-radius: var(--radius);
+  background: var(--background);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -55,7 +55,7 @@
 
 .traffic {
   display: none;
-  margin-left: var(--geist-gap-half);
+  margin-left: var(--gap-half);
 }
 
 .traffic.show {
@@ -77,7 +77,7 @@
 }
 
 .body.padding {
-  padding-top: var(--geist-gap-half);
+  padding-top: var(--gap-half);
 }
 
 .title {
@@ -99,11 +99,11 @@
 .titleRight {
   font-weight: 700;
   justify-content: flex-end;
-  padding-right: var(--geist-space-4x);
+  padding-right: var(--space-4x);
 }
 
 .caret {
-  background: var(--geist-success);
+  background: var(--success);
   display: inline-block;
   width: 7px;
   height: 15px;
@@ -136,7 +136,7 @@
 }
 
 .triangle {
-  color: var(--geist-foreground);
+  color: var(--on-background);
 }
 
 .prompt {

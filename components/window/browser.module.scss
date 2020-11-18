@@ -1,6 +1,6 @@
 .bar {
   flex: 1 1;
-  color: var(--geist-foreground);
+  color: var(--on-background);
   height: 40px;
   display: flex;
   justify-content: center;
@@ -20,7 +20,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 var(--geist-gap-half);
+  padding: 0 var(--gap-half);
   position: relative;
 }
 
@@ -41,7 +41,7 @@
   line-height: 1.25rem;
   font-size: 0.75rem;
   flex: 1 1;
-  margin: 0 var(--geist-gap-quarter);
+  margin: 0 var(--gap-quarter);
   max-width: 100%;
   display: block;
   text-overflow: ellipsis;
@@ -51,7 +51,7 @@
 }
 
 .lock {
-  color: var(--geist-cyan-dark);
+  color: #29bc9b;
 }
 
 .lockPlaceholder {
@@ -81,7 +81,7 @@ button.refresh {
   }
 
   .spacer.end {
-    flex-basis: var(--geist-gap-half);
+    flex-basis: var(--gap-half);
   }
 
   .input {

@@ -60,7 +60,7 @@ $margin: 20px;
     @include typography.typography('body1');
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--geist-foreground);
+    color: var(--on-background);
     display: inline-block;
     position: absolute;
     left: $margin;

@@ -1,265 +1,90 @@
-import useTranslation from 'next-translate/useTranslation';
+import { Select } from '@rmwc/select';
 import cn from 'classnames';
+import useTranslation from 'next-translate/useTranslation';
 
-import Link from 'lib/intl/link';
 import { useUser } from 'lib/context/user';
 
+import Group from './group';
+import Link from './link';
 import styles from './footer.module.scss';
 
-/* import NextLink from 'next/link'; */
-/* import config from 'intl/config.json'; */
-
-/*
- *const locales: Record<string, Msg> = defineMessages({
- *  en: {
- *    id: 'footer.lang.english',
- *    defaultMessage: 'English',
- *    description: 'Label for the "English" language option.',
- *  },
- *  fr: {
- *    id: 'footer.lang.french',
- *    defaultMessage: 'French',
- *    description: 'Label for the "French" language option.',
- *  },
- *  se: {
- *    id: 'footer.lang.spanish',
- *    defaultMessage: 'Spanish',
- *    description: 'Label for the "Spanish" language option.',
- *  },
- *  tr: {
- *    id: 'footer.lang.turkish',
- *    defaultMessage: 'Turkish',
- *    description: 'Label for the "Turkish" language option.',
- *  },
- *});
- */
-/*
- *<ul className={styles.langLinks}>
- *  <nav aria-labelledby='locale-picker-title'>
- *    <h3 id='locale-picker-title' className={styles.langTitle}>
- *      <span
- *        className={styles.langTitleIcon}
- *        role='img'
- *        aria-hidden='true'
- *      >
- *        🌎{' '}
- *      </span>
- *      {msg(labels.lang)}
- *    </h3>
- *    <ul className={styles.langLinksList}>
- *      {config.locales.map((locale: string, index: number) => (
- *        <LangLink
- *          key={index}
- *          href={`/${locale}`}
- *          label={msg(locales[locale])}
- *        />
- *      ))}
- *    </ul>
- *  </nav>
- *</ul>
- */
-
-interface LinkProps {
-  href: string;
-  label: string;
-}
-
-function NavLink({
-  href,
-  label,
-  className,
-}: LinkProps & { className: string }): JSX.Element {
-  /* eslint-disable jsx-a11y/anchor-is-valid */
-  if (href.indexOf('http') < 0 && href.indexOf('mailto') < 0)
-    return (
-      <Link href={href}>
-        <a className={className}>{label}</a>
-      </Link>
-    );
-  /* eslint-enable jsx-a11y/anchor-is-valid */
-  return (
-    <a className={className} href={href}>
-      {label}
-    </a>
-  );
-}
-
-function PrimaryLink(props: LinkProps): JSX.Element {
-  return (
-    <li className={styles.primaryLinkItem}>
-      <NavLink {...props} className={styles.primaryLink} />
-    </li>
-  );
-}
-
-/*
- *function LangLink(props: LinkProps): JSX.Element {
- *  return (
- *    <li className={styles.langLinkItem}>
- *      <NextLink href={props.href}>
- *        <a className={styles.langLink}>{props.label}</a>
- *      </NextLink>
- *    </li>
- *  );
- *}
- */
-
-interface LinkGroupProps {
-  header: string;
-  links: LinkProps[];
-}
-
-function LinkGroup({ header, links }: LinkGroupProps): JSX.Element {
-  return (
-    <li className={styles.linkGroup}>
-      <h2 className={styles.linkGroupHeader}>{header}</h2>
-      <ul className={styles.linkGroupList}>
-        {links.map((link) => (
-          <PrimaryLink key={link.href} {...link} />
-        ))}
-      </ul>
-    </li>
-  );
-}
-
-export default function Footer({
-  formWidth,
-}: {
+export interface FooterProps {
   formWidth?: boolean;
-}): JSX.Element {
+}
+
+export default function Footer({ formWidth }: FooterProps): JSX.Element {
   const { t } = useTranslation();
   const { user } = useUser();
+
   return (
-    <footer className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
-      <span className={styles.sitemapTitle}>
-        <h1 id='sitemap'>{t('common:footer-sitemap')}</h1>
-      </span>
-      <nav className={styles.contentWrapper} aria-labelledby='sitemap'>
-        <ul className={styles.primaryLinks}>
-          <LinkGroup
-            header={t('common:footer-useful-links')}
-            links={[
-              {
-                href: `/${user.orgs[0] || 'default'}/signup`,
-                label: t('common:footer-signup'),
-              },
-              {
-                href: `/${user.orgs[0] || 'default'}/search`,
-                label: t('common:footer-search'),
-              },
-              {
-                href:
-                  'https://github.com/tutorbookapp/tutorbook/issues/new/choose',
-                label: t('common:footer-issue'),
-              },
-            ]}
-          />
-          <LinkGroup
-            header={t('common:footer-resources')}
-            links={[
-              {
-                href: 'https://intercom.help/tutorbook',
-                label: t('common:footer-help-center'),
-              },
-              {
-                href:
-                  'https://intercom.help/tutorbook/articles/4048870-how-it-works',
-                label: t('common:footer-how-it-works'),
-              },
-              {
-                href: 'https://github.com/orgs/tutorbookapp',
-                label: t('common:footer-open-source'),
-              },
-              {
-                href: 'https://github.com/tutorbookapp/tutorbook#readme',
-                label: t('common:footer-docs'),
-              },
-            ]}
-          />
-          <LinkGroup
-            header={t('common:footer-partners')}
-            links={[
-              {
-                href: 'https://projectaccess.org/',
-                label: t('common:project-access'),
-              },
-              {
-                href: 'https://schoolclosures.org/',
-                label: t('common:school-closures'),
-              },
-              {
-                href: 'http://learnpanion.com/',
-                label: t('common:learnpanion'),
-              },
-              {
-                href: 'https://studyroom.at/',
-                label: t('common:studyroom'),
-              },
-              {
-                href: 'https://interns4good.org/',
-                label: t('common:interns4good'),
-              },
-            ]}
-          />
-          <LinkGroup
-            header={t('common:footer-socials')}
-            links={[
-              {
-                href: 'https://facebook.com/tutorbookapp',
-                label: t('common:facebook'),
-              },
-              {
-                href: 'https://instagram.com/tutorbookapp',
-                label: t('common:instagram'),
-              },
-              {
-                href: 'https://twitter.com/tutorbookapp',
-                label: t('common:twitter'),
-              },
-              {
-                href: 'https://github.com/orgs/tutorbookapp',
-                label: t('common:github'),
-              },
-              {
-                href: 'https://helpwithcovid.com/projects/782-tutorbook',
-                label: t('common:helpwithcovid'),
-              },
-              {
-                href: 'https://www.indiehackers.com/product/tutorbook',
-                label: t('common:indiehackers'),
-              },
-            ]}
-          />
-          <LinkGroup
-            header={t('common:footer-team')}
-            links={[
-              {
-                href: 'https://tutorbook.atlassian.net/wiki/spaces/TB/overview',
-                label: t('common:footer-team-home'),
-              },
-              {
-                href: 'https://tutorbook.atlassian.net/people',
-                label: t('common:footer-team-directory'),
-              },
-              {
-                href:
-                  'https://join.slack.com/t/tutorbookapp/shared_invite/zt-ekmpvd9t-uzH_HuS6KbwVg480TAMa5g',
-                label: t('common:footer-team-slack'),
-              },
-              {
-                href: 'https://helpwithcovid.com/projects/782-tutorbook',
-                label: t('common:footer-team-join'),
-              },
-              {
-                href: 'mailto:team@tutorbook.org',
-                label: t('common:footer-contact'),
-              },
-            ]}
-          />
-        </ul>
+    <footer className={cn(styles.footer, { [styles.formWidth]: formWidth })}>
+      <nav role='navigation'>
+        <Group label={t('common:footer-useful-links')}>
+          <Link href={`/${user.orgs[0] || 'default'}/signup`}>
+            {t('common:footer-signup')}
+          </Link>
+          <Link href={`/${user.orgs[0] || 'default'}/search`}>
+            {t('common:footer-search')}
+          </Link>
+          <Link href='https://github.com/tutorbookapp/tutorbook/issues/new/choose'>
+            {t('common:footer-issue')}
+          </Link>
+        </Group>
+        <Group label={t('common:footer-resources')}>
+          <Link href='https://intercom.help/tutorbook'>
+            {t('common:footer-help-center')}
+          </Link>
+          <Link href='https://intercom.help/tutorbook/articles/4048870-how-it-works'>
+            {t('common:footer-how-it-works')}
+          </Link>
+          <Link href='https://github.com/orgs/tutorbookapp'>
+            {t('common:footer-open-source')}
+          </Link>
+          <Link href='https://github.com/tutorbookapp/tutorbook#readme'>
+            {t('common:footer-docs')}
+          </Link>
+        </Group>
+        <Group label={t('common:footer-socials')}>
+          <Link href='https://facebook.com/tutorbookapp'>
+            {t('common:facebook')}
+          </Link>
+          <Link href='https://instagram.com/tutorbookapp'>
+            {t('common:instagram')}
+          </Link>
+          <Link href='https://twitter.com/tutorbookapp'>
+            {t('common:twitter')}
+          </Link>
+          <Link href='https://github.com/orgs/tutorbookapp'>
+            {t('common:github')}
+          </Link>
+          <Link href='https://helpwithcovid.com/projects/782-tutorbook'>
+            {t('common:helpwithcovid')}
+          </Link>
+          <Link href='https://www.indiehackers.com/product/tutorbook'>
+            {t('common:indiehackers')}
+          </Link>
+        </Group>
+        <Group label={t('common:footer-team')}>
+          <Link href='https://tutorbook.atlassian.net/wiki/spaces/TB/overview'>
+            {t('common:footer-team-home')}
+          </Link>
+          <Link href='https://tutorbook.atlassian.net/people'>
+            {t('common:footer-team-directory')}
+          </Link>
+          <Link href='https://join.slack.com/t/tutorbookapp/shared_invite/zt-ekmpvd9t-uzH_HuS6KbwVg480TAMa5g'>
+            {t('common:footer-team-slack')}
+          </Link>
+          <Link href='https://helpwithcovid.com/projects/782-tutorbook'>
+            {t('common:footer-team-join')}
+          </Link>
+          <Link href='mailto:team@tutorbook.org'>
+            {t('common:footer-contact')}
+          </Link>
+        </Group>
       </nav>
+      <section>
+        <span>Copyright &copy; 2020 Tutorbook. All rights reserved.</span>
+      </section>
     </footer>
   );
 }
-
-Footer.defaultProps = { formWidth: false };

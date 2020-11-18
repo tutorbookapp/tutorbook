@@ -3,7 +3,7 @@
 
 .cta {
   margin-top: 72px;
-  background: var(--geist-primary);
+  background: var(--primary);
 
   .wrapper {
     @include common.wrapper;
@@ -14,7 +14,7 @@
 
     h3 {
       @include typography.typography('headline3');
-      color: var(--geist-foreground);
+      color: var(--on-background);
       margin: 0 0 8px;
     }
 
@@ -27,8 +27,8 @@
 
     button {
       margin-left: 24px;
-      background: var(--geist-foreground);
-      color: var(--geist-primary);
+      background: var(--on-background);
+      color: var(--primary);
     }
 
     @media (max-width: 400px) {

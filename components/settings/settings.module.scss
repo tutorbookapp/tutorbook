@@ -19,7 +19,7 @@
         font-size: 14px;
         line-height: 24px;
         margin-bottom: 16px;
-        font-family: var(--fonts-sans);
+        font-family: var(--font-sans);
         color: var(--accents-5);
         text-decoration: none;
         transition: color 0.2s ease-in-out;
@@ -27,7 +27,7 @@
         cursor: pointer;
 
         &:hover {
-          color: var(--geist-foreground);
+          color: var(--on-background);
         }
 
         &:last-child {
@@ -35,7 +35,7 @@
         }
 
         &.active {
-          color: var(--geist-foreground);
+          color: var(--on-background);
           font-weight: 600;
         }
       }
@@ -97,7 +97,7 @@
         }
 
         .error {
-          color: var(--geist-error);
+          color: var(--error);
           font-weight: 450;
           margin-top: 16px;
         }
@@ -124,7 +124,7 @@
 
           a {
             cursor: pointer;
-            color: var(--geist-primary);
+            color: var(--primary);
             text-decoration: none;
             display: inline-flex;
             align-items: center;

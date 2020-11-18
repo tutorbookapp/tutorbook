@@ -49,12 +49,11 @@
 .title {
   @include typography.typography('headline2');
   @include gradient-text(
-    'linear-gradient(to right, #{color.adjust(var(--geist-primary'), $hue: 10%, $lightness: -10%)} 9.38%, #{color.adjust(map.get(config.$colors, 'primary), $hue: -15%)} 88.54%)',
-    'light'
+    'linear-gradient(to right, #{color.adjust(#0070f3, $hue: 10%, $lightness: -10%)} 9.38%, #{color.adjust(#0070f3, $hue: -15%)} 88.54%)',
+    'dark'
   );
   display: inline-block;
   padding-bottom: 5px; // Otherwise, words with 'g' and 'y' get cut off.
-  border: 1px solid #fff; // Otherwise, the background peeks out on mobile.
   margin: -1px;
 
   @media (max-width: 800px) {

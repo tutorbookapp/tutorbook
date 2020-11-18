@@ -1,7 +1,10 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import { useState, Fragment } from 'react';
+import { useCallback, useState, Fragment } from 'react';
+import { FormField } from '@rmwc/formfield';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
+import { Switch } from '@rmwc/switch';
+import cn from 'classnames';
 import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -10,6 +13,7 @@ import Avatar from 'components/avatar';
 
 import Link from 'lib/intl/link';
 import { AccountInterface, Org, User } from 'lib/model';
+import { useTheme } from 'lib/context/theme';
 import { useUser } from 'lib/context/user';
 
 import styles from './pop-over.module.scss';
@@ -70,6 +74,30 @@ export function PopOverButton({
   );
 }
 
+export function DarkModeSwitch(): JSX.Element {
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = useCallback(
+    () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark')),
+    [setTheme]
+  );
+
+  return (
+    <FormField className={cn(styles.item, styles.switch)}>
+      <div className={styles.icon}>
+        <Switch
+          id='dark-mode'
+          checked={theme === 'dark'}
+          onClick={toggleTheme}
+        />
+      </div>
+      <label htmlFor='dark-mode' className={styles.label}>
+        Enable dark mode
+      </label>
+    </FormField>
+  );
+}
+
 interface PopOverAccountProps {
   account: AccountInterface;
 }
@@ -94,7 +122,7 @@ export function PopOverAccountHeader({
   account,
 }: PopOverAccountProps): JSX.Element {
   return (
-    <div data-cy='account-header' className={`${styles.item} ${styles.header}`}>
+    <div data-cy='account-header' className={cn(styles.item, styles.header)}>
       <div className={styles.avatar}>
         <Avatar size={24} src={account.photo} />
       </div>
@@ -189,6 +217,8 @@ export default function PopOverMenu({
           >
             {t('common:launch-intercom')}
           </PopOverButton>
+          <div className={styles.line} />
+          <DarkModeSwitch />
           <div className={styles.line} />
           <PopOverButton
             id='logout'

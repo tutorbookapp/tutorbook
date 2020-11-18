@@ -5,7 +5,7 @@
 
 .search {
   border: 1px solid var(--accents-2);
-  background: var(--geist-background);
+  background: var(--background);
   height: var(--header-height) - 24px;
   align-items: center;
   display: inline-flex;
@@ -21,7 +21,7 @@
   @include typography.typography('body2');
   background: transparent none repeat scroll 0% 0%;
   border: 0px none;
-  color: var(--geist-foreground);
+  color: var(--on-background);
   cursor: pointer;
   display: inline-block;
   margin: 0px;
@@ -63,7 +63,7 @@
   visibility: hidden;
   position: absolute;
   border-radius: 4px;
-  background: var(--geist-background);
+  background: var(--background);
   transform: translateX(-50%);
   box-sizing: border-box;
   width: 100%;

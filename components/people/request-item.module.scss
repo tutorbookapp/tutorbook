@@ -12,10 +12,10 @@ $space: 20px;
   pointer-events: auto;
   box-sizing: border-box;
   display: grid;
-  background: var(--geist-primary);
+  background: var(--primary);
 }
 
-@mixin foreground {
+@mixin on-background {
   cursor: pointer;
   height: 100%;
   width: 100%;
@@ -23,7 +23,7 @@ $space: 20px;
   font-size: 3em;
   font-weight: 600;
   transition: box-shadow 0.75s;
-  background: var(--geist-background);
+  background: var(--background);
   grid-column: 1;
   grid-row: 1;
   @include elevation.elevation(12);
@@ -42,7 +42,7 @@ $space: 20px;
   }
 
   .display {
-    @include foreground;
+    @include on-background;
     padding: $space;
     display: flex;
     max-height: $height;
@@ -59,7 +59,7 @@ $space: 20px;
       @include typography.typography('body1');
       overflow: hidden;
       text-overflow: ellipsis;
-      color: var(--geist-foreground);
+      color: var(--on-background);
       height: 24px;
       flex: none;
       width: 100%;

@@ -9,7 +9,7 @@ $cell-width: 100px;
 }
 
 .menuSurface {
-  max-width: min(#{var(--geist-page-width-with-margin)}, calc(-32px + 100vw));
+  max-width: min(#{var(--page-width-with-margin)}, calc(-32px + 100vw));
   overflow: hidden;
   display: flex;
   visibility: hidden;
@@ -72,7 +72,7 @@ $cell-width: 100px;
         border-radius: 100%;
         color: #3c4043;
         font-weight: 400;
-        font-family: var(--fonts-sans);
+        font-family: var(--font-sans);
         line-height: 46px;
         height: 46px;
         margin-left: auto;
@@ -198,7 +198,7 @@ $cell-width: 100px;
             top: -6px;
             color: var(--accents-5);
             font-size: 10px;
-            font-family: var(--fonts-sans);
+            font-family: var(--font-sans);
           }
 
           &:first-child .timeLabel {

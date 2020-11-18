@@ -2,7 +2,7 @@
 @use 'styles/typography';
 @use '@material/elevation';
 
-@mixin wrapper($width: var(--geist-page-width-with-margin)) {
+@mixin wrapper($width: var(--page-width-with-margin)) {
   max-width: $width;
   margin: 0 auto;
   padding: 0 24px;
@@ -49,7 +49,7 @@
 
   &:hover {
     @include elevation.elevation(8);
-    border: 1px solid var(--geist-background);
+    border: 1px solid var(--background);
   }
 }
 
@@ -57,13 +57,13 @@
   margin: 24px;
 
   :global(.mdc-snackbar__action) {
-    color: var(--geist-primary);
+    color: var(--primary);
   }
 }
 
 @mixin error {
   @include typography.typography('body2');
-  color: var(--geist-error);
+  color: var(--error);
   font-weight: 450;
   font-size: 12px;
   margin-top: 16px;
@@ -77,6 +77,6 @@
   border: none;
 
   &:hover {
-    color: var(--geist-foreground);
+    color: var(--foreground);
   }
 }

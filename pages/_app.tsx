@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR, { SWRConfig, mutate } from 'swr';
 import { AppProps } from 'next/app';
 
@@ -6,6 +6,7 @@ import NProgress from 'components/nprogress';
 
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { Org, OrgJSON, User, UserJSON } from 'lib/model';
+import { Theme, ThemeContext } from 'lib/context/theme';
 import { fetcher } from 'lib/fetch';
 
 import 'styles/global.scss';
@@ -104,15 +105,34 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     void initFirebaseAndAnalytics();
   }, []);
 
+  // Store theme preferences in a cookie; initially uses system theme settings.
+  const [theme, setTheme] = useState<Theme>('system');
+  useEffect(() => {
+    let dark = theme === 'dark';
+    if (theme === 'system') {
+      const mq = matchMedia('(prefers-color-scheme: dark)');
+      if (mq.matches) dark = true;
+    }
+    document.documentElement.className = dark ? 'dark' : '';
+  }, [theme]);
+  useEffect(() => {
+    setTheme((prev) => (localStorage.getItem('theme') as Theme) || prev);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
   return (
-    <SWRConfig value={{ fetcher }}>
-      <UserContext.Provider
-        value={{ user, orgs, updateUser, updateOrg, loggedIn }}
-      >
-        <NProgress />
-        <div id='portal' />
-        <Component {...pageProps} />
-      </UserContext.Provider>
-    </SWRConfig>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <SWRConfig value={{ fetcher }}>
+        <UserContext.Provider
+          value={{ user, orgs, updateUser, updateOrg, loggedIn }}
+        >
+          <NProgress />
+          <div id='portal' />
+          <Component {...pageProps} />
+        </UserContext.Provider>
+      </SWRConfig>
+    </ThemeContext.Provider>
   );
 }

@@ -19,7 +19,7 @@ $radius: 4px;
 }
 
 .googleButton {
-  @include button.outline-color(var(--geist-primary));
+  @include button.outline-color(var(--primary));
   @include button.outline-width(2px);
   padding-left: $height + $padding;
   overflow: hidden;

@@ -1,0 +1,10 @@
+@use 'styles/common';
+
+li.link {
+  padding: var(--gap-quarter) 0;
+
+  a {
+    @include common.link;
+    font-size: 0.875rem;
+  }
+}

@@ -56,7 +56,7 @@
       }
 
       .error {
-        color: var(--geist-error);
+        color: var(--error);
         font-weight: 450;
         margin-top: 16px;
       }
@@ -83,7 +83,7 @@
 
         a {
           cursor: pointer;
-          color: var(--geist-primary);
+          color: var(--primary);
           text-decoration: none;
           display: inline-flex;
           align-items: center;

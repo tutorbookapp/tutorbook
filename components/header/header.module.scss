@@ -10,7 +10,7 @@ $cutoff: 800px;
     display: flex;
     align-items: center;
     padding: 0 24px;
-    width: var(--geist-page-width-with-margin);
+    width: var(--page-width-with-margin);
     max-width: 100%;
     margin: 0 auto 48px;
     box-sizing: border-box;
@@ -28,8 +28,8 @@ $cutoff: 800px;
       line-height: 24px;
 
       .header {
-        font-family: var(--fonts-sans);
-        color: var(--geist-foreground);
+        font-family: var(--font-sans);
+        color: var(--on-background);
         font-size: 36px;
         font-weight: 500;
         line-height: 1.5;
@@ -37,7 +37,7 @@ $cutoff: 800px;
       }
 
       .body {
-        font-family: var(--fonts-sans);
+        font-family: var(--font-sans);
         color: var(--accents-6);
         font-size: 14px;
         line-height: 24px;
@@ -53,7 +53,7 @@ $cutoff: 800px;
     align-items: center;
     margin-bottom: 24px;
     padding: 0 24px;
-    width: var(--geist-page-width-with-margin);
+    width: var(--page-width-with-margin);
     max-width: 100%;
     margin: 0 auto 24px;
     box-sizing: border-box;
@@ -79,13 +79,13 @@ $cutoff: 800px;
         text-decoration: none;
         white-space: nowrap;
         font-weight: 500;
-        font-family: var(--fonts-sans);
+        font-family: var(--font-sans);
         border-radius: 4px;
         font-size: 0.875rem;
         flex-shrink: 0;
         margin: 0px;
         color: var(--accents-5);
-        background-color: var(--geist-background);
+        background-color: var(--background);
         border: 1px solid var(--accents-2);
         transition: all 0.2s ease 0s;
         user-select: none;
@@ -95,8 +95,8 @@ $cutoff: 800px;
         box-sizing: border-box;
 
         &:hover {
-          color: var(--geist-foreground);
-          border: 1px solid var(--geist-foreground);
+          color: var(--on-background);
+          border: 1px solid var(--on-background);
         }
 
         &:not(:first-child) {

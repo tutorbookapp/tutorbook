@@ -2,7 +2,7 @@
 
 @mixin header {
   @include typography.typography('headline6');
-  color: var(--geist-foreground);
+  color: var(--on-background);
   font-weight: 600;
   margin: 24px 0 16px;
 }
@@ -39,7 +39,7 @@
 }
 
 @mixin error {
-  color: var(--geist-error);
+  color: var(--error);
   font-weight: 450;
   margin-top: 16px;
 }

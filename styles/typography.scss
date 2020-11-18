@@ -1,7 +1,7 @@
 @use 'sass:map';
 
 @forward '@material/typography' with (
-  $font-family: var(--fonts-sans),
+  $font-family: var(--font-sans),
   $styles-headline1: (
     letter-spacing: -0.049375rem,
     font-weight: 700,

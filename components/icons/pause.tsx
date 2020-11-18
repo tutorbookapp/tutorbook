@@ -10,13 +10,13 @@ export default function Pause(): JSX.Element {
       strokeLinejoin='round'
       shapeRendering='geometricPrecision'
     >
-      <rect x='6' y='4' width='4' height='16' fill='var(--geist-fill)' />
-      <rect x='14' y='4' width='4' height='16' fill='var(--geist-fill)' />
+      <rect x='6' y='4' width='4' height='16' fill='var(--fill)' />
+      <rect x='14' y='4' width='4' height='16' fill='var(--fill)' />
       <style jsx>{`
         svg {
-          color: var(--geist-foreground);
-          --geist-fill: currentColor;
-          --geist-stroke: var(--geist-background);
+          color: var(--on-background);
+          --fill: currentColor;
+          --stroke: var(--background);
         }
       `}</style>
     </svg>

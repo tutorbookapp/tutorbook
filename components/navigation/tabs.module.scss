@@ -23,11 +23,11 @@
     white-space: nowrap;
 
     &:hover {
-      color: var(--geist-foreground);
+      color: var(--on-background);
     }
 
     &.active {
-      color: var(--geist-foreground);
+      color: var(--on-background);
 
       &::before {
         content: '';

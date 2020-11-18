@@ -39,7 +39,7 @@
 
     .name {
       @include typography.typography('headline4');
-      color: var(--geist-foreground);
+      color: var(--on-background);
       line-height: 2.2rem;
       margin: 16px 0 8px;
     }
@@ -58,7 +58,7 @@
 
     .header {
       @include typography.typography('headline6');
-      color: var(--geist-foreground);
+      color: var(--on-background);
       font-weight: 600;
       margin: 24px 0 16px;
 

@@ -23,7 +23,7 @@ figure.wrapper {
   }
 
   video.radius {
-    border-radius: var(--geist-radius);
+    border-radius: 4px;
   }
 
   video:-webkit-full-screen {
@@ -50,7 +50,7 @@ figure.wrapper {
   div.controls {
     position: absolute;
     bottom: 5%;
-    background: var(--geist-background);
+    background: var(--background);
     height: 40px;
     display: flex;
     align-items: center;
@@ -108,7 +108,7 @@ figure.wrapper {
   }
 
   div.controls progress[value]:-webkit-progress-value {
-    background-color: var(--geist-foreground);
+    background-color: var(--on-background);
   }
 
   div.controls div.progress div.handle {
@@ -116,7 +116,7 @@ figure.wrapper {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--geist-foreground);
+    background: var(--on-background);
     transform: translateX(-4px) translateY(1px) scale(0);
     transition: width 0.1s ease, height 0.1s ease, border-radius 0.1s ease,
       transform 0.1s ease, background-color 0.1s ease;
@@ -126,7 +126,7 @@ figure.wrapper {
 
   div.controls div.progress div.thumb {
     position: absolute;
-    background: var(--geist-foreground);
+    background: var(--on-background);
     box-shadow: 0 4px 9px rgba(0, 0, 0, 0.12);
     transform: translate3d(0, 40px, 0) scale(0.8, 0);
     pointer-events: none;
@@ -177,7 +177,7 @@ figure.wrapper {
   }
 
   button.fullscreen {
-    color: var(--geist-foreground);
+    color: var(--on-background);
     background: transparent;
     border: 0;
     height: 30px;
