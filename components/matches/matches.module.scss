@@ -73,6 +73,14 @@ $filters-height: 56px;
   width: 100%;
   border-radius: 0;
 
+  :global(.mdc-data-table__row) {
+    cursor: pointer;
+
+    &.loading {
+      cursor: not-allowed;
+    }
+  }
+
   :global(.mdc-data-table__cell),
   :global(.mdc-data-table__header-cell) {
     padding: 0 16px;
@@ -134,39 +142,6 @@ $filters-height: 56px;
     &.visible,
     &.vetted {
       padding-right: 0;
-    }
-
-    &.status {
-      min-width: 85px;
-
-      button {
-        color: #fff;
-        text-align: center;
-        font-size: 0.75rem;
-        border: 1px solid;
-        border-radius: 4px;
-        outline: none;
-        font: inherit;
-        padding: 0 4px;
-        margin: 0;
-        cursor: pointer;
-
-        &.new {
-          color: var(--on-primary);
-          border-color: var(--primary);
-          background-color: var(--primary);
-        }
-
-        &.active {
-          border-color: var(--accents-5);
-          background-color: var(--accents-5);
-        }
-
-        &.stale {
-          border-color: #ab570a;
-          background-color: #ab570a;
-        }
-      }
     }
 
     &.people {

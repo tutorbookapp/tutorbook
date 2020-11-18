@@ -155,8 +155,6 @@ export default function DisplayPage({
             label='Log meeting'
             onClick={() => setActive(2)}
           />
-          <Chip icon='event_busy' label='Cancel meeting' />
-          <Chip icon='email' label='Send email' />
           <Chip icon='edit' label='Edit match' onClick={() => setActive(1)} />
         </ChipSet>
       </div>

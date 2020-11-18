@@ -49,18 +49,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
     setQuery((prev) => new MatchesQuery({ ...prev, org: org.id }));
   }, [org]);
 
-  const [dataEdited, setDataEdited] = useState<boolean>(false);
-
-  // Don't revalidate when data has been edited locally but not updated in the
-  // remote (i.e. the back-end) yet. Doing so would erase those local changes.
-  // @see {@link https://github.com/vercel/swr/issues/529}
-  const { data, isValidating, mutate } = useSWR<ListMatchesRes>(
-    query.endpoint,
-    {
-      revalidateOnFocus: !dataEdited,
-      revalidateOnReconnect: !dataEdited,
-    }
-  );
+  const { data, isValidating } = useSWR<ListMatchesRes>(query.endpoint);
 
   useEffect(() => {
     setSearching((prev: boolean) => prev && (isValidating || !data));
@@ -114,9 +103,6 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
             <DataTableContent>
               <DataTableHead className={styles.header}>
                 <DataTableRow>
-                  <DataTableHeadCell className={styles.status}>
-                    {t('common:status')}
-                  </DataTableHeadCell>
                   <DataTableHeadCell className={styles.people}>
                     {t('common:people')}
                   </DataTableHeadCell>
@@ -134,8 +120,6 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
                     <MatchRow
                       match={match}
                       key={match.id}
-                      mutate={mutate}
-                      setDataEdited={setDataEdited}
                       setViewing={setViewing}
                     />
                   ))}

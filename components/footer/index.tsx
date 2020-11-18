@@ -1,4 +1,3 @@
-import { Select } from '@rmwc/select';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
