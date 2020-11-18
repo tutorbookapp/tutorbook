@@ -1,4 +1,5 @@
-export * from './event';
+export * from './meeting';
+export * from './person';
 export * from './aspect';
 export * from './callback';
 export * from './account';

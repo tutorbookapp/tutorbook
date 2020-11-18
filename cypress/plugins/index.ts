@@ -8,10 +8,11 @@ import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
 import firebase from 'firebase-admin';
 
-import { MatchJSON, OrgJSON, UserJSON } from 'lib/model';
+import { MatchJSON, MeetingJSON, OrgJSON, UserJSON } from 'lib/model';
 
 import admin from 'cypress/fixtures/users/admin.json';
 import match from 'cypress/fixtures/match.json';
+import meeting from 'cypress/fixtures/meeting.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
@@ -70,6 +71,7 @@ const matchesIdx = search.initIndex(`${partition}-matches`);
 
 export interface Overrides {
   match?: Partial<MatchJSON> | null;
+  meeting?: Partial<MeetingJSON> | null;
   org?: Partial<OrgJSON> | null;
   school?: Partial<OrgJSON> | null;
   volunteer?: Partial<UserJSON> | null;
@@ -136,6 +138,11 @@ export default function plugins(
       if (overrides.admin === null) delete users[2];
       users = users.filter(Boolean);
 
+      let meetings: MeetingJSON[] = [];
+      meetings.push({ ...(meeting as MeetingJSON), ...overrides.meeting });
+      if (overrides.meeting === null) delete meetings[0];
+      meetings = meetings.filter(Boolean);
+
       const rconfig = { headers: await getHeaders(admin.id) };
 
       async function create(route: string, data: unknown[]): Promise<void> {
@@ -157,6 +164,7 @@ export default function plugins(
       );
 
       await create('matches', matches);
+      await create(`matches/${match.id}/meetings`, meetings);
 
       return null;
     },

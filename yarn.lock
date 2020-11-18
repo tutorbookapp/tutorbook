@@ -16883,6 +16883,13 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
+"timeago.js@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "timeago.js@npm:4.0.2"
+  checksum: 7c5bb9d45ff574981bf8bdb260876f3321e2350460986afc7c0950c7c3ebbf77e3ae229e3c995f4bddabddc065ddd543bfdecac98ec1c52097c48b28df8a27e9
+  languageName: node
+  linkType: hard
+
 "timed-out@npm:^4.0.0":
   version: 4.0.1
   resolution: "timed-out@npm:4.0.1"
@@ -17274,6 +17281,7 @@ resolve@1.1.7:
     svg-url-loader: ^6.0.0
     swr: ^0.3.8
     terser-webpack-plugin: ^3.0.7
+    timeago.js: ^4.0.2
     ts-loader: ^7.0.5
     ts-node: ^9.0.0
     typescript: ^4.0.3

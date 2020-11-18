@@ -35,6 +35,7 @@
   ],
   "domains": ["pausd.us", "pausd.org"],
   "aspects": ["tutoring"],
+  "subjects": [],
   "zoom": null,
   "matchURL": null,
   "signup": {

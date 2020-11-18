@@ -2,5 +2,8 @@
   "subtitle": "{{name}}'s student-tutor-mentor matches",
   "empty": "NO MATCHES TO SHOW",
   "search-placeholder": "Search matches",
-  "import-data-msg": "Could you help me import some existing matches?"
+  "import-data-msg": "Could you help me import some existing matches?",
+  "event-created": "created this match.",
+  "event-message": "sent a message:<0></0>\"{{message}}\"",
+  "event-meeting": "logged a meeting on:<0></0>{{time}}."
 }

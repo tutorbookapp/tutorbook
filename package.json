@@ -154,6 +154,7 @@
     "smartcrop-sharp": "^2.0.3",
     "styled-jsx": "^3.3.0",
     "swr": "^0.3.8",
+    "timeago.js": "^4.0.2",
     "ts-node": "^9.0.0",
     "url": "^0.11.0",
     "uuid": "^8.2.0",

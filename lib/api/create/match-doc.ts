@@ -15,7 +15,8 @@ export default async function createMatchDoc(
   match: Match,
   venue: Venue
 ): Promise<Match> {
-  const ref = db.collection('matches').doc();
+  const col = db.collection('matches');
+  const ref = match.id ? col.doc(match.id) : col.doc();
   const copy = new Match(clone({ ...match, venue, id: ref.id }));
   const [err] = await to(ref.set(copy.toFirestore()));
   if (err) {

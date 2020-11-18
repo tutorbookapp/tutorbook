@@ -14,15 +14,17 @@
 
     .people {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       border-bottom: 1px solid var(--accents-2);
       grid-gap: $padding;
       padding: 12px $padding $padding;
 
       .person {
         @include typography.typography('body2');
+        @include common.link;
         color: var(--geist-secondary);
         text-align: center;
+        display: block;
 
         .avatar {
           $size: ($width - 3 * $padding) / 2;
@@ -34,9 +36,7 @@
         }
 
         .name {
-          @include common.link;
           margin: 8px 0 0;
-          display: block;
         }
       }
     }

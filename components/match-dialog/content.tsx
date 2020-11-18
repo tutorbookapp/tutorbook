@@ -1,24 +1,13 @@
+import { useMemo, useState } from 'react';
 import useSWR from 'swr';
-import { useState } from 'react';
 
 import DialogContent from 'components/dialog';
 import UserDialogContent from 'components/user-dialog/content';
 
-import {
-  Callback,
-  Match,
-  MatchJSON,
-  RequestJSON,
-  User,
-  UserJSON,
-} from 'lib/model';
+import { Match, MatchJSON, RequestJSON, User } from 'lib/model';
+import clone from 'lib/utils/clone';
 
 import DisplayPage from './display-page';
-
-export enum Page {
-  Display = 0,
-  User,
-}
 
 export interface MatchDialogContentProps {
   initialData?: MatchJSON;
@@ -33,12 +22,33 @@ export default function MatchDialogContent({
   });
   const match = data as MatchJSON;
 
-  const [active, setActive] = useState<number>(Page.Display);
+  const [active, setActive] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
 
-  const [user, setUser] = useState<UserJSON>(new User().toJSON());
   const [matching, setMatching] = useState<RequestJSON[]>([]);
+
+  const people = useMemo(() => {
+    const ppl = clone(match.people);
+    const creatorId = match.creator.id;
+    if (ppl.findIndex((p) => p.id === creatorId) < 0) ppl.push(match.creator);
+    return ppl;
+  }, [match.people, match.creator]);
+
+  const content = useMemo(
+    () =>
+      [
+        <DisplayPage match={match} people={people} setActive={setActive} />,
+        people.map((person) => (
+          <UserDialogContent
+            initialData={new User(person).toJSON()}
+            matching={matching}
+            setMatching={setMatching}
+          />
+        )),
+      ].flat(),
+    [match, matching, people]
+  );
 
   return (
     <DialogContent
@@ -46,14 +56,9 @@ export default function MatchDialogContent({
       loading={loading}
       checked={checked}
       setActive={setActive}
-      nestedPages={[1]}
+      nestedPages={people.map((_, idx) => idx + 1)}
     >
-      <DisplayPage match={match} setActive={setActive} setUser={setUser} />
-      <UserDialogContent
-        initialData={user}
-        matching={matching}
-        setMatching={setMatching}
-      />
+      {content}
     </DialogContent>
   );
 }

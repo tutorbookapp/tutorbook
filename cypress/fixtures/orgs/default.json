@@ -35,6 +35,7 @@
   "profiles": ["name", "email", "bio", "subjects", "availability", "langs"],
   "domains": [],
   "aspects": ["mentoring", "tutoring"],
+  "subjects": [],
   "zoom": null,
   "matchURL": null,
   "signup": {

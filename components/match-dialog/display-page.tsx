@@ -1,32 +1,52 @@
 import { Chip, ChipSet } from '@rmwc/chip';
-import Link from 'next/link';
+import Trans from 'next-translate/Trans';
+import { format } from 'timeago.js';
+import { useCallback } from 'react';
+import useSWR from 'swr';
+import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
-import { Callback, MatchJSON, Timeslot, User } from 'lib/model';
+import { Callback, MatchJSON, MeetingJSON, Person, Timeslot } from 'lib/model';
+import { join, period } from 'lib/utils';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-users';
-import { join } from 'lib/utils';
 
-import styles from './page.module.scss';
+import styles from './display-page.module.scss';
 
-function Event({ badge, time, person, body }: EventProps): JSX.Element {
+interface EventProps {
+  badge: string;
+  time: Date;
+  person: Person;
+  children: React.ReactNode;
+  viewPerson: (person: Person) => void;
+}
+
+function Event({
+  badge,
+  time,
+  person,
+  viewPerson,
+  children,
+}: EventProps): JSX.Element {
+  const { lang: locale } = useTranslation();
+
   return (
     <div className={styles.event}>
-      <div className={styles.badge}>{badge}</div>
+      <div className={styles.badge}>
+        <span className='material-icons'>{badge}</span>
+      </div>
       <div className={styles.content}>
-        <div className={styles.time}>{time}</div>
+        <div className={styles.time}>{format(time, locale)}</div>
         <div className={styles.body}>
-          <Link href={`/gunn/people/${person.id}`}>
-            <a>{person.name}</a>
-          </Link>
-          {` ${body}`}
+          <a onClick={() => viewPerson(person)}>{`${person.name} `}</a>
+          {children}
         </div>
       </div>
     </div>
   );
 }
 
-function Origin(): JSX.Element {
+function Endpoint(): JSX.Element {
   return (
     <div className={styles.origin}>
       <div className={styles.badge} />
@@ -36,37 +56,44 @@ function Origin(): JSX.Element {
 
 export interface DisplayPageProps {
   match: MatchJSON;
+  people: Person[];
   setActive: Callback<number>;
 }
 
 export default function DisplayPage({
   match,
+  people,
   setActive,
-  setUser,
 }: DisplayPageProps): JSX.Element {
+  const { data: meetings } = useSWR<MeetingJSON[]>(
+    `/api/matches/${match.id}/meetings`
+  );
+  const { t } = useTranslation();
+
+  const viewPerson = useCallback(
+    (person: Person) => {
+      return setActive(people.findIndex((p) => p.id === person.id) + 1);
+    },
+    [setActive, people]
+  );
+
   return (
     <>
       <div className={styles.content}>
         <div className={styles.display}>
           <div className={styles.header}>People</div>
           <div className={styles.people}>
-            {match.people.map((person) => (
-              <div className={styles.person}>
-                <a href={person.photo} className={styles.avatar}>
+            {people.map((person, idx) => (
+              <a onClick={() => setActive(idx + 1)} className={styles.person}>
+                <div className={styles.avatar}>
                   <Avatar src={person.photo} size={129} />
-                </a>
-                <a
-                  onClick={() => {
-                    setUser(new User(person).toJSON());
-                    setActive(1);
-                  }}
-                  className={styles.name}
-                >
-                  {`${onlyFirstNameAndLastInitial(person.name)} (${join(
-                    person.roles
-                  )})`}
-                </a>
-              </div>
+                </div>
+                <div className={styles.name}>
+                  {`${onlyFirstNameAndLastInitial(person.name || '')} (${
+                    join(person.roles) || 'creator'
+                  })`}
+                </div>
+              </a>
             ))}
           </div>
           <div className={styles.header}>Subjects</div>
@@ -81,46 +108,50 @@ export default function DisplayPage({
           </a>
         </div>
         <div className={styles.timeline}>
-          <Origin />
+          <Endpoint />
           <Event
-            badge='C'
-            time='A month ago'
-            person={match.people[1]}
-            body='created this match.'
-          />
+            badge='add_box'
+            time={new Date(match.venue.created)}
+            person={match.creator}
+            viewPerson={viewPerson}
+          >
+            {t('matches:event-created')}
+          </Event>
           <Event
-            badge='M'
-            time='A month ago'
-            person={match.people[1]}
-            body='sent a message: "I could really use your help with learning how to use Cypress for integration and unit tests."'
-          />
-          <Event
-            badge='A'
-            time='Two weeks ago'
-            person={match.people[0]}
-            body='logged a meeting on Tuesday, November 3, 4:30 PM - 5:00 PM.'
-          />
-          <Event
-            badge='E'
-            time='One week ago'
-            person={match.people[1]}
-            body='removed the "Data Science" subject.'
-          />
-          <Event
-            badge='A'
-            time='Three days ago'
-            person={match.people[0]}
-            body='logged a meeting on Sunday, November 8, 4:30 PM - 5:00 PM.'
-          />
-          <Origin />
+            badge='email'
+            time={new Date(match.venue.created)}
+            person={match.creator}
+            viewPerson={viewPerson}
+          >
+            <Trans
+              i18nKey='matches:event-message'
+              components={[<br />]}
+              values={{ message: period(match.message) }}
+            />
+          </Event>
+          {(meetings || []).map((meeting: MeetingJSON) => (
+            <Event
+              badge='event_note'
+              time={new Date(meeting.created)}
+              person={meeting.creator}
+              viewPerson={viewPerson}
+            >
+              <Trans
+                i18nKey='matches:event-meeting'
+                components={[<br />]}
+                values={{ time: Timeslot.fromJSON(meeting.time).toString() }}
+              />
+            </Event>
+          ))}
+          <Endpoint />
         </div>
       </div>
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
-          <Chip icon='group_add' label='Create match' />
-          <Chip icon='person_add' label='Create request' />
+          <Chip icon='event_note' label='Log meeting' />
+          <Chip icon='event_busy' label='Cancel meeting' />
           <Chip icon='email' label='Send email' />
-          <Chip icon='edit' label='Edit profile' onClick={() => setActive(1)} />
+          <Chip icon='edit' label='Edit match' />
         </ChipSet>
       </div>
     </>

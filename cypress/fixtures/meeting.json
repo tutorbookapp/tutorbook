@@ -1,0 +1,19 @@
+{
+  "id": "meeting",
+  "created": "2020-10-20T19:03:00",
+  "updated": "2020-10-20T19:03:00",
+  "time": {
+    "from": "2020-10-20T19:03:00",
+    "to": "2020-10-20T19:03:35",
+    "recur": "",
+    "id": "CEzvTUDpaM9f9pDCTyI75"
+  },
+  "creator": {
+    "roles": ["tutor"],
+    "photo": "https://assets.tutorbook.app/jpgs/volunteer.jpg",
+    "handle": "6316934d-63b9-4aec-82f8-1bf2645c048d",
+    "name": "John Doe",
+    "id": "volunteer"
+  },
+  "notes": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers."
+}
