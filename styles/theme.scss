@@ -75,7 +75,7 @@ $highlight: #79ffe1;
   --on-background: #{$on-background};
   --on-error: #{$on-error};
 
-  --selection: #{color.adjust($highlight, $lightness: -60%)};
+  --selection: #{color.adjust($highlight, $saturation: -10%, $lightness: -40%)};
 
   --background-rgb: 18, 18, 18;
   --on-background-rgb: 255, 255, 255;
