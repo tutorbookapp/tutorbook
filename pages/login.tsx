@@ -9,7 +9,7 @@ import login from 'locales/en/login.json';
 
 function LoginPage(): JSX.Element {
   return (
-    <Page title='Login - Tutorbook' intercom>
+    <Page title='Login - Tutorbook'>
       <EmptyHeader />
       <Login />
     </Page>

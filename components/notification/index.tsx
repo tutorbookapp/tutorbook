@@ -9,12 +9,17 @@ import styles from './notification.module.scss';
 
 export interface NotificationProps {
   header: string;
+  intercom?: boolean;
   children?: React.ReactNode;
 }
 
-function Notification({ header, children }: NotificationProps): JSX.Element {
+function Notification({
+  header,
+  intercom,
+  children,
+}: NotificationProps): JSX.Element {
   return (
-    <Page title={`${header} - Tutorbook`} intercom>
+    <Page title={`${header} - Tutorbook`} intercom={intercom}>
       <EmptyHeader />
       <div className={styles.wrapper}>
         <div className={styles.content}>

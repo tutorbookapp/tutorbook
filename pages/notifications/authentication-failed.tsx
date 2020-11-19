@@ -2,7 +2,7 @@ import NotificationPage from 'components/notification';
 
 export default function AuthenticationFailedPage(): JSX.Element {
   return (
-    <NotificationPage header='Authentication Failed'>
+    <NotificationPage header='Authentication Failed' intercom>
       <p>
         It looks like you may have clicked on an invalid email verification
         link.

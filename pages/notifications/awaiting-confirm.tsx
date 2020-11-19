@@ -8,7 +8,7 @@ export default function AwaitingConfirmPage(): JSX.Element {
   } = useRouter();
 
   return (
-    <NotificationPage header='Awaiting Confirmation'>
+    <NotificationPage header='Awaiting Confirmation' intercom>
       <p>
         We just sent an email to <b>{email}</b>.
       </p>
