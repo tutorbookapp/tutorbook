@@ -10,6 +10,7 @@ import Button from 'components/button';
 
 import { APIErrorJSON } from 'lib/api/error';
 import getLocation from 'lib/utils/location';
+import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useUser } from 'lib/context/user';
 
@@ -55,13 +56,13 @@ export default function Login(): JSX.Element {
       setLoading(true);
       localStorage.setItem('email', email);
       const [locationErr, location] = await to(getLocation());
-      if (locationErr) return setError(locationErr.message);
+      if (locationErr) return setError(period(locationErr.message));
       const [err] = await to(
         axios.post('/api/login', { email, location, redirect })
       );
       if (err) {
         const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
-        return setError(e.message);
+        return setError(period(e.message));
       }
       return Router.push(`/notifications/awaiting-confirm?email=${email}`);
     },
@@ -71,7 +72,7 @@ export default function Login(): JSX.Element {
   const loginWithGoogle = useCallback(async () => {
     setLoading(true);
     const [err] = await to(signupWithGoogle());
-    if (err) return setError(err.message);
+    if (err) return setError(period(err.message));
     return Router.push(redirect);
   }, [redirect]);
 
