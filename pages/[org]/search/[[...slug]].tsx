@@ -113,7 +113,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   // TODO: Perhaps we should only allow filtering by a single org, as we don't
   // ever filter by more than one at once.
   useEffect(() => {
-    setQuery((prev: UsersQuery) => {
+    onChange((prev: UsersQuery) => {
       const updated = new UsersQuery({ ...prev, visible: true });
       if (org && !org.aspects.includes(prev.aspect))
         [updated.aspect] = org.aspects;
@@ -121,7 +121,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
       if (!dequal(prev, updated)) return updated;
       return prev;
     });
-  }, [org, query]);
+  }, [org, onChange]);
 
   // TODO: Investigate why I'm still using this `useSWR` refresh workaround. I
   // should get rid of it when updating the `Query` object definitions.
