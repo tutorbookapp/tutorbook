@@ -3,13 +3,10 @@ describe('Login page', () => {
     cy.logout();
   });
 
+  // TODO: Use the new Firebase Auth local emulator to test my two login flows.
   it('contains greeting and links', () => {
     cy.visit('/login');
-
-    cy.contains('h1', 'Login to Tutorbook');
-
-    cy.contains('Signup here').should('have.attr', 'href', '/default/signup');
-
+    cy.contains('h2', 'Welcome');
     cy.get('header').contains('TB').should('have.attr', 'href', '/');
   });
 
