@@ -14,7 +14,9 @@ export default function Confirm(): JSX.Element {
   const { query, push } = useRouter();
 
   useEffect(() => {
-    NProgress.start();
+    // Set a timeout to avoid conflicting with the page transition nprogress.
+    const timeoutId = setTimeout(() => NProgress.start(), 200);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
