@@ -6,6 +6,7 @@ import updateAuthUser from 'lib/api/update/auth-user';
 import updateUserDoc from 'lib/api/update/user-doc';
 import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updatePhoto from 'lib/api/update/photo';
+import updateUserOrgs from 'lib/api/update/user-orgs';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 
@@ -21,7 +22,7 @@ export default async function updateUser(
     // TODO: Check the existing data, not the data that is being sent with the
     // request (e.g. b/c I could fake data and add users to my org).
     await verifyAuth(req.headers, { userId: body.id, orgIds: body.orgs });
-    await updatePhoto(body);
+    await updatePhoto(updateUserOrgs(body));
 
     const user = await updateUserDoc(await updateAuthUser(body));
     await updateUserSearchObj(user);
