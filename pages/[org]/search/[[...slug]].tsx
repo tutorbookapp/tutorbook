@@ -1,9 +1,10 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import Router, { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR, { mutate } from 'swr';
+import NProgress from 'nprogress';
 import { dequal } from 'dequal/lite';
 
 import AuthDialog from 'components/auth-dialog';
@@ -94,9 +95,11 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     void prefetch(nextPageQuery.endpoint);
   }, [query]);
 
+  const url = useRef<string>('');
   const { query: params } = useRouter();
   useEffect(() => {
-    setQuery(UsersQuery.fromURLParams(params));
+    const updated = UsersQuery.fromURLParams(params);
+    setQuery((prev) => (dequal(prev, updated) ? prev : updated));
   }, [params]);
   const onChange = useCallback(
     (param: CallbackParam<UsersQuery>) => {
@@ -104,24 +107,21 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
       if (typeof param === 'object') updated = param;
       if (typeof param === 'function') updated = param(updated);
       if (!org || !org.id) return;
-      const url = updated.getURL(`/${org.id}/search/${viewing?.id || ''}`);
-      void Router.replace(url, undefined, { shallow: true });
+      if (!org.aspects.includes(updated.aspect)) [updated.aspect] = org.aspects;
+      updated.visible = true;
+      updated.orgs = [{ value: org.id, label: org.name }];
+      const newURL = updated.getURL(`/${org.id}/search/${viewing?.id || ''}`);
+      if (url.current === newURL) return;
+      void Router.replace((url.current = newURL), undefined, { shallow: true });
     },
     [org, query, viewing?.id]
   );
 
-  // TODO: Perhaps we should only allow filtering by a single org, as we don't
-  // ever filter by more than one at once.
+  // Update query parameters whenever the `onChange` query checks change (e.g.
+  // this ensures the `orgs` query prop is correctly filtering by org).
   useEffect(() => {
-    onChange((prev: UsersQuery) => {
-      const updated = new UsersQuery({ ...prev, visible: true });
-      if (org && !org.aspects.includes(prev.aspect))
-        [updated.aspect] = org.aspects;
-      if (org) updated.orgs = [{ value: org.id, label: org.name }];
-      if (!dequal(prev, updated)) return updated;
-      return prev;
-    });
-  }, [org, onChange]);
+    void onChange((prev) => prev);
+  }, [onChange]);
 
   // TODO: Investigate why I'm still using this `useSWR` refresh workaround. I
   // should get rid of it when updating the `Query` object definitions.
@@ -135,6 +135,12 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   useEffect(() => {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
+
+  // TODO: Debug how Next.js calls NProgress for shallow page transitions.
+  useEffect(() => {
+    if (searching) NProgress.start();
+    if (!searching) NProgress.done();
+  }, [searching]);
 
   const results = useMemo(() => (data ? data.users : []), [data]);
   const onClosed = useCallback(() => setViewing(undefined), []);
