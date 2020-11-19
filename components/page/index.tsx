@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import Head from 'next/head';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
@@ -26,6 +26,10 @@ export default function Page({
   intercom,
 }: PageProps): JSX.Element {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    document.body.className = intercom ? 'intercom' : '';
+  }, [intercom]);
 
   return (
     <>
