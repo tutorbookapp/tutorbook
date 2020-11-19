@@ -1,10 +1,10 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import Router, { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import NProgress from 'nprogress';
+import Router from 'next/router';
 import { dequal } from 'dequal/lite';
 
 import AuthDialog from 'components/auth-dialog';
@@ -13,15 +13,7 @@ import { QueryHeader } from 'components/navigation';
 import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
-import {
-  CallbackParam,
-  Option,
-  Org,
-  OrgJSON,
-  User,
-  UserJSON,
-  UsersQuery,
-} from 'lib/model';
+import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import clone from 'lib/utils/clone';
@@ -95,33 +87,36 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     void prefetch(nextPageQuery.endpoint);
   }, [query]);
 
-  const url = useRef<string>('');
-  const { query: params } = useRouter();
   useEffect(() => {
-    const updated = UsersQuery.fromURLParams(params);
-    setQuery((prev) => (dequal(prev, updated) ? prev : updated));
-  }, [params]);
-  const onChange = useCallback(
-    (param: CallbackParam<UsersQuery>) => {
-      let updated = query;
-      if (typeof param === 'object') updated = param;
-      if (typeof param === 'function') updated = param(updated);
-      if (!org || !org.id) return;
-      if (!org.aspects.includes(updated.aspect)) [updated.aspect] = org.aspects;
-      updated.visible = true;
-      updated.orgs = [{ value: org.id, label: org.name }];
-      const newURL = updated.getURL(`/${org.id}/search/${viewing?.id || ''}`);
-      if (url.current === newURL) return;
-      void Router.replace((url.current = newURL), undefined, { shallow: true });
-    },
-    [org, query, viewing?.id]
-  );
+    // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
+    // URL query parameters, but right now, it doesn't seem to be working. Once
+    // we do replace this with the `useRouter` hook, we'll be able to replace
+    // state management with just shallowly updating the URL.
+    // @see {@link https://github.com/vercel/next.js/issues/17112}
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    setQuery(UsersQuery.fromURLParams(Object.fromEntries(params.entries())));
+  }, []);
 
-  // Update query parameters whenever the `onChange` query checks change (e.g.
-  // this ensures the `orgs` query prop is correctly filtering by org).
+  // TODO: Use the built-in Next.js router hook to manage this query state and
+  // show the `NProgress` loader when the results are coming in.
   useEffect(() => {
-    void onChange((prev) => prev);
-  }, [onChange]);
+    if (!org || !org.id) return;
+    const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
+    void Router.replace(url, undefined, { shallow: true });
+  }, [org, query, viewing]);
+
+  // TODO: Perhaps we should only allow filtering by a single org, as we don't
+  // ever filter by more than one at once.
+  useEffect(() => {
+    setQuery((prev: UsersQuery) => {
+      const updated = new UsersQuery({ ...prev, visible: true });
+      if (!org) return dequal(prev, updated) ? prev : updated;
+      if (!org.aspects.includes(prev.aspect)) [updated.aspect] = org.aspects;
+      updated.orgs = [{ value: org.id, label: org.name }];
+      return dequal(prev, updated) ? prev : updated;
+    });
+  }, [org, query]);
 
   // TODO: Investigate why I'm still using this `useSWR` refresh workaround. I
   // should get rid of it when updating the `Query` object definitions.
@@ -159,7 +154,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
         <QueryHeader
           aspects={org ? org.aspects : ['mentoring', 'tutoring']}
           query={query}
-          onChange={onChange}
+          onChange={setQuery}
         />
         {auth && <AuthDialog />}
         {viewing && (
@@ -175,7 +170,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
           query={query}
           results={results}
           searching={searching || !canSearch}
-          onChange={onChange}
+          onChange={setQuery}
           setViewing={setViewing}
         />
       </Page>
