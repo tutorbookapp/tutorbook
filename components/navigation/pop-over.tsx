@@ -1,5 +1,5 @@
+import { Fragment, useEffect, useState } from 'react';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
-import { useCallback, useState, Fragment } from 'react';
 import { FormField } from '@rmwc/formfield';
 import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
@@ -7,11 +7,11 @@ import { Switch } from '@rmwc/switch';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
-import { IntercomAPI } from 'components/intercom';
 import Avatar from 'components/avatar';
+import { IntercomAPI } from 'components/intercom';
 
-import Link from 'lib/intl/link';
 import { AccountInterface, Org, User } from 'lib/model';
+import Link from 'lib/intl/link';
 import { useTheme } from 'lib/context/theme';
 import { useUser } from 'lib/context/user';
 
@@ -74,24 +74,20 @@ export function PopOverButton({
 }
 
 export function DarkModeSwitch(): JSX.Element {
-  const { theme, setTheme } = useTheme();
-
-  const toggleTheme = useCallback(
-    () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark')),
-    [setTheme]
-  );
+  const { t } = useTranslation();
+  const { dark, setTheme } = useTheme();
 
   return (
     <FormField className={cn(styles.item, styles.switch)}>
       <div className={styles.icon}>
         <Switch
           id='dark-mode'
-          checked={theme === 'dark'}
-          onClick={toggleTheme}
+          checked={dark}
+          onClick={() => setTheme(dark ? 'light' : 'dark')}
         />
       </div>
       <label htmlFor='dark-mode' className={styles.label}>
-        Enable dark mode
+        {t('common:toggle-theme')}
       </label>
     </FormField>
   );

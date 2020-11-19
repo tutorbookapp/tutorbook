@@ -105,25 +105,30 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     void initFirebaseAndAnalytics();
   }, []);
 
-  // Store theme in local storage; initially uses system theme settings.
+  // Initially set theme using system preferences, cache settings when changed.
   const [theme, setTheme] = useState<Theme>('system');
+  const [dark, setDark] = useState<boolean>(theme === 'dark');
+
   useEffect(() => {
-    let dark = theme === 'dark';
+    let isDark = theme === 'dark';
     if (theme === 'system') {
       const mq = matchMedia('(prefers-color-scheme: dark)');
-      if (mq.matches) dark = true;
+      if (mq.matches) isDark = true;
     }
-    document.documentElement.className = dark ? 'dark' : '';
+    setDark(isDark);
   }, [theme]);
   useEffect(() => {
+    document.documentElement.className = dark ? 'dark' : '';
+  }, [dark]);
+  useEffect(() => {
     setTheme((prev) => (localStorage.getItem('theme') as Theme) || prev);
-  }, []);
+  }, [setTheme]);
   useEffect(() => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ dark, theme, setTheme }}>
       <SWRConfig value={{ fetcher }}>
         <UserContext.Provider
           value={{ user, orgs, updateUser, updateOrg, loggedIn }}
