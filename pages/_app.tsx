@@ -105,7 +105,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     void initFirebaseAndAnalytics();
   }, []);
 
-  // Store theme preferences in a cookie; initially uses system theme settings.
+  // Store theme in local storage; initially uses system theme settings.
   const [theme, setTheme] = useState<Theme>('system');
   useEffect(() => {
     let dark = theme === 'dark';

@@ -21,7 +21,7 @@
 }
 
 .content {
-  @include common.wrapper(var(--form-width));
+  @include common.wrapper(var(--form-width-with-margin));
   display: flex;
   padding: 48px 24px;
 

@@ -42,7 +42,8 @@
   --page-margin: var(--space-gap);
   --page-width: 1000px;
   --page-width-with-margin: 1048px;
-  --form-width: 768px;
+  --form-width: 720px;
+  --form-width-with-margin: 768px;
 
   --header-height: 64px;
 }

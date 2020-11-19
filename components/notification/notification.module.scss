@@ -1,0 +1,35 @@
+@use 'styles/common';
+@use 'styles/typography';
+
+.wrapper {
+  @include common.wrapper(var(--form-width-with-margin));
+  margin-top: calc(var(--header-height) * -1);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--header-height) + 24px) 24px;
+
+  .content {
+    text-align: center;
+  }
+
+  h3 {
+    @include typography.typography('headline3');
+    margin: 0 0 32px;
+
+    @media (max-width: 400px) {
+      @include typography.typography('headline4');
+    }
+  }
+
+  p {
+    @include typography.typography('body1');
+    color: var(--accents-5);
+    margin: 8px 0;
+
+    b {
+      color: var(--on-background);
+    }
+  }
+}

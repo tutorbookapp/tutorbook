@@ -1,76 +1,52 @@
-@use 'sass:map';
 @use 'styles/common';
 @use 'styles/typography';
 
 .wrapper {
-  min-height: calc(100vh - var(--header-height));
+  @include common.wrapper(var(--form-width-with-margin));
+  margin-top: calc(var(--header-height) * -1);
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  -moz-box-pack: center;
-  justify-content: center;
-  -moz-box-align: center;
   align-items: center;
+  justify-content: center;
+  padding: calc(var(--header-height) + 24px) 24px;
 
   .content {
-    max-width: 900px;
-    position: relative;
-    justify-content: center;
-    -moz-box-pack: center;
-    flex-direction: column;
-    display: flex;
-    padding: 24px;
-    flex: 1 1 0%;
+    text-align: center;
+    max-width: 450px;
+  }
 
-    .title {
+  h2 {
+    @include typography.typography('headline2');
+    margin: 0 0 32px;
+
+    @media (max-width: 400px) {
       @include typography.typography('headline3');
-      text-align: center;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    .buttons {
-      $width: 400px;
-
-      width: $width;
-      margin: 48px auto 0 auto;
-      max-width: 100%;
-      text-align: center;
-
-      button {
-        width: 100%;
-      }
-
-      @media (max-width: $width) {
-        width: 100%;
-      }
-
-      .error {
-        @include common.error;
-        text-align: initial;
-        position: absolute;
-        width: $width;
-      }
     }
   }
 
-  .signup {
-    width: 100%;
-    background: var(--background);
-    border-top: 1px solid var(--accents-2);
-    color: var(--on-background);
-    padding: 2em;
-    height: 100px;
-    display: flex;
-    -moz-box-align: center;
-    align-items: center;
-    -moz-box-pack: center;
-    justify-content: center;
-    box-sizing: border-box;
+  .divider {
+    @include typography.typography('body1');
+    border-bottom: 2px solid var(--on-background);
+    text-align: center;
+    line-height: 0;
+    margin: 32px 0;
 
-    .link {
-      @include typography.typography('body1');
-      color: var(--primary);
-      text-decoration: none;
+    span {
+      background: var(--background);
+      padding: 0 8px;
     }
+  }
+
+  :global(.mdc-button) {
+    width: 100%;
+  }
+
+  :global(.mdc-text-field) {
+    margin-bottom: 16px;
+    width: 100%;
+  }
+
+  .error {
+    @include common.error;
   }
 }

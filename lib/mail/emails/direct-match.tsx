@@ -53,6 +53,10 @@ export default function DirectMatchEmail({
           Tutorbook. You can edit or remove your profile{' '}
           <Link href='https://tutorbook.app/profile'>here</Link>.
         </P>
+        <P style={{ marginBottom: '0px !important' }}>
+          If this message contains spam or unwanted messages let us know at{' '}
+          <Link href='mailto:team@tutorbook.org'>team@tutorbook.org</Link>.
+        </P>
       </Footer>
     </Email>
   );

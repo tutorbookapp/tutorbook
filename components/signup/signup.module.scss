@@ -4,7 +4,7 @@
 @use 'styles/typography';
 
 .wrapper {
-  @include common.wrapper(var(--form-width));
+  @include common.wrapper(var(--form-width-with-margin));
   margin: 60px auto;
   box-sizing: border-box;
 

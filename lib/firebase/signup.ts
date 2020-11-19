@@ -4,16 +4,17 @@ import { mutate } from 'swr';
 import to from 'await-to-js';
 
 import { User, UserInterface, UserJSON } from 'lib/model';
-import { APIError } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/api/error';
 
 export async function signup(user: User): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
 
   const auth = firebase.auth();
-  const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<APIError>>(
-    axios.post('/api/users', user.toJSON())
-  );
+  const [err, res] = await to<
+    AxiosResponse<UserJSON>,
+    AxiosError<APIErrorJSON>
+  >(axios.post('/api/users', user.toJSON()));
 
   if (err && err.response) throw new Error(err.response.data.message);
   if (err && err.request) throw new Error('Users API did not respond.');
@@ -62,9 +63,10 @@ export async function signupWithGoogle(
 
   // Create the Firestore profile document (we cannot call the `POST /api/users`
   // endpoint because the Firebase Authentication account already exists).
-  const [err, res] = await to<AxiosResponse<UserJSON>, AxiosError<APIError>>(
-    axios.put(`/api/users/${signedInUser.id}`, signedInUser.toJSON())
-  );
+  const [err, res] = await to<
+    AxiosResponse<UserJSON>,
+    AxiosError<APIErrorJSON>
+  >(axios.put(`/api/users/${signedInUser.id}`, signedInUser.toJSON()));
 
   if (err && err.response) throw new Error(err.response.data.message);
   if (err && err.request) throw new Error('Users API did not respond.');

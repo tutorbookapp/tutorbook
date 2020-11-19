@@ -255,10 +255,6 @@ export function Footer({ children }: Partial<Props>): JSX.Element {
           Tutorbook - <Link href='https://tutorbook.app'>tutorbook.app</Link>
         </P>
         {children}
-        <P style={{ marginBottom: '0px !important' }}>
-          If this message contains spam or unwanted messages let us know at{' '}
-          <Link href='mailto:team@tutorbook.org'>team@tutorbook.org</Link>.
-        </P>
       </Item>
     </ColorContext.Provider>
   );

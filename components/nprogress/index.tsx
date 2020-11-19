@@ -4,7 +4,7 @@ import Router from 'next/router';
 let timeout: ReturnType<typeof setTimeout>;
 
 const start = () => {
-  timeout = setTimeout(() => NProgress.start(), 100);
+  timeout = setTimeout(() => NProgress.start(), 150);
 };
 
 const done = () => {
@@ -47,6 +47,56 @@ export default function Progress(): JSX.Element {
         -webkit-transform: rotate(3deg) translate(0px, -4px);
         -ms-transform: rotate(3deg) translate(0px, -4px);
         transform: rotate(3deg) translate(0px, -4px);
+      }
+
+      /* Remove these to get rid of the spinner */
+      #nprogress .spinner {
+        display: block;
+        position: fixed;
+        z-index: 1031;
+        bottom: 15px;
+        right: 15px;
+      }
+
+      #nprogress .spinner-icon {
+        width: 18px;
+        height: 18px;
+        box-sizing: border-box;
+
+        border: solid 2px transparent;
+        border-top-color: var(--primary);
+        border-left-color: var(--primary);
+        border-radius: 50%;
+
+        -webkit-animation: nprogress-spinner 400ms linear infinite;
+        animation: nprogress-spinner 400ms linear infinite;
+      }
+
+      .nprogress-custom-parent {
+        overflow: hidden;
+        position: relative;
+      }
+
+      .nprogress-custom-parent #nprogress .spinner,
+      .nprogress-custom-parent #nprogress .bar {
+        position: absolute;
+      }
+
+      @-webkit-keyframes nprogress-spinner {
+        0% {
+          -webkit-transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+      @keyframes nprogress-spinner {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     `}</style>
   );
