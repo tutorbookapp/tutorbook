@@ -87,8 +87,8 @@ export interface UserInterface extends AccountInterface {
   orgs: string[];
   zooms: ZoomUser[];
   availability: Availability;
-  mentoring: { subjects: string[]; searches: string[] };
-  tutoring: { subjects: string[]; searches: string[] };
+  mentoring: Subjects;
+  tutoring: Subjects;
   langs: string[];
   parents: string[];
   verifications: Verification[];
@@ -146,15 +146,9 @@ export class User extends Account implements UserInterface {
 
   public availability: Availability = new Availability();
 
-  public mentoring: { subjects: string[]; searches: string[] } = {
-    subjects: [],
-    searches: [],
-  };
+  public mentoring: Subjects = { subjects: [], searches: [] };
 
-  public tutoring: { subjects: string[]; searches: string[] } = {
-    subjects: [],
-    searches: [],
-  };
+  public tutoring: Subjects = { subjects: [], searches: [] };
 
   public langs: string[] = [];
 
