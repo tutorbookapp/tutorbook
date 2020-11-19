@@ -58,14 +58,14 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   }, [user, error]);
   const updateUser = useCallback(
     async (param: UpdateUserParam) => {
-      let updatedUser: User = user;
-      if (typeof param === 'object') updatedUser = new User(param);
-      if (typeof param === 'function') updatedUser = new User(param(user));
+      let updated: User = user;
+      if (typeof param === 'object') updated = new User(param);
+      if (typeof param === 'function') updated = new User(param(user));
       // Re-validate if we haven't gotten any account data yet. This fixes
       // an issue where the profile view would locally update to an empty
       // `User()` *before* our `/api/account` endpoint could respond. SWR
       // cancelled the `/api/account` mutation in favor of the empty one.
-      await mutate('/api/account', updatedUser, !loggedIn);
+      await mutate('/api/account', updated.toJSON(), loggedIn === undefined);
     },
     [user, loggedIn]
   );
@@ -87,7 +87,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
         updatedOrg.toJSON(),
         ...orgs.map((org: Org) => org.toJSON()).slice(idx + 1),
       ];
-      await mutate('/api/orgs', updated, !loggedIn);
+      await mutate('/api/orgs', updated, loggedIn === undefined);
     },
     [orgs, loggedIn]
   );

@@ -5,7 +5,6 @@ import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { Switch } from '@rmwc/switch';
 import cn from 'classnames';
-import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import { IntercomAPI } from 'components/intercom';
@@ -165,7 +164,7 @@ export default function PopOverMenu({
   children,
 }: PopOverMenuProps): JSX.Element {
   const { t } = useTranslation();
-  const { user, orgs } = useUser();
+  const { user, updateUser, orgs } = useUser();
 
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
 
@@ -223,11 +222,13 @@ export default function PopOverMenu({
           <PopOverButton
             id='logout'
             onClick={async () => {
+              // TODO: Logging out when on the profile page which has a
+              // `useContinuous` hook attached to this user object doesn't work.
               setLoggingOut(true);
               const { default: firebase } = await import('lib/firebase');
               await import('firebase/auth');
               await firebase.auth().signOut();
-              await mutate('/api/account', new User().toJSON(), false);
+              await updateUser(new User());
             }}
           >
             {t(loggingOut ? 'common:logging-out' : 'common:logout')}
