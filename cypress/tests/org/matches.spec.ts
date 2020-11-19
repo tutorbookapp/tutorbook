@@ -18,8 +18,8 @@ describe('Matches dashboard page', () => {
     cy.visit(`/${school.id}/matches`);
   });
 
-  // TODO: Assert about SWR re-validation by dispatching window focus events.
-  it('updates status on matches', () => {
+  // TODO: Test the appointment logging flow, the nested user pages, etc.
+  it('shows match info in dialog', () => {
     cy.wait('@get-account');
 
     cy.getBySel('title').should('have.text', 'Matches');
@@ -38,15 +38,7 @@ describe('Matches dashboard page', () => {
     cy.wait('@list-matches');
     matchIsListed();
 
-    cy.getBySel('match-row')
-      .contains('button', 'New')
-      .click()
-      .should('have.text', 'Active')
-      .click()
-      .should('have.text', 'Stale')
-      .click()
-      .should('have.text', 'New');
-    cy.wait(5000);
-    cy.wait('@update-match');
+    cy.getBySel('match-row').click();
+    cy.getBySel('match-dialog', { timeout: 60000 }).should('be.visible');
   });
 });

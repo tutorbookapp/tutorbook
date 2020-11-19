@@ -220,7 +220,7 @@ describe('Search page', () => {
 
     cy.contains('button', 'Any languages').click();
     cy.focused()
-      .type('Spa')
+      .type('Sp')
       .closest('label')
       .should('contain', 'What languages do you speak?');
     cy.contains('li', 'Spanish').click();
@@ -272,7 +272,7 @@ describe('Search page', () => {
   });
 
   it('signs users up and sends matches', () => {
-    cy.setup({ student: null, match: null });
+    cy.setup({ student: null, match: null, meeting: null });
     cy.logout();
     // TODO: Refactor the `search.spec.ts` into two specs (one for the default
     // search view and one for when a user slug is passed along with the URL).
