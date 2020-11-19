@@ -55,7 +55,7 @@ export default function Progress(): JSX.Element {
         position: fixed;
         z-index: 1031;
         bottom: 15px;
-        right: 15px;
+        left: 15px;
       }
 
       #nprogress .spinner-icon {
