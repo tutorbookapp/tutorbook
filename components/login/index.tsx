@@ -37,9 +37,12 @@ export default function Login(): JSX.Element {
   }, [redirect]);
 
   useEffect(() => {
-    if (!loading) return;
-    NProgress.start();
-    setError('');
+    if (!loading) {
+      NProgress.done();
+    } else {
+      NProgress.start();
+      setError('');
+    }
   }, [loading]);
   useEffect(() => {
     if (error) setLoading(false);
