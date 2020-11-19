@@ -3,10 +3,10 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { User, UserJSON, isUserJSON } from 'lib/model';
 import { handle } from 'lib/api/error';
 import updateAuthUser from 'lib/api/update/auth-user';
-import updateUserDoc from 'lib/api/update/user-doc';
-import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updatePhoto from 'lib/api/update/photo';
+import updateUserDoc from 'lib/api/update/user-doc';
 import updateUserOrgs from 'lib/api/update/user-orgs';
+import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 

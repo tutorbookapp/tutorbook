@@ -66,7 +66,7 @@ export async function signupWithGoogle(
   const [err, res] = await to<
     AxiosResponse<UserJSON>,
     AxiosError<APIErrorJSON>
-  >(axios.put(`/api/users/${signedInUser.id}`, signedInUser.toJSON()));
+  >(axios.put('/api/account', signedInUser.toJSON()));
 
   if (err && err.response) throw new Error(err.response.data.message);
   if (err && err.request) throw new Error('Users API did not respond.');

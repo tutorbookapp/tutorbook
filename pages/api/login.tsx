@@ -49,7 +49,7 @@ export default async function login(req: Req, res: Res<void>): Promise<void> {
         await sendLoginLink(req, res);
         break;
       default:
-        res.setHeader('Allow', ['GET', 'POST']);
+        res.setHeader('Allow', ['POST']);
         res.status(405).end(`Method ${req.method as string} Not Allowed`);
     }
   } catch (e) {

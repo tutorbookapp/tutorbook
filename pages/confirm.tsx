@@ -44,7 +44,7 @@ export default function Confirm(): JSX.Element {
       // Create the Firestore profile document (we cannot POST to `/api/users`
       // endpoint because the Firebase Authentication account already exists).
       const [createErr, res] = await to(
-        axios.put<UserJSON>(`/api/users/${user.id}`, user.toJSON())
+        axios.put<UserJSON>('/api/account', user.toJSON())
       );
       if (createErr || !res) return error();
       if (!dequal(res.data, user.toJSON())) {
