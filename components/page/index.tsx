@@ -144,6 +144,7 @@ export default function Page({
         />
         <meta name='msapplication-navbutton-color' content='#0070f3' />
         <script src='/intercom.js' async />
+        <script src='/segment.js' async />
       </Head>
       <div
         data-cy='page'
