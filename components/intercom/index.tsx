@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
+import { Org } from 'lib/model';
+import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
 const appId = process.env.NEXT_PUBLIC_INTERCOM_APP_ID as string;
@@ -11,17 +13,22 @@ const canUseDOM = !!(
   window.document.createElement
 );
 
-/**
- * Duplicate definition from the `lib/model` package. These are all the
- * valid datatypes for custom Intercom user attributes.
- * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
- */
-type IntercomCustomAttribute = string | boolean | number | Date;
-
 interface IntercomSettings {
   app_id: string;
   language_override: string;
-  [key: string]: IntercomCustomAttribute;
+  email: string;
+  user_id: string;
+  name: string;
+  phone: string;
+  avatar: { type: string; image_url: string };
+  company?: Company;
+  companies: Company[];
+}
+
+interface Company {
+  id: string;
+  name: string;
+  website: string;
 }
 
 /**
@@ -29,14 +36,9 @@ interface IntercomSettings {
  * global `window.Intercom` object.
  * @see {@link https://developers.intercom.com/installing-intercom/docs/intercom-javascript}
  */
-
 type Basics = (action: 'hide' | 'show' | 'shutdown' | 'showMessages') => void;
-type Boot = (action: 'boot', settings: IntercomSettings) => void;
 type NewMsg = (action: 'showNewMessage', message: string) => void;
-type Update = (
-  action: 'update',
-  user: { [key: string]: IntercomCustomAttribute }
-) => void;
+type Update = (action: 'update', settings?: IntercomSettings) => void;
 type TrackEvt = (action: 'trackEvent', event: string) => void;
 type Visitor = (action: 'getVisitorId') => string;
 type StartTour = (action: 'startTour', tourId: number) => void;
@@ -49,7 +51,6 @@ type Unread = (
 
 type IntercomGlobal =
   | Basics
-  | Boot
   | NewMsg
   | Update
   | TrackEvt
@@ -83,28 +84,34 @@ export interface IntercomProps {
 }
 
 export default function Intercom({ visible }: IntercomProps): null {
-  const { user } = useUser();
+  const { org } = useOrg();
+  const { user, orgs } = useUser();
   const { lang: locale } = useTranslation();
 
-  const [settings, setSettings] = useState<IntercomSettings>({
-    app_id: appId,
-    language_override: locale,
-    hide_default_launcher: !visible,
-    ...user.toIntercom(),
-  });
+  const [settings, setSettings] = useState<IntercomSettings>();
 
   useEffect(() => {
+    const orgToCompany = (o: Org) => {
+      const website = o.socials.filter((s) => s.type === 'website')[0];
+      return { id: o.id, name: o.name, website: website?.url || '' };
+    };
     const updated = {
       app_id: appId,
       language_override: locale,
       hide_default_launcher: !visible,
-      ...user.toIntercom(),
+      email: user.email,
+      user_id: user.id,
+      name: user.name,
+      phone: user.phone,
+      avatar: { type: 'avatar', image_url: user.photo },
+      company: org ? orgToCompany(org) : undefined,
+      companies: orgs.map(orgToCompany),
     };
     setSettings((prev) => {
       if (dequal(updated, prev)) return prev;
       return updated;
     });
-  }, [locale, visible, user]);
+  }, [locale, visible, user, orgs, org]);
 
   useEffect(() => {
     if (!canUseDOM) return;

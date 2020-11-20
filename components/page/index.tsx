@@ -5,6 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Footer from 'components/footer';
 import Intercom from 'components/intercom';
+import Segment from 'components/segment';
 
 import styles from './page.module.scss';
 
@@ -154,6 +155,7 @@ export default function Page({
       </div>
       <Footer formWidth={formWidth} />
       <Intercom visible={intercom} />
+      <Segment />
     </>
   );
 }

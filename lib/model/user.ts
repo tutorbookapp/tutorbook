@@ -33,13 +33,6 @@ type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 /**
- * Duplicate definition from the `lib/react-intercom` package. These are
- * all the valid datatypes for custom Intercom user attributes.
- * @see {@link https://www.intercom.com/help/en/articles/179-send-custom-user-attributes-to-intercom}
- */
-type IntercomCustomAttribute = string | boolean | number | Date;
-
-/**
  * Right now, we only support traditional K-12 grade levels (e.g. 'Freshman'
  * maps to the number 9).
  * @todo Perhaps support other grade levels and other educational systems (e.g.
@@ -185,46 +178,6 @@ export class User extends Account implements UserInterface {
   public get lastName(): string {
     const parts: string[] = this.name.split(' ');
     return parts[parts.length - 1];
-  }
-
-  /**
-   * Converts this user object into a data type that Intercom can understand.
-   * @todo Instead of doing all of this parsing logic, I should just explicitly
-   * list what needs to be sent to Intercom (i.e. only a limited subset of the
-   * entire user profile that can be understood by Intercom's UI).
-   * @see {@link https://bit.ly/3ksWc8B}
-   */
-  public toIntercom(): Record<string, IntercomCustomAttribute> {
-    const { id, photo, token, ref, ...rest } = this;
-    const isFilled = (val: unknown): boolean => {
-      switch (typeof val) {
-        case 'string':
-          return val !== '';
-        case 'boolean':
-          return true;
-        case 'number':
-          return true;
-        case 'undefined':
-          return false;
-        case 'object':
-          if (val === null) return false;
-          return Object.values(val).filter(isFilled).length > 0;
-        default:
-          return !!val;
-      }
-    };
-    const isValid = (val: unknown): boolean => {
-      if (typeof val === 'string') return true;
-      if (typeof val === 'boolean') return true;
-      if (typeof val === 'number') return true;
-      if (val instanceof Date) return true;
-      return false;
-    };
-    return Object.fromEntries(
-      Object.entries(rest)
-        .filter(([_, val]) => isFilled(val))
-        .map(([key, val]) => [key, isValid(val) ? val : JSON.stringify(val)])
-    );
   }
 
   public toPerson(): Person {
