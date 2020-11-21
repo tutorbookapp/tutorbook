@@ -116,4 +116,17 @@ export class Account implements AccountInterface {
   public toString(): string {
     return `${this.name}${this.id ? ` (${this.id})` : ''}`;
   }
+
+  public toSegment(): Record<string, string> {
+    const website = this.socials.filter((s) => s.type === 'website')[0];
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      phone: this.phone,
+      avatar: this.photo,
+      description: this.bio,
+      website: website?.url,
+    };
+  }
 }

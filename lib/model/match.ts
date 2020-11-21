@@ -8,6 +8,7 @@ import {
   TimeslotFirestore,
   TimeslotJSON,
   TimeslotSearchHit,
+  TimeslotSegment,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
 import {
@@ -89,6 +90,12 @@ export type MatchFirestore = Omit<
   request?: MatchFirestore;
   venue: VenueFirestore;
 };
+
+export interface MatchSegment {
+  message: string;
+  subjects: string[];
+  time?: TimeslotSegment;
+}
 
 export function isMatchJSON(json: unknown): json is MatchJSON {
   if (!isJSON(json)) return false;
@@ -208,6 +215,14 @@ export class Match implements MatchInterface {
       id: objectID,
     });
   }
+
+  public toSegment(): MatchSegment {
+    return {
+      message: this.message,
+      subjects: this.subjects,
+      time: this.time?.toSegment(),
+    };
+  }
 }
 
 // Matches and requests share exactly the same data model, but are just stored
@@ -217,4 +232,5 @@ export { Match as Request };
 export { isMatchJSON as isRequestJSON };
 export type RequestInterface = MatchInterface;
 export type RequestSearchHit = MatchSearchHit;
+export type RequestSegment = MatchSegment;
 export type RequestJSON = MatchJSON;

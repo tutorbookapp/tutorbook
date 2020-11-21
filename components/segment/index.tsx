@@ -23,6 +23,7 @@ export default function Segment({ intercom }: SegmentProps): null {
   useEffect(() => {
     if (!window.analytics.load) return;
     window.analytics.load(process.env.NEXT_PUBLIC_SEGMENT_KEY as string);
+    window.analytics.page(); // 1st page load doesn't trigger Next.js Router.
   }, []);
 
   useEffect(() => {
@@ -32,16 +33,10 @@ export default function Segment({ intercom }: SegmentProps): null {
   }, [router.events]);
 
   useEffect(() => {
-    const website = user.socials.filter((s) => s.type === 'website')[0];
     window.analytics.identify(
       user.id,
       {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        avatar: user.photo,
-        description: user.bio,
-        website: website?.url,
+        ...user.toSegment(),
         company: org ? { id: org.id, name: org.name } : undefined,
       },
       {
@@ -54,15 +49,7 @@ export default function Segment({ intercom }: SegmentProps): null {
 
   useEffect(() => {
     if (!org) return;
-    const website = org.socials.filter((s) => s.type === 'website')[0];
-    window.analytics.group(org.id, {
-      name: org.name,
-      email: org.email,
-      phone: org.phone,
-      avatar: org.photo,
-      description: org.bio,
-      website: website?.url,
-    });
+    window.analytics.group(org.id, org.toSegment());
   }, [org]);
 
   return null;

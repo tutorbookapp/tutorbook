@@ -33,6 +33,7 @@ import {
 import { APIErrorJSON } from 'lib/api/error';
 import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
+import { useAnalytics } from 'lib/hooks';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -65,6 +66,20 @@ export default function RequestDialog({
   const [message, setMessage] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
+
+  useAnalytics('Match Subjects Updated', () => ({
+    subjects,
+    user: user.toSegment(),
+  }));
+  useAnalytics('Match Time Updated', () => ({
+    time: time?.toSegment(),
+    user: user.toSegment(),
+  }));
+  useAnalytics('Match Message Updated', () => ({
+    message,
+    user: user.toSegment(),
+  }));
+  useAnalytics('Match Errored', () => error && { error });
 
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
@@ -158,7 +173,7 @@ export default function RequestDialog({
         }
         await updateUser(User.fromJSON((res as AxiosResponse<UserJSON>).data));
       }
-      const [err] = await to<
+      const [err, res] = await to<
         AxiosResponse<MatchJSON>,
         AxiosError<APIErrorJSON>
       >(axios.post('/api/matches', match.current.toJSON()));
@@ -184,6 +199,8 @@ export default function RequestDialog({
         );
       } else {
         setChecked(true);
+        const created = Match.fromJSON((res as AxiosResponse<MatchJSON>).data);
+        window.analytics.track('Match Created', created.toSegment());
         setTimeout(() => setOpen(false), 1000);
       }
     },

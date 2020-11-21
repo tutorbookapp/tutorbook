@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import NProgress from 'nprogress';
 import Router from 'next/router';
@@ -13,13 +13,22 @@ import { QueryHeader } from 'components/navigation';
 import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
-import { Option, Org, OrgJSON, User, UserJSON, UsersQuery } from 'lib/model';
+import {
+  CallbackParam,
+  Option,
+  Org,
+  OrgJSON,
+  User,
+  UserJSON,
+  UsersQuery,
+} from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import clone from 'lib/utils/clone';
 import { db } from 'lib/api/firebase';
 import { intersection } from 'lib/utils';
 import { prefetch } from 'lib/fetch';
+import { useAnalytics } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -40,7 +49,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   const [hits, setHits] = useState<number>(query.hitsPerPage);
   const [auth, setAuth] = useState<boolean>(false);
   const [canSearch, setCanSearch] = useState<boolean>(false);
-  const [searching, setSearching] = useState<boolean>(false);
+  const [searching, setSearching] = useState<boolean>(true);
   const [viewing, setViewing] = useState<UserJSON>();
 
   const { data, isValidating } = useSWR<ListUsersRes>(
@@ -148,55 +157,63 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     );
   }, [viewing, query.aspect, query.subjects]);
 
+  const queryChangeTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const onQueryChange = useCallback(
+    (param: CallbackParam<UsersQuery>) => {
+      let updated = query;
+      if (typeof param === 'object') updated = param;
+      if (typeof param === 'function') updated = param(updated);
+      setQuery(updated);
+      // Throttle this analytics tracking to prevent numerous events when multiple
+      // subjects are selected right after one another.
+      if (queryChangeTimeout.current) clearTimeout(queryChangeTimeout.current);
+      queryChangeTimeout.current = setTimeout(() => {
+        console.log('[EVENT] User List Filtered');
+        window.analytics.track('User List Filtered', {
+          org: org ? Org.fromJSON(org).toSegment() : undefined,
+          subjects: updated.subjects.map((o) => o.value).join(' AND '),
+          langs: updated.langs.map((o) => o.value).join(' AND '),
+          aspect: updated.aspect,
+        });
+      }, 2500);
+    },
+    [query, org]
+  );
+
   // Uses the object-action framework event naming and known ecommerce events.
   // @see {@link https://segment.com/docs/connections/spec/ecommerce/v2/#product-list-filtered}
   // @see {@link https://segment.com/academy/collecting-data/naming-conventions-for-clean-data}
-  useEffect(() => {
-    if (searching) return;
-    const filters = [];
-    if (query.subjects.length)
-      filters.push({
-        type: 'subjects',
-        value: query.subjects.map((o) => o.value).join(' AND '),
-      });
-    if (query.langs.length)
-      filters.push({
-        type: 'langs',
-        value: query.langs.map((o) => o.value).join(' AND '),
-      });
-    const url = `${window.location.protocol}//${window.location.host}`;
-    window.analytics.track('Product List Filtered', {
-      filters,
-      list_id: org?.id || 'search',
-      category: query.aspect,
-      products: results.map((res, idx) => ({
-        product_id: res.id,
-        name: res.name,
-        position: idx,
-        url: `${url}/${org?.id || 'default'}/search/${res.id}`,
-        image_url: res.photo,
-        bio: res.bio,
-        socials: res.socials,
-        subjects: res[query.aspect].subjects,
-      })),
-    });
-  }, [searching, query, org?.id, results]);
-
-  useEffect(() => {
-    if (!viewing) return;
-    const url = `${window.location.protocol}//${window.location.host}`;
-    window.analytics.track('Product Viewed', {
-      product_id: viewing.id,
-      category: query.aspect,
-      name: viewing.name,
-      position: results.findIndex((res) => res.id === viewing.id),
-      url: `${url}/${org?.id || 'default'}/search/${viewing.id}`,
-      image_url: viewing.photo,
-      bio: viewing.bio,
-      socials: viewing.socials,
-      subjects: viewing[query.aspect].subjects,
-    });
-  }, [viewing, query.aspect, org?.id, results]);
+  const url = useMemo(() => {
+    if (typeof window === 'undefined') return 'https://tutorbook.app';
+    return `${window.location.protocol}//${window.location.host}`;
+  }, []);
+  useAnalytics(
+    'User List Loaded',
+    () =>
+      !searching && {
+        org: org ? Org.fromJSON(org).toSegment() : undefined,
+        subjects: query.subjects.map((o) => o.value).join(' AND '),
+        langs: query.langs.map((o) => o.value).join(' AND '),
+        aspect: query.aspect,
+        users: results.map((res, idx) => ({
+          ...User.fromJSON(res).toSegment(),
+          position: idx,
+          url: `${url}/${org?.id || 'default'}/search/${res.id}`,
+          subjects: res[query.aspect].subjects,
+        })),
+      }
+  );
+  useAnalytics(
+    'User Viewed',
+    () =>
+      viewing && {
+        aspect: query.aspect,
+        ...User.fromJSON(viewing).toSegment(),
+        position: results.findIndex((res) => res.id === viewing.id),
+        url: `${url}/${org?.id || 'default'}/search/${viewing.id}`,
+        subjects: viewing[query.aspect].subjects,
+      }
+  );
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
@@ -204,7 +221,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
         <QueryHeader
           aspects={org ? org.aspects : ['mentoring', 'tutoring']}
           query={query}
-          onChange={setQuery}
+          onChange={onQueryChange}
         />
         {auth && <AuthDialog />}
         {viewing && (
@@ -220,7 +237,7 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
           query={query}
           results={results}
           searching={searching || !canSearch}
-          onChange={setQuery}
+          onChange={onQueryChange}
           setViewing={setViewing}
         />
       </Page>

@@ -55,6 +55,7 @@ export type TimeslotFirestore = TimeslotBase<Timestamp>;
  */
 export type TimeslotJSON = TimeslotBase<string>;
 export type TimeslotSearchHit = TimeslotBase<number>;
+export type TimeslotSegment = { from: Date; to: Date };
 
 export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   if (!isJSON(json)) return false;
@@ -199,5 +200,9 @@ export class Timeslot implements TimeslotInterface {
       recur: params.get('recur') || undefined,
       id: params.get('id') || undefined,
     });
+  }
+
+  public toSegment(): TimeslotSegment {
+    return { from: this.from, to: this.to };
   }
 }

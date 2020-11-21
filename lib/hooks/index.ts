@@ -1,5 +1,6 @@
-export { default as usePrevious } from './use-previous';
-export { default as useContinuous } from './use-continuous';
-export { default as useSingle } from './use-single';
-export { default as useLoggedIn } from './use-logged-in';
-export { default as useSocialProps } from './use-social-props';
+export { default as useAnalytics } from './analytics';
+export { default as usePrevious } from './previous';
+export { default as useContinuous } from './continuous';
+export { default as useSingle } from './single';
+export { default as useLoggedIn } from './logged-in';
+export { default as useSocialProps } from './social-props';

@@ -76,10 +76,14 @@ export default function useContinuous<T>(
   }, [data, retry, timeout]);
 
   useEffect(() => {
-    // Immediately mutate local data.
-    if (((data as unknown) as { id: string })?.id !== '' && updateLocal) {
+    if (!updateLocal) return;
+    // Don't update remote data for unidentified resource.
+    if (((data as unknown) as { id: string })?.id === '') return;
+    // Throttle local updates (500ms) to prevent unecessary large re-renders.
+    const timeoutId = setTimeout(() => {
       void updateLocal(data);
-    }
+    }, 500);
+    return () => clearTimeout(timeoutId);
   }, [updateLocal, data]);
 
   useEffect(() => {
