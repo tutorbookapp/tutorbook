@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AxiosError } from 'axios';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 
+import { APIErrorJSON } from 'lib/api/error';
 import { Callback } from 'lib/model';
 
 interface ContinuousProps<T> {
   data: T;
   setData: Callback<T>;
-  error?: Error;
+  error: string;
   timeout: number;
   retry: () => Promise<void>;
 }
@@ -31,7 +33,7 @@ export default function useContinuous<T>(
   initialTimeout: number = 5000
 ): ContinuousProps<T> {
   const [data, setData] = useState<T>(initialData);
-  const [error, setError] = useState<Error>();
+  const [error, setError] = useState<string>('');
   const [retryCount, setRetryCount] = useState<number>(0);
 
   const lastReceivedResponse = useRef<T>();
@@ -39,10 +41,12 @@ export default function useContinuous<T>(
   const retry = useCallback(async () => {
     const [err, res] = await to(updateRemote(data));
     if (err) {
-      setError(err);
+      // If the server sends an error, show error message.
+      const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
+      setError(e.message);
       setRetryCount((prev: number) => prev + 1);
     } else {
-      setError(undefined);
+      setError('');
       setRetryCount(0);
       if (res && !dequal(res, data)) {
         lastReceivedResponse.current = res;
