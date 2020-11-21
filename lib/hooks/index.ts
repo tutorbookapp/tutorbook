@@ -1,3 +1,4 @@
+export { default as useTrack } from './track';
 export { default as useAnalytics } from './analytics';
 export { default as usePrevious } from './previous';
 export { default as useContinuous } from './continuous';

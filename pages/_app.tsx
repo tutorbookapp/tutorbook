@@ -4,10 +4,11 @@ import { AppProps } from 'next/app';
 
 import NProgress from 'components/nprogress';
 
-import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 import { Theme, ThemeContext } from 'lib/context/theme';
+import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { fetcher } from 'lib/fetch';
+import { useTrack } from 'lib/hooks';
 
 import 'styles/global.scss';
 
@@ -69,6 +70,18 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     },
     [user, loggedIn]
   );
+
+  // Only trigger the `User Signed In` event if the user was logged out before.
+  const track = useTrack();
+  const prevLoggedIn = useRef<boolean | undefined>(loggedIn);
+  useEffect(() => {
+    if (loggedIn === true && prevLoggedIn.current === false) {
+      track('User Signed In', { user: user.toSegment() });
+    } else if (loggedIn === false && prevLoggedIn.current === true) {
+      track('User Signed Out');
+    }
+    prevLoggedIn.current = loggedIn;
+  }, [track, user, loggedIn]);
 
   // Consumers can update local app-wide org data (proxy to SWR's mutate FN).
   const { data: orgsData } = useSWR<OrgJSON[]>('/api/orgs', fetcher);

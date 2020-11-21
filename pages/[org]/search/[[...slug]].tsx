@@ -22,13 +22,13 @@ import {
   UserJSON,
   UsersQuery,
 } from 'lib/model';
+import { useAnalytics, useTrack } from 'lib/hooks';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import clone from 'lib/utils/clone';
 import { db } from 'lib/api/firebase';
 import { intersection } from 'lib/utils';
 import { prefetch } from 'lib/fetch';
-import { useAnalytics } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -157,27 +157,25 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     );
   }, [viewing, query.aspect, query.subjects]);
 
-  const queryChangeTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const track = useTrack();
   const onQueryChange = useCallback(
     (param: CallbackParam<UsersQuery>) => {
       let updated = query;
       if (typeof param === 'object') updated = param;
       if (typeof param === 'function') updated = param(updated);
       setQuery(updated);
-      // Throttle this analytics tracking to prevent numerous events when multiple
-      // subjects are selected right after one another.
-      if (queryChangeTimeout.current) clearTimeout(queryChangeTimeout.current);
-      queryChangeTimeout.current = setTimeout(() => {
-        console.log('[EVENT] User List Filtered');
-        window.analytics.track('User List Filtered', {
+      track(
+        'User List Filtered',
+        {
           org: org ? Org.fromJSON(org).toSegment() : undefined,
           subjects: updated.subjects.map((o) => o.value).join(' AND '),
           langs: updated.langs.map((o) => o.value).join(' AND '),
           aspect: updated.aspect,
-        });
-      }, 2500);
+        },
+        2500
+      );
     },
-    [query, org]
+    [track, query, org]
   );
 
   // Uses the object-action framework event naming and known ecommerce events.

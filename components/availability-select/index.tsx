@@ -89,6 +89,8 @@ export default function AvailabilitySelect({
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, []);
 
+  // TODO: Fix the `useContinuous` hook to skip this callback when the component
+  // is initially mounted (e.g. leads to invalid analytics tracking).
   const updateRemote = useCallback(
     async (updated: Availability) => {
       onChange(updated);

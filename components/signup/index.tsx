@@ -14,7 +14,7 @@ import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
 
 import { Aspect, Availability, User, UserJSON } from 'lib/model';
-import { useSingle, useSocialProps } from 'lib/hooks';
+import { useAnalytics, useSingle, useSocialProps, useTrack } from 'lib/hooks';
 import { signup } from 'lib/firebase/signup';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
@@ -26,12 +26,21 @@ interface SignupProps {
 }
 
 export default function Signup({ aspect }: SignupProps): JSX.Element {
-  const updateRemote = useCallback(async (updated: User) => {
-    if (!updated.id) return signup(updated);
-    const url = `/api/users/${updated.id}`;
-    const { data } = await axios.put<UserJSON>(url, updated.toJSON());
-    return User.fromJSON(data);
-  }, []);
+  const track = useTrack();
+
+  const updateRemote = useCallback(
+    async (updated: User) => {
+      if (!updated.id) {
+        track('User Signup Started', { aspect, user: updated.toSegment() });
+        return signup(updated);
+      }
+      const url = `/api/users/${updated.id}`;
+      const { data } = await axios.put<UserJSON>(url, updated.toJSON());
+      track('User Updated', { aspect, user: updated.toSegment() });
+      return User.fromJSON(data);
+    },
+    [track, aspect]
+  );
 
   const { org } = useOrg();
   const { t, lang: locale } = useTranslation();
@@ -44,6 +53,11 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     checked,
     error,
   } = useSingle(local, updateRemote, updateLocal);
+
+  useAnalytics(
+    'User Signup Errored',
+    () => error && { error, aspect, user: user.toSegment() }
+  );
 
   const getSocialProps = useSocialProps(
     user,
@@ -78,56 +92,68 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const name = evt.currentTarget.value;
+      track('User Name Updated', { name });
       setUser((prev) => new User({ ...prev, name }));
     },
-    [setUser]
+    [track, setUser]
   );
   const onEmailChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const email = evt.currentTarget.value;
+      track('User Email Updated', { email });
       setUser((prev) => new User({ ...prev, email }));
     },
-    [setUser]
+    [track, setUser]
   );
   const onPhoneChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const phone = evt.currentTarget.value;
+      track('User Phone Updated', { phone });
       setUser((prev) => new User({ ...prev, phone }));
     },
-    [setUser]
+    [track, setUser]
   );
   const onPhotoChange = useCallback(
     (photo: string) => {
+      track('User Photo Updated', { photo });
       setUser((prev) => new User({ ...prev, photo }));
     },
-    [setUser]
+    [track, setUser]
   );
   const onBioChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const bio = evt.currentTarget.value;
+      track('User Bio Updated', { bio });
       setUser((prev) => new User({ ...prev, bio }));
     },
-    [setUser]
+    [track, setUser]
   );
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
+      track('User Subjects Updated', { aspect, subjects }, 2500);
       setUser(
         (prev) => new User({ ...prev, [aspect]: { ...prev[aspect], subjects } })
       );
     },
-    [setUser, aspect]
+    [track, setUser, aspect]
   );
   const onAvailabilityChange = useCallback(
     (availability: Availability) => {
+      // TODO: Fix the `useContinuous` hook that the `AvailabilitySelect` uses
+      // to skip this callback when the component is initially mounted.
+      track('User Availability Updated', {
+        availability: availability.toSegment(),
+      });
       setUser((prev) => new User({ ...prev, availability }));
     },
-    [setUser]
+    [track, setUser]
   );
   const onLangsChange = useCallback(
     (langs: string[]) => {
+      track('User Langs Updated', { langs }, 2500);
       setUser((prev) => new User({ ...prev, langs }));
     },
-    [setUser]
+    [track, setUser]
   );
 
   const action = useMemo(() => (user.id ? 'update' : 'create'), [user.id]);

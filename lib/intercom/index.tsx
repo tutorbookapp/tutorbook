@@ -5,10 +5,9 @@ const canUseDOM = !!(
 );
 
 type Basics = (action: 'hide' | 'show' | 'shutdown' | 'showMessages') => void;
-type NewMsg = (action: 'showNewMessage', message: string) => void;
-type TrackEvt = (action: 'trackEvent', event: string) => void;
-type Visitor = (action: 'getVisitorId') => string;
+type NewMessage = (action: 'showNewMessage', message: string) => void;
 type StartTour = (action: 'startTour', tourId: number) => void;
+type Visitor = (action: 'getVisitorId') => string;
 
 type Callbacks = (trigger: 'onHide' | 'onShow', callback: () => void) => void;
 type Unread = (
@@ -18,10 +17,9 @@ type Unread = (
 
 type IntercomGlobal =
   | Basics
-  | NewMsg
-  | TrackEvt
-  | Visitor
+  | NewMessage
   | StartTour
+  | Visitor
   | Callbacks
   | Unread;
 

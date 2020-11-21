@@ -1,21 +1,25 @@
 import { useEffect, useRef } from 'react';
 import { dequal } from 'dequal/lite';
 
-export default function useAnalytics<T>(
+import useTrack from 'lib/hooks/track';
+
+type Falsy = '' | false | null | undefined;
+
+export default function useAnalytics<T extends Record<string, unknown> | Falsy>(
   event: string,
   traits: () => T,
   throttle = 500
 ): void {
   const prev = useRef<T>(traits());
+  const track = useTrack();
 
   useEffect(() => {
     const updated = traits();
     if (!updated || dequal(prev.current, updated)) return;
     const timeoutId = setTimeout(() => {
-      console.log(`[EVENT] ${event}`, updated);
-      window.analytics.track(event, updated);
+      track(event, updated as Record<string, unknown>);
       prev.current = updated;
     }, throttle);
     return () => clearTimeout(timeoutId);
-  }, [event, traits, throttle]);
+  }, [track, event, traits, throttle]);
 }

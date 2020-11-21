@@ -4,6 +4,7 @@ import {
   TimeslotInterface,
   TimeslotJSON,
   TimeslotSearchHit,
+  TimeslotSegment,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
 import { getDate, getMonthsTimeslots, sameDate } from 'lib/utils/time';
@@ -211,7 +212,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   }
 
   public toJSON(): AvailabilityJSON {
-    return Array.from(this.map((timeslot: Timeslot) => timeslot.toJSON()));
+    return Array.from(this.map((t) => t.toJSON()));
   }
 
   public static fromJSON(json: AvailabilityJSON): Availability {
@@ -237,5 +238,9 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
       availability.push(Timeslot.fromURLParam(timeslotParam));
     });
     return availability;
+  }
+
+  public toSegment(): TimeslotSegment[] {
+    return Array.from(this.map((t) => t.toSegment()));
   }
 }

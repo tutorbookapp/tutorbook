@@ -30,10 +30,10 @@ import {
   User,
   UserJSON,
 } from 'lib/model';
+import { useAnalytics, useTrack } from 'lib/hooks';
 import { APIErrorJSON } from 'lib/api/error';
 import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
-import { useAnalytics } from 'lib/hooks';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -120,6 +120,8 @@ export default function RequestDialog({
     return org ? org.profiles.includes('phone') : false;
   }, [org]);
 
+  const track = useTrack();
+
   // Signup the user via a Google Popup window if they aren't current logged in
   // **before** sending the request (this will trigger an update app-wide).
   const onSubmit = useCallback(
@@ -200,11 +202,11 @@ export default function RequestDialog({
       } else {
         setChecked(true);
         const created = Match.fromJSON((res as AxiosResponse<MatchJSON>).data);
-        window.analytics.track('Match Created', created.toSegment());
+        track('Match Created', created.toSegment());
         setTimeout(() => setOpen(false), 1000);
       }
     },
-    [currentUser, phoneRequired, phone, updateUser]
+    [track, currentUser, phoneRequired, phone, updateUser]
   );
 
   return (
