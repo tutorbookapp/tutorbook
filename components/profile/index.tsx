@@ -1,17 +1,22 @@
-import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
 import { FormEvent, useCallback } from 'react';
+import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
+import AvailabilitySelect from 'components/availability-select';
 import Header from 'components/header';
 import LangSelect from 'components/lang-select';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
-import AvailabilitySelect from 'components/availability-select';
 
 import { Availability, User, UserJSON } from 'lib/model';
-import { useContinuous, useSocialProps } from 'lib/hooks';
+import {
+  useAnalytics,
+  useContinuous,
+  useSocialProps,
+  useTrack,
+} from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 
 import styles from './profile.module.scss';
@@ -20,15 +25,25 @@ export default function Profile(): JSX.Element {
   const { t } = useTranslation();
   const { user: local, updateUser: updateLocal } = useUser();
 
-  const updateRemote = useCallback(async (updated: User) => {
-    const url = `/api/users/${updated.id}`;
-    const { data } = await axios.put<UserJSON>(url, updated.toJSON());
-    return User.fromJSON(data);
-  }, []);
+  const track = useTrack();
+  const updateRemote = useCallback(
+    async (updated: User) => {
+      const url = `/api/users/${updated.id}`;
+      const { data } = await axios.put<UserJSON>(url, updated.toJSON());
+      track('Profile Updated', { user: updated.toSegment() });
+      return User.fromJSON(data);
+    },
+    [track]
+  );
 
   const { error, retry, timeout, data: user, setData: setUser } = useContinuous<
     User
   >(local, updateRemote, updateLocal);
+
+  useAnalytics(
+    'Profile Errored',
+    () => error && { error, user: user.toSegment() }
+  );
 
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {

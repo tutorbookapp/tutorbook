@@ -79,10 +79,10 @@ export default function useContinuous<T>(
     if (!updateLocal) return;
     // Don't update remote data for unidentified resource.
     if (((data as unknown) as { id: string })?.id === '') return;
-    // Throttle local updates (500ms) to prevent unecessary large re-renders.
+    // Throttle local updates (one sec) to prevent unecessary large re-renders.
     const timeoutId = setTimeout(() => {
       void updateLocal(data);
-    }, 500);
+    }, 1000);
     return () => clearTimeout(timeoutId);
   }, [updateLocal, data]);
 
