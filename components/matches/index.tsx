@@ -15,7 +15,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
 import Header from 'components/header';
-import { IntercomAPI } from 'components/intercom';
+import Intercom from 'lib/intercom';
 import MatchDialog from 'components/match-dialog';
 import Placeholder from 'components/placeholder';
 
@@ -77,7 +77,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
           {
             label: t('common:import-data'),
             onClick: () =>
-              IntercomAPI('showNewMessage', t('matches:import-data-msg')),
+              Intercom('showNewMessage', t('matches:import-data-msg')),
           },
         ]}
       />

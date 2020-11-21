@@ -2,7 +2,7 @@ import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
-import { IntercomAPI } from 'components/intercom';
+import Intercom from 'lib/intercom';
 
 import styles from './contact-cta.module.scss';
 
@@ -17,7 +17,7 @@ export default function ContactCTA(): JSX.Element {
           <p>{t('landing:contact-body')}</p>
         </div>
         <Button
-          onClick={() => IntercomAPI('showNewMessage', t('common:new-org-msg'))}
+          onClick={() => Intercom('showNewMessage', t('common:new-org-msg'))}
           label='Contact Us'
           raised
           arrow

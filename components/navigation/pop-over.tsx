@@ -8,7 +8,7 @@ import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
-import { IntercomAPI } from 'components/intercom';
+import Intercom from 'lib/intercom';
 
 import { AccountInterface, Org, User } from 'lib/model';
 import Link from 'lib/intl/link';
@@ -199,16 +199,14 @@ export default function PopOverMenu({
           <PopOverButton
             id='create-org'
             icon='add'
-            onClick={() =>
-              IntercomAPI('showNewMessage', t('common:new-org-msg'))
-            }
+            onClick={() => Intercom('showNewMessage', t('common:new-org-msg'))}
           >
             {t('common:new-org-btn')}
           </PopOverButton>
           <PopOverButton
             id='get-help'
             icon='contact_support'
-            onClick={() => IntercomAPI('show')}
+            onClick={() => Intercom('show')}
           >
             {t('common:launch-intercom')}
           </PopOverButton>

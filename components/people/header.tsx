@@ -3,7 +3,7 @@ import { Snackbar } from '@rmwc/snackbar';
 import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
 
-import { IntercomAPI } from 'components/intercom';
+import Intercom from 'lib/intercom';
 import TitleHeader from 'components/header';
 
 import { TCallback, User, UserJSON } from 'lib/model';
@@ -70,7 +70,7 @@ export default memo(function Header({
 
   const { t } = useTranslation();
   const importData = useCallback(() => {
-    return IntercomAPI('showNewMessage', t('people:import-data-msg'));
+    return Intercom('showNewMessage', t('people:import-data-msg'));
   }, [t]);
 
   return (
