@@ -71,7 +71,8 @@ export type Tag = 'not-vetted';
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property visible - Whether or not this user appears in search results.
  * @property featured - Aspects in which this user is first in search results.
- * @property token - The user's Firebase Authentication JWT `idToken`.
+ * @property [token] - The user's Firebase Authentication JWT `idToken`.
+ * @property [hash] - The user's Intercom HMAC for identity verifications.
  * @todo Add a `zoom` prop that contains the user's personal Zoom OAuth token
  * (e.g. for freelancers who want to user their own Zoom account when creating
  * meetings).
@@ -88,6 +89,7 @@ export interface UserInterface extends AccountInterface {
   visible: boolean;
   featured: Aspect[];
   token?: string;
+  hash?: string;
 }
 
 /**
@@ -123,6 +125,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (typeof json.visible !== 'boolean') return false;
   if (!isArray(json.featured, isAspect)) return false;
   if (json.token && typeof json.token !== 'string') return false;
+  if (json.hash && typeof json.hash !== 'string') return false;
   return true;
 }
 
@@ -154,6 +157,8 @@ export class User extends Account implements UserInterface {
   public featured: Aspect[] = [];
 
   public token?: string;
+
+  public hash?: string;
 
   /**
    * Creates a new `User` object by overriding all of our default values w/ the
@@ -229,6 +234,7 @@ export class User extends Account implements UserInterface {
       verifications: this.verifications.map((v) => v.toFirestore()),
       zooms: this.zooms.map((z) => z.toFirestore()),
       token: undefined,
+      hash: undefined,
     });
   }
 
@@ -243,7 +249,15 @@ export class User extends Account implements UserInterface {
   }
 
   public toJSON(): UserJSON {
-    const { availability, verifications, zooms, ref, token, ...rest } = this;
+    const {
+      availability,
+      verifications,
+      zooms,
+      ref,
+      token,
+      hash,
+      ...rest
+    } = this;
     return {
       ...rest,
       availability: availability.toJSON(),

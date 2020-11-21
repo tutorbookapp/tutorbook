@@ -148,6 +148,56 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
     );
   }, [viewing, query.aspect, query.subjects]);
 
+  // Uses the object-action framework event naming and known ecommerce events.
+  // @see {@link https://segment.com/docs/connections/spec/ecommerce/v2/#product-list-filtered}
+  // @see {@link https://segment.com/academy/collecting-data/naming-conventions-for-clean-data}
+  useEffect(() => {
+    if (searching) return;
+    const filters = [];
+    if (query.subjects.length)
+      filters.push({
+        type: 'subjects',
+        value: query.subjects.map((o) => o.value).join(' AND '),
+      });
+    if (query.langs.length)
+      filters.push({
+        type: 'langs',
+        value: query.langs.map((o) => o.value).join(' AND '),
+      });
+    const url = `${window.location.protocol}//${window.location.host}`;
+    window.analytics.track('Product List Filtered', {
+      filters,
+      list_id: org?.id || 'search',
+      category: query.aspect,
+      products: results.map((res, idx) => ({
+        product_id: res.id,
+        name: res.name,
+        position: idx,
+        url: `${url}/${org?.id || 'default'}/search/${res.id}`,
+        image_url: res.photo,
+        bio: res.bio,
+        socials: res.socials,
+        subjects: res[query.aspect].subjects,
+      })),
+    });
+  }, [searching, query, org?.id, results]);
+
+  useEffect(() => {
+    if (!viewing) return;
+    const url = `${window.location.protocol}//${window.location.host}`;
+    window.analytics.track('Product Viewed', {
+      product_id: viewing.id,
+      category: query.aspect,
+      name: viewing.name,
+      position: results.findIndex((res) => res.id === viewing.id),
+      url: `${url}/${org?.id || 'default'}/search/${viewing.id}`,
+      image_url: viewing.photo,
+      bio: viewing.bio,
+      socials: viewing.socials,
+      subjects: viewing[query.aspect].subjects,
+    });
+  }, [viewing, query.aspect, org?.id, results]);
+
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page title={`${org?.name || 'Loading'} - Search - Tutorbook`}>

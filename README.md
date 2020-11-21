@@ -103,6 +103,14 @@ Summarized here are descriptions of common data flow patterns and design specs.
 These are some of the front-end design guidelines that TB follows in order to
 maintain consistency and display predictable behavior.
 
+### Analytics
+
+TB uses [Segment](https://segment.com) to collect analytics from both the client
+and the server. When defining events, we use Segment's recommended
+[object-action framework](https://segment.com/academy/collecting-data/naming-conventions-for-clean-data/).
+Each event name includes an object (e.g. Product, Application) and an action on
+that object (e.g. Viewed, Installed, Created).
+
 ### Zoom Integration
 
 TB ([Tutorbook](https://tutorbook.app)) creates new recurring Zoom meetings for
@@ -253,9 +261,9 @@ trying to contribute; it'll save your reputation and a lot of time):
   useful (relatively drop-in) solutions.
 - [Algolia](https://algolia.com/doc) is synced with our [Firestore
   database](https://firebase.google.com/docs/firestore) via [GCP
-  Functions](https://firebase.google.com/docs/functions/firestore-events). We
-  use Algolia for subject and language selection and to power our primary search
-  view capabilities.
+  Functions](https://firebase.google.com/docs/functions/firestore-events). TB
+  uses Algolia for subject and language selection and to power the primary
+  search view capabilities.
 
 ## Development Environment
 
@@ -360,7 +368,7 @@ This command runs two scripts [concurrently](https://www.npmjs.com/package/concu
    Suite](https://firebase.google.com/docs/emulator-suite).
 
 Open [http://0.0.0.0:3000](http://0.0.0.0:3000) to view the app in the browser
-(note that we use `0.0.0.0` instead of the default `localhost` for [Intercom
+(note that TB uses `0.0.0.0` instead of the default `localhost` for [Intercom
 support](https://bit.ly/3cAWfLv). The page will hot-reload if you make edits.
 You will also see any lint errors in the console.
 
@@ -374,8 +382,8 @@ Runs `next build` which builds the application for production usage.
 
 #### `yarn start`
 
-Runs `next start` which starts a Next.js production server. We have no use for
-this right now because we're deploying to Vercel NOW which handles that for us.
+Runs `next start` which starts a Next.js production server. I have no use for
+this right now because I'm deploying to Vercel NOW which handles that for me.
 
 #### `yarn analyze`
 
@@ -385,7 +393,7 @@ Runs the build to generate a bundle size visualizer.
 
 Runs all of ESLint tests. This should rarely be necessary because you should
 have ESLint integrated into your IDE (and thus it should run as you edit code)
-and we have Husky running `pretty-quick` before each commit (which should take
+and I have Husky running `pretty-quick` before each commit (which should take
 care of the styling that ESLint enforces).
 
 #### `yarn style`
