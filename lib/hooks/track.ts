@@ -13,7 +13,11 @@ export default function useTrack(): Track {
     (event: string, props?: unknown, throttle = 1000) => {
       if (queue[event]) clearTimeout(queue[event]);
       queue[event] = setTimeout(() => {
-        const properties = { org: org?.toSegment(), ...(props as object) };
+        const properties = {
+          ...(props as object),
+          org: org?.toSegment(),
+          orgId: org?.id,
+        };
         console.log(`[EVENT] ${event}`, properties);
         window.analytics.track(event, properties);
       }, throttle);

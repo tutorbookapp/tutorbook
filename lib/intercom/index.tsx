@@ -31,7 +31,6 @@ declare global {
  */
 export default function Intercom(...args: Parameters<IntercomGlobal>): void {
   if (canUseDOM && window.Intercom) {
-    // eslint-disable-next-line @typescript-eslint/ban-types
     (window.Intercom as Function)(...args);
   } else if (canUseDOM) {
     console.warn('Intercom has not been initialized yet.');
