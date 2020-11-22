@@ -31,7 +31,7 @@ function PeoplePage(): JSX.Element {
     return orgs[idx];
   }, [orgs, params.org]);
 
-  usePage('Org People');
+  usePage('Org People', params.org as string);
   useLoggedIn(`/${params.org as string}/people`);
 
   return (

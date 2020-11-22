@@ -28,7 +28,7 @@ function MatchesPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  usePage('Org Matches');
+  usePage('Org Matches', query.org as string);
   useLoggedIn(`/${query.org as string}/matches`);
 
   return (

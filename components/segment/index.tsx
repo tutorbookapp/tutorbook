@@ -27,17 +27,12 @@ export default function Segment({ intercom }: SegmentProps): null {
 
   const prevIdentity = useRef<Record<string, unknown>>();
   useEffect(() => {
-    const company = org ? { id: org.id, name: org.name } : undefined;
-    const identity = { ...user.toSegment(), company };
+    const identity = user.toSegment();
     if (dequal(prevIdentity.current, identity)) return;
-    if (user.id) {
-      console.log(`[ALIAS] ${user.id}`);
-      window.analytics.alias(user.id);
-    }
-    console.log(`[IDENTITY] ${user.toString()}`, identity);
+    if (user.id) window.analytics.alias(user.id);
     window.analytics.identify(user.id, identity);
     prevIdentity.current = identity;
-  }, [user, org]);
+  }, [user]);
 
   useEffect(() => {
     Intercom('update', {
@@ -50,7 +45,8 @@ export default function Segment({ intercom }: SegmentProps): null {
   useEffect(() => {
     const group = org?.toSegment();
     if (!org || !group || dequal(prevGroup.current, group)) return;
-    console.log(`[GROUP] ${org.toString()}`, group);
+    // The `orgId` prop is required for Segment to create Mixpanel groups.
+    // @see {@link https://bit.ly/3kWrJPw}
     window.analytics.group(org.id, { ...group, orgId: group.id });
     prevGroup.current = group;
   }, [org]);

@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 
-export default function usePage(name: string): void {
+export default function usePage(name: string, orgId = 'default'): void {
   useEffect(() => {
-    console.log(`[PAGE] ${name}`);
-    window.analytics.page(name);
-  }, [name]);
+    // The `orgId` prop is required to connect events with Mixpanel groups.
+    // @see {@link https://bit.ly/36YrRsT}
+    window.analytics.page(name, { orgId });
+  }, [name, orgId]);
 }

@@ -28,7 +28,7 @@ function SettingsPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  usePage('Org Settings');
+  usePage('Org Settings', query.org as string);
   useLoggedIn(`/${query.org as string}/settings`);
 
   return (

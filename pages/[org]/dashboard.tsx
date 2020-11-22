@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Page from 'components/page';
 import Overview from 'components/overview';
+import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
 import { useLoggedIn, usePage } from 'lib/hooks';
@@ -12,8 +12,8 @@ import { OrgContext } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
-import overview from 'locales/en/overview.json';
 import common from 'locales/en/common.json';
+import overview from 'locales/en/overview.json';
 
 function DashboardPage(): JSX.Element {
   const { orgs, loggedIn } = useUser();
@@ -26,8 +26,8 @@ function DashboardPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  usePage('Org Dashboard');
-  useLoggedIn(`/${query.org}/dashboard`);
+  usePage('Org Dashboard', query.org as string);
+  useLoggedIn(`/${query.org as string}/dashboard`);
 
   return (
     <OrgContext.Provider value={{ org }}>
