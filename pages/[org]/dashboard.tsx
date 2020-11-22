@@ -7,8 +7,8 @@ import Page from 'components/page';
 import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
+import { useLoggedIn, usePage } from 'lib/hooks';
 import { OrgContext } from 'lib/context/org';
-import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -26,6 +26,7 @@ function DashboardPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
+  usePage('Org Dashboard');
   useLoggedIn(`/${query.org}/dashboard`);
 
   return (

@@ -23,6 +23,8 @@ export default async function createUser(
   try {
     const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
 
+    throw new Error('This is a fake error');
+
     // TODO: Update the photo after creating the auth user ID so that we can
     // organize our GCP Storage bucket by user (that would require two calls to
     // the auth API, however, so not ideal... perhaps I should assign uIDs).

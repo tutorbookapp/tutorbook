@@ -7,8 +7,8 @@ import { TabHeader } from 'components/navigation';
 import People from 'components/people';
 import Page from 'components/page';
 
+import { useLoggedIn, usePage } from 'lib/hooks';
 import { OrgContext } from 'lib/context/org';
-import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -31,6 +31,7 @@ function PeoplePage(): JSX.Element {
     return orgs[idx];
   }, [orgs, params.org]);
 
+  usePage('Org People');
   useLoggedIn(`/${params.org as string}/people`);
 
   return (

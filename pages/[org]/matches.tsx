@@ -7,8 +7,8 @@ import Page from 'components/page';
 import Matches from 'components/matches';
 import { TabHeader } from 'components/navigation';
 
+import { useLoggedIn, usePage } from 'lib/hooks';
 import { OrgContext } from 'lib/context/org';
-import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -28,6 +28,7 @@ function MatchesPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
+  usePage('Org Matches');
   useLoggedIn(`/${query.org as string}/matches`);
 
   return (

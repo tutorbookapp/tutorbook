@@ -4,7 +4,7 @@ import Page from 'components/page';
 import Profile from 'components/profile';
 import { TabHeader } from 'components/navigation';
 
-import { useLoggedIn } from 'lib/hooks';
+import { useLoggedIn, usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
@@ -14,6 +14,7 @@ import user3rd from 'locales/en/user3rd.json';
 function ProfilePage(): JSX.Element {
   const { t } = useTranslation();
 
+  usePage('Profile');
   useLoggedIn('profile');
 
   return (

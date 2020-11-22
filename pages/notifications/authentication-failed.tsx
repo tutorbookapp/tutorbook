@@ -1,6 +1,10 @@
 import NotificationPage from 'components/notification';
 
+import { usePage } from 'lib/hooks';
+
 export default function AuthenticationFailedPage(): JSX.Element {
+  usePage('Authenticated Failed');
+
   return (
     <NotificationPage header='Authentication Failed' intercom>
       <p>

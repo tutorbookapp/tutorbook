@@ -67,20 +67,6 @@ export default function RequestDialog({
   const [phone, setPhone] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
 
-  useAnalytics('Match Subjects Updated', () => ({
-    subjects,
-    user: user.toSegment(),
-  }));
-  useAnalytics('Match Time Updated', () => ({
-    time: time?.toSegment(),
-    user: user.toSegment(),
-  }));
-  useAnalytics('Match Message Updated', () => ({
-    message,
-    user: user.toSegment(),
-  }));
-  useAnalytics('Match Errored', () => error && { error });
-
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
   const match = useRef<Match>(new Match());
@@ -108,6 +94,24 @@ export default function RequestDialog({
       people: [target, creator],
     });
   }, [currentUser, user, aspect, message, subjects, time, org?.id]);
+
+  useAnalytics('Match Subjects Updated', () => ({
+    subjects,
+    user: user.toSegment(),
+  }));
+  useAnalytics('Match Time Updated', () => ({
+    time: time?.toSegment(),
+    user: user.toSegment(),
+  }));
+  useAnalytics('Match Message Updated', () => ({
+    message,
+    user: user.toSegment(),
+  }));
+  useAnalytics(
+    'Match Errored',
+    () =>
+      error && { ...match.current.toSegment(), user: user.toSegment(), error }
+  );
 
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setMessage(event.currentTarget.value);
@@ -202,11 +206,14 @@ export default function RequestDialog({
       } else {
         setChecked(true);
         const created = Match.fromJSON((res as AxiosResponse<MatchJSON>).data);
-        track('Match Created', created.toSegment());
+        track('Match Created', {
+          ...created.toSegment(),
+          user: user.toSegment(),
+        });
         setTimeout(() => setOpen(false), 1000);
       }
     },
-    [track, currentUser, phoneRequired, phone, updateUser]
+    [user, track, currentUser, phoneRequired, phone, updateUser]
   );
 
   return (

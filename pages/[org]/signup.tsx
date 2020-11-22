@@ -10,8 +10,9 @@ import Page from 'components/page';
 
 import { isAspect, Aspect, Org, OrgJSON } from 'lib/model';
 import { OrgContext } from 'lib/context/org';
-import { withI18n } from 'lib/intl';
 import { db } from 'lib/api/firebase';
+import { usePage } from 'lib/hooks';
+import { withI18n } from 'lib/intl';
 
 import user3rd from 'locales/en/user3rd.json';
 import signup from 'locales/en/signup.json';
@@ -28,6 +29,7 @@ function SignupPage({ org }: SignupPageProps): JSX.Element {
     return org.aspects[0] || 'mentoring';
   });
 
+  usePage('Org Signup');
   useEffect(() => {
     setAspect((prev: Aspect) => {
       const updated = isAspect(query.aspect) ? query.aspect : prev;

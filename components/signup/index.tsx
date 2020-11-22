@@ -31,12 +31,14 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
   const updateRemote = useCallback(
     async (updated: User) => {
       if (!updated.id) {
-        track('User Signup Started', { aspect, user: updated.toSegment() });
-        return signup(updated);
+        track('User Signup Started', { ...updated.toSegment(), aspect });
+        const created = await signup(updated);
+        track('User Signed Up', { ...created.toSegment(), aspect });
+        return created;
       }
       const url = `/api/users/${updated.id}`;
       const { data } = await axios.put<UserJSON>(url, updated.toJSON());
-      track('User Updated', { aspect, user: updated.toSegment() });
+      track('User Updated', { ...updated.toSegment(), aspect });
       return User.fromJSON(data);
     },
     [track, aspect]
@@ -56,7 +58,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
 
   useAnalytics(
     'User Signup Errored',
-    () => error && { error, aspect, user: user.toSegment() }
+    () => error && { ...user.toSegment(), error, aspect }
   );
 
   const getSocialProps = useSocialProps(

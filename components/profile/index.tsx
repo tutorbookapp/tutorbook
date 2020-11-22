@@ -30,7 +30,7 @@ export default function Profile(): JSX.Element {
     async (updated: User) => {
       const url = `/api/users/${updated.id}`;
       const { data } = await axios.put<UserJSON>(url, updated.toJSON());
-      track('Profile Updated', { user: updated.toSegment() });
+      track('Profile Updated', updated.toSegment());
       return User.fromJSON(data);
     },
     [track]
@@ -42,7 +42,7 @@ export default function Profile(): JSX.Element {
 
   useAnalytics(
     'Profile Errored',
-    () => error && { error, user: user.toSegment() }
+    () => error && { ...user.toSegment(), error }
   );
 
   const onNameChange = useCallback(

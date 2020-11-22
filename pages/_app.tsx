@@ -76,7 +76,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   const prevLoggedIn = useRef<boolean | undefined>(loggedIn);
   useEffect(() => {
     if (loggedIn === true && prevLoggedIn.current === false) {
-      track('User Signed In', { user: user.toSegment() });
+      track('User Signed In', user.toSegment());
     } else if (loggedIn === false && prevLoggedIn.current === true) {
       track('User Signed Out');
     }

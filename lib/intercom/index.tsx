@@ -4,24 +4,19 @@ const canUseDOM = !!(
   window.document.createElement
 );
 
+interface Settings {
+  hide_default_launcher: boolean;
+  user_hash?: string;
+}
+
+type Boot = (action: 'boot', settings?: Settings) => void;
 type Basics = (action: 'hide' | 'show' | 'shutdown' | 'showMessages') => void;
+type Update = (action: 'update', settings: Settings) => void;
 type NewMessage = (action: 'showNewMessage', message: string) => void;
 type StartTour = (action: 'startTour', tourId: number) => void;
 type Visitor = (action: 'getVisitorId') => string;
 
-type Callbacks = (trigger: 'onHide' | 'onShow', callback: () => void) => void;
-type Unread = (
-  trigger: 'onUnreadCountChange',
-  callback: (unread: number) => void
-) => void;
-
-type IntercomGlobal =
-  | Basics
-  | NewMessage
-  | StartTour
-  | Visitor
-  | Callbacks
-  | Unread;
+type IntercomGlobal = Boot | Basics | Update | NewMessage | StartTour | Visitor;
 
 declare global {
   interface Window {
@@ -34,7 +29,7 @@ declare global {
  * would otherwise occur during SSR (when `window.Intercom` isn't populated).
  * @see {@link https://developers.intercom.com/installing-intercom/docs/intercom-javascript}
  */
-export default function IntercomAPI(...args: Parameters<IntercomGlobal>): void {
+export default function Intercom(...args: Parameters<IntercomGlobal>): void {
   if (canUseDOM && window.Intercom) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     (window.Intercom as Function)(...args);

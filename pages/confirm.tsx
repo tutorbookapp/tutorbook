@@ -9,9 +9,13 @@ import { useRouter } from 'next/router';
 import NotificationPage from 'components/notification';
 
 import { User, UserJSON } from 'lib/model';
+import { usePage, useTrack } from 'lib/hooks';
+import { period } from 'lib/utils';
 
 export default function Confirm(): JSX.Element {
   const { query, push } = useRouter();
+
+  usePage('Confirm');
 
   useEffect(() => {
     // Set a timeout to avoid conflicting with the page transition nprogress.
@@ -19,8 +23,11 @@ export default function Confirm(): JSX.Element {
     return () => clearTimeout(timeoutId);
   }, []);
 
+  const track = useTrack();
+
   useEffect(() => {
-    async function error(): Promise<void> {
+    async function error(msg: string): Promise<void> {
+      track('Email Login Errored', { error: period(msg) });
       await push('/notifications/authentication-failed');
     }
 
@@ -29,11 +36,12 @@ export default function Confirm(): JSX.Element {
       await import('firebase/auth');
 
       const auth = firebase.auth();
-      if (!auth.isSignInWithEmailLink(window.location.href)) return error();
+      if (!auth.isSignInWithEmailLink(window.location.href))
+        return error('Current URL was not a valid login link');
       const email = localStorage.getItem('email');
-      if (!email) return error();
+      if (!email) return error('No email found in local storage');
       const [signInErr, cred] = await to(auth.signInWithEmailLink(email));
-      if (signInErr || !cred?.user) return error();
+      if (signInErr || !cred?.user) return error(signInErr?.message || '');
       const user = new User({
         id: cred.user.uid,
         name: cred.user.displayName as string,
@@ -48,7 +56,7 @@ export default function Confirm(): JSX.Element {
       const [createErr, res] = await to(
         axios.put<UserJSON>('/api/account', user.toJSON())
       );
-      if (createErr || !res) return error();
+      if (createErr || !res) return error(createErr?.message || '');
       if (!dequal(res.data, user.toJSON())) {
         await mutate('/api/account', res.data, false);
       }
@@ -58,7 +66,7 @@ export default function Confirm(): JSX.Element {
     }
 
     void signupWithEmail();
-  }, [query, push]);
+  }, [track, query, push]);
 
   return <NotificationPage header='Confirming Login' />;
 }

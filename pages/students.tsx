@@ -3,6 +3,7 @@ import Hero from 'components/hero';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
+import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import about from 'locales/en/about.json';
@@ -12,6 +13,8 @@ import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
 
 function StudentsPage(): JSX.Element {
+  usePage('Students Landing');
+
   return (
     <Page title='Support at scale - Tutorbook' intercom>
       <TabHeader

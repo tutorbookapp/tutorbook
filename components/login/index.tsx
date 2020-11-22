@@ -12,6 +12,7 @@ import { APIErrorJSON } from 'lib/api/error';
 import getLocation from 'lib/utils/location';
 import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
+import { useTrack } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 
 import styles from './login.module.scss';
@@ -49,32 +50,43 @@ export default function Login(): JSX.Element {
     if (error) setLoading(false);
   }, [error]);
 
+  const track = useTrack();
+
   const [email, setEmail] = useState<string>('');
   const loginWithEmail = useCallback(
     async (evt: FormEvent) => {
       evt.preventDefault();
       setLoading(true);
       localStorage.setItem('email', email);
+      track('Email Login Started', { email });
       const [locationErr, location] = await to(getLocation());
-      if (locationErr) return setError(period(locationErr.message));
+      if (locationErr) {
+        track('Email Login Errored', { error: period(locationErr.message) });
+        return setError(period(locationErr.message));
+      }
       const [err] = await to(
         axios.post('/api/login', { email, location, redirect })
       );
       if (err) {
         const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
+        track('Email Login Errored', { error: period(e.message) });
         return setError(period(e.message));
       }
       return Router.push(`/notifications/awaiting-confirm?email=${email}`);
     },
-    [email, redirect]
+    [track, email, redirect]
   );
 
   const loginWithGoogle = useCallback(async () => {
     setLoading(true);
+    track('Google Login Started');
     const [err] = await to(signupWithGoogle());
-    if (err) return setError(period(err.message));
+    if (err) {
+      track('Google Login Errored', { error: period(err.message) });
+      return setError(period(err.message));
+    }
     return Router.push(redirect);
-  }, [redirect]);
+  }, [track, redirect]);
 
   return (
     <div className={styles.wrapper}>

@@ -8,8 +8,8 @@ import Settings from 'components/settings';
 import Signup from 'components/settings/signup';
 import { TabHeader } from 'components/navigation';
 
+import { useLoggedIn, usePage } from 'lib/hooks';
 import { OrgContext } from 'lib/context/org';
-import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -28,6 +28,7 @@ function SignupSettingsPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
+  usePage('Org Signup Settings');
   useLoggedIn(`/${query.org as string}/settings/signup`);
 
   return (

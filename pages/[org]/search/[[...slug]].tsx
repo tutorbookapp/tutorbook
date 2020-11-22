@@ -22,7 +22,7 @@ import {
   UserJSON,
   UsersQuery,
 } from 'lib/model';
-import { useAnalytics, useTrack } from 'lib/hooks';
+import { useAnalytics, usePage, useTrack } from 'lib/hooks';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import clone from 'lib/utils/clone';
@@ -43,6 +43,8 @@ interface SearchPageProps {
 }
 
 function SearchPage({ org, user }: SearchPageProps): JSX.Element {
+  usePage('Org Search');
+
   const { user: currentUser, loggedIn } = useUser();
 
   const [query, setQuery] = useState<UsersQuery>(new UsersQuery());

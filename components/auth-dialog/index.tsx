@@ -1,37 +1,41 @@
 import { useCallback, useState } from 'react';
 import { Dialog } from '@rmwc/dialog';
-import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
+import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
 import Loader from 'components/loader';
 
+import { join, period } from 'lib/utils';
 import { User } from 'lib/model';
-import { join } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useOrg } from 'lib/context/org';
+import { useTrack } from 'lib/hooks';
 
 import styles from './auth-dialog.module.scss';
 
 export default function AuthDialog(): JSX.Element {
   const [loggingIn, setLoggingIn] = useState<boolean>(false);
-  const [error, setError] = useState<Error>();
+  const [error, setError] = useState<string>('');
 
   const { org } = useOrg();
 
+  const track = useTrack();
   const onClick = useCallback(async () => {
-    setError(undefined);
+    setError('');
     setLoggingIn(true);
+    track('Google Login Started');
     const user = new User({ orgs: org ? [org.id] : ['default'] });
     const gsuite = !!org && !!org.domains.length;
     const [err] = await to(signupWithGoogle(user, gsuite));
     if (err) {
+      track('Google Login Errored', { error: period(err.message) });
       setLoggingIn(false);
-      setError(err);
+      setError(period(err.message));
     } else {
       setLoggingIn(false);
     }
-  }, [org]);
+  }, [track, org]);
 
   const { t } = useTranslation();
 
@@ -65,7 +69,7 @@ export default function AuthDialog(): JSX.Element {
           />
           {!!error && (
             <div data-cy='error' className={styles.error}>
-              {t('search:login-err', { error: error.message })}
+              {t('search:login-err', { error })}
             </div>
           )}
         </div>

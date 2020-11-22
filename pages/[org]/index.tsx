@@ -8,8 +8,9 @@ import Page from 'components/page';
 
 import { Org, OrgJSON } from 'lib/model';
 import { OrgContext } from 'lib/context/org';
-import { withI18n } from 'lib/intl';
 import { db } from 'lib/api/firebase';
+import { usePage } from 'lib/hooks';
+import { withI18n } from 'lib/intl';
 
 import home from 'locales/en/home.json';
 import common from 'locales/en/common.json';
@@ -19,6 +20,8 @@ interface HomePageProps {
 }
 
 function HomePage({ org }: HomePageProps): JSX.Element {
+  usePage('Org Home');
+
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page title={`${org?.name || 'Loading'} - Tutorbook`} formWidth intercom>

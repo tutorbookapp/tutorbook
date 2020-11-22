@@ -8,8 +8,8 @@ import Settings from 'components/settings';
 import General from 'components/settings/general';
 import { TabHeader } from 'components/navigation';
 
+import { useLoggedIn, usePage } from 'lib/hooks';
 import { OrgContext } from 'lib/context/org';
-import { useLoggedIn } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -28,6 +28,7 @@ function SettingsPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
+  usePage('Org Settings');
   useLoggedIn(`/${query.org as string}/settings`);
 
   return (

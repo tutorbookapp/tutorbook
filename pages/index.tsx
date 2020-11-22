@@ -12,12 +12,15 @@ import SearchImage from 'components/landing/imgs/search.png';
 import SignupImage from 'components/landing/imgs/signup.png';
 import VettingImage from 'components/landing/imgs/vetting.png';
 
+import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
 import landing from 'locales/en/landing.json';
 
 function OrgsPage(): JSX.Element {
+  usePage('Orgs Landing');
+
   return (
     <Page title='Support at scale - Tutorbook' intercom borderless>
       <TabHeader
