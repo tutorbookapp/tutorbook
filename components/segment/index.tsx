@@ -21,7 +21,7 @@ export default function Segment({ intercom }: SegmentProps): null {
   const { user } = useUser();
 
   useEffect(() => {
-    if (!window.analytics.load) return;
+    if (!window.analytics?.load) return;
     window.analytics.load(process.env.NEXT_PUBLIC_SEGMENT_KEY as string);
   }, []);
 
@@ -29,8 +29,8 @@ export default function Segment({ intercom }: SegmentProps): null {
   useEffect(() => {
     const identity = user.toSegment();
     if (dequal(prevIdentity.current, identity)) return;
-    if (user.id) window.analytics.alias(user.id);
-    window.analytics.identify(user.id, identity);
+    if (user.id) window.analytics?.alias(user.id);
+    window.analytics?.identify(user.id, identity);
     prevIdentity.current = identity;
   }, [user]);
 
@@ -47,7 +47,7 @@ export default function Segment({ intercom }: SegmentProps): null {
     if (!org || !group || dequal(prevGroup.current, group)) return;
     // The `orgId` prop is required for Segment to create Mixpanel groups.
     // @see {@link https://bit.ly/3kWrJPw}
-    window.analytics.group(org.id, { ...group, orgId: group.id });
+    window.analytics?.group(org.id, { ...group, orgId: group.id });
     prevGroup.current = group;
   }, [org]);
 

@@ -20,7 +20,7 @@ export default function useTrack(): Track {
           org: org?.toSegment(),
           orgId: org?.id,
         };
-        window.analytics.track(event, properties);
+        window.analytics?.track(event, properties);
       }, throttle);
     },
     [org]

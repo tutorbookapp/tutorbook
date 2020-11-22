@@ -223,7 +223,7 @@ export default function PopOverMenu({
               await import('firebase/auth');
               await firebase.auth().signOut();
               await updateUser(new User());
-              window.analytics.reset();
+              window.analytics?.reset();
               Intercom('shutdown');
               Intercom('boot');
             }}
