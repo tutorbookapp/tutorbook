@@ -3,9 +3,7 @@ import { dequal } from 'dequal/lite';
 
 import useTrack from 'lib/hooks/track';
 
-type Falsy = '' | false | null | undefined;
-
-export default function useAnalytics<T extends Record<string, unknown> | Falsy>(
+export default function useAnalytics<T>(
   event: string,
   traits: () => T,
   throttle = 500
@@ -17,7 +15,7 @@ export default function useAnalytics<T extends Record<string, unknown> | Falsy>(
     const updated = traits();
     if (!updated || dequal(prev.current, updated)) return;
     const timeoutId = setTimeout(() => {
-      track(event, updated as Record<string, unknown>);
+      track(event, updated);
       prev.current = updated;
     }, throttle);
     return () => clearTimeout(timeoutId);

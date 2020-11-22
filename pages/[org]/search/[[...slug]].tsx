@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import NProgress from 'nprogress';
 import Router from 'next/router';

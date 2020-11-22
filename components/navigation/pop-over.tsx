@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { FormField } from '@rmwc/formfield';
 import { Icon } from '@rmwc/icon';

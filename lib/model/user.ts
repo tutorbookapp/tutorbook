@@ -104,11 +104,13 @@ export type UserSearchHit = ObjectWithObjectID &
 
 export type UserJSON = Omit<
   UserInterface,
-  'availability' | 'verifications' | 'zooms'
+  'availability' | 'verifications' | 'zooms' | 'token' | 'hash'
 > & {
   availability: AvailabilityJSON;
   verifications: VerificationJSON[];
   zooms: ZoomUserJSON[];
+  token: string | null;
+  hash: string | null;
 };
 
 export function isUserJSON(json: unknown): json is UserJSON {
@@ -239,30 +241,26 @@ export class User extends Account implements UserInterface {
   }
 
   public static fromJSON(json: UserJSON): User {
-    const { availability, verifications, zooms, ...rest } = json;
+    const { availability, verifications, zooms, token, hash, ...rest } = json;
     return new User({
       ...rest,
       availability: Availability.fromJSON(availability),
       verifications: verifications.map((v) => Verification.fromJSON(v)),
       zooms: zooms.map((z) => ZoomUser.fromJSON(z)),
+      token: token || undefined,
+      hash: hash || undefined,
     });
   }
 
   public toJSON(): UserJSON {
-    const {
-      availability,
-      verifications,
-      zooms,
-      ref,
-      token,
-      hash,
-      ...rest
-    } = this;
+    const { availability, verifications, zooms, ref, ...rest } = this;
     return {
       ...rest,
       availability: availability.toJSON(),
       verifications: verifications.map((v) => v.toJSON()),
       zooms: zooms.map((z) => z.toJSON()),
+      token: null,
+      hash: null,
     };
   }
 }
