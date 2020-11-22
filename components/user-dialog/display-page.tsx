@@ -311,7 +311,9 @@ export default memo(function DisplayPage({
           <Chip icon='group_add' label='Create match' onClick={openMatch} />
           <Chip icon='email' label='Send email' onClick={openEmail} />
           <Chip icon='edit' label='Edit user' onClick={openEdit} />
-          <Chip icon='delete' label='Delete user' onClick={deleteUser} />
+          {false && (
+            <Chip icon='delete' label='Delete user' onClick={deleteUser} />
+          )}
         </ChipSet>
       </div>
     </>
