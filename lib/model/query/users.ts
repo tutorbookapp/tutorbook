@@ -82,7 +82,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
       query.availability = this.availability.toURLParam();
     if (this.checks.length) query.checks = encode(this.checks);
     if (this.parents.length) query.parents = encode(this.parents);
-    if (this.visible) query.visible = this.visible;
+    if (typeof this.visible === 'boolean') query.visible = this.visible;
 
     return url.format({ pathname, query });
   }
