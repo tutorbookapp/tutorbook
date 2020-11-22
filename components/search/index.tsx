@@ -33,8 +33,12 @@ export default function Search({
   const { t } = useTranslation();
   const formRef = useRef<HTMLDivElement | null>();
   const noResultsQuery = useMemo(() => {
-    return new UsersQuery({ aspect: query.aspect, visible: true });
-  }, [query.aspect]);
+    return new UsersQuery({
+      orgs: query.orgs,
+      aspect: query.aspect,
+      visible: true,
+    });
+  }, [query.aspect, query.orgs]);
 
   const loadingResults = useMemo(() => {
     return Array(query.hitsPerPage)
