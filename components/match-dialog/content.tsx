@@ -5,7 +5,7 @@ import { dequal } from 'dequal/lite';
 import DialogContent from 'components/dialog';
 import UserDialogContent from 'components/user-dialog/content';
 
-import { Match, MatchJSON, RequestJSON, User } from 'lib/model';
+import { Match, MatchJSON, User } from 'lib/model';
 import clone from 'lib/utils/clone';
 
 import DisplayPage from './display-page';
@@ -29,8 +29,6 @@ export default memo(
     const [active, setActive] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [checked, setChecked] = useState<boolean>(false);
-
-    const [matching, setMatching] = useState<RequestJSON[]>([]);
 
     const people = useMemo(() => {
       const ppl = clone(match.people);
@@ -64,12 +62,11 @@ export default memo(
           people.map((person) => (
             <UserDialogContent
               initialData={new User(person).toJSON()}
-              matching={matching}
-              setMatching={setMatching}
+              closeDialog={() => setActive(0)}
             />
           )),
         ].flat(),
-      [match, matching, people, onChange]
+      [match, people, onChange]
     );
 
     return (

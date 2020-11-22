@@ -25,7 +25,6 @@ import {
   Match,
   MatchJSON,
   Person,
-  RequestJSON,
   Timeslot,
   User,
   UserJSON,
@@ -39,7 +38,6 @@ import styles from './form-page.module.scss';
 
 export interface MatchPageProps {
   value: UserJSON;
-  matching: RequestJSON[];
   openDisplay: () => void;
   loading: boolean;
   setLoading: Callback<boolean>;
@@ -48,7 +46,6 @@ export interface MatchPageProps {
 
 export default memo(function MatchPage({
   value,
-  matching,
   openDisplay,
   loading,
   setLoading,
@@ -95,39 +92,9 @@ export default memo(function MatchPage({
       prev.forEach((subject: SubjectOption) => {
         if (options.includes(subject.value)) selected.add(subject.value);
       });
-      matching.forEach((request: RequestJSON) => {
-        request.subjects.forEach((subject: string) => {
-          if (options.includes(subject)) selected.add(subject);
-        });
-      });
       return [...selected].map((s) => ({ label: s, value: s }));
     });
-  }, [value.tutoring.subjects, value.mentoring.subjects, matching]);
-  useEffect(() => {
-    const selected: UserOption[] = [];
-    matching.forEach((request: RequestJSON) => {
-      request.people.forEach((person: Person) => {
-        if (person.roles.includes('tutor') || person.roles.includes('tutee'))
-          aspects.current.add('tutoring');
-        if (person.roles.includes('mentor') || person.roles.includes('mentee'))
-          aspects.current.add('mentoring');
-        if (selected.findIndex((s) => s.value === person.id) < 0)
-          selected.push({
-            value: person.id,
-            label: person.name || person.id,
-            photo: person.photo,
-          });
-      });
-    });
-    if (selected.length) setStudents(selected);
-  }, [matching]);
-  useEffect(() => {
-    let msg = '';
-    matching.forEach((r: RequestJSON) => {
-      msg += !msg && !r.message.endsWith(' ') ? r.message : ` ${r.message}`;
-    });
-    if (msg) setMessage(msg);
-  }, [matching]);
+  }, [value.tutoring.subjects, value.mentoring.subjects]);
 
   const match = useMemo(() => {
     const asps: Aspect[] = [...aspects.current];

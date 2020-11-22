@@ -7,7 +7,7 @@ import UserDialogContent, { UserDialogContentProps } from './content';
 import styles from './dialog.module.scss';
 
 export { Page } from './content';
-export type UserDialogProps = Omit<UserDialogContentProps, 'setOpen'> & {
+export type UserDialogProps = Omit<UserDialogContentProps, 'closeDialog'> & {
   onClosed: () => void;
 };
 
@@ -25,7 +25,7 @@ export default function UserDialog({
       onClosed={onClosed}
     >
       <NavContext.Provider value={() => setOpen(false)}>
-        <UserDialogContent {...props} />
+        <UserDialogContent closeDialog={() => setOpen(false)} {...props} />
       </NavContext.Provider>
     </Dialog>
   );

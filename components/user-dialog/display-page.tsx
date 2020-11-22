@@ -19,7 +19,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
-import { Aspect, Check, SocialInterface, UserJSON } from 'lib/model';
+import { Aspect, Callback, Check, SocialInterface, UserJSON } from 'lib/model';
 import clone from 'lib/utils/clone';
 import { useContinuous } from 'lib/hooks';
 import { useOrg } from 'lib/context/org';
@@ -40,7 +40,9 @@ export interface DisplayPageProps {
   onChange: (updated: UserJSON) => Promise<void>;
   openEdit: () => void;
   openMatch: () => void;
-  openRequest: () => void;
+  closeDialog: () => void;
+  setLoading: Callback<boolean>;
+  setChecked: Callback<boolean>;
 }
 
 export default memo(function DisplayPage({
@@ -48,7 +50,9 @@ export default memo(function DisplayPage({
   onChange,
   openEdit,
   openMatch,
-  openRequest,
+  closeDialog,
+  setLoading,
+  setChecked: setLoaderChecked,
 }: DisplayPageProps): JSX.Element {
   const { t } = useTranslation();
   const { org } = useOrg();
@@ -198,6 +202,13 @@ export default memo(function DisplayPage({
     [currentUserId, org?.id, setUser]
   );
 
+  const deleteUser = useCallback(async () => {
+    setLoading(true);
+    await axios.delete(`/api/users/${value.id}`);
+    setLoaderChecked(true);
+    setTimeout(() => closeDialog(), 1000);
+  }, [setLoading, setLoaderChecked, closeDialog, value.id]);
+
   return (
     <>
       <div className={styles.content}>
@@ -298,13 +309,9 @@ export default memo(function DisplayPage({
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
           <Chip icon='group_add' label='Create match' onClick={openMatch} />
-          <Chip
-            icon='person_add'
-            label='Create request'
-            onClick={openRequest}
-          />
           <Chip icon='email' label='Send email' onClick={openEmail} />
-          <Chip icon='edit' label='Edit profile' onClick={openEdit} />
+          <Chip icon='edit' label='Edit user' onClick={openEdit} />
+          <Chip icon='delete' label='Delete user' onClick={deleteUser} />
         </ChipSet>
       </div>
     </>

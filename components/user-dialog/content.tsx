@@ -5,25 +5,22 @@ import { v4 as uuid } from 'uuid';
 
 import DialogContent from 'components/dialog';
 
-import { Callback, RequestJSON, User, UserJSON } from 'lib/model';
+import { User, UserJSON } from 'lib/model';
 
 import DisplayPage from './display-page';
 import EditPage from './edit-page';
 import MatchPage from './match-page';
-import RequestPage from './request-page';
 
 export enum Page {
   Display = 0,
   Edit,
   Match,
-  Request,
 }
 
 export interface UserDialogContentProps {
   initialData?: UserJSON;
   initialPage?: Page;
-  matching: RequestJSON[];
-  setMatching: Callback<RequestJSON[]>;
+  closeDialog: () => void;
 }
 
 // This wrapper component merely manages the navigation transitions between it's
@@ -33,8 +30,7 @@ export default memo(
   function UserDialogContent({
     initialData = new User().toJSON(),
     initialPage = Page.Display,
-    matching,
-    setMatching,
+    closeDialog,
   }: UserDialogContentProps): JSX.Element {
     // Temporary ID that is used to locally mutate SWR data (without calling API).
     // We have to use a stateful variable for our ID to support user creation.
@@ -59,7 +55,6 @@ export default memo(
     const openDisplay = useCallback(() => setActive(Page.Display), []);
     const openEdit = useCallback(() => setActive(Page.Edit), []);
     const openMatch = useCallback(() => setActive(Page.Match), []);
-    const openRequest = useCallback(() => setActive(Page.Request), []);
 
     return (
       <DialogContent
@@ -72,7 +67,9 @@ export default memo(
           value={user}
           openEdit={openEdit}
           openMatch={openMatch}
-          openRequest={openRequest}
+          closeDialog={closeDialog}
+          setLoading={setLoading}
+          setChecked={setChecked}
           onChange={onChange}
         />
         <EditPage
@@ -87,15 +84,6 @@ export default memo(
           loading={loading}
           setLoading={setLoading}
           setChecked={setChecked}
-          matching={matching}
-          openDisplay={openDisplay}
-        />
-        <RequestPage
-          value={user}
-          loading={loading}
-          setLoading={setLoading}
-          setChecked={setChecked}
-          setMatching={setMatching}
           openDisplay={openDisplay}
         />
       </DialogContent>
@@ -106,12 +94,10 @@ export default memo(
       {
         data: prevProps.initialData,
         page: prevProps.initialPage,
-        matching: prevProps.matching,
       },
       {
         data: nextProps.initialData,
         page: nextProps.initialPage,
-        matching: nextProps.matching,
       }
     );
   }
