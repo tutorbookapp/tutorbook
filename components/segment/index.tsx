@@ -51,7 +51,7 @@ export default function Segment({ intercom }: SegmentProps): null {
     const group = org?.toSegment();
     if (!org || !group || dequal(prevGroup.current, group)) return;
     console.log(`[GROUP] ${org.toString()}`, group);
-    window.analytics.group(org.id, group);
+    window.analytics.group(org.id, { ...group, orgId: group.id });
     prevGroup.current = group;
   }, [org]);
 
