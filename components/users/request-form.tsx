@@ -260,7 +260,7 @@ export default function RequestForm({
 
   const forOthers = useMemo(() => {
     if (students.length === 1 && students[0].label === 'Myself') return '';
-    return 'for-others-';
+    return students.length === 0 ? '' : 'for-others-';
   }, [students]);
 
   return (
