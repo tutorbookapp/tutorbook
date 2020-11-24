@@ -493,8 +493,6 @@ const retryFailures = async () => {
   fs.writeFileSync('./failed.json', JSON.stringify(failed, null, 2));
 };
 
-retryFailures();
-
 const changeDateJSONToDates = async () => {
   const empty = {
     status: 'new',
@@ -572,3 +570,15 @@ const fetchUsersWithoutPics = async () => {
   fs.writeFileSync('./without-pic.json', JSON.stringify(withoutPics, null, 2));
   debugger;
 };
+
+const moveBannerImages = async () => {
+  const orgs = await db.collection('orgs').get();
+  await Promise.all(
+    orgs.docs.map(async (doc) => {
+      const background = ((doc.data().home || {}).en || {}).photo || '';
+      await doc.ref.update({ background });
+    })
+  );
+};
+
+moveBannerImages();
