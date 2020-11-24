@@ -1,5 +1,6 @@
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import cn from 'classnames';
 import { v4 as uuid } from 'uuid';
 
 import { TCallback } from 'lib/model';
@@ -87,10 +88,10 @@ export default function PhotoInput({
       helpText={{
         persistent: true,
         validationMsg: errored,
-        className: styles.helper,
         children: helperValue,
         ref: helperRef,
       }}
+      className={cn(styles.input, textFieldProps.className)}
       onChange={handleChange}
       inputRef={inputRef}
       invalid={errored}

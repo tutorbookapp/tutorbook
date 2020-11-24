@@ -57,7 +57,8 @@
     margin: 16px 0;
 
     .inputs {
-      padding: 16px;
+      margin: 16px auto;
+      padding: 0 16px;
 
       .field {
         @include common.field;
