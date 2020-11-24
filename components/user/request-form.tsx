@@ -57,37 +57,33 @@ export default function RequestForm({
   const { query } = useRouter();
   const { user: currentUser, updateUser } = useUser();
 
-  const aspects = useRef<Aspect[]>([]);
-  const [students, setStudents] = useState<UserOption[]>([]);
+  const [students, setStudents] = useState<UserOption[]>([
+    { label: 'Me', value: '' },
+  ]);
   const [subjects, setSubjects] = useState<SubjectOption[]>([]);
   const [message, setMessage] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
 
   useEffect(() => {
-    setStudents((prev) =>
-      prev.length || !currentUser.id
-        ? prev
-        : [
-            {
-              label: 'Myself',
-              value: currentUser.id,
-              photo: currentUser.photo,
-            },
-          ]
-    );
+    setStudents((prev) => {
+      const idx = prev.findIndex((s) => s.label === 'Me');
+      if (idx < 0) return prev;
+      const me = {
+        label: 'Me',
+        value: currentUser.id,
+        photo: currentUser.photo,
+      };
+      return [...prev.slice(0, idx), me, ...prev.slice(idx + 1)];
+    });
   }, [currentUser]);
 
-  useEffect(() => {
-    if (isAspect(query.aspect) && !aspects.current.includes(query.aspect))
-      aspects.current.push(query.aspect);
-  }, [query.aspect]);
-  useEffect(() => {
-    subjects.forEach((s) => {
-      if (s.aspect && !aspects.current.includes(s.aspect))
-        aspects.current.push(s.aspect);
-    });
-  }, [subjects]);
+  const aspects = useMemo(() => {
+    const asps = new Set<Aspect>();
+    if (isAspect(query.aspect)) asps.add(query.aspect);
+    subjects.forEach((s) => s.aspect && asps.add(s.aspect));
+    return [...asps];
+  }, [query.aspect, subjects]);
 
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
@@ -100,8 +96,8 @@ export default function RequestForm({
       roles: [],
       handle: uuid(),
     };
-    if (aspects.current.includes('tutoring')) target.roles.push('tutor');
-    if (aspects.current.includes('mentoring')) target.roles.push('mentor');
+    if (aspects.includes('tutoring')) target.roles.push('tutor');
+    if (aspects.includes('mentoring')) target.roles.push('mentor');
     const people = [
       target,
       ...students.map((s: UserOption) => {
@@ -112,8 +108,8 @@ export default function RequestForm({
           roles: [],
           handle: uuid(),
         };
-        if (aspects.current.includes('tutoring')) student.roles.push('tutee');
-        if (aspects.current.includes('mentoring')) student.roles.push('mentee');
+        if (aspects.includes('tutoring')) student.roles.push('tutee');
+        if (aspects.includes('mentoring')) student.roles.push('mentee');
         return student;
       }),
     ];
@@ -136,7 +132,7 @@ export default function RequestForm({
       org: org?.id || 'default',
       subjects: subjects.map((s) => s.value),
     });
-  }, [currentUser, user, message, subjects, time, students, org?.id]);
+  }, [currentUser, user, message, subjects, time, students, org?.id, aspects]);
 
   useAnalytics('Match Subjects Updated', () => ({
     subjects,
@@ -259,8 +255,17 @@ export default function RequestForm({
   );
 
   const forOthers = useMemo(() => {
-    if (students.length === 1 && students[0].label === 'Myself') return '';
-    return students.length === 0 ? '' : 'for-others-';
+    return students.findIndex((s) => s.label === 'Me') < 0 ? 'for-others-' : '';
+  }, [students]);
+  const person = useMemo(() => {
+    // TODO: This logic only works for English; when we add i18n we'll probably
+    // have to scrap all of this "custom placeholder" logic.
+    const names = students.map((s) => (s.label === 'Me' ? 'I' : s.label));
+    if (names[0] === 'I') {
+      names.shift();
+      names.push('I');
+    }
+    return join(names);
   }, [students]);
 
   return (
@@ -299,7 +304,7 @@ export default function RequestForm({
           onSelectedChange={setSubjects}
           selected={subjects}
           options={[...user.tutoring.subjects, ...user.mentoring.subjects]}
-          aspect={isAspect(query.aspect) ? query.aspect : undefined}
+          aspect={aspects.length === 1 ? aspects[0] : undefined}
         />
         <TimeSelect
           required
@@ -319,8 +324,8 @@ export default function RequestForm({
           characterCount
           maxLength={500}
           placeholder={t('match3rd:message-placeholder', {
+            person,
             subject: (subjects[0] || { label: 'Computer Science' }).label,
-            person: forOthers ? join(students.map((s) => s.label)) : 'I',
           })}
           label={t(`match3rd:${forOthers}message`)}
           className={styles.field}
