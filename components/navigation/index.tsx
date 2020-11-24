@@ -7,6 +7,7 @@ import FilterForm from 'components/filter-form';
 
 import { Aspect, Callback, TCallback, UsersQuery } from 'lib/model';
 import Link from 'lib/intl/link';
+import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
 import Tabs, { TabsProps } from './tabs';
@@ -41,14 +42,14 @@ function DesktopTabs({ aspect, onChange }: DesktopTabsProps): JSX.Element {
 
 function Logo(): JSX.Element {
   const { user } = useUser();
+  const { org } = useOrg();
+
   return (
-    /* eslint-disable jsx-a11y/anchor-is-valid */
-    <Link href={user.id ? '/dashboard' : '/'}>
+    <Link href={user.id ? '/dashboard' : `/${org?.id || ''}`}>
       <a className={styles.logo}>
         <span>TB</span>
       </a>
     </Link>
-    /* eslint-enable jsx-a11y/anchor-is-valid */
   );
 }
 
