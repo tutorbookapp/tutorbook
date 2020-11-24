@@ -2,6 +2,7 @@
   "id": "gunn",
   "name": "Gunn High School",
   "photo": "https://assets.tutorbook.app/jpgs/gunn.jpg",
+  "background": "https://firebasestorage.googleapis.com/v0/b/covid-tutoring.appspot.com/o/default%2Forgs%2Fgunn-banner.jpg?alt=media&token=bf5f10b8-c13b-4e99-9267-f2cdbe82feb4",
   "email": "psteward@pausd.org",
   "phone": "+16503548271",
   "bio": "Gunn High School's Academic Center is an inclusive support center where all Gunn students can receive tutoring, do homework, study, and work collaboratively on projects. In the AC, students requesting support in their academics can receive free tutoring.",
@@ -49,8 +50,7 @@
   "home": {
     "en": {
       "body": "To get a volunteer tutor, click the 'Search tutors' button (on the right). Then, click the 'Subjects' button (in the header) to select the subjects you need help with (e.g. Chemistry or Trigonometry). Finally, click on a search result, fill in the request form, and click the 'Send request' button. Once you do, the tutor will receive an email notification and will get back to you to setup recurring Zoom meetings. If you don't hear back from them within a few days, email Ms. Steward at psteward@pausd.org and she'll find you a suitable tutor!",
-      "header": "How it works",
-      "photo": "https://firebasestorage.googleapis.com/v0/b/covid-tutoring.appspot.com/o/default%2Forgs%2Fgunn-banner.jpg?alt=media&token=bf5f10b8-c13b-4e99-9267-f2cdbe82feb4"
+      "header": "How it works"
     }
   }
 }
