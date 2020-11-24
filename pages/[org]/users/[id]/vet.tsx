@@ -6,7 +6,7 @@ import useSWR from 'swr';
 
 import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
-import UserDisplay from 'components/user/display';
+import UserVet from 'components/user/vet';
 
 import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 import { OrgContext } from 'lib/context/org';
@@ -17,24 +17,18 @@ import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import match3rd from 'locales/en/match3rd.json';
 import user from 'locales/en/user.json';
 
-interface UserDisplayPageProps {
+interface UserVetPageProps {
   user?: UserJSON;
   org?: OrgJSON;
 }
 
-function UserDisplayPage({
+function UserVetPage({
   user: initialData,
   org,
-}: UserDisplayPageProps): JSX.Element {
+}: UserVetPageProps): JSX.Element {
   const { query } = useRouter();
-
-  // TODO: The router query should update before Next.js fetches static props.
-  // That way, SWR will fetch the full user data while Next.js fetches the
-  // static props and SWR will then ignore the truncated data.
-  // @see {@link https://github.com/vercel/next.js/issues/19492}
   const { data } = useSWR<UserJSON>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
     { initialData, revalidateOnMount: true }
@@ -46,13 +40,13 @@ function UserDisplayPage({
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page title={`${data?.name || 'Loading'} - Tutorbook`}>
         <EmptyHeader />
-        <UserDisplay user={data ? User.fromJSON(data) : undefined} />
+        <UserVet user={data ? User.fromJSON(data) : undefined} />
       </Page>
     </OrgContext.Provider>
   );
 }
 
-interface UserDisplayPageQuery extends ParsedUrlQuery {
+interface UserVetPageQuery extends ParsedUrlQuery {
   org: string;
   id: string;
 }
@@ -60,9 +54,9 @@ interface UserDisplayPageQuery extends ParsedUrlQuery {
 // Only public (truncated) data is used when generating static pages. Once
 // hydrated, SWR is used client-side to continually update the full page data.
 export const getStaticProps: GetStaticProps<
-  UserDisplayPageProps,
-  UserDisplayPageQuery
-> = async (ctx: GetStaticPropsContext<UserDisplayPageQuery>) => {
+  UserVetPageProps,
+  UserVetPageQuery
+> = async (ctx: GetStaticPropsContext<UserVetPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org and user w/out params.');
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) throw new Error(`Org (${doc.id}) doesn't exist.`);
@@ -74,8 +68,8 @@ export const getStaticProps: GetStaticProps<
 // TODO: We want to statically generate skeleton loading pages for each org.
 // @see {@link https://github.com/vercel/next.js/issues/14200}
 // @see {@link https://github.com/vercel/next.js/discussions/14486}
-export const getStaticPaths: GetStaticPaths<UserDisplayPageQuery> = async () => {
+export const getStaticPaths: GetStaticPaths<UserVetPageQuery> = async () => {
   return { paths: [], fallback: true };
 };
 
-export default withI18n(UserDisplayPage, { common, match3rd, user });
+export default withI18n(UserVetPage, { common, user });

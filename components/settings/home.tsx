@@ -48,7 +48,7 @@ export default function Home(): JSX.Element {
       <div className={styles.inputs}>
         <PhotoInput
           label={t('org:home-photo')}
-          value={org.background || ''}
+          value={org.background}
           onChange={onPhotoChange}
           className={styles.field}
           outlined

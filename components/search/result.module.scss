@@ -5,6 +5,10 @@
 $height: 125px;
 $margin: 20px;
 
+.link {
+  text-decoration: none;
+}
+
 .listItem {
   height: $height;
   position: relative;

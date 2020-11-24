@@ -1,4 +1,5 @@
 {
+  "error": "Could not update user. Retry in {{count}} seconds.",
   "update-btn": "Update user",
   "create-btn": "Create user",
   "update-error": "An error occurred while updating profile. {{error}}",
@@ -9,6 +10,7 @@
   "email": "Email address",
   "phone": "Phone number",
   "photo": "Profile photo",
+  "background": "Banner image",
   "parents": "Parents",
   "langs": "Languages",
   "availability": "Weekly availability",

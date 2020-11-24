@@ -58,7 +58,7 @@ export function isSocial(json: unknown): json is SocialInterface {
  * @property photo - Profile photo URL (i.e. the account's avatar).
  * @property email - Email address (e.g. "nicholas@tutorbook.org").
  * @property bio - A description of the org or user.
- * @property [background] - An optional background or banner image shown on the
+ * @property background - An optional background or banner image shown on the
  * org landing page and user display page.
  * @property socials - An array of the account's social media links.
  */
@@ -69,21 +69,26 @@ export interface AccountInterface {
   email: string;
   phone: string;
   bio: string;
-  background?: string;
+  background: string;
   socials: SocialInterface[];
   ref?: DocumentReference;
 }
 
-export type AccountJSON = Omit<AccountInterface, 'background'> & {
-  background: string | null;
-};
+export type AccountJSON = AccountInterface;
 
 export function isAccountJSON(json: unknown): json is AccountJSON {
-  const stringFields = ['id', 'name', 'photo', 'email', 'phone', 'bio'];
+  const stringFields = [
+    'id',
+    'name',
+    'photo',
+    'email',
+    'phone',
+    'bio',
+    'background',
+  ];
 
   if (!isJSON(json)) return false;
   if (stringFields.some((key) => typeof json[key] !== 'string')) return false;
-  if (json.background && typeof json.background !== 'string') return false;
   if (!isArray(json.socials, isSocial)) return false;
   return true;
 }
@@ -104,7 +109,7 @@ export class Account implements AccountInterface {
 
   public bio = '';
 
-  public background?: string;
+  public background = '';
 
   public socials: SocialInterface[] = [];
 
@@ -140,13 +145,5 @@ export class Account implements AccountInterface {
       description: this.bio,
       website: website?.url,
     };
-  }
-
-  public toJSON(): AccountJSON {
-    return { ...this, background: this.background || null };
-  }
-
-  public static fromJSON(json: AccountJSON): Account {
-    return new Account({ ...json, background: json.background || undefined });
   }
 }

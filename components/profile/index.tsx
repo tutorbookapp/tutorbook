@@ -65,6 +65,12 @@ export default function Profile(): JSX.Element {
     },
     [setUser]
   );
+  const onBackgroundChange = useCallback(
+    (background: string) => {
+      setUser((prev) => new User({ ...prev, background }));
+    },
+    [setUser]
+  );
   const onBioChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const bio = evt.currentTarget.value;
@@ -118,7 +124,7 @@ export default function Profile(): JSX.Element {
           className={styles.snackbar}
           message={t('profile:error', { count: timeout / 1000 })}
           timeout={-1}
-          action={<SnackbarAction label={t('profile:retry')} onClick={retry} />}
+          action={<SnackbarAction label={t('common:retry')} onClick={retry} />}
           leading
           open
         />
@@ -162,10 +168,20 @@ export default function Profile(): JSX.Element {
               type='tel'
               outlined
             />
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.inputs}>
             <PhotoInput
               label={t('user3rd:photo')}
               value={user.photo}
               onChange={onPhotoChange}
+              className={styles.field}
+              outlined
+            />
+            <PhotoInput
+              label={t('user3rd:background')}
+              value={user.background}
+              onChange={onBackgroundChange}
               className={styles.field}
               outlined
             />

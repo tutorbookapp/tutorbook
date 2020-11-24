@@ -125,6 +125,7 @@ export type OrgJSON = Omit<
 
 // TODO: Check that the `profiles` key only contains keys of the `User` object.
 export function isOrgJSON(json: unknown): json is OrgJSON {
+  if (!isAccountJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (!isStringArray(json.members)) return false;
   if (!isArray(json.aspects, isAspect)) return false;
@@ -135,7 +136,6 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isSignupConfig(json.signup)) return false;
   if (!isHomeConfig(json.home)) return false;
   if (json.matchURL && typeof json.matchURL !== 'string') return false;
-  if (!isAccountJSON(json)) return false;
   return true;
 }
 
@@ -219,10 +219,9 @@ export class Org extends Account implements OrgInterface {
   }
 
   public static fromJSON(json: OrgJSON): Org {
-    const { background, matchURL, subjects, zoom, ...rest } = json;
+    const { matchURL, subjects, zoom, ...rest } = json;
     return new Org({
       ...rest,
-      background: background || undefined,
       matchURL: matchURL || undefined,
       subjects: subjects || undefined,
       zoom: zoom || undefined,
@@ -230,10 +229,9 @@ export class Org extends Account implements OrgInterface {
   }
 
   public toJSON(): OrgJSON {
-    const { ref, background, matchURL, subjects, zoom, ...rest } = this;
+    const { ref, matchURL, subjects, zoom, ...rest } = this;
     return {
       ...rest,
-      background: background || null,
       matchURL: matchURL || null,
       subjects: subjects || null,
       zoom: zoom || null,

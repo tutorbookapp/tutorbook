@@ -122,6 +122,13 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     },
     [track, setUser]
   );
+  const onBackgroundChange = useCallback(
+    (background: string) => {
+      track('User Background Updated', { background });
+      setUser((prev) => new User({ ...prev, background }));
+    },
+    [setUser]
+  );
   const onBioChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const bio = evt.currentTarget.value;
@@ -212,6 +219,9 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               outlined
               required={org ? org.profiles.includes('phone') : false}
             />
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.inputs}>
             <PhotoInput
               label={t('user3rd:photo')}
               value={user.photo}
@@ -219,6 +229,14 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               className={styles.field}
               outlined
               required={org ? org.profiles.includes('photo') : false}
+            />
+            <PhotoInput
+              label={t('user3rd:background')}
+              value={user.background}
+              onChange={onBackgroundChange}
+              className={styles.field}
+              outlined
+              required={org ? org.profiles.includes('background') : false}
             />
           </div>
           <div className={styles.divider} />
