@@ -45,7 +45,6 @@ export default function Home({ org }: HomeProps): JSX.Element {
               data-cy='backdrop'
               objectPosition='center 50%'
               src={org.background}
-              alt={`Background of ${org?.name || 'Organization'}`}
             />
           )}
         </div>

@@ -63,7 +63,6 @@ export default function UserDisplay({ user }: UserDisplayProps): JSX.Element {
               objectFit='cover'
               data-cy='backdrop'
               objectPosition='center 50%'
-              alt={`Background of ${user?.name || 'User'}`}
               src={user.background}
             />
           )}
