@@ -192,3 +192,24 @@
   background-color: var(--background);
   border-color: var(--background);
 }
+
+.mdc-snackbar {
+  margin: 24px;
+}
+
+.mdc-snackbar__action::before,
+.mdc-snackbar__action::after {
+  background-color: var(--primary);
+}
+
+.mdc-snackbar__action:not(:disabled) {
+  color: var(--primary);
+}
+
+.mdc-snackbar__surface {
+  background-color: var(--snackbar-background);
+}
+
+.mdc-snackbar__label {
+  color: var(--snackbar-on-background);
+}

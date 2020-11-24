@@ -176,7 +176,6 @@ export default function VerificationsTable({
     <>
       {error && (
         <Snackbar
-          className={styles.snackbar}
           message={t('user:error', { count: timeout / 1000 })}
           timeout={-1}
           action={<SnackbarAction label={t('common:retry')} onClick={retry} />}

@@ -64,14 +64,6 @@
   }
 }
 
-@mixin snackbar {
-  margin: 24px;
-
-  :global(.mdc-snackbar__action) {
-    color: var(--primary);
-  }
-}
-
 @mixin error {
   @include typography.typography('body2');
   color: var(--error);

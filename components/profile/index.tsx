@@ -121,7 +121,6 @@ export default function Profile(): JSX.Element {
     <>
       {error && (
         <Snackbar
-          className={styles.snackbar}
           message={t('profile:error', { count: timeout / 1000 })}
           timeout={-1}
           action={<SnackbarAction label={t('common:retry')} onClick={retry} />}

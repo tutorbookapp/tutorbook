@@ -55,7 +55,6 @@ export default function Settings({
     <>
       {error && (
         <Snackbar
-          className={styles.snackbar}
           message={t('settings:error', { count: timeout / 1000 })}
           timeout={-1}
           action={

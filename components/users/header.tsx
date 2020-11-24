@@ -6,8 +6,6 @@ import to from 'await-to-js';
 import Intercom from 'lib/intercom';
 import TitleHeader from 'components/header';
 
-import styles from './header.module.scss';
-
 export interface HeaderProps {
   orgId: string;
   orgName: string;
@@ -73,7 +71,6 @@ export default memo(function Header({
     <>
       {snackbar && (
         <Snackbar
-          className={styles.snackbar}
           onClose={hideSnackbar}
           message={t('users:link-copied')}
           dismissIcon

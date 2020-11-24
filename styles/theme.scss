@@ -33,6 +33,8 @@ $highlight: #79ffe1;
 
   --primary-4: #{rgba($primary, 0.87)};
 
+  --snackbar-on-background: #{rgba($background, 0.87)};
+  --snackbar-background: #{color.mix($on-background, $background, 80%)};
   --chip-background: #{color.mix($on-background, $background, 12%)};
 
   --title-left: #{color.adjust($primary, $hue: 10%, $lightness: -10%)};
@@ -89,6 +91,8 @@ $highlight: #79ffe1;
 
   --primary-4: #{rgba($primary, 0.87)};
 
+  --snackbar-on-background: #{rgba($background, 0.87)};
+  --snackbar-background: #{$on-background};
   --chip-background: #{color.mix($on-background, $background, 12%)};
 
   --title-left: #{$primary};
