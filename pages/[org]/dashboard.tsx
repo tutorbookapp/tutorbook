@@ -45,8 +45,8 @@ function DashboardPage(): JSX.Element {
                 href: `/${query.org as string}/dashboard`,
               },
               {
-                label: t('common:people'),
-                href: `/${query.org as string}/people`,
+                label: t('common:users'),
+                href: `/${query.org as string}/users`,
               },
               {
                 label: t('common:matches'),

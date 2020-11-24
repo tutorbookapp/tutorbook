@@ -1,16 +1,17 @@
-import { memo, useEffect, useMemo, useState } from 'react';
 import { animated, useSpring } from 'react-spring';
+import { memo, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { v4 as uuid } from 'uuid';
 import useTranslation from 'next-translate/useTranslation';
+import { v4 as uuid } from 'uuid';
 
 import Placeholder from 'components/placeholder';
 import Result from 'components/search/result';
 
-import { Callback, TCallback, User, UserJSON, UsersQuery } from 'lib/model';
+import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import clone from 'lib/utils/clone';
 import { prefetch } from 'lib/fetch';
+import { useOrg } from 'lib/context/org';
 
 import { config, width } from './spring-animation';
 import styles from './results-list.module.scss';
@@ -18,18 +19,17 @@ import styles from './results-list.module.scss';
 export interface ResultsListProps {
   query: UsersQuery;
   setHits: Callback<number>;
-  setViewing: TCallback<UserJSON | undefined>;
   open: boolean;
 }
 
 export default memo(function ResultsList({
   query,
   setHits,
-  setViewing,
   open,
 }: ResultsListProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(true);
 
+  const { org } = useOrg();
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
@@ -68,7 +68,7 @@ export default memo(function ResultsList({
       {!searching &&
         (data?.users || []).map((user: UserJSON) => (
           <Result
-            onClick={() => setViewing(user)}
+            href={`/${org?.id || ''}/users/${user.id}`}
             user={User.fromJSON(user)}
             className={styles.item}
             key={user.id}
@@ -76,7 +76,7 @@ export default memo(function ResultsList({
         ))}
       {!searching && !(data?.users || []).length && (
         <div className={styles.empty}>
-          <Placeholder>{t('people:empty')}</Placeholder>
+          <Placeholder>{t('users:empty')}</Placeholder>
         </div>
       )}
       {searching && loadingRows}

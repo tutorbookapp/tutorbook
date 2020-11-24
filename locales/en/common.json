@@ -1,4 +1,5 @@
 {
+  "retry": "Retry",
   "toggle-theme": "Enable dark mode",
   "picktime-body": "{{org}} is currently using Picktime for appointment scheduling. Simply click the button below to be taken to their site where you can send {{user}} a lesson request:",
   "picktime-btn": "Open Picktime",
@@ -8,7 +9,7 @@
   "meta-description": "Web app that connects students in need (who no longer have face-to-face support from teachers due to COVID-19) with volunteer tutors (who want to make a difference from home).",
   "no-subjects": "No subjects",
   "no-langs": "No languages",
-  "no-users": "No people",
+  "no-users": "No users",
   "personal-account": "Personal Account",
   "organizations": "Organizations",
   "time": "Time",
@@ -43,7 +44,7 @@
   "dashboard": "Dashboard",
   "settings": "Settings",
   "overview": "Overview",
-  "people": "People",
+  "users": "Users",
   "matches": "Matches",
   "rows-per-page": "Rows per page:",
   "facebook": "Facebook",

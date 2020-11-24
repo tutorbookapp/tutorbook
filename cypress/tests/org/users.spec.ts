@@ -13,20 +13,20 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
   cy.get('@snackbar').should('not.exist');
 }
 
-describe('People dashboard page', () => {
+describe('Users dashboard page', () => {
   beforeEach(() => {
     cy.setup();
   });
 
   it('redirects to login page when logged out', () => {
     cy.logout();
-    cy.visit(`/${school.id}/people`);
+    cy.visit(`/${school.id}/users`);
     cy.wait('@get-account');
 
     // TODO: Refactor these assertions into reusable functions as they're used
     // on every single "login required" page. Or, just test them once and assume
     // that they work on every page.
-    const url = `/login?href=${encodeURIComponent(`/${school.id}/people`)}`;
+    const url = `/login?href=${encodeURIComponent(`/${school.id}/users`)}`;
 
     cy.url({ timeout: 60000 }).should('contain', url);
   });
@@ -35,7 +35,7 @@ describe('People dashboard page', () => {
     cy.route('GET', `/api/users/${volunteer.id}`).as('get-volunteer');
 
     cy.login(admin.id);
-    cy.visit(`/${school.id}/people/${volunteer.id}`);
+    cy.visit(`/${school.id}/users/${volunteer.id}`);
     cy.wait('@get-account');
 
     cy.getBySel('user-dialog').should('be.visible');
@@ -45,16 +45,16 @@ describe('People dashboard page', () => {
       .and('contain', volunteer.bio);
   });
 
-  // TODO: Add tests for the matching functionality of this people dashboard.
-  it('creates, edits, and matches people', () => {
+  // TODO: Add tests for the matching functionality of this users dashboard.
+  it('creates, edits, and matches users', () => {
     cy.login(admin.id);
-    cy.visit(`/${school.id}/people`);
+    cy.visit(`/${school.id}/users`);
     cy.wait('@get-account');
 
-    cy.getBySel('title').should('have.text', 'People');
+    cy.getBySel('title').should('have.text', 'Users');
     cy.getBySel('subtitle').should(
       'have.text',
-      'Create, edit, and match people'
+      'Create, edit, and match users'
     );
 
     // TODO: Assert about the content of the user's clipboard once it's
@@ -79,7 +79,7 @@ describe('People dashboard page', () => {
       .first()
       .should('contain', volunteer.name)
       .click();
-    cy.url().should('contain', `/${school.id}/people/${volunteer.id}`);
+    cy.url().should('contain', `/${school.id}/users/${volunteer.id}`);
 
     // TODO: Assert about the data sent in the `/api/user/${id}` PUT requests to
     // ensure that the front-end is properly updating data.
@@ -105,7 +105,7 @@ describe('People dashboard page', () => {
     cy.get('@dialog').should('not.exist');
 
     cy.get('@results').eq(1).should('contain', student.name).click();
-    cy.url().should('contain', `/${school.id}/people/${student.id}`);
+    cy.url().should('contain', `/${school.id}/users/${student.id}`);
 
     cy.getBySel('user-dialog')
       .should('be.visible')

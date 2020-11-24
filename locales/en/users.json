@@ -1,15 +1,15 @@
 {
-  "subtitle": "Create, edit, and match people",
+  "subtitle": "Create, edit, and match users",
   "create-user": "Create user",
-  "import-data-msg": "Could you help me import existing people?",
+  "import-data-msg": "Could you help me import existing user data?",
   "share-search-link": "Share search link",
   "share-signup-link": "Share signup link",
   "filters-not-vetted": "Not yet vetted",
   "filters-visible": "Visible in search",
   "filters-hidden": "Hidden from search",
-  "search-placeholder": "Search people",
+  "search-placeholder": "Search users",
   "link-copied": "Link copied to clipboard.",
   "visible": "Visible",
   "vetted": "Vetted",
-  "empty": "NO PEOPLE TO SHOW"
+  "empty": "NO USERS TO SHOW"
 }

@@ -6,14 +6,11 @@ import to from 'await-to-js';
 import Intercom from 'lib/intercom';
 import TitleHeader from 'components/header';
 
-import { TCallback, User, UserJSON } from 'lib/model';
-
 import styles from './header.module.scss';
 
 export interface HeaderProps {
   orgId: string;
   orgName: string;
-  setViewing: TCallback<UserJSON | undefined>;
 }
 
 function fallbackCopyTextToClipboard(text: string): void {
@@ -47,11 +44,10 @@ async function copyTextToClipboard(text: string): Promise<void> {
 export default memo(function Header({
   orgId,
   orgName,
-  setViewing,
 }: HeaderProps): JSX.Element {
   const createUser = useCallback(() => {
-    setViewing(new User({ orgs: [orgId] }).toJSON());
-  }, [setViewing, orgId]);
+    console.log('[TODO] Implement create user page.');
+  }, []);
 
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const hideSnackbar = useCallback(() => setSnackbar(false), []);
@@ -70,7 +66,7 @@ export default memo(function Header({
 
   const { t } = useTranslation();
   const importData = useCallback(() => {
-    return Intercom('showNewMessage', t('people:import-data-msg'));
+    return Intercom('showNewMessage', t('users:import-data-msg'));
   }, [t]);
 
   return (
@@ -79,26 +75,26 @@ export default memo(function Header({
         <Snackbar
           className={styles.snackbar}
           onClose={hideSnackbar}
-          message={t('people:link-copied')}
+          message={t('users:link-copied')}
           dismissIcon
           leading
           open
         />
       )}
       <TitleHeader
-        header={t('common:people')}
-        body={t('people:subtitle', { name: orgName })}
+        header={t('common:users')}
+        body={t('users:subtitle', { name: orgName })}
         actions={[
           {
-            label: t('people:create-user'),
+            label: t('users:create-user'),
             onClick: createUser,
           },
           {
-            label: t('people:share-signup-link'),
+            label: t('users:share-signup-link'),
             onClick: copySignupLink,
           },
           {
-            label: t('people:share-search-link'),
+            label: t('users:share-search-link'),
             onClick: copySearchLink,
           },
           {

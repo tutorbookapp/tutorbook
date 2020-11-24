@@ -30,7 +30,7 @@ export default memo(function SearchBar({
       const idx = tags.findIndex((a) => a.value === 'not-vetted');
       if (idx < 0) {
         tags.push({
-          label: t('people:filters-not-vetted'),
+          label: t('users:filters-not-vetted'),
           value: 'not-vetted',
         });
       } else {
@@ -64,7 +64,7 @@ export default memo(function SearchBar({
         />
         <ChipSet className={styles.filterChips}>
           <Chip
-            label={t('people:filters-not-vetted')}
+            label={t('users:filters-not-vetted')}
             checkmark
             onInteraction={toggleVettedFilter}
             selected={
@@ -72,13 +72,13 @@ export default memo(function SearchBar({
             }
           />
           <Chip
-            label={t('people:filters-visible')}
+            label={t('users:filters-visible')}
             checkmark
             onInteraction={toggleVisibleFilter}
             selected={query.visible === true}
           />
           <Chip
-            label={t('people:filters-hidden')}
+            label={t('users:filters-hidden')}
             checkmark
             onInteraction={toggleHiddenFilter}
             selected={query.visible === false}
@@ -106,7 +106,7 @@ export default memo(function SearchBar({
       <div className={styles.right}>
         <TextField
           outlined
-          placeholder={t('people:search-placeholder')}
+          placeholder={t('users:search-placeholder')}
           className={styles.searchField}
           value={query.query}
           onChange={(event: FormEvent<HTMLInputElement>) => {
