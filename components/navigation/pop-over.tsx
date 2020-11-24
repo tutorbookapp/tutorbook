@@ -184,8 +184,8 @@ export default function PopOverMenu({
               <PopOverLink href={`/${org.id}/search`}>
                 {t('common:search')}
               </PopOverLink>
-              <PopOverLink href={`/${org.id}/people`}>
-                {t('common:people')}
+              <PopOverLink href={`/${org.id}/users`}>
+                {t('common:users')}
               </PopOverLink>
               <PopOverLink href={`/${org.id}/matches`}>
                 {t('common:matches')}
