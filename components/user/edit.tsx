@@ -2,6 +2,7 @@ import { FormEvent, useCallback, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import { mutate } from 'swr';
+import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import AvailabilitySelect from 'components/availability-select';
@@ -14,7 +15,6 @@ import SubjectSelect from 'components/subject-select';
 
 import { Availability, User, UserJSON } from 'lib/model';
 import { useSingle, useSocialProps } from 'lib/hooks';
-import { useOrg } from 'lib/context/org';
 
 import styles from './edit.module.scss';
 
@@ -56,7 +56,6 @@ export default function UserEdit({
     User
   );
 
-  const { org } = useOrg();
   const { t } = useTranslation();
 
   const onNameChange = useCallback(
@@ -151,13 +150,15 @@ export default function UserEdit({
     return user.id.startsWith('temp') ? 'create' : 'update';
   }, [user.id]);
 
+  const router = useRouter();
+
   return (
     <div className={styles.wrapper}>
       <Result
         user={user}
         loading={!user}
         className={styles.display}
-        href={`/${org?.id || ''}/users/${user?.id || ''}`}
+        onClick={() => router.back()}
       />
       <div className={styles.card}>
         <Loader active={loading} checked={checked} />

@@ -1,8 +1,9 @@
+import { useRouter } from 'next/router';
+
 import Result from 'components/search/result';
 import VerificationsTable from 'components/user/verifications';
 
 import { User } from 'lib/model';
-import { useOrg } from 'lib/context/org';
 
 import styles from './vet.module.scss';
 
@@ -11,7 +12,7 @@ export interface UserVetProps {
 }
 
 export default function UserVet({ user }: UserVetProps): JSX.Element {
-  const { org } = useOrg();
+  const router = useRouter();
 
   return (
     <div className={styles.wrapper}>
@@ -19,7 +20,7 @@ export default function UserVet({ user }: UserVetProps): JSX.Element {
         user={user}
         loading={!user}
         className={styles.display}
-        href={`/${org?.id || ''}/users/${user?.id || ''}`}
+        onClick={() => router.back()}
       />
       <VerificationsTable user={user || new User()} />
     </div>
