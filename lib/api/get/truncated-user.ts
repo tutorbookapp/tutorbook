@@ -22,6 +22,7 @@ export default function getTruncatedUser(user: User): User {
   return new User({
     name: onlyFirstNameAndLastInitial(user.name),
     photo: user.photo,
+    background: user.background,
     bio: user.bio,
     orgs: user.orgs,
     availability: user.availability,

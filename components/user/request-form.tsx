@@ -79,11 +79,12 @@ export default function RequestForm({
   }, [currentUser]);
 
   const aspects = useMemo(() => {
+    if (org?.aspects.length === 1) return org.aspects;
     const asps = new Set<Aspect>();
     if (isAspect(query.aspect)) asps.add(query.aspect);
     subjects.forEach((s) => s.aspect && asps.add(s.aspect));
-    return [...asps];
-  }, [query.aspect, subjects]);
+    return [...asps].filter((a) => !org || org.aspects.includes(a));
+  }, [org, query.aspect, subjects]);
 
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.

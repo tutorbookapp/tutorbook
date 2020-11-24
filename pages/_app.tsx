@@ -67,6 +67,8 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
       // `User()` *before* our `/api/account` endpoint could respond. SWR
       // cancelled the `/api/account` mutation in favor of the empty one.
       await mutate('/api/account', updated.toJSON(), loggedIn === undefined);
+      if (updated.id)
+        await mutate(`/api/users/${updated.id}`, updated.toJSON(), false);
     },
     [user, loggedIn]
   );

@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
+import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import AvailabilitySelect from 'components/availability-select';
@@ -24,6 +25,9 @@ export interface UserEditProps {
 export default function UserEdit({
   user: initialData,
 }: UserEditProps): JSX.Element {
+  const updateLocal = useCallback(async (updated: User) => {
+    await mutate(`/api/users/${updated.id}`, updated.toJSON(), false);
+  }, []);
   const updateRemote = useCallback(async (updated: User) => {
     if (updated.id.startsWith('temp')) {
       const json = { ...updated.toJSON(), id: '' };
@@ -42,7 +46,7 @@ export default function UserEdit({
     checked,
     loading,
     error,
-  } = useSingle(initialData || new User(), updateRemote);
+  } = useSingle(initialData || new User(), updateRemote, updateLocal);
 
   const getSocialProps = useSocialProps(
     user,
