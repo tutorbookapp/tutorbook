@@ -104,15 +104,25 @@ export default function UserDisplay({ user }: UserDisplayProps): JSX.Element {
           </div>
           <h2>{user && 'About'}</h2>
           <p>{user && user.bio}</p>
-          <div className={styles.divider} />
-          <h2>{user && 'Teaches'}</h2>
-          <p>
-            {user &&
-              join([...user.tutoring.subjects, ...user.mentoring.subjects])}
-          </p>
-          <div className={styles.divider} />
-          <h2>{user && 'Speaks'}</h2>
-          <p>{user && join(langs)}</p>
+          {(!user ||
+            !!user.tutoring.subjects.length ||
+            !!user.mentoring.subjects.length) && (
+            <>
+              <div className={styles.divider} />
+              <h2>{user && 'Teaches'}</h2>
+              <p>
+                {user &&
+                  join([...user.tutoring.subjects, ...user.mentoring.subjects])}
+              </p>
+            </>
+          )}
+          {(!user || !!user.langs.length) && (
+            <>
+              <div className={styles.divider} />
+              <h2>{user && 'Speaks'}</h2>
+              <p>{user && join(langs)}</p>
+            </>
+          )}
         </div>
         <div className={styles.right}>
           <div className={styles.sticky}>
