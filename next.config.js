@@ -26,6 +26,16 @@ module.exports = withImages({
         destination: '/default/search/:slug*',
         permanent: true,
       },
+      {
+        source: '/:org/search/:id',
+        destination: '/:org/users/:id',
+        permanent: true,
+      },
+      {
+        source: '/:org/people/:slug*',
+        destination: '/:org/users/:slug*',
+        permanent: true,
+      },
     ];
   },
   webpack(config, { isServer }) {
