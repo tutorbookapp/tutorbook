@@ -72,6 +72,7 @@ export default memo(function ResultsList({
             user={User.fromJSON(user)}
             className={styles.item}
             key={user.id}
+            newTab
           />
         ))}
       {!searching && !(data?.users || []).length && (
