@@ -85,6 +85,20 @@ export async function subjectsToOptions(
   return subjects.map((subject) => ({ label: subject, value: subject }));
 }
 
+export async function getSubjectLabels(
+  subjects: string[],
+  locale = 'en'
+): Promise<string[]> {
+  return (await subjectsToOptions(subjects, locale)).map((o) => o.label);
+}
+
+export async function getLangLabels(
+  langs: string[],
+  locale = 'en'
+): Promise<string[]> {
+  return (await langsToOptions(langs, locale)).map((o) => o.label);
+}
+
 /**
  * Ensures that the given string ends in a period.
  */
