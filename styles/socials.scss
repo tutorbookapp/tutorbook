@@ -5,6 +5,7 @@
   .socialLink {
     @include typography.typography('subtitle1');
     margin-right: 10px;
+    line-height: 22px;
     font-size: 0;
 
     &:before {

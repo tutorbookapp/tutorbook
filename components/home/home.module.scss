@@ -6,25 +6,48 @@
 
 @include common.card-styles;
 
+.card {
+  padding: 16px;
+  margin-bottom: 24px;
+  min-width: 245px;
+  width: 100%;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  a {
+    display: block;
+    margin-top: 16px;
+    text-decoration: none;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
 .content {
   @include common.wrapper(var(--form-width-with-margin));
-  display: flex;
   padding: 48px 24px;
+  display: flex;
 
-  $cutoff: 570px;
-
-  @media (max-width: $cutoff) {
+  @media (max-width: 700px) {
     flex-direction: column;
+
+    .left {
+      margin-right: 0;
+      margin-bottom: 24px;
+    }
   }
 
   .left {
     flex: 1 1 auto;
     margin-right: 24px;
-
-    @media (max-width: $cutoff) {
-      margin-right: 0;
-      margin-bottom: 24px;
-    }
 
     .wrapper {
       display: flex;
@@ -32,7 +55,8 @@
 
       .img {
         display: block;
-        min-width: 120px;
+        width: 120px;
+        height: 120px;
         margin-right: 16px;
       }
 
@@ -45,19 +69,21 @@
 
       .socials {
         height: 28px;
+        display: flex;
+        flex-wrap: wrap;
       }
 
       @include socials.core-styles;
     }
 
-    .header {
+    h2 {
       @include typography.typography('headline6');
       color: var(--on-background);
       font-weight: 600;
       margin: 24px 0 0;
     }
 
-    .body {
+    p {
       @include typography.typography('body1');
       color: var(--accents-5);
       white-space: pre-wrap;
@@ -66,30 +92,11 @@
   }
 
   .right {
-    flex: 0;
+    flex: 0 1 0%;
 
-    .actions {
+    .sticky {
       position: sticky;
       top: calc(var(--header-height) + 24px);
-
-      .card {
-        padding: 16px;
-        margin-bottom: 24px;
-
-        a {
-          display: block;
-          margin-top: 16px;
-          text-decoration: none;
-
-          &:first-child {
-            margin-top: 0;
-          }
-        }
-
-        .btn {
-          width: 100%;
-        }
-      }
     }
   }
 }
@@ -116,8 +123,8 @@
 
   .name,
   .socials,
-  .header,
-  .body {
+  h2,
+  p {
     @include loader.loading;
     border-radius: 4px;
   }
@@ -131,12 +138,12 @@
     width: 200px;
   }
 
-  .header {
+  h2 {
     height: 32px;
     margin-bottom: 8px !important;
   }
 
-  .body {
+  p {
     height: 100px;
   }
 }

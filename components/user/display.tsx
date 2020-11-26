@@ -54,7 +54,7 @@ export default function UserDisplay({ user }: UserDisplayProps): JSX.Element {
   ]);
 
   return (
-    <div data-cy='user-home' className={cn({ [styles.loading]: !user })}>
+    <div className={cn({ [styles.loading]: !user })}>
       {(!user || user.background) && (
         <div className={styles.background}>
           {user?.background && (
@@ -73,12 +73,12 @@ export default function UserDisplay({ user }: UserDisplayProps): JSX.Element {
           <div className={styles.wrapper}>
             <a
               className={styles.img}
-              href={user && user.photo}
+              href={user?.photo || ''}
               target='_blank'
               rel='noreferrer'
               tabIndex={-1}
             >
-              <Avatar size={120} loading={!user} src={user && user.photo} />
+              <Avatar size={200} loading={!user} src={user?.photo} />
             </a>
             <div>
               <h1 data-cy='name' className={styles.name}>

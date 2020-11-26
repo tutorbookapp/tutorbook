@@ -24,9 +24,9 @@ function HomePage({ org }: HomePageProps): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title={`${org?.name || 'Loading'} - Tutorbook`} formWidth intercom>
+      <Page title={`${org?.name || 'Loading'} - Tutorbook`} intercom formWidth>
         <EmptyHeader formWidth />
-        <Home org={org} />
+        <Home org={org ? Org.fromJSON(org) : undefined} />
       </Page>
     </OrgContext.Provider>
   );

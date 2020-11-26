@@ -4,49 +4,23 @@
 @use 'styles/socials';
 @use 'styles/typography';
 
-.divider {
-  border-top: 1px solid var(--accents-2);
-  margin: 32px 0;
-}
-
-.right {
-  width: 400px;
-
-  .sticky {
-    position: sticky;
-    top: calc(var(--header-height) + 24px);
-    text-align: center;
-
-    .actions {
-      margin-top: 8px;
-      display: inline-block;
-
-      button {
-        margin: 0 4px;
-      }
-    }
-  }
-}
-
 .content {
   @include common.wrapper();
   display: flex;
   padding: 48px 24px;
 
-  $cutoff: 570px;
-
-  @media (max-width: $cutoff) {
+  @media (max-width: 900px) {
     flex-direction: column;
+
+    .left {
+      margin-right: 0;
+      margin-bottom: 24px;
+    }
   }
 
   .left {
     flex: 1 1 auto;
     margin-right: 72px;
-
-    @media (max-width: $cutoff) {
-      margin-right: 0;
-      margin-bottom: 48px;
-    }
 
     .wrapper {
       display: flex;
@@ -54,8 +28,9 @@
 
       .img {
         display: block;
-        min-width: 120px;
-        margin-right: 16px;
+        width: 200px;
+        height: 200px;
+        margin-right: 24px;
       }
 
       .name {
@@ -67,6 +42,8 @@
 
       .socials {
         height: 28px;
+        display: flex;
+        flex-wrap: wrap;
       }
 
       @include socials.core-styles;
@@ -88,7 +65,24 @@
   }
 
   .right {
-    flex: none;
+    flex: 0 1 0%;
+
+    .sticky {
+      position: sticky;
+      top: calc(var(--header-height) + 24px);
+      text-align: center;
+      min-width: 400px;
+      width: 100%;
+
+      .actions {
+        margin-top: 8px;
+        display: inline-block;
+
+        button {
+          margin: 0 4px;
+        }
+      }
+    }
   }
 }
 
@@ -137,4 +131,9 @@
   p {
     height: 100px;
   }
+}
+
+.divider {
+  border-top: 1px solid var(--accents-2);
+  margin: 32px 0;
 }
