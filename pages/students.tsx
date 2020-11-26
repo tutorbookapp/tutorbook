@@ -13,7 +13,7 @@ import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
 
 function StudentsPage(): JSX.Element {
-  usePage('Students Landing');
+  usePage({ name: 'Students Landing' });
 
   return (
     <Page title='Support at scale - Tutorbook' intercom>

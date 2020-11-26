@@ -32,7 +32,7 @@ interface SearchPageProps {
 }
 
 function SearchPage({ org }: SearchPageProps): JSX.Element {
-  usePage('Org Search', org?.id);
+  usePage({ name: 'Org Search', org: org?.id });
 
   const { user: currentUser, loggedIn } = useUser();
 

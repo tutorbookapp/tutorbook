@@ -20,7 +20,7 @@ interface HomePageProps {
 }
 
 function HomePage({ org }: HomePageProps): JSX.Element {
-  usePage('Org Home', org?.id);
+  usePage({ name: 'Org Home', org: org?.id });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

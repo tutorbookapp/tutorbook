@@ -34,7 +34,12 @@ function UserVetPage({
     { initialData, revalidateOnMount: true }
   );
 
-  usePage('User Home', org?.id);
+  usePage({
+    name: 'User Home',
+    org: org?.id,
+    login: true,
+    admin: true,
+  });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

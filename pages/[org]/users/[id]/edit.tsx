@@ -34,7 +34,13 @@ function UserEditPage({
     { initialData, revalidateOnMount: true }
   );
 
-  usePage('User Home', org?.id);
+  usePage({
+    name: 'User Home',
+    url: `/${query.org as string}/users/${query.id as string}/edit`,
+    org: query.org as string,
+    login: true,
+    admin: true,
+  });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

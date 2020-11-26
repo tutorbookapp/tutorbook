@@ -19,7 +19,7 @@ import common from 'locales/en/common.json';
 import landing from 'locales/en/landing.json';
 
 function OrgsPage(): JSX.Element {
-  usePage('Orgs Landing');
+  usePage({ name: 'Orgs Landing' });
 
   return (
     <Page title='Support at scale - Tutorbook' intercom borderless>

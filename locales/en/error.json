@@ -1,0 +1,9 @@
+{
+  "404-header": "404 - Page Not Found",
+  "404-body": "The requested page doesn't exist or you don't have access to it.",
+  "400-header": "400 - Bad Request",
+  "405-header": "405 - Method Not Allowed",
+  "500-header": "500 - Internal Server Error",
+  "header": "Unknown Error",
+  "body": "An unexpected error occurred. Try again later."
+}

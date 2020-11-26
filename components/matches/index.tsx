@@ -26,7 +26,7 @@ import { LoadingRow, MatchRow } from './row';
 import styles from './matches.module.scss';
 
 interface MatchesProps {
-  org: Org;
+  org?: Org;
 }
 
 /**
@@ -42,11 +42,14 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
   const [viewing, setViewing] = useState<MatchJSON>();
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MatchesQuery>(
-    new MatchesQuery({ org: org.id, hitsPerPage: 10 })
+    new MatchesQuery({ org: org?.id || 'default', hitsPerPage: 10 })
   );
 
   useEffect(() => {
-    setQuery((prev) => new MatchesQuery({ ...prev, org: org.id }));
+    setQuery((prev) => {
+      if (!org) return prev;
+      return new MatchesQuery({ ...prev, org: org.id });
+    });
   }, [org]);
 
   const { data, isValidating } = useSWR<ListMatchesRes>(query.endpoint);
@@ -72,7 +75,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
       )}
       <Header
         header={t('common:matches')}
-        body={t('matches:subtitle', { name: org.name })}
+        body={t('matches:subtitle', { name: org?.name || '' })}
         actions={[
           {
             label: t('common:import-data'),

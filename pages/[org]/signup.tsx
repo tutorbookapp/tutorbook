@@ -29,7 +29,7 @@ function SignupPage({ org }: SignupPageProps): JSX.Element {
     return org.aspects[0] || 'mentoring';
   });
 
-  usePage('Org Signup', org?.id);
+  usePage({ name: 'Org Signup', org: org?.id });
   useEffect(() => {
     setAspect((prev: Aspect) => {
       const updated = isAspect(query.aspect) ? query.aspect : prev;

@@ -1,14 +1,13 @@
-import ErrorPage from 'next/error';
 import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Page from 'components/page';
 import Matches from 'components/matches';
+import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
-import { useLoggedIn, usePage } from 'lib/hooks';
 import { OrgContext } from 'lib/context/org';
+import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -18,7 +17,7 @@ import matches from 'locales/en/matches.json';
 import user from 'locales/en/user.json';
 
 function MatchesPage(): JSX.Element {
-  const { orgs, loggedIn } = useUser();
+  const { orgs } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
 
@@ -28,41 +27,40 @@ function MatchesPage(): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  usePage('Org Matches', query.org as string);
-  useLoggedIn(`/${query.org as string}/matches`);
+  usePage({
+    name: 'Org Matches',
+    org: query.org as string,
+    login: true,
+    admin: true,
+  });
 
   return (
     <OrgContext.Provider value={{ org }}>
-      {!!loggedIn && !org && (
-        <ErrorPage statusCode={401} title={t('common:not-org-member')} />
-      )}
-      {!!org && (
-        <Page title={`${org.name} - Matches - Tutorbook`}>
-          <TabHeader
-            switcher
-            tabs={[
-              {
-                label: t('common:overview'),
-                href: `/${query.org as string}/dashboard`,
-              },
-              {
-                label: t('common:users'),
-                href: `/${query.org as string}/users`,
-              },
-              {
-                label: t('common:matches'),
-                active: true,
-                href: `/${query.org as string}/matches`,
-              },
-              {
-                label: t('common:settings'),
-                href: `/${query.org as string}/settings`,
-              },
-            ]}
-          />
-          <Matches org={org} />
-        </Page>
-      )}
+      <Page title={`${org?.name || 'Loading'} - Matches - Tutorbook`}>
+        <TabHeader
+          switcher
+          tabs={[
+            {
+              label: t('common:overview'),
+              href: `/${query.org as string}/dashboard`,
+            },
+            {
+              label: t('common:users'),
+              href: `/${query.org as string}/users`,
+            },
+            {
+              label: t('common:matches'),
+              active: true,
+              href: `/${query.org as string}/matches`,
+            },
+            {
+              label: t('common:settings'),
+              href: `/${query.org as string}/settings`,
+            },
+          ]}
+        />
+        <Matches org={org} />
+      </Page>
     </OrgContext.Provider>
   );
 }

@@ -11,7 +11,7 @@ import SearchBar from './search-bar';
 import styles from './users.module.scss';
 
 interface UsersProps {
-  org: Org;
+  org?: Org;
 }
 
 /**
@@ -30,25 +30,23 @@ export default function Users({ org }: UsersProps): JSX.Element {
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
-      orgs: [{ label: org.name, value: org.id }],
+      orgs: org ? [{ label: org.name, value: org.id }] : [],
       hitsPerPage: 5,
     })
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
   useEffect(() => {
-    setQuery(
-      (prev) =>
-        new UsersQuery({
-          ...prev,
-          orgs: [{ label: org.name, value: org.id }],
-        })
-    );
+    setQuery((prev) => {
+      if (!org) return prev;
+      const orgs = [{ label: org.name, value: org.id }];
+      return new UsersQuery({ ...prev, orgs });
+    });
   }, [org]);
 
   return (
     <>
-      <Header orgId={org.id} orgName={org.name} />
+      <Header orgId={org?.id || ''} orgName={org?.name || ''} />
       <div className={styles.wrapper}>
         <SearchBar query={query} setQuery={setQuery} setOpen={setFiltersOpen} />
         <div className={styles.content}>

@@ -4,7 +4,7 @@ import Page from 'components/page';
 import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
-import { useLoggedIn, usePage } from 'lib/hooks';
+import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -15,8 +15,7 @@ function DashboardPage(): JSX.Element {
   const { t } = useTranslation();
   const { user } = useUser();
 
-  usePage('Dashboard');
-  useLoggedIn('dashboard');
+  usePage({ name: 'Dashboard', url: '/dashboard', login: true });
 
   return (
     <Page title='Dashboard - Tutorbook' intercom>

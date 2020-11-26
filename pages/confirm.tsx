@@ -15,7 +15,7 @@ import { period } from 'lib/utils';
 export default function Confirm(): JSX.Element {
   const { query, push } = useRouter();
 
-  usePage('Confirm');
+  usePage({ name: 'Confirm' });
 
   useEffect(() => {
     // Set a timeout to avoid conflicting with the page transition nprogress.
