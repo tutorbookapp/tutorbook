@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Ripple } from '@rmwc/ripple';
 
 import Avatar from 'components/avatar';
@@ -8,12 +9,39 @@ import { TCallback, User } from 'lib/model';
 import styles from './cards.module.scss';
 
 interface UserCardProps {
-  onClick: TCallback<React.SyntheticEvent<HTMLDivElement>>;
+  onClick?: TCallback<React.SyntheticEvent<HTMLDivElement>>;
+  href?: string;
   user: User;
 }
 
-export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
-  // TODO: Remove workaround for the jsx-a11y/click-events-have-key-events rule.
+function UserCardContent({ user }: { user: User }): JSX.Element {
+  return (
+    <>
+      <div className={styles.img}>
+        <Avatar size={160} src={user.photo} />
+      </div>
+      <div data-cy='name' className={styles.name}>
+        {user.name}
+      </div>
+      <div data-cy='bio' className={styles.bio}>
+        {user.bio}
+      </div>
+    </>
+  );
+}
+
+export function UserCard({ user, onClick, href }: UserCardProps): JSX.Element {
+  if (href)
+    return (
+      <Link href={href} passHref>
+        <Ripple>
+          <a data-cy='user-card' target='_blank' className={styles.card}>
+            <UserCardContent user={user} />
+          </a>
+        </Ripple>
+      </Link>
+    );
+
   return (
     <Ripple>
       <div
@@ -21,18 +49,8 @@ export function UserCard({ user, onClick }: UserCardProps): JSX.Element {
         tabIndex={0}
         className={styles.card}
         onClick={onClick}
-        onKeyPress={() => {}}
-        role='gridcell'
       >
-        <div className={styles.img}>
-          <Avatar size={160} src={user.photo} />
-        </div>
-        <div data-cy='name' className={styles.name}>
-          {user.name}
-        </div>
-        <div data-cy='bio' className={styles.bio}>
-          {user.bio}
-        </div>
+        <UserCardContent user={user} />
       </div>
     </Ripple>
   );

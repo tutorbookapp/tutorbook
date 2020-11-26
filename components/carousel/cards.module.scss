@@ -12,6 +12,8 @@ $margin: 20px;
   border-top: none;
   cursor: pointer;
   text-align: initial;
+  text-decoration: none;
+  display: block;
 
   &.disabled {
     cursor: not-allowed;

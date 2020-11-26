@@ -10,24 +10,14 @@ import { dequal } from 'dequal/lite';
 import AuthDialog from 'components/auth-dialog';
 import Page from 'components/page';
 import { QueryHeader } from 'components/navigation';
-import RequestDialog from 'components/request-dialog';
 import Search from 'components/search';
 
-import {
-  CallbackParam,
-  Option,
-  Org,
-  OrgJSON,
-  User,
-  UserJSON,
-  UsersQuery,
-} from 'lib/model';
+import { CallbackParam, Org, OrgJSON, User, UsersQuery } from 'lib/model';
 import { useAnalytics, usePage, useTrack } from 'lib/hooks';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import clone from 'lib/utils/clone';
 import { db } from 'lib/api/firebase';
-import { intersection } from 'lib/utils';
 import { prefetch } from 'lib/fetch';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
@@ -39,10 +29,9 @@ import search from 'locales/en/search.json';
 
 interface SearchPageProps {
   org?: OrgJSON;
-  user?: UserJSON;
 }
 
-function SearchPage({ org, user }: SearchPageProps): JSX.Element {
+function SearchPage({ org }: SearchPageProps): JSX.Element {
   usePage('Org Search', org?.id);
 
   const { user: currentUser, loggedIn } = useUser();
@@ -52,7 +41,6 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   const [auth, setAuth] = useState<boolean>(false);
   const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(true);
-  const [viewing, setViewing] = useState<UserJSON>();
 
   const { data, isValidating } = useSWR<ListUsersRes>(
     canSearch ? query.endpoint : null
@@ -85,10 +73,6 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   // Save the number of hits from the last successful request.
   useEffect(() => setHits((prev) => data?.hits || prev), [data?.hits]);
 
-  // Open the user dialog once our updated `getStaticProps` has resolved.
-  // @see {@link https://nextjs.org/docs/basic-features/data-fetching}
-  useEffect(() => setViewing(user), [user]);
-
   // Prefetch the next page of results (using SWR's global cache).
   // @see {@link https://swr.vercel.app/docs/prefetching}
   useEffect(() => {
@@ -113,9 +97,9 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   // show the `NProgress` loader when the results are coming in.
   useEffect(() => {
     if (!org || !org.id) return;
-    const url = query.getURL(`/${org.id}/search/${viewing ? viewing.id : ''}`);
+    const url = query.getURL(`/${org.id}/search`);
     void Router.replace(url, undefined, { shallow: true });
-  }, [org, query, viewing]);
+  }, [org, query]);
 
   // TODO: Perhaps we should only allow filtering by a single org, as we don't
   // ever filter by more than one at once.
@@ -149,15 +133,6 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
   }, [searching]);
 
   const results = useMemo(() => (data ? data.users : []), [data]);
-  const onClosed = useCallback(() => setViewing(undefined), []);
-  const subjects = useMemo(() => {
-    if (!viewing) return [];
-    return intersection<string, Option<string>>(
-      viewing[query.aspect].subjects,
-      query.subjects,
-      (a: string, b: Option<string>) => a === b.value
-    );
-  }, [viewing, query.aspect, query.subjects]);
 
   const track = useTrack();
   const onQueryChange = useCallback(
@@ -203,17 +178,6 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
         })),
       }
   );
-  useAnalytics(
-    'User Viewed',
-    () =>
-      viewing && {
-        aspect: query.aspect,
-        ...User.fromJSON(viewing).toSegment(),
-        position: results.findIndex((res) => res.id === viewing.id),
-        url: `${url}/${org?.id || 'default'}/search/${viewing.id}`,
-        subjects: viewing[query.aspect].subjects,
-      }
-  );
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
@@ -224,21 +188,12 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
           onChange={onQueryChange}
         />
         {auth && <AuthDialog />}
-        {viewing && (
-          <RequestDialog
-            user={User.fromJSON(viewing)}
-            aspect={query.aspect}
-            onClosed={onClosed}
-            subjects={subjects}
-          />
-        )}
         <Search
           hits={hits}
           query={query}
           results={results}
           searching={searching || !canSearch}
           onChange={onQueryChange}
-          setViewing={setViewing}
         />
       </Page>
     </OrgContext.Provider>
@@ -247,7 +202,6 @@ function SearchPage({ org, user }: SearchPageProps): JSX.Element {
 
 interface SearchPageQuery extends ParsedUrlQuery {
   org: string;
-  slug?: string[];
 }
 
 export const getStaticProps: GetStaticProps<
@@ -258,17 +212,12 @@ export const getStaticProps: GetStaticProps<
   const orgDoc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!orgDoc.exists) throw new Error(`Org (${orgDoc.id}) doesn't exist.`);
   const props: SearchPageProps = { org: Org.fromFirestore(orgDoc).toJSON() };
-  if (ctx.params.slug && ctx.params.slug[0]) {
-    const userDoc = await db.collection('users').doc(ctx.params.slug[0]).get();
-    if (!userDoc.exists) console.warn(`User (${userDoc.id}) doesn't exist.`);
-    props.user = User.fromFirestore(userDoc).toJSON();
-  }
   return { props, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SearchPageQuery> = async () => {
   const orgs = (await db.collection('orgs').get()).docs;
-  const paths = orgs.map((org) => ({ params: { org: org.id, slug: [] } }));
+  const paths = orgs.map((org) => ({ params: { org: org.id } }));
   return { paths, fallback: true };
 };
 

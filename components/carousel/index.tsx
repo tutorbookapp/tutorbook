@@ -4,17 +4,19 @@ import { v4 as uuid } from 'uuid';
 
 import { User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import { useOrg } from 'lib/context/org';
 
 import Carousel from './carousel';
 import { LoadingCard, UserCard } from './cards';
 
 interface Props {
   query: UsersQuery;
-  onClick: (user: User) => void;
+  onClick?: (user: User) => void;
 }
 
 export default function UserCarousel({ query, onClick }: Props): JSX.Element {
   const { data } = useSWR<ListUsersRes>(query.endpoint);
+  const { org } = useOrg();
 
   useEffect(() => {
     void mutate(query.endpoint);
@@ -30,7 +32,12 @@ export default function UserCarousel({ query, onClick }: Props): JSX.Element {
               <UserCard
                 key={user.id || uuid()}
                 user={user}
-                onClick={() => onClick(user)}
+                onClick={onClick ? () => onClick(user) : undefined}
+                href={
+                  !onClick
+                    ? `/${org?.id || 'default'}/users/${user.id}`
+                    : undefined
+                }
               />
             ))}
         </Carousel>

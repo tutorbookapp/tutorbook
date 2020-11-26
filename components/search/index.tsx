@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -18,7 +18,6 @@ interface SearchProps {
   hits: number;
   searching: boolean;
   query: UsersQuery;
-  setViewing: Callback<UserJSON | undefined>;
 }
 
 export default function Search({
@@ -27,7 +26,6 @@ export default function Search({
   hits,
   searching,
   onChange,
-  setViewing,
 }: SearchProps): JSX.Element {
   const [elevated, setElevated] = useState<boolean>(false);
 
@@ -46,10 +44,6 @@ export default function Search({
       .fill(null)
       .map(() => <Result loading key={nanoid()} />);
   }, [query.hitsPerPage]);
-
-  const onNoResultsClick = useCallback((u: User) => setViewing(u.toJSON()), [
-    setViewing,
-  ]);
 
   useEffect(() => {
     const listener = () => {
@@ -94,7 +88,7 @@ export default function Search({
             {t('search:no-results-title')}
           </h3>
           <p className={styles.noResultsBody}>{t('search:no-results-body')}</p>
-          <Carousel query={noResultsQuery} onClick={onNoResultsClick} />
+          <Carousel query={noResultsQuery} />
         </div>
       )}
     </div>

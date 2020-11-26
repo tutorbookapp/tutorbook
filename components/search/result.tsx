@@ -55,6 +55,8 @@ interface ResultLinkProps extends ResultProps {
   newTab?: boolean;
 }
 
+// TODO: Refactor this to use the `passHref` prop on `Link` to forward the href
+// to the `Ripple` component which will in turn forward it to the `a` tag.
 function ResultLink({
   user,
   className,

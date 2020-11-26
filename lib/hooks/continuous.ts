@@ -36,6 +36,9 @@ export default function useContinuous<T>(
   const [error, setError] = useState<string>('');
   const [retryCount, setRetryCount] = useState<number>(0);
 
+  // The given changes are always initially saved; we don't want to show an
+  // unnecessary "Saved changes" snackbar when the user first opens a page.
+
   const lastReceivedResponse = useRef<T>();
 
   const retry = useCallback(async () => {
