@@ -64,6 +64,7 @@ export async function langsToOptions(
   langs: string[],
   locale = 'en'
 ): Promise<Option<string>[]> {
+  if (!langs.length) return [];
   const res: SearchResponse<LangHit> = await searchIndex.search('', {
     filters: langs.map((lang: string) => `objectID:${lang}`).join(' OR '),
   });
