@@ -1,4 +1,5 @@
 import { NextPageContext } from 'next';
+import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import { EmptyHeader } from 'components/navigation';

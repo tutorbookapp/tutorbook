@@ -46,9 +46,7 @@ export default function UserDisplay({
             className={cn({ [styles.blurred]: !user?.background })}
           />
         )}
-        {user && !user.background && !user.photo && (
-          <span>No Banner Image</span>
-        )}
+        {user && !user.background && !user.photo && <span>No Banner</span>}
       </div>
       <div className={styles.content}>
         <div className={styles.left}>
