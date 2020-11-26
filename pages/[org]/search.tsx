@@ -209,10 +209,9 @@ export const getStaticProps: GetStaticProps<
   SearchPageQuery
 > = async (ctx: GetStaticPropsContext<SearchPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
-  const orgDoc = await db.collection('orgs').doc(ctx.params.org).get();
-  if (!orgDoc.exists) throw new Error(`Org (${orgDoc.id}) doesn't exist.`);
-  const props: SearchPageProps = { org: Org.fromFirestore(orgDoc).toJSON() };
-  return { props, revalidate: 1 };
+  const doc = await db.collection('orgs').doc(ctx.params.org).get();
+  if (!doc.exists) return { notFound: true };
+  return { props: { org: Org.fromFirestore(doc).toJSON() }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SearchPageQuery> = async () => {

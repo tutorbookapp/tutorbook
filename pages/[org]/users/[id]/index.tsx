@@ -115,30 +115,34 @@ export const getStaticProps: GetStaticProps<
   UserDisplayPageQuery
 > = async (ctx: GetStaticPropsContext<UserDisplayPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org and user w/out params.');
-  const [org, user] = await Promise.all([
-    getOrg(ctx.params.org),
-    getUser(ctx.params.id),
-  ]);
-  const [langs, tutoring, mentoring] = await Promise.all([
-    getLangLabels(user.langs),
-    getSubjectLabels(user.tutoring.subjects),
-    getSubjectLabels(user.mentoring.subjects),
-  ]);
-  // Note that because Next.js cannot expose the `req` object when fetching
-  // static props, there are a couple of possible FOUC:
-  // 1. If the user is an admin, the user's full name and the "edit" and "vet"
-  //    icon buttons will appear after SWR fetches the user data client-side.
-  // 2. If there is an `aspect` specified as a query parameter, the user's
-  //    "teaches" section could change.
-  return {
-    props: {
-      langs,
-      org: org.toJSON(),
-      subjects: { tutoring, mentoring },
-      user: getTruncatedUser(user).toJSON(),
-    },
-    revalidate: 1,
-  };
+  try {
+    const [org, user] = await Promise.all([
+      getOrg(ctx.params.org),
+      getUser(ctx.params.id),
+    ]);
+    const [langs, tutoring, mentoring] = await Promise.all([
+      getLangLabels(user.langs),
+      getSubjectLabels(user.tutoring.subjects),
+      getSubjectLabels(user.mentoring.subjects),
+    ]);
+    // Note that because Next.js cannot expose the `req` object when fetching
+    // static props, there are a couple of possible FOUC:
+    // 1. If the user is an admin, the user's full name and the "edit" and "vet"
+    //    icon buttons will appear after SWR fetches the user data client-side.
+    // 2. If there is an `aspect` specified as a query parameter, the user's
+    //    "teaches" section could change.
+    return {
+      props: {
+        langs,
+        org: org.toJSON(),
+        subjects: { tutoring, mentoring },
+        user: getTruncatedUser(user).toJSON(),
+      },
+      revalidate: 1,
+    };
+  } catch (e) {
+    return { notFound: true };
+  }
 };
 
 // TODO: We want to statically generate skeleton loading pages for each org.

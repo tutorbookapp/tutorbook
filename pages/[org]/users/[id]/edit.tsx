@@ -10,8 +10,7 @@ import UserEdit from 'components/user/edit';
 
 import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 import { OrgContext } from 'lib/context/org';
-import { db } from 'lib/api/firebase';
-import getTruncatedUser from 'lib/api/get/truncated-user';
+import getOrg from 'lib/api/get/org';
 import getUser from 'lib/api/get/user';
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
@@ -64,11 +63,15 @@ export const getStaticProps: GetStaticProps<
   UserEditPageQuery
 > = async (ctx: GetStaticPropsContext<UserEditPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org and user w/out params.');
-  const doc = await db.collection('orgs').doc(ctx.params.org).get();
-  if (!doc.exists) throw new Error(`Org (${doc.id}) doesn't exist.`);
-  const org = Org.fromFirestore(doc);
-  const user = getTruncatedUser(await getUser(ctx.params.id));
-  return { props: { org: org.toJSON(), user: user.toJSON() }, revalidate: 1 };
+  try {
+    const [org, user] = await Promise.all([
+      getOrg(ctx.params.org),
+      getUser(ctx.params.id),
+    ]);
+    return { props: { org: org.toJSON(), user: user.toJSON() }, revalidate: 1 };
+  } catch (e) {
+    return { notFound: true };
+  }
 };
 
 // TODO: We want to statically generate skeleton loading pages for each org.

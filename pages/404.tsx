@@ -18,7 +18,7 @@ function Custom404Page(): JSX.Element {
   return (
     <Page title={`${t('error:404-header')} - Tutorbook`} intercom>
       <EmptyHeader />
-      <Notification header={`404 - ${t('error:404-header')}`}>
+      <Notification header={t('error:404-header')}>
         <p>{t('error:404-body')}</p>
       </Notification>
     </Page>

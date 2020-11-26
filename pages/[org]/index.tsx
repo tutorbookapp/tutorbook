@@ -42,7 +42,7 @@ export const getStaticProps: GetStaticProps<
 > = async (ctx: GetStaticPropsContext<HomePageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
-  if (!doc.exists) throw new Error(`Org (${doc.id}) doesn't exist.`);
+  if (!doc.exists) return { notFound: true };
   const org = Org.fromFirestore(doc);
   return { props: { org: org.toJSON() }, revalidate: 1 };
 };
