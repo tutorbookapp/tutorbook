@@ -52,6 +52,7 @@ function ResultButton({
 
 interface ResultLinkProps extends ResultProps {
   href: string;
+  newTab?: boolean;
 }
 
 function ResultLink({
@@ -59,6 +60,7 @@ function ResultLink({
   className,
   loading,
   href,
+  newTab,
   avatar = true,
 }: ResultLinkProps): JSX.Element {
   const disabled = useMemo(() => loading || !href, [loading, href]);
@@ -73,7 +75,7 @@ function ResultLink({
         })}
       >
         <Link href={href}>
-          <a className={styles.link}>
+          <a className={styles.link} target={newTab ? '_blank' : undefined}>
             {avatar && (
               <div className={styles.img}>
                 <Avatar size={85} loading={loading} src={(user || {}).photo} />

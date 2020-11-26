@@ -2,7 +2,7 @@
 
 .table {
   width: 100%;
-  margin-top: 24px;
+  margin: 24px 0;
 
   .checkbox {
     width: 56px;
@@ -33,5 +33,13 @@
         @include typography.typography('body2');
       }
     }
+  }
+}
+
+.switch {
+  margin: 0 16px;
+
+  label {
+    margin-left: 16px;
   }
 }

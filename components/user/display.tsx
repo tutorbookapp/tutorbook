@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@rmwc/button';
+import { IconButton } from '@rmwc/icon-button';
 import Image from 'next/image';
 import Link from 'next/link';
 import cn from 'classnames';
@@ -70,82 +70,91 @@ export default function UserDisplay({ user }: UserDisplayProps): JSX.Element {
       )}
       <div className={styles.content}>
         <div className={styles.left}>
-          <div className={styles.wrapper}>
-            <a
-              className={styles.img}
-              href={user?.photo || ''}
-              target='_blank'
-              rel='noreferrer'
-              tabIndex={-1}
-            >
-              <Avatar size={200} loading={!user} src={user?.photo} />
-            </a>
-            <div>
-              <h1 data-cy='name' className={styles.name}>
-                {user && user.name}
-              </h1>
-              {(!user || !!user.socials.length) && (
-                <div data-cy='socials' className={styles.socials}>
-                  {(user ? user.socials : []).map((social) => (
-                    <a
-                      data-cy={`${social.type}-social-link`}
-                      key={social.type}
-                      target='_blank'
-                      rel='noreferrer'
-                      href={social.url}
-                      className={`${styles.socialLink} ${styles[social.type]}`}
-                    >
-                      {social.type}
-                    </a>
-                  ))}
-                  {!!user?.email && (
-                    <a
-                      data-cy='email-social-link'
-                      target='_blank'
-                      rel='noreferrer'
-                      href={`mailto:${encodeURIComponent(
-                        `"${user.name}"<${user.email}>`
-                      )}`}
-                      className={`${styles.socialLink} ${styles.email}`}
-                    >
-                      {user.email}
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-          <h2>{user && 'About'}</h2>
-          <p>{user && user.bio}</p>
-          {(!user || !!subjects.length) && (
-            <>
-              <div className={styles.divider} />
-              <h2>{user && 'Teaches'}</h2>
-              <p>{user && join(subjects)}</p>
-            </>
-          )}
-          {!!langs.length && (
-            <>
-              <div className={styles.divider} />
-              <h2>{user && 'Speaks'}</h2>
-              <p>{user && join(langs)}</p>
-            </>
-          )}
-        </div>
-        <div className={styles.right}>
-          <div className={styles.sticky}>
-            <RequestForm admin={admin} user={user || new User()} />
+          <a
+            className={styles.img}
+            href={user?.photo || ''}
+            target='_blank'
+            rel='noreferrer'
+            tabIndex={-1}
+          >
+            <Avatar size={260} loading={!user} src={user?.photo} />
             {currentUser.id !== user?.id && admin && (
               <div className={styles.actions}>
                 <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
-                  <Button icon='edit' label='Edit user' />
+                  <IconButton icon='edit' label='Edit user' />
                 </Link>
                 <Link href={`/${org?.id || ''}/users/${user?.id || ''}/vet`}>
-                  <Button icon='fact_check' label='Vet user' />
+                  <IconButton icon='fact_check' label='Vet user' />
                 </Link>
               </div>
             )}
-          </div>
+          </a>
+          <h1 data-cy='name' className={styles.name}>
+            {user && user.name}
+          </h1>
+          {(!user || !!user.socials.length) && (
+            <div data-cy='socials' className={styles.socials}>
+              {(user ? user.socials : []).map((social) => (
+                <a
+                  data-cy={`${social.type}-social-link`}
+                  key={social.type}
+                  target='_blank'
+                  rel='noreferrer'
+                  href={social.url}
+                  className={`${styles.socialLink} ${styles[social.type]}`}
+                >
+                  {social.type}
+                </a>
+              ))}
+              {!!user?.email && (
+                <a
+                  data-cy='email-social-link'
+                  target='_blank'
+                  rel='noreferrer'
+                  href={`mailto:${encodeURIComponent(
+                    `"${user.name}"<${user.email}>`
+                  )}`}
+                  className={`${styles.socialLink} ${styles.email}`}
+                >
+                  {user.email}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+        <div className={styles.right}>
+          <h2>{user && 'About'}</h2>
+          <p>{user && user.bio}</p>
+          {!user && (
+            <>
+              <h2 />
+              <p className={styles.subjects} />
+            </>
+          )}
+          {!user && (
+            <>
+              <h2 />
+              <form className={styles.form} />
+            </>
+          )}
+          {user && !!subjects.length && (
+            <>
+              <h2>Teaches</h2>
+              <p>{join(subjects)}</p>
+            </>
+          )}
+          {user && !!langs.length && (
+            <>
+              <h2>Speaks</h2>
+              <p>{join(langs)}</p>
+            </>
+          )}
+          {user && (
+            <>
+              <h2>Request</h2>
+              <RequestForm admin={admin} user={user || new User()} />
+            </>
+          )}
         </div>
       </div>
     </div>

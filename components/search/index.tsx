@@ -81,6 +81,7 @@ export default function Search({
                   href={`/${org?.id || 'default'}/users/${res.id}?aspect=${
                     query.aspect
                   }`}
+                  newTab
                 />
               ))}
           </ul>

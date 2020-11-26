@@ -38,8 +38,8 @@ function UserEditPage({
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title={`${data?.name || 'Loading'} - Tutorbook`}>
-        <EmptyHeader />
+      <Page title={`${data?.name || 'Loading'} - Tutorbook`} formWidth>
+        <EmptyHeader formWidth />
         <UserEdit user={data ? User.fromJSON(data) : undefined} />
       </Page>
     </OrgContext.Provider>

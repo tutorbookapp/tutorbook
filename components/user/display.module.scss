@@ -3,57 +3,111 @@
 @use 'styles/loader';
 @use 'styles/socials';
 @use 'styles/typography';
+@use '@material/icon-button';
+@use '@material/elevation';
 
 .content {
-  @include common.wrapper();
+  @include common.wrapper(var(--form-width-with-margin));
   display: flex;
   padding: 48px 24px;
 
-  @media (max-width: 900px) {
-    flex-direction: column;
-
-    .left {
-      margin-right: 0;
-      margin-bottom: 24px;
-    }
-  }
+  $cutoff: 570px;
+  $padding: 40px;
+  $margin: 24px;
 
   .left {
-    flex: 1 1 auto;
-    margin-right: 72px;
+    flex-grow: 1;
+    flex-basis: 0;
+    max-width: 260px;
 
-    .wrapper {
-      display: flex;
-      align-items: center;
+    @media (max-width: $cutoff) {
+      margin-bottom: $margin;
+      max-width: none;
+    }
 
-      .img {
-        display: block;
-        width: 200px;
-        height: 200px;
-        margin-right: 24px;
+    .img {
+      position: relative;
+      display: block;
+      height: 260px;
+      width: 260px;
+
+      .actions {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+
+        button {
+          @include icon-button.size(32px);
+          background: var(--primary);
+          color: var(--on-primary);
+          border-radius: 50%;
+          font-size: 18px;
+          margin: 0 4px;
+
+          &:first-child {
+            margin-left: 0;
+          }
+
+          &:last-child {
+            margin-right: 0;
+          }
+
+          @include elevation.elevation(2);
+          transition: elevation.transition-value();
+          will-change: elevation.$property;
+
+          &:hover,
+          &:focus {
+            @include elevation.elevation(4);
+          }
+
+          &:active {
+            @include elevation.elevation(8);
+          }
+
+          &:disabled {
+            @include elevation.elevation(0);
+          }
+        }
       }
+    }
 
-      .name {
-        @include typography.typography('headline4');
-        color: var(--on-background);
-        line-height: 2.2rem;
-        margin: 0 0 8px;
-      }
+    .name {
+      @include typography.typography('headline4');
+      color: var(--on-background);
+      line-height: 2.2rem;
+      margin: 16px 0 8px;
+    }
 
-      .socials {
-        height: 28px;
-        display: flex;
-        flex-wrap: wrap;
-      }
+    @include socials.core-styles;
+  }
 
-      @include socials.core-styles;
+  .right {
+    flex-grow: 1.5;
+    flex-basis: 0;
+    margin-left: $padding;
+
+    @media (max-width: $cutoff) {
+      margin-left: 0;
     }
 
     h2 {
       @include typography.typography('headline6');
       color: var(--on-background);
       font-weight: 600;
-      margin: 24px 0 0;
+      margin: 16px 0 0;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+
+      &:last-of-type {
+        margin-bottom: 16px;
+      }
+
+      &.picktime {
+        margin: 24px 0 4px;
+      }
     }
 
     p {
@@ -61,27 +115,6 @@
       color: var(--accents-5);
       white-space: pre-wrap;
       margin: 0 0 8px;
-    }
-  }
-
-  .right {
-    flex: 0 1 0%;
-
-    .sticky {
-      position: sticky;
-      top: calc(var(--header-height) + 24px);
-      text-align: center;
-      min-width: 400px;
-      width: 100%;
-
-      .actions {
-        margin-top: 8px;
-        display: inline-block;
-
-        button {
-          margin: 0 4px;
-        }
-      }
     }
   }
 }
@@ -104,14 +137,24 @@
 .loading {
   .background {
     @include loader.loading;
+    border-bottom: 1px solid var(--accents-2);
   }
 
   .name,
+  .form,
   .socials,
   h2,
   p {
     @include loader.loading;
     border-radius: 4px;
+  }
+
+  .form {
+    height: 365px;
+  }
+
+  .subjects {
+    height: 48px;
   }
 
   .name {

@@ -10,12 +10,13 @@ import {
 import { FormEvent, useCallback, useMemo } from 'react';
 import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
 import { Checkbox } from '@rmwc/checkbox';
+import { Switch } from '@rmwc/switch';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
-import useTranslation from 'next-translate/useTranslation';
 import { mutate } from 'swr';
+import useTranslation from 'next-translate/useTranslation';
 
-import { Check, User, UserJSON, Verification } from 'lib/model';
+import { Aspect, Check, User, UserJSON, Verification } from 'lib/model';
 import clone from 'lib/utils/clone';
 import { useContinuous } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -172,6 +173,28 @@ export default function VerificationsTable({
     [currentUser.id, org, setUser]
   );
 
+  const onVisibilityChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const visible = evt.currentTarget.checked;
+      return setUser((prev) => new User({ ...prev, visible }));
+    },
+    [setUser]
+  );
+
+  const onFeaturedChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const { checked } = evt.currentTarget;
+      return setUser((prev) => {
+        const featured: Aspect[] = [];
+        if (!checked) return new User({ ...prev, featured });
+        if (prev.tutoring.subjects.length) featured.push('tutoring');
+        if (prev.mentoring.subjects.length) featured.push('mentoring');
+        return new User({ ...prev, featured });
+      });
+    },
+    [setUser]
+  );
+
   return (
     <>
       {error && (
@@ -230,6 +253,21 @@ export default function VerificationsTable({
           </DataTableBody>
         </DataTableContent>
       </DataTable>
+      <Switch
+        className={styles.switch}
+        label={t('user:visible')}
+        checked={user.visible}
+        onChange={onVisibilityChange}
+      />
+      <Switch
+        className={styles.switch}
+        label={t('user:featured')}
+        checked={!!user.featured.length}
+        onChange={onFeaturedChange}
+        disabled={
+          !user.tutoring.subjects.length && !user.mentoring.subjects.length
+        }
+      />
     </>
   );
 }
