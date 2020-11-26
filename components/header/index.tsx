@@ -18,15 +18,16 @@ function ActionButton({ label, onClick }: ActionButtonProps): JSX.Element {
 interface ActionLinkProps {
   label: string;
   href: string;
+  newTab?: boolean;
 }
 
-function ActionLink({ label, href }: ActionLinkProps): JSX.Element {
+function ActionLink({ label, href, newTab }: ActionLinkProps): JSX.Element {
   return (
-    /* eslint-disable jsx-a11y/anchor-is-valid */
     <Link href={href}>
-      <a className={styles.button}>{label}</a>
+      <a className={styles.button} target={newTab ? '_blank' : undefined}>
+        {label}
+      </a>
     </Link>
-    /* eslint-enable jsx-a11y/anchor-is-valid */
   );
 }
 
@@ -34,10 +35,11 @@ interface ActionProps {
   label: string;
   href?: string;
   onClick?: () => void;
+  newTab?: boolean;
 }
 
-function Action({ label, href, onClick }: ActionProps): JSX.Element {
-  if (href) return <ActionLink label={label} href={href} />;
+function Action({ label, href, onClick, newTab }: ActionProps): JSX.Element {
+  if (href) return <ActionLink label={label} href={href} newTab={newTab} />;
   return <ActionButton label={label} onClick={onClick || (() => {})} />;
 }
 
