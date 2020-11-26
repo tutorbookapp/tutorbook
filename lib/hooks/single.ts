@@ -50,11 +50,11 @@ export default function useSingle<T extends { id: string }>(
       // Update remote data with POST or PUT API request.
       const [err, res] = await to(updateRemote(data));
       if (err) {
+        // Hide the loading state, error has been received.
+        setLoading(false);
         // If the server sends an error, show error message.
         const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
         setError(e.message);
-        // Hide the loading state, error has been received.
-        setLoading(false);
       } else {
         // Otherwise, mutate local data with the server's response.
         prevData.current = res as T;
