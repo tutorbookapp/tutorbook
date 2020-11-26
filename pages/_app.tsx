@@ -38,7 +38,7 @@ async function installServiceWorker(): Promise<void> {
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
-  const initialPageLoad = useRef<boolean>(true);
+  const userLoaded = useRef<boolean>(false);
   const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
   const user = useMemo(() => {
     // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
@@ -47,14 +47,14 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   }, [data]);
   const loggedIn = useMemo(() => {
     if (user.id) {
-      initialPageLoad.current = false;
+      userLoaded.current = true;
       return true;
     }
     if (error) {
-      initialPageLoad.current = false;
+      userLoaded.current = true;
       return false;
     }
-    if (initialPageLoad.current) return undefined;
+    if (!userLoaded.current) return undefined;
     return false;
   }, [user, error]);
   const updateUser = useCallback(
