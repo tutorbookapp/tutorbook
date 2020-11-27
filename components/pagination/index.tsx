@@ -1,36 +1,41 @@
-import { FormEvent, memo, useCallback } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import { Select } from '@rmwc/select';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, UsersQuery } from 'lib/model';
+import { Callback, Query } from 'lib/model';
 
 import styles from './pagination.module.scss';
 
-export interface PaginationProps {
+export interface PaginationProps<T extends Query> {
   hits: number;
-  query: UsersQuery;
-  setQuery: Callback<UsersQuery>;
+  query: T;
+  setQuery: Callback<T>;
+  model: new (query: Partial<T>) => T;
 }
 
-export default memo(function Pagination({
+// TODO: For some reason, the React `memo` types don't allow for the `T` type
+// variable to be properly parsed by Typescript. Instead, I'll have to wrap a
+// parent component around this one to provide that typing or something.
+export default function Pagination<T extends Query>({
   hits,
   query,
   setQuery,
-}: PaginationProps): JSX.Element {
+  model: QueryModel,
+}: PaginationProps<T>): JSX.Element {
   const onHitsPerPageChange = useCallback(
     (event: FormEvent<HTMLSelectElement>) => {
       const hitsPerPage = Number(event.currentTarget.value);
-      setQuery((prev) => new UsersQuery({ ...prev, hitsPerPage, page: 0 }));
+      setQuery((prev) => new QueryModel({ ...prev, hitsPerPage, page: 0 }));
     },
-    [setQuery]
+    [QueryModel, setQuery]
   );
   const pageLeft = useCallback(() => {
-    setQuery((prev) => new UsersQuery({ ...prev, page: prev.page - 1 }));
-  }, [setQuery]);
+    setQuery((prev) => new QueryModel({ ...prev, page: prev.page - 1 }));
+  }, [QueryModel, setQuery]);
   const pageRight = useCallback(() => {
-    setQuery((prev) => new UsersQuery({ ...prev, page: prev.page + 1 }));
-  }, [setQuery]);
+    setQuery((prev) => new QueryModel({ ...prev, page: prev.page + 1 }));
+  }, [QueryModel, setQuery]);
 
   const { t } = useTranslation();
 
@@ -63,4 +68,4 @@ export default memo(function Pagination({
       </div>
     </div>
   );
-});
+}

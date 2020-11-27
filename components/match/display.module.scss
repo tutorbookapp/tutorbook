@@ -24,10 +24,11 @@
 
       .person {
         @include typography.typography('body1');
-        @include common.link;
-        color: var(--accents-5);
+        text-decoration: none;
         display: block;
         margin: 0 8px;
+        outline: none;
+        border: none;
 
         &:first-child {
           margin-left: 0;

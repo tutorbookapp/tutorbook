@@ -28,6 +28,10 @@ function DashboardPage(): JSX.Element {
             href: '/dashboard',
           },
           {
+            label: t('common:matches'),
+            href: '/matches',
+          },
+          {
             label: t('common:profile'),
             href: '/profile',
           },

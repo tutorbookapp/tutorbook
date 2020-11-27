@@ -14,7 +14,6 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 import matches from 'locales/en/matches.json';
-import user from 'locales/en/user.json';
 
 function MatchesPage(): JSX.Element {
   const { orgs } = useUser();
@@ -59,10 +58,10 @@ function MatchesPage(): JSX.Element {
             },
           ]}
         />
-        <Matches org={org} />
+        <Matches org />
       </Page>
     </OrgContext.Provider>
   );
 }
 
-export default withI18n(MatchesPage, { common, match, matches, user });
+export default withI18n(MatchesPage, { common, match, matches });

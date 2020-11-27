@@ -26,8 +26,9 @@ function addFilters(
 }
 
 function getFilterString(query: MatchesQuery): string {
-  let filterString = `org:${query.org}`;
+  let filterString = query.org ? `org:${query.org}` : '';
   filterString = addFilters(filterString, query.orgs, 'orgs');
+  filterString = addFilters(filterString, query.people, 'people.id');
   filterString = addFilters(filterString, query.tags, '_tags');
   return filterString;
 }

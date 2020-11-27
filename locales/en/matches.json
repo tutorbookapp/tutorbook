@@ -1,5 +1,6 @@
 {
-  "subtitle": "{{name}}'s student-tutor-mentor matches",
+  "org-subtitle": "{{name}}'s student-tutor-mentor matches",
+  "subtitle": "Your upcoming matches",
   "empty": "NO MATCHES TO SHOW",
   "search-placeholder": "Search matches",
   "import-data-msg": "Could you help me import some existing matches?",

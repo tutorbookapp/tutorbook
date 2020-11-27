@@ -79,7 +79,12 @@ export default function Search({
                 />
               ))}
           </ul>
-          <Pagination query={query} setQuery={onChange} hits={hits} />
+          <Pagination
+            model={UsersQuery}
+            setQuery={onChange}
+            query={query}
+            hits={hits}
+          />
         </>
       )}
       {!searching && !results.length && (

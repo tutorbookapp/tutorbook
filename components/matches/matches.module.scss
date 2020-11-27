@@ -72,6 +72,7 @@ $filters-height: 56px;
 .table {
   width: 100%;
   border-radius: 0;
+  border-bottom: none;
 
   :global(.mdc-data-table__row) {
     cursor: pointer;
@@ -158,54 +159,6 @@ $filters-height: 56px;
   }
 }
 
-.pagination {
-  height: $filters-height;
-  border: 1px solid var(--on-background-2);
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-top: none;
-  display: flex;
-  justify-content: space-between;
-
-  .right {
-    align-items: center;
-    display: flex;
-
-    .hitsPerPage {
-      @include typography.typography('body2');
-      align-items: center;
-      display: flex;
-
-      :global(.mdc-select) {
-        background-color: transparent;
-        border-radius: 0;
-
-        :global(.mdc-select__anchor) {
-          border-radius: 0;
-          width: 70px;
-
-          :global(.mdc-line-ripple::before) {
-            border: none;
-          }
-        }
-      }
-
-      :global(.mdc-select:not(.mdc-select--disabled) .mdc-select__anchor) {
-        background-color: transparent;
-      }
-    }
-
-    .pageNumber {
-      @include typography.typography('body2');
-      margin: 0 24px;
-    }
-
-    :global(.mdc-icon-button:last-child) {
-      margin-right: ($filters-height - 48px) / 2;
-    }
-  }
-}
-
 .wrapper {
   list-style: none;
   padding: 0 24px;
@@ -218,6 +171,7 @@ $filters-height: 56px;
   margin: 0;
   padding: 24px;
   border: 1px solid var(--on-background-2);
+  border-bottom: none;
 }
 
 .snackbar {

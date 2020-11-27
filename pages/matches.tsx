@@ -1,23 +1,23 @@
 import useTranslation from 'next-translate/useTranslation';
 
+import Matches from 'components/matches';
 import Page from 'components/page';
-import Profile from 'components/profile';
 import { TabHeader } from 'components/navigation';
 
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import profile from 'locales/en/profile.json';
-import user3rd from 'locales/en/user3rd.json';
+import match from 'locales/en/match.json';
+import matches from 'locales/en/matches.json';
 
-function ProfilePage(): JSX.Element {
+function MatchesPage(): JSX.Element {
   const { t } = useTranslation();
 
-  usePage({ name: 'Profile', url: '/profile', login: true });
+  usePage({ name: 'Matches', url: '/matches', login: true });
 
   return (
-    <Page title='Profile - Tutorbook'>
+    <Page title='Matches - Tutorbook'>
       <TabHeader
         switcher
         tabs={[
@@ -27,18 +27,18 @@ function ProfilePage(): JSX.Element {
           },
           {
             label: t('common:matches'),
+            active: true,
             href: '/matches',
           },
           {
             label: t('common:profile'),
-            active: true,
             href: '/profile',
           },
         ]}
       />
-      <Profile />
+      <Matches user />
     </Page>
   );
 }
 
-export default withI18n(ProfilePage, { common, profile, user3rd });
+export default withI18n(MatchesPage, { common, match, matches });

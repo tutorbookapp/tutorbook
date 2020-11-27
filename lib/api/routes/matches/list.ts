@@ -27,8 +27,11 @@ export default async function listMatches(
       MatchesQuery
     );
 
-    // TODO: Allow users to filter their own matches.
-    await verifyAuth(req.headers, { orgIds: [query.org] });
+    await verifyAuth(req.headers, {
+      userIds: query.people.map((p) => p.value),
+      orgIds: query.org ? [query.org] : undefined,
+    });
+
     const { matches, hits } = await getMatches(query);
     res.status(200).json({ hits, matches: matches.map((m) => m.toJSON()) });
   } catch (e) {

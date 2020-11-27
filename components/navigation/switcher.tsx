@@ -27,8 +27,17 @@ export default function Switcher(): JSX.Element {
   }, [orgs, query]);
 
   const destination = useMemo(() => {
-    if (!pathname.includes('[org]')) return 'dashboard';
+    if (!pathname.includes('[org]')) {
+      if (pathname.includes('matches')) return 'matches';
+      if (pathname.includes('profile')) return 'settings';
+      return 'dashboard';
+    }
     return pathname.split('/').slice(2).join('/');
+  }, [pathname]);
+  const personalDestination = useMemo(() => {
+    if (pathname.includes('settings')) return '/profile';
+    if (pathname.includes('matches')) return '/matches';
+    return '/dashboard';
   }, [pathname]);
 
   return (
@@ -40,7 +49,7 @@ export default function Switcher(): JSX.Element {
       >
         <div data-cy='switcher-list' className={styles.picker}>
           <div className={styles.header}>{t('common:personal-account')}</div>
-          <PopOverAccountLink account={user} href='/dashboard' />
+          <PopOverAccountLink account={user} href={personalDestination} />
           {orgs && !!orgs.length && (
             <>
               <div className={styles.line} />

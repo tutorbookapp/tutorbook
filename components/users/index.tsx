@@ -84,7 +84,12 @@ export default function Users({ org }: UsersProps): JSX.Element {
             setHits={setHits}
           />
         </div>
-        <Pagination query={query} setQuery={onQueryChange} hits={hits} />
+        <Pagination
+          query={query}
+          model={UsersQuery}
+          setQuery={onQueryChange}
+          hits={hits}
+        />
       </div>
     </>
   );
