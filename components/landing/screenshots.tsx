@@ -31,7 +31,7 @@ const previews = [
   {
     label: 'Match scheduling',
     id: 'scheduling',
-    url: '/default/search/2SLcWTl1DxbgJzFGGAUghtcJuAl2',
+    url: '/default/users/2SLcWTl1DxbgJzFGGAUghtcJuAl2',
   },
 ];
 
