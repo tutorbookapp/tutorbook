@@ -5,6 +5,7 @@ import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Callback, Option, Tag, UsersQuery } from 'lib/model';
+import { useOrg } from 'lib/context/org';
 
 import styles from './search-bar.module.scss';
 
@@ -20,6 +21,7 @@ export default memo(function SearchBar({
   setOpen,
 }: SearchBarProps): JSX.Element {
   const { t } = useTranslation();
+  const { org } = useOrg();
 
   const toggleFiltersOpen = useCallback(() => {
     setOpen((prev: boolean) => !prev);
@@ -83,24 +85,28 @@ export default memo(function SearchBar({
             onInteraction={toggleHiddenFilter}
             selected={query.visible === false}
           />
-          <Chip
-            label={t('common:mentors')}
-            checkmark
-            onInteraction={() => {
-              const aspect = 'mentoring';
-              setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
-            }}
-            selected={query.aspect === 'mentoring'}
-          />
-          <Chip
-            label={t('common:tutors')}
-            checkmark
-            onInteraction={() => {
-              const aspect = 'tutoring';
-              setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
-            }}
-            selected={query.aspect === 'tutoring'}
-          />
+          {(!org || org.aspects.includes('mentoring')) && (
+            <Chip
+              label={t('common:mentors')}
+              checkmark
+              onInteraction={() => {
+                const aspect = 'mentoring';
+                setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
+              }}
+              selected={query.aspect === 'mentoring'}
+            />
+          )}
+          {(!org || org.aspects.includes('tutoring')) && (
+            <Chip
+              label={t('common:tutors')}
+              checkmark
+              onInteraction={() => {
+                const aspect = 'tutoring';
+                setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
+              }}
+              selected={query.aspect === 'tutoring'}
+            />
+          )}
         </ChipSet>
       </div>
       <div className={styles.right}>

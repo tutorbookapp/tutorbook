@@ -33,6 +33,7 @@ export default function Users({ org }: UsersProps): JSX.Element {
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
       orgs: org ? [{ label: org.name, value: org.id }] : [],
+      aspect: org?.aspects[0] || 'tutoring',
       hitsPerPage: 5,
     })
   );
@@ -53,7 +54,10 @@ export default function Users({ org }: UsersProps): JSX.Element {
     onQueryChange((prev) => {
       if (!org) return prev;
       const orgs = [{ label: org.name, value: org.id }];
-      return new UsersQuery({ ...prev, orgs });
+      const aspect = org.aspects.includes(prev.aspect)
+        ? prev.aspect
+        : org.aspects[0];
+      return new UsersQuery({ ...prev, orgs, aspect });
     });
   }, [org, onQueryChange]);
 
