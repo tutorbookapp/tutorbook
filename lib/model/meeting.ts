@@ -90,6 +90,10 @@ export class Meeting extends Resource implements MeetingInterface {
     );
   }
 
+  public toString(): string {
+    return `Meeting on ${this.time.toString()}`;
+  }
+
   public toJSON(): MeetingJSON {
     const { time, ref, ...rest } = this;
     return { ...rest, ...super.toJSON(), time: time.toJSON() };

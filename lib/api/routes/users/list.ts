@@ -29,6 +29,8 @@ export default async function listUsers(
       UsersQuery
     );
     const { users, hits } = await getUsers(query);
+
+    // TODO: Don't completely error; instead, conditionally truncated users.
     const [err] = await to(
       verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) })
     );

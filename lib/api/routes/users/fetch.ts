@@ -18,12 +18,12 @@ export default async function fetchUser(
   try {
     const userId = verifyQueryId(req.query);
     const user = await getUser(userId);
-    const [err, uid] = await to(
+    const [err, attrs] = await to(
       verifyAuth(req.headers, { userId, orgIds: user.orgs })
     );
     res.status(200).json({
       ...(err ? getTruncatedUser(user) : user).toJSON(),
-      hash: uid === userId ? getUserHash(uid) : null,
+      hash: attrs?.uid === userId ? getUserHash(userId) : null,
     });
   } catch (e) {
     handle(e, res);

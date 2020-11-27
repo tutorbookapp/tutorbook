@@ -16,9 +16,10 @@ export default async function fetchMatch(
     const id = verifyQueryId(req.query);
     const match = await getMatch(id);
 
-    // TODO: Right now this only responds to admin requests but we want it to
-    // respond to any of the match's people as well.
-    await verifyAuth(req.headers, { orgIds: [match.org] });
+    await verifyAuth(req.headers, {
+      userIds: match.people.map((p) => p.id),
+      orgIds: [match.org],
+    });
 
     res.status(200).json(match.toJSON());
   } catch (e) {

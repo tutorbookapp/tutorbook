@@ -1,0 +1,36 @@
+@use 'styles/common';
+
+.wrapper {
+  @include common.wrapper(var(--form-width-with-margin));
+  padding: 48px 24px;
+}
+
+.card {
+  border: 1px solid var(--accents-2);
+  border-radius: 4px;
+  position: relative;
+  max-width: 500px;
+
+  .inputs {
+    margin: 32px auto;
+    padding: 0 32px;
+
+    .field {
+      @include common.field;
+    }
+
+    .btn {
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .error {
+      @include common.error;
+    }
+  }
+
+  .divider {
+    @include common.divider;
+    margin: 8px 0;
+  }
+}

@@ -26,8 +26,8 @@ import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
  */
 export default async function verifyAuth(
   headers: IncomingHttpHeaders,
-  options?: { userId?: string; orgIds?: string[] }
-): Promise<string> {
+  options?: { userId?: string; userIds?: string[]; orgIds?: string[] }
+): Promise<{ adminOf?: string[]; uid: string }> {
   if (typeof headers.authorization !== 'string')
     throw new APIError('You must provide a valid authorization header', 401);
   if (!headers.authorization.startsWith('Bearer '))
@@ -40,11 +40,13 @@ export default async function verifyAuth(
 
   // Check if JWT belongs to `userId` OR an admin to any one of the `orgIds`
   const { uid } = token as DecodedIdToken;
-  if (!options) return uid;
-  if (options && options.userId && uid === options.userId) return uid;
-  if (options && options.orgIds && options.orgIds.length) {
+  if (!options) return { uid };
+  if (options.userId && options.userId === uid) return { uid };
+  if (options.userIds && options.userIds.includes(uid)) return { uid };
+  if (options.orgIds && options.orgIds.length) {
     const orgIds = (await getOrgsByAdminId(uid)).map((o) => o.id);
-    if (options.orgIds.some((orgId) => orgIds.includes(orgId))) return uid;
+    if (options.orgIds.some((orgId) => orgIds.includes(orgId)))
+      return { uid, adminOf: orgIds };
   }
   throw new APIError('You are not authorized to perform this action', 401);
 }

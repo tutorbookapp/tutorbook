@@ -67,7 +67,8 @@
 
     .info {
       flex: 1 1 auto;
-      margin-left: 32px;
+      margin-top: 4px;
+      margin-left: 40px;
 
       dl {
         margin: 0 0 24px;
@@ -101,17 +102,6 @@
         &:hover {
           text-decoration: underline;
         }
-      }
-    }
-
-    .actions {
-      flex: none;
-      width: 225px;
-      margin-left: 32px;
-
-      button {
-        width: 100%;
-        margin-bottom: 16px;
       }
     }
   }
@@ -168,8 +158,12 @@
       padding: 36px 0 16px;
       align-items: center;
 
-      &:first-child {
+      &:first-of-type {
         padding-top: 64px;
+      }
+
+      &:nth-last-of-type(2) {
+        padding-bottom: 64px;
       }
 
       &::before {

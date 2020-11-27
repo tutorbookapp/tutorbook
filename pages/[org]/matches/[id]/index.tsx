@@ -22,6 +22,7 @@ import { OrgContext } from 'lib/context/org';
 import getMatch from 'lib/api/get/match';
 import getMeetings from 'lib/api/get/meetings';
 import getOrg from 'lib/api/get/org';
+import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
@@ -41,14 +42,22 @@ interface MatchPageProps {
 // match page data props. This will also show full user data for admins.
 function MatchPage({
   org,
-  match: initialData,
-  people,
-  meetings,
+  match: initialMatch,
+  people: initialPeople,
+  meetings: initialMeetings,
 }: MatchPageProps): JSX.Element {
   const { query } = useRouter();
-  const { data } = useSWR<MatchJSON>(
+  const { data: match } = useSWR<MatchJSON>(
     typeof query.id === 'string' ? `/api/matches/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { initialData: initialMatch, revalidateOnMount: true }
+  );
+  const { data: people } = useSWR<UserJSON[]>(
+    typeof query.id === 'string' ? `/api/matches/${query.id}/people` : null,
+    { initialData: initialPeople, revalidateOnMount: true }
+  );
+  const { data: meetings } = useSWR<MeetingJSON[]>(
+    typeof query.id === 'string' ? `/api/matches/${query.id}/meetings` : null,
+    { initialData: initialMeetings, revalidateOnMount: true }
   );
 
   usePage({ name: 'Match Home', org: org?.id, login: true });
@@ -58,7 +67,7 @@ function MatchPage({
       <Page title='Match - Tutorbook'>
         <EmptyHeader />
         <MatchDisplay
-          match={data ? Match.fromJSON(data) : undefined}
+          match={match ? Match.fromJSON(match) : undefined}
           people={people ? people.map((p) => User.fromJSON(p)) : undefined}
           meetings={
             meetings ? meetings.map((m) => Meeting.fromJSON(m)) : undefined
@@ -92,7 +101,7 @@ export const getStaticProps: GetStaticProps<
       props: {
         org: org.toJSON(),
         match: match.toJSON(),
-        people: people.map((p) => p.toJSON()),
+        people: people.map((p) => getTruncatedUser(p).toJSON()),
         meetings: meetings.map((m) => m.toJSON()),
       },
       revalidate: 1,

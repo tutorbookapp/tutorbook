@@ -108,7 +108,7 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
 }
 
 async function getAccount(req: Req, res: Res): Promise<void> {
-  const uid = await verifyAuth(req.headers);
+  const { uid } = await verifyAuth(req.headers);
   res.statusCode = 302;
   res.setHeader('Location', `/api/users/${uid}`);
   res.end();

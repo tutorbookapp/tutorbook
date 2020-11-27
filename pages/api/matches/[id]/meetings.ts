@@ -10,7 +10,7 @@ import { APIError } from 'lib/api/error';
  * GET - Lists the timeline of meetings for a given match.
  * POST - Creates a new match meeting (in our Firestore database).
  *
- * Requires JWT of org admin (meetingually, we'll also allow users to access their
+ * Requires JWT of org admin (eventually, we'll also allow users to access their
  * own matches).
  */
 export default async function meetings(

@@ -26,6 +26,8 @@ export default async function listMatches(
       isMatchesQueryURL,
       MatchesQuery
     );
+
+    // TODO: Allow users to filter their own matches.
     await verifyAuth(req.headers, { orgIds: [query.org] });
     const { matches, hits } = await getMatches(query);
     res.status(200).json({ hits, matches: matches.map((m) => m.toJSON()) });

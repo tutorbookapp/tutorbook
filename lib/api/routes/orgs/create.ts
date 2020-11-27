@@ -16,7 +16,7 @@ export default async function createOrg(
 ): Promise<void> {
   try {
     const body = verifyBody<Org, OrgJSON>(req.body, isOrgJSON, Org);
-    const uid = await verifyAuth(req.headers);
+    const { uid } = await verifyAuth(req.headers);
     verifyOrgAdminsInclude(body, uid);
     await updatePhoto(body);
     const org = await createOrgDoc(body);

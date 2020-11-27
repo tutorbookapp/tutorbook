@@ -29,6 +29,7 @@ export default async function updateMatch(
     if (body.time) verifyTimeInAvailability(body.time, people);
     verifySubjectsCanBeTutored(body.subjects, people);
 
+    // TODO: Allow any person who is part of the match to update it.
     // Verify the creator exists and that the one sending the request is:
     // a) The creator him/herself OR;
     // b) Admin of the creator's org (e.g. Gunn High School).

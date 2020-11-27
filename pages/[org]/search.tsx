@@ -204,6 +204,7 @@ interface SearchPageQuery extends ParsedUrlQuery {
   org: string;
 }
 
+// TODO: Incrementally statically generate each empty aspect query.
 export const getStaticProps: GetStaticProps<
   SearchPageProps,
   SearchPageQuery

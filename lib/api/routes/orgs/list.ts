@@ -18,7 +18,7 @@ export default async function listOrgs(
   res: Res<ListOrgsRes>
 ): Promise<void> {
   try {
-    const uid = await verifyAuth(req.headers);
+    const { uid } = await verifyAuth(req.headers);
     const orgs = await getOrgsByAdminId(uid);
     res.status(200).json(orgs.map((o) => o.toJSON()));
   } catch (e) {

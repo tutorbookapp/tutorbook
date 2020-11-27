@@ -16951,7 +16951,18 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"timeago.js@npm:^4.0.2":
+"timeago-react@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "timeago-react@npm:3.0.1"
+  dependencies:
+    timeago.js: ^4.0.0
+  peerDependencies:
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0
+  checksum: e705a554b4f2c803e0b4dd142d85688462a9bf4522f052b8b96417c797d76d14f166a0b0dd5b871cb1ecf66d8fe5147d048982ce67eeb90ceff4ab6e8a28ea1a
+  languageName: node
+  linkType: hard
+
+"timeago.js@npm:^4.0.0":
   version: 4.0.2
   resolution: "timeago.js@npm:4.0.2"
   checksum: 7c5bb9d45ff574981bf8bdb260876f3321e2350460986afc7c0950c7c3ebbf77e3ae229e3c995f4bddabddc065ddd543bfdecac98ec1c52097c48b28df8a27e9
@@ -17366,7 +17377,7 @@ resolve@1.1.7:
     svg-url-loader: ^6.0.0
     swr: ^0.3.8
     terser-webpack-plugin: ^3.0.7
-    timeago.js: ^4.0.2
+    timeago-react: ^3.0.1
     ts-loader: ^7.0.5
     ts-node: ^9.0.0
     typescript: ^4.0.3

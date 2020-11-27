@@ -1,13 +1,14 @@
 import Link from 'next/link';
+import TimeAgo from 'timeago-react';
 import Trans from 'next-translate/Trans';
 import cn from 'classnames';
-import { format } from 'timeago.js';
+import { nanoid } from 'nanoid';
 import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
-import Button from 'components/button';
 import LoadingDots from 'components/loading-dots';
+import MatchLog from 'components/match/log';
 
 import { Match, Meeting, User } from 'lib/model';
 import { join, period } from 'lib/utils';
@@ -32,7 +33,10 @@ function Event({ badge, time, person, children }: EventProps): JSX.Element {
         {time && person && <span className='material-icons'>{badge}</span>}
       </div>
       <div className={styles.content}>
-        <div className={styles.time}>{time && format(time, locale)}</div>
+        {time && (
+          <TimeAgo datetime={time} className={styles.time} locale={locale} />
+        )}
+        {!time && <div className={styles.time} />}
         <div className={styles.body}>
           {person && (
             <>
@@ -44,14 +48,6 @@ function Event({ badge, time, person, children }: EventProps): JSX.Element {
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function Endpoint(): JSX.Element {
-  return (
-    <div className={styles.origin}>
-      <div className={styles.badge} />
     </div>
   );
 }
@@ -83,7 +79,10 @@ export default function MatchDisplay({
           <div className={styles.people}>
             {people &&
               people.map((person) => (
-                <Link href={`/${org?.id || 'default'}/users/${person.id}`}>
+                <Link
+                  href={`/${org?.id || 'default'}/users/${person.id}`}
+                  key={person.id}
+                >
                   <a className={styles.person}>
                     <div className={styles.avatar}>
                       <Avatar src={person.photo} size={200} />
@@ -95,7 +94,7 @@ export default function MatchDisplay({
               ))}
             {!people &&
               [null, null].map(() => (
-                <div className={styles.person}>
+                <div key={nanoid()} className={styles.person}>
                   <div className={styles.avatar}>
                     <Avatar size={200} loading />
                   </div>
@@ -126,10 +125,6 @@ export default function MatchDisplay({
               </dd>
             </dl>
           </div>
-          <div className={styles.actions}>
-            <Button label='Log meeting' raised arrow />
-            <Button label='Reschedule' outlined arrow />
-          </div>
         </div>
       </div>
       <div className={cn(styles.timeline, { [styles.loading]: !match })}>
@@ -156,6 +151,7 @@ export default function MatchDisplay({
             people &&
             meetings.map((meeting) => (
               <Event
+                key={meeting.id}
                 badge='event_note'
                 time={new Date(meeting.created)}
                 person={
@@ -171,7 +167,7 @@ export default function MatchDisplay({
                 />
               </Event>
             ))}
-          <Endpoint />
+          <MatchLog match={match} />
         </div>
       </div>
     </>
