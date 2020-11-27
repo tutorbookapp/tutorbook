@@ -43,10 +43,6 @@ export default memo(function Header({
   orgId,
   orgName,
 }: HeaderProps): JSX.Element {
-  const createUser = useCallback(() => {
-    console.log('[TODO] Implement create user page.');
-  }, []);
-
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const hideSnackbar = useCallback(() => setSnackbar(false), []);
   const copySignupLink = useCallback(async () => {
@@ -82,10 +78,6 @@ export default memo(function Header({
         header={t('common:users')}
         body={t('users:subtitle', { name: orgName })}
         actions={[
-          {
-            label: t('users:create-user'),
-            onClick: createUser,
-          },
           {
             label: t('users:share-signup-link'),
             onClick: copySignupLink,
