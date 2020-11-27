@@ -170,11 +170,11 @@ export default function PopOverMenu({
       <MenuSurface open={open} onClose={onClose}>
         <div data-cy='picker' className={styles.picker}>
           <PopOverAccountHeader account={user} />
-          <PopOverLink href='/'>{t('common:home')}</PopOverLink>
           <PopOverLink href={`/${user.orgs[0] || 'default'}/search`}>
             {t('common:search')}
           </PopOverLink>
           <PopOverLink href='/profile'>{t('common:profile')}</PopOverLink>
+          <PopOverLink href='/matches'>{t('common:matches')}</PopOverLink>
           <PopOverLink href='/dashboard'>{t('common:dashboard')}</PopOverLink>
           {orgs.map((org: Org) => (
             <Fragment key={org.id}>
