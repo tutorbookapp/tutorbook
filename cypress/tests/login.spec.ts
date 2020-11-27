@@ -20,7 +20,7 @@ describe('Login page', () => {
   it('navigates to specified redirect destination', () => {
     cy.setup();
     cy.login();
-    cy.visit('/login?href=profile');
+    cy.visit('/login?href=%2Fprofile');
     cy.url({ timeout: 60000 }).should('contain', '/profile');
   });
 });

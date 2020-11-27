@@ -12,7 +12,7 @@ describe('Dashboard page', () => {
     cy.visit('/dashboard');
 
     cy.wait('@get-account');
-    cy.url({ timeout: 60000 }).should('contain', '/login?href=dashboard');
+    cy.url({ timeout: 60000 }).should('contain', '/login?href=%2Fdashboard');
   });
 
   it('shows placeholders and accounts when logged in', () => {

@@ -12,7 +12,7 @@ describe('Profile page', () => {
     cy.visit('/profile');
     cy.wait('@get-account');
 
-    cy.url({ timeout: 60000 }).should('contain', '/login?href=profile');
+    cy.url({ timeout: 60000 }).should('contain', '/login?href=%2Fprofile');
   });
 
   it('retries failed update requests', () => {
@@ -20,7 +20,7 @@ describe('Profile page', () => {
       method: 'PUT',
       url: '/api/users/*',
       status: 400,
-      response: { msg: 'You must provide a request body.' },
+      response: { message: 'You must provide a request body.' },
     }).as('update-user');
     cy.login(volunteer.id);
     cy.visit('/profile');

@@ -31,22 +31,7 @@ describe('Users dashboard page', () => {
     cy.url({ timeout: 60000 }).should('contain', url);
   });
 
-  it('opens directly to user dialog', () => {
-    cy.route('GET', `/api/users/${volunteer.id}`).as('get-volunteer');
-
-    cy.login(admin.id);
-    cy.visit(`/${school.id}/users/${volunteer.id}`);
-    cy.wait('@get-account');
-
-    cy.getBySel('user-dialog').should('be.visible');
-    cy.wait('@get-volunteer');
-    cy.getBySel('user-dialog')
-      .should('contain', volunteer.name)
-      .and('contain', volunteer.bio);
-  });
-
-  // TODO: Add tests for the matching functionality of this users dashboard.
-  it('creates, edits, and matches users', () => {
+  it.only('shows share buttons and filters users', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`);
     cy.wait('@get-account');
@@ -73,46 +58,12 @@ describe('Users dashboard page', () => {
 
     cy.wait('@list-users');
     cy.getBySel('results')
-      .children('li')
+      .children('a')
       .as('results')
       .should('have.length', 3)
       .first()
       .should('contain', volunteer.name)
-      .click();
-    cy.url().should('contain', `/${school.id}/users/${volunteer.id}`);
-
-    // TODO: Assert about the data sent in the `/api/user/${id}` PUT requests to
-    // ensure that the front-end is properly updating data.
-    cy.getBySel('user-dialog', { timeout: 60000 }).should('be.visible');
-    cy.getBySel('user-dialog').as('dialog');
-
-    // TODO: Why do we have to `force` this click?
-    cy.get('@dialog')
-      .contains('label', 'Visible in search results')
-      .parent()
-      .find('input')
-      .should('be.checked')
-      .click({ force: true })
-      .should('not.be.checked');
-    cy.get('@dialog')
-      .contains('label', 'Featured result')
-      .parent()
-      .find('input')
-      .should('be.checked')
-      .click({ force: true })
-      .should('not.be.checked');
-    cy.get('@dialog').contains('button', 'close').click();
-    cy.get('@dialog').should('not.exist');
-
-    cy.get('@results').eq(1).should('contain', student.name).click();
-    cy.url().should('contain', `/${school.id}/users/${student.id}`);
-
-    cy.getBySel('user-dialog')
-      .should('be.visible')
-      .contains('label', 'Featured result')
-      .parent()
-      .find('input')
-      .should('not.be.checked')
-      .and('be.disabled');
+      .and('have.attr', 'href', `/${school.id}/users/${volunteer.id}`)
+      .and('have.attr', 'target', '_blank');
   });
 });
