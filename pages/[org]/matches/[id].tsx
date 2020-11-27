@@ -38,6 +38,7 @@ function MatchPage(): JSX.Element {
     typeof query.id === 'string' ? `/api/matches/${query.id}/meetings` : null
   );
 
+  // TODO: Redirect to 404 page when SWR throws a 401 error.
   usePage({ name: 'Match Home', org: org?.id, login: true });
 
   return (
