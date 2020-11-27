@@ -3,8 +3,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import cn from 'classnames';
 import { useMemo } from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
+import Button from 'components/button';
 import RequestForm from 'components/user/request-form';
 
 import { User } from 'lib/model';
@@ -26,6 +28,7 @@ export default function UserDisplay({
   subjects,
 }: UserDisplayProps): JSX.Element {
   const { org } = useOrg();
+  const { t } = useTranslation();
   const { orgs, user: currentUser } = useUser();
 
   const admin = useMemo(() => orgs.some((o) => user?.orgs.includes(o.id)), [
@@ -120,10 +123,24 @@ export default function UserDisplay({
               <p>{join(langs)}</p>
             </>
           )}
-          {user && (
+          {user && !org?.matchURL && (
             <>
               <h2>Request</h2>
               <RequestForm admin={admin} user={user || new User()} />
+            </>
+          )}
+          {user && org?.matchURL && (
+            <>
+              <h2 className={styles.picktime}>Request</h2>
+              <p>
+                {t('common:picktime-body', { org: org.name, user: user.name })}
+              </p>
+              <Button
+                href={org.matchURL}
+                label={t('common:picktime-btn')}
+                raised
+                arrow
+              />
             </>
           )}
         </div>

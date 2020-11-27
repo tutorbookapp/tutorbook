@@ -116,6 +116,15 @@
       white-space: pre-wrap;
       margin: 0 0 8px;
     }
+
+    a {
+      width: 100%;
+      margin-top: 8px;
+
+      button {
+        width: 100%;
+      }
+    }
   }
 }
 
