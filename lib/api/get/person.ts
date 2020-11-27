@@ -1,4 +1,4 @@
-import { Person, UserWithRoles } from 'lib/model';
+import { Person, User } from 'lib/model';
 import { APIError } from 'lib/api/error';
 import { addRoles } from 'lib/utils';
 import getUser from 'lib/api/get/user';
@@ -14,8 +14,8 @@ import getUser from 'lib/api/get/user';
  */
 export default async function getPerson(
   person: Person,
-  people: UserWithRoles[] = []
-): Promise<UserWithRoles> {
+  people: User[] = []
+): Promise<User> {
   if (!person.id) {
     const msg = `${person.name || 'Person'} does not have uID`;
     throw new APIError(msg, 400);

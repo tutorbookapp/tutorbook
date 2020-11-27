@@ -9,14 +9,14 @@ import {
   P,
   Quote,
 } from 'lib/mail/components';
-import { Match, Org, UserWithRoles } from 'lib/model';
+import { Match, Org, User } from 'lib/model';
 import { join } from 'lib/utils';
 
 export interface MatchEmailProps {
   org: Org;
   match: Match;
-  people: UserWithRoles[];
-  creator: UserWithRoles;
+  people: User[];
+  creator: User;
 }
 
 /**

@@ -22,7 +22,7 @@ export default async function fetchPeople(
       userIds: match.people.map((p) => p.id),
       orgIds: [match.org],
     });
-    const people = await Promise.all(
+    const users = await Promise.all(
       match.people.map(async (p) => {
         const user = await getUser(p.id);
         if (uid === user.id) return user;
@@ -30,8 +30,12 @@ export default async function fetchPeople(
         return getTruncatedUser(user);
       })
     );
+    const people = users.map((u) => {
+      const ps = match.people[match.people.findIndex((p) => p.id === u.id)];
+      return { ...u.toJSON(), roles: ps?.roles || [] };
+    });
 
-    res.status(200).json(people.map((p) => p.toJSON()));
+    res.status(200).json(people);
   } catch (e) {
     handle(e, res);
   }

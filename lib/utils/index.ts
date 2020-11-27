@@ -1,7 +1,7 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import algoliasearch from 'algoliasearch/lite';
 
-import { Option, Role, User, UserWithRoles } from 'lib/model';
+import { Option, Role, User } from 'lib/model';
 import clone from 'lib/utils/clone';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
@@ -47,12 +47,10 @@ export function validPhoto(url: string): boolean {
  * Adds roles to a given user object.
  * @param user - The user to add roles to.
  * @param roles - The roles to add.
- * @return A `UserWithRoles` object that contains all data combined.
+ * @return A `User` object that contains all data combined.
  */
-export function addRoles(user: User, roles: Role[]): UserWithRoles {
-  const userWithRoles = new User(clone(user));
-  (userWithRoles as UserWithRoles).roles = roles;
-  return userWithRoles as UserWithRoles;
+export function addRoles(user: User, roles: Role[]): User {
+  return new User(clone({ ...user, roles }));
 }
 
 /**

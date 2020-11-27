@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import generatePassword from 'password-generator';
 import to from 'await-to-js';
 
-import { Aspect, Match, Org, UserWithRoles, Venue, ZoomUser } from 'lib/model';
+import { Aspect, Match, Org, User, Venue, ZoomUser } from 'lib/model';
 import { db } from 'lib/api/firebase';
 import { join } from 'lib/utils';
 
@@ -61,13 +61,13 @@ interface ZoomUserRes {
  */
 export default async function createZoom(
   match: Match,
-  people: UserWithRoles[]
+  people: User[]
 ): Promise<Venue> {
   const org = Org.fromFirestore(
     await db.collection('orgs').doc(match.org).get()
   );
   const aspects = new Set<Aspect>();
-  const hosts = people.filter((person: UserWithRoles) => {
+  const hosts = people.filter((person: User) => {
     if (person.roles.includes('tutor')) {
       aspects.add('tutoring');
       return true;
@@ -78,7 +78,7 @@ export default async function createZoom(
     }
     return false;
   });
-  const students = people.filter((person: UserWithRoles) => {
+  const students = people.filter((person: User) => {
     if (person.roles.includes('tutee')) {
       aspects.add('tutoring');
       return true;
@@ -155,7 +155,7 @@ export default async function createZoom(
     }
   }
 
-  async function createUser(user: UserWithRoles): Promise<ZoomUser> {
+  async function createUser(user: User): Promise<ZoomUser> {
     // TODO: Enable orgs to configure these Zoom user creation settings.
     const [err, res] = await to<AxiosResponse<ZoomUserRes>>(
       axios({

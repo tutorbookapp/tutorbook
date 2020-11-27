@@ -99,7 +99,10 @@ export default function MatchDisplay({
                       <Avatar src={person.photo} size={200} />
                     </div>
                     <h1 className={styles.name}>{person.name}</h1>
-                    <div className={styles.roles}>Tutor</div>
+                    <div className={styles.roles}>
+                      {join(person.roles.map((r) => t(`common:${r}`))) ||
+                        'unknown'}
+                    </div>
                   </a>
                 </Link>
               ))}

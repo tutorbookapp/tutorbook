@@ -15,7 +15,7 @@ import {
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
-import { Person, Role } from 'lib/model/person';
+import { Person, Role, isRole } from 'lib/model/person';
 import {
   Verification,
   VerificationJSON,
@@ -76,6 +76,7 @@ export type Tag = 'not-vetted';
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property visible - Whether or not this user appears in search results.
  * @property featured - Aspects in which this user is first in search results.
+ * @property roles - Always empty unless in context of match or request.
  * @property [token] - The user's Firebase Authentication JWT `idToken`.
  * @property [hash] - The user's Intercom HMAC for identity verifications.
  * @todo Add a `zoom` prop that contains the user's personal Zoom OAuth token
@@ -93,6 +94,7 @@ export interface UserInterface extends AccountInterface {
   verifications: Verification[];
   visible: boolean;
   featured: Aspect[];
+  roles: Role[];
   token?: string;
   hash?: string;
 }
@@ -137,12 +139,11 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isArray(json.verifications, isVerificationJSON)) return false;
   if (typeof json.visible !== 'boolean') return false;
   if (!isArray(json.featured, isAspect)) return false;
+  if (!isArray(json.roles, isRole)) return false;
   if (json.token && typeof json.token !== 'string') return false;
   if (json.hash && typeof json.hash !== 'string') return false;
   return true;
 }
-
-export type UserWithRoles = User & { roles: Role[] };
 
 /**
  * Class that provides default values for our `UserInterface` data model.
@@ -168,6 +169,8 @@ export class User extends Account implements UserInterface {
   public visible = false;
 
   public featured: Aspect[] = [];
+
+  public roles: Role[] = [];
 
   public token?: string;
 
@@ -203,8 +206,8 @@ export class User extends Account implements UserInterface {
       id: this.id,
       name: this.name,
       photo: this.photo,
+      roles: this.roles,
       handle: uuid(),
-      roles: [],
     };
   }
 

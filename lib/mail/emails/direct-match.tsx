@@ -7,13 +7,13 @@ import {
   P,
   Quote,
 } from 'lib/mail/components';
-import { Match, UserWithRoles } from 'lib/model';
+import { Match, User } from 'lib/model';
 import { join } from 'lib/utils';
 
 export interface DirectMatchEmailProps {
   match: Match;
-  recipient: UserWithRoles;
-  creator: UserWithRoles;
+  recipient: User;
+  creator: User;
 }
 
 /**

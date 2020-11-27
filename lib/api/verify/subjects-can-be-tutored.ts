@@ -1,5 +1,5 @@
 import { APIError } from 'lib/api/error';
-import { UserWithRoles } from 'lib/model';
+import { User } from 'lib/model';
 
 /**
  * Verifies that the given subjects can be tutored/mentored by all the mentors
@@ -13,9 +13,9 @@ import { UserWithRoles } from 'lib/model';
  */
 export default function verifySubjectsCanBeTutored(
   subjects: string[],
-  people: UserWithRoles[]
+  people: User[]
 ): void {
-  people.forEach((person: UserWithRoles) => {
+  people.forEach((person: User) => {
     const isTutor = person.roles.indexOf('tutor') >= 0;
     const isMentor = person.roles.indexOf('mentor') >= 0;
     const canTutor = (s: string) => person.tutoring.subjects.includes(s);

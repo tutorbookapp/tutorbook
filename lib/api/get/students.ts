@@ -1,4 +1,4 @@
-import { UserWithRoles } from 'lib/model';
+import { User } from 'lib/model';
 
 /**
  * Gets the students from an array of people.
@@ -6,8 +6,8 @@ import { UserWithRoles } from 'lib/model';
  * @return The students (i.e. the people in the given `people` array whose roles
  * include either `tutee` or `mentee`).
  */
-export default function getStudents(people: UserWithRoles[]): UserWithRoles[] {
-  return people.filter((person: UserWithRoles) => {
+export default function getStudents(people: User[]): User[] {
+  return people.filter((person: User) => {
     return person.roles.includes('tutee') || person.roles.includes('mentee');
   });
 }

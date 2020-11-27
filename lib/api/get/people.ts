@@ -1,4 +1,4 @@
-import { Person, UserWithRoles } from 'lib/model';
+import { Person, User } from 'lib/model';
 import getPerson from 'lib/api/get/person';
 
 /**
@@ -6,8 +6,6 @@ import getPerson from 'lib/api/get/person';
  * @param people - An array of people to fetch.
  * @return An array of the complete user data for each of the specified people.
  */
-export default async function getPeople(
-  people: Person[]
-): Promise<UserWithRoles[]> {
+export default async function getPeople(people: Person[]): Promise<User[]> {
   return Promise.all(people.map((person: Person) => getPerson(person)));
 }

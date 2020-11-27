@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { Match, Org, User, UserWithRoles } from 'lib/model';
+import { Match, Org, User } from 'lib/model';
 import DirectMatchEmail from 'lib/mail/emails/direct-match';
 import { Email } from 'lib/mail/types';
 import MatchEmail from 'lib/mail/emails/match';
@@ -11,8 +11,8 @@ import send from 'lib/mail/send';
 
 export default async function sendEmails(
   match: Match,
-  people: UserWithRoles[],
-  creator: UserWithRoles,
+  people: User[],
+  creator: User,
   org: Org,
   orgAdmins: User[]
 ): Promise<void> {
