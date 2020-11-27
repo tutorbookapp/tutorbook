@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { dequal } from 'dequal/lite';
 
 import Pagination from 'components/pagination';
 
-import { Org, UsersQuery } from 'lib/model';
+import { CallbackParam, Org, UsersQuery } from 'lib/model';
 
 import FiltersSheet from './filters-sheet';
 import Header from './header';
@@ -27,6 +28,7 @@ interface UsersProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function Users({ org }: UsersProps): JSX.Element {
+  const [searching, setSearching] = useState<boolean>(true);
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
@@ -36,24 +38,49 @@ export default function Users({ org }: UsersProps): JSX.Element {
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
-  useEffect(() => {
+  const onQueryChange = useCallback((param: CallbackParam<UsersQuery>) => {
     setQuery((prev) => {
+      let updated = prev;
+      if (typeof param === 'object') updated = param;
+      if (typeof param === 'function') updated = param(updated);
+      if (dequal(updated, prev)) return prev;
+      setSearching(true);
+      return updated;
+    });
+  }, []);
+
+  useEffect(() => {
+    onQueryChange((prev) => {
       if (!org) return prev;
       const orgs = [{ label: org.name, value: org.id }];
       return new UsersQuery({ ...prev, orgs });
     });
-  }, [org]);
+  }, [org, onQueryChange]);
 
   return (
     <>
       <Header orgId={org?.id || ''} orgName={org?.name || ''} />
       <div className={styles.wrapper}>
-        <SearchBar query={query} setQuery={setQuery} setOpen={setFiltersOpen} />
+        <SearchBar
+          query={query}
+          setQuery={onQueryChange}
+          setOpen={setFiltersOpen}
+        />
         <div className={styles.content}>
-          <FiltersSheet open={filtersOpen} query={query} setQuery={setQuery} />
-          <ResultsList open={filtersOpen} query={query} setHits={setHits} />
+          <FiltersSheet
+            open={filtersOpen}
+            query={query}
+            setQuery={onQueryChange}
+          />
+          <ResultsList
+            searching={searching}
+            setSearching={setSearching}
+            open={filtersOpen}
+            query={query}
+            setHits={setHits}
+          />
         </div>
-        <Pagination query={query} setQuery={setQuery} hits={hits} />
+        <Pagination query={query} setQuery={onQueryChange} hits={hits} />
       </div>
     </>
   );

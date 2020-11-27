@@ -111,6 +111,8 @@ export default memo(function SearchBar({
           value={query.query}
           onChange={(event: FormEvent<HTMLInputElement>) => {
             const q: string = event.currentTarget.value;
+            // TODO: Throttle the actual API requests but immediately show the
+            // loading state (i.e. we can't just throttle `setQuery` updates).
             setQuery((p) => new UsersQuery({ ...p, query: q, page: 0 }));
           }}
         />
