@@ -6,7 +6,9 @@ import to from 'await-to-js';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-import NotificationPage from 'components/notification';
+import { EmptyHeader } from 'components/navigation';
+import Notification from 'components/notification';
+import Page from 'components/page';
 
 import { User, UserJSON } from 'lib/model';
 import { usePage, useTrack } from 'lib/hooks';
@@ -68,5 +70,10 @@ export default function Confirm(): JSX.Element {
     void signupWithEmail();
   }, [track, query, push]);
 
-  return <NotificationPage header='Confirming Login' />;
+  return (
+    <Page title='Confirming Login - Tutorbook'>
+      <EmptyHeader />
+      <Notification header='Confirming Login' />
+    </Page>
+  );
 }
