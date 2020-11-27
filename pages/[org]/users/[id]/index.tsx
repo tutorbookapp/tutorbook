@@ -126,7 +126,7 @@ export const getStaticProps: GetStaticProps<
       getSubjectLabels(user.mentoring.subjects),
     ]);
     // Note that because Next.js cannot expose the `req` object when fetching
-    // static props, there are a couple of possible FOUC:
+    // static props, there are a couple of possible data change flashes:
     // 1. If the user is an admin, the user's full name and the "edit" and "vet"
     //    icon buttons will appear after SWR fetches the user data client-side.
     // 2. If there is an `aspect` specified as a query parameter, the user's
@@ -145,9 +145,6 @@ export const getStaticProps: GetStaticProps<
   }
 };
 
-// TODO: We want to statically generate skeleton loading pages for each org.
-// @see {@link https://github.com/vercel/next.js/issues/14200}
-// @see {@link https://github.com/vercel/next.js/discussions/14486}
 export const getStaticPaths: GetStaticPaths<UserDisplayPageQuery> = async () => {
   return { paths: [], fallback: true };
 };

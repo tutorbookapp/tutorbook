@@ -1,0 +1,40 @@
+.loading {
+  --loading-dots-height: auto;
+  --loading-dots-size: 2px;
+  display: inline-flex;
+  align-items: center;
+  height: var(--loading-dots-height);
+
+  span {
+    animation-name: blink;
+    animation-duration: 1.4s;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    width: var(--loading-dots-size);
+    height: var(--loading-dots-size);
+    border-radius: 50%;
+    background-color: var(--accents-6);
+    display: inline-block;
+    margin: 0 1px;
+
+    &:nth-of-type(2) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-of-type(3) {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.2;
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.2;
+  }
+}

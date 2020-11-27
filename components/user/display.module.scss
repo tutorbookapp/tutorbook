@@ -74,7 +74,6 @@
 
     .name {
       @include typography.typography('headline4');
-      color: var(--on-background);
       line-height: 2.2rem;
       margin: 16px 0 8px;
     }
@@ -93,8 +92,6 @@
 
     h2 {
       @include typography.typography('headline6');
-      color: var(--on-background);
-      font-weight: 600;
       margin: 16px 0 0;
 
       &:first-of-type {

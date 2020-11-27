@@ -16,10 +16,9 @@ import { v4 as uuid } from 'uuid';
 
 import Header from 'components/header';
 import Intercom from 'lib/intercom';
-import MatchDialog from 'components/match-dialog';
 import Placeholder from 'components/placeholder';
 
-import { MatchJSON, MatchesQuery, Org } from 'lib/model';
+import { MatchesQuery, Org } from 'lib/model';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
 
 import { LoadingRow, MatchRow } from './row';
@@ -39,7 +38,6 @@ interface MatchesProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
 export default function Matches({ org }: MatchesProps): JSX.Element {
-  const [viewing, setViewing] = useState<MatchJSON>();
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MatchesQuery>(
     new MatchesQuery({ org: org?.id || 'default', hitsPerPage: 10 })
@@ -67,12 +65,6 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
 
   return (
     <>
-      {viewing && (
-        <MatchDialog
-          initialData={viewing}
-          onClosed={() => setViewing(undefined)}
-        />
-      )}
       <Header
         header={t('common:matches')}
         body={t('matches:subtitle', { name: org?.name || '' })}
@@ -120,11 +112,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               <DataTableBody>
                 {!searching &&
                   (data ? data.matches : []).map((match) => (
-                    <MatchRow
-                      match={match}
-                      key={match.id}
-                      setViewing={setViewing}
-                    />
+                    <MatchRow match={match} key={match.id} />
                   ))}
                 {searching && loadingRows}
               </DataTableBody>

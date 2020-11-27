@@ -1,22 +1,23 @@
 import { DataTableCell, DataTableRow } from '@rmwc/data-table';
 import { memo, useMemo } from 'react';
+import Link from 'next/link';
 import { dequal } from 'dequal/lite';
 
-import { Callback, MatchJSON, Person } from 'lib/model';
+import { MatchJSON } from 'lib/model';
 import { join } from 'lib/utils';
+import { useOrg } from 'lib/context/org';
 
 import styles from './matches.module.scss';
 
 interface MatchRowProps {
   match: MatchJSON;
-  setViewing: Callback<MatchJSON | undefined>;
 }
 
 export const MatchRow = memo(
-  function MatchRow({ match, setViewing }: MatchRowProps) {
+  function MatchRow({ match }: MatchRowProps) {
     const peopleNames = useMemo(() => {
       const names: string[] = [];
-      match.people.forEach((p: Person) => {
+      match.people.forEach((p) => {
         if (p.name) names.push(`${p.name} (${join(p.roles) || 'other'})`);
       });
       const diff = match.people.length - names.length;
@@ -24,18 +25,22 @@ export const MatchRow = memo(
       return names;
     }, [match.people]);
 
+    const { org } = useOrg();
+
     return (
-      <DataTableRow data-cy='match-row' onClick={() => setViewing(match)}>
-        <DataTableCell className={styles.people}>
-          {join(peopleNames)}
-        </DataTableCell>
-        <DataTableCell className={styles.subjects}>
-          {join(match.subjects)}
-        </DataTableCell>
-        <DataTableCell className={styles.message}>
-          {match.message}
-        </DataTableCell>
-      </DataTableRow>
+      <Link href={`/${org?.id || 'default'}/matches/${match.id}`}>
+        <DataTableRow data-cy='match-row'>
+          <DataTableCell className={styles.people}>
+            {join(peopleNames)}
+          </DataTableCell>
+          <DataTableCell className={styles.subjects}>
+            {join(match.subjects)}
+          </DataTableCell>
+          <DataTableCell className={styles.message}>
+            {match.message}
+          </DataTableCell>
+        </DataTableRow>
+      </Link>
     );
   },
   (prevProps: MatchRowProps, nextProps: MatchRowProps) => {
