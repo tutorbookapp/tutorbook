@@ -100,18 +100,6 @@ export default function MatchLog({ match }: MatchLogProps): JSX.Element {
         <div className={styles.inputs}>
           <TimeSelect
             required
-            label='Next meeting time'
-            onChange={setNextMeetingTime}
-            value={nextMeetingTime}
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.inputs}>
-          <TimeSelect
-            required
             label='Meeting time'
             onChange={onTimeChange}
             value={meeting.time}
@@ -129,6 +117,17 @@ export default function MatchLog({ match }: MatchLogProps): JSX.Element {
             onChange={onNotesChange}
             value={meeting.notes}
             className={styles.field}
+            outlined
+          />
+        </div>
+        <div className={styles.divider} />
+        <div className={styles.inputs}>
+          <TimeSelect
+            label='Next meeting time'
+            onChange={setNextMeetingTime}
+            value={nextMeetingTime}
+            className={styles.field}
+            renderToPortal
             outlined
           />
           <Button

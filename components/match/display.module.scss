@@ -108,6 +108,28 @@
 }
 
 .timeline {
+  &.loading {
+    height: 600px;
+
+    .body {
+      @include loader.loading;
+      border-radius: 4px;
+      width: 500px;
+      height: 48px;
+    }
+
+    .time {
+      @include loader.loading;
+      border-radius: 4px;
+      width: 100px;
+    }
+
+    .event:first-child .body {
+      width: 200px;
+      height: 24px;
+    }
+  }
+
   .wrapper {
     @include common.wrapper();
     padding: 0 24px 48px;
@@ -115,7 +137,6 @@
     .origin {
       position: relative;
       margin-left: 16px;
-      padding: 16px 0;
 
       &::before {
         position: absolute;
@@ -199,7 +220,7 @@
       }
 
       .content {
-        max-width: 600px;
+        max-width: 500px - 32px - 24px;
         margin: -20px 0 0;
         display: block;
         flex: auto;
@@ -230,26 +251,6 @@
           &:hover {
             text-decoration: underline;
           }
-        }
-      }
-
-      &.loading {
-        .body {
-          @include loader.loading;
-          border-radius: 4px;
-          width: 500px;
-          height: 48px;
-        }
-
-        .time {
-          @include loader.loading;
-          border-radius: 4px;
-          width: 100px;
-        }
-
-        &:first-child .body {
-          width: 200px;
-          height: 24px;
         }
       }
     }

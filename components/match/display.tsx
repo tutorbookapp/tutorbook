@@ -28,9 +28,9 @@ function Event({ badge, time, person, children }: EventProps): JSX.Element {
   const { lang: locale } = useTranslation();
 
   return (
-    <div className={cn(styles.event, { [styles.loading]: !time || !person })}>
+    <div className={styles.event}>
       <div className={styles.badge}>
-        {time && person && <span className='material-icons'>{badge}</span>}
+        <span className='material-icons'>{badge}</span>
       </div>
       <div className={styles.content}>
         {time && (
@@ -52,6 +52,14 @@ function Event({ badge, time, person, children }: EventProps): JSX.Element {
   );
 }
 
+function Endpoint(): JSX.Element {
+  return (
+    <div className={styles.origin}>
+      <div className={styles.badge} />
+    </div>
+  );
+}
+
 export interface MatchDisplayProps {
   match?: Match;
   people?: User[];
@@ -66,19 +74,22 @@ export default function MatchDisplay({
   const { org } = useOrg();
   const { t } = useTranslation();
 
+  const loading = useMemo(() => {
+    return !match || !people || !meetings;
+  }, [match, people, meetings]);
   const creator = useMemo(() => {
-    if (!people || !match) return;
+    if (loading || !match || !people) return;
     const idx = people.findIndex((p) => p.id === match.creator.id);
     return idx < 0 ? new User(match.creator) : people[idx];
-  }, [people, match]);
+  }, [loading, people, match]);
 
   return (
     <>
-      <div className={cn(styles.header, { [styles.loading]: !match })}>
+      <div className={cn(styles.header, { [styles.loading]: loading })}>
         <div className={styles.wrapper}>
           <div className={styles.people}>
-            {people &&
-              people.map((person) => (
+            {!loading &&
+              (people || []).map((person) => (
                 <Link
                   href={`/${org?.id || 'default'}/users/${person.id}`}
                   key={person.id}
@@ -92,53 +103,56 @@ export default function MatchDisplay({
                   </a>
                 </Link>
               ))}
-            {!people &&
-              [null, null].map(() => (
-                <div key={nanoid()} className={styles.person}>
-                  <div className={styles.avatar}>
-                    <Avatar size={200} loading />
+            {loading &&
+              Array(2)
+                .fill(null)
+                .map(() => (
+                  <div key={nanoid()} className={styles.person}>
+                    <div className={styles.avatar}>
+                      <Avatar size={200} loading />
+                    </div>
+                    <h2 className={styles.name} />
                   </div>
-                  <h2 className={styles.name} />
-                </div>
-              ))}
+                ))}
           </div>
           <div className={styles.info}>
             <dl>
               <dt>Subjects</dt>
               <dd>
-                {!match && <LoadingDots />}
-                {match && join(match.subjects)}
+                {loading && <LoadingDots />}
+                {!loading && join(match?.subjects || [])}
               </dd>
             </dl>
             <dl>
               <dt>Next meeting time</dt>
               <dd>
-                {!match && <LoadingDots />}
-                {match && (match.time?.toString() || 'No scheduled meetings')}
+                {loading && <LoadingDots />}
+                {!loading &&
+                  (match?.time?.toString() || 'No scheduled meetings')}
               </dd>
             </dl>
             <dl>
               <dt>Meeting venue</dt>
               <dd>
-                {!match && <LoadingDots />}
-                {match && <a href={match.venue.url}>{match.venue.url}</a>}
+                {loading && <LoadingDots />}
+                {!loading && <a href={match?.venue.url}>{match?.venue.url}</a>}
               </dd>
             </dl>
           </div>
         </div>
       </div>
-      <div className={cn(styles.timeline, { [styles.loading]: !match })}>
+      <div className={cn(styles.timeline, { [styles.loading]: loading })}>
         <div className={styles.wrapper}>
           <Event
             badge='add_box'
-            time={match ? new Date(match.venue.created) : undefined}
+            time={!loading ? new Date(match?.venue.created || '') : undefined}
             person={creator}
           >
             {t('matches:event-created')}
           </Event>
           <Event
             badge='email'
-            time={match ? new Date(match.venue.created || '') : undefined}
+            time={!loading ? new Date(match?.venue.created || '') : undefined}
             person={creator}
           >
             <Trans
@@ -147,18 +161,17 @@ export default function MatchDisplay({
               values={{ message: period(match?.message || '') }}
             />
           </Event>
-          {meetings &&
-            people &&
-            meetings.map((meeting) => (
+          {!loading &&
+            (meetings || []).map((meeting) => (
               <Event
                 key={meeting.id}
                 badge='event_note'
                 time={new Date(meeting.created)}
-                person={
-                  people[
-                    people.findIndex((p) => p.id === meeting.creator.id)
-                  ] || new User(meeting.creator)
-                }
+                person={(() => {
+                  if (!people) return;
+                  const findCreator = (p: User) => p.id === meeting.creator.id;
+                  return people[people.findIndex(findCreator)];
+                })()}
               >
                 <Trans
                   i18nKey='matches:event-meeting'
@@ -167,7 +180,8 @@ export default function MatchDisplay({
                 />
               </Event>
             ))}
-          <MatchLog match={match} />
+          {!loading && <MatchLog match={match} />}
+          {loading && <Endpoint />}
         </div>
       </div>
     </>
