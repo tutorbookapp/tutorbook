@@ -29,26 +29,37 @@ export default memo(function ResultsList({
 }: ResultsListProps): JSX.Element {
   const [searching, setSearching] = useState<boolean>(true);
 
+  // Throttle new requests (e.g. when using text-based search, don't send a new
+  // request for every letter changed until 500ms of no change).
+  const [endpoint, setEndpoint] = useState<string>('');
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setEndpoint(query.endpoint);
+      void mutate(query.endpoint);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [query.endpoint]);
+
   const { org } = useOrg();
   const { t } = useTranslation();
-  const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
+  const { data, isValidating } = useSWR<ListUsersRes>(endpoint);
 
   // Prefetch the next page of results (using SWR's global cache).
   // @see {@link https://swr.vercel.app/docs/prefetching}
   useEffect(() => {
-    const nextPageQuery = new UsersQuery(
-      clone({ ...query, page: query.page + 1 })
-    );
-    void prefetch(nextPageQuery.endpoint);
+    const timeoutId = setTimeout(() => {
+      const nextPageQuery = new UsersQuery(
+        clone({ ...query, page: query.page + 1 })
+      );
+      void prefetch(nextPageQuery.endpoint);
+    }, 500);
+    return () => clearTimeout(timeoutId);
   }, [query]);
 
   // TODO: Avoid code duplication from the main search page by porting over all
   // of this logic into custom hooks or a shared lib directory.
   useEffect(() => setHits((prev) => data?.hits || prev), [setHits, data?.hits]);
-  useEffect(() => {
-    setSearching(true);
-    void mutate(query.endpoint);
-  }, [query]);
+  useEffect(() => setSearching(true), [query]);
   useEffect(() => {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
