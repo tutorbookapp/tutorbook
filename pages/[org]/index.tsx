@@ -1,6 +1,8 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
+import { useRouter } from 'next/router';
+import useSWR from 'swr';
 
 import { EmptyHeader } from 'components/navigation';
 import Home from 'components/home';
@@ -12,14 +14,20 @@ import { db } from 'lib/api/firebase';
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
-import home from 'locales/en/home.json';
 import common from 'locales/en/common.json';
+import home from 'locales/en/home.json';
 
 interface HomePageProps {
   org?: OrgJSON;
 }
 
-function HomePage({ org }: HomePageProps): JSX.Element {
+function HomePage({ org: initialData }: HomePageProps): JSX.Element {
+  const { query } = useRouter();
+  const { data: org } = useSWR(
+    typeof query.org === 'string' ? `/api/orgs/${query.org}` : null,
+    { initialData, revalidateOnMount: true }
+  );
+
   usePage({ name: 'Org Home', org: org?.id });
 
   return (
