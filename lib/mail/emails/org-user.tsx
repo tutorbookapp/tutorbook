@@ -23,7 +23,7 @@ export default function OrgUserEmail({
   user,
   org,
 }: OrgUserEmailProps): JSX.Element {
-  const userDialogURL = `https://tutorbook.app/${org.id}/people/${user.id}`;
+  const userDialogURL = `https://tutorbook.app/${org.id}/users/${user.id}`;
   return (
     <Email>
       <Header />
