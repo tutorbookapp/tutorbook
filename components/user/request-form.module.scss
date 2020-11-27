@@ -1,5 +1,12 @@
 @use 'styles/common';
 
+@include common.card-styles;
+
+.card {
+  margin-top: 24px;
+  padding: 16px;
+}
+
 .field {
   @include common.field;
 }

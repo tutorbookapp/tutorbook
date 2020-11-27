@@ -291,7 +291,6 @@ export default function RequestForm({
             onSelectedChange={setStudents}
             selected={students}
             className={styles.field}
-            renderToPortal
             outlined
           />
         )}
@@ -299,7 +298,6 @@ export default function RequestForm({
           required
           outlined
           autoOpenMenu
-          renderToPortal
           label={t(`match3rd:${forOthers}subjects`)}
           className={styles.field}
           onSelectedChange={setSubjects}
@@ -310,7 +308,6 @@ export default function RequestForm({
         <TimeSelect
           required
           outlined
-          renderToPortal
           label={t(`match3rd:${forOthers}time`)}
           className={styles.field}
           onChange={setTime}

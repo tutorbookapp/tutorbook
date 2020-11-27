@@ -47,6 +47,7 @@
   .card {
     border: 1px solid var(--accents-2);
     border-radius: 4px;
+    position: relative;
   }
 
   :global(html:not(.dark)) .card {

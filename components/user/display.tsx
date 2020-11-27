@@ -124,10 +124,7 @@ export default function UserDisplay({
             </>
           )}
           {user && !org?.matchURL && (
-            <>
-              <h2>Request</h2>
-              <RequestForm admin={admin} user={user || new User()} />
-            </>
+            <RequestForm admin={admin} user={user || new User()} />
           )}
           {user && org?.matchURL && (
             <>
