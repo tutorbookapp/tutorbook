@@ -15,10 +15,10 @@ import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
 import Header from 'components/header';
-import Intercom from 'lib/intercom';
 import Placeholder from 'components/placeholder';
 
 import { MatchesQuery, Org } from 'lib/model';
+import Intercom from 'lib/intercom';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
 
 import { LoadingRow, MatchRow } from './row';
@@ -50,10 +50,12 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
     });
   }, [org]);
 
+  // TODO: Reuse the `Pagination` component, save the hits from last page, and
+  // prefetch the next page of results.
   const { data, isValidating } = useSWR<ListMatchesRes>(query.endpoint);
 
   useEffect(() => {
-    setSearching((prev: boolean) => prev && (isValidating || !data));
+    setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
 
   const loadingRows: JSX.Element[] = useMemo(() => {
@@ -111,7 +113,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
               </DataTableHead>
               <DataTableBody>
                 {!searching &&
-                  (data ? data.matches : []).map((match) => (
+                  (data?.matches || []).map((match) => (
                     <MatchRow match={match} key={match.id} />
                   ))}
                 {searching && loadingRows}
@@ -119,7 +121,7 @@ export default function Matches({ org }: MatchesProps): JSX.Element {
             </DataTableContent>
           </DataTable>
         )}
-        {!searching && !(data ? data.matches : []).length && (
+        {!searching && !(data?.matches || []).length && (
           <div className={styles.empty}>
             <Placeholder>{t('matches:empty')}</Placeholder>
           </div>
