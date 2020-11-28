@@ -7,6 +7,7 @@ import client from 'firebase/app';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
 import firebase from 'firebase-admin';
+import { percyHealthCheck } from '@percy/cypress/task';
 
 import { MatchJSON, MeetingJSON, OrgJSON, UserJSON } from 'lib/model';
 
@@ -104,6 +105,7 @@ export default function plugins(
 ): Cypress.ConfigOptions {
   codecov(on, config);
   on('task', {
+    percyHealthCheck,
     async clear(): Promise<null> {
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +

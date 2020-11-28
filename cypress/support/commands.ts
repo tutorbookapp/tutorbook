@@ -6,6 +6,7 @@ import photo from 'cypress/fixtures/users/volunteer.jpg.json';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'cypress-file-upload';
+import '@percy/cypress';
 
 /**
  * Add types to the existing global Cypress object.

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "isolatedModules": false,
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node"]
+    "types": ["cypress", "@percy/cypress", "node"]
   },
   "include": ["**/*.ts"]
 }
