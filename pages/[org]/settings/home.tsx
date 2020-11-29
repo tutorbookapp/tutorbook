@@ -29,6 +29,7 @@ function HomeSettingsPage(): JSX.Element {
 
   usePage({
     name: 'Org Home Settings',
+    url: `/${query.org as string}/settings/home`,
     org: query.org as string,
     login: true,
     admin: true,

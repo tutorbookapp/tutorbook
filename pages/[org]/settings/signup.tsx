@@ -29,6 +29,7 @@ function SignupSettingsPage(): JSX.Element {
 
   usePage({
     name: 'Org Signup Settings',
+    url: `/${query.org as string}/settings/signup`,
     org: query.org as string,
     login: true,
     admin: true,

@@ -87,7 +87,7 @@ function UserDisplayPage({
     return [...unique];
   }, [org, query.aspect, subjects]);
 
-  usePage({ name: 'User Home', org: org?.id });
+  usePage({ name: 'User Display', org: org?.id });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

@@ -34,8 +34,9 @@ function UserVetPage({
   );
 
   usePage({
-    name: 'User Home',
-    org: org?.id,
+    name: 'User Vet',
+    url: `/${query.org as string}/users/${query.id as string}/vet`,
+    org: query.org as string,
     login: true,
     admin: true,
   });

@@ -34,7 +34,7 @@ function UserEditPage({
   );
 
   usePage({
-    name: 'User Home',
+    name: 'User Edit',
     url: `/${query.org as string}/users/${query.id as string}/edit`,
     org: query.org as string,
     login: true,

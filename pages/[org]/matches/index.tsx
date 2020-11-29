@@ -28,6 +28,7 @@ function MatchesPage(): JSX.Element {
 
   usePage({
     name: 'Org Matches',
+    url: `/${query.org as string}/matches`,
     org: query.org as string,
     login: true,
     admin: true,

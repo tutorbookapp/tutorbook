@@ -32,6 +32,7 @@ function UsersPage(): JSX.Element {
 
   usePage({
     name: 'Org Users',
+    url: `/${params.org as string}/users`,
     org: params.org as string,
     login: true,
     admin: true,

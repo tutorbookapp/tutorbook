@@ -23,7 +23,7 @@ import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 import matches from 'locales/en/matches.json';
 
-function MatchPage(): JSX.Element {
+function MatchDisplayPage(): JSX.Element {
   const { query } = useRouter();
   const { data: org } = useSWR<OrgJSON>(
     typeof query.org === 'string' ? `/api/orgs/${query.org}` : null
@@ -39,7 +39,12 @@ function MatchPage(): JSX.Element {
   );
 
   // TODO: Redirect to 404 page when SWR throws a 401 error.
-  usePage({ name: 'Match Home', org: org?.id, login: true });
+  usePage({
+    name: 'Match Display',
+    url: `/${query.org as string}/matches/${query.id as string}`,
+    org: query.org as string,
+    login: true,
+  });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
@@ -57,4 +62,4 @@ function MatchPage(): JSX.Element {
   );
 }
 
-export default withI18n(MatchPage, { common, match, matches });
+export default withI18n(MatchDisplayPage, { common, match, matches });

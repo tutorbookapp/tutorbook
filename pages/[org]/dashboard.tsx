@@ -28,6 +28,7 @@ function DashboardPage(): JSX.Element {
 
   usePage({
     name: 'Org Dashboard',
+    url: `/${query.org as string}/dashboard`,
     org: query.org as string,
     login: true,
     admin: true,

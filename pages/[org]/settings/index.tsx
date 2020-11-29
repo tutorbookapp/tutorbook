@@ -29,6 +29,7 @@ function SettingsPage(): JSX.Element {
 
   usePage({
     name: 'Org Settings',
+    url: `/${query.org as string}/settings`,
     org: query.org as string,
     login: true,
     admin: true,
