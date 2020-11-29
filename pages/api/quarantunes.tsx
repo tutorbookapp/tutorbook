@@ -11,7 +11,7 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
   const users = (
     await db
       .collection('users')
-      .where('email', '==', 'nicholas.h.chiang@gmail.com')
+      .where('orgs', 'array-contains', 'quarantunes')
       .get()
   ).docs.map((d) => User.fromFirestore(d));
   const analytics = new Analytics(process.env.SEGMENT_KEY as string);
