@@ -11,12 +11,11 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
   const users = (
     await db
       .collection('users')
-      .where('orgs', 'array-contains', 'quarantunes')
+      .where('email', '==', 'nicholas.h.chiang@gmail.com')
       .get()
   ).docs.map((d) => User.fromFirestore(d));
   const analytics = new Analytics(process.env.SEGMENT_KEY as string);
   const baseURL = `http://${req.headers.host || 'tutorbook.app'}`;
-  return res.status(500).end('Endpoint Not Operational');
   await Promise.all(
     users.map(async (user: User) => {
       analytics.identify({ userId: user.id, traits: user.toSegment() });
@@ -34,6 +33,7 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
       const pixel = `https://api.segment.io/v1/pixel/track?data=${pixelData}`;
       const firstName = user.name.split(' ')[0] || user.name;
       return send({
+        bcc: { name: 'Tutorbook', email: 'team@tutorbook.org' },
         replyTo: { name: 'Julia Segal', email: 'quarantunes.info@gmail.com' },
         to: { name: user.name, email: user.email },
         subject: `Hi ${firstName}! Could you update your QuaranTunes profile?`,
