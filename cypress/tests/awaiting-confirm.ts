@@ -1,8 +1,13 @@
 import student from 'cypress/fixtures/users/student.json';
 
 describe('Awaiting confirmation page', () => {
+  beforeEach(() => {
+    cy.logout();
+  });
+
   it('shows message with specified email address', () => {
     cy.visit(`/awaiting-confirm?email=${student.email}`);
+    cy.wait('@get-account');
 
     cy.getBySel('page').find('h3').should('have.text', 'Awaiting Confirmation');
     cy.get('p')
@@ -23,6 +28,7 @@ describe('Awaiting confirmation page', () => {
 
   it('shows fallback example email address', () => {
     cy.visit('/awaiting-confirm');
+    cy.wait('@get-account');
 
     cy.get('p')
       .should('have.length', 2)

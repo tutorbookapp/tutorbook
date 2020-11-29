@@ -13,7 +13,7 @@ describe('Profile page', () => {
     cy.wait('@get-account').loading();
 
     cy.url({ timeout: 60000 }).should('contain', '/login?href=%2Fprofile');
-    cy.percySnapshot('Login Page');
+    cy.loading(false).percySnapshot('Login Page');
   });
 
   it('retries failed update requests', () => {

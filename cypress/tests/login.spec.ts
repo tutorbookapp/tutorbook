@@ -27,7 +27,7 @@ describe('Login page', () => {
 
     cy.getBySel('page').find('h2').should('have.text', 'Welcome');
     cy.get('header').contains('TB').should('have.attr', 'href', '/');
-    cy.percySnapshot('Login Page');
+    cy.loading(false).percySnapshot('Login Page');
 
     cy.contains('button', 'Continue with Google').click();
     cy.get('button').should('be.disabled').loading();

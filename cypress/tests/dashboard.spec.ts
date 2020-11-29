@@ -14,7 +14,7 @@ describe('Dashboard page', () => {
     cy.wait('@get-account').loading();
 
     cy.url({ timeout: 60000 }).should('contain', '/login?href=%2Fdashboard');
-    cy.percySnapshot('Login Page');
+    cy.loading(false).percySnapshot('Login Page');
   });
 
   it('only shows org accounts to admins', () => {
