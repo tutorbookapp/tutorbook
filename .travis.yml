@@ -21,6 +21,8 @@ cache:
 env:
   global:
     - NODE_ENV=test
+    - PERCY_PARALLEL_NONCE=$TRAVIS_BUILD_ID
+    - PERCY_PARALLEL_TOTAL=9
   jobs:
     - BROWSER=electron PARALLEL=1
     - BROWSER=electron PARALLEL=2
