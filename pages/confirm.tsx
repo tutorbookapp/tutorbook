@@ -30,7 +30,7 @@ export default function Confirm(): JSX.Element {
   useEffect(() => {
     async function error(msg: string): Promise<void> {
       track('Email Login Errored', { error: period(msg) });
-      await push('/notifications/authentication-failed');
+      await push('/authentication-failed');
     }
 
     async function signupWithEmail(): Promise<void> {

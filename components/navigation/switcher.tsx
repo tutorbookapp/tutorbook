@@ -20,8 +20,7 @@ export default function Switcher(): JSX.Element {
   const [selected, setSelected] = useState<string>('Account');
 
   useEffect(() => {
-    if (!orgs) return setSelected('Account');
-    const idx: number = orgs.findIndex((o: Org) => o.id === query.org);
+    const idx = orgs.findIndex((o: Org) => o.id === query.org);
     if (idx < 0) return setSelected('Account');
     return setSelected(orgs[idx].name);
   }, [orgs, query]);

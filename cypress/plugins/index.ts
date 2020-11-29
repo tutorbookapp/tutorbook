@@ -86,7 +86,7 @@ declare global {
     interface Chainable {
       task(event: 'clear'): Chainable<null>;
       task(event: 'seed', overrides?: Overrides): Chainable<null>;
-      task(event: 'login', uid?: string): Chainable<string>;
+      task(event: 'login', uid: string): Chainable<string>;
     }
   }
 }
@@ -170,9 +170,8 @@ export default function plugins(
 
       return null;
     },
-    async login(uid?: string): Promise<string> {
-      const fallbackId = student.id || volunteer.id || admin.id;
-      return auth.createCustomToken(uid || fallbackId);
+    async login(uid: string): Promise<string> {
+      return auth.createCustomToken(uid);
     },
   });
   return { ...config, env: { ...config.env, ...clientCredentials } };

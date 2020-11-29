@@ -17,10 +17,11 @@ declare global {
   /* eslint-disable-next-line @typescript-eslint/no-namespace */
   namespace Cypress {
     interface Chainable {
-      login: (uid?: string) => Chainable<null>;
+      login: (uid: string) => Chainable<null>;
       logout: () => Chainable<null>;
       setup: (overrides?: Overrides) => Chainable<undefined>;
       getBySel: (selector: string, args?: any) => Chainable<Element>;
+      loading: (isLoading?: boolean) => Chainable<undefined>;
     }
   }
 }
@@ -46,7 +47,7 @@ function loginWithToken(token: string): Promise<null> {
   });
 }
 
-function login(uid?: string): Cypress.Chainable<null> {
+function login(uid: string): Cypress.Chainable<null> {
   if (firebase.auth().currentUser) cy.logout();
   return cy.task('login', uid).then((token: string) => loginWithToken(token));
 }
@@ -99,26 +100,35 @@ function getBySel(
   return cy.get(`[data-cy=${selector}]`, ...args);
 }
 
+function loading(isLoading = true): void {
+  if (isLoading) {
+    cy.get('html').should('have.class', 'nprogress-busy');
+    cy.get('#nprogress').should('exist');
+  } else {
+    cy.get('html').should('not.have.class', 'nprogress-busy');
+    cy.get('#nprogress').should('not.exist');
+  }
+}
+
 // TODO: Debug why Next.js keeps mounting and unmounting these image components.
 chai.Assertion.addMethod('img', function img(
   src: string,
   w: number = 1200,
   q: number = 75
 ): void {
-  /*
-   *new chai.Assertion(this._obj).to.exist;
-   *const expected = `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${q}`;
-   *this.assert(
-   *  this._obj.attr('src') === expected,
-   *  'expected #{this} to have Next.js image source #{exp}, but the source was #{act}',
-   *  'expected #{this} not to have Next.js image source #{exp}',
-   *  expected,
-   *  this._obj.attr('src')
-   *);
-   */
+  new chai.Assertion(this._obj).to.exist;
+  const expected = `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${q}`;
+  this.assert(
+    this._obj.attr('src') === expected,
+    'expected #{this} to have Next.js image source #{exp}, but the source was #{act}',
+    'expected #{this} not to have Next.js image source #{exp}',
+    expected,
+    this._obj.attr('src')
+  );
 });
 
 Cypress.Commands.add('login', login);
 Cypress.Commands.add('logout', logout);
 Cypress.Commands.add('setup', setup);
 Cypress.Commands.add('getBySel', getBySel);
+Cypress.Commands.add('loading', loading);

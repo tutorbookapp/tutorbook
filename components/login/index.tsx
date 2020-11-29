@@ -72,7 +72,7 @@ export default function Login(): JSX.Element {
         track('Email Login Errored', { error: period(e.message) });
         return setError(period(e.message));
       }
-      return Router.push(`/notifications/awaiting-confirm?email=${email}`);
+      return Router.push(`/awaiting-confirm?email=${email}`);
     },
     [track, email, redirect]
   );
@@ -114,10 +114,12 @@ export default function Login(): JSX.Element {
             required
             outlined
           />
-          <Button label='Continue with Email' disabled={loading} raised arrow />
+          <Button label='Continue with email' disabled={loading} raised arrow />
         </form>
         {!!error && (
-          <div className={styles.error}>{t('login:error', { error })}</div>
+          <div data-cy='error' className={styles.error}>
+            {t('login:error', { error })}
+          </div>
         )}
       </div>
     </div>
