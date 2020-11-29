@@ -3394,6 +3394,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@segment/loosely-validate-event@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@segment/loosely-validate-event@npm:2.0.0"
+  dependencies:
+    component-type: ^1.2.1
+    join-component: ^1.1.0
+  checksum: e79b633db665b461d079b3fb781231bcb36bca52179920605ec0cbeb3ae259387d815a84ee3c5b4fb0b0d58ebe4032693d14f9b8ce030e6b9cede9b6c2edacaf
+  languageName: node
+  linkType: hard
+
 "@segment/prevent-default@npm:^1.0.0":
   version: 1.0.0
   resolution: "@segment/prevent-default@npm:1.0.0"
@@ -3489,6 +3499,13 @@ __metadata:
   version: 1.5.1
   resolution: "@types/accept-language-parser@npm:1.5.1"
   checksum: 2d8c1319e611e1fae98552b4ae4efe5eaf6d5edb3761c86a3969ee480f04462d0053f1c0c15c78b901b45a76d27f474fb00634596bfe649fd2586282c2d0f82d
+  languageName: node
+  linkType: hard
+
+"@types/analytics-node@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "@types/analytics-node@npm:3.1.4"
+  checksum: 4db5d149028cb507f71696e20322ac69d535a92777a58c8616286c77bc4bfb4e25d2003745867a7ecdc6d013fa2e6f2576b7b7002e06f27ce5cd52a96d4fa5a2
   languageName: node
   linkType: hard
 
@@ -4287,6 +4304,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"analytics-node@npm:^3.4.0-beta.3":
+  version: 3.4.0-beta.3
+  resolution: "analytics-node@npm:3.4.0-beta.3"
+  dependencies:
+    "@segment/loosely-validate-event": ^2.0.0
+    axios: ^0.19.2
+    axios-retry: ^3.0.2
+    lodash.isstring: ^4.0.1
+    md5: ^2.2.1
+    ms: ^2.0.0
+    remove-trailing-slash: ^0.1.0
+    uuid: ^3.2.1
+  checksum: 8f4482e4ff051fa21d30e1ffcd0710ff255ecaad315cd21c63e0475ffa147c0935f1ce3f4fa0930883895c9da7dce3c5eba02884dcb732519d739d39ad3654e6
+  languageName: node
+  linkType: hard
+
 "anser@npm:1.4.9":
   version: 1.4.9
   resolution: "anser@npm:1.4.9"
@@ -4811,6 +4844,15 @@ __metadata:
   version: 3.5.5
   resolution: "axe-core@npm:3.5.5"
   checksum: 3d42ed3f0a24ae08081f878a6e1c629a60e4556ab0be896463ff800274b78bf3f1ce62a20396b4e892dc17e682df631ee06fd0daaf2928a49e46e8c0c4dfdcd0
+  languageName: node
+  linkType: hard
+
+"axios-retry@npm:^3.0.2":
+  version: 3.1.9
+  resolution: "axios-retry@npm:3.1.9"
+  dependencies:
+    is-retry-allowed: ^1.1.0
+  checksum: 1e6a4df3089bd08377734e2dcb58a6895b272ca9facd6e8b2d0388c342b31d39a1ec4592abe171d9f596bbab374fbc4de6e845d4eb6d7440c874e97933f29888
   languageName: node
   linkType: hard
 
@@ -5797,6 +5839,13 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: b71a4ee4648489291af86418b96247824a8c1ee4f4f95d6268967fb40e9fbf70500e72fb737d5186a23cf98c8a02b91d68cb2f426d7428e92883af9d31a037ec
+  languageName: node
+  linkType: hard
+
+"charenc@npm:0.0.2":
+  version: 0.0.2
+  resolution: "charenc@npm:0.0.2"
+  checksum: ff8199e90334dc7bb60a9fe0aa2bef3e72b1d125e801151459db1cf1c9b77c437ad4a5d9248ee0003720bcb537a90787a53f6e2e1613dbf5fba46f59d5547307
   languageName: node
   linkType: hard
 
@@ -6913,6 +6962,13 @@ __metadata:
     shebang-command: ^2.0.0
     which: ^2.0.1
   checksum: 51f10036f5f1de781be98f4738d58b50c6d44f4f471069b8ab075b21605893ba1548654880f7310a29a732d6fc7cd481da6026169b9f0831cab0148a62fb397a
+  languageName: node
+  linkType: hard
+
+"crypt@npm:0.0.2":
+  version: 0.0.2
+  resolution: "crypt@npm:0.0.2"
+  checksum: 1ad9c8439ad26eef21ca130df3e79fff4915e839167efde163891b935ffb41742bfbc359bb00ae8b1ff205db52e7fb0e32326b84b7f977cd6e6a279eed9dc742
   languageName: node
   linkType: hard
 
@@ -10994,7 +11050,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"is-buffer@npm:^1.1.0, is-buffer@npm:^1.1.5":
+"is-buffer@npm:^1.1.0, is-buffer@npm:^1.1.5, is-buffer@npm:~1.1.6":
   version: 1.1.6
   resolution: "is-buffer@npm:1.1.6"
   checksum: 336ec78f00e88efe6ff6f1aa08d06aadb942a6cd320e5f538ac00648378fb964743b3737c88ce7ce8741c067e4a3b78f596b83ee1a3c72dc2885ea0b03dc84f2
@@ -11255,7 +11311,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"is-retry-allowed@npm:^1.0.0":
+"is-retry-allowed@npm:^1.0.0, is-retry-allowed@npm:^1.1.0":
   version: 1.2.0
   resolution: "is-retry-allowed@npm:1.2.0"
   checksum: 739384d2662f38fe0edd1bcdf7f88551c6f1b1fdc7fde3ba86442cd675d337f14100d6479bcbb4635f7e38d11e1a2c2e173a52ba39547631960641d9fbe65531
@@ -11546,6 +11602,13 @@ fsevents@~2.1.2:
     "@hapi/pinpoint": ^2.0.0
     "@hapi/topo": ^5.0.0
   checksum: 197c86238922203a34a894a6240342462815bb538412333b496500520ec4d5ad04db3c7ae6d3ea58e8b1780252c91e53eb22ac7822cb82c14572920f60f031f7
+  languageName: node
+  linkType: hard
+
+"join-component@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "join-component@npm:1.1.0"
+  checksum: 6bb6b1bf9f4cc928caba39dab72599dea962baa5c0101c608ea3a4386fe46e57851472f36d0ed04b39738bac199ac4d034c8153211c3afa616e1b61f7b8dde66
   languageName: node
   linkType: hard
 
@@ -12655,6 +12718,17 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"md5@npm:^2.2.1":
+  version: 2.3.0
+  resolution: "md5@npm:2.3.0"
+  dependencies:
+    charenc: 0.0.2
+    crypt: 0.0.2
+    is-buffer: ~1.1.6
+  checksum: ba00eaf2b7ca49bb7ba67b8ded5db45ecfba4e85694f30cb0b720051936af5337bbd350865357b91580ecb0f7053df658381d50cb689f22135dfa345c52d61cc
+  languageName: node
+  linkType: hard
+
 "media-typer@npm:0.3.0":
   version: 0.3.0
   resolution: "media-typer@npm:0.3.0"
@@ -13047,7 +13121,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.2, ms@npm:^2.1.1":
+"ms@npm:2.1.2, ms@npm:^2.0.0, ms@npm:^2.1.1":
   version: 2.1.2
   resolution: "ms@npm:2.1.2"
   checksum: 9b65fb709bc30c0c07289dcbdb61ca032acbb9ea5698b55fa62e2cebb04c5953f1876a1f3f7f4bc2e91d4bf4d86003f3e207c3bc6ee2f716f99827e62389cd0e
@@ -15585,6 +15659,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"remove-trailing-slash@npm:^0.1.0":
+  version: 0.1.1
+  resolution: "remove-trailing-slash@npm:0.1.1"
+  checksum: 05117a5bf5d9e080cac479066d6f6eedcba53eabfe73e115f615798ef236e82daff9a9faeb3153b20779c281a2fa2d86018167f4ff3e60b29caa3d37f7eb8fff
+  languageName: node
+  linkType: hard
+
 "repeat-element@npm:^1.1.2":
   version: 1.1.3
   resolution: "repeat-element@npm:1.1.3"
@@ -17892,6 +17973,7 @@ resolve@1.1.7:
     "@sendgrid/helpers": ^7.2.0
     "@sendgrid/mail": ^7.2.2
     "@types/accept-language-parser": ^1.5.1
+    "@types/analytics-node": ^3.1.4
     "@types/mixpanel-browser": ^2.35.4
     "@types/node": ^14.0.26
     "@types/nprogress": ^0.2.0
@@ -17907,6 +17989,7 @@ resolve@1.1.7:
     "@typescript-eslint/parser": ^3.7.0
     accept-language-parser: ^1.5.0
     algoliasearch: ^4.3.1
+    analytics-node: ^3.4.0-beta.3
     await-to-js: ^2.1.1
     axios: ^0.21.0
     babel-eslint: ^10.1.0
@@ -18483,7 +18566,7 @@ typescript@^4.0.3:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.0.0, uuid@npm:^3.3.2, uuid@npm:^3.3.3, uuid@npm:^3.4.0":
+"uuid@npm:^3.0.0, uuid@npm:^3.2.1, uuid@npm:^3.3.2, uuid@npm:^3.3.3, uuid@npm:^3.4.0":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
