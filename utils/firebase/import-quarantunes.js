@@ -175,7 +175,7 @@ function getSubjects(id) {
 
 function getUsers() {
   console.log(`Fetching user CSV rows...`);
-  const rows = CSVToArray(fs.readFileSync('./quarantunes.csv'));
+  const rows = CSVToArray(fs.readFileSync('./quarantunes-latest.csv'));
   console.log(`Fetching mentoring subjects...`);
   const subjects = getSubjects('mentoring');
   rows.shift();
@@ -207,6 +207,7 @@ function getUsers() {
       name: `${first} ${last}`,
       email: email || '',
       phone: phone(phoneNumber)[0] || '',
+      background: '',
       photo: photo ? getPhotoURL(photo) : '',
       bio:
         (bio ? period(bio) : '') +
@@ -237,22 +238,62 @@ function getUsers() {
       verifications: [],
       visible: true,
       featured: [],
+      roles: [],
     };
   });
 }
 
 async function createUser(user) {
-  const photo = user.photo
-    ? await uploadFile(await downloadFile(user.photo))
-    : '';
   const endpoint = 'https://develop.tutorbook.app/api/users';
-  const [err] = await to(axios.post(endpoint, { ...user, photo }));
+  const [err] = await to(axios.post(endpoint, user));
   if (err) {
     console.log(
       `\n\n${err.name} creating user (${user.name} <${user.email}>): ${
         (err.response || {}).data || err.message
       }\n`
     );
+    debugger;
+  }
+}
+
+const createToken = async () => {
+  const token = await auth.createCustomToken('1j0tRKGtpjSX33gLsLnalxvd1Tl2');
+  await firebase.auth().signInWithCustomToken(token);
+  const idToken = await firebase.auth().currentUser.getIdToken(true);
+  await firebase.auth().signOut();
+  return idToken;
+};
+
+const convertToUserJSON = (userData) => {
+  const availability = (userData.availability || []).map((timeslot) => ({
+    to: timeslot.to.toDate().toJSON(),
+    from: timeslot.from.toDate().toJSON(),
+    recur: timeslot.recur,
+  }));
+  return { ...userData, availability };
+};
+
+async function updateUser(updated) {
+  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const headers = { authorization: `Bearer ${await createToken()}` };
+
+  console.log(`Fetching user (${updated.id})...`);
+
+  const data = (await db.collection('users').doc(updated.id).get()).data();
+  const user = {
+    background: '',
+    roles: [],
+    ...convertToUserJSON(data),
+    ...updated,
+  };
+
+  console.log(`Updating user (${user.name})...`, user);
+
+  const [err] = await to(
+    axios.put(`${endpoint}/${updated.id}`, user, { headers })
+  );
+  if (err) {
+    console.error(`${err.name} updating user (${user.name}): ${err.message}`);
     debugger;
   }
 }
@@ -278,31 +319,35 @@ async function verifyImport() {
   const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
   bar.start(users.length, 0);
   let count = 0;
-  await Promise.all(
-    users.map(async (user) => {
-      const create = async (data) => {
-        console.log(`Creating user (${data.name} <${data.email}>)...`);
-        await createUser(data);
-        console.log(`Created user (${data.name} <${data.email}>).`);
-      };
-      const { docs } = await db
-        .collection('users')
-        .where('email', '==', (user.email || '').toLowerCase())
-        .get();
-      if (!user.email) {
-        console.error(`\nUser (${user.name}) missing email.`);
-        debugger;
-      } else if (docs.length !== 1) {
-        console.error(`\n${docs.length} docs with email (${user.email}).`);
-        debugger;
-      } else if (!(docs[0].data().orgs || []).includes('quarantunes')) {
-        console.error(`\nUser (${user.name} <${user.email}>) missing org.`);
-        debugger;
-      }
-      count++;
-      bar.update(count);
-    })
-  );
+  for (const user of users) {
+    const create = async (data) => {
+      console.log(`Creating user (${data.name} <${data.email}>)...`);
+      await createUser(data);
+      console.log(`Created user (${data.name} <${data.email}>).`);
+    };
+    const update = (data) => updateUser(data);
+    const { docs } = await db
+      .collection('users')
+      .where('email', '==', (user.email || '').toLowerCase())
+      .get();
+    if (!user.email) {
+      console.error(`\nUser (${user.name}) missing email.`);
+      console.log('User:', JSON.stringify(user, null, 2));
+      debugger;
+    } else if (docs.length !== 1) {
+      console.error(`\n${docs.length} docs with email (${user.email}).`);
+      console.log('User:', JSON.stringify(user, null, 2));
+      debugger;
+    } else if (!(docs[0].data().orgs || []).includes('quarantunes')) {
+      console.error(`\nUser (${user.name} <${user.email}>) missing org.`);
+      console.log('User:', JSON.stringify(user, null, 2));
+      const data = docs[0].data();
+      console.log('Data:', JSON.stringify(data, null, 2));
+      debugger;
+    }
+    count++;
+    bar.update(count);
+  }
 }
 
 verifyImport();

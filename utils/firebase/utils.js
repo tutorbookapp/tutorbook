@@ -581,4 +581,10 @@ const moveBannerImages = async () => {
   );
 };
 
-moveBannerImages();
+const fetchUsersWithoutOrgs = async () => {
+  console.log('Fetching users...');
+  const users = await db.collection('users').get();
+  console.log(`Filtering ${users.length} users...`);
+  const withoutOrgs = users.docs.filter((d) => !(d.data().orgs || []).length);
+  debugger;
+};
