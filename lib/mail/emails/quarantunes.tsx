@@ -27,6 +27,11 @@ export default function CampaignEmail({
       <Item>
         <P style={{ marginTop: '0px !important' }}>Hi {name},</P>
         <P>
+          Please ignore any earlier emails from us. I made some mistakes when
+          sending them (sorry about that); you should instead only pay attention
+          to this one.
+        </P>
+        <P>
           QuaranTunes has just started using Tutorbook! You&apos;ll now be able
           to set your own availability and manage your own profile page (without
           us admins having to get involved).

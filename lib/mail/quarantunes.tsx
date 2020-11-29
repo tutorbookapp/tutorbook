@@ -15,28 +15,29 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
       .get()
   ).docs.map((d) => User.fromFirestore(d));
   const analytics = new Analytics(process.env.SEGMENT_KEY as string);
-  const baseURL = `http://${req.headers.host || 'tutorbook.app'}`;
+  const baseURL = 'https://tutorbook.app';
   await Promise.all(
     users.map(async (user: User) => {
       analytics.identify({ userId: user.id, traits: user.toSegment() });
-      analytics.track({ userId: user.id, event: 'QuaranTunes Email Sent' });
+      analytics.track({ userId: user.id, event: 'QuaranTunes Email II Sent' });
       const link =
         `${baseURL}/profile?` +
         `ajs_uid=${encodeURIComponent(user.id)}&` +
-        `ajs_event=${encodeURIComponent('QuaranTunes Email Link Clicked')}`;
+        `ajs_event=${encodeURIComponent('QuaranTunes Email II Link Clicked')}`;
       const pixelJSON = JSON.stringify({
         writeKey: process.env.SEGMENT_PIXEL_KEY as string,
-        event: 'QuaranTunes Email Opened',
+        event: 'QuaranTunes Email II Opened',
         userId: user.id,
       });
       const pixelData = Buffer.from(pixelJSON, 'utf-8').toString('base64');
       const pixel = `https://api.segment.io/v1/pixel/track?data=${pixelData}`;
       const firstName = user.name.split(' ')[0] || user.name;
       return send({
+        from: { name: 'Julia Segal', email: 'team@tutorbook.org' },
         bcc: { name: 'Tutorbook', email: 'team@tutorbook.org' },
         replyTo: { name: 'Julia Segal', email: 'quarantunes.info@gmail.com' },
         to: { name: user.name, email: user.email },
-        subject: `Hi ${firstName}! Could you update your QuaranTunes profile?`,
+        subject: `Hi ${firstName}! Could you modify your QuaranTunes profile?`,
         html: renderToStaticMarkup(
           <QuaranTunesEmail
             name={firstName}

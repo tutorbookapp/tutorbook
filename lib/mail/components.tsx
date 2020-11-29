@@ -249,7 +249,7 @@ export function Header(): JSX.Element {
 export function Footer({ children }: Partial<Props>): JSX.Element {
   return (
     <ColorContext.Provider value='#666666'>
-      <Item top='0px' bottom='48px'>
+      <Item top='48px' bottom='48px'>
         <hr style={dividerStyle} />
         <P>
           Tutorbook - <Link href='https://tutorbook.app'>tutorbook.app</Link>
