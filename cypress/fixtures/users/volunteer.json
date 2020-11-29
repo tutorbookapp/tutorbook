@@ -73,5 +73,7 @@
   "langs": ["en", "es"],
   "parents": [],
   "verifications": [],
-  "visible": true
+  "visible": true,
+  "token": null,
+  "hash": null
 }

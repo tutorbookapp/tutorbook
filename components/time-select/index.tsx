@@ -1,5 +1,6 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import {
+  FormEvent,
   SyntheticEvent,
   memo,
   useCallback,
@@ -96,8 +97,16 @@ export default memo(
       (value?.from || new Date()).getMonth()
     );
 
-    const viewPrevMonth = useCallback(() => setMonth((prev) => prev - 1), []);
-    const viewNextMonth = useCallback(() => setMonth((prev) => prev + 1), []);
+    const viewPrevMonth = useCallback((evt: FormEvent<HTMLButtonElement>) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+      setMonth((prev) => prev - 1);
+    }, []);
+    const viewNextMonth = useCallback((evt: FormEvent<HTMLButtonElement>) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+      setMonth((prev) => prev + 1);
+    }, []);
     const selected = useMemo(() => new Date(year, month, date), [
       year,
       month,
@@ -202,7 +211,9 @@ export default memo(
                             ? getWeekdayOfFirst(month, year) + 1
                             : undefined,
                       }}
-                      onClick={() => {
+                      onClick={(evt: FormEvent<HTMLButtonElement>) => {
+                        evt.preventDefault();
+                        evt.stopPropagation();
                         setDate(idx + 1);
                         setSelectOpen(true);
                       }}
@@ -235,7 +246,9 @@ export default memo(
                         minute: 'numeric',
                         hour12: true,
                       })}
-                      onClick={() => {
+                      onClick={(evt: FormEvent<HTMLButtonElement>) => {
+                        evt.preventDefault();
+                        evt.stopPropagation();
                         onChange(timeslot);
                         inputRef.current?.blur();
                       }}

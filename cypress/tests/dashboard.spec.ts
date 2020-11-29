@@ -11,8 +11,8 @@ describe('Dashboard page', () => {
   it('redirects to login page when logged out', () => {
     cy.logout();
     cy.visit('/dashboard');
+    cy.wait('@get-account').loading();
 
-    cy.wait('@get-account');
     cy.url({ timeout: 60000 }).should('contain', '/login?href=%2Fdashboard');
     cy.percySnapshot('Login Page');
   });
@@ -43,7 +43,7 @@ describe('Dashboard page', () => {
     cy.get('@intercom').should('be.calledWithExactly', 'showNewMessage', msg);
     cy.percySnapshot('Dashboard Page for Students with Switcher Open');
 
-    cy.getBySel('page').click();
+    cy.getBySel('page').click({ force: true });
     cy.percySnapshot('Dashboard Page for Students');
   });
 

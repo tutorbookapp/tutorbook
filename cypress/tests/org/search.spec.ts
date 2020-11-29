@@ -1,8 +1,6 @@
-import { getDaysInMonth, getNextDateWithDay } from 'lib/utils/time';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
 import admin from 'cypress/fixtures/users/admin.json';
-import match from 'cypress/fixtures/match.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
@@ -22,6 +20,7 @@ describe('Search page', () => {
       .find('li')
       .should('have.css', 'cursor', 'not-allowed')
       .and('have.attr', 'disabled');
+    cy.percySnapshot('Search Page in Loading State');
 
     cy.wait('@get-account');
     cy.get('.mdc-dialog--open')
@@ -41,9 +40,11 @@ describe('Search page', () => {
     cy.get('@dialog').should('have.class', 'mdc-dialog--open');
     cy.get('@dialog').trigger('keyup', { keyCode: 27 });
     cy.get('@dialog').should('have.class', 'mdc-dialog--open');
+    cy.percySnapshot('Search Page with Auth Dialog Open');
 
     cy.contains('button', 'Continue with Google').click().should('be.disabled');
     cy.getBySel('loader').should('be.visible');
+    cy.percySnapshot('Search Page with Auth Dialog Loading');
 
     // TODO: Find some way to trick the application into thinking that it was
     // logged in successfully so we can make assertions about the user being
@@ -54,6 +55,7 @@ describe('Search page', () => {
     cy.getBySel('error')
       .should('be.visible')
       .and('contain', 'Unable to establish a connection with the popup.');
+    cy.percySnapshot('Search Page with Auth Dialog Error');
 
     cy.getBySel('results')
       .find('li')
@@ -80,6 +82,7 @@ describe('Search page', () => {
       .and('contain', admin.bio)
       .find('img')
       .should('have.img', admin.photo, 85);
+    cy.percySnapshot('Search Page for Schools');
 
     cy.get('#open-nav').click();
     cy.getBySel('picker')
@@ -102,8 +105,13 @@ describe('Search page', () => {
       .and('contain', volunteer.bio)
       .find('img')
       .should('have.img', volunteer.photo, 85);
+    cy.percySnapshot('Search Page');
+
+    // TODO: Also make assertions about results in the 'No Results' carousel.
   });
 
+  // TODO: Refactor this into reusable tests and assertions to test a variety of
+  // different filter combinations (in order to reach 100% back-end coverage).
   it('filters users by subjects and langs', () => {
     cy.setup({ student: { phone: '' } });
     cy.login(student.id);
@@ -111,6 +119,7 @@ describe('Search page', () => {
 
     cy.wait('@get-account');
     cy.get('.mdc-dialog--open').should('not.exist');
+    cy.percySnapshot('Search Page in Loading State');
 
     cy.wait('@list-users');
     cy.getBySel('results').find('li').should('have.length', 2).as('results');
@@ -128,17 +137,21 @@ describe('Search page', () => {
       .and('contain', admin.bio)
       .find('img')
       .should('have.img', admin.photo, 85);
+    cy.percySnapshot('Search Page for Schools');
 
+    // TODO: Perhaps create some `Select` component tests to test the different
+    // error and content states (e.g. multiple lines of selected chips).
     cy.contains('button', 'Any languages').click();
     cy.focused()
-      .type('sp')
+      .type('Span')
       .closest('label')
       .should('contain', 'What languages do you speak?')
       .as('langs-input');
+    cy.percySnapshot('Search Page with Lang Select Focused');
 
     // TODO: Why doesn't a regular `cy.click()` command work here? Why do I have
     // to call `cy.trigger()` instead? What is wrong with the event listener?
-    cy.contains('li', 'Spanish')
+    cy.contains('li:visible', 'Spanish')
       .trigger('click')
       .find('input[type="checkbox"]')
       .should('be.checked');
@@ -147,7 +160,10 @@ describe('Search page', () => {
       .should('have.length', 1)
       .first()
       .should('contain', 'Spanish');
+    cy.percySnapshot('Search Page with Lang Selected');
 
+    // TODO: Find a better way to unfocus the `FilterForm` (something that an
+    // actual user would actually do, e.g. click on the loading results).
     cy.getBySel('page').click({ force: true });
     cy.wait('@list-users');
     cy.getBySel('results')
@@ -157,17 +173,58 @@ describe('Search page', () => {
       .should('not.have.attr', 'disabled', '')
       .find('a')
       .should('contain', onlyFirstNameAndLastInitial(volunteer.name))
-      .and('have.attr', 'href', `/${school.id}/users/${volunteer.id}`)
+      .and(
+        'have.attr',
+        'href',
+        `/${school.id}/users/${volunteer.id}?aspect=${school.aspects[0]}`
+      )
       .and('have.attr', 'target', '_blank');
+    cy.percySnapshot('Search Page with Lang Filters');
 
     cy.contains('button', 'Any subjects').click();
     cy.focused()
       .type('Artificial')
       .closest('label')
       .should('contain', 'What would you like to learn?');
-    cy.contains('li', 'Artificial Intelligence').click();
-    cy.get('@spanish-chip').contains('[role="button"]', 'close').click();
-    cy.get('@langs-input').children('.mdc-chip').should('have.length', 0);
+    cy.contains('.mdc-menu-surface', 'No subjects').should('be.visible');
+    cy.percySnapshot('Search Page with Subject Select Focused');
+
+    cy.focused().type('{selectall}{del}Math').should('have.value', 'Math');
+    cy.contains('li:visible', 'Geometry')
+      .trigger('click')
+      .find('input[type="checkbox"]')
+      .should('be.checked');
+    cy.percySnapshot('Search Page with Subject and Lang Selected');
+
+    cy.getBySel('page').click({ force: true });
+    cy.wait('@list-users');
+    cy.getBySel('results').should('not.exist');
+    cy.getBySel('no-results')
+      .should('be.visible')
+      .within(() => {
+        cy.get('h3').should('have.text', 'No Results');
+        cy.get('p').should(
+          'have.text',
+          "We couldn't find anyone matching those filters. But here are some suggestions:"
+        );
+
+        // TODO: Create custom Cypress commands to validate the contents of these
+        // carousel cards and the search result tiles (which are reused a lot).
+        cy.getBySel('carousel').find('a').should('have.length', 2).as('cards');
+        cy.percySnapshot('Search Page with No Results');
+      });
+
+    cy.contains('button', 'Spanish').click();
+    cy.focused()
+      .parent()
+      .within(() => {
+        cy.get('.mdc-chip')
+          .first()
+          .contains('[role="button"]', 'close')
+          .click();
+        cy.get('.mdc-chip').should('have.length', 0);
+        cy.percySnapshot('Search Page with Subject Selected');
+      });
 
     cy.getBySel('page').click({ force: true });
     cy.wait('@list-users');
@@ -177,8 +234,13 @@ describe('Search page', () => {
       .first()
       .should('not.have.attr', 'disabled', '')
       .find('a')
-      .should('contain', onlyFirstNameAndLastInitial(volunteer.name))
-      .and('have.attr', 'href', `/${school.id}/users/${volunteer.id}`)
+      .should('contain', onlyFirstNameAndLastInitial(admin.name))
+      .and(
+        'have.attr',
+        'href',
+        `/${school.id}/users/${admin.id}?aspect=${school.aspects[0]}`
+      )
       .and('have.attr', 'target', '_blank');
+    cy.percySnapshot('Search Page with Subject Filters');
   });
 });

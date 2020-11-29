@@ -70,7 +70,7 @@ describe('Signup page', () => {
       .should('have.length', 1)
       .and('contain', 'English');
     cy.get('@langs-input').type('Span');
-    cy.contains('li', 'Spanish').click({ force: true });
+    cy.contains('li:visible', 'Spanish').trigger('click');
     cy.get('@langs-input')
       .children('.mdc-chip')
       .should('have.length', 2)
@@ -83,7 +83,7 @@ describe('Signup page', () => {
 
     // TODO: Why isn't this `click()` call working? It seems to be working fine
     // with the `SubjectSelect` controlling the search view.
-    cy.contains('li', 'Computer Science').click({ force: true });
+    cy.contains('li:visible', 'Computer Science').trigger('click');
     cy.get('@subjects-input')
       .children('.mdc-chip')
       .should('have.length', 1)
@@ -113,9 +113,9 @@ describe('Signup page', () => {
       .should('contain', 'What can you tutor?')
       .and('have.value', '')
       .type('Math');
-    cy.contains('li', 'Algebra').click({ force: true });
-    cy.contains('li', 'Geometry').click({ force: true });
-    cy.contains('li', 'Trigonometry').click({ force: true });
+    cy.contains('li:visible', 'Algebra').trigger('click');
+    cy.contains('li:visible', 'Geometry').trigger('click');
+    cy.contains('li:visible', 'Trigonometry').trigger('click');
     cy.get('@subjects-input')
       .children('.mdc-chip')
       .should('have.length', 3)

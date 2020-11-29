@@ -6,13 +6,13 @@ import useTranslation from 'next-translate/useTranslation';
 import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
 
-import { Option, Callback, UsersQuery } from 'lib/model';
+import { Callback, Option, UsersQuery } from 'lib/model';
 
 import styles from './filter-form.module.scss';
 
 interface SearchButtonProps {
   children: string;
-  onClick: (event: FormEvent<HTMLButtonElement>) => void;
+  onClick: () => void;
 }
 
 function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
@@ -65,11 +65,7 @@ export default function FilterForm({
     return removeClickListener;
   });
 
-  useEffect(() => {
-    setActive((prev: boolean) => prev || !!focused);
-  }, [focused]);
-
-  const onSubmit = useCallback((evt: FormEvent) => {
+  const onSubmit = useCallback((evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     setActive(false);
   }, []);
@@ -86,8 +82,14 @@ export default function FilterForm({
     [onChange]
   );
 
-  const focusSubjects = useCallback(() => setFocused('subjects'), []);
-  const focusLangs = useCallback(() => setFocused('langs'), []);
+  const focusSubjects = useCallback(() => {
+    setActive(true);
+    setFocused('subjects');
+  }, []);
+  const focusLangs = useCallback(() => {
+    setActive(true);
+    setFocused('langs');
+  }, []);
   const focusNothing = useCallback(() => setFocused(undefined), []);
 
   const { t } = useTranslation();

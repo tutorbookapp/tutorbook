@@ -94,36 +94,11 @@ function DesktopNav(): JSX.Element {
   );
 }
 
-interface LastHeader {
-  type: 'empty' | 'tab' | 'query' | 'aspect';
-  props: any;
-}
-
-let lastHeader: LastHeader = { type: 'empty', props: {} };
-
-// Shows the last header that was viewed or an empty header. Used for the user
-// and match pages (that almost act as dialogs) where context matters.
-// TODO: Allow for intelligent defaults when there isn't a last header.
-// TODO: Remove tab header selections and add search CTA to query header.
-export function LastHeader(): JSX.Element {
-  switch (lastHeader.type) {
-    case 'tab':
-      return <TabHeader {...lastHeader.props} />;
-    case 'query':
-      return <QueryHeader {...lastHeader.props} />;
-    case 'aspect':
-      return <AspectHeader {...lastHeader.props} />;
-    default:
-      return <EmptyHeader {...lastHeader.props} />;
-  }
-}
-
 interface TabHeaderProps extends TabsProps {
   switcher?: boolean;
 }
 
 export function TabHeader({ switcher, ...rest }: TabHeaderProps): JSX.Element {
-  lastHeader = { type: 'tab', props: { switcher, ...rest } };
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
@@ -145,7 +120,6 @@ interface EmptyHeaderProps {
 }
 
 export function EmptyHeader({ formWidth }: EmptyHeaderProps): JSX.Element {
-  lastHeader = { type: 'empty', props: { formWidth } };
   return (
     <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <header className={styles.header}>
@@ -170,7 +144,6 @@ export function AspectHeader({
   onChange,
   formWidth,
 }: AspectHeaderProps): JSX.Element {
-  lastHeader = { type: 'aspect', props: { aspect, onChange, formWidth } };
   return (
     <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <header className={styles.header}>
@@ -198,10 +171,6 @@ export function QueryHeader({
   aspects,
   formWidth,
 }: QueryHeaderProps): JSX.Element {
-  lastHeader = {
-    type: 'query',
-    props: { query, onChange, aspects, formWidth },
-  };
   return (
     <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
       <header className={styles.header}>

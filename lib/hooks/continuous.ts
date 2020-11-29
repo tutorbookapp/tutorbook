@@ -89,7 +89,7 @@ export default function useContinuous<T>(
     // Throttle local updates (one sec) to prevent unecessary large re-renders.
     const timeoutId = setTimeout(() => {
       void updateLocal(data);
-    }, 1000);
+    }, 500);
     return () => clearTimeout(timeoutId);
   }, [updateLocal, data]);
 

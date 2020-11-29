@@ -24,11 +24,14 @@ export interface SubjectOption extends Option<string> {
   aspect?: Aspect;
 }
 
-interface SubjectSelectProps {
+interface UniqueSubjectSelectProps {
   options?: string[];
   grade?: GradeAlias;
   aspect?: Aspect;
 }
+
+export type SubjectSelectProps = SelectControllerProps<string, SubjectOption> &
+  UniqueSubjectSelectProps;
 
 /**
  * The `SubjectSelect` is a `Select` controller which means that it:
@@ -50,8 +53,7 @@ export default memo(
     aspect,
     grade,
     ...props
-  }: SelectControllerProps<string, SubjectOption> &
-    SubjectSelectProps): JSX.Element {
+  }: SubjectSelectProps): JSX.Element {
     // Directly control the `Select` component with this internal state.
     const [selectedOptions, setSelectedOptions] = useState<SubjectOption[]>(
       selected || []

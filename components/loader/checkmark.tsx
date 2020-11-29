@@ -10,6 +10,7 @@ interface Props {
 export default function Checkmark({ className, checked }: Props): JSX.Element {
   return (
     <svg
+      data-cy-checked={!!checked}
       className={cn(styles.checkmark, className, { [styles.checked]: checked })}
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 52 52'

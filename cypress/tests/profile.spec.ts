@@ -10,9 +10,10 @@ describe('Profile page', () => {
   it('redirects to login page when logged out', () => {
     cy.logout();
     cy.visit('/profile');
-    cy.wait('@get-account');
+    cy.wait('@get-account').loading();
 
     cy.url({ timeout: 60000 }).should('contain', '/login?href=%2Fprofile');
+    cy.percySnapshot('Login Page');
   });
 
   it('retries failed update requests', () => {
@@ -24,10 +25,14 @@ describe('Profile page', () => {
     }).as('update-user');
     cy.login(volunteer.id);
     cy.visit('/profile');
+    cy.percySnapshot('Profile Page in Loading State');
+
     cy.wait('@get-account');
+    cy.percySnapshot('Profile Page');
 
     cy.clock();
     cy.contains('Your name').type('{selectall}{del}John');
+    cy.percySnapshot('Profile Page with Updated Name');
 
     cy.tick(5000);
     cy.wait('@update-user');
@@ -36,7 +41,9 @@ describe('Profile page', () => {
     cy.get('.mdc-snackbar__surface')
       .should('be.visible')
       .children('.mdc-snackbar__label')
-      .as('snackbar-label')
+      .as('snackbar-label');
+    cy.percySnapshot('Profile Page with Update Error');
+    cy.get('@snackbar-label')
       .invoke('text')
       .then((text1: string) => {
         expect(text1).to.contain('Could not update profile.');
@@ -62,24 +69,36 @@ describe('Profile page', () => {
 
     cy.getBySel('title').should('have.text', 'Profile');
     cy.getBySel('subtitle').should('have.text', 'Update your profile');
+    cy.percySnapshot('Profile Page');
 
     cy.contains('a', 'View profile').should(
       'have.attr',
       'href',
-      `/default/search/${volunteer.id}`
+      `/default/users/${volunteer.id}`
     );
+
+    // TODO: Why does SWR fetch '/api/account' a second time sometimes? When it
+    // does, the 'useContinuous' hook resets all of our changes (b/c of that
+    // 500ms local update throttle, which we definitely want to keep). I'm
+    // guessing that the window was refocused so it tries to revalidate.
+    cy.contains('Your name').find('input').click().should('be.focused');
+    cy.wait('@get-account');
     cy.contains('Your name')
       .find('input')
       .type('{selectall}{del}John')
-      .should('have.attr', 'required');
+      .should('have.value', 'John')
+      .and('have.attr', 'required');
+
+    cy.wait(500); // Wait for the 500ms throttle on local updates to trigger.
+
     cy.get('#open-nav').click();
     cy.getBySel('account-header').should('have.length', 1).as('account-header');
     cy.get('@account-header').find('span').should('have.text', 'John');
     cy.get('@account-header')
       .find('img')
       .as('profile-img')
-      .should('have.attr', 'src')
-      .as('profile-img-src');
+      .should('have.img', volunteer.photo, 24);
+    cy.percySnapshot('Profile Page with Navigation Open');
 
     cy.contains('Your email address')
       .children('input')
@@ -101,20 +120,14 @@ describe('Profile page', () => {
       .next()
       .as('photo-input-label')
       .should('have.text', 'Uploading student.jpg...');
+    cy.percySnapshot('Profile Page with Photo Uploading');
 
     cy.wait('@upload-photo');
+    cy.wait(500); // Wait for the 500ms throttle on local updates to trigger.
 
-    // TODO: These assertions are taking advantage of a bug in Cypress to check
-    // if the profile photo's `src` attribute has changed.
-    // @see {@link https://github.com/cypress-io/cypress/issues/8552}
     cy.get('@photo-input-label').should('have.text', 'Uploaded student.jpg.');
-    cy.get('@profile-img')
-      .should('have.attr', 'src')
-      .then((src: unknown) => {
-        cy.get('@profile-img-src').then((originalSrc: unknown) => {
-          expect(src as string).to.not.equal(originalSrc as string);
-        });
-      });
+    cy.get('@profile-img').should('not.have.img', volunteer.photo, 24);
+    cy.percySnapshot('Profile Page with Photo Uploaded');
 
     cy.contains('What can you tutor?')
       .children('.mdc-chip')
@@ -170,6 +183,7 @@ describe('Profile page', () => {
       .should('have.length', volunteer.availability.length)
       .and('be.visible')
       .as('timeslots');
+    cy.percySnapshot('Profile Page with Availability Select Open');
 
     // Drag-and-drop the timeslots and assert that their content changes.
     // @see {@link https://bit.ly/2TIuE3i}
@@ -192,7 +206,7 @@ describe('Profile page', () => {
     });
 
     // Override the default clock so we can test the continuous updating system
-    // that automatically saves changes after 5secs of no change.
+    // that automatically saves changes with 5secs of no change.
     cy.clock();
     cy.tick(5000);
     cy.wait('@update-user');

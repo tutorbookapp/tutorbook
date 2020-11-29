@@ -21,7 +21,7 @@ declare global {
       logout: () => Chainable<null>;
       setup: (overrides?: Overrides) => Chainable<undefined>;
       getBySel: (selector: string, args?: any) => Chainable<Element>;
-      loading: (isLoading?: boolean) => Chainable<undefined>;
+      loading: (isLoading?: boolean, args?: any) => Chainable<undefined>;
     }
   }
 }
@@ -79,6 +79,7 @@ function setup(overrides?: Overrides): void {
 
   cy.route('POST', '/api/users').as('create-user');
   cy.route('GET', '/api/users*').as('list-users');
+  cy.route('GET', '/api/users/*').as('get-user');
   cy.route('PUT', '/api/users/*').as('update-user');
 
   cy.route({
@@ -100,30 +101,30 @@ function getBySel(
   return cy.get(`[data-cy=${selector}]`, ...args);
 }
 
-function loading(isLoading = true): void {
+function loading(isLoading = true, ...args: any): void {
   if (isLoading) {
-    cy.get('html').should('have.class', 'nprogress-busy');
-    cy.get('#nprogress').should('exist');
+    cy.get('html', ...args).should('have.class', 'nprogress-busy');
+    cy.get('#nprogress', ...args).should('exist');
   } else {
-    cy.get('html').should('not.have.class', 'nprogress-busy');
-    cy.get('#nprogress').should('not.exist');
+    cy.get('html', ...args).should('not.have.class', 'nprogress-busy');
+    cy.get('#nprogress', ...args).should('not.exist');
   }
 }
 
-// TODO: Debug why Next.js keeps mounting and unmounting these image components.
 chai.Assertion.addMethod('img', function img(
   src: string,
-  w: number = 1200,
+  w: number,
   q: number = 75
 ): void {
-  new chai.Assertion(this._obj).to.exist;
+  const element = (this._obj as JQuery<HTMLImageElement>)[0];
   const expected = `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${q}`;
+  const baseUrl = Cypress.config('baseUrl') || 'http://localhost:3000';
   this.assert(
-    this._obj.attr('src') === expected,
+    element.currentSrc === `${baseUrl}${expected}`,
     'expected #{this} to have Next.js image source #{exp}, but the source was #{act}',
     'expected #{this} not to have Next.js image source #{exp}',
     expected,
-    this._obj.attr('src')
+    element.currentSrc
   );
 });
 

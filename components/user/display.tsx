@@ -37,7 +37,7 @@ export default function UserDisplay({
   ]);
 
   return (
-    <div className={cn({ [styles.loading]: !user })}>
+    <div data-cy='user-display' className={cn({ [styles.loading]: !user })}>
       <div className={styles.background}>
         {(user?.background || user?.photo) && (
           <Image
@@ -96,7 +96,7 @@ export default function UserDisplay({
           {(!user || user.bio) && (
             <>
               <h2>{user && 'About'}</h2>
-              <p>{user && user.bio}</p>
+              <p data-cy='bio'>{user && user.bio}</p>
             </>
           )}
           {!user && (
@@ -114,13 +114,13 @@ export default function UserDisplay({
           {user && !!subjects?.length && (
             <>
               <h2>Teaches</h2>
-              <p>{join(subjects)}</p>
+              <p data-cy='subjects'>{join(subjects)}</p>
             </>
           )}
           {user && !!langs?.length && (
             <>
               <h2>Speaks</h2>
-              <p>{join(langs)}</p>
+              <p data-cy='langs'>{join(langs)}</p>
             </>
           )}
           {user && !org?.matchURL && (

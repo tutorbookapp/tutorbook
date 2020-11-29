@@ -39,7 +39,7 @@ describe('Login page', () => {
     cy.getBySel('error')
       .should('be.visible')
       .and('contain', 'Unable to establish a connection with the popup.');
-    cy.percySnapshot('Login Page after Google Error');
+    cy.percySnapshot('Login Page with Google Error');
 
     // TODO: Make assertions about the email being sent by our back-end API.
     cy.contains('button', 'Continue with email')
@@ -82,7 +82,7 @@ describe('Login page', () => {
     cy.getBySel('error')
       .should('be.visible')
       .and('have.text', 'An error occurred while logging in. Network Error.');
-    cy.percySnapshot('Login Page after Location Error');
+    cy.percySnapshot('Login Page with Location Error');
   });
 
   it('errors when login API endpoint fails', () => {
@@ -96,7 +96,7 @@ describe('Login page', () => {
     cy.getBySel('error')
       .should('be.visible')
       .and('contain', 'Request failed with status code 500.');
-    cy.percySnapshot('Login Page after API Error');
+    cy.percySnapshot('Login Page with API Error');
   });
 
   it('navigates to dashboard on successful login', () => {

@@ -145,7 +145,7 @@ describe('Users dashboard page', () => {
     cy.get('@langs-input')
       .parent()
       .should('have.class', 'mdc-menu-surface--anchor')
-      .contains('li', 'Spanish')
+      .contains('li:visible', 'Spanish')
       .trigger('click')
       .find('input[type="checkbox"]')
       .should('be.checked');
@@ -196,7 +196,7 @@ describe('Users dashboard page', () => {
     cy.get('@subjects-input')
       .parent()
       .should('have.class', 'mdc-menu-surface--anchor')
-      .contains('li', 'Computer Science')
+      .contains('li:visible', 'Computer Science')
       .trigger('click')
       .find('input[type="checkbox"]')
       .should('be.checked');

@@ -27,14 +27,6 @@ export default function SearchForm(): JSX.Element {
     setQuery((prev: UsersQuery) => new UsersQuery({ ...prev, subjects }));
   }, []);
 
-  const onSubmit = useCallback(
-    (evt: FormEvent<HTMLFormElement>) => {
-      evt.preventDefault();
-      setSubmitting(true);
-      return Router.push(query.getURL(`/${user.orgs[0] || 'default'}/search`));
-    },
-    [query, user.orgs]
-  );
   const searchMentors = useCallback(
     (evt: FormEvent<HTMLButtonElement>) => {
       evt.preventDefault();
@@ -57,14 +49,13 @@ export default function SearchForm(): JSX.Element {
   );
 
   return (
-    <form className={styles.form} onSubmit={onSubmit}>
+    <div className={styles.form}>
       <SubjectSelect
         label={t('query3rd:subjects')}
         onSelectedChange={onSubjectsChange}
         selected={query.subjects}
         placeholder={t('common:subjects-placeholder')}
         className={styles.field}
-        renderToPortal
         outlined
       />
       <Button
@@ -83,6 +74,6 @@ export default function SearchForm(): JSX.Element {
         raised
         arrow
       />
-    </form>
+    </div>
   );
 }

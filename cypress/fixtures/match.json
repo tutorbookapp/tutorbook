@@ -16,6 +16,8 @@
     "name": "Nicholas Chiang",
     "id": "admin"
   },
+  "time": null,
+  "request": null,
   "org": "gunn",
   "subjects": ["Computer Science"],
   "message": "I could really use your help with learning how to use Cypress for integration and unit tests.",
