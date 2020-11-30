@@ -27,13 +27,13 @@ export default memo(function FiltersSheet({
 
   const onSubjectsChange = useCallback(
     (subjects: Option<string>[]) => {
-      setQuery((prev) => new UsersQuery({ ...prev, subjects }));
+      setQuery((prev) => new UsersQuery({ ...prev, subjects, page: 0 }));
     },
     [setQuery]
   );
   const onLangsChange = useCallback(
     (langs: Option<string>[]) => {
-      setQuery((prev) => new UsersQuery({ ...prev, langs }));
+      setQuery((prev) => new UsersQuery({ ...prev, langs, page: 0 }));
     },
     [setQuery]
   );

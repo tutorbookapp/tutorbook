@@ -71,13 +71,13 @@ export default function FilterForm({
   }, []);
   const onSubjectsChange = useCallback(
     (subjects: Option<string>[]) => {
-      onChange((prev) => new UsersQuery({ ...prev, subjects }));
+      onChange((prev) => new UsersQuery({ ...prev, subjects, page: 0 }));
     },
     [onChange]
   );
   const onLangsChange = useCallback(
     (langs: Option<string>[]) => {
-      onChange((prev) => new UsersQuery({ ...prev, langs }));
+      onChange((prev) => new UsersQuery({ ...prev, langs, page: 0 }));
     },
     [onChange]
   );
