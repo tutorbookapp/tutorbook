@@ -147,7 +147,7 @@ export function intersection<A extends unknown, B extends unknown>(
 export function join<T = any>(
   array: Array<T>,
   ending = 'and',
-  oxfordComma = false
+  oxfordComma = true
 ): string {
   /* eslint-disable @typescript-eslint/restrict-template-expressions */
   const arr: Array<T> = Array.from(array);
