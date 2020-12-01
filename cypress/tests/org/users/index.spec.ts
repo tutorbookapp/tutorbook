@@ -15,7 +15,9 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
 
 describe('Users dashboard page', () => {
   beforeEach(() => {
-    cy.setup();
+    // TODO: Update our fixtures so we can accurately test that the aspect chips
+    // only appear when the aspect is within the given org.
+    cy.setup({ school: { aspects: ['tutoring', 'mentoring'] } });
   });
 
   it('redirects to login page when logged out', () => {
