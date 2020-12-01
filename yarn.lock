@@ -7150,9 +7150,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "cypress@npm:6.0.0"
+"cypress@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "cypress@npm:6.0.1"
   dependencies:
     "@cypress/listr-verbose-renderer": ^0.4.1
     "@cypress/request": ^2.88.5
@@ -7194,7 +7194,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: ba955a53902b84bd53edc6012476bf37c05660ca3b8216a5d0c735bb517c8a20a1c31cef79ca38224ca74312c36133797b33bbf31a84f2b286cc3f3af37968f9
+  checksum: 0fb6c0df12c092f7f52debf386870e62ecacb9caa62c11a319ffa5b59195f4609488da331bf19a63b941b3390c4778e0d3638cc1153e4f42635a54d4952f5226
   languageName: node
   linkType: hard
 
@@ -17999,7 +17999,7 @@ resolve@1.1.7:
     concurrently: ^5.3.0
     cross-env: ^7.0.2
     csv-parse: ^4.12.0
-    cypress: ^6.0.0
+    cypress: ^6.0.1
     cypress-file-upload: ^4.1.1
     dequal: ^2.0.2
     dotenv: ^8.2.0
