@@ -153,6 +153,7 @@ export function join<T = any>(
   const arr: Array<T> = Array.from(array);
   if (arr.length === 0) return '';
   if (arr.length === 1) return `${arr[0]}`;
+  if (arr.length === 2) return arr.join(` ${ending} `);
   const lastItem: T | undefined = arr.pop();
   const str: string = arr.join(', ');
   return `${str + (oxfordComma ? ', ' : ' ') + ending} ${lastItem}`;
