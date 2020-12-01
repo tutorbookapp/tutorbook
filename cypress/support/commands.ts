@@ -19,7 +19,7 @@ declare global {
     interface Chainable {
       login: (uid: string) => Chainable<null>;
       logout: () => Chainable<null>;
-      setup: (overrides?: Overrides) => Chainable<undefined>;
+      setup: (overrides?: Overrides | null) => Chainable<undefined>;
       getBySel: (selector: string, args?: any) => Chainable<Element>;
       loading: (isLoading?: boolean, args?: any) => Chainable<undefined>;
     }
@@ -63,9 +63,9 @@ function logout(): Cypress.Chainable<null> {
   );
 }
 
-function setup(overrides?: Overrides): void {
+function setup(overrides?: Overrides | null): void {
   cy.task('clear');
-  cy.task('seed', overrides);
+  if (overrides !== null) cy.task('seed', overrides);
 
   cy.server();
 

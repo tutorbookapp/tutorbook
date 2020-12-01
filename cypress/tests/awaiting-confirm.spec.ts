@@ -3,6 +3,7 @@ import student from 'cypress/fixtures/users/student.json';
 describe('Awaiting confirmation page', () => {
   beforeEach(() => {
     cy.logout();
+    cy.setup(null);
   });
 
   it('shows message with specified email address', () => {
