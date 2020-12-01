@@ -128,7 +128,7 @@ export default function UserDisplay({
           )}
           {user && org?.matchURL && (
             <>
-              <h2 className={styles.picktime}>Request</h2>
+              <h2>Request</h2>
               <p>
                 {t('common:picktime-body', { org: org.name, user: user.name })}
               </p>
