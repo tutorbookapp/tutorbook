@@ -1,7 +1,11 @@
 describe('Authentication failed page', () => {
-  it('shows authentication failed message', () => {
+  beforeEach(() => {
+    cy.logout();
+    cy.setup(null);
     cy.visit('/authentication-failed');
+  });
 
+  it('shows authentication failed message', () => {
     cy.getBySel('page').find('h3').should('have.text', 'Authentication Failed');
     cy.get('p')
       .should('have.length', 2)
@@ -16,7 +20,7 @@ describe('Authentication failed page', () => {
         'have.text',
         'Please close this window and try authenticating again.'
       );
-
+    cy.wait('@get-account');
     cy.percySnapshot('Authentication Failed Page');
   });
 });
