@@ -32,13 +32,20 @@ describe('Matches dashboard page', () => {
 
     cy.wait('@list-matches');
     matchIsListed();
+    cy.percySnapshot('Matches Page');
 
     cy.get('[placeholder="Search matches"]').type('Computer');
+    cy.percySnapshot('Matches Page in Loading State');
 
     cy.wait('@list-matches');
     matchIsListed();
+    cy.percySnapshot('Matches Page with Search Populated');
 
     cy.getBySel('match-row').click();
-    cy.getBySel('match-dialog', { timeout: 60000 }).should('be.visible');
+    cy.url({ timeout: 60000 }).should(
+      'contain',
+      `/${school.id}/matches/${match.id}`
+    );
+    cy.percySnapshot('Match Display Page');
   });
 });

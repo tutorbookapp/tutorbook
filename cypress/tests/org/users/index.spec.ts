@@ -13,6 +13,7 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
   cy.get('@snackbar').should('not.exist');
 }
 
+// TODO: Add `cy.percySnapshot` calls to add visual snapshot testing.
 describe('Users dashboard page', () => {
   beforeEach(() => {
     // TODO: Update our fixtures so we can accurately test that the aspect chips
