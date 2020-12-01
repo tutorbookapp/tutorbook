@@ -11,9 +11,13 @@
   display: flex;
   padding: 48px 24px;
 
-  $cutoff: 570px;
+  $cutoff: 600px;
   $padding: 40px;
   $margin: 24px;
+
+  @media (max-width: $cutoff) {
+    flex-direction: column;
+  }
 
   .left {
     flex-grow: 1;
@@ -28,8 +32,7 @@
     .img {
       position: relative;
       display: block;
-      height: 260px;
-      width: 260px;
+      width: 100%;
 
       .actions {
         position: absolute;
