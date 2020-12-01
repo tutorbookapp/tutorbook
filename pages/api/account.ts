@@ -72,6 +72,7 @@ function mergeUsers(overrides: User, baseline: User): User {
     // quality and an actual face instead of a letter) than the Google avatar.
     photo: baseline.photo || overrides.photo,
 
+    background: overrides.background || baseline.background,
     email: overrides.email || baseline.email,
     phone: overrides.phone || baseline.phone,
     bio: overrides.bio || baseline.bio,
@@ -89,6 +90,7 @@ function mergeUsers(overrides: User, baseline: User): User {
     verifications: mergeArrays(overrides.verifications, baseline.verifications),
     visible: overrides.visible || baseline.visible,
     featured: mergeArrays(overrides.featured, baseline.featured),
+    roles: mergeArrays(overrides.roles, baseline.roles),
   });
 }
 
