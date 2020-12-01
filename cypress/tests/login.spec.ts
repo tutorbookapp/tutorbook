@@ -69,9 +69,10 @@ describe('Login page', () => {
   });
 
   it('errors when location cannot be detected', () => {
-    cy.intercept('GET', 'https://ipinfo.io/json*', { statusCode: 500 }).as(
-      'get-location'
-    );
+    cy.intercept('GET', 'https://ipinfo.io/json*', {
+      statusCode: 500,
+      delayMs: 1000,
+    }).as('get-location');
     cy.visit('/login');
 
     startEmailAddressLogin();
@@ -86,7 +87,10 @@ describe('Login page', () => {
   });
 
   it('errors when login API endpoint fails', () => {
-    cy.intercept('POST', '/api/login', { statusCode: 500 }).as('create-login');
+    cy.intercept('POST', '/api/login', {
+      statusCode: 500,
+      delayMs: 1000,
+    }).as('create-login');
     cy.visit('/login');
 
     startEmailAddressLogin();
