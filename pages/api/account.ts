@@ -66,7 +66,12 @@ function mergeUsers(overrides: User, baseline: User): User {
   return new User({
     id: overrides.id || baseline.id,
     name: overrides.name || baseline.name,
-    photo: overrides.photo || baseline.photo,
+
+    // Don't override an existing profile picture when the user is logging in
+    // with Google. Typically, the existing picture will be better (e.g. higher
+    // quality and an actual face instead of a letter) than the Google avatar.
+    photo: baseline.photo || overrides.photo,
+
     email: overrides.email || baseline.email,
     phone: overrides.phone || baseline.phone,
     bio: overrides.bio || baseline.bio,
