@@ -7,9 +7,9 @@ import { validPhoto } from 'lib/utils';
 import styles from './avatar.module.scss';
 
 interface AvatarProps {
-  src?: string;
+  size: number | 'dynamic';
   loading?: boolean;
-  size?: number;
+  src?: string;
 }
 
 /**
@@ -21,9 +21,9 @@ interface AvatarProps {
  * able to be optimized instead of it is one of the newest GCP Storage buckets.
  */
 export default function Avatar({
+  size,
   loading,
   src = '',
-  size = 500,
 }: AvatarProps): JSX.Element {
   const { t } = useTranslation();
 
@@ -34,7 +34,7 @@ export default function Avatar({
           <img className={styles.photo} data-cy='avatar' src={src} alt='' />
         </div>
       )}
-      {!loading && !!src && validPhoto(src) && (
+      {!loading && !!src && validPhoto(src) && size !== 'dynamic' && (
         <Image
           data-cy='avatar'
           layout='fixed'
@@ -43,6 +43,18 @@ export default function Avatar({
           src={src}
           alt=''
         />
+      )}
+      {!loading && !!src && validPhoto(src) && size === 'dynamic' && (
+        <div className={styles.photoWrapper}>
+          <Image
+            data-cy='avatar'
+            layout='fill'
+            objectFit='cover'
+            objectPosition='center 50%'
+            src={src}
+            alt=''
+          />
+        </div>
       )}
       {!src && !loading && (
         <div className={styles.noPhotoWrapper}>
