@@ -3,6 +3,10 @@ import * as admin from 'firebase-admin';
 import { isDateJSON, isJSON } from 'lib/model/json';
 import construct from 'lib/model/construct';
 
+export interface Constructor<T> {
+  new (partial: Partial<T>): T;
+}
+
 type Timestamp = admin.firestore.Timestamp;
 
 /**

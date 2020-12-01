@@ -22,10 +22,11 @@ export default async function updateUser(
     // TODO: Check the existing data, not the data that is being sent with the
     // request (e.g. b/c I could fake data and add users to my org).
     await verifyAuth(req.headers, { userId: body.id, orgIds: body.orgs });
-    await updatePhoto(updateUserOrgs(body));
+    const updated = await updatePhoto(updateUserOrgs(body), User);
 
-    const user = await updateUserDoc(await updateAuthUser(body));
+    const user = await updateUserDoc(await updateAuthUser(updated));
     await updateUserSearchObj(user);
+
     res.status(200).json(user.toJSON());
   } catch (e) {
     handle(e, res);

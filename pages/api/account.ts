@@ -91,20 +91,20 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
 
   // Revert to old behavior if user doesn't already exist; just create it.
-  const user = (await to(getUser(body.id)))[1];
+  const original = (await to(getUser(body.id)))[1];
 
   // Merge the two users giving priority to the request body (but preventing any
   // loss of data; `mergeUsers` won't allow falsy values or empty arrays).
-  const merged = mergeUsers(body, user || new User());
+  const merged = mergeUsers(body, original || new User());
 
   // TODO: Check the existing data, not the data that is being sent with the
   // request (e.g. b/c I could fake data and add users to my org).
   await verifyAuth(req.headers, { userId: merged.id, orgIds: merged.orgs });
-  await updatePhoto(updateUserOrgs(merged));
+  const updated = await updatePhoto(updateUserOrgs(merged), User);
 
-  const updated = await updateUserDoc(await updateAuthUser(merged));
-  await updateUserSearchObj(updated);
-  res.status(200).json(updated.toJSON());
+  const user = await updateUserDoc(await updateAuthUser(updated));
+  await updateUserSearchObj(user);
+  res.status(200).json(user.toJSON());
 }
 
 async function getAccount(req: Req, res: Res): Promise<void> {

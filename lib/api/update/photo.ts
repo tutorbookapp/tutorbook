@@ -6,9 +6,10 @@ import smartcrop from 'smartcrop-sharp';
 import to from 'await-to-js';
 import { v4 as uuid } from 'uuid';
 
+import { Account, Constructor } from 'lib/model';
 import { APIError } from 'lib/api/error';
-import { Account } from 'lib/model';
 import { bucket } from 'lib/api/firebase';
+import clone from 'lib/utils/clone';
 import { getPhotoFilename } from 'lib/utils';
 
 /**
@@ -58,26 +59,36 @@ async function downloadPhoto(src: string): Promise<Buffer> {
  * @param account - The account whose photo we need to update.
  * @return Nothing; this performs side effects on the original account object.
  */
-export default async function updatePhoto(account: Account): Promise<void> {
+export default async function updatePhoto<T extends Account>(
+  account: T,
+  Model: Constructor<T>
+): Promise<T> {
   // Skip 'assets.tutorbook.app' photos that are used during integration tests.
-  if (/https:\/\/assets\.tutorbook\.app\/(.*)/.exec(account.photo)) return;
-  if (/test-tutorbook\.appspot\.com/.exec(account.photo)) return;
-  if (!account.photo) return;
+  if (/test-tutorbook\.appspot\.com/.exec(account.photo)) return account;
+  if (/assets\.tutorbook\.app/.exec(account.photo)) return account;
+  if (!account.photo) return account;
 
   // Download the image, crop and/or resize it to 500x500 pixels, and upload the
-  // final result to the proper location in our GCP Storage bucket.
-  const photo = await crop(await downloadPhoto(account.photo));
-  const filename = getPhotoFilename(account.photo) || `temp/${uuid()}.jpg`;
-  const file = bucket.file(filename);
+  // final result to a completely new location in our GCP Storage bucket.
+  const cropped = await crop(await downloadPhoto(account.photo));
+
+  // Remove the old photo's filename and create a new one. Otherwise, Next.js
+  // will continue to use the cached (uncropped) version of the profile photo.
+  const existing = getPhotoFilename(account.photo);
+  if (existing) await bucket.file(existing).delete().catch();
+
+  const file = bucket.file(`temp/${uuid()}.jpg`);
   const token = uuid();
   const metadata = { metadata: { firebaseStorageDownloadTokens: token } };
   await new Promise((resolve, reject) => {
-    photo
+    cropped
       .pipe(file.createWriteStream({ metadata }))
       .on('error', reject)
       .on('finish', resolve);
   });
-  account.photo =
+  const photo =
     `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/` +
     `${encodeURIComponent(file.name)}?alt=media&token=${token}`;
+
+  return new Model(clone({ ...account, photo }));
 }

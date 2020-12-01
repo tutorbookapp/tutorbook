@@ -18,8 +18,7 @@ export default async function createOrg(
     const body = verifyBody<Org, OrgJSON>(req.body, isOrgJSON, Org);
     const { uid } = await verifyAuth(req.headers);
     verifyOrgAdminsInclude(body, uid);
-    await updatePhoto(body);
-    const org = await createOrgDoc(body);
+    const org = await createOrgDoc(await updatePhoto(body, Org));
     res.status(201).json(org.toJSON());
   } catch (e) {
     handle(e, res);

@@ -23,8 +23,7 @@ export default async function updateOrg(
     await verifyAuth(req.headers, { orgIds: [body.id] });
     const prev = await getOrg(body.id);
     verifyMembersUnchanged(prev, body);
-    await updatePhoto(body);
-    const org = await updateOrgDoc(body);
+    const org = await updateOrgDoc(await updatePhoto(body, Org));
     res.status(200).json(org.toJSON());
   } catch (e) {
     handle(e, res);

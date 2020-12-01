@@ -26,9 +26,9 @@ export default async function createUser(
     // TODO: Update the photo after creating the auth user ID so that we can
     // organize our GCP Storage bucket by user (that would require two calls to
     // the auth API, however, so not ideal... perhaps I should assign uIDs).
-    await updatePhoto(updateUserOrgs(body));
+    const updated = await updatePhoto(updateUserOrgs(body), User);
 
-    const user = await createUserDoc(await createAuthUser(body));
+    const user = await createUserDoc(await createAuthUser(updated));
     await createUserSearchObj(user);
 
     await Promise.all(
