@@ -81,8 +81,6 @@ describe('Profile page', () => {
     // does, the 'useContinuous' hook resets all of our changes (b/c of that
     // 500ms local update throttle, which we definitely want to keep). I'm
     // guessing that the window was refocused so it tries to revalidate.
-    cy.contains('Your name').find('input').click().should('be.focused');
-    cy.wait('@get-account');
     cy.contains('Your name')
       .find('input')
       .type('{selectall}{del}John')
