@@ -40,12 +40,13 @@ function addFilter(base: string, filter: string): string {
 function addFilters(
   base: string,
   filters: Option<string>[],
-  attr: string
+  attr: string,
+  concat: 'OR' | 'AND' = 'AND'
 ): string {
   const addAND = base.length && !base.endsWith(' AND ') && filters.length;
   let filterString = addAND ? `${base} AND ` : base;
   for (let i = 0; i < filters.length; i += 1) {
-    filterString += i === 0 ? '(' : ' AND ';
+    filterString += i === 0 ? '(' : ` ${concat} `;
     filterString += `${attr}:"${filters[i].value}"`;
     if (i === filters.length - 1) filterString += ')';
   }
@@ -54,7 +55,7 @@ function addFilters(
 
 function getFilterString(query: UsersQuery): string {
   let filterString = '';
-  filterString = addFilters(filterString, query.orgs, 'orgs');
+  filterString = addFilters(filterString, query.orgs, 'orgs', 'OR');
   filterString = addFilters(filterString, query.tags, '_tags');
   return filterString;
 }
