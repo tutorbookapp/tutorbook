@@ -21,12 +21,7 @@ describe('Org settings page', () => {
     cy.login(student.id);
     cy.visit(`/${org.id}/settings`);
     cy.wait('@get-account');
-
-    cy.get('h1').should('have.text', '401');
-    cy.get('h2').should(
-      'have.text',
-      'You are not a member of this organization.'
-    );
+    cy.url().should('contain', '/404').and('be.404');
   });
 
   it('displays and updates org settings', () => {

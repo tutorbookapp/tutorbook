@@ -118,16 +118,7 @@ describe('User display page', () => {
     cy.visit(`/${org.id}/users/${volunteer.id}`);
 
     cy.loading().percySnapshot('User Display Page in Loading State');
-    cy.loading(false, { timeout: 60000 })
-      .getBySel('page')
-      .within(() => {
-        cy.get('h3').should('have.text', '404 - Page Not Found');
-        cy.get('p').should(
-          'have.text',
-          "The requested page doesn't exist or you don't have access to it."
-        );
-      });
-    cy.percySnapshot('Not Found Page');
+    cy.loading(false, { timeout: 60000 }).should('be.404');
   });
 
   it('collects phone before sending requests', () => {

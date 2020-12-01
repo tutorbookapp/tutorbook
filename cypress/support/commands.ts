@@ -111,6 +111,17 @@ function loading(isLoading = true, ...args: any): void {
   }
 }
 
+chai.Assertion.addMethod('404', function error(): void {
+  cy.getBySel('page').within(() => {
+    cy.get('h3').should('have.text', '404 - Page Not Found');
+    cy.get('p').should(
+      'have.text',
+      "The requested page doesn't exist or you don't have access to it."
+    );
+  });
+  cy.percySnapshot('Not Found Page');
+});
+
 chai.Assertion.addMethod('img', function img(
   src: string,
   w: number,
