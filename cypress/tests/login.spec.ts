@@ -107,7 +107,7 @@ describe('Login page', () => {
     cy.setup();
     cy.login(student.id);
     cy.visit('/login');
-    cy.wait('@get-account').loading();
+    cy.wait('@get-account');
     cy.url({ timeout: 60000 }).should('contain', '/dashboard');
     cy.percySnapshot('Dashboard Page for Students');
   });
@@ -116,7 +116,7 @@ describe('Login page', () => {
     cy.setup();
     cy.login(volunteer.id);
     cy.visit('/login?href=%2Fprofile');
-    cy.wait('@get-account').loading();
+    cy.wait('@get-account');
     cy.url({ timeout: 60000 }).should('contain', '/profile');
     cy.percySnapshot('Profile Page for Volunteers');
   });
