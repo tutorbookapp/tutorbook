@@ -119,6 +119,7 @@
 
 .background {
   height: 45vh;
+  max-height: 400px;
   margin-top: calc(-1 * var(--header-height));
   background: var(--accents-2);
   position: relative;
