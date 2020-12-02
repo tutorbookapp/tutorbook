@@ -85,7 +85,7 @@ export default memo(function SearchBar({
             onInteraction={toggleHiddenFilter}
             selected={query.visible === false}
           />
-          {(!org || org.aspects.includes('mentoring')) && (
+          {(!org || org.aspects.length === 2) && (
             <Chip
               label={t('common:mentors')}
               checkmark
@@ -96,7 +96,7 @@ export default memo(function SearchBar({
               selected={query.aspect === 'mentoring'}
             />
           )}
-          {(!org || org.aspects.includes('tutoring')) && (
+          {(!org || org.aspects.length === 2) && (
             <Chip
               label={t('common:tutors')}
               checkmark
