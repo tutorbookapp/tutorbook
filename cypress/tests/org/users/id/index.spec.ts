@@ -7,6 +7,45 @@ import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
 import volunteer from 'cypress/fixtures/users/volunteer.json';
 
+// John Doe is available on Sundays 9am-12pm and 1-4pm. These are the times that
+// should be shown to the user (30min timeslots in 15min intervals).
+function getTimeOptions(): string[] {
+  const start = new Date(0);
+  const times: string[] = [];
+  let hour = 9;
+  let min = 0;
+
+  function addTimes(): void {
+    start.setHours(hour);
+    start.setMinutes(min);
+    times.push(
+      start.toLocaleString('en', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      })
+    );
+    if (min === 45) {
+      hour += 1;
+      min = 0;
+    } else {
+      min += 15;
+    }
+  }
+
+  while (hour < 12) addTimes(); // Sundays from 9am-12pm.
+
+  // Remove the last time which is invalid (e.g. 11:45am isn't within the 30min
+  // window of the end time of 12pm b/c we didn't include that complex logic).
+  times.pop();
+
+  hour = 13;
+  while (hour < 16) addTimes(); // Sundays from 1-4pm.
+  times.pop();
+
+  return times;
+}
+
 // TODO: The time selected and pre-selected date changes based on the current
 // date. B/c of this, our visual snapshot tests are useless. Instead, we should
 // use `cy.clock()` to manually set the time and control when it changes.
@@ -79,18 +118,9 @@ function selectTime(): void {
       })
     );
 
-  // John Doe is available on Sundays 9am-12pm and 1-4pm. These are the times
-  // that should be shown to the user (30min timeslots in 15min intervals).
-  [
-    ['9:00 AM', '9:15 AM', '9:30 AM', '9:45 AM', '10:00 AM', '10:15 AM'],
-    ['10:30 AM', '10:45 AM', '11:00 AM', '11:15 AM', '11:30 AM', '1:00 PM'],
-    ['1:15 PM', '1:30 PM', '1:45 PM', '2:00 PM', '2:15 PM', '2:30 PM'],
-    ['2:45 PM', '3:00 PM', '3:15 PM', '3:30 PM'],
-  ]
-    .reduce((a, c) => a.concat(c))
-    .forEach((time: string, idx: number) => {
-      cy.getBySel('time-button').eq(idx).should('have.text', time);
-    });
+  getTimeOptions().forEach((time: string, idx: number) => {
+    cy.getBySel('time-button').eq(idx).should('have.text', time);
+  });
   cy.percySnapshot('User Display Page with Date Selected');
 
   cy.getBySel('time-button').first().trigger('click');
@@ -113,28 +143,38 @@ function selectTime(): void {
 // behavior, subjects displayed (based on org and query aspect), etc.
 describe('User display page', () => {
   it('shows not found error for missing users', () => {
-    cy.setup({ volunteer: null, match: null, meeting: null });
-    cy.login(student.id);
-    cy.visit(`/${org.id}/users/${volunteer.id}`);
+    cy.setup(null);
+    cy.logout();
+    cy.visit(`/${org.id}/users/does-not-exist`, { failOnStatusCode: false });
 
     cy.loading().percySnapshot('User Display Page in Loading State');
-    cy.loading(false, { timeout: 60000 }).should('be.404');
+    cy.loading(false, { timeout: 60000 });
+
+    cy.getBySel('page').within(() => {
+      cy.get('h3').should('have.text', '404 - Page Not Found');
+      cy.get('p').should(
+        'have.text',
+        "The requested page doesn't exist or you don't have access to it."
+      );
+    });
+    cy.percySnapshot('Not Found Page');
   });
 
   it('collects phone before sending requests', () => {
-    cy.setup({ student: { phone: '' } });
+    cy.setup({ student: { phone: '' }, match: null, meeting: null });
     cy.login(student.id);
     cy.visit(`/${school.id}/users/${volunteer.id}`);
     cy.wait('@get-user', { timeout: 60000 });
 
     cy.getBySel('user-display').within(() => {
+      cy.getBySel('backdrop').should('have.img', volunteer.background);
       cy.getBySel('bio').should('have.text', volunteer.bio);
       cy.getBySel('name').should(
         'have.text',
         onlyFirstNameAndLastInitial(volunteer.name)
       );
       cy.getBySel('avatar')
-        .should('have.img', volunteer.photo, 260)
+        .should('have.img', volunteer.photo)
         .closest('a')
         .should('have.attr', 'href', volunteer.photo);
       cy.getBySel('socials')

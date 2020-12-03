@@ -1,10 +1,10 @@
 import admin from 'cypress/fixtures/users/admin.json';
-import student from 'cypress/fixtures/users/student.json';
 import org from 'cypress/fixtures/orgs/default.json';
+import student from 'cypress/fixtures/users/student.json';
 
 describe('Org settings page', () => {
   beforeEach(() => {
-    cy.setup();
+    cy.setup({ volunteer: null, match: null, meeting: null });
   });
 
   it('redirects to login page when logged out', () => {
@@ -21,7 +21,7 @@ describe('Org settings page', () => {
     cy.login(student.id);
     cy.visit(`/${org.id}/settings`);
     cy.wait('@get-account');
-    cy.url().should('contain', '/404').and('be.404');
+    cy.url({ timeout: 60000 }).should('contain', '/404');
   });
 
   it('displays and updates org settings', () => {

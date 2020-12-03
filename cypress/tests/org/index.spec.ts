@@ -2,7 +2,7 @@ import org from 'cypress/fixtures/orgs/default.json';
 
 describe('Org landing page', () => {
   beforeEach(() => {
-    cy.setup();
+    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
     cy.visit(`/${org.id}`);
   });
 
@@ -54,11 +54,11 @@ describe('Org landing page', () => {
         });
 
         cy.getBySel('bio').should('have.text', org.bio);
-        cy.getBySel('header').should('have.text', org.home.en.header);
-        cy.getBySel('body').should('have.text', org.home.en.body);
+        cy.getBySel('custom-header').should('have.text', org.home.en.header);
+        cy.getBySel('custom-body').should('have.text', org.home.en.body);
         cy.getBySel('backdrop')
           .should('be.visible')
-          .and('have.img', org.home.en.photo, 1200, 100);
+          .and('have.img', org.background);
       });
   });
 });

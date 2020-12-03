@@ -18,7 +18,8 @@ describe('Users dashboard page', () => {
   beforeEach(() => {
     // TODO: Update our fixtures so we can accurately test that the aspect chips
     // only appear when the aspect is within the given org.
-    cy.setup({ school: { aspects: ['tutoring', 'mentoring'] } });
+    const aspects = ['tutoring', 'mentoring'];
+    cy.setup({ school: { aspects }, match: null, meeting: null });
   });
 
   it('redirects to login page when logged out', () => {

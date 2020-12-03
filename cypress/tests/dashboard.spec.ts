@@ -4,20 +4,18 @@ import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
 
 describe('Dashboard page', () => {
-  beforeEach(() => {
-    cy.setup();
-  });
-
   it('redirects to login page when logged out', () => {
+    cy.setup(null);
     cy.logout();
     cy.visit('/dashboard');
-    cy.wait('@get-account').loading();
+    cy.wait('@get-account');
 
     cy.url({ timeout: 60000 }).should('contain', '/login?href=%2Fdashboard');
     cy.loading(false).percySnapshot('Login Page');
   });
 
   it('only shows org accounts to admins', () => {
+    cy.setup({ volunteer: null, match: null, meeting: null });
     cy.login(student.id);
     cy.visit('/dashboard');
     cy.percySnapshot('Dashboard Page in Loading State');
@@ -48,6 +46,7 @@ describe('Dashboard page', () => {
   });
 
   it('shows placeholders and accounts when logged in', () => {
+    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
     cy.login(admin.id);
     cy.visit('/dashboard');
 

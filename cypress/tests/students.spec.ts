@@ -22,7 +22,7 @@ function selectSubject(): void {
 
 describe('Student landing page', () => {
   beforeEach(() => {
-    cy.setup();
+    cy.setup({ student: null, meeting: null, match: null });
     cy.logout();
     cy.visit('/students');
   });
@@ -32,12 +32,9 @@ describe('Student landing page', () => {
       .first()
       .within(() => {
         selectSubject();
-        cy.contains('button', 'Search mentors').click().should('be.disabled');
+        cy.contains('button', 'Search mentors').click();
       });
 
-    // TODO: Find way to make Cypress wait for Next.js to emit the "client-side
-    // page transition complete" signal (e.g. when the nprogress bar is hidden).
-    cy.loading().percySnapshot('Students Landing Page in Loading State');
     cy.url({ timeout: 60000 }).should('contain', '/default/search');
 
     cy.get('header')
@@ -85,7 +82,10 @@ describe('Student landing page', () => {
           'have.text',
           'Learn from and work with an expert.'
         );
-        cy.get('form > button').should('have.length', 2).as('buttons');
+        cy.getBySel('search-form')
+          .children('button')
+          .should('have.length', 2)
+          .as('buttons');
         cy.get('@buttons').first().should('have.text', 'Search mentors');
         cy.get('@buttons').last().should('have.text', 'Search tutors');
         cy.percySnapshot('Students Landing Page');

@@ -46,6 +46,6 @@ describe('Matches dashboard page', () => {
       'contain',
       `/${school.id}/matches/${match.id}`
     );
-    cy.percySnapshot('Match Display Page');
+    cy.loading(false, { timeout: 60000 }).percySnapshot('Match Display Page');
   });
 });

@@ -49,7 +49,7 @@ export default function SearchForm(): JSX.Element {
   );
 
   return (
-    <div className={styles.form}>
+    <div data-cy='search-form' className={styles.form}>
       <SubjectSelect
         label={t('query3rd:subjects')}
         onSelectedChange={onSubjectsChange}

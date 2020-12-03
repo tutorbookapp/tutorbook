@@ -8,7 +8,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Search page', () => {
   it('restricts access to school data', () => {
-    cy.setup();
+    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
     cy.logout();
     cy.visit(`/${school.id}/search`, {
       onBeforeLoad(win: Window): void {
@@ -64,7 +64,7 @@ describe('Search page', () => {
   });
 
   it('partitions search results by org', () => {
-    cy.setup();
+    cy.setup({ student: null, match: null, meeting: null });
     cy.login(admin.id);
     cy.visit(`/${school.id}/search`);
 
@@ -113,7 +113,7 @@ describe('Search page', () => {
   // TODO: Refactor this into reusable tests and assertions to test a variety of
   // different filter combinations (in order to reach 100% back-end coverage).
   it('filters users by subjects and langs', () => {
-    cy.setup({ student: { phone: '' } });
+    cy.setup({ student: { phone: '' }, match: null, meeting: null });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);
 
