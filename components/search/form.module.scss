@@ -1,4 +1,3 @@
-@use 'sass:map';
 @use '@material/elevation';
 
 .form {
@@ -10,7 +9,7 @@
   display: none;
   position: sticky;
   z-index: 3;
-  top: var(--header-height) + 12px;
+  top: calc(var(--header-height) + 12px);
   margin-bottom: 24px;
   width: 100%;
 }
