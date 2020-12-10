@@ -44,14 +44,16 @@
     "en": {
       "tutoring": {
         "body": "Gunn High School's Academic Center is an inclusive support center where all Gunn students can receive tutoring, do homework, study, and work collaboratively on projects. In the AC, students requesting support in their academics can receive free tutoring. If you are interested in volunteering as a tutor, please fill out the form below. You'll be contacted when a match with a student requesting a tutor is made.",
-        "header": "Become a peer tutor at Gunn's Academic Center"
+        "header": "Become a peer tutor at Gunn's Academic Center",
+        "bio": ""
       }
     }
   },
   "home": {
     "en": {
       "body": "To get a volunteer tutor, click the 'Search tutors' button (on the right). Then, click the 'Subjects' button (in the header) to select the subjects you need help with (e.g. Chemistry or Trigonometry). Finally, click on a search result, fill in the request form, and click the 'Send request' button. Once you do, the tutor will receive an email notification and will get back to you to setup recurring Zoom meetings. If you don't hear back from them within a few days, email Ms. Steward at psteward@pausd.org and she'll find you a suitable tutor!",
-      "header": "How it works"
+      "header": "How it works",
+      "bio": ""
     }
   }
 }
