@@ -364,12 +364,68 @@ const updateUser = async (updated) => {
 };
 
 const createOrg = async (org) => {
-  const endpoint =
-    'https://covid-tutoring-git-filters.tutorbook.now.sh/api/orgs';
+  const endpoint = 'https://develop.tutorbook.app/api/orgs';
   const headers = { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.post(endpoint, org, { headers }));
   if (err) console.log('Error creating org:', err);
 };
+
+createOrg({
+  id: 'roboticsforall',
+  name: 'Robotics For All',
+  photo: '',
+  background: '',
+  email: 'info@roboticsforall.net',
+  phone: '+16506659734',
+  bio:
+    'Robotics For All is a student-led nonprofit organization that aims to inspire the next generation of students and volunteers to achieve their full potential, regardless of their background.',
+  socials: [
+    {
+      type: 'website',
+      url: 'https://www.roboticsforall.net',
+    },
+    {
+      type: 'instagram',
+      url: 'https://www.instagram.com/roboticsforall/',
+    },
+    {
+      type: 'facebook',
+      url: 'https://www.facebook.com/roboticsforalleducation/',
+    },
+    {
+      type: 'linkedin',
+      url: 'https://www.linkedin.com/company/robotics-for-all/',
+    },
+  ],
+  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
+  profiles: ['name', 'email', 'bio', 'subjects', 'availability', 'langs'],
+  domains: [],
+  aspects: ['mentoring', 'tutoring'],
+  subjects: null,
+  zoom: null,
+  matchURL: null,
+  signup: {
+    en: {
+      tutoring: {
+        body:
+          "Thank you for expressing interest in tutoring with Tutoring for All, a branch of the non-profit organization Robotics for All. Our goal is to provide free, quality tutoring services to primarily low income and disadvantaged students. Simply fill out the form below and you'll be contacted when a student sends you a lesson request.",
+        header: 'Become a Robotics For All volunteer tutor',
+      },
+      mentoring: {
+        body:
+          "The mission of Mentoring for All is to provide guidance on the path towards future success for underserved high school students. Our aim is to inspire students to make the most of their experiences and help them understand their passions through our well designed curriculum, highly qualified mentors, and extra events like panels, roundtables, and workshops. Simply fill out the form below and you'll be contacted when a student sends you a request.",
+        header: 'Become a Robotics For All volunteer mentor',
+      },
+    },
+  },
+  home: {
+    en: {
+      body:
+        'Robotics for All strives to provide equitable educational opportunities to students of all backgrounds, particularly low income and under-represented students, with an emphasis on teaching the fields of STEM (Science, Technology, Engineering, and Math). The goal is to reduce the opportunity gap, allowing students to gain beneficial skills for the rest of their academic and professional careers. We believe that it is important for students to have access to a quality STEM education, regardless of socio-economic status.',
+      header: 'Our mission',
+    },
+  },
+});
 
 const createUser = async (user) => {
   const endpoint = 'https://develop.tutorbook.app/api/users';
