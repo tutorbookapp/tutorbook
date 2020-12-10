@@ -75,7 +75,9 @@ export default async function updatePhoto<T extends Account>(
   // Remove the old photo's filename and create a new one. Otherwise, Next.js
   // will continue to use the cached (uncropped) version of the profile photo.
   const existing = getPhotoFilename(account.photo);
-  if (existing) await bucket.file(existing).delete().catch();
+  // TODO: Remove the old photo and debug any front-end issues where it isn't
+  // updated properly and we get a 404 when fetching it for a second time.
+  if (false && existing) await bucket.file(existing).delete().catch();
 
   const file = bucket.file(`temp/${uuid()}.jpg`);
   const token = uuid();
