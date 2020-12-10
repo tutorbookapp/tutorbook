@@ -17,7 +17,7 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type Config<T> = { [locale: string]: T };
 type AspectConfig<T> = Config<{ [key in Aspect]?: T }>;
 
-type SignupConfig = AspectConfig<{ header: string; body: string }>;
+type SignupConfig = AspectConfig<{ header: string; body: string; bio: string }>;
 type HomeConfig = Config<{
   header: string;
   body: string;
@@ -32,6 +32,7 @@ export function isSignupConfig(config: unknown): config is SignupConfig {
       if (!isJSON(aspectConfig)) return false;
       if (typeof aspectConfig.header !== 'string') return false;
       if (typeof aspectConfig.body !== 'string') return false;
+      if (typeof aspectConfig.bio !== 'string') return false;
       return true;
     });
   });
@@ -159,6 +160,11 @@ export class Org extends Account implements OrgInterface {
 
   public zoom?: ZoomAccount;
 
+  // TODO: Don't only include org data that the user is an admin of. Instead,
+  // keep an app-wide org context that includes the org configurations for all
+  // of the orgs a user is a part of. We'll need that data to customize the user
+  // specific pages (e.g. their universal profile page, matches schedule, etc).
+  // TODO: Include these org specific bio placeholders in the user profile page.
   public signup: SignupConfig = {
     en: {
       mentoring: {
@@ -169,6 +175,12 @@ export class Org extends Account implements OrgInterface {
           "on meaningful projects that you're both passionate about. " +
           'Complete the form below to create your profile and sign-up as a ' +
           'mentor.',
+        bio:
+          'Ex: Founder of "The Church Co", Drummer, IndieHacker.  I\'m ' +
+          'currently working on "The Church Co" ($30k MRR) where we create ' +
+          "high quality, low cost websites for churches and nonprofits. I'd " +
+          'love to have a student shadow my work and help build some church ' +
+          'websites.',
       },
       tutoring: {
         header: 'Support students throughout COVID',
@@ -177,6 +189,12 @@ export class Org extends Account implements OrgInterface {
           "individualized instruction due to COVID-19. We're making sure " +
           'that no one loses out on education in these difficult times by ' +
           'connecting students with free, volunteer tutors like you.',
+        bio:
+          "Ex: I'm currently an electrical engineering Ph.D. student at " +
+          'Stanford University who has been volunteering with AmeriCorps ' +
+          "(tutoring local high schoolers) for over five years now. I'm " +
+          'passionate about teaching and would love to help you in any way ' +
+          'that I can!',
       },
     },
   };

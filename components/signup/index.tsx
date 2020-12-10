@@ -294,7 +294,10 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               />
               <TextField
                 label={t('user3rd:bio')}
-                placeholder={t('common:bio-placeholder')}
+                placeholder={
+                  (org?.signup[locale][aspect] || {}).bio ||
+                  t('common:bio-placeholder')
+                }
                 value={user.bio}
                 onChange={onBioChange}
                 className={styles.field}

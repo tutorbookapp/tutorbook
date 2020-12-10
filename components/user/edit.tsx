@@ -15,6 +15,7 @@ import SubjectSelect from 'components/subject-select';
 
 import { Availability, User, UserJSON } from 'lib/model';
 import { useSingle, useSocialProps } from 'lib/hooks';
+import { useOrg } from 'lib/context/org';
 
 import styles from './edit.module.scss';
 
@@ -56,7 +57,8 @@ export default function UserEdit({
     User
   );
 
-  const { t } = useTranslation();
+  const { org } = useOrg();
+  const { t, lang: locale } = useTranslation();
 
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
@@ -228,7 +230,10 @@ export default function UserEdit({
             />
             <TextField
               label={t('user:bio')}
-              placeholder={t('common:bio-placeholder')}
+              placeholder={
+                (org?.signup[locale][org?.aspects[0] || 'tutoring'] || {})
+                  .bio || t('common:bio-placeholder')
+              }
               value={user.bio}
               onChange={onBioChange}
               className={styles.field}

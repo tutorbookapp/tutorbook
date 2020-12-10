@@ -49,6 +49,25 @@ export default function Signup(): JSX.Element {
     },
     [locale, setOrg]
   );
+  const onBioChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>, aspect: Aspect) => {
+      const bio = evt.currentTarget.value;
+      setOrg((prev: Org) => {
+        const signup = {
+          ...prev.signup,
+          [locale]: {
+            ...prev.signup[locale],
+            [aspect]: {
+              ...prev.signup[locale][aspect],
+              bio,
+            },
+          },
+        };
+        return new Org({ ...prev, signup });
+      });
+    },
+    [locale, setOrg]
+  );
 
   return (
     <div className={styles.card}>
@@ -70,6 +89,17 @@ export default function Signup(): JSX.Element {
               placeholder={t(`org:signup-${aspect}-body-placeholder`)}
               value={(org.signup[locale][aspect] || {}).body || ''}
               onChange={(evt) => onBodyChange(evt, aspect)}
+              className={styles.field}
+              outlined
+              required
+              rows={8}
+              textarea
+            />
+            <TextField
+              label={t(`org:signup-${aspect}-bio`)}
+              placeholder={t(`org:signup-${aspect}-bio-placeholder`)}
+              value={(org.signup[locale][aspect] || {}).bio || ''}
+              onChange={(evt) => onBioChange(evt, aspect)}
               className={styles.field}
               outlined
               required
