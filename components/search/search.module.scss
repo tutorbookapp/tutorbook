@@ -1,36 +1,60 @@
-@use 'sass:map';
-@use 'styles/typography';
 @use '@material/elevation';
+@use 'styles/typography';
 
 .wrapper {
   max-width: var(--page-width-with-margin);
-  margin: 0 auto;
   padding: 48px 24px;
-  box-sizing: border-box;
-}
+  margin: 0 auto;
 
-.results {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+  // TODO: Why is this flex display needed to properly size the no results
+  // placeholder? It's what makes it work in the users dashboard...
+  display: flex;
+  flex-direction: column;
 
-.noResults {
-  margin: 80px 0;
-  text-align: center;
-}
+  $filters-height: 56px;
 
-.noResultsHeader {
-  @include typography.typography('headline3');
-  margin: 16px 0;
-}
+  .filters {
+    height: $filters-height;
+    border: 1px solid var(--accents-2);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    display: flex;
+    justify-content: space-between;
 
-.noResultsBody {
-  @include typography.typography('subtitle1');
-  color: var(--accents-5);
-  margin: 0 0 40px;
-}
+    .right {
+      display: flex;
+      align-items: center;
 
-.carousel {
-  margin-top: -50%;
+      .searchField {
+        $margin: 10px;
+        height: $filters-height - $margin * 2;
+        margin-right: $margin;
+
+        &:not(:global(.mdc-text-field--focused)):not(:global(.mdc-text-field--invalid)) {
+          :global(.mdc-notched-outline__leading),
+          :global(.mdc-notched-outline__notch),
+          :global(.mdc-notched-outline__trailing) {
+            border-color: var(--accents-2) !important;
+          }
+        }
+
+        input {
+          @include typography.typography('body2');
+        }
+      }
+    }
+  }
+
+  .results {
+    border-left: 1px solid var(--accents-2);
+    border-right: 1px solid var(--accents-2);
+    overflow: hidden;
+    min-height: 625px;
+
+    .empty {
+      margin: 0;
+      padding: 24px;
+      height: 100%;
+    }
+  }
 }

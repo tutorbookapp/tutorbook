@@ -10,20 +10,6 @@
   .empty {
     margin: 0;
     padding: 24px;
-    flex: 1 1 auto;
-  }
-
-  .item {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-
-    &:first-child {
-      border-top: none;
-    }
-
-    &:last-child {
-      border-bottom: none;
-    }
+    height: 100%;
   }
 }

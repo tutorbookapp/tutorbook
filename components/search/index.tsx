@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { TextField } from '@rmwc/textfield';
 import { nanoid } from 'nanoid';
 import useTranslation from 'next-translate/useTranslation';
 
-import Carousel from 'components/carousel';
 import Pagination from 'components/pagination';
+import Placeholder from 'components/placeholder';
 
 import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
 import { useOrg } from 'lib/context/org';
@@ -31,13 +32,6 @@ export default function Search({
 
   const { t } = useTranslation();
   const formRef = useRef<HTMLDivElement | null>();
-  const noResultsQuery = useMemo(() => {
-    return new UsersQuery({
-      orgs: query.orgs,
-      aspect: query.aspect,
-      visible: true,
-    });
-  }, [query.aspect, query.orgs]);
 
   const loadingResults = useMemo(() => {
     return Array(query.hitsPerPage)
@@ -63,39 +57,48 @@ export default function Search({
   return (
     <div className={styles.wrapper}>
       <Form query={query} onChange={onChange} />
-      {(searching || !!results.length) && (
-        <>
-          <ul data-cy='results' className={styles.results}>
-            {searching && loadingResults}
-            {!searching &&
-              results.map((res) => (
-                <Result
-                  key={res.id}
-                  user={User.fromJSON(res)}
-                  href={`/${org?.id || 'default'}/users/${res.id}?aspect=${
-                    query.aspect
-                  }`}
-                  newTab
-                />
-              ))}
-          </ul>
-          <Pagination
-            model={UsersQuery}
-            setQuery={onChange}
-            query={query}
-            hits={hits}
+      <div className={styles.filters}>
+        <div className={styles.left} />
+        <div className={styles.right}>
+          <TextField
+            outlined
+            placeholder={t('search:placeholder')}
+            className={styles.searchField}
+            value={query.query}
+            onChange={(event: FormEvent<HTMLInputElement>) => {
+              const q: string = event.currentTarget.value;
+              // TODO: Throttle the actual API requests but immediately show the
+              // loading state (i.e. we can't just throttle `setQuery` updates).
+              onChange((p) => new UsersQuery({ ...p, query: q, page: 0 }));
+            }}
           />
-        </>
-      )}
-      {!searching && !results.length && (
-        <div data-cy='no-results' className={styles.noResults}>
-          <h3 className={styles.noResultsHeader}>
-            {t('search:no-results-title')}
-          </h3>
-          <p className={styles.noResultsBody}>{t('search:no-results-body')}</p>
-          <Carousel query={noResultsQuery} />
         </div>
-      )}
+      </div>
+      <div data-cy='results' className={styles.results}>
+        {searching && loadingResults}
+        {!searching &&
+          results.map((res) => (
+            <Result
+              key={res.id}
+              user={User.fromJSON(res)}
+              href={`/${org?.id || 'default'}/users/${res.id}?aspect=${
+                query.aspect
+              }`}
+              newTab
+            />
+          ))}
+        {!searching && !results.length && (
+          <div className={styles.empty}>
+            <Placeholder>{t('search:empty')}</Placeholder>
+          </div>
+        )}
+      </div>
+      <Pagination
+        model={UsersQuery}
+        setQuery={onChange}
+        query={query}
+        hits={hits}
+      />
     </div>
   );
 }

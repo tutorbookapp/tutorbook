@@ -106,13 +106,11 @@ describe('Search page', () => {
       .find('img')
       .should('have.img', volunteer.photo, 85);
     cy.percySnapshot('Search Page');
-
-    // TODO: Also make assertions about results in the 'No Results' carousel.
   });
 
   // TODO: Refactor this into reusable tests and assertions to test a variety of
   // different filter combinations (in order to reach 100% back-end coverage).
-  it('filters users by subjects and langs', () => {
+  it('filters users by subjects, langs, and name', () => {
     cy.setup({ student: { phone: '' }, match: null, meeting: null });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);
@@ -138,6 +136,26 @@ describe('Search page', () => {
       .find('img')
       .should('have.img', admin.photo, 85);
     cy.percySnapshot('Search Page for Schools');
+
+    cy.get('input[placeholder="Search results"]')
+      .as('search-input')
+      .type(admin.name.substring(0, 5));
+    cy.wait('@list-users');
+    cy.getBySel('results')
+      .find('li')
+      .should('have.length', 1)
+      .first()
+      .should('not.have.attr', 'disabled', '')
+      .find('a')
+      .should('contain', onlyFirstNameAndLastInitial(admin.name))
+      .and(
+        'have.attr',
+        'href',
+        `/${school.id}/users/${admin.id}?aspect=${school.aspects[0]}`
+      )
+      .and('have.attr', 'target', '_blank');
+    cy.percySnapshot('Search Page with Search Populated');
+    cy.get('@search-input').type('{selectall}{del}').should('have.value', '');
 
     // TODO: Perhaps create some `Select` component tests to test the different
     // error and content states (e.g. multiple lines of selected chips).
@@ -198,21 +216,8 @@ describe('Search page', () => {
 
     cy.getBySel('page').click({ force: true });
     cy.wait('@list-users');
-    cy.getBySel('results').should('not.exist');
-    cy.getBySel('no-results')
-      .should('be.visible')
-      .within(() => {
-        cy.get('h3').should('have.text', 'No Results');
-        cy.get('p').should(
-          'have.text',
-          "We couldn't find anyone matching those filters. But here are some suggestions:"
-        );
-
-        // TODO: Create custom Cypress commands to validate the contents of these
-        // carousel cards and the search result tiles (which are reused a lot).
-        cy.getBySel('carousel').find('a').should('have.length', 2).as('cards');
-        cy.percySnapshot('Search Page with No Results');
-      });
+    cy.getBySel('results').should('contain', 'NO RESULTS TO SHOW');
+    cy.percySnapshot('Search Page with No Results');
 
     cy.contains('button', 'Spanish').click();
     cy.focused()

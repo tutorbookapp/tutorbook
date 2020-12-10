@@ -1,6 +1,6 @@
 {
-  "no-results-title": "No Results",
-  "no-results-body": "We couldn't find anyone matching those filters. But here are some suggestions:",
+  "placeholder": "Search results",
+  "empty": "NO RESULTS TO SHOW",
   "any-subjects": "Any subjects",
   "any-availability": "Any availability",
   "any-langs": "Any languages",

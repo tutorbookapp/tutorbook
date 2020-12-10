@@ -18,16 +18,10 @@ $margin: 20px;
 .listItem {
   height: $height;
   position: relative;
-  border: 1px solid var(--accents-2);
+  border-bottom: 1px solid var(--accents-2);
   box-sizing: border-box;
   border-top: none;
   cursor: pointer;
-
-  &:first-child {
-    border-top: 1px solid var(--accents-2);
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-  }
 
   &:last-child {
     border-bottom: none;
