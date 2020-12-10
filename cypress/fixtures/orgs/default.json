@@ -33,7 +33,15 @@
     }
   ],
   "members": ["admin"],
-  "profiles": ["name", "email", "bio", "subjects", "availability", "langs"],
+  "profiles": [
+    "name",
+    "photo",
+    "email",
+    "bio",
+    "subjects",
+    "availability",
+    "langs"
+  ],
   "domains": [],
   "aspects": ["mentoring", "tutoring"],
   "subjects": null,

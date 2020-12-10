@@ -5,10 +5,13 @@ import to from 'await-to-js';
 
 import { APIErrorJSON } from 'lib/api/error';
 import { Callback } from 'lib/model';
+import { Validations } from 'lib/context/validations';
 
 interface SingleProps<T> {
   data: T;
   setData: Callback<T>;
+  validations: Validations;
+  setValidations: Callback<Validations>;
   onSubmit: (evt?: FormEvent) => Promise<void>;
   loading: boolean;
   checked: boolean;
@@ -35,12 +38,15 @@ export default function useSingle<T extends { id: string }>(
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
+  const [validations, setValidations] = useState<Validations>({});
 
   const prevData = useRef<T>(initialData);
 
   const onSubmit = useCallback(
     async (evt?: FormEvent) => {
+      // Validate submission data.
       if (evt) evt.preventDefault();
+      if (Object.values(validations).some((v) => !v())) return;
       // Show a loading state.
       setError('');
       setChecked(false);
@@ -67,7 +73,7 @@ export default function useSingle<T extends { id: string }>(
         setTimeout(() => setLoading(false), 1000);
       }
     },
-    [updateLocal, updateRemote, data]
+    [updateLocal, updateRemote, data, validations]
   );
 
   useEffect(() => {
@@ -76,5 +82,14 @@ export default function useSingle<T extends { id: string }>(
     setData((prev: T) => (dequal(prev, initialData) ? prev : initialData));
   }, [initialData]);
 
-  return { data, setData, onSubmit, error, loading, checked };
+  return {
+    data,
+    setData,
+    validations,
+    setValidations,
+    onSubmit,
+    error,
+    loading,
+    checked,
+  };
 }

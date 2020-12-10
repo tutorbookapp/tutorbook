@@ -1,9 +1,12 @@
-import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import cn from 'classnames';
+import { nanoid } from 'nanoid';
 import { v4 as uuid } from 'uuid';
 
 import { TCallback } from 'lib/model';
+import clone from 'lib/utils/clone';
+import { useValidations } from 'lib/context/validations';
 
 import styles from './photo-input.module.scss';
 
@@ -24,10 +27,10 @@ export type PhotoInputProps = Omit<TextFieldHTMLProps, Overrides> &
 export default function PhotoInput({
   value,
   onChange,
+  required,
   ...textFieldProps
 }: PhotoInputProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const helperRef = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -81,7 +84,31 @@ export default function PhotoInput({
       },
     });
   };
-  /* eslint-disable jsx-a11y/control-has-associated-label */
+
+  const { setValidations } = useValidations();
+  useEffect(() => {
+    const id = nanoid();
+    setValidations((prev) => ({
+      ...prev,
+      [id]: () => {
+        if (!required || value) return true;
+        setHelperValue('Please click the text field above to upload a photo.');
+        setErrored(true);
+        // TODO: Right now, this merely mimics the default browser behavior.
+        // Instead, we should implement smooth scrolling and ensure that it is
+        // scrolled at least 64px from the top of the page (b/c of the header).
+        inputRef.current?.parentElement?.scrollIntoView();
+        return false;
+      },
+    }));
+    return () =>
+      setValidations((prev) => {
+        const validations = clone(prev);
+        delete validations[id];
+        return validations;
+      });
+  }, [setValidations, value, required]);
+
   return (
     <TextField
       {...textFieldProps}
@@ -89,9 +116,12 @@ export default function PhotoInput({
         persistent: true,
         validationMsg: errored,
         children: helperValue,
-        ref: helperRef,
       }}
-      className={cn(styles.input, textFieldProps.className)}
+      className={cn(
+        styles.input,
+        textFieldProps.className,
+        required && styles.required
+      )}
       onChange={handleChange}
       inputRef={inputRef}
       invalid={errored}
@@ -104,5 +134,4 @@ export default function PhotoInput({
       />
     </TextField>
   );
-  /* eslint-enable jsx-a11y/control-has-associated-label */
 }

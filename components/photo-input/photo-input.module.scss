@@ -1,4 +1,10 @@
-@use 'sass:map';
+.required {
+  :global(.mdc-floating-label::after),
+  :global(.mdc-notched-outline .mdc-floating-label::after) {
+    margin-left: 1px;
+    content: '*';
+  }
+}
 
 .clickArea {
   position: absolute;

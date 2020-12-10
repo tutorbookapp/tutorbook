@@ -31,6 +31,8 @@ describe('Signup page', () => {
   });
 
   it('signs new volunteers up', () => {
+    cy.percySnapshot('Signup Page');
+
     cy.contains('Your name')
       .children('input')
       .as('name-input')
@@ -45,22 +47,6 @@ describe('Signup page', () => {
       .as('phone-input')
       .should('have.attr', 'type', 'tel')
       .type(volunteer.phone);
-
-    cy.contains('Your profile photo')
-      .as('photo-input')
-      .children('input')
-      .should('have.attr', 'type', 'file')
-      .attachFile('users/volunteer.jpg');
-    cy.get('@photo-input')
-      .next()
-      .as('photo-input-label')
-      .should('have.text', 'Uploading volunteer.jpg...');
-
-    // TODO: Don't call our production data storage APIs (as this will
-    // eventually incur costs after storing an image for each test).
-    cy.wait('@upload-photo');
-
-    cy.get('@photo-input-label').should('have.text', 'Uploaded volunteer.jpg.');
 
     // TODO: Test this in different locales to ensure that the current locale is
     // always properly pre-selected.
@@ -83,16 +69,52 @@ describe('Signup page', () => {
 
     // TODO: Why isn't this `click()` call working? It seems to be working fine
     // with the `SubjectSelect` controlling the search view.
-    cy.contains('li:visible', 'Computer Science').trigger('click');
+    cy.contains('li:visible', 'Computer Science')
+      .trigger('click')
+      .find('input[type="checkbox"]')
+      .should('be.checked');
     cy.get('@subjects-input')
       .children('.mdc-chip')
       .should('have.length', 1)
       .and('contain', 'Computer Science');
+    cy.percySnapshot('Signup Page with Subject Selected');
 
     cy.contains('Qualifications? Interests?').type(volunteer.bio);
+    cy.percySnapshot('Signup Page with Bio Populated');
 
-    cy.contains('Create profile').as('btn').click().should('be.disabled');
+    cy.contains('Create profile').as('btn').click();
+    cy.getBySel('loader').as('loader').should('not.be.visible');
+    cy.contains('Your profile photo')
+      .as('photo-input')
+      .should('have.class', 'mdc-text-field--invalid');
+    cy.get('@photo-input')
+      .next()
+      .as('photo-input-label')
+      .should(
+        'have.text',
+        'Please click the text field above to upload a photo.'
+      );
+    cy.percySnapshot('Signup Page with Invalid Photo');
+
+    cy.get('@photo-input')
+      .children('input')
+      .should('have.attr', 'type', 'file')
+      .attachFile('users/volunteer.jpg');
+    cy.get('@photo-input-label')
+      .should('be.visible')
+      .and('have.text', 'Uploading volunteer.jpg...');
+    cy.percySnapshot('Signup Page with Photo Uploading');
+
+    // TODO: Don't call our production data storage APIs (as this will
+    // eventually incur costs after storing an image for each test).
+    cy.wait('@upload-photo');
+
+    cy.get('@photo-input-label').should('have.text', 'Uploaded volunteer.jpg.');
+    cy.percySnapshot('Signup Page with Photo Uploaded');
+
+    cy.get('@btn').click().should('be.disabled');
     cy.getBySel('loader').as('loader').should('be.visible');
+    cy.percySnapshot('Signup Page in Loading State');
 
     cy.wait('@create-user');
 

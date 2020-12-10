@@ -27,6 +27,7 @@
   "members": ["admin"],
   "profiles": [
     "name",
+    "photo",
     "email",
     "phone",
     "bio",
