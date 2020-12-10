@@ -2530,23 +2530,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:10.0.2":
-  version: 10.0.2
-  resolution: "@next/env@npm:10.0.2"
-  checksum: fe7e3189aa4c5659da71e5d6ae01ddceb95af308182ff2acdad33813139f6805c8db7a81991c855045a7e09232227fec75ece9e781f7fc9c098d778495c2cd0f
+"@next/env@npm:10.0.3":
+  version: 10.0.3
+  resolution: "@next/env@npm:10.0.3"
+  checksum: 4cc385204715314ac9b3a01ba365fba7c921149611bb4403c9143ca7906f3f2a19e59dc44e20e541733643788e83f767f0af74b8f4cf4fbf443cb067d671cd27
   languageName: node
   linkType: hard
 
-"@next/polyfill-module@npm:10.0.2":
-  version: 10.0.2
-  resolution: "@next/polyfill-module@npm:10.0.2"
-  checksum: 8e8fba9ff6f474771bee7960736b8083365e74f8e115e0813062b912003539197158691d86863fb742098832db637f8648402282d2d88d9dd0890f3a7eed587b
+"@next/polyfill-module@npm:10.0.3":
+  version: 10.0.3
+  resolution: "@next/polyfill-module@npm:10.0.3"
+  checksum: 833f84d824bca6b326af051a37b3d638b61bb94a003ce40f3fe23ea134fcbf2f56d3306a574b571333cae3b912dd8ab39ff755a6097707d698bad7e4a5a22124
   languageName: node
   linkType: hard
 
-"@next/react-dev-overlay@npm:10.0.2":
-  version: 10.0.2
-  resolution: "@next/react-dev-overlay@npm:10.0.2"
+"@next/react-dev-overlay@npm:10.0.3":
+  version: 10.0.3
+  resolution: "@next/react-dev-overlay@npm:10.0.3"
   dependencies:
     "@babel/code-frame": 7.10.4
     ally.js: 1.4.1
@@ -2562,17 +2562,17 @@ __metadata:
     react: ^16.9.0 || ^17
     react-dom: ^16.9.0 || ^17
     webpack: ^4 || ^5
-  checksum: 5a7820919f82bfaa6c4002169a9a39906e88dcfe2972a2c0ce3dfd27f933d0a7223a1885bbf6e5ffe9573318d24cb11ad47a78053ce32a5ee1513fec0f94df69
+  checksum: f3a9f768dea24706df178054214facd576044a79ac70cfdf94bfafd98ac0dc060a62ddec09f2e6b072a9f6d5d0a8ceca8d83d58ca96bf9b56d7cdef7a7160ca5
   languageName: node
   linkType: hard
 
-"@next/react-refresh-utils@npm:10.0.2":
-  version: 10.0.2
-  resolution: "@next/react-refresh-utils@npm:10.0.2"
+"@next/react-refresh-utils@npm:10.0.3":
+  version: 10.0.3
+  resolution: "@next/react-refresh-utils@npm:10.0.3"
   peerDependencies:
     react-refresh: 0.8.3
     webpack: ^4 || ^5
-  checksum: 0d9455e647a166b161d24b2be25df9bf91f39c8bc5b31001673bda9f6c3720a5672b3e92a71d8e7aa0cb8adce3f6493b674fae6878801b68a1f0fdb8867a1a3d
+  checksum: 68aeca3e30b185fb06a092e5a38a8b64da69a9b2fdad403115389b97e94e72f1177753569a8fdfa8a27f0be5ae18d2da6eac521bfafabc0f5f1aeb0318d1ce3c
   languageName: node
   linkType: hard
 
@@ -7150,9 +7150,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "cypress@npm:6.0.1"
+"cypress@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "cypress@npm:6.1.0"
   dependencies:
     "@cypress/listr-verbose-renderer": ^0.4.1
     "@cypress/request": ^2.88.5
@@ -7194,7 +7194,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: 0fb6c0df12c092f7f52debf386870e62ecacb9caa62c11a319ffa5b59195f4609488da331bf19a63b941b3390c4778e0d3638cc1153e4f42635a54d4952f5226
+  checksum: e522413ae3c24c4750ce2a263a1eb0d5a38ef82b54de05178bc4a4eab2cc100daef9ae81856d589acf1f3660029dc23b44c64671bc86f7c471b6b400142d10ec
   languageName: node
   linkType: hard
 
@@ -13305,17 +13305,17 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"next@npm:^10.0.2":
-  version: 10.0.2
-  resolution: "next@npm:10.0.2"
+"next@npm:^10.0.3":
+  version: 10.0.3
+  resolution: "next@npm:10.0.3"
   dependencies:
     "@ampproject/toolbox-optimizer": 2.7.0-alpha.1
     "@babel/runtime": 7.12.5
     "@hapi/accept": 5.0.1
-    "@next/env": 10.0.2
-    "@next/polyfill-module": 10.0.2
-    "@next/react-dev-overlay": 10.0.2
-    "@next/react-refresh-utils": 10.0.2
+    "@next/env": 10.0.3
+    "@next/polyfill-module": 10.0.3
+    "@next/react-dev-overlay": 10.0.3
+    "@next/react-refresh-utils": 10.0.3
     ast-types: 0.13.2
     babel-plugin-transform-define: 2.0.0
     babel-plugin-transform-react-remove-prop-types: 0.4.24
@@ -13362,7 +13362,7 @@ fsevents@~2.1.2:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 6f964e81192fd841690823d7fd5da2af713fff4138fa575d999308784793bccf1b4f11d64ebd89b06e611c1fa74ee24f1667e306179a4a3534542ddbd0c4e4ab
+  checksum: 7b4a77f7c3bc9bce1eccaf358a289b8a5725ab5941cb39be333619fa84bb6c8163ea9b7626ec985596eee16c5353c3eb5a0466d15e6eb5adaac16e8385365fb3
   languageName: node
   linkType: hard
 
@@ -17999,7 +17999,7 @@ resolve@1.1.7:
     concurrently: ^5.3.0
     cross-env: ^7.0.2
     csv-parse: ^4.12.0
-    cypress: ^6.0.1
+    cypress: ^6.1.0
     cypress-file-upload: ^4.1.1
     dequal: ^2.0.2
     dotenv: ^8.2.0
@@ -18022,7 +18022,7 @@ resolve@1.1.7:
     istanbul-lib-coverage: ^3.0.0
     mixpanel-browser: ^2.39.0
     nanoid: ^3.1.12
-    next: ^10.0.2
+    next: ^10.0.3
     next-images: ^1.6.2
     next-translate: ^0.17.1
     nprogress: ^0.2.0
