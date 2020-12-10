@@ -77,6 +77,8 @@ export type Tag = 'not-vetted';
  * @property visible - Whether or not this user appears in search results.
  * @property featured - Aspects in which this user is first in search results.
  * @property roles - Always empty unless in context of match or request.
+ * @property refs - How the user heard about TB or whatever org they're joining
+ * (e.g. Instagram, Facebook, Google, a friend, family, or other).
  * @property [token] - The user's Firebase Authentication JWT `idToken`.
  * @property [hash] - The user's Intercom HMAC for identity verifications.
  * @todo Add a `zoom` prop that contains the user's personal Zoom OAuth token
@@ -95,6 +97,7 @@ export interface UserInterface extends AccountInterface {
   visible: boolean;
   featured: Aspect[];
   roles: Role[];
+  refs: string[];
   token?: string;
   hash?: string;
 }
@@ -140,6 +143,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (typeof json.visible !== 'boolean') return false;
   if (!isArray(json.featured, isAspect)) return false;
   if (!isArray(json.roles, isRole)) return false;
+  if (!isStringArray(json.refs)) return false;
   if (json.token && typeof json.token !== 'string') return false;
   if (json.hash && typeof json.hash !== 'string') return false;
   return true;
@@ -171,6 +175,8 @@ export class User extends Account implements UserInterface {
   public featured: Aspect[] = [];
 
   public roles: Role[] = [];
+
+  public refs: string[] = [];
 
   public token?: string;
 

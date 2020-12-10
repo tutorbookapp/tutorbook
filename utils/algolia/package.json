@@ -13,8 +13,6 @@
     "algoliasearch": "^4.2.0",
     "await-to-js": "^2.1.1",
     "csv-parse": "^4.10.1",
-    "dotenv": "^8.2.0",
-    "fs": "0.0.1-security",
-    "path": "^0.12.7"
+    "dotenv": "^8.2.0"
   }
 }

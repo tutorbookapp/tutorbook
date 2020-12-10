@@ -120,6 +120,7 @@ export default memo(
       setSelectedOptions((prev: SubjectOption[]) => {
         // If they already match, do nothing.
         if (!value) return prev;
+        if (!value.length) return [];
         if (
           dequal(
             prev.map(({ value: val }) => val),

@@ -228,7 +228,7 @@ export default function UserEdit({
             />
             <TextField
               label={t('user:bio')}
-              placeholder={t('user:bio-placeholder')}
+              placeholder={t('common:bio-placeholder')}
               value={user.bio}
               onChange={onBioChange}
               className={styles.field}

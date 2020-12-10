@@ -49,8 +49,6 @@ const subjects = async (id) => {
   }
 };
 
-subjects('mentoring');
-
 const langs = async () => {
   const index = client.initIndex('langs');
   await index.clearObjects();
@@ -76,17 +74,28 @@ const langs = async () => {
   }
 };
 
-const main = async (id) => {
+const generic = async (id) => {
   const index = client.initIndex(id);
-  await index.clearObjects();
+  console.log(`Clearing index (${id})...`);
+  const [clearErr] = await to(index.clearObjects());
+  if (clearErr) {
+    console.error(`${clearErr.name} clearing index (${id}):`, clearErr);
+    debugger;
+  }
   const objs = parse(fs.readFileSync(`./${id}.csv`), {
     columns: true,
     skip_empty_lines: true,
-  }).filter((obj) => !!obj.objectID);
-  const [err, res] = await to(index.saveObjects(objs));
-  debugger;
-  if (err) {
-    console.error(`[ERROR] While saving ${id} objs:`, err);
+  }).filter((obj) => !!obj.name);
+  console.log(`Updating index (${id})...`);
+  const [updateErr] = await to(
+    index.saveObjects(objs, {
+      autoGenerateObjectIDIfNotExist: true,
+    })
+  );
+  if (updateErr) {
+    console.error(`${updateErr.name} updating index (${id}):`, updateErr);
     debugger;
   }
 };
+
+generic('refs');

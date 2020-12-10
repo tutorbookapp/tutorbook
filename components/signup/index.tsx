@@ -10,6 +10,7 @@ import Button from 'components/button';
 import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
+import RefSelect from 'components/ref-select';
 import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
 
@@ -167,6 +168,13 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     },
     [track, setUser]
   );
+  const onRefsChange = useCallback(
+    (refs: string[]) => {
+      track('User Refs Updated', { refs }, 2500);
+      setUser((prev) => new User({ ...prev, refs }));
+    },
+    [track, setUser]
+  );
 
   const action = useMemo(() => (user.id ? 'update' : 'create'), [user.id]);
 
@@ -245,6 +253,18 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             </div>
             <div className={styles.divider} />
             <div className={styles.inputs}>
+              <RefSelect
+                label={t('user3rd:refs', { org: org?.name || 'Tutorbook' })}
+                placeholder={t('common:refs-placeholder')}
+                value={user.refs}
+                onChange={onRefsChange}
+                className={styles.field}
+                required={org ? org.profiles.includes('refs') : false}
+                outlined
+              />
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.inputs}>
               <SubjectSelect
                 label={t(`user3rd:${aspect}-subjects`)}
                 placeholder={t(`common:${aspect}-subjects-placeholder`)}
@@ -274,7 +294,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               />
               <TextField
                 label={t('user3rd:bio')}
-                placeholder={t('user3rd:bio-placeholder')}
+                placeholder={t('common:bio-placeholder')}
                 value={user.bio}
                 onChange={onBioChange}
                 className={styles.field}

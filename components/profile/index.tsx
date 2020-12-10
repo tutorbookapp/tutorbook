@@ -204,9 +204,7 @@ export default function Profile(): JSX.Element {
             />
             <TextField
               label={t('user3rd:bio')}
-              placeholder={t('user3rd:bio-placeholder', {
-                name: user.name || 'Tutorbook',
-              })}
+              placeholder={t('common:bio-placeholder')}
               value={user.bio}
               onChange={onBioChange}
               className={styles.field}
