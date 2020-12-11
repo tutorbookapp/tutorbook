@@ -31,7 +31,8 @@ function ResultButton({
 
   return (
     <Ripple disabled={disabled} onClick={onClick}>
-      <li
+      <div
+        data-cy='result'
         className={cn(styles.listItem, className, {
           [styles.disabled]: disabled,
           [styles.loading]: loading,
@@ -45,7 +46,7 @@ function ResultButton({
         )}
         <div className={styles.name}>{user && user.name}</div>
         <div className={styles.bio}>{user && user.bio}</div>
-      </li>
+      </div>
     </Ripple>
   );
 }
@@ -69,7 +70,8 @@ function ResultLink({
 
   return (
     <Ripple disabled={disabled}>
-      <li
+      <div
+        data-cy='result'
         className={cn(styles.listItem, className, {
           [styles.disabled]: disabled,
           [styles.loading]: loading,
@@ -87,7 +89,7 @@ function ResultLink({
             <div className={styles.bio}>{user && user.bio}</div>
           </a>
         </Link>
-      </li>
+      </div>
     </Ripple>
   );
 }

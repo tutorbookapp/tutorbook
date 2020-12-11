@@ -86,8 +86,7 @@ describe('Users dashboard page', () => {
 
     // Showing featured tutors first.
     cy.wait('@list-users');
-    cy.getBySel('results')
-      .children('li')
+    cy.getBySel('result')
       .as('results')
       .should('have.length', 3)
       .first()

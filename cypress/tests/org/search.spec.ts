@@ -16,8 +16,7 @@ describe('Search page', () => {
       },
     });
 
-    cy.getBySel('results')
-      .find('li')
+    cy.getBySel('result')
       .should('have.css', 'cursor', 'not-allowed')
       .and('have.attr', 'disabled');
     cy.percySnapshot('Search Page in Loading State');
@@ -57,8 +56,7 @@ describe('Search page', () => {
       .and('contain', 'Unable to establish a connection with the popup.');
     cy.percySnapshot('Search Page with Auth Dialog Error');
 
-    cy.getBySel('results')
-      .find('li')
+    cy.getBySel('result')
       .should('have.css', 'cursor', 'not-allowed')
       .and('have.attr', 'disabled');
   });
@@ -69,7 +67,7 @@ describe('Search page', () => {
     cy.visit(`/${school.id}/search`);
 
     cy.wait('@list-users');
-    cy.getBySel('results').find('li').should('have.length', 2).as('results');
+    cy.getBySel('result').should('have.length', 2).as('results');
     cy.get('@results')
       .eq(0)
       .should('contain', volunteer.name)
@@ -98,7 +96,7 @@ describe('Search page', () => {
     // TODO: Perhaps make assertions about the 'api/users' query to remove this
     // awkward result item selection timeout workaround.
     cy.wait('@list-users');
-    cy.get('[data-cy="results"] li', { timeout: 60000 })
+    cy.getBySel('result', { timeout: 60000 })
       .should('have.length', 1)
       .first()
       .should('contain', volunteer.name)
@@ -120,7 +118,7 @@ describe('Search page', () => {
     cy.percySnapshot('Search Page in Loading State');
 
     cy.wait('@list-users');
-    cy.getBySel('results').find('li').should('have.length', 2).as('results');
+    cy.getBySel('result').should('have.length', 2).as('results');
     cy.get('@results')
       .eq(0)
       .should('not.contain', volunteer.name)
@@ -141,12 +139,10 @@ describe('Search page', () => {
       .as('search-input')
       .type(admin.name.substring(0, 5));
     cy.wait('@list-users');
-    cy.getBySel('results')
-      .find('li')
+    cy.get('@results')
       .should('have.length', 1)
-      .first()
       .should('not.have.attr', 'disabled', '')
-      .find('a')
+      .children('a')
       .should('contain', onlyFirstNameAndLastInitial(admin.name))
       .and(
         'have.attr',
@@ -184,12 +180,10 @@ describe('Search page', () => {
     // actual user would actually do, e.g. click on the loading results).
     cy.getBySel('page').click({ force: true });
     cy.wait('@list-users');
-    cy.getBySel('results')
-      .find('li')
+    cy.get('@results')
       .should('have.length', 1)
-      .first()
       .should('not.have.attr', 'disabled', '')
-      .find('a')
+      .children('a')
       .should('contain', onlyFirstNameAndLastInitial(volunteer.name))
       .and(
         'have.attr',
@@ -233,12 +227,10 @@ describe('Search page', () => {
 
     cy.getBySel('page').click({ force: true });
     cy.wait('@list-users');
-    cy.getBySel('results')
-      .find('li')
+    cy.get('@results')
       .should('have.length', 1)
-      .first()
       .should('not.have.attr', 'disabled', '')
-      .find('a')
+      .children('a')
       .should('contain', onlyFirstNameAndLastInitial(admin.name))
       .and(
         'have.attr',
