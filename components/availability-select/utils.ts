@@ -3,7 +3,7 @@ import { getDate } from 'lib/utils/time';
 
 export const WIDTH = 100;
 
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }

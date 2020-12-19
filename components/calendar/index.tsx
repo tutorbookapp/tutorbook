@@ -1,0 +1,187 @@
+import {
+  MouseEvent,
+  UIEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
+import { ResizeObserver as polyfill } from '@juggle/resize-observer';
+import { dequal } from 'dequal/lite';
+import { nanoid } from 'nanoid';
+import useMeasure from 'react-use-measure';
+import useTranslation from 'next-translate/useTranslation';
+
+import { Callback, Match } from 'lib/model';
+import { getDateWithTime, getNextDateWithDay } from 'lib/utils/time';
+
+import MatchRnd from './match-rnd';
+import { getMatch } from './utils';
+import styles from './calendar.module.scss';
+
+export interface CalendarProps {
+  matches: Match[];
+  setMatches: Callback<Match[]>;
+}
+
+/**
+ * The `Calendar` emulates the drag-and-resize interface of Google
+ * Calendar's event creation UI but on a much smaller scale. We use `react-rnd`
+ * within an RMWC `MenuSurface` to craft our UX.
+ * @see {@link https://github.com/tutorbookapp/tutorbook/issues/50}
+ */
+export default memo(
+  function Calendar({ matches, setMatches }: CalendarProps): JSX.Element {
+    const { lang: locale } = useTranslation();
+
+    const headerRef = useRef<HTMLDivElement>(null);
+    const timesRef = useRef<HTMLDivElement>(null);
+    const rowsRef = useRef<HTMLDivElement>(null);
+    const ticking = useRef<boolean>(false);
+
+    const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
+
+    useEffect(() => {
+      // Scroll to 8:30am by default (assumes 48px per hour).
+      if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
+    }, []);
+
+    const updateMatch = useCallback(
+      (idx: number, updated?: Match) => {
+        setMatches((prev) => {
+          if (!updated) return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+          if (idx < 0) return [...prev, updated];
+          return [...prev.slice(0, idx), updated, ...prev.slice(idx + 1)];
+        });
+      },
+      [setMatches]
+    );
+
+    // Create a new `TimeslotRND` closest to the user's click position. Assumes
+    // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
+    const onClick = useCallback(
+      (event: MouseEvent) => {
+        const position = { x: event.clientX - x, y: event.clientY - y };
+        updateMatch(-1, getMatch(48, position, nanoid()));
+      },
+      [x, y, updateMatch]
+    );
+
+    // Sync the scroll position of the main cell grid and the static headers. This
+    // was inspired by the way that Google Calendar's UI is currently setup.
+    // @see {@link https://mzl.la/35OIC9y}
+    const onScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+      const { scrollTop, scrollLeft } = event.currentTarget;
+      if (!ticking.current) {
+        requestAnimationFrame(() => {
+          if (timesRef.current) timesRef.current.scrollTop = scrollTop;
+          if (headerRef.current) headerRef.current.scrollLeft = scrollLeft;
+          ticking.current = false;
+        });
+        ticking.current = true;
+      }
+    }, []);
+
+    const weekdayCells = useMemo(
+      () =>
+        Array(7)
+          .fill(null)
+          .map((_, weekday) => (
+            <div key={nanoid()} className={styles.titleWrapper}>
+              <h2 className={styles.titleContent}>
+                <div className={styles.day}>
+                  {getNextDateWithDay(weekday).toLocaleString(locale, {
+                    weekday: 'long',
+                  })}
+                </div>
+              </h2>
+            </div>
+          )),
+      [locale]
+    );
+    const timeCells = useMemo(
+      () =>
+        Array(24)
+          .fill(null)
+          .map((_, hour) => (
+            <div key={nanoid()} className={styles.timeWrapper}>
+              <span className={styles.timeLabel}>
+                {getDateWithTime(hour).toLocaleString(locale, {
+                  hour: '2-digit',
+                })}
+              </span>
+            </div>
+          )),
+      [locale]
+    );
+    const headerCells = useMemo(
+      () =>
+        Array(7)
+          .fill(null)
+          .map(() => <div key={nanoid()} className={styles.headerCell} />),
+      []
+    );
+    const lineCells = useMemo(
+      () =>
+        Array(24)
+          .fill(null)
+          .map(() => <div key={nanoid()} className={styles.line} />),
+      []
+    );
+    const dayCells = useMemo(
+      () =>
+        Array(7)
+          .fill(null)
+          .map(() => <div key={nanoid()} className={styles.cell} />),
+      []
+    );
+
+    return (
+      <div className={styles.calendar}>
+        <div ref={headerRef} className={styles.headerWrapper}>
+          <div className={styles.headers}>
+            <div className={styles.space} />
+            {weekdayCells}
+            <div className={styles.scroller} />
+          </div>
+          <div className={styles.headerCells}>
+            <div className={styles.space} />
+            {headerCells}
+            <div className={styles.scroller} />
+          </div>
+        </div>
+        <div className={styles.gridWrapper}>
+          <div className={styles.grid}>
+            <div className={styles.timesWrapper} ref={timesRef}>
+              <div className={styles.times}>{timeCells}</div>
+            </div>
+            <div
+              className={styles.rowsWrapper}
+              onScroll={onScroll}
+              ref={rowsRef}
+            >
+              <div className={styles.rows}>
+                <div className={styles.lines}>{lineCells}</div>
+                <div className={styles.space} />
+                <div className={styles.cells} onClick={onClick} ref={cellsRef}>
+                  {matches.map((match: Match, idx: number) => (
+                    <MatchRnd
+                      key={match.id}
+                      value={match}
+                      onChange={(updated) => updateMatch(idx, updated)}
+                    />
+                  ))}
+                  {dayCells}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+  (prevProps: CalendarProps, nextProps: CalendarProps) => {
+    return dequal(prevProps, nextProps);
+  }
+);
