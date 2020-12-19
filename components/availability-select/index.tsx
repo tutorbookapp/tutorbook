@@ -257,16 +257,16 @@ export default memo(
           renderToPortal={renderToPortal ? '#portal' : false}
           data-cy='availability-select-surface'
         >
-          <div ref={headerRef} className={styles.headerWrapper}>
-            <div className={styles.headers}>
-              <div className={styles.space} />
-              {weekdayCells}
-              <div className={styles.scroller} />
-            </div>
-            <div className={styles.headerCells}>
-              <div className={styles.space} />
-              {headerCells}
-              <div className={styles.scroller} />
+          <div className={styles.headerWrapper}>
+            <div ref={headerRef} className={styles.headerContent}>
+              <div className={styles.headers}>
+                {weekdayCells}
+                <div className={styles.scroller} />
+              </div>
+              <div className={styles.headerCells}>
+                {headerCells}
+                <div className={styles.scroller} />
+              </div>
             </div>
           </div>
           <div className={styles.gridWrapper}>

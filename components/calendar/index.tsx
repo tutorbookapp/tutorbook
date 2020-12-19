@@ -10,6 +10,7 @@ import {
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
+import cn from 'classnames';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -40,7 +41,7 @@ export default memo(
     const rowsRef = useRef<HTMLDivElement>(null);
     const ticking = useRef<boolean>(false);
 
-    const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
+    const [cellsRef, { x, y, width }] = useMeasure({ polyfill, scroll: true });
 
     useEffect(() => {
       // Scroll to 8:30am by default (assumes 48px per hour).
@@ -63,9 +64,10 @@ export default memo(
     const onClick = useCallback(
       (event: MouseEvent) => {
         const position = { x: event.clientX - x, y: event.clientY - y };
-        updateMatch(-1, getMatch(48, position, nanoid()));
+        const match = new Match({ id: `temp-${nanoid()}` });
+        updateMatch(-1, getMatch(48, position, match, width / 7));
       },
-      [x, y, updateMatch]
+      [x, y, width, updateMatch]
     );
 
     // Sync the scroll position of the main cell grid and the static headers. This
@@ -89,11 +91,14 @@ export default memo(
           .fill(null)
           .map((_, weekday) => (
             <div key={nanoid()} className={styles.titleWrapper}>
-              <h2 className={styles.titleContent}>
-                <div className={styles.day}>
+              <h2 className={cn({ [styles.today]: weekday === 3 })}>
+                <div className={styles.weekday}>
                   {getNextDateWithDay(weekday).toLocaleString(locale, {
-                    weekday: 'long',
+                    weekday: 'short',
                   })}
+                </div>
+                <div className={styles.date}>
+                  {getNextDateWithDay(weekday).getDate()}
                 </div>
               </h2>
             </div>
@@ -139,16 +144,16 @@ export default memo(
 
     return (
       <div className={styles.calendar}>
-        <div ref={headerRef} className={styles.headerWrapper}>
-          <div className={styles.headers}>
-            <div className={styles.space} />
-            {weekdayCells}
-            <div className={styles.scroller} />
-          </div>
-          <div className={styles.headerCells}>
-            <div className={styles.space} />
-            {headerCells}
-            <div className={styles.scroller} />
+        <div className={styles.headerWrapper}>
+          <div ref={headerRef} className={styles.headerContent}>
+            <div className={styles.headers}>
+              {weekdayCells}
+              <div className={styles.scroller} />
+            </div>
+            <div className={styles.headerCells}>
+              {headerCells}
+              <div className={styles.scroller} />
+            </div>
           </div>
         </div>
         <div className={styles.gridWrapper}>
@@ -169,6 +174,7 @@ export default memo(
                     <MatchRnd
                       key={match.id}
                       value={match}
+                      width={width / 7}
                       onChange={(updated) => updateMatch(idx, updated)}
                     />
                   ))}

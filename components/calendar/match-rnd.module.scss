@@ -10,14 +10,11 @@
   font-weight: 500;
   font-size: 12px;
   color: white;
-  z-index: 4;
 
   .wrapper {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 0;
+    padding: 10px;
 
     .btn {
       @include icon-button.icon-size(12px);

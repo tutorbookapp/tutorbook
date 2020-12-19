@@ -2,6 +2,7 @@
 @use 'sass:color';
 @use 'styles/typography';
 
+$times-width: 50px;
 $cell-width: 100px;
 $border: var(--accents-2);
 
@@ -24,19 +25,24 @@ $border: var(--accents-2);
 }
 
 .headerWrapper {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
+  margin-left: $times-width;
+
+  .headerContent {
+    padding-left: 7px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
 }
 
 .headers {
   flex: none;
   display: flex;
+  border-left: var(--background) 1px solid;
 
   .space {
-    min-width: $cell-width / 2 + 8px;
+    min-width: $times-width + 8px;
     flex: none;
   }
 
@@ -73,9 +79,10 @@ $border: var(--accents-2);
   height: 8px;
   display: flex;
   flex: none;
+  border-left: $border 1px solid;
 
   .space {
-    width: $cell-width / 2 + 8px;
+    width: $times-width + 8px;
     flex: none;
   }
 
@@ -85,8 +92,8 @@ $border: var(--accents-2);
     flex: 1 0 auto;
     border-right: $border 1px solid;
 
-    &:last-child {
-      border-right: white 1px solid;
+    &:nth-last-of-type(2) {
+      border-right: var(--background) 1px solid;
     }
   }
 
@@ -140,7 +147,7 @@ $border: var(--accents-2);
       flex: none;
       display: flex;
       align-items: flex-start;
-      min-width: $cell-width / 2;
+      min-width: $times-width;
       height: auto;
 
       &::before {
@@ -250,7 +257,7 @@ $border: var(--accents-2);
             border-right: $border 1px solid;
 
             &:last-child {
-              border-right: white 1px solid;
+              border-right: var(--background) 1px solid;
             }
           }
         }

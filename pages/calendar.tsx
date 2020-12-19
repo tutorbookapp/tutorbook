@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import Calendar from 'components/calendar';
+import Header from 'components/header';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
@@ -77,6 +78,24 @@ function CalendarPage(): JSX.Element {
           {
             label: t('common:profile'),
             href: '/profile',
+          },
+        ]}
+      />
+      <Header
+        header={t('common:calendar')}
+        body='Create, edit, and cancel meetings'
+        actions={[
+          {
+            label: 'Previous week',
+            href: '#',
+          },
+          {
+            label: 'Next week',
+            href: '#',
+          },
+          {
+            label: 'Today',
+            href: '#',
           },
         ]}
       />

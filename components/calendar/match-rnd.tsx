@@ -118,18 +118,7 @@ export default function MatchRnd({
       <div className={styles.wrapper}>
         <IconButton className={styles.btn} icon='close' onClick={remove} />
         <div className={styles.content}>
-          <div>
-            {(value.time || new Timeslot()).from.toLocaleString(locale, {
-              hour: 'numeric',
-              minute: 'numeric',
-            })}
-          </div>
-          <div>
-            {(value.time || new Timeslot()).to.toLocaleString(locale, {
-              hour: 'numeric',
-              minute: 'numeric',
-            })}
-          </div>
+          {(value.time || new Timeslot()).toString(locale)}
         </div>
       </div>
     </Rnd>

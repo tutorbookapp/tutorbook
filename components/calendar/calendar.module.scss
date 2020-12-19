@@ -3,27 +3,34 @@
 @use 'styles/common';
 @use 'styles/typography';
 
+$times-width: 40px;
 $cell-width: 100px;
 $border: var(--accents-2);
 
 .calendar {
   @include common.wrapper;
+  padding: 12px 24px 0;
 }
 
 .headerWrapper {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
+  margin-left: $times-width;
+
+  .headerContent {
+    padding-left: 7px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
 }
 
 .headers {
   flex: none;
   display: flex;
+  border-left: var(--background) 1px solid;
 
   .space {
-    min-width: $cell-width / 2 + 8px;
+    min-width: $times-width + 8px;
     flex: none;
   }
 
@@ -35,16 +42,52 @@ $border: var(--accents-2);
     box-sizing: border-box;
     display: flex;
 
-    .titleContent {
+    h2 {
       margin: 0;
       text-align: center;
       width: 100%;
 
-      .day {
-        @include typography.typography('body2');
-        font-weight: 500;
+      .weekday {
         line-height: 32px;
+        position: relative;
+        color: var(--accents-5);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.8px;
+        margin-left: 0;
         margin-top: 8px;
+        text-indent: 0.8px;
+        text-transform: uppercase;
+      }
+
+      .date {
+        color: var(--accents-5);
+        position: relative;
+        font-size: 26px;
+        letter-spacing: -2.6px;
+        text-indent: -2.6px;
+        font-weight: 400;
+        font-variant: tabular-nums;
+        font-feature-settings: 'tnum' 1;
+        border-radius: 100%;
+        line-height: 46px;
+        height: 46px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -8px;
+        width: 46px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      &.today .weekday {
+        color: var(--primary);
+      }
+
+      &.today .date {
+        color: var(--on-primary);
+        background: var(--primary);
       }
     }
   }
@@ -60,9 +103,10 @@ $border: var(--accents-2);
   height: 8px;
   display: flex;
   flex: none;
+  border-left: $border 1px solid;
 
   .space {
-    width: $cell-width / 2 + 8px;
+    width: $times-width + 8px;
     flex: none;
   }
 
@@ -72,8 +116,8 @@ $border: var(--accents-2);
     flex: 1 0 auto;
     border-right: $border 1px solid;
 
-    &:last-child {
-      border-right: white 1px solid;
+    &:nth-last-of-type(2) {
+      border-right: var(--background) 1px solid;
     }
   }
 
@@ -90,7 +134,7 @@ $border: var(--accents-2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-height: calc(48px * 8 + 24px);
+  max-height: calc(100vh - var(--header-height) - 86px);
 
   .grid {
     display: flex;
@@ -105,7 +149,7 @@ $border: var(--accents-2);
       height: 4px;
       position: absolute;
       width: calc(100% - 16px);
-      z-index: 505;
+      z-index: 1;
     }
 
     &::after {
@@ -119,7 +163,7 @@ $border: var(--accents-2);
       position: absolute;
       right: 16px;
       width: $cell-width;
-      z-index: 505;
+      z-index: 1;
     }
 
     .timesWrapper {
@@ -127,7 +171,7 @@ $border: var(--accents-2);
       flex: none;
       display: flex;
       align-items: flex-start;
-      min-width: $cell-width / 2;
+      min-width: $times-width;
       height: auto;
 
       &::before {
@@ -140,7 +184,7 @@ $border: var(--accents-2);
         height: 2px;
         position: absolute;
         width: $cell-width;
-        z-index: 505;
+        z-index: 1;
       }
 
       .times {
@@ -197,7 +241,6 @@ $border: var(--accents-2);
               position: absolute;
               width: 100%;
               margin-top: -1px;
-              z-index: 3;
               pointer-events: none;
             }
 
@@ -237,7 +280,7 @@ $border: var(--accents-2);
             border-right: $border 1px solid;
 
             &:last-child {
-              border-right: white 1px solid;
+              border-right: var(--background) 1px solid;
             }
           }
         }
