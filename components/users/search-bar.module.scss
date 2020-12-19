@@ -18,6 +18,10 @@ $filters-height: 56px;
     .filtersButton {
       margin-left: ($filters-height - 48px) / 2;
     }
+
+    .filterChips {
+      flex-wrap: nowrap;
+    }
   }
 
   .right {
