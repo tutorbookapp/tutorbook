@@ -1,6 +1,6 @@
 @use 'sass:map';
 
-$cutoff: 800px;
+$cutoff: 700px;
 
 .wrapper {
   margin-top: 48px;
@@ -15,9 +15,17 @@ $cutoff: 800px;
     margin: 0 auto 48px;
     box-sizing: border-box;
 
+    &.withActions {
+      margin-bottom: 0;
+    }
+
     @media only screen and (max-width: $cutoff) {
       text-align: center;
       justify-content: center;
+
+      &.withActions {
+        margin-bottom: 24px;
+      }
     }
 
     .title {

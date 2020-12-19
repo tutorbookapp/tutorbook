@@ -1,4 +1,5 @@
-import Link from 'lib/intl/link';
+import Link from 'next/link';
+import cn from 'classnames';
 
 import styles from './header.module.scss';
 
@@ -56,7 +57,11 @@ export default function Title({
 }: TitleProps): JSX.Element {
   return (
     <header className={styles.wrapper}>
-      <div className={styles.content}>
+      <div
+        className={cn(styles.content, {
+          [styles.withActions]: actions && !!actions.length,
+        })}
+      >
         <div className={styles.title}>
           <h1 data-cy='title' className={styles.header}>
             {header}
