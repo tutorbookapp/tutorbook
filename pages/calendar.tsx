@@ -22,7 +22,6 @@ function CalendarPage(): JSX.Element {
 
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MatchesQuery>();
-  const [hits, setHits] = useState<number>(query?.hitsPerPage || 10);
 
   const onQueryChange = useCallback((param: CallbackParam<MatchesQuery>) => {
     setQuery((prev) => {
@@ -50,7 +49,6 @@ function CalendarPage(): JSX.Element {
     query ? query.endpoint : null
   );
 
-  useEffect(() => setHits((prev) => data?.hits || prev), [data?.hits]);
   useEffect(() => {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
@@ -99,7 +97,11 @@ function CalendarPage(): JSX.Element {
           },
         ]}
       />
-      <Calendar matches={matches} setMatches={setMatches} />
+      <Calendar
+        searching={searching}
+        matches={matches}
+        setMatches={setMatches}
+      />
     </Page>
   );
 }

@@ -14,20 +14,29 @@ $border: var(--accents-2);
 
 .headerWrapper {
   margin-left: $times-width;
+  align-items: end;
+  display: flex;
 
   .headerContent {
     padding-left: 7px;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     position: relative;
+  }
+
+  .scroller {
+    overflow: scroll;
+    visibility: hidden;
+    flex: none;
   }
 }
 
 .headers {
   flex: none;
   display: flex;
-  border-left: var(--background) 1px solid;
+  border-left: transparent 1px solid;
 
   .space {
     min-width: $times-width + 8px;
@@ -37,6 +46,7 @@ $border: var(--accents-2);
   .titleWrapper {
     width: $cell-width;
     min-width: $cell-width;
+    max-width: calc(100% / 7);
     flex: 1 0 auto;
     overflow: hidden;
     box-sizing: border-box;
@@ -91,12 +101,6 @@ $border: var(--accents-2);
       }
     }
   }
-
-  .scroller {
-    overflow: scroll;
-    visibility: hidden;
-    flex: none;
-  }
 }
 
 .headerCells {
@@ -113,18 +117,13 @@ $border: var(--accents-2);
   .headerCell {
     width: $cell-width;
     min-width: $cell-width;
+    max-width: calc(100% / 7);
     flex: 1 0 auto;
     border-right: $border 1px solid;
 
-    &:nth-last-of-type(2) {
-      border-right: var(--background) 1px solid;
+    &:last-child {
+      border-right: transparent 1px solid;
     }
-  }
-
-  .scroller {
-    overflow: scroll;
-    visibility: hidden;
-    flex: none;
   }
 }
 
@@ -276,11 +275,12 @@ $border: var(--accents-2);
           .cell {
             width: $cell-width;
             min-width: $cell-width;
+            max-width: calc(100% / 7);
             flex: 1 0 auto;
             border-right: $border 1px solid;
 
             &:last-child {
-              border-right: var(--background) 1px solid;
+              border-right: transparent 1px solid;
             }
           }
         }

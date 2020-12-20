@@ -4,15 +4,18 @@ import {
   MouseEvent as ReactMouseEvent,
   TouchEvent as ReactTouchEvent,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import { IconButton } from '@rmwc/icon-button';
 import { ResizeDirection } from 're-resizable';
+import Router from 'next/router';
 import dynamic from 'next/dynamic';
-import useTranslation from 'next-translate/useTranslation';
 
 import { Match, TCallback, Timeslot } from 'lib/model';
+import { join } from 'lib/utils';
+import { prefetch } from 'lib/fetch';
+import { useUser } from 'lib/context/user';
 
 import { WIDTH, getHeight, getMatch, getPosition } from './utils';
 import styles from './match-rnd.module.scss';
@@ -30,8 +33,6 @@ export default function MatchRnd({
   onChange,
   width = WIDTH,
 }: MatchRndProps): JSX.Element {
-  const { lang: locale } = useTranslation();
-
   // Workaround for `react-rnd`'s unusual resizing behavior.
   // @see {@link https://codesandbox.io/s/1z7kjjk0pq?file=/src/index.js}
   // @see {@link https://github.com/bokuweb/react-rnd/issues/457}
@@ -44,7 +45,6 @@ export default function MatchRnd({
     return getHeight(value.time || new Timeslot());
   }, [value.time]);
 
-  const remove = useCallback(() => onChange(undefined), [onChange]);
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
       onChange(getMatch(newHeight, newPosition, value, width));
@@ -52,8 +52,26 @@ export default function MatchRnd({
     [width, onChange, value]
   );
 
-  const onClick = useCallback((e: ReactMouseEvent) => e.stopPropagation(), []);
-  const onResizeStop = useCallback(() => setOffset({ x: 0, y: 0 }), []);
+  // Only trigger `onClick` callback when user hasn't been dragging.
+  const [dragging, setDragging] = useState<boolean>(false);
+
+  const { user } = useUser();
+  const other = useMemo(() => {
+    const idx = value.people.findIndex((p) => p.id !== user.id);
+    return value.people[idx] || user;
+  }, [user, value.people]);
+
+  const onClick = useCallback(
+    async (evt: ReactMouseEvent) => {
+      evt.stopPropagation();
+      if (!dragging) await Router.push(`/${value.org}/matches/${value.id}`);
+    },
+    [dragging, value.id, value.org]
+  );
+  const onResizeStop = useCallback(() => {
+    setTimeout(() => setDragging(false), 0);
+    setOffset({ x: 0, y: 0 });
+  }, []);
   const onResize = useCallback(
     (
       e: MouseEvent | TouchEvent,
@@ -65,6 +83,7 @@ export default function MatchRnd({
       // callback can be called multiple times for the same resize delta. Thus,
       // we only want to update `position` to reflect the **difference** btwn
       // the last `delta` and the current `delta`.
+      setDragging(true);
       update(Number(ref.style.height.replace('px', '')), {
         x: position.x - (dir === 'left' ? delta.width - offset.x : 0),
         y: position.y - (dir === 'top' ? delta.height - offset.y : 0),
@@ -76,6 +95,9 @@ export default function MatchRnd({
     },
     [update, position, offset]
   );
+  const onDragStop = useCallback(() => {
+    setTimeout(() => setDragging(false), 0);
+  }, []);
   const onDrag = useCallback(
     (
       e: ReactMouseEvent | ReactTouchEvent | MouseEvent | TouchEvent,
@@ -85,14 +107,28 @@ export default function MatchRnd({
       // correctly for the `onDrag` callback.
       // @see {@link https://github.com/STRML/react-draggable/issues/413}
       // @see {@link https://github.com/bokuweb/react-rnd/issues/453}
+      setDragging(true);
       update(height, { x: data.x, y: data.y });
     },
     [update, height]
   );
 
+  useEffect(() => {
+    void Router.prefetch(`/${value.org}/matches/${value.id}`);
+  }, [value.org, value.id]);
+  useEffect(() => {
+    void prefetch(`/api/matches/${value.id}`);
+    void prefetch(`/api/matches/${value.id}/people`);
+    void prefetch(`/api/matches/${value.id}/meetings`);
+  }, [value.id]);
+  useEffect(() => {
+    void prefetch(`/api/orgs/${value.org}`);
+  }, [value.org]);
+
   return (
     <Rnd
       data-cy='match-rnd'
+      style={{ cursor: dragging ? 'move' : 'pointer' }}
       className={styles.match}
       position={position}
       minHeight={12 * 4}
@@ -100,6 +136,7 @@ export default function MatchRnd({
       onResizeStop={onResizeStop}
       onResize={onResize}
       onClick={onClick}
+      onDragStop={onDragStop}
       onDrag={onDrag}
       bounds='parent'
       resizeGrid={[0, 12]}
@@ -115,11 +152,8 @@ export default function MatchRnd({
         topRight: false,
       }}
     >
-      <div className={styles.wrapper}>
-        <IconButton className={styles.btn} icon='close' onClick={remove} />
-        <div className={styles.content}>
-          {(value.time || new Timeslot()).toString(locale)}
-        </div>
+      <div className={styles.content}>
+        {`${join(value.subjects)} with ${other.name}`}
       </div>
     </Rnd>
   );

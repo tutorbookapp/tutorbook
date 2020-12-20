@@ -24,6 +24,7 @@ import styles from './calendar.module.scss';
 export interface CalendarProps {
   matches: Match[];
   setMatches: Callback<Match[]>;
+  searching: boolean;
 }
 
 /**
@@ -41,7 +42,8 @@ export default memo(
     const rowsRef = useRef<HTMLDivElement>(null);
     const ticking = useRef<boolean>(false);
 
-    const [cellsRef, { x, y, width }] = useMeasure({ polyfill, scroll: true });
+    const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
+    const [cellRef, { width }] = useMeasure({ polyfill });
 
     useEffect(() => {
       // Scroll to 8:30am by default (assumes 48px per hour).
@@ -65,7 +67,7 @@ export default memo(
       (event: MouseEvent) => {
         const position = { x: event.clientX - x, y: event.clientY - y };
         const match = new Match({ id: `temp-${nanoid()}` });
-        updateMatch(-1, getMatch(48, position, match, width / 7));
+        updateMatch(-1, getMatch(48, position, match, width));
       },
       [x, y, width, updateMatch]
     );
@@ -138,47 +140,51 @@ export default memo(
       () =>
         Array(7)
           .fill(null)
-          .map(() => <div key={nanoid()} className={styles.cell} />),
+          .map(() => (
+            <div key={nanoid()} className={styles.cell} ref={cellRef} />
+          )),
       []
     );
 
     return (
       <div className={styles.calendar}>
-        <div className={styles.headerWrapper}>
-          <div ref={headerRef} className={styles.headerContent}>
-            <div className={styles.headers}>
-              {weekdayCells}
-              <div className={styles.scroller} />
+        <div className={styles.left} />
+        <div className={styles.right}>
+          <div className={styles.headerWrapper}>
+            <div ref={headerRef} className={styles.headerContent}>
+              <div className={styles.headers}>{weekdayCells}</div>
+              <div className={styles.headerCells}>{headerCells}</div>
             </div>
-            <div className={styles.headerCells}>
-              {headerCells}
-              <div className={styles.scroller} />
-            </div>
+            <div className={styles.scroller} />
           </div>
-        </div>
-        <div className={styles.gridWrapper}>
-          <div className={styles.grid}>
-            <div className={styles.timesWrapper} ref={timesRef}>
-              <div className={styles.times}>{timeCells}</div>
-            </div>
-            <div
-              className={styles.rowsWrapper}
-              onScroll={onScroll}
-              ref={rowsRef}
-            >
-              <div className={styles.rows}>
-                <div className={styles.lines}>{lineCells}</div>
-                <div className={styles.space} />
-                <div className={styles.cells} onClick={onClick} ref={cellsRef}>
-                  {matches.map((match: Match, idx: number) => (
-                    <MatchRnd
-                      key={match.id}
-                      value={match}
-                      width={width / 7}
-                      onChange={(updated) => updateMatch(idx, updated)}
-                    />
-                  ))}
-                  {dayCells}
+          <div className={styles.gridWrapper}>
+            <div className={styles.grid}>
+              <div className={styles.timesWrapper} ref={timesRef}>
+                <div className={styles.times}>{timeCells}</div>
+              </div>
+              <div
+                className={styles.rowsWrapper}
+                onScroll={onScroll}
+                ref={rowsRef}
+              >
+                <div className={styles.rows}>
+                  <div className={styles.lines}>{lineCells}</div>
+                  <div className={styles.space} />
+                  <div
+                    className={styles.cells}
+                    onClick={onClick}
+                    ref={cellsRef}
+                  >
+                    {matches.map((match: Match, idx: number) => (
+                      <MatchRnd
+                        key={match.id}
+                        value={match}
+                        width={width}
+                        onChange={(updated) => updateMatch(idx, updated)}
+                      />
+                    ))}
+                    {dayCells}
+                  </div>
                 </div>
               </div>
             </div>
