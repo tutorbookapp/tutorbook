@@ -4,6 +4,7 @@ import {
   memo,
   useCallback,
   useEffect,
+  useState,
   useMemo,
   useRef,
 } from 'react';
@@ -18,6 +19,7 @@ import { Callback, Match } from 'lib/model';
 import { getDateWithTime, getNextDateWithDay } from 'lib/utils/time';
 
 import MatchRnd from './match-rnd';
+import MatchPreview from './match-preview';
 import { getMatch } from './utils';
 import styles from './calendar.module.scss';
 
@@ -146,45 +148,48 @@ export default memo(
       []
     );
 
+    const [preview, setPreview] = useState<MatchPreviewProps>();
+
     return (
       <div className={styles.calendar}>
-        <div className={styles.left} />
-        <div className={styles.right}>
-          <div className={styles.headerWrapper}>
-            <div ref={headerRef} className={styles.headerContent}>
-              <div className={styles.headers}>{weekdayCells}</div>
-              <div className={styles.headerCells}>{headerCells}</div>
-            </div>
-            <div className={styles.scroller} />
+        <div className={styles.headerWrapper}>
+          <div ref={headerRef} className={styles.headerContent}>
+            <div className={styles.headers}>{weekdayCells}</div>
+            <div className={styles.headerCells}>{headerCells}</div>
           </div>
-          <div className={styles.gridWrapper}>
-            <div className={styles.grid}>
-              <div className={styles.timesWrapper} ref={timesRef}>
-                <div className={styles.times}>{timeCells}</div>
-              </div>
-              <div
-                className={styles.rowsWrapper}
-                onScroll={onScroll}
-                ref={rowsRef}
-              >
-                <div className={styles.rows}>
-                  <div className={styles.lines}>{lineCells}</div>
-                  <div className={styles.space} />
-                  <div
-                    className={styles.cells}
-                    onClick={onClick}
-                    ref={cellsRef}
-                  >
-                    {matches.map((match: Match, idx: number) => (
-                      <MatchRnd
-                        key={match.id}
-                        value={match}
-                        width={width}
-                        onChange={(updated) => updateMatch(idx, updated)}
-                      />
-                    ))}
-                    {dayCells}
-                  </div>
+          <div className={styles.scroller} />
+        </div>
+        <div className={styles.gridWrapper}>
+          <div className={styles.grid}>
+            <div className={styles.timesWrapper} ref={timesRef}>
+              <div className={styles.times}>{timeCells}</div>
+            </div>
+            <div
+              className={styles.rowsWrapper}
+              onScroll={onScroll}
+              ref={rowsRef}
+            >
+              <div className={styles.rows}>
+                <div className={styles.lines}>{lineCells}</div>
+                <div className={styles.space} />
+                <div className={styles.cells} onClick={onClick} ref={cellsRef}>
+                  {preview && (
+                    <MatchPreview
+                      {...preview}
+                      width={width}
+                      onClosed={() => setPreview(undefined)}
+                    />
+                  )}
+                  {matches.map((match: Match, idx: number) => (
+                    <MatchRnd
+                      key={match.id}
+                      value={match}
+                      width={width}
+                      onClick={(position) => setPreview({ match, position })}
+                      onChange={(updated) => updateMatch(idx, updated)}
+                    />
+                  ))}
+                  {dayCells}
                 </div>
               </div>
             </div>

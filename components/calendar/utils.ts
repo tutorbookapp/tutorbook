@@ -1,6 +1,6 @@
-import { Position, getTimeslot } from 'components/availability-select/utils';
+import { getTimeslot } from 'components/availability-select/utils';
 
-import { Match } from 'lib/model';
+import { Match, Position } from 'lib/model';
 
 export const WIDTH = 100;
 

@@ -1,3 +1,4 @@
+export * from './position';
 export * from './meeting';
 export * from './person';
 export * from './aspect';

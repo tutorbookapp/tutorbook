@@ -51,6 +51,10 @@
           color: var(--on-background);
           margin: 16px 0 8px;
           line-height: 1.2rem;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          width: 200px;
         }
 
         .roles {

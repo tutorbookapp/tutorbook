@@ -14,6 +14,7 @@ import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { animated, useSpring } from 'react-spring';
 import { Button } from '@rmwc/button';
 import { IconButton } from '@rmwc/icon-button';
+import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import cn from 'classnames';
 import { dequal } from 'dequal/lite';
 import useMeasure from 'react-use-measure';
@@ -78,7 +79,7 @@ export default memo(
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const timeoutId = useRef<ReturnType<typeof setTimeout>>();
 
-    const [ref, { width }] = useMeasure();
+    const [ref, { width }] = useMeasure({ polyfill });
     const [selectOpen, setSelectOpen] = useState<boolean>(!!value);
     const props = useSpring({
       width: selectOpen ? width : 0,

@@ -1,12 +1,7 @@
-import { Timeslot } from 'lib/model';
+import { Position, Timeslot } from 'lib/model';
 import { getDate } from 'lib/utils/time';
 
 export const WIDTH = 100;
-
-export interface Position {
-  x: number;
-  y: number;
-}
 
 export function getPosition(value: Timeslot, width: number = WIDTH): Position {
   const { from: start } = value;

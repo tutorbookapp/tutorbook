@@ -7,6 +7,8 @@ import construct from 'lib/model/construct';
 export interface MatchesQueryInterface extends QueryInterface {
   org?: string;
   people: Option<string>[];
+  from?: Date;
+  to?: Date;
 }
 
 export type MatchesQueryJSON = MatchesQueryInterface;
@@ -24,6 +26,10 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
   public org?: string;
 
   public people: Option<string>[] = [];
+
+  public from?: Date;
+
+  public to?: Date;
 
   public constructor(query: Partial<MatchesQueryInterface> = {}) {
     super(query);

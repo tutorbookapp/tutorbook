@@ -4,18 +4,15 @@ import {
   MouseEvent as ReactMouseEvent,
   TouchEvent as ReactTouchEvent,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { ResizeDirection } from 're-resizable';
-import Router from 'next/router';
 import dynamic from 'next/dynamic';
+import useTranslation from 'next-translate/useTranslation';
 
 import { Match, TCallback, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
-import { prefetch } from 'lib/fetch';
-import { useUser } from 'lib/context/user';
 
 import { WIDTH, getHeight, getMatch, getPosition } from './utils';
 import styles from './match-rnd.module.scss';
@@ -26,11 +23,13 @@ interface MatchRndProps {
   value: Match;
   width?: number;
   onChange: TCallback<Match | undefined>;
+  onClick: (pos: Position) => void;
 }
 
 export default function MatchRnd({
   value,
   onChange,
+  onClick: clickHandler,
   width = WIDTH,
 }: MatchRndProps): JSX.Element {
   // Workaround for `react-rnd`'s unusual resizing behavior.
@@ -55,18 +54,12 @@ export default function MatchRnd({
   // Only trigger `onClick` callback when user hasn't been dragging.
   const [dragging, setDragging] = useState<boolean>(false);
 
-  const { user } = useUser();
-  const other = useMemo(() => {
-    const idx = value.people.findIndex((p) => p.id !== user.id);
-    return value.people[idx] || user;
-  }, [user, value.people]);
-
   const onClick = useCallback(
-    async (evt: ReactMouseEvent) => {
+    (evt: ReactMouseEvent) => {
       evt.stopPropagation();
-      if (!dragging) await Router.push(`/${value.org}/matches/${value.id}`);
+      if (!dragging) clickHandler(position);
     },
-    [dragging, value.id, value.org]
+    [dragging, clickHandler, position]
   );
   const onResizeStop = useCallback(() => {
     setTimeout(() => setDragging(false), 0);
@@ -113,17 +106,7 @@ export default function MatchRnd({
     [update, height]
   );
 
-  useEffect(() => {
-    void Router.prefetch(`/${value.org}/matches/${value.id}`);
-  }, [value.org, value.id]);
-  useEffect(() => {
-    void prefetch(`/api/matches/${value.id}`);
-    void prefetch(`/api/matches/${value.id}/people`);
-    void prefetch(`/api/matches/${value.id}/meetings`);
-  }, [value.id]);
-  useEffect(() => {
-    void prefetch(`/api/orgs/${value.org}`);
-  }, [value.org]);
+  const { lang: locale } = useTranslation();
 
   return (
     <Rnd
@@ -153,7 +136,16 @@ export default function MatchRnd({
       }}
     >
       <div className={styles.content}>
-        {`${join(value.subjects)} with ${other.name}`}
+        <div className={styles.subjects}>{join(value.subjects)}</div>
+        <div className={styles.time}>
+          {`${(value.time || new Timeslot()).from.toLocaleString(locale, {
+            hour: 'numeric',
+            minute: 'numeric',
+          })} - ${(value.time || new Timeslot()).to.toLocaleString(locale, {
+            hour: 'numeric',
+            minute: 'numeric',
+          })}`}
+        </div>
       </div>
     </Rnd>
   );

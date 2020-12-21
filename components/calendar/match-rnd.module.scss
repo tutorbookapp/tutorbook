@@ -14,8 +14,16 @@
   .content {
     @include typography.typography('body2');
     color: var(--on-primary);
-    padding: 10px;
-    font-size: 12px;
+    padding: 8px;
     line-height: 12px;
+
+    .subjects {
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .time {
+      font-size: 10px;
+    }
   }
 }

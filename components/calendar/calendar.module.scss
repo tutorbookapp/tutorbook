@@ -14,7 +14,7 @@ $border: var(--accents-2);
 
 .headerWrapper {
   margin-left: $times-width;
-  align-items: end;
+  align-items: flex-end;
   display: flex;
 
   .headerContent {
@@ -71,7 +71,7 @@ $border: var(--accents-2);
       }
 
       .date {
-        color: var(--accents-5);
+        color: var(--accents-6);
         position: relative;
         font-size: 26px;
         letter-spacing: -2.6px;
@@ -148,7 +148,7 @@ $border: var(--accents-2);
       height: 4px;
       position: absolute;
       width: calc(100% - 16px);
-      z-index: 1;
+      z-index: 2;
     }
 
     &::after {
@@ -162,7 +162,7 @@ $border: var(--accents-2);
       position: absolute;
       right: 16px;
       width: $cell-width;
-      z-index: 1;
+      z-index: 2;
     }
 
     .timesWrapper {
@@ -183,7 +183,7 @@ $border: var(--accents-2);
         height: 2px;
         position: absolute;
         width: $cell-width;
-        z-index: 1;
+        z-index: 2;
       }
 
       .times {

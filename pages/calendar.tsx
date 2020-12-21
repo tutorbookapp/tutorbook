@@ -17,6 +17,8 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 
+import matchJSON from 'cypress/fixtures/match.json';
+
 function CalendarPage(): JSX.Element {
   usePage({ name: 'Calendar', url: '/calendar', login: true });
 
@@ -53,11 +55,11 @@ function CalendarPage(): JSX.Element {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
 
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<Match[]>([Match.fromJSON(matchJSON)]);
 
-  useEffect(() => {
-    setMatches((prev) => data?.matches.map((m) => Match.fromJSON(m)) || prev);
-  }, [data?.matches]);
+  //useEffect(() => {
+  //setMatches((prev) => data?.matches.map((m) => Match.fromJSON(m)) || prev);
+  //}, [data?.matches]);
 
   return (
     <Page title='Calendar - Tutorbook'>
