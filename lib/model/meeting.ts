@@ -1,14 +1,13 @@
 import * as admin from 'firebase-admin';
-import { v4 as uuid } from 'uuid';
 
 import {
-  Resource,
-  ResourceFirestore,
-  ResourceInterface,
-  ResourceJSON,
-  ResourceSearchHit,
-  isResourceJSON,
-} from 'lib/model/resource';
+  Match,
+  MatchFirestore,
+  MatchInterface,
+  MatchJSON,
+  MatchSearchHit,
+  isMatchJSON,
+} from 'lib/model/match';
 import {
   Timeslot,
   TimeslotFirestore,
@@ -16,7 +15,13 @@ import {
   TimeslotSearchHit,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import { Person, isPerson } from 'lib/model/person';
+import {
+  Venue,
+  VenueFirestore,
+  VenueJSON,
+  VenueSearchHit,
+  isVenueJSON,
+} from 'lib/model/venue';
 import construct from 'lib/model/construct';
 import { isJSON } from 'lib/model/json';
 
@@ -28,14 +33,15 @@ type DocumentReference = admin.firestore.DocumentReference;
  * A meeting is a past appointment logged for a match (e.g. John and Jane met
  * last week for 30 mins on Tuesday 3:00 - 3:30 PM).
  * @typedef {Object} Meeting
- * @extends Resource
+ * @extends Match
+ * @property venue - Link to the meeting venue (e.g. Zoom or Jitsi).
  * @property time - Time of the meeting (e.g. Tuesday 3:00 - 3:30 PM).
  * @property creator - The person who logged the meeting (typically the tutor).
  * @property notes - Notes about the meeting (e.g. what they worked on).
  */
-export interface MeetingInterface extends ResourceInterface {
+export interface MeetingInterface extends MatchInterface {
+  venue: Venue;
   time: Timeslot;
-  creator: Person;
   notes: string;
   ref?: DocumentReference;
   id: string;
@@ -43,37 +49,34 @@ export interface MeetingInterface extends ResourceInterface {
 
 export type MeetingJSON = Omit<
   MeetingInterface,
-  keyof ResourceInterface | 'time'
+  keyof MatchInterface | 'time' | 'venue'
 > &
-  ResourceJSON & { time: TimeslotJSON };
+  MatchJSON & { time: TimeslotJSON; venue: VenueJSON };
 export type MeetingFirestore = Omit<
   MeetingInterface,
-  keyof ResourceInterface | 'time'
+  keyof MatchInterface | 'time' | 'venue'
 > &
-  ResourceFirestore & { time: TimeslotFirestore };
-export type MeetingSearchHit = Omit<MeetingInterface, keyof Resource | 'time'> &
-  ResourceSearchHit & { time: TimeslotSearchHit };
+  MatchFirestore & { time: TimeslotFirestore; venue: VenueFirestore };
+export type MeetingSearchHit = Omit<
+  MeetingInterface,
+  keyof Match | 'time' | 'venue'
+> &
+  MatchSearchHit & { time: TimeslotSearchHit; venue: VenueSearchHit };
 
 export function isMeetingJSON(json: unknown): json is MeetingJSON {
-  if (!isResourceJSON(json)) return false;
+  if (!isMatchJSON(json)) return false;
   if (!isJSON(json)) return false;
+  if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
-  if (!isPerson(json.creator)) return false;
   if (typeof json.notes !== 'string') return false;
   if (typeof json.id !== 'string') return false;
   return true;
 }
 
-export class Meeting extends Resource implements MeetingInterface {
-  public time = new Timeslot();
+export class Meeting extends Match implements MeetingInterface {
+  public venue = new Venue();
 
-  public creator: Person = {
-    id: '',
-    name: '',
-    photo: '',
-    handle: uuid(),
-    roles: [],
-  };
+  public time = new Timeslot();
 
   public notes = '';
 
@@ -83,11 +86,7 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public constructor(meeting: Partial<MeetingInterface> = {}) {
     super(meeting);
-    construct<MeetingInterface, ResourceInterface>(
-      this,
-      meeting,
-      new Resource()
-    );
+    construct<MeetingInterface, MatchInterface>(this, meeting, new Match());
   }
 
   public toString(): string {
@@ -95,31 +94,43 @@ export class Meeting extends Resource implements MeetingInterface {
   }
 
   public toJSON(): MeetingJSON {
-    const { time, ref, ...rest } = this;
-    return { ...rest, ...super.toJSON(), time: time.toJSON() };
+    const { time, venue, ref, ...rest } = this;
+    return {
+      ...rest,
+      ...super.toJSON(),
+      time: time.toJSON(),
+      venue: venue.toJSON(),
+    };
   }
 
-  public static fromJSON({ time, ...rest }: MeetingJSON): Meeting {
+  public static fromJSON({ time, venue, ...rest }: MeetingJSON): Meeting {
     return new Meeting({
       ...rest,
-      ...Resource.fromJSON(rest),
+      ...Match.fromJSON(rest),
       time: Timeslot.fromJSON(time),
+      venue: Venue.fromJSON(venue),
     });
   }
 
   public toFirestore(): MeetingFirestore {
-    const { time, ref, ...rest } = this;
-    return { ...rest, ...super.toFirestore(), time: time.toFirestore() };
+    const { time, venue, ref, ...rest } = this;
+    return {
+      ...rest,
+      ...super.toFirestore(),
+      time: time.toFirestore(),
+      venue: venue.toFirestore(),
+    };
   }
 
-  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Meeting {
+  public static fromFirestore(snapshot: DocumentSnapshot): Meeting {
     const data: DocumentData | undefined = snapshot.data();
     if (data) {
-      const { time, ...rest } = data as MeetingFirestore;
+      const { time, venue, ...rest } = data as MeetingFirestore;
       return new Meeting({
         ...rest,
-        ...Resource.fromFirestore(rest),
+        ...Match.fromFirestore(snapshot),
         time: Timeslot.fromFirestore(time),
+        venue: Venue.fromFirestore(venue),
         ref: snapshot.ref,
         id: snapshot.id,
       });
@@ -131,19 +142,16 @@ export class Meeting extends Resource implements MeetingInterface {
     return new Meeting();
   }
 
-  public static fromFirestore({ time, ...rest }: MeetingFirestore): Meeting {
+  public static fromSearchHit({
+    time,
+    venue,
+    ...rest
+  }: MeetingSearchHit): Meeting {
     return new Meeting({
       ...rest,
-      ...Resource.fromFirestore(rest),
-      time: Timeslot.fromFirestore(time),
-    });
-  }
-
-  public static fromSearchHit({ time, ...rest }: MeetingSearchHit): Meeting {
-    return new Meeting({
-      ...rest,
-      ...Resource.fromSearchHit(rest),
+      ...Match.fromSearchHit(rest),
       time: Timeslot.fromSearchHit(time),
+      venue: Venue.fromSearchHit(venue),
     });
   }
 }

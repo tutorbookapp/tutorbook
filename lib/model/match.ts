@@ -4,20 +4,13 @@ import { v4 as uuid } from 'uuid';
 
 import { Person, isPerson } from 'lib/model/person';
 import {
-  Timeslot,
-  TimeslotFirestore,
-  TimeslotJSON,
-  TimeslotSearchHit,
-  TimeslotSegment,
-  isTimeslotJSON,
-} from 'lib/model/timeslot';
-import {
-  Venue,
-  VenueFirestore,
-  VenueJSON,
-  VenueSearchHit,
-  isVenueJSON,
-} from 'lib/model/venue';
+  Resource,
+  ResourceFirestore,
+  ResourceInterface,
+  ResourceJSON,
+  ResourceSearchHit,
+  isResourceJSON,
+} from 'lib/model/resource';
 import { Aspect } from 'lib/model/aspect';
 import construct from 'lib/model/construct';
 import firestoreVals from 'lib/model/firestore-vals';
@@ -39,6 +32,7 @@ type DocumentReference = admin.firestore.DocumentReference;
  * @property stale - When the people in the match have not met or have ceased
  * communications for over a week. A stale match needs re-engagement or should
  * be deleted.
+ * @todo Is this property really necessary/valuable? If so, expose it in the UX.
  */
 export type MatchStatus = 'new' | 'active' | 'stale';
 
@@ -51,51 +45,33 @@ export type MatchStatus = 'new' | 'active' | 'stale';
  * @property people - The people involved in this match (i.e. pupil and tutor).
  * @property creator - The person who created this match (e.g. pupil or admin).
  * @property message - A more detailed description of this match or request.
- * @property venue - The meeting venue (e.g. Zoom or Jitsi) for this match.
- * @property [times] - When the people in this match will meet.
- * @property [request] - The request that was fulfilled by this match (if any).
  */
-export interface MatchInterface {
+export interface MatchInterface extends ResourceInterface {
   status: MatchStatus;
   org: string;
   subjects: string[];
   people: Person[];
   creator: Person;
   message: string;
-  venue: Venue;
   ref?: DocumentReference;
   id: string;
 }
 
-export type MatchJSON = Omit<MatchInterface, 'time' | 'request' | 'venue'> & {
-  time: TimeslotJSON | null;
-  request: MatchJSON | null;
-  venue: VenueJSON;
-};
-
+export type MatchJSON = Omit<MatchInterface, keyof ResourceInterface> &
+  ResourceJSON;
 export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, 'time' | 'request' | 'venue'> & {
-    time?: TimeslotSearchHit;
-    request?: MatchSearchHit;
-    venue: VenueSearchHit;
-  };
-
-export type MatchFirestore = Omit<
-  MatchInterface,
-  'time' | 'request' | 'venue'
-> & {
-  time?: TimeslotFirestore;
-  request?: MatchFirestore;
-  venue: VenueFirestore;
-};
+  Omit<MatchInterface, keyof ResourceInterface> &
+  ResourceSearchHit;
+export type MatchFirestore = Omit<MatchInterface, keyof ResourceInterface> &
+  ResourceFirestore;
 
 export interface MatchSegment {
   message: string;
   subjects: string[];
-  time?: TimeslotSegment;
 }
 
 export function isMatchJSON(json: unknown): json is MatchJSON {
+  if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (typeof json.status !== 'string') return false;
   if (!['new', 'active', 'stale'].includes(json.status)) return false;
@@ -106,14 +82,11 @@ export function isMatchJSON(json: unknown): json is MatchJSON {
   if (json.people.some((p) => !isPerson(p))) return false;
   if (!isPerson(json.creator)) return false;
   if (typeof json.message !== 'string') return false;
-  if (!isVenueJSON(json.venue)) return false;
-  if (json.time && !isTimeslotJSON(json.time)) return false;
-  if (json.request && !isMatchJSON(json.request)) return false;
   if (typeof json.id !== 'string') return false;
   return true;
 }
 
-export class Match implements MatchInterface {
+export class Match extends Resource implements MatchInterface {
   public status: MatchStatus = 'new';
 
   public org = 'default';
@@ -132,18 +105,13 @@ export class Match implements MatchInterface {
 
   public message = '';
 
-  public venue: Venue = new Venue();
-
-  public time?: Timeslot;
-
-  public request?: Match;
-
   public ref?: DocumentReference;
 
   public id = '';
 
   public constructor(match: Partial<MatchInterface> = {}) {
-    construct<MatchInterface>(this, match);
+    super(match);
+    construct<MatchInterface, ResourceInterface>(this, match, new Resource());
   }
 
   public get aspect(): Aspect {
@@ -154,44 +122,29 @@ export class Match implements MatchInterface {
   }
 
   public toJSON(): MatchJSON {
-    const { time, request, venue, ref, ...rest } = this;
-    return {
-      ...rest,
-      time: time ? time.toJSON() : null,
-      request: request ? request.toJSON() : null,
-      venue: venue.toJSON(),
-    };
+    const { ref, ...rest } = this;
+    return { ...rest, ...super.toJSON() };
   }
 
   public static fromJSON(json: MatchJSON): Match {
-    const { time, request, venue, ...rest } = json;
-    return new Match({
-      ...rest,
-      time: time ? Timeslot.fromJSON(time) : undefined,
-      request: request ? Match.fromJSON(request) : undefined,
-      venue: Venue.fromJSON(venue),
-    });
+    return new Match({ ...json, ...Resource.fromJSON(json) });
   }
 
-  public toFirestore(): DocumentData {
-    const { time, request, venue, ref, ...rest } = this;
-    return firestoreVals({
-      ...rest,
-      time: time ? time.toFirestore() : undefined,
-      request: request ? request.toFirestore() : undefined,
-      venue: venue.toFirestore(),
-    });
+  public toFirestore(): MatchFirestore {
+    const { ref, ...rest } = this;
+    // TODO: Update the `firestoreVals` type definition (so it returns the
+    // `MatchFirestore` object) and use it everywhere in `toFirestore` methods.
+    return firestoreVals({ ...rest, ...super.toFirestore() }) as MatchFirestore;
   }
 
+  // TODO: Decide whether these Firestore conversion methods should accept a
+  // `DocumentSnapshot` or the actual object itself (as `Resource` does).
   public static fromFirestore(snapshot: DocumentSnapshot): Match {
     const data: DocumentData | undefined = snapshot.data();
     if (data) {
-      const { time, request, venue, ...rest } = data;
       return new Match({
-        ...rest,
-        time: time ? Timeslot.fromFirestore(time) : undefined,
-        request: request ? Match.fromJSON(request) : undefined,
-        venue: Venue.fromFirestore(venue),
+        ...data,
+        ...Resource.fromFirestore(data as ResourceFirestore),
         ref: snapshot.ref,
         id: snapshot.id,
       });
@@ -203,22 +156,11 @@ export class Match implements MatchInterface {
     return new Match();
   }
 
-  public static fromSearchHit(hit: MatchSearchHit): Match {
-    const { time, request, venue, objectID, ...rest } = hit;
-    return new Match({
-      ...rest,
-      time: time ? Timeslot.fromSearchHit(time) : undefined,
-      request: request ? Match.fromSearchHit(request) : undefined,
-      venue: Venue.fromSearchHit(venue),
-      id: objectID,
-    });
+  public static fromSearchHit({ objectID, ...hit }: MatchSearchHit): Match {
+    return new Match({ ...hit, ...Resource.fromSearchHit(hit), id: objectID });
   }
 
   public toSegment(): MatchSegment {
-    return {
-      message: this.message,
-      subjects: this.subjects,
-      time: this.time?.toSegment(),
-    };
+    return { message: this.message, subjects: this.subjects };
   }
 }
