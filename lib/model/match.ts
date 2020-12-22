@@ -63,8 +63,6 @@ export interface MatchInterface {
   creator: Person;
   message: string;
   venue: Venue;
-  time?: Timeslot;
-  request?: Match;
   ref?: DocumentReference;
   id: string;
 }
@@ -224,13 +222,3 @@ export class Match implements MatchInterface {
     };
   }
 }
-
-// Matches and requests share exactly the same data model, but are just stored
-// in different places within our database (and have different names when used
-// throughout the code base, as aliased here).
-export { Match as Request };
-export { isMatchJSON as isRequestJSON };
-export type RequestInterface = MatchInterface;
-export type RequestSearchHit = MatchSearchHit;
-export type RequestSegment = MatchSegment;
-export type RequestJSON = MatchJSON;
