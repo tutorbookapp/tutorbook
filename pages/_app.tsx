@@ -136,7 +136,8 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     setDark(isDark);
   }, [theme]);
   useEffect(() => {
-    document.documentElement.className = dark ? 'dark' : '';
+    if (dark) return document.documentElement.classList.add('dark');
+    return document.documentElement.classList.remove('dark');
   }, [dark]);
   useEffect(() => {
     localStorage.setItem('theme', theme);

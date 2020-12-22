@@ -28,7 +28,8 @@ export default function Page({
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.body.className = intercom ? 'intercom' : '';
+    if (intercom) return document.body.classList.add('intercom');
+    return document.body.classList.remove('intercom');
   }, [intercom]);
 
   return (
