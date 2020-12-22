@@ -114,12 +114,12 @@ export default memo(function SearchBar({
           outlined
           placeholder={t('users:search-placeholder')}
           className={styles.searchField}
-          value={query.query}
+          value={query.search}
           onChange={(event: FormEvent<HTMLInputElement>) => {
-            const q: string = event.currentTarget.value;
+            const search = event.currentTarget.value;
             // TODO: Throttle the actual API requests but immediately show the
             // loading state (i.e. we can't just throttle `setQuery` updates).
-            setQuery((p) => new UsersQuery({ ...p, query: q, page: 0 }));
+            setQuery((p) => new UsersQuery({ ...p, search, page: 0 }));
           }}
         />
       </div>

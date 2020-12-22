@@ -125,14 +125,14 @@ export default async function getUsers(
   if (!filterStrings.length) filterStrings = [undefined];
   const index = client.initIndex(`${process.env.APP_ENV as string}-users`);
   const optionalFilters = getOptionalFilterStrings(query);
-  const { page, hitsPerPage, query: text } = query;
+  const { page, hitsPerPage, search } = query;
   await Promise.all(
     filterStrings.map(async (filterString) => {
       const options: SearchOptions | undefined = filterString
         ? { page, hitsPerPage, optionalFilters, filters: filterString }
         : { page, hitsPerPage, optionalFilters };
       const [err, res] = await to<SearchResponse<UserSearchHit>>(
-        index.search(text, options) as Promise<SearchResponse<UserSearchHit>>
+        index.search(search, options) as Promise<SearchResponse<UserSearchHit>>
       );
       if (err)
         throw new APIError(

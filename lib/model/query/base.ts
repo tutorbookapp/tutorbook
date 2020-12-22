@@ -1,7 +1,5 @@
 import url from 'url';
 
-import { Check } from 'lib/model/verification';
-import { Tag } from 'lib/model/user';
 import construct from 'lib/model/construct';
 
 export interface Option<T> {
@@ -12,16 +10,14 @@ export interface Option<T> {
 /**
  * The base object just supports pagination, text-based search, and tag filters.
  * @abstract
- * @property query - The current string search query.
+ * @property search - The current string search query.
  * @property orgs - The organizations that the resource belongs to.
  * @property tags - Algolia search `__tags` (e.g. `NOT_YET_VETTED`).
  * @property hitsPerPage - The number of hits to display per page (pagination).
  * @property page - The current page number (for pagination purposes).
  */
 export interface QueryInterface {
-  query: string;
-  orgs: Option<string>[];
-  tags: Option<Tag>[];
+  search: string;
   hitsPerPage: number;
   page: number;
 }
@@ -31,11 +27,7 @@ export type QueryJSON = QueryInterface;
 export type QueryURL = { [key in keyof QueryInterface]?: string };
 
 export abstract class Query implements QueryInterface {
-  public query = '';
-
-  public orgs: Option<string>[] = [];
-
-  public tags: Option<Tag>[] = [];
+  public search = '';
 
   // The number of hits per page (for pagination purposes).
   // @see {@link https://www.algolia.com/doc/guides/building-search-ui/going-further/backend-search/how-to/pagination/}
@@ -53,34 +45,23 @@ export abstract class Query implements QueryInterface {
 
   public abstract get endpoint(): string;
 
-  protected getURL(pathname: string): string {
-    function encode(p?: Option<any>[]): string {
-      return encodeURIComponent(JSON.stringify(p));
-    }
+  protected getURLQuery(): Record<string, string | number | boolean> {
+    const query: Record<string, string | number | boolean> = {};
+    if (this.search) query.search = encodeURIComponent(this.search);
+    if (this.hitsPerPage !== 20) query.hitsPerPage = this.hitsPerPage;
+    if (this.page !== 0) query.page = this.page;
+    return query;
+  }
 
-    return url.format({
-      pathname,
-      query: {
-        query: encodeURIComponent(this.query),
-        orgs: encode(this.orgs),
-        tags: encode(this.tags),
-        page: this.page,
-        hitsPerPage: this.hitsPerPage,
-      },
-    });
+  public getURL(pathname: string): string {
+    return url.format({ pathname, query: this.getURLQuery() });
   }
 
   public static fromURLParams(params: QueryURL): QueryInterface {
-    function decode<T = string>(p?: string): Option<T>[] {
-      return p ? (JSON.parse(decodeURIComponent(p)) as Option<T>[]) : [];
-    }
-
     return {
-      query: decodeURIComponent(params.query || ''),
-      orgs: decode<Check>(params.orgs),
-      tags: decode(params.tags),
-      page: Number(decodeURIComponent(params.page || '0')),
+      search: decodeURIComponent(params.search || ''),
       hitsPerPage: Number(decodeURIComponent(params.hitsPerPage || '20')),
+      page: Number(decodeURIComponent(params.page || '0')),
     };
   }
 

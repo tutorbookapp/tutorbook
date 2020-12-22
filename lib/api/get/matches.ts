@@ -40,9 +40,9 @@ export default async function searchMatches(
 ): Promise<{ matches: Match[]; hits: number }> {
   const index = client.initIndex(`${process.env.APP_ENV as string}-matches`);
   const filters = getFilterString(query);
-  const { page, hitsPerPage, query: text } = query;
+  const { page, hitsPerPage, search } = query;
   const [err, res] = await to<SearchResponse<MatchSearchHit>>(
-    index.search(text, { page, hitsPerPage, filters }) as Promise<
+    index.search(search, { page, hitsPerPage, filters }) as Promise<
       SearchResponse<MatchSearchHit>
     >
   );

@@ -55,12 +55,6 @@ export function isSubjects(json: unknown): json is Subjects {
 }
 
 /**
- * Various tags that are added to the Algolia users search during indexing (via
- * the `firebase/functions/src/algolia.ts` GCP serverless function).
- */
-export type Tag = 'not-vetted';
-
-/**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
  * @extends AccountInterface

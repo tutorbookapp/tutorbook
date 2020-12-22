@@ -1,5 +1,3 @@
-import url from 'url';
-
 import { Option, Query, QueryInterface } from 'lib/model/query/base';
 import construct from 'lib/model/construct';
 
@@ -7,8 +5,6 @@ import construct from 'lib/model/construct';
 export interface MatchesQueryInterface extends QueryInterface {
   org?: string;
   people: Option<string>[];
-  from?: Date;
-  to?: Date;
 }
 
 export type MatchesQueryJSON = MatchesQueryInterface;
@@ -20,39 +16,25 @@ export function isMatchesQueryURL(query: unknown): query is MatchesQueryURL {
   return true;
 }
 
-// TODO: Refactor the query data models as we never filter by multiple orgs for
-// matches. Also, we want to minify the query URL (it's way to long right now).
 export class MatchesQuery extends Query implements MatchesQueryInterface {
   public org?: string;
 
   public people: Option<string>[] = [];
-
-  public from?: Date;
-
-  public to?: Date;
 
   public constructor(query: Partial<MatchesQueryInterface> = {}) {
     super(query);
     construct<MatchesQueryInterface>(this, query);
   }
 
-  public getURL(pathname: string): string {
+  protected getURLQuery(): Record<string, string | number | boolean> {
     function encode(p?: Option<any>[]): string {
       return encodeURIComponent(JSON.stringify(p));
     }
 
-    return url.format({
-      pathname,
-      query: {
-        org: this.org || '',
-        people: encode(this.people),
-        query: encodeURIComponent(this.query),
-        orgs: encode(this.orgs),
-        tags: encode(this.tags),
-        page: this.page,
-        hitsPerPage: this.hitsPerPage,
-      },
-    });
+    const query = super.getURLQuery();
+    if (this.people.length) query.people = encode(this.people);
+    if (this.org) query.org = encodeURIComponent(this.org);
+    return query;
   }
 
   public static fromURLParams(params: MatchesQueryURL): MatchesQuery {
@@ -61,9 +43,9 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
     }
 
     return new MatchesQuery({
-      ...super.fromURLParams(params),
+      ...Query.fromURLParams(params),
       people: decode(params.people),
-      org: params.org,
+      org: params.org ? decodeURIComponent(params.org) : undefined,
     });
   }
 
@@ -72,6 +54,6 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
   }
 
   public static fromJSON(json: MatchesQueryJSON): MatchesQuery {
-    return new MatchesQuery(super.fromJSON(json));
+    return new MatchesQuery(Query.fromJSON(json));
   }
 }
