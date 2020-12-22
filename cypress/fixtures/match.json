@@ -1,14 +1,8 @@
 {
   "id": "match",
   "status": "new",
-  "venue": {
-    "type": "jitsi",
-    "id": "bffQbpagCt",
-    "url": "https://meet.jit.si/TB-bffQbpagCt",
-    "invite": "Open https://meet.jit.si/TB-bffQbpagCt to join your meeting.",
-    "created": "2020-10-15T19:04:10",
-    "updated": "2020-10-15T19:04:10"
-  },
+  "created": "2020-10-15T19:04:10",
+  "updated": "2020-10-15T19:04:10",
   "creator": {
     "roles": [],
     "photo": "https://assets.tutorbook.app/jpgs/admin.jpg",
@@ -16,8 +10,6 @@
     "name": "Nicholas Chiang",
     "id": "admin"
   },
-  "time": null,
-  "request": null,
   "org": "gunn",
   "subjects": ["Computer Science"],
   "message": "I could really use your help with learning how to use Cypress for integration and unit tests.",

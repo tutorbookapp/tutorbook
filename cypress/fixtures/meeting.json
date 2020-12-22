@@ -8,6 +8,14 @@
     "recur": "",
     "id": "CEzvTUDpaM9f9pDCTyI75"
   },
+  "venue": {
+    "type": "jitsi",
+    "id": "bffQbpagCt",
+    "url": "https://meet.jit.si/TB-bffQbpagCt",
+    "invite": "Open https://meet.jit.si/TB-bffQbpagCt to join your meeting.",
+    "created": "2020-10-15T19:04:10",
+    "updated": "2020-10-15T19:04:10"
+  },
   "creator": {
     "roles": ["tutor"],
     "photo": "https://assets.tutorbook.app/jpgs/volunteer.jpg",
@@ -15,5 +23,25 @@
     "name": "John Doe",
     "id": "volunteer"
   },
-  "notes": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers."
+  "notes": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
+  "status": "new",
+  "org": "gunn",
+  "subjects": ["Computer Science"],
+  "message": "I could really use your help with learning how to use Cypress for integration and unit tests.",
+  "people": [
+    {
+      "roles": ["tutor"],
+      "photo": "https://assets.tutorbook.app/jpgs/volunteer.jpg",
+      "handle": "6316934d-63b9-4aec-82f8-1bf2645c048d",
+      "name": "John Doe",
+      "id": "volunteer"
+    },
+    {
+      "roles": ["tutee"],
+      "photo": "https://assets.tutorbook.app/jpgs/student.jpg",
+      "handle": "5481564b-e29d-4241-a1dd-01456834f65d",
+      "name": "Erik Lucatero",
+      "id": "student"
+    }
+  ]
 }
