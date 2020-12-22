@@ -8,8 +8,7 @@ $margin: 24px;
 .actions {
   border-top: 1px solid var(--accents-2);
   overflow: auto;
-  display: flex;
-  justify-content: flex-end;
+  text-align: right;
   flex: none;
 
   .chips {
