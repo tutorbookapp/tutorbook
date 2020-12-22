@@ -148,7 +148,7 @@ $border: var(--accents-2);
       height: 4px;
       position: absolute;
       width: calc(100% - 16px);
-      z-index: 2;
+      z-index: 1;
     }
 
     &::after {
@@ -162,7 +162,7 @@ $border: var(--accents-2);
       position: absolute;
       right: 16px;
       width: $cell-width;
-      z-index: 2;
+      z-index: 1;
     }
 
     .timesWrapper {
@@ -183,7 +183,7 @@ $border: var(--accents-2);
         height: 2px;
         position: absolute;
         width: $cell-width;
-        z-index: 2;
+        z-index: 1;
       }
 
       .times {

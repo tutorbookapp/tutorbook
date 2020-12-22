@@ -4,6 +4,7 @@ import {
   MouseEvent as ReactMouseEvent,
   TouchEvent as ReactTouchEvent,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -14,23 +15,30 @@ import useTranslation from 'next-translate/useTranslation';
 import { Match, TCallback, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 
-import { WIDTH, getHeight, getMatch, getPosition } from './utils';
+import { getHeight, getMatch, getPosition } from './utils';
+import { RND_MARGIN } from './config';
 import styles from './match-rnd.module.scss';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
-interface MatchRndProps {
+export interface MatchRndProps {
   value: Match;
-  width?: number;
+  width: number;
   onChange: TCallback<Match | undefined>;
-  onClick: (pos: Position) => void;
+  onClick: (pos: Position, height: number) => void;
+  onTouchStart: () => void;
+  onMouseDown: () => void;
+  onDrag: () => void;
 }
 
 export default function MatchRnd({
   value,
+  width,
   onChange,
   onClick: clickHandler,
-  width = WIDTH,
+  onDrag: dragHandler,
+  onTouchStart,
+  onMouseDown,
 }: MatchRndProps): JSX.Element {
   // Workaround for `react-rnd`'s unusual resizing behavior.
   // @see {@link https://codesandbox.io/s/1z7kjjk0pq?file=/src/index.js}
@@ -53,13 +61,16 @@ export default function MatchRnd({
 
   // Only trigger `onClick` callback when user hasn't been dragging.
   const [dragging, setDragging] = useState<boolean>(false);
+  useEffect(() => {
+    if (dragging) dragHandler();
+  }, [dragging, dragHandler]);
 
   const onClick = useCallback(
     (evt: ReactMouseEvent) => {
       evt.stopPropagation();
-      if (!dragging) clickHandler(position);
+      if (!dragging) clickHandler(position, height);
     },
-    [dragging, clickHandler, position]
+    [dragging, clickHandler, position, height]
   );
   const onResizeStop = useCallback(() => {
     setTimeout(() => setDragging(false), 0);
@@ -115,12 +126,14 @@ export default function MatchRnd({
       className={styles.match}
       position={position}
       minHeight={12 * 4}
-      size={{ width: width - 10, height }}
+      size={{ width: width - RND_MARGIN, height }}
       onResizeStop={onResizeStop}
       onResize={onResize}
       onClick={onClick}
       onDragStop={onDragStop}
       onDrag={onDrag}
+      onTouchStart={onTouchStart}
+      onMouseDown={onMouseDown}
       bounds='parent'
       resizeGrid={[0, 12]}
       dragGrid={[width, 12]}

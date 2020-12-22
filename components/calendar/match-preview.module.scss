@@ -1,6 +1,25 @@
 @use 'styles/typography';
+@use '@material/dialog';
 
 $image-size: 160px;
+
+.scrimOuter {
+  position: absolute;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  top: 0;
+  left: 0;
+
+  .scrimInner {
+    z-index: dialog.$z-index;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    position: fixed;
+    pointer-events: none;
+  }
+}
 
 .wrapper {
   box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
@@ -8,12 +27,11 @@ $image-size: 160px;
   background: var(--background);
   position: absolute;
   border-radius: 8px;
-  z-index: 1;
   font-weight: 500;
-  width: $image-size * 2 + 16px + 48px;
   opacity: 0;
   will-change: opacity;
   transition: opacity 200ms ease-in-out;
+  pointer-events: auto;
 
   &.open {
     opacity: 1;
@@ -29,6 +47,26 @@ $image-size: 160px;
     padding: 9px;
     width: 36px;
     height: 36px;
+  }
+}
+
+.actions {
+  border-top: 1px solid var(--accents-2);
+  overflow: auto;
+  text-align: right;
+
+  .chips {
+    padding: 12px 0;
+    flex-wrap: nowrap;
+    display: inline-flex;
+
+    :global(.mdc-chip:first-child) {
+      margin-left: 12px;
+    }
+
+    :global(.mdc-chip:last-child) {
+      margin-right: 12px;
+    }
   }
 }
 

@@ -15262,6 +15262,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"react-merge-refs@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "react-merge-refs@npm:1.1.0"
+  checksum: 20819f9fb3dd9cbf6eeccb49ac9cc6db139a4084e458d3df36cf3b6a7b9464b8abc244137c40b5c32dd7ca37929f0c411e8cec3ff3d4ba40203394f58416b656
+  languageName: node
+  linkType: hard
+
 "react-refresh@npm:0.8.3":
   version: 0.8.3
   resolution: "react-refresh@npm:0.8.3"
@@ -18072,6 +18079,7 @@ resolve@1.1.7:
     re-resizable: ^6.5.4
     react: ^16.13.1
     react-dom: ^16.13.1
+    react-merge-refs: ^1.1.0
     react-rnd: ^10.2.1
     react-spring: ^8.0.27
     react-test-renderer: ^16.13.1
