@@ -1,5 +1,7 @@
 {
   "id": "default",
+  "created": "2020-10-15T19:04:10",
+  "updated": "2020-10-15T19:04:10",
   "name": "Tutorbook",
   "photo": "https://assets.tutorbook.app/jpgs/default.jpg",
   "background": "https://assets.tutorbook.app/jpgs/rocky-beach.jpg",
@@ -44,9 +46,6 @@
   ],
   "domains": [],
   "aspects": ["mentoring", "tutoring"],
-  "subjects": null,
-  "zoom": null,
-  "matchURL": null,
   "signup": {
     "en": {
       "mentoring": {

@@ -1,5 +1,7 @@
 {
   "id": "volunteer",
+  "created": "2020-10-15T19:04:10",
+  "updated": "2020-10-15T19:04:10",
   "name": "John Doe",
   "email": "john@example.com",
   "phone": "+16505550137",
@@ -74,7 +76,5 @@
   "langs": ["en", "es"],
   "parents": [],
   "verifications": [],
-  "visible": true,
-  "token": null,
-  "hash": null
+  "visible": true
 }

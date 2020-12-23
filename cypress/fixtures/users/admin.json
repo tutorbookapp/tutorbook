@@ -1,5 +1,7 @@
 {
   "id": "admin",
+  "created": "2020-10-15T19:04:10",
+  "updated": "2020-10-15T19:04:10",
   "name": "Nicholas Chiang",
   "email": "nicholas@example.com",
   "phone": "+16505550138",
@@ -75,7 +77,5 @@
       "notes": "I chatted with John Doe over Zoom; he's a great guy! Very passionate about CS."
     }
   ],
-  "visible": true,
-  "token": null,
-  "hash": null
+  "visible": true
 }
