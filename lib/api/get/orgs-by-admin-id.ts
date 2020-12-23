@@ -9,5 +9,5 @@ import { Org } from 'lib/model';
 export default async function getOrgsByAdminId(uid: string): Promise<Org[]> {
   return (
     await db.collection('orgs').where('members', 'array-contains', uid).get()
-  ).docs.map((org: DocumentSnapshot) => Org.fromFirestore(org));
+  ).docs.map((org: DocumentSnapshot) => Org.fromFirestoreDoc(org));
 }

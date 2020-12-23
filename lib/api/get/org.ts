@@ -11,5 +11,5 @@ import { db } from 'lib/api/firebase';
 export default async function getOrg(id: string): Promise<Org> {
   const doc = await db.collection('orgs').doc(id).get();
   if (!doc.exists) throw new APIError(`Org (${id}) does not exist in database`);
-  return Org.fromFirestore(doc);
+  return Org.fromFirestoreDoc(doc);
 }

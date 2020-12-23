@@ -2,8 +2,8 @@ import { Meeting, MeetingsQuery } from 'lib/model';
 import { addOptionsFilter, addStringFilter, list } from 'lib/api/search';
 
 function getFilterStrings(query: MeetingsQuery): string[] {
-  let str = query.org ? `org:${query.org}` : '';
-  str = addOptionsFilter(str, query.people, 'people.id', 'OR');
+  let str = query.org ? `match.org:${query.org}` : '';
+  str = addOptionsFilter(str, query.people, 'match.people.id', 'OR');
 
   const to = query.to.valueOf();
   const from = query.from.valueOf();
@@ -22,6 +22,5 @@ export default async function getMeetings(
   query: MeetingsQuery
 ): Promise<{ hits: number; results: Meeting[] }> {
   const filters = getFilterStrings(query);
-  console.log('Filtering meetings by strings:', filters);
   return list('meetings', query, Meeting.fromSearchHit, filters);
 }

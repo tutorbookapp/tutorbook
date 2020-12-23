@@ -9,5 +9,5 @@ export default async function getUserMatches(uid: string): Promise<Match[]> {
       .collection('matches')
       .where('peopleIds', 'array-contains', uid)
       .get()
-  ).docs.map((match) => Match.fromFirestore(match));
+  ).docs.map((match) => Match.fromFirestoreDoc(match));
 }

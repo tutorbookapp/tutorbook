@@ -12,5 +12,5 @@ export default async function getMatch(id: string): Promise<Match> {
   const doc = await db.collection('matches').doc(id).get();
   if (!doc.exists)
     throw new APIError(`Match (${id}) does not exist in database`);
-  return Match.fromFirestore(doc);
+  return Match.fromFirestoreDoc(doc);
 }

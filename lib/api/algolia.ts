@@ -36,5 +36,6 @@ export default function index<
 >(indexId: string, obj: T, tags?: string[]): Promise<SaveObjectResponse> {
   const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
   const idxObj = clone({ ...obj.toSearchHit(), _tags: tags });
+  console.log('Saving index object:', idxObj);
   return (idx.saveObject(idxObj) as unknown) as Promise<SaveObjectResponse>;
 }

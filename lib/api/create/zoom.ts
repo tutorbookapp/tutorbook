@@ -63,7 +63,7 @@ export default async function createZoom(
   match: Match,
   people: User[]
 ): Promise<Venue> {
-  const org = Org.fromFirestore(
+  const org = Org.fromFirestoreDoc(
     await db.collection('orgs').doc(match.org).get()
   );
   const aspects = new Set<Aspect>();
