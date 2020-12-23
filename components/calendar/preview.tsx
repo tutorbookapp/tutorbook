@@ -17,15 +17,15 @@ import useMeasure from 'react-use-measure';
 
 import Avatar from 'components/avatar';
 
-import { Callback, Match, Position } from 'lib/model';
+import { Callback, Meeting, Position } from 'lib/model';
 import { join } from 'lib/utils';
 import { useScrollLock } from 'lib/hooks';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from './config';
-import styles from './match-preview.module.scss';
+import styles from './preview.module.scss';
 
-export interface MatchPreviewProps {
-  match: Match;
+export interface MeetingPreviewProps {
+  meeting: Meeting;
   offset: Position;
   onClosed: () => void;
   width: number;
@@ -35,14 +35,14 @@ export interface MatchPreviewProps {
   open: boolean;
 }
 
-type MatchPreviewRef =
+type MeetingPreviewRef =
   | RefObject<HTMLElement>
   | null
   | ((element: HTMLElement | null) => void);
 
-export default forwardRef(function MatchPreview(
+export default forwardRef(function MeetingPreview(
   {
-    match,
+    meeting,
     offset,
     onClosed,
     width: itemWidth,
@@ -50,8 +50,8 @@ export default forwardRef(function MatchPreview(
     position: itemPosition,
     setOpen,
     open,
-  }: MatchPreviewProps,
-  ref: MatchPreviewRef
+  }: MeetingPreviewProps,
+  ref: MeetingPreviewRef
 ): JSX.Element {
   const measured = useRef<boolean>(false);
 
@@ -97,6 +97,7 @@ export default forwardRef(function MatchPreview(
   }, [alignedTop, alignedCenter, alignedBottom, previewBounds.height]);
 
   const props = useSpring({
+    // TODO: Clicking on match after closing begins should reverse animation.
     onRest: () => (!open && measured.current ? onClosed() : undefined),
     left: itemPosition.x < itemWidth * 3 ? onRight : onLeft,
     config: { tension: 250, velocity: 50 },
@@ -122,8 +123,11 @@ export default forwardRef(function MatchPreview(
           </div>
           <div className={styles.content}>
             <div className={styles.people}>
-              {match.people.map((person) => (
-                <Link href={`/${match.org}/users/${person.id}`} key={person.id}>
+              {meeting.people.map((person) => (
+                <Link
+                  href={`/${meeting.org}/users/${person.id}`}
+                  key={person.id}
+                >
                   <a className={styles.person}>
                     <div className={styles.avatar}>
                       <Avatar src={person.photo} size={160} />
@@ -137,12 +141,12 @@ export default forwardRef(function MatchPreview(
             <div className={styles.info}>
               <dl>
                 <dt>Subjects</dt>
-                <dd>{join(match.subjects)}</dd>
+                <dd>{join(meeting.subjects)}</dd>
               </dl>
               <dl>
                 <dt>Meeting venue</dt>
                 <dd>
-                  <a href={match.venue.url}>{match.venue.url}</a>
+                  <a href={meeting.venue.url}>{meeting.venue.url}</a>
                 </dd>
               </dl>
             </div>

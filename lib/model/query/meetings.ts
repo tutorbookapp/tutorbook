@@ -28,9 +28,19 @@ export function isMeetingsQueryURL(query: unknown): query is MeetingsQueryURL {
 
 export class MeetingsQuery extends MatchesQuery
   implements MeetingsQueryInterface {
-  public from: Date = new Date();
+  // Start query on the most recent Sunday at 12am.
+  public from = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDate() - new Date().getDay()
+  );
 
-  public to: Date = new Date();
+  // End query on the next Sunday at 12am (instead of Saturday 11:59:59.99).
+  public to = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDate() - new Date().getDay() + 7
+  );
 
   public constructor(query: Partial<MeetingsQueryInterface> = {}) {
     super(query);

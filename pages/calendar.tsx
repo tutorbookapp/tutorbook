@@ -8,8 +8,8 @@ import Header from 'components/header';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
-import { CallbackParam, Match, MatchesQuery } from 'lib/model';
-import { ListMatchesRes } from 'lib/api/routes/matches/list';
+import { CallbackParam, Meeting, MeetingsQuery } from 'lib/model';
+import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
@@ -17,17 +17,16 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 
-import matchJSON from 'cypress/fixtures/match.json';
-
 function CalendarPage(): JSX.Element {
   usePage({ name: 'Calendar', url: '/calendar', login: true });
 
   const [searching, setSearching] = useState<boolean>(true);
-  const [query, setQuery] = useState<MatchesQuery>();
+  const [query, setQuery] = useState<MeetingsQuery>();
 
-  const onQueryChange = useCallback((param: CallbackParam<MatchesQuery>) => {
+  const onQueryChange = useCallback((param: CallbackParam<MeetingsQuery>) => {
     setQuery((prev) => {
-      let updated = prev || new MatchesQuery({ hitsPerPage: 10 });
+      // TODO: Will there ever be more than 1000 meetings to display at once?
+      let updated = prev || new MeetingsQuery({ hitsPerPage: 1000 });
       if (typeof param === 'object') updated = param;
       if (typeof param === 'function') updated = param(updated);
       if (dequal(updated, prev)) return prev;
@@ -43,23 +42,23 @@ function CalendarPage(): JSX.Element {
     onQueryChange((prev) => {
       if (!user.id) return prev;
       const people = [{ label: user.name, value: user.id }];
-      return new MatchesQuery({ ...prev, people });
+      return new MeetingsQuery({ ...prev, people });
     });
   }, [user, onQueryChange]);
 
-  const { data, isValidating } = useSWR<ListMatchesRes>(
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const { data, isValidating } = useSWR<ListMeetingsRes>(
     query ? query.endpoint : null
   );
 
   useEffect(() => {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
-
-  const [matches, setMatches] = useState<Match[]>([Match.fromJSON(matchJSON)]);
-
-  //useEffect(() => {
-  //setMatches((prev) => data?.matches.map((m) => Match.fromJSON(m)) || prev);
-  //}, [data?.matches]);
+  useEffect(() => {
+    setMeetings(
+      (prev) => data?.meetings.map((m) => Meeting.fromJSON(m)) || prev
+    );
+  }, [data?.meetings]);
 
   return (
     <Page title='Calendar - Tutorbook'>
@@ -100,9 +99,10 @@ function CalendarPage(): JSX.Element {
         ]}
       />
       <Calendar
+        query={query}
         searching={searching}
-        matches={matches}
-        setMatches={setMatches}
+        meetings={meetings}
+        setMeetings={setMeetings}
       />
     </Page>
   );

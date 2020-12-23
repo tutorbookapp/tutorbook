@@ -1,4 +1,4 @@
-import { getDaysInMonth, getNextDateWithDay } from 'lib/utils/time';
+import { getDaysInMonth, getDateWithDay } from 'lib/utils/time';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
 import match from 'cypress/fixtures/match.json';
@@ -86,7 +86,7 @@ function selectTime(): void {
 
   const monthBeginning = new Date(now.getFullYear(), now.getMonth());
   function dayIdx(day: number): number {
-    return getNextDateWithDay(day, monthBeginning).getDate() - 1;
+    return getDateWithDay(day, monthBeginning).getDate() - 1;
   }
 
   // Only the days when John Doe is available should be clickable.
@@ -100,7 +100,7 @@ function selectTime(): void {
   cy.percySnapshot('User Display Page with Time Select Open');
 
   // TODO: We won't let bookings in the past so this will sometimes fail.
-  const selected = getNextDateWithDay(0, monthBeginning);
+  const selected = getDateWithDay(0, monthBeginning);
   selected.setHours(9, 0, 0, 0);
   cy.get('@days')
     .eq(selected.getDate() - 1)

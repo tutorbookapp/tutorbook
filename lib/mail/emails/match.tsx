@@ -54,13 +54,13 @@ export default function MatchEmail({
           button below to join the {aspect === 'mentoring' ? 'call' : 'lesson'}:
         </P>
         <br />
-        <Button href={match.venue.url}>
+        <Button href='#'>
           JOIN {aspect === 'mentoring' ? 'CALL' : 'LESSON'}
         </Button>
         <br />
         <P>Or copy and paste this URL into a new tab of your browser:</P>
         <P style={{ marginBottom: '0px !important' }}>
-          <Link href={match.venue.url}>{match.venue.url}</Link>
+          <Link href='#'>TODO</Link>
         </P>
         <br />
         <P>

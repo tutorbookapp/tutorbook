@@ -1,31 +1,44 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { MeetingJSON } from 'lib/model';
+import { APIError, handle } from 'lib/api/error';
+import {
+  MeetingJSON,
+  MeetingsQuery,
+  MeetingsQueryURL,
+  isMeetingsQueryURL,
+} from 'lib/model';
 import getMeetings from 'lib/api/get/meetings';
-import getMatch from 'lib/api/get/match';
-import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import verifyQuery from 'lib/api/verify/query';
 
-export type ListMeetingsRes = MeetingJSON[];
+export interface ListMeetingsRes {
+  meetings: MeetingJSON[];
+  hits: number;
+}
 
 export default async function listMeetings(
   req: Req,
   res: Res<ListMeetingsRes>
 ): Promise<void> {
   try {
-    const id = verifyQueryId(req.query);
-    const [match, meetings] = await Promise.all([
-      getMatch(id),
-      getMeetings(id),
-    ]);
+    const query = verifyQuery<MeetingsQuery, MeetingsQueryURL>(
+      req.query,
+      isMeetingsQueryURL,
+      MeetingsQuery
+    );
 
+    // User must be either:
+    // a) An org admin of the matches requested, OR;
+    // b) The person whose matches are being requested.
+    if (query.people.length !== 1 && !query.org)
+      throw new APIError('You must filter meetings by org or people', 400);
     await verifyAuth(req.headers, {
-      userIds: match.people.map((p) => p.id),
-      orgIds: [match.org],
+      userId: query.people.length === 1 ? query.people[0].value : undefined,
+      orgIds: query.org ? [query.org] : undefined,
     });
 
-    res.status(200).json(meetings.map((m) => m.toJSON()));
+    const { results, hits } = await getMeetings(query);
+    res.status(200).json({ hits, meetings: results.map((m) => m.toJSON()) });
   } catch (e) {
     handle(e, res);
   }

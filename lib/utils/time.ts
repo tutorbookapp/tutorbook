@@ -50,25 +50,26 @@ export function getWeekdayOfFirst(month: number, year?: number): number {
 }
 
 /**
- * Returns the next date (from now or from a given date) that has the given
- * times.
+ * Returns the next date from 1970-01-01T00:00:00Z (the origin of the Unix
+ * timestamp) or a given date that has the given times.
+ * @see {@link https://en.wikipedia.org/wiki/Unix_time}
  * @param hours - The hours that the returned date should have.
- * @param minutes - The minutes that the returned date should have.
- * @param seconds - The seconds that the returned date should have.
- * @param milliseconds - The milliseconds that the returned date should have.
- * @param [now] - The date we should start from. Default is right now.
+ * @param [minutes=0] - The minutes that the returned date should have.
+ * @param [seconds=0] - The seconds that the returned date should have.
+ * @param [milliseconds=0] - The milliseconds that the returned date should have.
+ * @param [reference] - The date we should start from. Default is UTC 0.
  */
-export function getNextDateWithTime(
+export function getDateWithTime(
   hours: number,
-  minutes: number,
-  seconds: number,
-  milliseconds: number,
-  now: Date = new Date()
+  minutes = 0,
+  seconds = 0,
+  milliseconds = 0,
+  reference = new Date(0)
 ): Date {
   return new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
+    reference.getFullYear(),
+    reference.getMonth(),
+    reference.getDate(),
     hours,
     minutes,
     seconds,
@@ -77,44 +78,14 @@ export function getNextDateWithTime(
 }
 
 /**
- * Returns the next date from 1970-01-01T00:00:00Z (the origin of the Unix
- * timestamp) that has the given times.
- * @see {@link https://en.wikipedia.org/wiki/Unix_time}
- * @param hours - The hours that the returned date should have.
- * @param [minutes=0] - The minutes that the returned date should have.
- * @param [seconds=0] - The seconds that the returned date should have.
- * @param [milliseconds=0] - The milliseconds that the returned date should
- * have.
- */
-export function getDateWithTime(
-  hours: number,
-  minutes = 0,
-  seconds = 0,
-  milliseconds = 0
-): Date {
-  return getNextDateWithTime(
-    hours,
-    minutes,
-    seconds,
-    milliseconds,
-    new Date(0)
-  );
-}
-
-/**
  * Returns the next date (from a given date) that has the given day (does not
  * change the times on the given date).
  * @param day - The integer representing the desired day (e.g. 0 for Sunday).
- * @param [now] - The starting point and the date to get the time values
- * from (i.e. the hours, minutes, seconds, milliseconds, year, month, etc).
- * Default is right now.
+ * @param [reference] - The date we should start from. Default is UTC 0.
  * @todo Why do we have a counter (originally from `@tutorboook/utils`)?
  */
-export function getNextDateWithDay(
-  weekday: number,
-  now: Date = new Date()
-): Date {
-  const date = new Date(now.valueOf());
+export function getDateWithDay(weekday: number, reference = new Date(0)): Date {
+  const date = new Date(reference.valueOf());
   let count = 0; // TODO: Why did we add this counter in `lib/utils`?
   while (date.getDay() !== weekday && count <= 256) {
     date.setDate(date.getDate() + 1);
@@ -133,10 +104,13 @@ export function getDate(
   hours: number,
   minutes = 0,
   seconds = 0,
-  milliseconds = 0
+  milliseconds = 0,
+  reference = new Date(0)
 ): Date {
-  const time: Date = getDateWithTime(hours, minutes, seconds, milliseconds);
-  return getNextDateWithDay(weekday, time);
+  return getDateWithDay(
+    weekday,
+    getDateWithTime(hours, minutes, seconds, milliseconds, reference)
+  );
 }
 
 /**

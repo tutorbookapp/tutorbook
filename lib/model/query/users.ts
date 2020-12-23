@@ -73,6 +73,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
   // these are sent in URL parameters. Main obstacle would just be serializing
   // and deserializing the complex `Option` JSON objects.
   // @see {@link https://www.npmjs.com/package/serialize-query-params}
+  // @see {@link https://github.com/pbeshai/use-query-params}
   protected getURLQuery(): Record<string, string | number | boolean> {
     function encode(p?: Option<any>[]): string {
       return encodeURIComponent(JSON.stringify(p));

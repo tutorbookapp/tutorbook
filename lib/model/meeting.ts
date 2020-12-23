@@ -43,8 +43,6 @@ export interface MeetingInterface extends MatchInterface {
   venue: Venue;
   time: Timeslot;
   notes: string;
-  ref?: DocumentReference;
-  id: string;
 }
 
 export type MeetingJSON = Omit<
@@ -79,10 +77,6 @@ export class Meeting extends Match implements MeetingInterface {
   public time = new Timeslot();
 
   public notes = '';
-
-  public ref?: DocumentReference;
-
-  public id = '';
 
   public constructor(meeting: Partial<MeetingInterface> = {}) {
     super(meeting);

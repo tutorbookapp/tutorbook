@@ -2,6 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
+import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getMatch from 'lib/api/get/match';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
@@ -29,6 +30,7 @@ export default async function createMeeting(
       Meeting
     );
     const meeting = await createMeetingDoc(body, id);
+    await createMeetingSearchObj(meeting);
 
     res.status(200).json(meeting.toJSON());
   } catch (e) {

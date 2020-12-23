@@ -32,8 +32,8 @@ export default async function listMatches(
       orgIds: query.org ? [query.org] : undefined,
     });
 
-    const { matches, hits } = await getMatches(query);
-    res.status(200).json({ hits, matches: matches.map((m) => m.toJSON()) });
+    const { results, hits } = await getMatches(query);
+    res.status(200).json({ hits, matches: results.map((m) => m.toJSON()) });
   } catch (e) {
     handle(e, res);
   }

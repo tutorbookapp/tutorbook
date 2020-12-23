@@ -1,9 +1,8 @@
 @use 'sass:map';
 @use 'styles/typography';
 @use '@material/elevation';
-@use '@material/icon-button/_index.scss' as icon-button;
 
-.match {
+.meeting {
   @include elevation.elevation(4);
   background: var(--primary);
   border-radius: 2px;

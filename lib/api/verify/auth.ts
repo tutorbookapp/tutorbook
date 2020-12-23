@@ -9,11 +9,10 @@ import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
 /**
  * Verifies the authorization header by:
  * 1. Checking that it contains a valid Firebase Authorization JWT.
- * 2. (Optional) Verifying that the JWT belongs to a certain user OR to an admin
- * of any one of the specified orgs.
+ * 2. (Optional) Verifying that the JWT belongs to a certain user OR to any one
+ * of the specified users OR to an admin of any one of the specified orgs.
  * @param headers - The request headers to verify.
- * @param [options] - Specify if the JWT must belong to a certain user OR to an
- * admin access of any one of the specified orgs.
+ * @param [options] - Specify JWT ownership requirements (see above).
  * @return Promise that resolves to the authenticated user's uID; throws an
  * `APIError` if the user is unauthenticated.
  * @example
@@ -23,6 +22,8 @@ import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
  * await verifyAuth(req.headers, { userId: 'student' });
  * // Verify request is from an admin for either `gunn` or `paly`.
  * await verifyAuth(req.headers, { orgIds: ['gunn', 'paly'] });
+ * // Verify request is from `student` or `tutor`.
+ * await verifyAuth(req.headers, { userIds: ['sudent', 'tutor'] });
  */
 export default async function verifyAuth(
   headers: IncomingHttpHeaders,

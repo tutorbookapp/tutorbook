@@ -12,26 +12,28 @@ import { ResizeDirection } from 're-resizable';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Match, TCallback, Timeslot } from 'lib/model';
+import { Meeting, TCallback, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 
-import { getHeight, getMatch, getPosition } from './utils';
+import { getHeight, getMeeting, getPosition } from './utils';
 import { RND_MARGIN } from './config';
-import styles from './match-rnd.module.scss';
+import styles from './rnd.module.scss';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
-export interface MatchRndProps {
-  value: Match;
+export interface MeetingRndProps {
+  reference: Date;
+  value: Meeting;
   width: number;
-  onChange: TCallback<Match | undefined>;
+  onChange: TCallback<Meeting | undefined>;
   onClick: (pos: Position, height: number) => void;
   onTouchStart: () => void;
   onMouseDown: () => void;
   onDrag: () => void;
 }
 
-export default function MatchRnd({
+export default function MeetingRnd({
+  reference,
   value,
   width,
   onChange,
@@ -39,24 +41,29 @@ export default function MatchRnd({
   onDrag: dragHandler,
   onTouchStart,
   onMouseDown,
-}: MatchRndProps): JSX.Element {
+}: MeetingRndProps): JSX.Element {
   // Workaround for `react-rnd`'s unusual resizing behavior.
   // @see {@link https://codesandbox.io/s/1z7kjjk0pq?file=/src/index.js}
   // @see {@link https://github.com/bokuweb/react-rnd/issues/457}
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
   const position = useMemo(() => {
-    return getPosition(value.time || new Timeslot(), width);
+    return getPosition(value.time, width);
   }, [value.time, width]);
   const height = useMemo(() => {
-    return getHeight(value.time || new Timeslot());
+    return getHeight(value.time);
+  }, [value.time]);
+
+  useEffect(() => {
+    console.log('From:', value.time.from.toJSON());
+    console.log('To:', value.time.to.toJSON());
   }, [value.time]);
 
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
-      onChange(getMatch(newHeight, newPosition, value, width));
+      onChange(getMeeting(newHeight, newPosition, value, width, reference));
     },
-    [width, onChange, value]
+    [reference, width, onChange, value]
   );
 
   // Only trigger `onClick` callback when user hasn't been dragging.
@@ -121,9 +128,9 @@ export default function MatchRnd({
 
   return (
     <Rnd
-      data-cy='match-rnd'
+      data-cy='meeting-rnd'
       style={{ cursor: dragging ? 'move' : 'pointer' }}
-      className={styles.match}
+      className={styles.meeting}
       position={position}
       minHeight={12 * 4}
       size={{ width: width - RND_MARGIN, height }}

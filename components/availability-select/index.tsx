@@ -19,7 +19,7 @@ import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Availability, TCallback, Timeslot } from 'lib/model';
-import { getDateWithTime, getNextDateWithDay } from 'lib/utils/time';
+import { getDateWithTime, getDateWithDay } from 'lib/utils/time';
 import { useContinuous } from 'lib/hooks';
 
 import TimeslotRnd from './timeslot-rnd';
@@ -196,7 +196,7 @@ export default memo(
             <div key={nanoid()} className={styles.titleWrapper}>
               <h2 className={styles.titleContent}>
                 <div className={styles.day}>
-                  {getNextDateWithDay(weekday).toLocaleString(locale, {
+                  {getDateWithDay(weekday).toLocaleString(locale, {
                     weekday: 'long',
                   })}
                 </div>

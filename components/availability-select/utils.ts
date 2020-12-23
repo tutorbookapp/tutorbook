@@ -22,7 +22,8 @@ export function getTimeslot(
   height: number,
   position: Position,
   timeslotId?: string,
-  width: number = WIDTH
+  width: number = WIDTH,
+  reference: Date = new Date(0)
 ): Timeslot {
   // Each column is 82px wide, so we merely divide to figure out which column
   // the `TimeslotRnd` is located (e.g. 0 = Sunday, 1 = Monday, etc).
@@ -40,7 +41,7 @@ export function getTimeslot(
 
   const hours = Math.floor(minsFromMidnight / 60);
   const mins = minsFromMidnight % 60;
-  const start = getDate(weekday, hours, mins);
+  const start = getDate(weekday, hours, mins, 0, 0, reference);
   const end = new Date(start.valueOf() + minsDuration * 60000);
 
   return new Timeslot({ from: start, to: end, id: timeslotId });

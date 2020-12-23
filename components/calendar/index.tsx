@@ -8,24 +8,24 @@ import {
   useState,
 } from 'react';
 import cn from 'classnames';
-import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, Match } from 'lib/model';
-import { getDateWithTime, getNextDateWithDay } from 'lib/utils/time';
+import { Callback, Meeting, MeetingsQuery } from 'lib/model';
+import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { useClickOutside } from 'lib/hooks';
 
-import MatchPreview from './match-preview';
-import MatchRnd from './match-rnd';
-import { getMatch } from './utils';
+import MeetingPreview from './preview';
+import MeetingRnd from './rnd';
+import { getMeeting } from './utils';
 import styles from './calendar.module.scss';
 
 export interface CalendarProps {
-  matches: Match[];
-  setMatches: Callback<Match[]>;
+  query?: MeetingsQuery;
+  meetings: Meeting[];
+  setMeetings: Callback<Meeting[]>;
   searching: boolean;
 }
 
@@ -36,8 +36,9 @@ export interface CalendarProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/50}
  */
 export default function Calendar({
-  matches,
-  setMatches,
+  query = new MeetingsQuery(),
+  meetings,
+  setMeetings,
 }: CalendarProps): JSX.Element {
   const { lang: locale } = useTranslation();
 
@@ -51,7 +52,7 @@ export default function Calendar({
   const [cellRef, { width }] = useMeasure({ polyfill });
 
   const [open, setOpen] = useState<boolean>(false);
-  const [preview, setPreview] = useState<MatchPreviewProps>();
+  const [preview, setPreview] = useState<MeetingPreviewProps>();
   const closingTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const onRndInteraction = useCallback(() => {
     if (closingTimeoutId.current) {
@@ -70,15 +71,15 @@ export default function Calendar({
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, []);
 
-  const updateMatch = useCallback(
-    (idx: number, updated?: Match) => {
-      setMatches((prev) => {
+  const updateMeeting = useCallback(
+    (idx: number, updated?: Meeting) => {
+      setMeetings((prev) => {
         if (!updated) return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
         if (idx < 0) return [...prev, updated];
         return [...prev.slice(0, idx), updated, ...prev.slice(idx + 1)];
       });
     },
-    [setMatches]
+    [setMeetings]
   );
 
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
@@ -86,10 +87,10 @@ export default function Calendar({
   const onClick = useCallback(
     (event: MouseEvent) => {
       const position = { x: event.clientX - x, y: event.clientY - y };
-      const match = new Match({ id: `temp-${nanoid()}` });
-      updateMatch(-1, getMatch(48, position, match, width));
+      const meeting = new Meeting({ id: `temp-${nanoid()}` });
+      updateMeeting(-1, getMeeting(48, position, meeting, width, query.from));
     },
-    [x, y, width, updateMatch]
+    [query.from, x, y, width, updateMeeting]
   );
 
   // Sync the scroll position of the main cell grid and the static headers. This
@@ -111,21 +112,21 @@ export default function Calendar({
     () =>
       Array(7)
         .fill(null)
-        .map((_, weekday) => (
+        .map((_, day) => (
           <div key={nanoid()} className={styles.titleWrapper}>
-            <h2 className={cn({ [styles.today]: weekday === 3 })}>
+            <h2 className={cn({ [styles.today]: new Date().getDay() === day })}>
               <div className={styles.weekday}>
-                {getNextDateWithDay(weekday).toLocaleString(locale, {
+                {getDateWithDay(day, query.from).toLocaleString(locale, {
                   weekday: 'short',
                 })}
               </div>
               <div className={styles.date}>
-                {getNextDateWithDay(weekday).getDate()}
+                {getDateWithDay(day, query.from).getDate()}
               </div>
             </h2>
           </div>
         )),
-    [locale]
+    [locale, query.from]
   );
   const timeCells = useMemo(
     () =>
@@ -169,7 +170,7 @@ export default function Calendar({
   return (
     <>
       {preview && (
-        <MatchPreview
+        <MeetingPreview
           {...preview}
           width={width}
           ref={previewRef}
@@ -201,15 +202,16 @@ export default function Calendar({
                 <div className={styles.lines}>{lineCells}</div>
                 <div className={styles.space} />
                 <div className={styles.cells} onClick={onClick} ref={cellsRef}>
-                  {matches.map((match: Match, idx: number) => (
-                    <MatchRnd
-                      key={match.id}
-                      value={match}
+                  {meetings.map((meeting: Meeting, idx: number) => (
+                    <MeetingRnd
+                      key={meeting.id}
+                      reference={query.from}
+                      value={meeting}
                       width={width}
                       onClick={(position, height) =>
-                        setPreview({ match, position, height })
+                        setPreview({ meeting, position, height })
                       }
-                      onChange={(updated) => updateMatch(idx, updated)}
+                      onChange={(updated) => updateMeeting(idx, updated)}
                       onTouchStart={onRndInteraction}
                       onMouseDown={onRndInteraction}
                       onDrag={onRndDrag}

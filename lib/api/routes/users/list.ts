@@ -28,16 +28,14 @@ export default async function listUsers(
       isUsersQueryURL,
       UsersQuery
     );
-    const { users, hits } = await getUsers(query);
+    const { results, hits } = await getUsers(query);
 
     // TODO: Don't completely error; instead, conditionally truncated users.
-    const [err] = await to(
-      verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) })
-    );
-    res.status(200).json({
-      hits,
-      users: (err ? users.map(getTruncatedUser) : users).map((u) => u.toJSON()),
-    });
+    const orgIds = query.orgs.map((o) => o.value);
+    const [err] = await to(verifyAuth(req.headers, { orgIds }));
+    const users = err ? results.map(getTruncatedUser) : results;
+
+    res.status(200).json({ hits, users: users.map((u) => u.toJSON()) });
   } catch (e) {
     handle(e, res);
   }
