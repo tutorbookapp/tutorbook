@@ -33,6 +33,7 @@ import {
   isZoomUserJSON,
 } from 'lib/model/zoom-user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
@@ -194,6 +195,10 @@ export class User extends Account implements UserInterface {
   public constructor(user: Partial<UserInterface> = {}) {
     super(user);
     construct<UserInterface, AccountInterface>(this, user, new Account());
+  }
+
+  public get clone(): User {
+    return new User(clone(this));
   }
 
   public get firstName(): string {

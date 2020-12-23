@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 
 import { isDateJSON, isJSON } from 'lib/model/json';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 
 export interface Constructor<T> {
@@ -49,6 +50,10 @@ export class Resource implements ResourceInterface {
 
   public constructor(resource: Partial<ResourceInterface> = {}) {
     construct<ResourceInterface>(this, resource);
+  }
+
+  public get clone(): Resource {
+    return new Resource(clone(this));
   }
 
   public toJSON(): ResourceJSON {

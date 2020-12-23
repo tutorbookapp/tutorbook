@@ -8,6 +8,7 @@ import {
   isTimeslotJSON,
 } from 'lib/model/timeslot';
 import { getDate, getMonthsTimeslots, sameDate } from 'lib/utils/time';
+import clone from 'lib/utils/clone';
 
 /**
  * One's schedule contains all your booked timeslots (the inverse of one's
@@ -50,6 +51,10 @@ export function timeslotOnDate(timeslot: Timeslot, date: Date): boolean {
  * `[Object object]`.
  */
 export class Availability extends Array<Timeslot> implements AvailabilityAlias {
+  public get clone(): Availability {
+    return new Availability(...clone(this));
+  }
+
   /**
    * Sorts this availability (in-place) from the earliest to the latest timeslot
    * start time and returns the sorted list.

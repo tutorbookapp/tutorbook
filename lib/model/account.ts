@@ -10,6 +10,7 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
@@ -136,6 +137,10 @@ export class Account extends Resource implements AccountInterface {
     );
     this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
     void this.validatePhone();
+  }
+
+  public get clone(): Account {
+    return new Account(clone(this));
   }
 
   public async validatePhone(): Promise<void> {

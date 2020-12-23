@@ -6,6 +6,7 @@ import {
   ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import { isJSON } from 'lib/model/json';
 
@@ -49,6 +50,10 @@ export class ZoomUser extends Resource implements ZoomUserInterface {
   public constructor(user: Partial<ZoomUserInterface>) {
     super(user);
     construct<ZoomUserInterface, ResourceInterface>(this, user, new Resource());
+  }
+
+  public get clone(): ZoomUser {
+    return new ZoomUser(clone(this));
   }
 
   public toJSON(): ZoomUserJSON {

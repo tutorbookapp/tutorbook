@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 
 import { isDateJSON, isJSON } from 'lib/model/json';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 
 /**
@@ -81,6 +82,10 @@ export class Timeslot implements TimeslotInterface {
    */
   public constructor(timeslot: Partial<TimeslotInterface> = {}) {
     construct<TimeslotInterface>(this, timeslot);
+  }
+
+  public get clone(): Timeslot {
+    return new Timeslot(clone(this));
   }
 
   /**

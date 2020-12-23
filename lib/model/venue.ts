@@ -8,6 +8,7 @@ import {
   ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import { isJSON } from 'lib/model/json';
 
@@ -59,6 +60,10 @@ export class Venue extends Resource implements VenueInterface {
   public constructor(venue: Partial<VenueInterface> = {}) {
     super(venue);
     construct<VenueInterface, ResourceInterface>(this, venue, new Resource());
+  }
+
+  public get clone(): Venue {
+    return new Venue(clone(this));
   }
 
   public toJSON(): VenueJSON {

@@ -7,6 +7,7 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 
 /**
@@ -98,6 +99,10 @@ export class Verification extends Resource implements VerificationInterface {
       verification,
       new Resource()
     );
+  }
+
+  public get clone(): Verification {
+    return new Verification(clone(this));
   }
 
   public toJSON(): VerificationJSON {

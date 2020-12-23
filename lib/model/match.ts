@@ -12,6 +12,7 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import { Aspect } from 'lib/model/aspect';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 import { isJSON } from 'lib/model/json';
@@ -110,6 +111,10 @@ export class Match extends Resource implements MatchInterface {
   public constructor(match: Partial<MatchInterface> = {}) {
     super(match);
     construct<MatchInterface, ResourceInterface>(this, match, new Resource());
+  }
+
+  public get clone(): Match {
+    return new Match(clone(this));
   }
 
   public get aspect(): Aspect {

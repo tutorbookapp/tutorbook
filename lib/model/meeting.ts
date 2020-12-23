@@ -30,11 +30,11 @@ import {
   VenueSearchHit,
   isVenueJSON,
 } from 'lib/model/venue';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 import { isJSON } from 'lib/model/json';
 
-type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
 
@@ -111,6 +111,10 @@ export class Meeting extends Resource implements MeetingInterface {
       meeting,
       new Resource()
     );
+  }
+
+  public get clone(): Meeting {
+    return new Meeting(clone(this));
   }
 
   public toString(): string {

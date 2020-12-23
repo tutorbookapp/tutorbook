@@ -11,6 +11,7 @@ import {
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { UserInterface } from 'lib/model/user';
+import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
@@ -214,6 +215,10 @@ export class Org extends Account implements OrgInterface {
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
     construct<OrgInterface, AccountInterface>(this, org, new Account());
+  }
+
+  public get clone(): Org {
+    return new Org(clone(this));
   }
 
   public toJSON(): OrgJSON {
