@@ -4,8 +4,8 @@
  * @param obj - The data model to clean.
  * @return The data model without any "undefined" properties.
  */
-export default function firestoreVals<T>(obj: T): Partial<T> {
+export default function definedVals<T>(obj: T): T {
   return Object.fromEntries(
     Object.entries(obj).filter(([_, val]) => val !== undefined)
-  ) as Partial<T>;
+  ) as T;
 }

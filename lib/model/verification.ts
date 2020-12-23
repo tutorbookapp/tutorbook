@@ -82,13 +82,6 @@ export function isVerificationJSON(json: unknown): json is VerificationJSON {
   return true;
 }
 
-export function verificationsFromFirestore(data: unknown): Verification[] {
-  if (!isArray(data)) return [];
-  return data.map((v: unknown) => {
-    return Verification.fromFirestore(v as VerificationFirestore);
-  });
-}
-
 export class Verification extends Resource implements VerificationInterface {
   public user = '';
 
@@ -121,6 +114,10 @@ export class Verification extends Resource implements VerificationInterface {
 
   public static fromFirestore(data: VerificationFirestore): Verification {
     return new Verification({ ...data, ...Resource.fromFirestore(data) });
+  }
+
+  public toSearchHit(): VerificationSearchHit {
+    return { ...this, ...super.toSearchHit() };
   }
 
   public static fromSearchHit(hit: VerificationSearchHit): Verification {

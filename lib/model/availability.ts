@@ -202,7 +202,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   }
 
   public toFirestore(): AvailabilityFirestore {
-    return Array.from(this.map((timeslot: Timeslot) => timeslot.toFirestore()));
+    return Array.from(this.map((t) => t.toFirestore()));
   }
 
   public static fromFirestore(data: AvailabilityFirestore): Availability {
@@ -219,6 +219,10 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     const availability: Availability = new Availability();
     json.forEach((t) => availability.push(Timeslot.fromJSON(t)));
     return availability;
+  }
+
+  public toSearchHit(): AvailabilitySearchHit {
+    return Array.from(this.map((t) => t.toSearchHit()));
   }
 
   public static fromSearchHit(hit: AvailabilitySearchHit): Availability {

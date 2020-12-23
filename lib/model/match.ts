@@ -13,10 +13,9 @@ import {
 } from 'lib/model/resource';
 import { Aspect } from 'lib/model/aspect';
 import construct from 'lib/model/construct';
-import firestoreVals from 'lib/model/firestore-vals';
+import definedVals from 'lib/model/defined-vals';
 import { isJSON } from 'lib/model/json';
 
-type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
 
@@ -57,12 +56,11 @@ export interface MatchInterface extends ResourceInterface {
   id: string;
 }
 
-export type MatchJSON = Omit<MatchInterface, keyof ResourceInterface> &
-  ResourceJSON;
+export type MatchJSON = Omit<MatchInterface, keyof Resource> & ResourceJSON;
 export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, keyof ResourceInterface> &
+  Omit<MatchInterface, keyof Resource | 'id'> &
   ResourceSearchHit;
-export type MatchFirestore = Omit<MatchInterface, keyof ResourceInterface> &
+export type MatchFirestore = Omit<MatchInterface, keyof Resource> &
   ResourceFirestore;
 
 export interface MatchSegment {
@@ -122,8 +120,7 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toJSON(): MatchJSON {
-    const { ref, ...rest } = this;
-    return { ...rest, ...super.toJSON() };
+    return definedVals({ ...this, ...super.toJSON(), ref: undefined });
   }
 
   public static fromJSON(json: MatchJSON): Match {
@@ -131,29 +128,32 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toFirestore(): MatchFirestore {
-    const { ref, ...rest } = this;
-    // TODO: Update the `firestoreVals` type definition (so it returns the
-    // `MatchFirestore` object) and use it everywhere in `toFirestore` methods.
-    return firestoreVals({ ...rest, ...super.toFirestore() }) as MatchFirestore;
+    return definedVals({ ...this, ...super.toFirestore(), ref: undefined });
   }
 
-  // TODO: Decide whether these Firestore conversion methods should accept a
-  // `DocumentSnapshot` or the actual object itself (as `Resource` does).
-  public static fromFirestore(snapshot: DocumentSnapshot): Match {
-    const data: DocumentData | undefined = snapshot.data();
-    if (data) {
+  public static fromFirestore(data: MatchFirestore): Match {
+    return new Match({ ...data, ...Resource.fromFirestore(data) });
+  }
+
+  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Match {
+    if (snapshot.data())
       return new Match({
-        ...data,
-        ...Resource.fromFirestore(data as ResourceFirestore),
+        ...Match.fromFirestore(snapshot.data() as MatchFirestore),
         ref: snapshot.ref,
         id: snapshot.id,
       });
-    }
-    console.warn(
-      `[WARNING] Tried to create match (${snapshot.ref.id}) from ` +
-        'non-existent Firestore document.'
-    );
     return new Match();
+  }
+
+  public toSearchHit(): MatchSearchHit {
+    const { id, ...rest } = this;
+    return definedVals({
+      ...rest,
+      ...super.toSearchHit(),
+      ref: undefined,
+      id: undefined,
+      objectID: id,
+    });
   }
 
   public static fromSearchHit({ objectID, ...hit }: MatchSearchHit): Match {

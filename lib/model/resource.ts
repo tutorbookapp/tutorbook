@@ -31,8 +31,8 @@ export interface ResourceFirestore {
 }
 
 export interface ResourceSearchHit {
-  created: string;
-  updated: string;
+  created: number;
+  updated: number;
 }
 
 export function isResourceJSON(json: unknown): json is ResourceJSON {
@@ -77,6 +77,13 @@ export class Resource implements ResourceInterface {
       created: data.created.toDate(),
       updated: data.updated.toDate(),
     });
+  }
+
+  public toSearchHit(): ResourceSearchHit {
+    return {
+      created: this.created.valueOf(),
+      updated: this.updated.valueOf(),
+    };
   }
 
   public static fromSearchHit(hit: ResourceSearchHit): Resource {

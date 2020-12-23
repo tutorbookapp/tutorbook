@@ -2,16 +2,18 @@ import * as admin from 'firebase-admin';
 
 import {
   Account,
+  AccountFirestore,
   AccountInterface,
   AccountJSON,
+  AccountSearchHit,
   isAccountJSON,
 } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { UserInterface } from 'lib/model/user';
 import construct from 'lib/model/construct';
+import definedVals from 'lib/model/defined-vals';
 
-type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 type Config<T> = { [locale: string]: T };
@@ -114,15 +116,9 @@ export interface OrgInterface extends AccountInterface {
   matchURL?: string;
 }
 
-export type OrgJSON = Omit<
-  OrgInterface,
-  keyof AccountInterface | 'subjects' | 'zoom' | 'matchURL'
-> &
-  AccountJSON & {
-    subjects: string[] | null;
-    zoom: ZoomAccount | null;
-    matchURL: string | null;
-  };
+export type OrgJSON = Omit<OrgInterface, keyof Account> & AccountJSON;
+export type OrgSearchHit = Omit<OrgInterface, keyof Account> & AccountSearchHit;
+export type OrgFirestore = Omit<OrgInterface, keyof Account> & AccountFirestore;
 
 // TODO: Check that the `profiles` key only contains keys of the `User` object.
 export function isOrgJSON(json: unknown): json is OrgJSON {
@@ -220,39 +216,42 @@ export class Org extends Account implements OrgInterface {
     construct<OrgInterface, AccountInterface>(this, org, new Account());
   }
 
-  public static fromFirestore(snapshot: DocumentSnapshot): Org {
-    const orgData: DocumentData | undefined = snapshot.data();
-    if (orgData) {
-      return new Org({
-        ...orgData,
-        ref: snapshot.ref,
-        id: snapshot.id,
-      });
-    }
-    console.warn(
-      `[WARNING] Tried to create account (${snapshot.ref.id}) from ` +
-        'non-existent Firestore document.'
-    );
-    return new Org();
+  public toJSON(): OrgJSON {
+    return definedVals({ ...this, ...super.toJSON(), ref: undefined });
   }
 
   public static fromJSON(json: OrgJSON): Org {
-    const { matchURL, subjects, zoom, ...rest } = json;
-    return new Org({
-      ...rest,
-      matchURL: matchURL || undefined,
-      subjects: subjects || undefined,
-      zoom: zoom || undefined,
+    return new Org({ ...json, ...Account.fromJSON(json) });
+  }
+
+  public toFirestore(): OrgFirestore {
+    return definedVals({ ...this, ...super.toFirestore(), ref: undefined });
+  }
+
+  public static fromFirestore(data: OrgFirestore): Org {
+    return new Org({ ...data, ...Account.fromFirestore(data) });
+  }
+
+  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Org {
+    if (snapshot.data())
+      return new Org({
+        ...Org.fromFirestore(snapshot.data() as OrgFirestore),
+        ref: snapshot.ref,
+        id: snapshot.id,
+      });
+    return new Org();
+  }
+
+  public toSearchHit(): OrgSearchHit {
+    return definedVals({
+      ...this,
+      ...super.toSearchHit(),
+      ref: undefined,
+      id: undefined,
     });
   }
 
-  public toJSON(): OrgJSON {
-    const { ref, matchURL, subjects, zoom, ...rest } = this;
-    return {
-      ...rest,
-      matchURL: matchURL || null,
-      subjects: subjects || null,
-      zoom: zoom || null,
-    };
+  public static fromSearchHit(hit: OrgSearchHit): Org {
+    return new Org({ ...hit, ...Account.fromSearchHit(hit) });
   }
 }

@@ -180,6 +180,11 @@ export class Timeslot implements TimeslotInterface {
     });
   }
 
+  public toSearchHit(): TimeslotSearchHit {
+    const { from, to, ...rest } = this;
+    return { ...rest, from: from.valueOf(), to: to.valueOf() };
+  }
+
   public static fromSearchHit(hit: TimeslotSearchHit): Timeslot {
     return new Timeslot({
       ...hit,

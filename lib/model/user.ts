@@ -1,16 +1,18 @@
 import * as admin from 'firebase-admin';
-import { ObjectWithObjectID } from '@algolia/client-search';
 import { v4 as uuid } from 'uuid';
 
 import {
   Account,
+  AccountFirestore,
   AccountInterface,
   AccountJSON,
+  AccountSearchHit,
   isAccountJSON,
 } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
 import {
   Availability,
+  AvailabilityFirestore,
   AvailabilityJSON,
   AvailabilitySearchHit,
   isAvailabilityJSON,
@@ -18,23 +20,22 @@ import {
 import { Person, Role, isRole } from 'lib/model/person';
 import {
   Verification,
+  VerificationFirestore,
   VerificationJSON,
   VerificationSearchHit,
   isVerificationJSON,
-  verificationsFromFirestore,
 } from 'lib/model/verification';
 import {
   ZoomUser,
+  ZoomUserFirestore,
   ZoomUserJSON,
   ZoomUserSearchHit,
   isZoomUserJSON,
-  zoomsFromFirestore,
 } from 'lib/model/zoom-user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import construct from 'lib/model/construct';
-import firestoreVals from 'lib/model/firestore-vals';
+import definedVals from 'lib/model/defined-vals';
 
-type DocumentData = admin.firestore.DocumentData;
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 /**
@@ -96,31 +97,34 @@ export interface UserInterface extends AccountInterface {
   hash?: string;
 }
 
-/**
- * What results from searching our users Algolia index.
- */
-export type UserSearchHit = ObjectWithObjectID &
-  Omit<UserInterface, 'availability' | 'verifications' | 'zooms'> & {
-    availability: AvailabilitySearchHit;
-    verifications: VerificationSearchHit[];
-    zooms: ZoomUserSearchHit[];
-  };
-
 export type UserJSON = Omit<
   UserInterface,
-  | keyof AccountInterface
-  | 'availability'
-  | 'verifications'
-  | 'zooms'
-  | 'token'
-  | 'hash'
+  keyof Account | 'availability' | 'verifications' | 'zooms'
 > &
   AccountJSON & {
     availability: AvailabilityJSON;
     verifications: VerificationJSON[];
     zooms: ZoomUserJSON[];
-    token: string | null;
-    hash: string | null;
+  };
+
+export type UserFirestore = Omit<
+  UserInterface,
+  keyof Account | 'availability' | 'verifications' | 'zooms'
+> &
+  AccountFirestore & {
+    availability: AvailabilityFirestore;
+    verifications: VerificationFirestore[];
+    zooms: ZoomUserFirestore[];
+  };
+
+export type UserSearchHit = Omit<
+  UserInterface,
+  keyof Account | 'availability' | 'verifications' | 'zooms'
+> &
+  AccountSearchHit & {
+    availability: AvailabilitySearchHit;
+    verifications: VerificationSearchHit[];
+    zooms: ZoomUserSearchHit[];
   };
 
 export function isUserJSON(json: unknown): json is UserJSON {
@@ -211,70 +215,97 @@ export class User extends Account implements UserInterface {
     };
   }
 
-  public static fromSearchHit(hit: UserSearchHit): User {
-    const { availability, verifications, zooms, objectID, ...rest } = hit;
-    const user: Partial<UserInterface> = {
+  public toJSON(): UserJSON {
+    const { availability, verifications, zooms, ...rest } = this;
+    return definedVals({
       ...rest,
-      availability: Availability.fromSearchHit(availability),
-      verifications: verifications.map((v) => Verification.fromSearchHit(v)),
-      zooms: zooms.map((z) => ZoomUser.fromSearchHit(z)),
-      id: objectID,
-    };
-    return new User(user);
-  }
-
-  public static fromFirestore(snapshot: DocumentSnapshot): User {
-    const userData: DocumentData | undefined = snapshot.data();
-    if (userData) {
-      const { availability, verifications, zooms, ...rest } = userData;
-      return new User({
-        ...rest,
-        availability: Availability.fromFirestore(availability),
-        verifications: verificationsFromFirestore(verifications),
-        zooms: zoomsFromFirestore(zooms),
-        ref: snapshot.ref,
-        id: snapshot.id,
-      });
-    }
-    console.warn(
-      `[WARNING] Tried to create user (${snapshot.ref.id}) from ` +
-        'non-existent Firestore document.'
-    );
-    return new User();
-  }
-
-  public toFirestore(): DocumentData {
-    return firestoreVals({
-      ...super.toFirestore(),
-      availability: this.availability.toFirestore(),
-      verifications: this.verifications.map((v) => v.toFirestore()),
-      zooms: this.zooms.map((z) => z.toFirestore()),
+      ...super.toJSON(),
+      availability: availability.toJSON(),
+      verifications: verifications.map((v) => v.toJSON()),
+      zooms: zooms.map((z) => z.toJSON()),
       token: undefined,
       hash: undefined,
+      ref: undefined,
     });
   }
 
   public static fromJSON(json: UserJSON): User {
-    const { availability, verifications, zooms, token, hash, ...rest } = json;
+    const { availability, verifications, zooms, ...rest } = json;
     return new User({
       ...rest,
+      ...Account.fromJSON(rest),
       availability: Availability.fromJSON(availability),
       verifications: verifications.map((v) => Verification.fromJSON(v)),
       zooms: zooms.map((z) => ZoomUser.fromJSON(z)),
-      token: token || undefined,
-      hash: hash || undefined,
     });
   }
 
-  public toJSON(): UserJSON {
-    const { availability, verifications, zooms, ref, ...rest } = this;
-    return {
+  public toFirestore(): UserFirestore {
+    const { availability, verifications, zooms, ...rest } = this;
+    return definedVals({
       ...rest,
-      availability: availability.toJSON(),
-      verifications: verifications.map((v) => v.toJSON()),
-      zooms: zooms.map((z) => z.toJSON()),
-      token: null,
-      hash: null,
-    };
+      ...super.toFirestore(),
+      availability: availability.toFirestore(),
+      verifications: verifications.map((v) => v.toFirestore()),
+      zooms: zooms.map((z) => z.toFirestore()),
+      token: undefined,
+      hash: undefined,
+      ref: undefined,
+    });
+  }
+
+  public static fromFirestore({
+    availability,
+    verifications,
+    zooms,
+    ...rest
+  }: UserFirestore): User {
+    return new User({
+      ...rest,
+      ...Account.fromFirestore(rest),
+      availability: Availability.fromFirestore(availability),
+      verifications: verifications.map((v) => Verification.fromFirestore(v)),
+      zooms: zooms.map((z) => ZoomUser.fromFirestore(z)),
+    });
+  }
+
+  public static fromFirestoreDoc(snapshot: DocumentSnapshot): User {
+    if (snapshot.data())
+      return new User({
+        ...User.fromFirestore(snapshot.data() as UserFirestore),
+        ref: snapshot.ref,
+        id: snapshot.id,
+      });
+    return new User();
+  }
+
+  public toSearchHit(): UserSearchHit {
+    const { availability, verifications, zooms, ...rest } = this;
+    return definedVals({
+      ...rest,
+      ...super.toSearchHit(),
+      availability: availability.toSearchHit(),
+      verifications: verifications.map((v) => v.toSearchHit()),
+      zooms: zooms.map((z) => z.toSearchHit()),
+      token: undefined,
+      hash: undefined,
+      ref: undefined,
+      id: undefined,
+    });
+  }
+
+  public static fromSearchHit({
+    availability,
+    verifications,
+    zooms,
+    ...rest
+  }: UserSearchHit): User {
+    return new User({
+      ...rest,
+      ...Account.fromSearchHit(rest),
+      availability: Availability.fromSearchHit(availability),
+      verifications: verifications.map((v) => Verification.fromSearchHit(v)),
+      zooms: zooms.map((z) => ZoomUser.fromSearchHit(z)),
+    });
   }
 }

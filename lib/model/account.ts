@@ -1,10 +1,19 @@
 import * as admin from 'firebase-admin';
+import { ObjectWithObjectID } from '@algolia/client-search';
 
+import {
+  Resource,
+  ResourceFirestore,
+  ResourceInterface,
+  ResourceJSON,
+  ResourceSearchHit,
+  isResourceJSON,
+} from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
 import construct from 'lib/model/construct';
-import firestoreVals from 'lib/model/firestore-vals';
+import definedVals from 'lib/model/defined-vals';
 
-type DocumentData = admin.firestore.DocumentData;
+type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
 
 /**
@@ -62,7 +71,7 @@ export function isSocial(json: unknown): json is SocialInterface {
  * org landing page and user display page.
  * @property socials - An array of the account's social media links.
  */
-export interface AccountInterface {
+export interface AccountInterface extends ResourceInterface {
   id: string;
   name: string;
   photo: string;
@@ -74,7 +83,12 @@ export interface AccountInterface {
   ref?: DocumentReference;
 }
 
-export type AccountJSON = AccountInterface;
+export type AccountJSON = Omit<AccountInterface, keyof Resource> & ResourceJSON;
+export type AccountFirestore = Omit<AccountInterface, keyof Resource> &
+  ResourceFirestore;
+export type AccountSearchHit = ObjectWithObjectID &
+  Omit<AccountInterface, keyof Resource | 'id'> &
+  ResourceSearchHit;
 
 export function isAccountJSON(json: unknown): json is AccountJSON {
   const stringFields = [
@@ -87,16 +101,14 @@ export function isAccountJSON(json: unknown): json is AccountJSON {
     'background',
   ];
 
+  if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (stringFields.some((key) => typeof json[key] !== 'string')) return false;
   if (!isArray(json.socials, isSocial)) return false;
   return true;
 }
 
-// TODO: Make this an abstract class but still prevent the `phone` property from
-// being overriden by child constructors (i.e. the child constructor doesn't
-// perform the same phone validation as this one does).
-export class Account implements AccountInterface {
+export class Account extends Resource implements AccountInterface {
   public id = '';
 
   public name = '';
@@ -116,7 +128,12 @@ export class Account implements AccountInterface {
   public ref?: DocumentReference;
 
   public constructor(account: Partial<AccountInterface> = {}) {
-    construct<AccountInterface>(this, account);
+    super(account);
+    construct<AccountInterface, ResourceInterface>(
+      this,
+      account,
+      new Resource()
+    );
     this.socials = this.socials.filter((s: SocialInterface) => !!s.url);
     void this.validatePhone();
   }
@@ -126,8 +143,52 @@ export class Account implements AccountInterface {
     this.phone = phone(this.phone)[0] || '';
   }
 
-  public toFirestore(): DocumentData {
-    return firestoreVals({ ...this, ref: undefined });
+  public toJSON(): AccountJSON {
+    return definedVals({ ...this, ...super.toJSON(), ref: undefined });
+  }
+
+  public static fromJSON(json: AccountJSON): Account {
+    return new Account({ ...json, ...Resource.fromJSON(json) });
+  }
+
+  public toFirestore(): AccountFirestore {
+    return definedVals({ ...this, ...super.toFirestore(), ref: undefined });
+  }
+
+  public static fromFirestore(data: AccountFirestore): Account {
+    return new Account({ ...data, ...Resource.fromFirestore(data) });
+  }
+
+  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Account {
+    if (snapshot.data())
+      return new Account({
+        ...Account.fromFirestore(snapshot.data() as AccountFirestore),
+        ref: snapshot.ref,
+        id: snapshot.id,
+      });
+    return new Account();
+  }
+
+  public toSearchHit(): AccountSearchHit {
+    const { id, ...rest } = this;
+    return definedVals({
+      ...rest,
+      ...super.toSearchHit(),
+      ref: undefined,
+      id: undefined,
+      objectID: id,
+    });
+  }
+
+  public static fromSearchHit({
+    objectID,
+    ...rest
+  }: AccountSearchHit): Account {
+    return new Account({
+      ...rest,
+      ...Resource.fromSearchHit(rest),
+      id: objectID,
+    });
   }
 
   public toString(): string {

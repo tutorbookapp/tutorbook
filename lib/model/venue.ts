@@ -77,6 +77,10 @@ export class Venue extends Resource implements VenueInterface {
     return new Venue({ ...data, ...Resource.fromFirestore(data) });
   }
 
+  public toSearchHit(): VenueSearchHit {
+    return { ...this, ...super.toSearchHit() };
+  }
+
   public static fromSearchHit(hit: VenueSearchHit): Venue {
     return new Venue({ ...hit, ...Resource.fromSearchHit(hit) });
   }

@@ -6,8 +6,8 @@ import {
   ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
-import { isArray, isJSON } from 'lib/model/json';
 import construct from 'lib/model/construct';
+import { isJSON } from 'lib/model/json';
 
 /**
  * A user's Zoom account that belongs to a certain org.
@@ -39,13 +39,6 @@ export function isZoomUserJSON(json: unknown): json is ZoomUserJSON {
   return true;
 }
 
-export function zoomsFromFirestore(data: unknown): ZoomUser[] {
-  if (!isArray(data)) return [];
-  return data.map((z: unknown) => {
-    return ZoomUser.fromFirestore(z as ZoomUserFirestore);
-  });
-}
-
 export class ZoomUser extends Resource implements ZoomUserInterface {
   public id = '';
 
@@ -72,6 +65,10 @@ export class ZoomUser extends Resource implements ZoomUserInterface {
 
   public static fromFirestore(data: ZoomUserFirestore): ZoomUser {
     return new ZoomUser({ ...data, ...Resource.fromFirestore(data) });
+  }
+
+  public toSearchHit(): ZoomUserSearchHit {
+    return { ...this, ...super.toSearchHit() };
   }
 
   public static fromSearchHit(data: ZoomUserSearchHit): ZoomUser {
