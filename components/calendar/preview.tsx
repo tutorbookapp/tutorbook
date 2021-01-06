@@ -123,9 +123,9 @@ export default forwardRef(function MeetingPreview(
           </div>
           <div className={styles.content}>
             <div className={styles.people}>
-              {meeting.people.map((person) => (
+              {meeting.match.people.map((person) => (
                 <Link
-                  href={`/${meeting.org}/users/${person.id}`}
+                  href={`/${meeting.match.org}/users/${person.id}`}
                   key={person.id}
                 >
                   <a className={styles.person}>
@@ -141,7 +141,7 @@ export default forwardRef(function MeetingPreview(
             <div className={styles.info}>
               <dl>
                 <dt>Subjects</dt>
-                <dd>{join(meeting.subjects)}</dd>
+                <dd>{join(meeting.match.subjects)}</dd>
               </dl>
               <dl>
                 <dt>Meeting venue</dt>

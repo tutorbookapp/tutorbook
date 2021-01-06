@@ -54,11 +54,6 @@ export default function MeetingRnd({
     return getHeight(value.time);
   }, [value.time]);
 
-  useEffect(() => {
-    console.log('From:', value.time.from.toJSON());
-    console.log('To:', value.time.to.toJSON());
-  }, [value.time]);
-
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
       onChange(getMeeting(newHeight, newPosition, value, width, reference));
@@ -156,7 +151,7 @@ export default function MeetingRnd({
       }}
     >
       <div className={styles.content}>
-        <div className={styles.subjects}>{join(value.subjects)}</div>
+        <div className={styles.subjects}>{join(value.match.subjects)}</div>
         <div className={styles.time}>
           {`${(value.time || new Timeslot()).from.toLocaleString(locale, {
             hour: 'numeric',
