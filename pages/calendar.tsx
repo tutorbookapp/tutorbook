@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useSWR, { mutate } from 'swr';
 import { dequal } from 'dequal/lite';
-import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import Calendar from 'components/calendar';
@@ -48,19 +48,39 @@ function CalendarPage(): JSX.Element {
     });
   }, [user, onQueryChange]);
 
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
   const { data, isValidating } = useSWR<ListMeetingsRes>(
-    query ? query.endpoint : null
+    query ? query.endpoint : null,
+    {
+      revalidateOnFocus: !mutatedIds.size,
+      revalidateOnReconnect: !mutatedIds.size,
+    }
+  );
+
+  const meetings = useMemo(
+    () => data?.meetings.map((m) => Meeting.fromJSON(m)) || [],
+    [data?.meetings]
+  );
+  const setMeetings = useCallback(
+    async (param: CallbackParam<Meeting[]>) => {
+      let updated = meetings;
+      if (typeof param === 'object') updated = param;
+      if (typeof param === 'function') updated = param(updated);
+      if (!query?.endpoint || dequal(updated, meetings)) return;
+      // TODO: If we ever need to use the `hits` property, we'll have to update
+      // this callback function to properly cache and reuse the previous value.
+      await mutate(
+        query?.endpoint,
+        { meetings: updated.map((m) => m.toJSON()) },
+        false
+      );
+    },
+    [meetings, query?.endpoint]
   );
 
   useEffect(() => {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
-  useEffect(() => {
-    setMeetings(
-      (prev) => data?.meetings.map((m) => Meeting.fromJSON(m)) || prev
-    );
-  }, [data?.meetings]);
 
   return (
     <Page title='Calendar - Tutorbook'>
@@ -105,6 +125,7 @@ function CalendarPage(): JSX.Element {
         searching={searching}
         meetings={meetings}
         setMeetings={setMeetings}
+        setMutatedIds={setMutatedIds}
       />
     </Page>
   );

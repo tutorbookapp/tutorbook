@@ -84,7 +84,7 @@ export default function useContinuous<T>(
 
   useEffect(() => {
     if (!updateLocal) return;
-    // Don't update remote data for unidentified resource.
+    // Don't update local data for unidentified resource.
     if (((data as unknown) as { id: string })?.id === '') return;
     // Throttle local updates (one sec) to prevent unecessary large re-renders.
     const timeoutId = setTimeout(() => {

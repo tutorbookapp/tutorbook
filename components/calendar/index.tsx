@@ -26,6 +26,7 @@ export interface CalendarProps {
   query?: MeetingsQuery;
   meetings: Meeting[];
   setMeetings: Callback<Meeting[]>;
+  setMutatedIds: Callback<Set<string>>;
   searching: boolean;
 }
 
@@ -39,6 +40,7 @@ export default function Calendar({
   query = new MeetingsQuery(),
   meetings,
   setMeetings,
+  setMutatedIds,
 }: CalendarProps): JSX.Element {
   const { lang: locale } = useTranslation();
 
@@ -73,13 +75,25 @@ export default function Calendar({
 
   const updateMeeting = useCallback(
     (idx: number, updated?: Meeting) => {
+      // TODO: Mutate the meeting IDs properly when deleting meetings:
+      // 1. Immediately remove meeting from display (local mutation) and prevent
+      //    revalidations (i.e. add the meeting ID to these `mutatedIds`).
+      // 2. Once deleted, remove the meeting ID from these `mutatedIds`.
+      // 3. If deletion fails, restore meeting to display (local mutation),
+      //    allow revalidations, and show error snackbar (with retry button).
+      setMutatedIds((prev) => {
+        if (!updated) return prev;
+        const mutatedMeetingIds = new Set(prev);
+        mutatedMeetingIds.add(updated.id);
+        return mutatedMeetingIds;
+      });
       setMeetings((prev) => {
         if (!updated) return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
         if (idx < 0) return [...prev, updated];
         return [...prev.slice(0, idx), updated, ...prev.slice(idx + 1)];
       });
     },
-    [setMeetings]
+    [setMutatedIds, setMeetings]
   );
 
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
@@ -88,7 +102,8 @@ export default function Calendar({
     (event: MouseEvent) => {
       const position = { x: event.clientX - x, y: event.clientY - y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
-      updateMeeting(-1, getMeeting(48, position, meeting, width, query.from));
+      console.log('TODO: Use edit meeting page to create new meetings.');
+      //updateMeeting(-1, getMeeting(48, position, meeting, width, query.from));
     },
     [query.from, x, y, width, updateMeeting]
   );
@@ -208,6 +223,7 @@ export default function Calendar({
                       reference={query.from}
                       value={meeting}
                       width={width}
+                      setMutatedIds={setMutatedIds}
                       onClick={(position, height) =>
                         setPreview({ meeting, position, height })
                       }

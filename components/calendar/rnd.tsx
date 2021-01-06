@@ -9,11 +9,13 @@ import {
   useState,
 } from 'react';
 import { ResizeDirection } from 're-resizable';
+import axios from 'axios';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Meeting, TCallback, Timeslot } from 'lib/model';
+import { Callback, Meeting, MeetingJSON, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
+import { useContinuous } from 'lib/hooks';
 
 import { getHeight, getMeeting, getPosition } from './utils';
 import { RND_MARGIN } from './config';
@@ -25,7 +27,8 @@ export interface MeetingRndProps {
   reference: Date;
   value: Meeting;
   width: number;
-  onChange: TCallback<Meeting | undefined>;
+  setMutatedIds: Callback<Set<string>>;
+  onChange: (updated: Meeting) => Promise<void>;
   onClick: (pos: Position, height: number) => void;
   onTouchStart: () => void;
   onMouseDown: () => void;
@@ -34,31 +37,54 @@ export interface MeetingRndProps {
 
 export default function MeetingRnd({
   reference,
-  value,
   width,
-  onChange,
+  value: local,
+  setMutatedIds,
+  onChange: updateLocal,
   onClick: clickHandler,
   onDrag: dragHandler,
   onTouchStart,
   onMouseDown,
 }: MeetingRndProps): JSX.Element {
+  const updateRemote = useCallback(
+    async (updated: Meeting) => {
+      const url = `/api/meetings/${updated.id}`;
+      const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
+      setMutatedIds((prev) => {
+        const mutatedMeetingIds = new Set(prev);
+        mutatedMeetingIds.delete(updated.id);
+        return mutatedMeetingIds;
+      });
+      return Meeting.fromJSON(data);
+    },
+    [setMutatedIds]
+  );
+
+  // TODO: Debug `updateRemote` and `updateLocal` calls within `useContinuous`
+  // to ensure that the `mutatedIds` are always properly up-to-date.
+  const { data: meeting, setData: setMeeting } = useContinuous(
+    local,
+    updateRemote,
+    updateLocal
+  );
+
   // Workaround for `react-rnd`'s unusual resizing behavior.
   // @see {@link https://codesandbox.io/s/1z7kjjk0pq?file=/src/index.js}
   // @see {@link https://github.com/bokuweb/react-rnd/issues/457}
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
   const position = useMemo(() => {
-    return getPosition(value.time, width);
-  }, [value.time, width]);
+    return getPosition(meeting.time, width);
+  }, [meeting.time, width]);
   const height = useMemo(() => {
-    return getHeight(value.time);
-  }, [value.time]);
+    return getHeight(meeting.time);
+  }, [meeting.time]);
 
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
-      onChange(getMeeting(newHeight, newPosition, value, width, reference));
+      setMeeting(getMeeting(newHeight, newPosition, meeting, width, reference));
     },
-    [reference, width, onChange, value]
+    [reference, width, setMeeting, meeting]
   );
 
   // Only trigger `onClick` callback when user hasn't been dragging.
@@ -151,12 +177,12 @@ export default function MeetingRnd({
       }}
     >
       <div className={styles.content}>
-        <div className={styles.subjects}>{join(value.match.subjects)}</div>
+        <div className={styles.subjects}>{join(meeting.match.subjects)}</div>
         <div className={styles.time}>
-          {`${(value.time || new Timeslot()).from.toLocaleString(locale, {
+          {`${(meeting.time || new Timeslot()).from.toLocaleString(locale, {
             hour: 'numeric',
             minute: 'numeric',
-          })} - ${(value.time || new Timeslot()).to.toLocaleString(locale, {
+          })} - ${(meeting.time || new Timeslot()).to.toLocaleString(locale, {
             hour: 'numeric',
             minute: 'numeric',
           })}`}
