@@ -28,6 +28,9 @@ export function isMeetingsQueryURL(query: unknown): query is MeetingsQueryURL {
 
 export class MeetingsQuery extends MatchesQuery
   implements MeetingsQueryInterface {
+  // TODO: Will there ever be more than 1000 meetings to display at once?
+  public hitsPerPage = 1000;
+
   // Start query on the most recent Sunday at 12am.
   public from = new Date(
     new Date().getFullYear(),

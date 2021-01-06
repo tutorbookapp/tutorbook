@@ -23,24 +23,26 @@ function CalendarPage(): JSX.Element {
   const [searching, setSearching] = useState<boolean>(true);
   const [query, setQuery] = useState<MeetingsQuery>();
 
-  const onQueryChange = useCallback((param: CallbackParam<MeetingsQuery>) => {
-    setQuery((prev) => {
-      // TODO: Will there ever be more than 1000 meetings to display at once?
-      let updated = prev || new MeetingsQuery({ hitsPerPage: 1000 });
-      if (typeof param === 'object') updated = param;
-      if (typeof param === 'function') updated = param(updated);
-      if (dequal(updated, prev)) return prev;
-      setSearching(true);
-      return updated;
-    });
-  }, []);
+  const onQueryChange = useCallback(
+    (param: CallbackParam<MeetingsQuery | undefined>) => {
+      setQuery((prev) => {
+        let updated = prev;
+        if (typeof param === 'object') updated = param;
+        if (typeof param === 'function') updated = param(updated);
+        if (dequal(updated, prev)) return prev;
+        setSearching(true);
+        return updated;
+      });
+    },
+    []
+  );
 
   const { t } = useTranslation();
   const { user } = useUser();
 
   useEffect(() => {
     onQueryChange((prev) => {
-      if (!user.id) return prev;
+      if (!user.id) return;
       const people = [{ label: user.name, value: user.id }];
       return new MeetingsQuery({ ...prev, people });
     });
