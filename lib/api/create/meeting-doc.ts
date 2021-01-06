@@ -6,9 +6,9 @@ import clone from 'lib/utils/clone';
 import { db } from 'lib/api/firebase';
 
 export default async function createMeetingDoc(
-  meeting: Meeting,
-  matchId: string
+  meeting: Meeting
 ): Promise<Meeting> {
+  const matchId = meeting.match.id;
   const col = db.collection('matches').doc(matchId).collection('meetings');
   const ref = meeting.id ? col.doc(meeting.id) : col.doc();
   const copy = new Meeting(clone({ ...meeting, id: ref.id }));

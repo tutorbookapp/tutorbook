@@ -1,18 +1,18 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model';
-import createMeetingDoc from 'lib/api/create/meeting-doc';
-import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getMatch from 'lib/api/get/match';
 import { handle } from 'lib/api/error';
+import updateMeetingDoc from 'lib/api/update/meeting-doc';
+import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 
-export type CreateMeetingRes = MeetingJSON;
+export type UpdateMeetingRes = MeetingJSON;
 
-export default async function createMeeting(
+export default async function updateMeeting(
   req: Req,
-  res: Res<CreateMeetingRes>
+  res: Res<UpdateMeetingRes>
 ): Promise<void> {
   try {
     const body = verifyBody<Meeting, MeetingJSON>(
@@ -27,10 +27,10 @@ export default async function createMeeting(
       orgIds: [body.match.org],
     });
 
-    const meeting = await createMeetingDoc(body);
-    await createMeetingSearchObj(meeting);
+    await updateMeetingDoc(body);
+    await updateMeetingSearchObj(body);
 
-    res.status(200).json(meeting.toJSON());
+    res.status(200).json(body.toJSON());
   } catch (e) {
     handle(e, res);
   }

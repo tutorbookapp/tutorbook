@@ -31,9 +31,11 @@ export function deleteObj(
   return (idx.deleteObject(objId) as unknown) as Promise<DeleteResponse>;
 }
 
-export default function index<
-  T extends { toSearchHit: () => Record<string, unknown> }
->(indexId: string, obj: T, tags?: string[]): Promise<SaveObjectResponse> {
+export default function index<T extends { toSearchHit: () => object }>(
+  indexId: string,
+  obj: T,
+  tags?: string[]
+): Promise<SaveObjectResponse> {
   const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
   const idxObj = clone({ ...obj.toSearchHit(), _tags: tags });
   return (idx.saveObject(idxObj) as unknown) as Promise<SaveObjectResponse>;
