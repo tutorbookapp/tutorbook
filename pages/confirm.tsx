@@ -13,8 +13,11 @@ import Page from 'components/page';
 import { User, UserJSON } from 'lib/model';
 import { usePage, useTrack } from 'lib/hooks';
 import { period } from 'lib/utils';
+import { withI18n } from 'lib/intl';
 
-export default function Confirm(): JSX.Element {
+import common from 'locales/en/common.json';
+
+function ConfirmPage(): JSX.Element {
   const { query, push } = useRouter();
 
   usePage({ name: 'Confirm' });
@@ -77,3 +80,5 @@ export default function Confirm(): JSX.Element {
     </Page>
   );
 }
+
+export default withI18n(ConfirmPage, { common });
