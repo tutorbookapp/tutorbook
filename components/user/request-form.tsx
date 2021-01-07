@@ -319,8 +319,6 @@ export default function RequestForm({
           textarea
           rows={4}
           required
-          characterCount
-          maxLength={500}
           placeholder={t('match3rd:message-placeholder', {
             person,
             subject: (subjects[0] || { label: 'Computer Science' }).label,
