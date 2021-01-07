@@ -1,28 +1,35 @@
-import { Chip, ChipSet } from '@rmwc/chip';
 import {
   RefObject,
   forwardRef,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { animated, useSpring } from 'react-spring';
-import { IconButton } from '@rmwc/icon-button';
-import Link from 'next/link';
 import cn from 'classnames';
 import mergeRefs from 'react-merge-refs';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 
-import Avatar from 'components/avatar';
+import DialogContent from 'components/dialog';
+import { NavContext } from 'components/dialog/context';
 
 import { Callback, Meeting, Position } from 'lib/model';
-import { join } from 'lib/utils';
 import { useScrollLock } from 'lib/hooks';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from './config';
+import DeletePage from './delete-page';
+import DisplayPage from './display-page';
+import EditPage from './edit-page';
 import styles from './preview.module.scss';
+
+export enum Page {
+  Display = 0,
+  Edit,
+  Delete,
+}
 
 export interface MeetingPreviewProps {
   meeting: Meeting;
@@ -105,6 +112,13 @@ export default forwardRef(function MeetingPreview(
     top,
   });
 
+  const [active, setActive] = useState<number>(Page.Display);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [checked, setChecked] = useState<boolean>(false);
+
+  const openEdit = useCallback(() => setActive(Page.Edit), []);
+  const openDelete = useCallback(() => setActive(Page.Delete), []);
+
   return (
     <div className={styles.scrimOuter}>
       <div className={styles.scrimInner}>
@@ -114,49 +128,22 @@ export default forwardRef(function MeetingPreview(
           onClick={(event) => event.stopPropagation()}
           className={cn(styles.wrapper, { [styles.open]: open })}
         >
-          <div className={styles.nav}>
-            <IconButton
-              onClick={() => setOpen(false)}
-              className={styles.btn}
-              icon='close'
-            />
-          </div>
-          <div className={styles.content}>
-            <div className={styles.people}>
-              {meeting.match.people.map((person) => (
-                <Link
-                  href={`/${meeting.match.org}/users/${person.id}`}
-                  key={person.id}
-                >
-                  <a className={styles.person}>
-                    <div className={styles.avatar}>
-                      <Avatar src={person.photo} size={160} />
-                    </div>
-                    <div className={styles.name}>{person.name}</div>
-                    <div className={styles.roles}>{join(person.roles)}</div>
-                  </a>
-                </Link>
-              ))}
-            </div>
-            <div className={styles.info}>
-              <dl>
-                <dt>Subjects</dt>
-                <dd>{join(meeting.match.subjects)}</dd>
-              </dl>
-              <dl>
-                <dt>Meeting venue</dt>
-                <dd>
-                  <a href={meeting.venue.url}>{meeting.venue.url}</a>
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className={styles.actions}>
-            <ChipSet className={styles.chips}>
-              <Chip icon='edit' label='Edit meeting' />
-              <Chip icon='delete' label='Delete meeting' />
-            </ChipSet>
-          </div>
+          <NavContext.Provider value={() => setOpen(false)}>
+            <DialogContent
+              active={active}
+              setActive={setActive}
+              loading={loading}
+              checked={checked}
+            >
+              <DisplayPage
+                meeting={meeting}
+                openEdit={openEdit}
+                openDelete={openDelete}
+              />
+              <EditPage setLoading={setLoading} setChecked={setChecked} />
+              <DeletePage setLoading={setLoading} setChecked={setChecked} />
+            </DialogContent>
+          </NavContext.Provider>
         </animated.div>
       </div>
     </div>

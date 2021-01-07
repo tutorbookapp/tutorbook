@@ -1,5 +1,7 @@
 @use 'components/dialog';
 
+// TODO: Refactor this from the transition core logic to create a very reusable
+// nested transitions HOC (i.e. don't require a nav button in fixed locations).
 .pages {
   width: calc(100vw - 32px);
   max-width: 850px;

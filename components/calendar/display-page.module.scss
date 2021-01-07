@@ -1,0 +1,125 @@
+@use 'styles/typography';
+
+$image-size: 160px;
+
+.actions {
+  border-top: 1px solid var(--accents-2);
+  overflow: auto;
+  text-align: right;
+  flex: none;
+
+  .chips {
+    padding: 12px 0;
+    flex-wrap: nowrap;
+    display: inline-flex;
+
+    :global(.mdc-chip:first-child) {
+      margin-left: 12px;
+    }
+
+    :global(.mdc-chip:last-child) {
+      margin-right: 12px;
+    }
+  }
+}
+
+.content {
+  padding: 0 24px;
+  overflow: auto;
+  height: 100%;
+}
+
+.people {
+  display: flex;
+  margin-top: 24px;
+
+  .person {
+    @include typography.typography('body1');
+    text-decoration: none;
+    display: block;
+    margin: 0 8px;
+    outline: none;
+    border: none;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    .avatar {
+      width: $image-size;
+      height: $image-size;
+      text-decoration: none;
+      display: block;
+      outline: none;
+    }
+
+    .name {
+      @include typography.typography('headline5');
+      color: var(--on-background);
+      margin: 16px 0 8px;
+      line-height: 1.2rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: $image-size;
+    }
+
+    .roles {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 14px;
+      height: 14px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--accents-5);
+      margin-top: 8px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: $image-size;
+    }
+  }
+}
+
+.info {
+  flex: 1 1 auto;
+  margin-top: 24px;
+
+  dl {
+    margin: 0 0 24px;
+  }
+
+  dt {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+    height: 14px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--accents-5);
+    margin-bottom: 4px;
+  }
+
+  dd {
+    font-size: 14px;
+    color: var(--on-background);
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+  }
+
+  a {
+    color: var(--on-background);
+    text-decoration: none;
+    font-weight: 500;
+    display: block;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
