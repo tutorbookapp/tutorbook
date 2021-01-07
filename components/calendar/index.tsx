@@ -225,7 +225,12 @@ export default function Calendar({
                       width={width}
                       setMutatedIds={setMutatedIds}
                       onClick={(position, height) =>
-                        setPreview({ meeting, position, height })
+                        setPreview({
+                          meeting,
+                          position,
+                          height,
+                          onChange: (updated) => updateMeeting(idx, update),
+                        })
                       }
                       onChange={(updated) => updateMeeting(idx, updated)}
                       onTouchStart={onRndInteraction}

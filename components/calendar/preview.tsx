@@ -33,6 +33,7 @@ export enum Page {
 
 export interface MeetingPreviewProps {
   meeting: Meeting;
+  onChange: (updated: Meeting) => Promise<void>;
   offset: Position;
   onClosed: () => void;
   width: number;
@@ -50,6 +51,7 @@ type MeetingPreviewRef =
 export default forwardRef(function MeetingPreview(
   {
     meeting,
+    onChange,
     offset,
     onClosed,
     width: itemWidth,
@@ -140,7 +142,12 @@ export default forwardRef(function MeetingPreview(
                 openEdit={openEdit}
                 openDelete={openDelete}
               />
-              <EditPage setLoading={setLoading} setChecked={setChecked} />
+              <EditPage
+                meeting={meeting}
+                onChange={onChange}
+                setLoading={setLoading}
+                setChecked={setChecked}
+              />
               <DeletePage setLoading={setLoading} setChecked={setChecked} />
             </DialogContent>
           </NavContext.Provider>

@@ -1,12 +1,9 @@
 @use 'components/dialog';
 
-// TODO: Refactor this from the transition core logic to create a very reusable
-// nested transitions HOC (i.e. don't require a nav button in fixed locations).
 .pages {
-  width: calc(100vw - 32px);
-  max-width: 850px;
   display: grid;
-  overflow: hidden;
+  height: 100%;
+  width: 100%;
 }
 
 .page {
@@ -14,8 +11,6 @@
   // another yet still retain their sizing to size the dialog surface.
   // @see {@link https://stackoverflow.com/a/51949049/10023158}
   grid-column: 1;
-  max-height: calc(100vh - 32px);
-  overflow: hidden;
   grid-row: 1;
   opacity: 0;
   z-index: 1;
@@ -26,10 +21,9 @@
   }
 
   .wrapper {
-    max-height: calc(100vh - 32px);
+    flex-direction: column;
     position: relative;
     display: flex;
-    flex-direction: column;
     height: 100%;
 
     .nav {
