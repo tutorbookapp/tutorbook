@@ -174,7 +174,7 @@ export default function PopOverMenu({
             {t('common:search')}
           </PopOverLink>
           <PopOverLink href='/profile'>{t('common:profile')}</PopOverLink>
-          <PopOverLink href='/matches'>{t('common:matches')}</PopOverLink>
+          <PopOverLink href='/calendar'>{t('common:calendar')}</PopOverLink>
           <PopOverLink href='/dashboard'>{t('common:dashboard')}</PopOverLink>
           {orgs.map((org: Org) => (
             <Fragment key={org.id}>
