@@ -21,7 +21,7 @@ import useMeasure from 'react-use-measure';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Availability, AvailabilityJSON, Callback, Timeslot } from 'lib/model';
+import { Availability, AvailabilityJSON, TCallback, Timeslot } from 'lib/model';
 import {
   getDate,
   getDaysInMonth,
@@ -41,7 +41,7 @@ type OverridenProps =
 interface Props {
   uid?: string;
   value?: Timeslot;
-  onChange: Callback<Timeslot | undefined>;
+  onChange: TCallback<Timeslot>;
   renderToPortal?: boolean;
   focused?: boolean;
   onFocused?: () => any;
