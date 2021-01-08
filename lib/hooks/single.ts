@@ -28,6 +28,10 @@ interface SingleProps<T> {
  * 5. Otherwise, mutate local data with the server's response.
  * 6. Hide the loading state. Data has been updated or an error has occurred.
  * @see {@link https://github.com/tutorbookapp/tutorbook#forms-and-data-mutation}
+ * @todo Locally mutating data before updating the remote makes changes feel
+ * faster but having a loader visible defeats that purpose. Should we even
+ * locally mutate data first, then? Or should we hide the loader before the
+ * remote is properly updated?
  */
 export default function useSingle<T extends { id: string }>(
   initialData: T,
