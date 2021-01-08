@@ -36,15 +36,13 @@ interface SingleProps<T> {
 export default function useSingle<T extends { id: string }>(
   initialData: T,
   updateRemote: (data: T) => Promise<T | void>,
-  updateLocal?: (data: T) => Promise<void> | void
+  updateLocal?: (data: T, hasBeenUpdated?: boolean) => Promise<void> | void
 ): SingleProps<T> {
   const [data, setData] = useState<T>(initialData);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
   const [validations, setValidations] = useState<Validations>({});
-
-  const prevData = useRef<T>(initialData);
 
   const onSubmit = useCallback(
     async (evt?: FormEvent) => {
@@ -56,7 +54,7 @@ export default function useSingle<T extends { id: string }>(
       setChecked(false);
       setLoading(true);
       // Immediately mutate local data.
-      if (updateLocal) await updateLocal(data);
+      if (updateLocal) await updateLocal(data, false);
       // Update remote data with POST or PUT API request.
       const [err, res] = await to(updateRemote(data));
       if (err) {
@@ -67,10 +65,12 @@ export default function useSingle<T extends { id: string }>(
         setError(e.message);
       } else {
         // Otherwise, mutate local data with the server's response.
-        prevData.current = res as T;
         if (!dequal(res, data)) {
           setData(res as T);
-          if (updateLocal) await updateLocal(res as T);
+          if (updateLocal) await updateLocal(res as T, true);
+        } else if (updateLocal) {
+          // Signal that local data is now in sync with server data.
+          await updateLocal(data, true);
         }
         setChecked(true);
         // Hide the loading state. Data has been updated.

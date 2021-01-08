@@ -29,7 +29,7 @@ interface ContinuousProps<T> {
 export default function useContinuous<T>(
   initialData: T,
   updateRemote: (data: T) => Promise<T | void>,
-  updateLocal?: (data: T) => Promise<void>,
+  updateLocal?: (data: T, hasBeenUpdated?: boolean) => Promise<void> | void,
   initialTimeout: number = 5000
 ): ContinuousProps<T> {
   const [data, setData] = useState<T>(initialData);
@@ -38,8 +38,7 @@ export default function useContinuous<T>(
 
   // The given changes are always initially saved; we don't want to show an
   // unnecessary "Saved changes" snackbar when the user first opens a page.
-
-  const lastReceivedResponse = useRef<T>();
+  const lastReceivedResponse = useRef<T>(initialData);
 
   const retry = useCallback(async () => {
     const [err, res] = await to(updateRemote(data));
@@ -51,12 +50,15 @@ export default function useContinuous<T>(
     } else {
       setError('');
       setRetryCount(0);
-      if (res && !dequal(res, data)) {
-        lastReceivedResponse.current = res;
-        setData(res);
+      lastReceivedResponse.current = res as T;
+      if (!dequal(res, data)) {
+        setData(res as T);
+      } else if (updateLocal) {
+        // Signal that local data is now in sync with server data.
+        await updateLocal(data, true);
       }
     }
-  }, [updateRemote, data]);
+  }, [updateLocal, updateRemote, data]);
 
   const timeout = useMemo(() => {
     // Exponential backoff equation taken from the @vercel/swr source code.
@@ -88,7 +90,7 @@ export default function useContinuous<T>(
     if (((data as unknown) as { id: string })?.id === '') return;
     // Throttle local updates (one sec) to prevent unecessary large re-renders.
     const timeoutId = setTimeout(() => {
-      void updateLocal(data);
+      void updateLocal(data, dequal(lastReceivedResponse.current, data));
     }, 500);
     return () => clearTimeout(timeoutId);
   }, [updateLocal, data]);

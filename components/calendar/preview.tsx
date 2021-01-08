@@ -31,12 +31,11 @@ export enum Page {
 
 export interface MeetingPreviewProps {
   meeting: Meeting;
-  onChange: (updated: Meeting) => Promise<void>;
   offset: Position;
-  onClosed: () => void;
   width: number;
   height: number;
   position: Position;
+  onClosed: () => void;
   setOpen: Callback<boolean>;
   open: boolean;
 }
@@ -49,7 +48,6 @@ type MeetingPreviewRef =
 export default forwardRef(function MeetingPreview(
   {
     meeting,
-    onChange,
     offset,
     onClosed,
     width: itemWidth,
@@ -124,7 +122,6 @@ export default forwardRef(function MeetingPreview(
         <animated.div
           style={props}
           ref={mergeRefs([previewRef, ref])}
-          onClick={(event) => event.stopPropagation()}
           className={cn(styles.wrapper, { [styles.open]: open })}
         >
           <NavContext.Provider value={() => setOpen(false)}>
@@ -142,7 +139,6 @@ export default forwardRef(function MeetingPreview(
               />
               <EditPage
                 meeting={meeting}
-                onChange={onChange}
                 setLoading={setLoading}
                 setChecked={setChecked}
               />

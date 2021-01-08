@@ -10,64 +10,53 @@ import {
 } from 'react';
 import { ResizeDirection } from 're-resizable';
 import axios from 'axios';
-import { dequal } from 'dequal/lite';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import { Meeting, MeetingJSON, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 import { useContinuous } from 'lib/hooks';
 
 import { getHeight, getMeeting, getPosition } from './utils';
 import { RND_MARGIN } from './config';
 import styles from './rnd.module.scss';
+import { useCalendar } from './context';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
 export interface MeetingRndProps {
-  reference: Date;
-  value: Meeting;
   width: number;
-  setMutatedIds: Callback<Set<string>>;
-  onChange: (updated: Meeting) => Promise<void>;
-  onClick: (pos: Position, height: number) => void;
+  meeting: Meeting;
+  setPreview: (preview: {
+    meeting: Meeting;
+    position: Position;
+    height: number;
+  }) => void;
   onTouchStart: () => void;
   onMouseDown: () => void;
   onDrag: () => void;
 }
 
 export default function MeetingRnd({
-  reference,
   width,
-  value: local,
-  setMutatedIds,
-  onChange: updateLocal,
-  onClick: clickHandler,
-  onDrag: dragHandler,
+  meeting: initialData,
+  setPreview,
   onTouchStart,
   onMouseDown,
+  onDrag: dragHandler,
 }: MeetingRndProps): JSX.Element {
-  const updateRemote = useCallback(
-    async (updated: Meeting) => {
-      const url = `/api/meetings/${updated.id}`;
-      const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
-      setMutatedIds((prev) => {
-        const mutatedMeetingIds = new Set(prev);
-        mutatedMeetingIds.delete(updated.id);
-        if (dequal([...mutatedMeetingIds], [...prev])) return prev;
-        return mutatedMeetingIds;
-      });
-      return Meeting.fromJSON(data);
-    },
-    [setMutatedIds]
-  );
+  const updateRemote = useCallback(async (updated: Meeting) => {
+    const url = `/api/meetings/${updated.id}`;
+    const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
+    return Meeting.fromJSON(data);
+  }, []);
 
-  // TODO: Debug `updateRemote` and `updateLocal` calls within `useContinuous`
-  // to ensure that the `mutatedIds` are always properly up-to-date.
+  const { lang: locale } = useTranslation();
+  const { startingDate, mutateMeeting } = useCalendar();
   const { data: meeting, setData: setMeeting } = useContinuous(
-    local,
+    initialData,
     updateRemote,
-    updateLocal
+    mutateMeeting
   );
 
   // Workaround for `react-rnd`'s unusual resizing behavior.
@@ -84,27 +73,31 @@ export default function MeetingRnd({
 
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
-      setMeeting(getMeeting(newHeight, newPosition, meeting, width, reference));
+      setMeeting(
+        getMeeting(newHeight, newPosition, meeting, width, startingDate)
+      );
     },
-    [reference, width, setMeeting, meeting]
+    [startingDate, width, setMeeting, meeting]
   );
 
-  // Only trigger `onClick` callback when user hasn't been dragging.
   const [dragging, setDragging] = useState<boolean>(false);
   useEffect(() => {
     if (dragging) dragHandler();
   }, [dragging, dragHandler]);
 
   const onClick = useCallback(
-    (evt: ReactMouseEvent) => {
+    (evt: FormEvent) => {
       evt.stopPropagation();
-      if (!dragging) clickHandler(position, height);
+      if (!dragging) setPreview({ meeting, position, height });
     },
-    [dragging, clickHandler, position, height]
+    [setPreview, dragging, meeting, position, height]
   );
   const onResizeStop = useCallback(() => {
     setTimeout(() => setDragging(false), 0);
     setOffset({ x: 0, y: 0 });
+  }, []);
+  const onDragStop = useCallback(() => {
+    setTimeout(() => setDragging(false), 0);
   }, []);
   const onResize = useCallback(
     (
@@ -129,9 +122,6 @@ export default function MeetingRnd({
     },
     [update, position, offset]
   );
-  const onDragStop = useCallback(() => {
-    setTimeout(() => setDragging(false), 0);
-  }, []);
   const onDrag = useCallback(
     (
       e: ReactMouseEvent | ReactTouchEvent | MouseEvent | TouchEvent,
@@ -146,8 +136,6 @@ export default function MeetingRnd({
     },
     [update, height]
   );
-
-  const { lang: locale } = useTranslation();
 
   return (
     <Rnd

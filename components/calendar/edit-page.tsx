@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect } from 'react';
+import { FormEvent, useCallback, useEffect, useLayoutEffect } from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
@@ -6,23 +6,23 @@ import useTranslation from 'next-translate/useTranslation';
 import Button from 'components/button';
 import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
+import { useNav } from 'components/dialog/context';
 
 import { Callback, Match, Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import { usePrevious, useSingle } from 'lib/hooks';
 import { join } from 'lib/utils';
-import { useSingle } from 'lib/hooks';
 
 import styles from './edit-page.module.scss';
+import { useCalendar } from './context';
 
 export interface EditPageProps {
   meeting: Meeting;
-  onChange: (updated: Meeting) => Promise<void>;
   setLoading: Callback<boolean>;
   setChecked: Callback<boolean>;
 }
 
 export default function EditPage({
-  meeting: local,
-  onChange: updateLocal,
+  meeting: initialData,
   setLoading,
   setChecked,
 }: EditPageProps): JSX.Element {
@@ -32,14 +32,22 @@ export default function EditPage({
     return Meeting.fromJSON(data);
   }, []);
 
+  const { t } = useTranslation();
+  const { mutateMeeting } = useCalendar();
   const {
     data: meeting,
     setData: setMeeting,
     onSubmit,
-    error,
     loading,
     checked,
-  } = useSingle(local, updateRemote, updateLocal);
+    error,
+  } = useSingle(initialData, updateRemote, mutateMeeting);
+
+  const nav = useNav();
+  const prevLoading = usePrevious(loading);
+  useLayoutEffect(() => {
+    if (prevLoading && !loading && !error) nav();
+  }, [prevLoading, loading, error, nav]);
 
   useEffect(() => setLoading(loading), [loading, setLoading]);
   useEffect(() => setChecked(checked), [checked, setChecked]);
@@ -69,8 +77,6 @@ export default function EditPage({
     },
     [setMeeting]
   );
-
-  const { t } = useTranslation();
 
   return (
     <form className={styles.form} onSubmit={onSubmit}>

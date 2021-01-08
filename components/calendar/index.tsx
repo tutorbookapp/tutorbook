@@ -8,7 +8,6 @@ import {
   useState,
 } from 'react';
 import cn from 'classnames';
-import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
@@ -16,7 +15,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import LoadingDots from 'components/loading-dots';
 
-import { Callback, Meeting, MeetingsQuery } from 'lib/model';
+import { Meeting, Position } from 'lib/model';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { useClickOutside } from 'lib/hooks';
 
@@ -24,30 +23,19 @@ import MeetingPreview from './preview';
 import MeetingRnd from './rnd';
 import { getMeeting } from './utils';
 import styles from './calendar.module.scss';
+import { useCalendar } from './context';
 
-export interface CalendarProps {
-  query: MeetingsQuery;
+export interface CalendarBodyProps {
   searching: boolean;
   meetings: Meeting[];
-  setMeetings: Callback<Meeting[]>;
-  setMutatedIds: Callback<Set<string>>;
-  searching: boolean;
 }
 
-/**
- * The `Calendar` emulates the drag-and-resize interface of Google
- * Calendar's event creation UI but on a much smaller scale. We use `react-rnd`
- * within an RMWC `MenuSurface` to craft our UX.
- * @see {@link https://github.com/tutorbookapp/tutorbook/issues/50}
- */
-export default function Calendar({
-  query,
+export default function CalendarBody({
   searching,
   meetings,
-  setMeetings,
-  setMutatedIds,
-}: CalendarProps): JSX.Element {
+}: CalendarBodyProps): JSX.Element {
   const { lang: locale } = useTranslation();
+  const { startingDate } = useCalendar();
 
   const previewRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -59,7 +47,11 @@ export default function Calendar({
   const [cellRef, { width }] = useMeasure({ polyfill });
 
   const [open, setOpen] = useState<boolean>(false);
-  const [preview, setPreview] = useState<MeetingPreviewProps>();
+  const [preview, setPreview] = useState<{
+    meeting: Meeting;
+    position: Position;
+    height: number;
+  }>();
   const closingTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const onRndInteraction = useCallback(() => {
     if (closingTimeoutId.current) {
@@ -78,40 +70,16 @@ export default function Calendar({
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, []);
 
-  const updateMeeting = useCallback(
-    (idx: number, updated?: Meeting) => {
-      // TODO: Mutate the meeting IDs properly when deleting meetings:
-      // 1. Immediately remove meeting from display (local mutation) and prevent
-      //    revalidations (i.e. add the meeting ID to these `mutatedIds`).
-      // 2. Once deleted, remove the meeting ID from these `mutatedIds`.
-      // 3. If deletion fails, restore meeting to display (local mutation),
-      //    allow revalidations, and show error snackbar (with retry button).
-      setMutatedIds((prev) => {
-        if (!updated) return prev;
-        const mutatedMeetingIds = new Set(prev);
-        mutatedMeetingIds.add(updated.id);
-        if (dequal([...mutatedMeetingIds], [...prev])) return prev;
-        return mutatedMeetingIds;
-      });
-      setMeetings((prev) => {
-        if (!updated) return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
-        if (idx < 0) return [...prev, updated];
-        return [...prev.slice(0, idx), updated, ...prev.slice(idx + 1)];
-      });
-    },
-    [setMutatedIds, setMeetings]
-  );
-
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const onClick = useCallback(
     (event: MouseEvent) => {
       const position = { x: event.clientX - x, y: event.clientY - y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
-      console.log('TODO: Use edit meeting page to create new meetings.');
-      //updateMeeting(-1, getMeeting(48, position, meeting, width, query.from));
+      const created = getMeeting(48, position, meeting, width, startingDate);
+      console.log('Clicked:', created.toJSON());
     },
-    [query.from, x, y, width, updateMeeting]
+    [startingDate, x, y, width]
   );
 
   // Sync the scroll position of the main cell grid and the static headers. This
@@ -135,7 +103,7 @@ export default function Calendar({
         .fill(null)
         .map((_, day) => {
           const now = new Date();
-          const date = getDateWithDay(day, query.from);
+          const date = getDateWithDay(day, startingDate);
           const today =
             now.getFullYear() === date.getFullYear() &&
             now.getMonth() === date.getMonth() &&
@@ -151,7 +119,7 @@ export default function Calendar({
             </div>
           );
         }),
-    [locale, query.from]
+    [locale, startingDate]
   );
   const timeCells = useMemo(
     () =>
@@ -189,7 +157,7 @@ export default function Calendar({
         .map(() => (
           <div key={nanoid()} className={styles.cell} ref={cellRef} />
         )),
-    []
+    [cellRef]
   );
 
   return (
@@ -233,22 +201,12 @@ export default function Calendar({
                 <div className={styles.space} />
                 <div className={styles.cells} onClick={onClick} ref={cellsRef}>
                   {!searching &&
-                    meetings.map((meeting: Meeting, idx: number) => (
+                    meetings.map((meeting: Meeting) => (
                       <MeetingRnd
                         key={meeting.id}
-                        reference={query.from}
-                        value={meeting}
                         width={width}
-                        setMutatedIds={setMutatedIds}
-                        onClick={(position, height) =>
-                          setPreview({
-                            meeting,
-                            position,
-                            height,
-                            onChange: (updated) => updateMeeting(idx, update),
-                          })
-                        }
-                        onChange={(updated) => updateMeeting(idx, updated)}
+                        meeting={meeting}
+                        setPreview={setPreview}
                         onTouchStart={onRndInteraction}
                         onMouseDown={onRndInteraction}
                         onDrag={onRndDrag}
