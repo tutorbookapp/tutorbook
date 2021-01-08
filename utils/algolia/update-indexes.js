@@ -97,5 +97,3 @@ const generic = async (id) => {
     debugger;
   }
 };
-
-generic('refs');

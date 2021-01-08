@@ -2,10 +2,10 @@ name,synonyms,categories
 Art,,
 Photography,,Art
 Filmmaking,Video Production,Art
+Theater,Drama,Art
 ,,
 Music,,Art
 Music Production,,Music
-Music Composition,,Music
 Singing,,Music
 Guitar,,Music
 Piano,,Music
@@ -19,15 +19,12 @@ Cello,,Music
 Clarinet,,Music
 Viola,,Music
 Flute,,Music
-Piccolo,,Music
 Trumpet,,Music
 Trombone,,Music
 Tuba,,Music
 Alto Saxophone,,Music
 Tenor Saxophone,,Music
 Bari Saxophone,,Music
-French Horn,,Music
-Xylophone,,Music
 ,,
 Business,Business and Commerce,
 Entrepreneurship,,Business

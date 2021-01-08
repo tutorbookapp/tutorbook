@@ -1,56 +1,53 @@
 name,synonyms,categories,grades
-PSAT,PSAT Prep,,"11, 12"
-ACT,ACT Prep,,"11, 12"
-SAT,SAT Prep,,"11, 12"
-LSAT,LSAT Prep,,12
-GRE,GRE Prep,,12
+PSAT,,,"11, 12"
+ACT,,,"11, 12"
+SAT,,,"11, 12"
 ,,,
 Math,"SAT Math, SAT: Math1, SAT: Math2, SAT: Math 1, SAT: Math 2",,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
-Algebra,"Linear Algebra, Geometry A/Alg 1A, Geometry/ Alg 2A, Pre-Algebra, Algebra 1, Algebra 1A, Algebra 2",Math,"7, 8, 9, 10"
-Geometry,"Geometry A/Alg 1A, Geometry/ Alg 2A, Geometry Honors, Geometry A, Geometry H",Math,"9, 10"
+Algebra,"Pre-Algebra, Algebra 1, Algebra 1A, Algebra 2",Math,"7, 8, 9, 10"
+Geometry,"Geometry Honors, Geometry A, Geometry H",Math,"9, 10"
 Trigonometry,"Algebra 2/Trig A, Algebra 2/Trig H, Trigonometry Honors, Trigonometry H",Math,10
 Calculus,"AP Calculus, AP Calculus AB, AP Calculus BC, Pre-Calculus, Multivariable Calculus, IAC",Math,12
-Statistics,"Stats, AP Statistics",Math,"11, 12"
+Statistics,AP Statistics,Math,"11, 12"
 Additional Mathematics,,Math,"8, 9, 10"
 Analysis,"Analysis Honors, Analysis H, IAC",Math,11
 ,,,
 Science,,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
-Physics,"Conceptual Physics, SAT: Physics, AP Physics 1, AP Physics 2, AP Physics C",Science,"11, 12"
-Biology,"Marine Biology, SAT: Biology, AP Biology, Biology Honors, Biology H",Science,"11, 12"
-Chemistry,"Organic Chemistry, Biochemistry, SAT: Chemistry, AP Chemistry, Chemistry Honors, Chemistry H",Science,12
+Physics,"SAT: Physics, AP Physics 1, AP Physics 2, AP Physics C",Science,"11, 12"
+Biology,"SAT: Biology, AP Biology, Biology Honors, Biology H",Science,"11, 12"
+Chemistry,"SAT: Chemistry, AP Chemistry, Chemistry Honors, Chemistry H",Science,12
 Environmental Science,AP Environmental Science,Science,"11, 12"
 ,,,
-History,"Ancient History, Social Studies, AP U.S. Government, AP US Government, AP Art History, AP European History, AP U.S. History, AP US History, APUSH, AP World History, European History, U.S. History, US History, World History, Cont World History",,"11, 12"
-Economics,"AP Macroeconomics, AP Microeconomics, AP Economics",History,"11, 12"
-Government,"AP U.S. Government and Politics, Politics, Political Science, U.S. Government",History,"11, 12"
+History,"AP U.S. Government, AP US Government, AP Art History, AP European History, AP U.S. History, AP US History, AP World History, European History, U.S. History, US History, World History",,"11, 12"
+Economics,"AP Macroeconomics, AP Microeconomics",History,"11, 12"
+Government,"AP U.S. Government and Politics, Politics, U.S. Government",History,"11, 12"
 Psychology,AP Psychology,History,12
-Philosophy,,History,"10, 11, 12"
 ,,,
 Latin Language,"AP Latin, Latin",,"6, 7, 8, 9, 10, 11, 12"
 Spanish Language,"AP Spanish Language, AP Spanish Literature, Spanish, SAT: Spanish",,"6, 7, 8, 9, 10, 11, 12"
-Chinese Language,"AP Chinese Language, Chinese, AP Mandarin, Mandarin",,"6, 7, 8, 9, 10, 11, 12"
+Chinese Language,"AP Chinese Language, Chinese",,"6, 7, 8, 9, 10, 11, 12"
 Urdu Language,Urdu,,"6, 7, 8, 9, 10, 11, 12"
 Hindi Language,Hindi,,"6, 7, 8, 9, 10, 11, 12"
 Japanese Language,"AP Japanese Language, Japanese",,"6, 7, 8, 9, 10, 11, 12"
 French Language,"AP French Language, AP French Literature, French, SAT: French",,"6, 7, 8, 9, 10, 11, 12"
 German Language,"AP German Language, German",,"6, 7, 8, 9, 10, 11, 12"
-Italian Language,Italian,,"6, 7, 8, 9, 10, 11, 12"
 ,,,
-English,"Creative Writing, Grammar, Literature, The Works of Shakespeare, Classic Mythology, Escape Lit, Film as Composition in Lit, Fundamentals of Communication, Advanced Communication, Communication, American Lit, Western Culture, Western Lit, World Lit, World Classics H, Lit Style, Cont Herit, ESL, Essay Writing, Essay Editing, AP English Language and Composition, AP English Lit and Composition, AP English Literature and Composition, SAT: Literature",,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+English,"AP English Language and Composition, AP English Literature and Composition, SAT: Literature",,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 General Paper,,English,"11, 12"
 Reading,,English,"0, 1, 2, 3, 4, 5"
 Writing,,English,"0, 1, 2, 3, 4, 5"
 ,,,
-Computer Science,"FOOP, AP Comp Sci A, Computer Programming, AP Computer Science A, AP Computer Science Advanced, AP Comp Sci P, AP Computer Science P, AP Computer Science Principles",,"1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+Computer Science,"AP Computer Science A, AP Computer Science Advanced, AP Computer Science P, AP Computer Science Principles",,"1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Engineering,,,"7, 8, 9, 10, 11, 12"
 Design,"Design and Technology, Design and Communication",,"11, 12"
 Accounting,,,"8, 9, 10, 11, 12"
 Business Studies,,,"8, 9, 10, 11, 12"
 ,,,
-Study Skills,"Basic College Skills, Organization, Planning",,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+Study Skills,,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
 Travel and Tourism,,,"8, 9, 10, 11, 12"
 Islamic Studies,,,"6, 7, 8, 9, 10, 11, 12"
 ,,,
 Art,,,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
-Music,"Piano, Musicianship/Piano",Art,"0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
-Filmmaking,Video Production,Art,"9, 10, 11, 12"
+Photography,,Art,"6, 7, 8, 9, 10, 11, 12"
+Filmmaking,Video Production,Art,"6, 7, 8, 9, 10, 11, 12"
+Theater,Drama,Art,"6, 7, 8, 9, 10, 11, 12"
