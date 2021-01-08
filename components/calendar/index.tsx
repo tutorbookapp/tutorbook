@@ -53,16 +53,20 @@ export default function CalendarBody({
     height: number;
   }>();
   const closingTimeoutId = useRef<ReturnType<typeof setTimeout>>();
-  const onRndInteraction = useCallback(() => {
+  const preventPreviewClose = useCallback(() => {
+    console.log('Preventing preview close:', closingTimeoutId.current);
     if (closingTimeoutId.current) {
       clearTimeout(closingTimeoutId.current);
       closingTimeoutId.current = undefined;
     }
   }, []);
-  const onRndDrag = useCallback(() => setOpen(false), []);
+  const closePreview = useCallback(() => setOpen(false), []);
 
   useClickOutside(previewRef, () => {
-    closingTimeoutId.current = setTimeout(() => setOpen(false), 0);
+    // TODO: Instead of experimenting with this seemingly arbitrary timeout, I
+    // should instead create some context that stores an array of element refs
+    // that can be clicked without closing the preview (e.g. a retry snackbar).
+    closingTimeoutId.current = setTimeout(() => setOpen(false), 250);
   });
 
   useEffect(() => {
@@ -169,6 +173,7 @@ export default function CalendarBody({
           ref={previewRef}
           offset={{ x, y }}
           onClosed={() => setPreview(undefined)}
+          preventPreviewClose={preventPreviewClose}
           setOpen={setOpen}
           open={open}
         />
@@ -207,9 +212,8 @@ export default function CalendarBody({
                         width={width}
                         meeting={meeting}
                         setPreview={setPreview}
-                        onTouchStart={onRndInteraction}
-                        onMouseDown={onRndInteraction}
-                        onDrag={onRndDrag}
+                        preventPreviewClose={preventPreviewClose}
+                        closePreview={closePreview}
                       />
                     ))}
                   {dayCells}

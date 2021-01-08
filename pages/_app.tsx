@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR, { SWRConfig, mutate } from 'swr';
 import { AppProps } from 'next/app';
+import { SnackbarQueue } from '@rmwc/snackbar';
 
 import NProgress from 'components/nprogress';
 
@@ -8,6 +9,7 @@ import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 import { Theme, ThemeContext } from 'lib/context/theme';
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { fetcher } from 'lib/fetch';
+import snackbar from 'lib/snackbar';
 import { useTrack } from 'lib/hooks';
 
 import 'styles/global.scss';
@@ -152,6 +154,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
           <NProgress />
           <div id='portal' />
           <Component {...pageProps} />
+          <SnackbarQueue messages={snackbar.messages} leading />
         </UserContext.Provider>
       </SWRConfig>
     </ThemeContext.Provider>

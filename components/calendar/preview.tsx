@@ -36,6 +36,7 @@ export interface MeetingPreviewProps {
   height: number;
   position: Position;
   onClosed: () => void;
+  preventPreviewClose: () => void;
   setOpen: Callback<boolean>;
   open: boolean;
 }
@@ -50,6 +51,7 @@ export default forwardRef(function MeetingPreview(
     meeting,
     offset,
     onClosed,
+    preventPreviewClose,
     width: itemWidth,
     height: itemHeight,
     position: itemPosition,
@@ -136,6 +138,7 @@ export default forwardRef(function MeetingPreview(
                 openEdit={openEdit}
                 setLoading={setLoading}
                 setChecked={setChecked}
+                preventPreviewClose={preventPreviewClose}
               />
               <EditPage
                 meeting={meeting}

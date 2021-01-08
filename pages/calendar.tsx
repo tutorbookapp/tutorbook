@@ -54,7 +54,6 @@ function CalendarPage(): JSX.Element {
     [data?.meetings]
   );
 
-  const startingDate = useMemo(() => query.from, [query.from]);
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated = false) => {
       console.log(`Mutating (${hasBeenUpdated}) meeting (${mutated.id})...`);
@@ -73,6 +72,16 @@ function CalendarPage(): JSX.Element {
       if (dequal(updated, meetings)) return;
       // Note: If we ever need to use the `hits` property, we'll have to update
       // this callback function to properly cache and reuse the previous value.
+      const json = updated.map((m) => m.toJSON());
+      await mutate(query.endpoint, { meetings: json }, false);
+    },
+    [query.endpoint, meetings]
+  );
+  const removeMeeting = useCallback(
+    async (meetingId: string) => {
+      const idx = meetings.findIndex((m) => m.id === meetingId);
+      if (idx < 0) return;
+      const updated = [...meetings.slice(0, idx), ...meetings.slice(idx + 1)];
       const json = updated.map((m) => m.toJSON());
       await mutate(query.endpoint, { meetings: json }, false);
     },
@@ -99,7 +108,9 @@ function CalendarPage(): JSX.Element {
           },
         ]}
       />
-      <CalendarContext.Provider value={{ startingDate, mutateMeeting }}>
+      <CalendarContext.Provider
+        value={{ mutateMeeting, removeMeeting, startingDate: query.from }}
+      >
         <CalendarHeader query={query} setQuery={setQuery} />
         <CalendarBody searching={!data} meetings={meetings} />
       </CalendarContext.Provider>

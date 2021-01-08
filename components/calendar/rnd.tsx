@@ -32,18 +32,16 @@ export interface MeetingRndProps {
     position: Position;
     height: number;
   }) => void;
-  onTouchStart: () => void;
-  onMouseDown: () => void;
-  onDrag: () => void;
+  preventPreviewClose: () => void;
+  closePreview: () => void;
 }
 
 export default function MeetingRnd({
   width,
   meeting: initialData,
   setPreview,
-  onTouchStart,
-  onMouseDown,
-  onDrag: dragHandler,
+  preventPreviewClose,
+  closePreview,
 }: MeetingRndProps): JSX.Element {
   const updateRemote = useCallback(async (updated: Meeting) => {
     const url = `/api/meetings/${updated.id}`;
@@ -82,8 +80,8 @@ export default function MeetingRnd({
 
   const [dragging, setDragging] = useState<boolean>(false);
   useEffect(() => {
-    if (dragging) dragHandler();
-  }, [dragging, dragHandler]);
+    if (dragging) closePreview();
+  }, [dragging, closePreview]);
 
   const onClick = useCallback(
     (evt: FormEvent) => {
@@ -150,8 +148,8 @@ export default function MeetingRnd({
       onClick={onClick}
       onDragStop={onDragStop}
       onDrag={onDrag}
-      onTouchStart={onTouchStart}
-      onMouseDown={onMouseDown}
+      onTouchStart={preventPreviewClose}
+      onMouseDown={preventPreviewClose}
       bounds='parent'
       resizeGrid={[0, 12]}
       dragGrid={[width, 12]}

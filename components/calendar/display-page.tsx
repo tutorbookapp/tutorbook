@@ -1,17 +1,24 @@
 import { Chip, ChipSet } from '@rmwc/chip';
+import axios, { AxiosError } from 'axios';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useCallback } from 'react';
+import to from 'await-to-js';
+import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
 import { Callback, Meeting } from 'lib/model';
-import { join } from 'lib/utils';
+import { join, period } from 'lib/utils';
+import { APIErrorJSON } from 'lib/api/error';
+import snackbar from 'lib/snackbar';
 
 import styles from './display-page.module.scss';
+import { useCalendar } from './context';
 
 export interface DisplayPageProps {
   meeting: Meeting;
   openEdit: () => void;
+  preventPreviewClose: () => void;
   setLoading: Callback<boolean>;
   setChecked: Callback<boolean>;
 }
@@ -19,13 +26,48 @@ export interface DisplayPageProps {
 export default function DisplayPage({
   meeting,
   openEdit,
+  preventPreviewClose,
   setLoading,
   setChecked,
 }: DisplayPageProps): JSX.Element {
+  const { t } = useTranslation();
+  const { removeMeeting } = useCalendar();
+
+  const [error, setError] = useState<string>('');
   const deleteMeeting = useCallback(async () => {
+    setError('');
+    setChecked(false);
     setLoading(true);
-    setTimeout(() => setChecked(true), 2500);
-  }, [setLoading, setChecked]);
+    const [err] = await to(axios.delete(`/api/meetings/${meeting.id}`));
+    if (err) {
+      const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
+      setLoading(false);
+      setError(e.message);
+    } else {
+      setChecked(true);
+      setTimeout(() => removeMeeting(meeting.id), 1000);
+    }
+  }, [setLoading, setChecked, removeMeeting, meeting.id]);
+
+  useEffect(() => {
+    // TODO: Close snackbar when delete button is clicked repeatedly (i.e. when
+    // error is reset; similar to how it works when using the component).
+    if (error)
+      snackbar.notify({
+        body: t('meeting:delete-error', { error: period(error) }),
+        actions: [
+          {
+            label: t('common:retry'),
+            onClick() {
+              preventPreviewClose();
+              return deleteMeeting();
+            },
+          },
+        ],
+        onClose: () => setError(''),
+        dismissesOnAction: true,
+      });
+  }, [error, preventPreviewClose, deleteMeeting, t]);
 
   return (
     <>
