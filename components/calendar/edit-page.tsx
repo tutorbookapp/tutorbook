@@ -8,6 +8,7 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 
 import { Callback, Match, Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import { join } from 'lib/utils';
 import { useSingle } from 'lib/hooks';
 
 import styles from './edit-page.module.scss';
@@ -98,7 +99,9 @@ export default function EditPage({
           textarea
           rows={4}
           required
-          placeholder={t('meeting:notes-placeholder')}
+          placeholder={t('meeting:notes-placeholder', {
+            subject: join(meeting.match.subjects) || 'Computer Science',
+          })}
           label={t('meeting:notes')}
           className={styles.field}
           onChange={onNotesChange}

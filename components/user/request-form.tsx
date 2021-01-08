@@ -321,7 +321,7 @@ export default function RequestForm({
           required
           placeholder={t('match3rd:message-placeholder', {
             person,
-            subject: (subjects[0] || { label: 'Computer Science' }).label,
+            subject: join(subjects.map((s) => s.label)) || 'Computer Science',
           })}
           label={t(`match3rd:${forOthers}message`)}
           className={styles.field}
