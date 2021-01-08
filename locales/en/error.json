@@ -5,5 +5,8 @@
   "405-header": "405 - Method Not Allowed",
   "500-header": "500 - Internal Server Error",
   "header": "Unknown Error",
-  "body": "An unexpected error occurred. Try again later."
+  "body": "An unexpected error occurred. Try again later.",
+  "response": "An error ocurred while {{action}}. {{error}}",
+  "no-response": "An error ocurred while {{action}}. Please check your Internet connection and try again.",
+  "no-request": "An error ocurred while {{action}}. {{error}} Please check your Internet connection and try again."
 }

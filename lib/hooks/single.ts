@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';

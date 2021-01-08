@@ -5,7 +5,7 @@ import { Meeting, Position } from 'lib/model';
 export function getMeeting(
   height: number,
   position: Position,
-  meeting?: Meeting,
+  meeting: Meeting,
   width: number,
   reference: Date = new Date(0)
 ): Meeting {

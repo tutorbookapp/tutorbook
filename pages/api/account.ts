@@ -107,11 +107,15 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   // TODO: Check the existing data, not the data that is being sent with the
   // request (e.g. b/c I could fake data and add users to my org).
   await verifyAuth(req.headers, { userId: merged.id, orgIds: merged.orgs });
-  const updated = await updatePhoto(updateUserOrgs(merged), User);
 
-  const user = await updateUserDoc(await updateAuthUser(updated));
-  await updateUserSearchObj(user);
-  res.status(200).json(user.toJSON());
+  const withOrgsUpdate = updateUserOrgs(merged);
+  const withPhotoUpdate = await updatePhoto(withOrgsUpdate, User);
+  const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
+
+  await updateUserDoc(withAuthUpdate);
+  await updateUserSearchObj(withAuthUpdate);
+
+  res.status(200).json(withAuthUpdate.toJSON());
 }
 
 async function getAccount(req: Req, res: Res): Promise<void> {

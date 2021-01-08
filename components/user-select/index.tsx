@@ -56,13 +56,13 @@ export default function UserSelect({
     return { value: u.id, label: u.name, photo: u.photo };
   }, []);
   const getSuggestions = useCallback(
-    async (query: string = '') => {
+    async (search: string = '') => {
       const promises: Promise<{ data: ListUsersRes }>[] = [];
       if (orgs.length)
         promises.push(
           axios.get<ListUsersRes>(
             new UsersQuery({
-              query,
+              search,
               orgs: orgs.map(({ id, name }) => ({ label: name, value: id })),
             }).endpoint
           )
@@ -71,7 +71,7 @@ export default function UserSelect({
         promises.push(
           axios.get<ListUsersRes>(
             new UsersQuery({
-              query,
+              search,
               parents: [{ label: user.name, value: user.id }],
             }).endpoint
           )

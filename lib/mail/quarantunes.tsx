@@ -13,7 +13,7 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
       .collection('users')
       .where('orgs', 'array-contains', 'quarantunes')
       .get()
-  ).docs.map((d) => User.fromFirestore(d));
+  ).docs.map((d) => User.fromFirestoreDoc(d));
   const analytics = new Analytics(process.env.SEGMENT_KEY as string);
   const baseURL = 'https://tutorbook.app';
   await Promise.all(

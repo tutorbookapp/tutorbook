@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
+import { v4 as uuid } from 'uuid';
 
 import {
   Match,
@@ -8,6 +9,7 @@ import {
   MatchSearchHit,
   isMatchJSON,
 } from 'lib/model/match';
+import { Person, isPerson } from 'lib/model/person';
 import {
   Resource,
   ResourceFirestore,
@@ -53,6 +55,7 @@ export type MeetingStatus = 'pending' | 'logged' | 'approved';
  * @typedef {Object} Meeting
  * @extends Resource
  * @property status - This meeting's status (i.e. pending, logged, or approved).
+ * @property creator - The person who created this meeting.
  * @property match - This meeting's match.
  * @property venue - Link to the meeting venue (e.g. Zoom or Jitsi).
  * @property time - Time of the meeting (e.g. Tuesday 3:00 - 3:30 PM).
@@ -61,6 +64,7 @@ export type MeetingStatus = 'pending' | 'logged' | 'approved';
  */
 export interface MeetingInterface extends ResourceInterface {
   status: MeetingStatus;
+  creator: Person;
   match: Match;
   venue: Venue;
   time: Timeslot;
@@ -95,6 +99,7 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (typeof json.status !== 'string') return false;
+  if (!isPerson(json.creator)) return false;
   if (!['pending', 'logged', 'approved'].includes(json.status)) return false;
   if (!isMatchJSON(json.match)) return false;
   if (!isVenueJSON(json.venue)) return false;
@@ -106,6 +111,14 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
 
 export class Meeting extends Resource implements MeetingInterface {
   public status: MeetingStatus = 'pending';
+
+  public creator: Person = {
+    id: '',
+    name: '',
+    photo: '',
+    handle: uuid(),
+    roles: [],
+  };
 
   public match = new Match();
 

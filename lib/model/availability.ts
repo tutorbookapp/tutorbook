@@ -102,7 +102,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   }
 
   /**
-   * Returns whether or not this availability contains the exact given timeslot.
+   * @return Whether or not this availability contains the exact given timeslot.
    * @deprecated I'm not sure where I would need to use this, but whereever I do
    * it should be removed.
    */
@@ -111,12 +111,16 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   }
 
   /**
-   * Returns whether there is availability during a given timeslot.
+   * @return Whether this availability overlaps at all with the given timeslot.
+   * @todo Account for recurrance rules.
+   */
+  public overlaps(timeslot: Timeslot): boolean {
+    return this.some((t) => t.overlaps(timeslot));
+  }
+
+  /**
+   * @return Whether there is availability during a given timeslot.
    * @param timeslot - The timeslot to verify is in this availability.
-   * @return Whether *any* timeslot in this availability contains the given
-   * timeslot.
-   * @deprecated I'm not sure where I would need to use this, but whereever I do
-   * it should be removed.
    * @todo Account for recurrance rules.
    */
   public contains(timeslot: Timeslot): boolean {

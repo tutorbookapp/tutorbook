@@ -23,6 +23,8 @@ import {
   Aspect,
   Match,
   MatchJSON,
+  Meeting,
+  MeetingJSON,
   Person,
   Timeslot,
   User,
@@ -32,6 +34,7 @@ import {
 import { join, period } from 'lib/utils';
 import { useAnalytics, useTrack } from 'lib/hooks';
 import { APIErrorJSON } from 'lib/api/error';
+import { getErrorMessage } from 'lib/fetch';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
@@ -88,6 +91,7 @@ export default function RequestForm({
 
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
+  const meeting = useRef<Meeting>(new Meeting());
   const match = useRef<Match>(new Match());
   useEffect(() => {
     const target: Person = {
@@ -126,12 +130,16 @@ export default function RequestForm({
             roles: [],
           };
     match.current = new Match({
-      time,
       people,
       creator,
       message,
       org: org?.id || 'default',
       subjects: subjects.map((s) => s.value),
+    });
+    meeting.current = new Meeting({
+      time,
+      creator,
+      match: match.current,
     });
   }, [currentUser, user, message, subjects, time, students, org?.id, aspects]);
 
@@ -139,7 +147,7 @@ export default function RequestForm({
     subjects,
     user: user.toSegment(),
   }));
-  useAnalytics('Match Time Updated', () => ({
+  useAnalytics('Meeting Time Updated', () => ({
     time: time?.toSegment(),
     user: user.toSegment(),
   }));
@@ -177,7 +185,9 @@ export default function RequestForm({
         if (err) {
           setLoading(false);
           setError(
-            `An error occurred while logging in with Google. ${err.message}`
+            `An error occurred while logging in with Google. ${period(
+              err.message
+            )}`
           );
           return;
         }
@@ -185,36 +195,10 @@ export default function RequestForm({
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
           AxiosError<APIErrorJSON>
-        >(
-          axios.put(`/api/users/${currentUser.id}`, {
-            ...currentUser.toJSON(),
-            phone,
-          })
-        );
-        if (err && err.response) {
-          setLoading(false);
-          setError(
-            `An error occurred while adding your phone number. ${period(
-              (err.response.data || err).message
-            )}`
-          );
-          return;
-        }
-        if (err && err.request) {
-          setLoading(false);
-          setError(
-            'An error occurred while adding your phone number. Please check ' +
-              'your Internet connection and try again.'
-          );
-          return;
-        }
+        >(axios.put('/api/account', { ...currentUser.toJSON(), phone }));
         if (err) {
           setLoading(false);
-          setError(
-            `An error occurred while adding your phone number. ${period(
-              err.message
-            )} Please check your Internet connection and try again.`
-          );
+          setError(getErrorMessage(err, 'adding your phone number', t));
           return;
         }
         await updateUser(User.fromJSON((res as AxiosResponse<UserJSON>).data));
@@ -223,36 +207,29 @@ export default function RequestForm({
         AxiosResponse<MatchJSON>,
         AxiosError<APIErrorJSON>
       >(axios.post('/api/matches', match.current.toJSON()));
-      if (err && err.response) {
+      if (err) {
         setLoading(false);
-        setError(
-          `An error occurred while sending your request. ${period(
-            (err.response.data || err).message
-          )}`
-        );
-      } else if (err && err.request) {
-        setLoading(false);
-        setError(
-          'An error occurred while sending your request. Please check your ' +
-            'Internet connection and try again.'
-        );
-      } else if (err) {
-        setLoading(false);
-        setError(
-          `An error occurred while sending your request. ${period(
-            err.message
-          )} Please check your Internet connection and try again.`
-        );
+        setError(getErrorMessage(err, 'creating match', t));
       } else {
-        setChecked(true);
         const created = Match.fromJSON((res as AxiosResponse<MatchJSON>).data);
         track('Match Created', {
           ...created.toSegment(),
           user: user.toSegment(),
         });
+        meeting.current.match = created;
+        const [e] = await to<
+          AxiosResponse<MeetingJSON>,
+          AxiosError<APIErrorJSON>
+        >(axios.post('/api/meetings', meeting.current.toJSON()));
+        if (e) {
+          setLoading(false);
+          setError(getErrorMessage(e, 'creating meeting', t));
+        } else {
+          setChecked(true);
+        }
       }
     },
-    [user, track, currentUser, phoneRequired, phone, updateUser]
+    [user, track, currentUser, phoneRequired, phone, updateUser, t]
   );
 
   const forOthers = useMemo(() => {

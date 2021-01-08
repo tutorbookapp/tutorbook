@@ -8,7 +8,6 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 import LoadingDots from 'components/loading-dots';
-import MatchLog from 'components/match/log';
 
 import { Match, Meeting, User } from 'lib/model';
 import { join, period } from 'lib/utils';
@@ -126,21 +125,6 @@ export default function MatchDisplay({
                 {!loading && join(match?.subjects || [])}
               </dd>
             </dl>
-            <dl>
-              <dt>Next meeting time</dt>
-              <dd>
-                {loading && <LoadingDots />}
-                {!loading &&
-                  (match?.time?.toString() || 'No scheduled meetings')}
-              </dd>
-            </dl>
-            <dl>
-              <dt>Meeting venue</dt>
-              <dd>
-                {loading && <LoadingDots />}
-                {!loading && <a href={match?.venue.url}>{match?.venue.url}</a>}
-              </dd>
-            </dl>
           </div>
         </div>
       </div>
@@ -148,14 +132,14 @@ export default function MatchDisplay({
         <div className={styles.wrapper}>
           <Event
             badge='add_box'
-            time={!loading ? new Date(match?.venue.created || '') : undefined}
+            time={!loading ? new Date(match?.created || '') : undefined}
             person={creator}
           >
             {t('matches:event-created')}
           </Event>
           <Event
             badge='email'
-            time={!loading ? new Date(match?.venue.created || '') : undefined}
+            time={!loading ? new Date(match?.created || '') : undefined}
             person={creator}
           >
             <Trans
@@ -183,8 +167,7 @@ export default function MatchDisplay({
                 />
               </Event>
             ))}
-          {!loading && <MatchLog match={match} />}
-          {loading && <Endpoint />}
+          <Endpoint />
         </div>
       </div>
     </>

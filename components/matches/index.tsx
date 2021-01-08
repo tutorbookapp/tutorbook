@@ -92,7 +92,7 @@ export default function Matches({
   useEffect(() => {
     setSearching(true);
     const timeoutId = setTimeout(() => {
-      setQuery((prev) => new MatchesQuery({ ...prev, query: search, page: 0 }));
+      setQuery((prev) => new MatchesQuery({ ...prev, search, page: 0 }));
     }, 500);
     return () => clearTimeout(timeoutId);
   }, [search]);

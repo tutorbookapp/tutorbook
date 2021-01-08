@@ -99,6 +99,20 @@ export class Timeslot implements TimeslotInterface {
   }
 
   /**
+   * @return Whether or not this timeslot overlaps with the given timeslot:
+   * 1. (Contained) Timeslot contains the given timeslot, OR;
+   * 2. (Overlap Start) Timeslot contains the given timeslot's start time, OR;
+   * 3. (Overlap End) Timeslot contains the given timeslot's end time.
+   */
+  public overlaps(other: { from: Date; to: Date }): boolean {
+    return (
+      this.contains(other) ||
+      this.contains({ from: other.from, to: other.from }) ||
+      this.contains({ from: other.to, to: other.to })
+    );
+  }
+
+  /**
    * Returns whether or not this timeslot contains the given timeslot.
    * @param other - The timeslot to check is within this timeslot.
    * @return Whether the starting time of this timeslot is before the starting
@@ -106,7 +120,7 @@ export class Timeslot implements TimeslotInterface {
    * the ending time of the other timeslot.
    * @todo Account for recurrance rules.
    */
-  public contains(other: TimeslotInterface): boolean {
+  public contains(other: { from: Date; to: Date }): boolean {
     return (
       this.from.valueOf() <= other.from.valueOf() &&
       this.from.valueOf() + this.duration >= other.to.valueOf()

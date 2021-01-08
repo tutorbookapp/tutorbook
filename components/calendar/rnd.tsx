@@ -84,7 +84,7 @@ export default function MeetingRnd({
   }, [dragging, closePreview]);
 
   const onClick = useCallback(
-    (evt: FormEvent) => {
+    (evt: ReactMouseEvent) => {
       evt.stopPropagation();
       if (!dragging) setPreview({ meeting, position, height });
     },
