@@ -39,10 +39,20 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
 
 /**
+ * A meeting's status starts as `pending`, becomes `logged` once a tutor or
+ * student confirms they've attended the meeting, and finally becomes `approved`
+ * once an org admin (or an automation they've setup) approves the logged hours.
+ * @typedef MeetingStatus
+ * @todo Implement the approval process so that the `approved` status is used.
+ */
+export type MeetingStatus = 'pending' | 'logged' | 'approved';
+
+/**
  * A meeting is a past appointment logged for a match (e.g. John and Jane met
  * last week for 30 mins on Tuesday 3:00 - 3:30 PM).
  * @typedef {Object} Meeting
  * @extends Resource
+ * @property status - This meeting's status (i.e. pending, logged, or approved).
  * @property match - This meeting's match.
  * @property venue - Link to the meeting venue (e.g. Zoom or Jitsi).
  * @property time - Time of the meeting (e.g. Tuesday 3:00 - 3:30 PM).
@@ -50,6 +60,7 @@ type DocumentReference = admin.firestore.DocumentReference;
  * @property notes - Notes about the meeting (e.g. what they worked on).
  */
 export interface MeetingInterface extends ResourceInterface {
+  status: MeetingStatus;
   match: Match;
   venue: Venue;
   time: Timeslot;
@@ -83,6 +94,8 @@ export type MeetingSearchHit = ObjectWithObjectID &
 export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
+  if (typeof json.status !== 'string') return false;
+  if (!['pending', 'logged', 'approved'].includes(json.status)) return false;
   if (!isMatchJSON(json.match)) return false;
   if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
@@ -92,6 +105,8 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
 }
 
 export class Meeting extends Resource implements MeetingInterface {
+  public status: MeetingStatus = 'pending';
+
   public match = new Match();
 
   public venue = new Venue();
