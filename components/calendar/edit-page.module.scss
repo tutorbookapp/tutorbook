@@ -9,9 +9,10 @@
   }
 
   .inputs {
-    max-width: 500px;
-    margin: 32px auto;
-    padding: 0 48px;
+    margin: 24px auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
 
     .field {
       @include common.field;

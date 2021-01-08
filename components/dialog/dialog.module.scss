@@ -2,8 +2,6 @@
 
 .pages {
   display: grid;
-  height: 100%;
-  width: 100%;
 }
 
 .page {
@@ -27,7 +25,7 @@
     height: 100%;
 
     .nav {
-      padding: 16px;
+      padding: 12px;
       border-bottom: 1px solid var(--accents-2);
 
       .btn {

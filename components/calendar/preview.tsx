@@ -20,7 +20,6 @@ import { Callback, Meeting, Position } from 'lib/model';
 import { useScrollLock } from 'lib/hooks';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from './config';
-import DeletePage from './delete-page';
 import DisplayPage from './display-page';
 import EditPage from './edit-page';
 import styles from './preview.module.scss';
@@ -28,7 +27,6 @@ import styles from './preview.module.scss';
 export enum Page {
   Display = 0,
   Edit,
-  Delete,
 }
 
 export interface MeetingPreviewProps {
@@ -119,7 +117,6 @@ export default forwardRef(function MeetingPreview(
   const [checked, setChecked] = useState<boolean>(false);
 
   const openEdit = useCallback(() => setActive(Page.Edit), []);
-  const openDelete = useCallback(() => setActive(Page.Delete), []);
 
   return (
     <div className={styles.scrimOuter}>
@@ -140,7 +137,8 @@ export default forwardRef(function MeetingPreview(
               <DisplayPage
                 meeting={meeting}
                 openEdit={openEdit}
-                openDelete={openDelete}
+                setLoading={setLoading}
+                setChecked={setChecked}
               />
               <EditPage
                 meeting={meeting}
@@ -148,7 +146,6 @@ export default forwardRef(function MeetingPreview(
                 setLoading={setLoading}
                 setChecked={setChecked}
               />
-              <DeletePage setLoading={setLoading} setChecked={setChecked} />
             </DialogContent>
           </NavContext.Provider>
         </animated.div>

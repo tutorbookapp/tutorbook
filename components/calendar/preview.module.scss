@@ -27,6 +27,7 @@
       will-change: opacity;
       transition: opacity 200ms ease-in-out;
       pointer-events: auto;
+      overflow: hidden;
 
       &.open {
         opacity: 1;
