@@ -1,19 +1,17 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, MatchJSON, isMatchJSON } from 'lib/model';
-import { handle } from 'lib/api/error';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
+import { handle } from 'lib/api/error';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
-import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyOrgs from 'lib/api/verify/orgs';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
-import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
 export type UpdateMatchRes = MatchJSON;
 
@@ -25,8 +23,6 @@ export default async function updateMatch(
     const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);
     const people = await getPeople(body.people);
 
-    // TODO: Update the time verification logic to account for recur rules.
-    if (body.time) verifyTimeInAvailability(body.time, people);
     verifySubjectsCanBeTutored(body.subjects, people);
 
     // TODO: Allow any person who is part of the match to update it.
@@ -49,11 +45,10 @@ export default async function updateMatch(
     const orgIds = (await getOrgsByAdminId(creator.id)).map((o) => o.id);
     students.forEach((s) => s.id !== creator.id && verifyOrgs(s, orgIds));
 
-    const zoom = await updateZoom(body, people);
-    const match = await updateMatchDoc(body, zoom);
-    await updateMatchSearchObj(match);
+    await updateMatchDoc(body);
+    await updateMatchSearchObj(body);
 
-    res.status(200).json(match.toJSON());
+    res.status(200).json(body.toJSON());
   } catch (e) {
     handle(e, res);
   }

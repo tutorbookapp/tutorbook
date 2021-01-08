@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import generatePassword from 'password-generator';
 import to from 'await-to-js';
 
-import { Aspect, Match, Org, User, Venue, ZoomUser } from 'lib/model';
+import { Aspect, Meeting, Org, User, Venue, ZoomUser } from 'lib/model';
 import { db } from 'lib/api/firebase';
 import { join } from 'lib/utils';
 
@@ -60,11 +60,11 @@ interface ZoomUserRes {
  * @todo Finish this doc-comment and actually implement this API flow.
  */
 export default async function createZoom(
-  match: Match,
+  meeting: Meeting,
   people: User[]
 ): Promise<Venue> {
   const org = Org.fromFirestoreDoc(
-    await db.collection('orgs').doc(match.org).get()
+    await db.collection('orgs').doc(meeting.match.org).get()
   );
   const aspects = new Set<Aspect>();
   const hosts = people.filter((person: User) => {
@@ -98,7 +98,7 @@ export default async function createZoom(
         method: 'post',
         url: `https://api.zoom.us/users/${hostId}/meetings`,
         data: {
-          topic: `${join(match.subjects)} ${join([...aspects])} match`,
+          topic: `${join(meeting.match.subjects)} ${join([...aspects])} match`,
           type: 3, // Recurring meeting w/ no fixed time.
           password: generatePassword(10), // Passwords no longer than 10 chars.
           settings: {
@@ -119,7 +119,7 @@ export default async function createZoom(
     return (res as AxiosResponse<ZoomMeeting>).data;
   }
 
-  let meeting: undefined | ZoomMeeting;
+  let zoom: undefined | ZoomMeeting;
 
   // 1. Try using the tutor and mentor Zoom users.
   // eslint-disable-next-line no-restricted-syntax
@@ -132,12 +132,12 @@ export default async function createZoom(
           `org (${org.toString()}) Zoom account.`
       );
     } else {
-      meeting = mtg;
+      zoom = mtg;
       break;
     }
   }
 
-  if (!meeting) {
+  if (!zoom) {
     // 2. Try using the student Zoom users.
     // eslint-disable-next-line no-restricted-syntax
     for (const student of students) {
@@ -149,7 +149,7 @@ export default async function createZoom(
             `user within org (${org.toString()}) Zoom account.`
         );
       } else {
-        meeting = mtg;
+        zoom = mtg;
         break;
       }
     }
@@ -188,7 +188,7 @@ export default async function createZoom(
     return zoomUser;
   }
 
-  if (!meeting) {
+  if (!zoom) {
     // 3. Create a new Zoom user for the tutor or mentor.
     // eslint-disable-next-line no-restricted-syntax
     for (const host of hosts) {
@@ -208,7 +208,7 @@ export default async function createZoom(
             `[WARNING] ${err.name} creating Zoom meeting: ${err.message}`
           );
         } else {
-          meeting = mtg;
+          zoom = mtg;
           break;
         }
       }
@@ -216,14 +216,14 @@ export default async function createZoom(
   }
 
   // 4. Fallback to using Jitsi.
-  if (!meeting) return new Venue();
+  if (!zoom) return new Venue();
 
   return new Venue({
     type: 'zoom',
-    id: meeting.id,
-    url: meeting.join_url,
+    id: zoom.id,
+    url: zoom.join_url,
     invite: '',
-    created: new Date(meeting.created_at),
-    updated: new Date(meeting.created_at),
+    created: new Date(zoom.created_at),
+    updated: new Date(zoom.created_at),
   });
 }
