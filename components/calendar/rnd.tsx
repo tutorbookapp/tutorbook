@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { ResizeDirection } from 're-resizable';
 import axios from 'axios';
+import { dequal } from 'dequal/lite';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -53,6 +54,7 @@ export default function MeetingRnd({
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
         mutatedMeetingIds.delete(updated.id);
+        if (dequal([...mutatedMeetingIds], [...prev])) return prev;
         return mutatedMeetingIds;
       });
       return Meeting.fromJSON(data);

@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import cn from 'classnames';
+import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
@@ -89,6 +90,7 @@ export default function Calendar({
         if (!updated) return prev;
         const mutatedMeetingIds = new Set(prev);
         mutatedMeetingIds.add(updated.id);
+        if (dequal([...mutatedMeetingIds], [...prev])) return prev;
         return mutatedMeetingIds;
       });
       setMeetings((prev) => {
