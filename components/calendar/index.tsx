@@ -13,6 +13,8 @@ import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
+import LoadingDots from 'components/loading-dots';
+
 import { Callback, Meeting, MeetingsQuery } from 'lib/model';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { useClickOutside } from 'lib/hooks';
@@ -23,7 +25,8 @@ import { getMeeting } from './utils';
 import styles from './calendar.module.scss';
 
 export interface CalendarProps {
-  query?: MeetingsQuery;
+  query: MeetingsQuery;
+  searching: boolean;
   meetings: Meeting[];
   setMeetings: Callback<Meeting[]>;
   setMutatedIds: Callback<Set<string>>;
@@ -37,7 +40,8 @@ export interface CalendarProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/50}
  */
 export default function Calendar({
-  query = new MeetingsQuery(),
+  query,
+  searching,
   meetings,
   setMeetings,
   setMutatedIds,
@@ -127,20 +131,24 @@ export default function Calendar({
     () =>
       Array(7)
         .fill(null)
-        .map((_, day) => (
-          <div key={nanoid()} className={styles.titleWrapper}>
-            <h2 className={cn({ [styles.today]: new Date().getDay() === day })}>
-              <div className={styles.weekday}>
-                {getDateWithDay(day, query.from).toLocaleString(locale, {
-                  weekday: 'short',
-                })}
-              </div>
-              <div className={styles.date}>
-                {getDateWithDay(day, query.from).getDate()}
-              </div>
-            </h2>
-          </div>
-        )),
+        .map((_, day) => {
+          const now = new Date();
+          const date = getDateWithDay(day, query.from);
+          const today =
+            now.getFullYear() === date.getFullYear() &&
+            now.getMonth() === date.getMonth() &&
+            now.getDate() === date.getDate();
+          return (
+            <div key={nanoid()} className={styles.titleWrapper}>
+              <h2 className={cn({ [styles.today]: today })}>
+                <div className={styles.weekday}>
+                  {date.toLocaleString(locale, { weekday: 'short' })}
+                </div>
+                <div className={styles.date}>{date.getDate()}</div>
+              </h2>
+            </div>
+          );
+        }),
     [locale, query.from]
   );
   const timeCells = useMemo(
@@ -213,31 +221,37 @@ export default function Calendar({
               onScroll={onScroll}
               ref={rowsRef}
             >
+              {searching && (
+                <div className={styles.loader}>
+                  <LoadingDots size={4} />
+                </div>
+              )}
               <div className={styles.rows}>
                 <div className={styles.lines}>{lineCells}</div>
                 <div className={styles.space} />
                 <div className={styles.cells} onClick={onClick} ref={cellsRef}>
-                  {meetings.map((meeting: Meeting, idx: number) => (
-                    <MeetingRnd
-                      key={meeting.id}
-                      reference={query.from}
-                      value={meeting}
-                      width={width}
-                      setMutatedIds={setMutatedIds}
-                      onClick={(position, height) =>
-                        setPreview({
-                          meeting,
-                          position,
-                          height,
-                          onChange: (updated) => updateMeeting(idx, update),
-                        })
-                      }
-                      onChange={(updated) => updateMeeting(idx, updated)}
-                      onTouchStart={onRndInteraction}
-                      onMouseDown={onRndInteraction}
-                      onDrag={onRndDrag}
-                    />
-                  ))}
+                  {!searching &&
+                    meetings.map((meeting: Meeting, idx: number) => (
+                      <MeetingRnd
+                        key={meeting.id}
+                        reference={query.from}
+                        value={meeting}
+                        width={width}
+                        setMutatedIds={setMutatedIds}
+                        onClick={(position, height) =>
+                          setPreview({
+                            meeting,
+                            position,
+                            height,
+                            onChange: (updated) => updateMeeting(idx, update),
+                          })
+                        }
+                        onChange={(updated) => updateMeeting(idx, updated)}
+                        onTouchStart={onRndInteraction}
+                        onMouseDown={onRndInteraction}
+                        onDrag={onRndDrag}
+                      />
+                    ))}
                   {dayCells}
                 </div>
               </div>

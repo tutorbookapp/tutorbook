@@ -21,36 +21,35 @@ function CalendarPage(): JSX.Element {
   usePage({ name: 'Calendar', url: '/calendar', login: true });
 
   const [searching, setSearching] = useState<boolean>(true);
-  const [query, setQuery] = useState<MeetingsQuery>();
-
-  const onQueryChange = useCallback(
-    (param: CallbackParam<MeetingsQuery | undefined>) => {
-      setQuery((prev) => {
-        let updated = prev;
-        if (typeof param === 'object') updated = param;
-        if (typeof param === 'function') updated = param(updated);
-        if (dequal(updated, prev)) return prev;
-        setSearching(true);
-        return updated;
-      });
-    },
-    []
+  const [query, setQuery] = useState<MeetingsQuery>(
+    new MeetingsQuery({ hitsPerPage: 1000 })
   );
 
-  const { t } = useTranslation();
-  const { user } = useUser();
+  const onQueryChange = useCallback((param: CallbackParam<MeetingsQuery>) => {
+    setQuery((prev) => {
+      let updated = prev;
+      if (typeof param === 'object') updated = param;
+      if (typeof param === 'function') updated = param(updated);
+      if (dequal(updated, prev)) return prev;
+      setSearching(true);
+      return updated;
+    });
+  }, []);
+
+  const { t, lang: locale } = useTranslation();
+  const { user, loggedIn } = useUser();
 
   useEffect(() => {
     onQueryChange((prev) => {
-      if (!user.id) return;
+      if (!loggedIn) return prev;
       const people = [{ label: user.name, value: user.id }];
       return new MeetingsQuery({ ...prev, people });
     });
-  }, [user, onQueryChange]);
+  }, [loggedIn, user, onQueryChange]);
 
   const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
   const { data, isValidating } = useSWR<ListMeetingsRes>(
-    query ? query.endpoint : null,
+    loggedIn ? query.endpoint : null,
     {
       revalidateOnFocus: !mutatedIds.size,
       revalidateOnReconnect: !mutatedIds.size,
@@ -82,6 +81,19 @@ function CalendarPage(): JSX.Element {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
 
+  const title = useMemo(() => {
+    const { from, to } = query;
+    if (from.getMonth() !== to.getMonth())
+      return `${from.toLocaleString(locale, {
+        month: 'short',
+        year: from.getFullYear() !== to.getFullYear() ? 'numeric' : undefined,
+      })} - ${to.toLocaleString(locale, {
+        month: 'short',
+        year: 'numeric',
+      })}`;
+    return from.toLocaleString(locale, { month: 'long', year: 'numeric' });
+  }, [query, locale]);
+
   return (
     <Page title='Calendar - Tutorbook'>
       <TabHeader
@@ -103,20 +115,42 @@ function CalendarPage(): JSX.Element {
         ]}
       />
       <Header
-        header={t('common:calendar')}
-        body='Create, edit, and cancel meetings'
+        header={title}
+        body='Create, edit, and cancel your meetings'
         actions={[
           {
             label: 'Previous week',
-            href: '#',
+            onClick: () =>
+              onQueryChange((prev) => {
+                const to = new Date(prev.from);
+                const from = new Date(
+                  to.getFullYear(),
+                  to.getMonth(),
+                  to.getDate() - 7
+                );
+                return new MeetingsQuery({ ...prev, from, to });
+              }),
           },
           {
             label: 'Next week',
-            href: '#',
+            onClick: () =>
+              onQueryChange((prev) => {
+                const from = new Date(prev.to);
+                const to = new Date(
+                  from.getFullYear(),
+                  from.getMonth(),
+                  from.getDate() + 7
+                );
+                return new MeetingsQuery({ ...prev, from, to });
+              }),
           },
           {
             label: 'Today',
-            href: '#',
+            onClick: () =>
+              onQueryChange((prev) => {
+                const { from, to } = new MeetingsQuery();
+                return new MeetingsQuery({ ...prev, from, to });
+              }),
           },
         ]}
       />

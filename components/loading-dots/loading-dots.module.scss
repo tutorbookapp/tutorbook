@@ -1,17 +1,12 @@
 .loading {
-  --loading-dots-height: auto;
-  --loading-dots-size: 2px;
   display: inline-flex;
   align-items: center;
-  height: var(--loading-dots-height);
 
   span {
     animation-name: blink;
     animation-duration: 1.4s;
     animation-iteration-count: infinite;
     animation-fill-mode: both;
-    width: var(--loading-dots-size);
-    height: var(--loading-dots-size);
     border-radius: 50%;
     background-color: var(--accents-6);
     display: inline-block;
