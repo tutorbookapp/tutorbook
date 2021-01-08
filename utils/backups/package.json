@@ -1,0 +1,15 @@
+{
+  "name": "backups",
+  "version": "1.0.0",
+  "description": "Included in this directory are locally stored (not backed up to GitHub for obvious privacy reasons) Firestore backup JSON files created with [this command line tool](https://www.npmjs.com/package/node-firestore-import-export).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-firestore-import-export": "^1.1.0"
+  }
+}
