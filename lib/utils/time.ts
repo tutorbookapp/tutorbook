@@ -170,7 +170,8 @@ export function getTimeslots(
 export function getMonthsTimeslots(
   baseline: Availability,
   month: number,
-  year: number
+  year: number,
+  booked?: Availability
 ): Availability {
   const interval = 15;
   const duration = 30;
@@ -192,13 +193,13 @@ export function getMonthsTimeslots(
       // Clone those weekly recurring timeslots into the month's date range.
       let date = 1;
       while (date <= daysInMonth) {
-        if ((date - 1 + weekdayOffset) % 7 === weekday)
-          timeslots.push(
-            new Timeslot({
-              from: new Date(year, month, date, fromHrs, fromMins),
-              to: new Date(year, month, date, toHrs, toMins),
-            })
-          );
+        if ((date - 1 + weekdayOffset) % 7 === weekday) {
+          const t = new Timeslot({
+            from: new Date(year, month, date, fromHrs, fromMins),
+            to: new Date(year, month, date, toHrs, toMins),
+          });
+          if (!booked?.overlaps(t)) timeslots.push(t);
+        }
         date += 1;
       }
       from = new Date(from.valueOf() + interval * 6e4);

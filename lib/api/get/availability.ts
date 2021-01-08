@@ -1,7 +1,7 @@
-import { Availability } from 'lib/model';
+import { Availability, MeetingsQuery } from 'lib/model';
+import getMeetings from 'lib/api/get/meetings';
 import { getMonthsTimeslots } from 'lib/utils/time';
 import getUser from 'lib/api/get/user';
-import getUserMatches from 'lib/api/get/user-matches';
 
 /**
  * Calculates the user's availability for a given month and returns an array of
@@ -23,10 +23,15 @@ export default async function getAvailability(
   const { availability: baseline } = await getUser(uid);
 
   // 2. Remove the weekly recurring match times from that availability.
-  const matches = await getUserMatches(uid);
-  matches.forEach((m) => (m.time ? baseline.remove(m.time) : undefined));
+  const query = new MeetingsQuery({
+    people: [{ label: '', value: uid }],
+    from: new Date(year, month, 0),
+    to: new Date(year, month + 1, 0),
+  });
+  const meetings = (await getMeetings(query)).results;
+  const booked = new Availability(...meetings.map((m) => m.time));
 
   // 3. Split each of the availability timeslots into 30 min timeslots in 15 min
   // intervals. This assumes there is no overlap between the baseline timeslots.
-  return getMonthsTimeslots(baseline, month, year);
+  return getMonthsTimeslots(baseline, month, year, booked);
 }
