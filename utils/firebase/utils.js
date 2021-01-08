@@ -602,52 +602,17 @@ const fetchQuarantunesEmails = async () => {
   debugger;
 };
 
-createOrg({
-  id: 'collegiatetutornetwork',
-  name: 'Collegiate Tutor Network',
-  photo: '',
-  background: '',
-  email: 'collegiatetutornetwork@gmail.com',
-  phone: '',
-  bio:
-    'Collegiate Tutor Network is a group of students from top universities, with a passion for teaching. We connect you directly with the ideal tutor for your needs. By students, for students.',
-  socials: [
-    {
-      type: 'website',
-      url: 'https://collegiatetutornetwork.com/#/',
-    },
-  ],
-  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
-  profiles: [
-    'name',
-    'email',
-    'bio',
-    'photo',
-    'subjects',
-    'availability',
-    'langs',
-  ],
-  domains: [],
-  aspects: ['tutoring'],
-  subjects: null,
-  zoom: null,
-  matchURL: null,
-  signup: {
-    en: {
-      tutoring: {
-        body:
-          "If you are an undergraduate at an elite university, we cannot wait to have you join our modern tutoring platform. Simply fill out the form below and you'll be contacted as soon as you've been matched with a student.",
-        header: 'Join our Collegiate Tutor Network',
-        bio:
-          'Ex: Jessica Seng, the daughter of former refugees, is a Cambodian American writer from Tucson, Arizona. She graduated with an honors in Science, Technology, and Society, an interdisciplinary honors in the arts, the Louis F. Sudler prize in the arts, and was awarded the award of excellence recognizing the top 10% of her class. She majored in Science, Technology, and Society (with a concentration in Media and Communications) and minored in Creative Writing. Jessica is among the first generation in her family to go to college and was only able to achieve this goal due to tutoring programs and community investment. In terms of tutoring, Jessica really believes in working with the students and tailoring curriculum programs to meet their needs but she is most interested in SAT prep (reading and writing) and any courses related to English, literature, writing, and arts.',
-      },
-    },
-  },
-  home: {
-    en: {
-      body:
-        'Collegiate Tutor Network is a modern tutoring platform. We connect parents to top tutors across the country, without restrictions. Unlike traditional tutoring companies, we give parents the ability to hand-pick the perfect tutor for their student from our diverse roster of tutors. Parents then have the freedom to negotiate with the tutor and work together to craft the optimal learning experience for their student.',
-      header: 'Our Model',
-    },
-  },
-});
+const addResourceTimestamps = async (col) => {
+  console.log(`Fetching ${col}...`);
+  const { docs } = await db.collection(col).get();
+  console.log(`Adding resource timestamps to ${docs.length} ${col}...`);
+  await Promise.all(
+    docs.map(async (d) => {
+      await d.ref.update({ created: new Date(), updated: new Date() });
+    })
+  );
+};
+
+addResourceTimestamps('orgs');
+addResourceTimestamps('users');
+addResourceTimestamps('matches');
