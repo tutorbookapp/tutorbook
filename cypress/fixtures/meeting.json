@@ -1,5 +1,6 @@
 {
   "id": "meeting",
+  "status": "pending",
   "created": "2020-10-20T19:03:00",
   "updated": "2020-10-20T19:03:00",
   "time": {
@@ -17,11 +18,11 @@
     "updated": "2020-10-15T19:04:10"
   },
   "creator": {
-    "roles": ["tutor"],
-    "photo": "https://assets.tutorbook.app/jpgs/volunteer.jpg",
-    "handle": "6316934d-63b9-4aec-82f8-1bf2645c048d",
-    "name": "John Doe",
-    "id": "volunteer"
+    "roles": [],
+    "photo": "https://assets.tutorbook.app/jpgs/admin.jpg",
+    "handle": "e3eea549-b5a2-4395-889b-a63928874c3d",
+    "name": "Nicholas Chiang",
+    "id": "admin"
   },
   "notes": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
   "match": {

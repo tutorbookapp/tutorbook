@@ -166,7 +166,7 @@ export default function plugins(
       );
 
       await create('matches', matches);
-      await create(`matches/${match.id}/meetings`, meetings);
+      await create('meetings', meetings);
 
       return null;
     },
