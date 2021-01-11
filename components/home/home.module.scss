@@ -121,7 +121,6 @@
 .loading {
   .background {
     @include loader.loading;
-    border-bottom: 1px solid var(--accents-2);
   }
 
   .name,
