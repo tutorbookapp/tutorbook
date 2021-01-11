@@ -7,25 +7,20 @@ import {
   P,
   Quote,
 } from 'lib/mail/components';
-import { Match, User } from 'lib/model';
+import { Meeting, User } from 'lib/model';
 import { join } from 'lib/utils';
 
-export interface DirectMatchEmailProps {
-  match: Match;
+export interface DirectMeetingEmailProps {
+  meeting: Meeting;
   recipient: User;
   creator: User;
 }
 
-/**
- * Email sent to the recipient of a match sent via the `RequestDialog` directly
- * by a student. Includes the match subjects and message.
- * @todo Specify the match time and include link to Jitsi/Zoom meeting room.
- */
-export default function DirectMatchEmail({
-  match,
+export default function DirectMeetingEmail({
+  meeting,
   recipient,
   creator,
-}: DirectMatchEmailProps): JSX.Element {
+}: DirectMeetingEmailProps): JSX.Element {
   return (
     <Email>
       <Header />
@@ -35,9 +30,9 @@ export default function DirectMatchEmail({
         </P>
         <P>
           {creator.name} wants you as a {join(recipient.roles)} for{' '}
-          {join(match.subjects)}:
+          {join(meeting.match.subjects)}:
         </P>
-        <Quote text={match.message} cite={creator.name} />
+        <Quote text={meeting.match.message} cite={creator.name} />
         <P>
           If you&apos;re interested, please get in touch with {creator.name} by
           replying to this email or using the following email address:

@@ -1,16 +1,17 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { Match, Org, User } from 'lib/model';
-import DirectMatchEmail from 'lib/mail/emails/direct-match';
+import { Meeting, Org, User } from 'lib/model';
 import { Email } from 'lib/mail/types';
-import MatchEmail from 'lib/mail/emails/match';
-import OrgDirectMatchEmail from 'lib/mail/emails/org-direct-match';
-import OrgMatchEmail from 'lib/mail/emails/org-match';
 import { join } from 'lib/utils';
 import send from 'lib/mail/send';
 
+import DirectMeetingTemplate from './direct-template';
+import MeetingTemplate from './template';
+import OrgDirectMeetingTemplate from './org-direct-template';
+import OrgMeetingTemplate from './org-template';
+
 export default async function sendEmails(
-  match: Match,
+  meeting: Meeting,
   people: User[],
   creator: User,
   org: Org,
@@ -18,21 +19,26 @@ export default async function sendEmails(
 ): Promise<void> {
   const emails: Email[] = [];
   if (people.findIndex((p) => p.id === creator.id) < 0) {
-    // Admin created match, send admin match email to all match people.
+    // Admin created meeting, send admin meeting email to all meeting people.
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
       to: people.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
       html: renderToStaticMarkup(
-        <MatchEmail match={match} people={people} creator={creator} org={org} />
+        <MeetingTemplate
+          meeting={meeting}
+          people={people}
+          creator={creator}
+          org={org}
+        />
       ),
     });
     emails.push({
       to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
       html: renderToStaticMarkup(
-        <OrgMatchEmail
-          match={match}
+        <OrgMeetingTemplate
+          meeting={meeting}
           people={people}
           creator={creator}
           org={org}
@@ -40,16 +46,16 @@ export default async function sendEmails(
       ),
     });
   } else {
-    // Student created match, send request email to volunteer and confirmation
+    // Student created meeting, send request email to volunteer and confirmation
     // email to student.
     const recipient = people[people.findIndex((p) => p.id !== creator.id)];
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
       to: { name: recipient.name, email: recipient.email },
-      subject: `New ${join(match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
       html: renderToStaticMarkup(
-        <DirectMatchEmail
-          match={match}
+        <DirectMeetingTemplate
+          meeting={meeting}
           recipient={recipient}
           creator={creator}
         />
@@ -57,10 +63,10 @@ export default async function sendEmails(
     });
     emails.push({
       to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
       html: renderToStaticMarkup(
-        <OrgDirectMatchEmail
-          match={match}
+        <OrgDirectMeetingTemplate
+          meeting={meeting}
           recipient={recipient}
           creator={creator}
           org={org}

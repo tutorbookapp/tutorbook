@@ -9,48 +9,43 @@ import {
   P,
   Quote,
 } from 'lib/mail/components';
-import { Match, Org, User } from 'lib/model';
+import { Meeting, Org, User } from 'lib/model';
 import { join } from 'lib/utils';
 
-export interface OrgDirectMatchEmailProps {
+export interface OrgMeetingEmailProps {
   org: Org;
-  match: Match;
-  recipient: User;
+  meeting: Meeting;
+  people: User[];
   creator: User;
 }
 
-/**
- * Email sent to org admins when a match is created by an org admin between
- * people who are a part of that org. Includes the match subjects, message, link
- * to a Jitsi video calling room, and each person's contact info.
- * @todo Specify the match times as well.
- */
-export default function OrgDirectMatchEmail({
+export default function OrgMeetingEmail({
   org,
-  match,
-  recipient,
+  meeting,
+  people,
   creator,
-}: OrgDirectMatchEmailProps): JSX.Element {
+}: OrgMeetingEmailProps): JSX.Element {
   return (
     <Email>
       <Header />
       <Item>
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
         <P>
-          {creator.name} requested {recipient.name} as a {join(recipient.roles)}
-          for {join(match.subjects)}:
+          {creator.name} created a match for {join(meeting.match.subjects)} with{' '}
+          {join(people.map((p) => `${p.name} as the ${join(p.roles)}`))}:
         </P>
-        <Quote text={match.message} cite={creator.name} />
+        <Quote text={meeting.match.message} cite={creator.name} />
+        <br />
         <P>Click the button below to view {org.name}&apos;s matches:</P>
         <br />
-        <Button href={`https://tutorbook.app/${org.id}/matches`}>
+        <Button href={`https://tutorbook.app/${org.id}/meetinges`}>
           VIEW MATCHES
         </Button>
         <br />
         <P>Or copy and paste this URL into a new tab of your browser:</P>
         <P style={{ marginBottom: '0px !important' }}>
-          <Link href={`https://tutorbook.app/${org.id}/matches`}>
-            {`https://tutorbook.app/${org.id}/matches`}
+          <Link href={`https://tutorbook.app/${org.id}/meetinges`}>
+            {`https://tutorbook.app/${org.id}/meetinges`}
           </Link>
         </P>
         <br />
@@ -58,7 +53,7 @@ export default function OrgDirectMatchEmail({
           For easy communication about this match, you can use these email
           addresses:
         </P>
-        <ContactsTable contacts={[creator, recipient]} />
+        <ContactsTable contacts={people} />
         <br />
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
       </Item>
