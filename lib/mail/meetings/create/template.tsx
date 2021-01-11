@@ -9,29 +9,23 @@ import {
   P,
   Quote,
 } from 'lib/mail/components';
-import { Match, Org, User } from 'lib/model';
+import { Meeting, Org, User } from 'lib/model';
 import { join } from 'lib/utils';
 
-export interface MatchEmailProps {
+export interface MeetingEmailProps {
   org: Org;
-  match: Match;
+  meeting: Meeting;
   people: User[];
   creator: User;
 }
 
-/**
- * Email sent to all people in a match (i.e. tutor and student) when an org
- * admin created a match. Includes the match subjects, message, link to a Jitsi
- * video calling room, and each person's contact info.
- * @todo Specify the appointment times here as well.
- */
-export default function MatchEmail({
+export default function MeetingEmail({
   org,
-  match,
+  meeting,
   people,
   creator,
-}: MatchEmailProps): JSX.Element {
-  const aspect = match.people.some((p) => p.roles.includes('mentor'))
+}: MeetingEmailProps): JSX.Element {
+  const aspect = meeting.match.people.some((p) => p.roles.includes('mentor'))
     ? 'mentoring'
     : 'tutoring';
 
@@ -44,7 +38,7 @@ export default function MatchEmail({
         </P>
         <P>
           You have a new {aspect} {aspect === 'mentoring' ? 'match' : 'lesson'}{' '}
-          for {join(match.subjects)}.{' '}
+          for {join(meeting.match.subjects)}.{' '}
           {join(people.map((p) => `${p.name} is the ${join(p.roles)}`))}.
         </P>
         <P>
@@ -67,7 +61,10 @@ export default function MatchEmail({
           {creator.name.split(' ').shift()} from {org.name} set up this{' '}
           {aspect === 'mentoring' ? 'match' : 'lesson'}:
         </P>
-        <Quote text={match.message} cite={`${creator.name} from ${org.name}`} />
+        <Quote
+          text={meeting.match.message}
+          cite={`${creator.name} from ${org.name}`}
+        />
         <br />
         <P>
           If this doesn&apos;t seem like a good match, please get in touch with{' '}

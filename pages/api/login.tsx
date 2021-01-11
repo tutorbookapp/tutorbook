@@ -4,7 +4,7 @@ import to from 'await-to-js';
 
 import { APIError, handle } from 'lib/api/error';
 import { FirebaseError, auth } from 'lib/api/firebase';
-import LoginEmail from 'lib/mail/emails/login';
+import LoginEmail from 'lib/mail/login';
 import { isJSON } from 'lib/model/json';
 import send from 'lib/mail/send';
 

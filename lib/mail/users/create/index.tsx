@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { Org, User } from 'lib/model';
-import OrgUserEmail from 'lib/mail/emails/org-user';
+import OrgUserTemplate from 'lib/mail/emails/org-template';
 import send from 'lib/mail/send';
 
 export default async function sendEmails(
@@ -12,6 +12,6 @@ export default async function sendEmails(
   await send({
     to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),
     subject: `${user.name} signed up on Tutorbook.`,
-    html: renderToStaticMarkup(<OrgUserEmail user={user} org={org} />),
+    html: renderToStaticMarkup(<OrgUserTemplate user={user} org={org} />),
   });
 }
