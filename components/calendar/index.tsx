@@ -54,13 +54,16 @@ export default function CalendarBody({
   }>();
   const closingTimeoutId = useRef<ReturnType<typeof setTimeout>>();
   const preventPreviewClose = useCallback(() => {
-    console.log('Preventing preview close:', closingTimeoutId.current);
     if (closingTimeoutId.current) {
       clearTimeout(closingTimeoutId.current);
       closingTimeoutId.current = undefined;
     }
   }, []);
   const closePreview = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!meetings.some((m) => m.id === preview?.meeting.id)) setOpen(false);
+  }, [meetings, preview?.meeting.id]);
 
   useClickOutside(previewRef, () => {
     // TODO: Instead of experimenting with this seemingly arbitrary timeout, I
