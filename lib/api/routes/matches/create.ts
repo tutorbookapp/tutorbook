@@ -7,9 +7,7 @@ import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
-import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';
-import sendEmails from 'lib/mail/matches/create';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyOrgAdminsInclude from 'lib/api/verify/org-admins-include';
@@ -48,9 +46,6 @@ export default async function createMatch(
 
     const match = await createMatchDoc(body);
     await createMatchSearchObj(match);
-
-    const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));
-    await sendEmails(match, people, creator, org, orgAdmins);
 
     res.status(201).json(match.toJSON());
   } catch (e) {

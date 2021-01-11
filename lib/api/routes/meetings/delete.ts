@@ -2,6 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
+import deleteZoom from 'lib/api/delete/zoom';
 import getMeeting from 'lib/api/get/meeting';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
@@ -22,6 +23,7 @@ export default async function deleteMeeting(
       orgIds: [meeting.match.org],
     });
 
+    await deleteZoom(meeting.id);
     await deleteMeetingDoc(meeting.id);
     await deleteMeetingSearchObj(meeting.id);
 
