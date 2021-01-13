@@ -15,8 +15,10 @@ import { Checkbox } from '@rmwc/checkbox';
 import { Chip } from '@rmwc/chip';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 import to from 'await-to-js';
+import { nanoid } from 'nanoid';
 
 import { Option, TCallback } from 'lib/model';
+import { useClickContext } from 'lib/hooks/click-outside';
 import { usePrevious } from 'lib/hooks';
 
 import SelectHint from './select-hint';
@@ -285,9 +287,20 @@ export default function Select<T, O extends Option<T>>({
     [value, onChange, suggestions]
   );
 
+  const { updateEl, removeEl } = useClickContext();
+  const elementId = useRef<string>(`select-${nanoid()}`);
+  const menuSurfaceRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return removeEl(elementId.current);
+      return updateEl(elementId.current, node);
+    },
+    [updateEl, removeEl]
+  );
+
   return (
     <MenuSurfaceAnchor className={className}>
       <MenuSurface
+        ref={menuSurfaceRef}
         foundationRef={foundationRef}
         open={suggestionsOpen}
         onFocus={(event: SyntheticEvent<HTMLDivElement>) => {

@@ -60,6 +60,7 @@ export default function DialogContent({
     <div className={styles.pages}>
       {children.map((page, idx) => (
         <animated.div
+          key={idx}
           style={springs[idx]}
           className={cn(styles.page, { [styles.active]: active === idx })}
         >

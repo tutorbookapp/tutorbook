@@ -1,13 +1,5 @@
-import {
-  RefObject,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
 import { animated, useSpring } from 'react-spring';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import mergeRefs from 'react-merge-refs';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
@@ -17,7 +9,7 @@ import DialogContent from 'components/dialog';
 import { NavContext } from 'components/dialog/context';
 
 import { Callback, Meeting, Position } from 'lib/model';
-import { useScrollLock } from 'lib/hooks';
+import { useClickContext } from 'lib/hooks/click-outside';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from './config';
 import DisplayPage from './display-page';
@@ -36,30 +28,20 @@ export interface MeetingPreviewProps {
   height: number;
   position: Position;
   onClosed: () => void;
-  preventPreviewClose: () => void;
   setOpen: Callback<boolean>;
   open: boolean;
 }
 
-type MeetingPreviewRef =
-  | RefObject<HTMLElement>
-  | null
-  | ((element: HTMLElement | null) => void);
-
-export default forwardRef(function MeetingPreview(
-  {
-    meeting,
-    offset,
-    onClosed,
-    preventPreviewClose,
-    width: itemWidth,
-    height: itemHeight,
-    position: itemPosition,
-    setOpen,
-    open,
-  }: MeetingPreviewProps,
-  ref: MeetingPreviewRef
-): JSX.Element {
+export default function MeetingPreview({
+  meeting,
+  offset,
+  onClosed,
+  width: itemWidth,
+  height: itemHeight,
+  position: itemPosition,
+  setOpen,
+  open,
+}: MeetingPreviewProps): JSX.Element {
   const measured = useRef<boolean>(false);
 
   useEffect(() => {
@@ -68,14 +50,13 @@ export default forwardRef(function MeetingPreview(
       setOpen(true);
     }, 0);
   }, [setOpen]);
-  useScrollLock(open);
 
-  const [previewRef, previewBounds] = useMeasure({ polyfill });
+  const [measureRef, bounds] = useMeasure({ polyfill });
 
   const onLeft = useMemo(() => {
-    const x = offset.x + itemPosition.x - previewBounds.width - PREVIEW_MARGIN;
+    const x = offset.x + itemPosition.x - bounds.width - PREVIEW_MARGIN;
     return open ? x : x + 12;
-  }, [offset.x, open, itemPosition.x, previewBounds.width]);
+  }, [offset.x, open, itemPosition.x, bounds.width]);
   const onRight = useMemo(() => {
     const x =
       offset.x + itemPosition.x + itemWidth - RND_MARGIN + PREVIEW_MARGIN;
@@ -86,22 +67,20 @@ export default forwardRef(function MeetingPreview(
     return offset.y + itemPosition.y;
   }, [offset.y, itemPosition.y]);
   const alignedBottom = useMemo(() => {
-    return offset.y + itemPosition.y - previewBounds.height + itemHeight;
-  }, [offset.y, itemPosition.y, previewBounds.height, itemHeight]);
+    return offset.y + itemPosition.y - bounds.height + itemHeight;
+  }, [offset.y, itemPosition.y, bounds.height, itemHeight]);
   const alignedCenter = useMemo(() => {
-    return (
-      offset.y + itemPosition.y - 0.5 * (previewBounds.height - itemHeight)
-    );
-  }, [offset.y, itemPosition.y, previewBounds.height, itemHeight]);
+    return offset.y + itemPosition.y - 0.5 * (bounds.height - itemHeight);
+  }, [offset.y, itemPosition.y, bounds.height, itemHeight]);
   const top = useMemo(() => {
     const vh = Math.max(
       document.documentElement.clientHeight || 0,
       window.innerHeight || 0
     );
     if (alignedCenter < 0) return alignedTop;
-    if (alignedCenter + previewBounds.height > vh) return alignedBottom;
+    if (alignedCenter + bounds.height > vh) return alignedBottom;
     return alignedCenter;
-  }, [alignedTop, alignedCenter, alignedBottom, previewBounds.height]);
+  }, [alignedTop, alignedCenter, alignedBottom, bounds.height]);
 
   const props = useSpring({
     // TODO: Clicking on match after closing begins should reverse animation.
@@ -118,12 +97,21 @@ export default forwardRef(function MeetingPreview(
 
   const openEdit = useCallback(() => setActive(Page.Edit), []);
 
+  const { updateEl, removeEl } = useClickContext();
+  const clickRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return removeEl(`meeting-preview-${meeting.id}`);
+      return updateEl(`meeting-preview-${meeting.id}`, node);
+    },
+    [updateEl, removeEl, meeting.id]
+  );
+
   return (
     <div className={styles.scrimOuter}>
       <div className={styles.scrimInner}>
         <animated.div
           style={props}
-          ref={mergeRefs([previewRef, ref])}
+          ref={mergeRefs([measureRef, clickRef])}
           className={cn(styles.wrapper, { [styles.open]: open })}
         >
           <NavContext.Provider value={() => setOpen(false)}>
@@ -138,7 +126,6 @@ export default forwardRef(function MeetingPreview(
                 openEdit={openEdit}
                 setLoading={setLoading}
                 setChecked={setChecked}
-                preventPreviewClose={preventPreviewClose}
               />
               <EditPage
                 meeting={meeting}
@@ -151,4 +138,4 @@ export default forwardRef(function MeetingPreview(
       </div>
     </div>
   );
-});
+}

@@ -11,6 +11,7 @@ import { Callback, Meeting } from 'lib/model';
 import { join, period } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
 import snackbar from 'lib/snackbar';
+import { useClickContext } from 'lib/hooks/click-outside';
 
 import styles from './display-page.module.scss';
 import { useCalendar } from './context';
@@ -18,7 +19,6 @@ import { useCalendar } from './context';
 export interface DisplayPageProps {
   meeting: Meeting;
   openEdit: () => void;
-  preventPreviewClose: () => void;
   setLoading: Callback<boolean>;
   setChecked: Callback<boolean>;
 }
@@ -26,7 +26,6 @@ export interface DisplayPageProps {
 export default function DisplayPage({
   meeting,
   openEdit,
-  preventPreviewClose,
   setLoading,
   setChecked,
 }: DisplayPageProps): JSX.Element {
@@ -49,6 +48,7 @@ export default function DisplayPage({
     }
   }, [setLoading, setChecked, removeMeeting, meeting.id]);
 
+  const { updateEl, removeEl } = useClickContext();
   useEffect(() => {
     // TODO: Close snackbar when delete button is clicked repeatedly (i.e. when
     // error is reset; similar to how it works when using the component).
@@ -58,16 +58,17 @@ export default function DisplayPage({
         actions: [
           {
             label: t('common:retry'),
-            onClick() {
-              preventPreviewClose();
-              return deleteMeeting();
-            },
+            onClick: deleteMeeting,
           },
         ],
         onClose: () => setError(''),
         dismissesOnAction: true,
+        ref(node: HTMLElement | null): void {
+          if (!node) return removeEl(`meeting-delete-error-${meeting.id}`);
+          return updateEl(`meeting-delete-error-${meeting.id}`, node);
+        },
       });
-  }, [error, preventPreviewClose, deleteMeeting, t]);
+  }, [error, removeEl, updateEl, deleteMeeting, meeting.id, t]);
 
   return (
     <>

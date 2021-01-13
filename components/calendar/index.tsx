@@ -17,6 +17,7 @@ import LoadingDots from 'components/loading-dots';
 
 import { Meeting, Position } from 'lib/model';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
+import { ClickContext } from 'lib/hooks/click-outside';
 import { useClickOutside } from 'lib/hooks';
 
 import MeetingPreview from './preview';
@@ -37,7 +38,6 @@ export default function CalendarBody({
   const { lang: locale } = useTranslation();
   const { startingDate } = useCalendar();
 
-  const previewRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);
   const rowsRef = useRef<HTMLDivElement>(null);
@@ -52,25 +52,12 @@ export default function CalendarBody({
     position: Position;
     height: number;
   }>();
-  const closingTimeoutId = useRef<ReturnType<typeof setTimeout>>();
-  const preventPreviewClose = useCallback(() => {
-    if (closingTimeoutId.current) {
-      clearTimeout(closingTimeoutId.current);
-      closingTimeoutId.current = undefined;
-    }
-  }, []);
   const closePreview = useCallback(() => setOpen(false), []);
+  const { updateEl, removeEl } = useClickOutside(closePreview, open);
 
   useEffect(() => {
     if (!meetings.some((m) => m.id === preview?.meeting.id)) setOpen(false);
   }, [meetings, preview?.meeting.id]);
-
-  useClickOutside(previewRef, () => {
-    // TODO: Instead of experimenting with this seemingly arbitrary timeout, I
-    // should instead create some context that stores an array of element refs
-    // that can be clicked without closing the preview (e.g. a retry snackbar).
-    closingTimeoutId.current = setTimeout(() => setOpen(false), 250);
-  });
 
   useEffect(() => {
     // Scroll to 8:30am by default (assumes 48px per hour).
@@ -168,15 +155,13 @@ export default function CalendarBody({
   );
 
   return (
-    <>
+    <ClickContext.Provider value={{ updateEl, removeEl }}>
       {preview && (
         <MeetingPreview
           {...preview}
           width={width}
-          ref={previewRef}
           offset={{ x, y }}
           onClosed={() => setPreview(undefined)}
-          preventPreviewClose={preventPreviewClose}
           setOpen={setOpen}
           open={open}
         />
@@ -215,7 +200,6 @@ export default function CalendarBody({
                         width={width}
                         meeting={meeting}
                         setPreview={setPreview}
-                        preventPreviewClose={preventPreviewClose}
                         closePreview={closePreview}
                       />
                     ))}
@@ -226,6 +210,6 @@ export default function CalendarBody({
           </div>
         </div>
       </div>
-    </>
+    </ClickContext.Provider>
   );
 }

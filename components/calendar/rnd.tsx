@@ -15,6 +15,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { Meeting, MeetingJSON, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
+import { useClickContext } from 'lib/hooks/click-outside';
 import { useContinuous } from 'lib/hooks';
 
 import { getHeight, getMeeting, getPosition } from './utils';
@@ -32,7 +33,6 @@ export interface MeetingRndProps {
     position: Position;
     height: number;
   }) => void;
-  preventPreviewClose: () => void;
   closePreview: () => void;
 }
 
@@ -40,7 +40,6 @@ export default function MeetingRnd({
   width,
   meeting: initialData,
   setPreview,
-  preventPreviewClose,
   closePreview,
 }: MeetingRndProps): JSX.Element {
   const updateRemote = useCallback(async (updated: Meeting) => {
@@ -55,6 +54,15 @@ export default function MeetingRnd({
     initialData,
     updateRemote,
     mutateMeeting
+  );
+
+  const { updateEl, removeEl } = useClickContext();
+  const rndRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return removeEl(`meeting-rnd-${meeting.id}`);
+      return updateEl(`meeting-rnd-${meeting.id}`, node);
+    },
+    [updateEl, removeEl, meeting.id]
   );
 
   // Workaround for `react-rnd`'s unusual resizing behavior.
@@ -148,8 +156,6 @@ export default function MeetingRnd({
       onClick={onClick}
       onDragStop={onDragStop}
       onDrag={onDrag}
-      onTouchStart={preventPreviewClose}
-      onMouseDown={preventPreviewClose}
       bounds='parent'
       resizeGrid={[0, 12]}
       dragGrid={[width, 12]}
@@ -164,16 +170,18 @@ export default function MeetingRnd({
         topRight: false,
       }}
     >
-      <div className={styles.content}>
-        <div className={styles.subjects}>{join(meeting.match.subjects)}</div>
-        <div className={styles.time}>
-          {`${(meeting.time || new Timeslot()).from.toLocaleString(locale, {
-            hour: 'numeric',
-            minute: 'numeric',
-          })} - ${(meeting.time || new Timeslot()).to.toLocaleString(locale, {
-            hour: 'numeric',
-            minute: 'numeric',
-          })}`}
+      <div ref={rndRef} className={styles.wrapper}>
+        <div className={styles.content}>
+          <div className={styles.subjects}>{join(meeting.match.subjects)}</div>
+          <div className={styles.time}>
+            {`${(meeting.time || new Timeslot()).from.toLocaleString(locale, {
+              hour: 'numeric',
+              minute: 'numeric',
+            })} - ${(meeting.time || new Timeslot()).to.toLocaleString(locale, {
+              hour: 'numeric',
+              minute: 'numeric',
+            })}`}
+          </div>
         </div>
       </div>
     </Rnd>

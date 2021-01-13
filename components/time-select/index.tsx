@@ -20,6 +20,7 @@ import { dequal } from 'dequal/lite';
 import useMeasure from 'react-use-measure';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
+import { nanoid } from 'nanoid';
 
 import { Availability, AvailabilityJSON, TCallback, Timeslot } from 'lib/model';
 import {
@@ -28,6 +29,7 @@ import {
   getMonthsApart,
   getWeekdayOfFirst,
 } from 'lib/utils/time';
+import { useClickContext } from 'lib/hooks/click-outside';
 
 import styles from './time-select.module.scss';
 
@@ -143,11 +145,22 @@ export default memo(
       [year, month, availability]
     );
 
+    const { updateEl, removeEl } = useClickContext();
+    const elementId = useRef<string>(`time-select-${nanoid()}`);
+    const menuSurfaceRef = useCallback(
+      (node: HTMLElement | null) => {
+        if (!node) return removeEl(elementId.current);
+        return updateEl(elementId.current, node);
+      },
+      [updateEl, removeEl]
+    );
+
     return (
       <MenuSurfaceAnchor className={className}>
         <MenuSurface
           tabIndex={-1}
           open={menuOpen}
+          ref={menuSurfaceRef}
           onFocus={(event: SyntheticEvent<HTMLDivElement>) => {
             event.preventDefault();
             event.stopPropagation();
