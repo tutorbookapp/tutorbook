@@ -47,7 +47,7 @@ type DocumentReference = admin.firestore.DocumentReference;
  * @typedef MeetingStatus
  * @todo Implement the approval process so that the `approved` status is used.
  */
-export type MeetingStatus = 'pending' | 'logged' | 'approved';
+export type MeetingStatus = 'created' | 'pending' | 'logged' | 'approved';
 
 /**
  * A meeting is a past appointment logged for a match (e.g. John and Jane met
@@ -99,8 +99,9 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (typeof json.status !== 'string') return false;
+  if (!['created', 'pending', 'logged', 'approved'].includes(json.status))
+    return false;
   if (!isPerson(json.creator)) return false;
-  if (!['pending', 'logged', 'approved'].includes(json.status)) return false;
   if (!isMatchJSON(json.match)) return false;
   if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
