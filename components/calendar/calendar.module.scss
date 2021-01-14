@@ -13,7 +13,7 @@ $border: var(--accents-2);
   bottom: 50%;
   left: 50%;
   right: 50%;
-  z-index: 1;
+  z-index: 2;
 }
 
 .calendar {
@@ -157,7 +157,7 @@ $border: var(--accents-2);
       height: 4px;
       position: absolute;
       width: calc(100% - 16px);
-      z-index: 1;
+      z-index: 3;
     }
 
     &::after {
@@ -171,7 +171,7 @@ $border: var(--accents-2);
       position: absolute;
       right: 16px;
       width: $cell-width;
-      z-index: 1;
+      z-index: 3;
     }
 
     .timesWrapper {
@@ -192,7 +192,7 @@ $border: var(--accents-2);
         height: 2px;
         position: absolute;
         width: $cell-width;
-        z-index: 1;
+        z-index: 3;
       }
 
       .times {
@@ -287,6 +287,7 @@ $border: var(--accents-2);
             max-width: calc(100% / 7);
             flex: 1 0 auto;
             border-right: $border 1px solid;
+            position: relative;
 
             &:last-child {
               border-right: transparent 1px solid;
@@ -295,5 +296,34 @@ $border: var(--accents-2);
         }
       }
     }
+  }
+}
+
+.indicator {
+  $color: #ea4335;
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  left: 0;
+
+  .dot {
+    background: $color;
+    border-radius: 50%;
+    content: '';
+    position: absolute;
+    height: 12px;
+    margin-left: -6.5px;
+    margin-top: -5px;
+    width: 12px;
+    left: 0;
+    top: 0;
+  }
+
+  .line {
+    border-top: $color solid 2px;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    left: 0;
   }
 }

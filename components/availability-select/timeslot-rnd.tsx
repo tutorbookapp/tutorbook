@@ -28,9 +28,9 @@ interface TimeslotRndProps {
 /**
  * In our calendar grid, there are 48px to each hour. We allow users to specify
  * availability in 15min (or 12px) increments. This wrapper class calculates and
- * updates the `react-rnd` position and size based on a given `Timeslot` value.
+ * updates the `react-rnd` pos and size based on a given `Timeslot` value.
  * Note that this component **only** cares about the hours and minutes in the
- * `Timeslot` (i.e. you must position it into the correct date column yourself).
+ * `Timeslot` (i.e. you must pos it into the correct date column yourself).
  */
 export default function TimeslotRnd({
   value,
@@ -44,7 +44,7 @@ export default function TimeslotRnd({
   // @see {@link https://github.com/bokuweb/react-rnd/issues/457}
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
-  const position = useMemo(() => getPosition(value, width), [value, width]);
+  const pos = useMemo(() => getPosition(value.from, width), [value, width]);
   const height = useMemo(() => getHeight(value), [value]);
 
   const remove = useCallback(() => onChange(undefined), [onChange]);
@@ -66,18 +66,18 @@ export default function TimeslotRnd({
     ) => {
       // We use `offset` to ensure we don't duplicate position updates. This
       // callback can be called multiple times for the same resize delta. Thus,
-      // we only want to update `position` to reflect the **difference** btwn
-      // the last `delta` and the current `delta`.
+      // we only want to update `pos` to reflect the **difference** btwn the
+      // last `delta` and the current `delta`.
       update(Number(ref.style.height.replace('px', '')), {
-        x: position.x - (dir === 'left' ? delta.width - offset.x : 0),
-        y: position.y - (dir === 'top' ? delta.height - offset.y : 0),
+        x: pos.x - (dir === 'left' ? delta.width - offset.x : 0),
+        y: pos.y - (dir === 'top' ? delta.height - offset.y : 0),
       });
       setOffset((prev: Position) => ({
         x: dir === 'left' ? delta.width : prev.x,
         y: dir === 'top' ? delta.height : prev.y,
       }));
     },
-    [update, position, offset]
+    [update, pos, offset]
   );
   const onDrag = useCallback(
     (
@@ -97,7 +97,7 @@ export default function TimeslotRnd({
     <Rnd
       data-cy='timeslot-rnd'
       className={styles.timeslot}
-      position={position}
+      pos={pos}
       minHeight={12 * 4}
       size={{ width: width - 10, height }}
       onResizeStop={onResizeStop}

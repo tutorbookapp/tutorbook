@@ -3,14 +3,13 @@ import { getDate } from 'lib/utils/time';
 
 export const WIDTH = 100;
 
-export function getPosition(value: Timeslot, width: number = WIDTH): Position {
-  const { from: start } = value;
-  const minsFromMidnight = start.getHours() * 60 + start.getMinutes();
-  return { x: start.getDay() * width, y: (minsFromMidnight / 15) * 12 };
+export function getPosition(time: Date, width: number = WIDTH): Position {
+  const minsFromMidnight = time.getHours() * 60 + time.getMinutes();
+  return { x: time.getDay() * width, y: (minsFromMidnight / 15) * 12 };
 }
 
-export function getHeight(value: Timeslot): number {
-  const { from: start, to: end } = value;
+export function getHeight(timeslot: Timeslot): number {
+  const { from: start, to: end } = timeslot;
   const minsDuration = (end.valueOf() - start.valueOf()) / 60000;
   return (minsDuration / 15) * 12;
 }

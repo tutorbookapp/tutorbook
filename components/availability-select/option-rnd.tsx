@@ -14,17 +14,17 @@ export default function OptionRnd({
   value,
   width = WIDTH,
 }: OptionRndProps): JSX.Element {
-  const position = useMemo(() => getPosition(value, width), [value, width]);
+  const pos = useMemo(() => getPosition(value.from, width), [value, width]);
   const height = useMemo(() => getHeight(value), [value]);
 
   const style = useMemo(
     () => ({
-      top: position.y,
-      left: position.x,
+      top: pos.y,
+      left: pos.x,
       height: `${height}px`,
       width: `${width - 1}px`,
     }),
-    [position, height, width]
+    [pos, height, width]
   );
 
   return <div className={styles.option} style={style} />;

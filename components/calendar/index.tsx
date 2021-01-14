@@ -20,9 +20,9 @@ import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { ClickContext } from 'lib/hooks/click-outside';
 import { useClickOutside } from 'lib/hooks';
 
+import { getMeeting, getPosition } from './utils';
 import MeetingPreview from './preview';
 import MeetingRnd from './rnd';
-import { getMeeting } from './utils';
 import styles from './calendar.module.scss';
 import { useCalendar } from './context';
 
@@ -46,6 +46,7 @@ export default function CalendarBody({
   const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
   const [cellRef, { width }] = useMeasure({ polyfill });
 
+  const [now, setNow] = useState<Date>(new Date());
   const [open, setOpen] = useState<boolean>(false);
   const [preview, setPreview] = useState<{
     meeting: Meeting;
@@ -54,6 +55,12 @@ export default function CalendarBody({
   }>();
   const closePreview = useCallback(() => setOpen(false), []);
   const { updateEl, removeEl } = useClickOutside(closePreview, open);
+
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    const intervalId = window.setInterval(tick, 60000);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (!meetings.some((m) => m.id === preview?.meeting.id)) setOpen(false);
@@ -96,7 +103,6 @@ export default function CalendarBody({
       Array(7)
         .fill(null)
         .map((_, day) => {
-          const now = new Date();
           const date = getDateWithDay(day, startingDate);
           const today =
             now.getFullYear() === date.getFullYear() &&
@@ -113,7 +119,7 @@ export default function CalendarBody({
             </div>
           );
         }),
-    [locale, startingDate]
+    [now, locale, startingDate]
   );
   const timeCells = useMemo(
     () =>
@@ -148,10 +154,25 @@ export default function CalendarBody({
     () =>
       Array(7)
         .fill(null)
-        .map(() => (
-          <div key={nanoid()} className={styles.cell} ref={cellRef} />
-        )),
-    [cellRef]
+        .map((_, day) => {
+          const date = getDateWithDay(day, startingDate);
+          const today =
+            now.getFullYear() === date.getFullYear() &&
+            now.getMonth() === date.getMonth() &&
+            now.getDate() === date.getDate();
+          const { y: top } = getPosition(now);
+          return (
+            <div key={nanoid()} className={styles.cell} ref={cellRef}>
+              {today && (
+                <div style={{ top }} className={styles.indicator}>
+                  <div className={styles.dot} />
+                  <div className={styles.line} />
+                </div>
+              )}
+            </div>
+          );
+        }),
+    [now, cellRef]
   );
 
   return (

@@ -71,8 +71,8 @@ export default function MeetingRnd({
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
   const position = useMemo(() => {
-    return getPosition(meeting.time, width);
-  }, [meeting.time, width]);
+    return getPosition(meeting.time.from, width);
+  }, [meeting.time.from, width]);
   const height = useMemo(() => {
     return getHeight(meeting.time);
   }, [meeting.time]);
