@@ -21,25 +21,8 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
 
 /**
- * The different states of a match or request.
- * @enum {string} MatchStatus
- * @property new - When the match is first created; a match stays in the `new`
- * state for at least a week after it's been created until it is either moved to
- * `active` or `stale`.
- * @property active - When the people in the match are actively meeting on a
- * regular, recurring basis (e.g once a week, they have tutoring lessons after
- * school for ~60mins). This is the ideal state of the match.
- * @property stale - When the people in the match have not met or have ceased
- * communications for over a week. A stale match needs re-engagement or should
- * be deleted.
- * @todo Is this property really necessary/valuable? If so, expose it in the UX.
- */
-export type MatchStatus = 'new' | 'active' | 'stale';
-
-/**
  * Represents a tutoring lesson or mentoring appointment.
  * @typedef {Object} MatchInterface
- * @property status - The status of the match (`new`, `active`, or `stale`).
  * @property org - The ID of the organization that owns this request or match.
  * @property subjects - The subjects that this match is about (e.g. AP CS).
  * @property people - The people involved in this match (i.e. pupil and tutor).
@@ -47,7 +30,6 @@ export type MatchStatus = 'new' | 'active' | 'stale';
  * @property message - A more detailed description of this match or request.
  */
 export interface MatchInterface extends ResourceInterface {
-  status: MatchStatus;
   org: string;
   subjects: string[];
   people: Person[];
@@ -72,8 +54,6 @@ export interface MatchSegment {
 export function isMatchJSON(json: unknown): json is MatchJSON {
   if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
-  if (typeof json.status !== 'string') return false;
-  if (!['new', 'active', 'stale'].includes(json.status)) return false;
   if (typeof json.org !== 'string') return false;
   if (!(json.subjects instanceof Array)) return false;
   if (json.subjects.some((s) => typeof s !== 'string')) return false;
@@ -86,8 +66,6 @@ export function isMatchJSON(json: unknown): json is MatchJSON {
 }
 
 export class Match extends Resource implements MatchInterface {
-  public status: MatchStatus = 'new';
-
   public org = 'default';
 
   public subjects: string[] = [];
