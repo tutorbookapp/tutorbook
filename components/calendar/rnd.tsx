@@ -143,13 +143,28 @@ export default function MeetingRnd({
     [update, height]
   );
 
+  const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
+    height,
+  ]);
+  const timeString = useMemo(
+    () =>
+      `${(meeting.time || new Timeslot()).from.toLocaleString(locale, {
+        hour: 'numeric',
+        minute: 'numeric',
+      })} - ${(meeting.time || new Timeslot()).to.toLocaleString(locale, {
+        hour: 'numeric',
+        minute: 'numeric',
+      })}`,
+    [meeting.time, locale]
+  );
+
   return (
     <Rnd
       data-cy='meeting-rnd'
       style={{ cursor: dragging ? 'move' : 'pointer' }}
       className={styles.meeting}
       position={position}
-      minHeight={12 * 4}
+      minHeight={12 * 2}
       size={{ width: width - RND_MARGIN, height }}
       onResizeStop={onResizeStop}
       onResize={onResize}
@@ -172,16 +187,21 @@ export default function MeetingRnd({
     >
       <div ref={rndRef} className={styles.wrapper}>
         <div className={styles.content}>
-          <div className={styles.subjects}>{join(meeting.match.subjects)}</div>
-          <div className={styles.time}>
-            {`${(meeting.time || new Timeslot()).from.toLocaleString(locale, {
-              hour: 'numeric',
-              minute: 'numeric',
-            })} - ${(meeting.time || new Timeslot()).to.toLocaleString(locale, {
-              hour: 'numeric',
-              minute: 'numeric',
-            })}`}
+          <div
+            className={styles.header}
+            style={{
+              maxHeight: headerHeight > 30 ? headerHeight - 15 : 15,
+              whiteSpace: headerHeight < 45 ? 'nowrap' : 'normal',
+            }}
+          >
+            <span className={styles.subjects}>
+              {join(meeting.match.subjects)}
+            </span>
+            {headerHeight < 30 && (
+              <span className={styles.time}>{`, ${timeString}`}</span>
+            )}
           </div>
+          {headerHeight > 15 && <div className={styles.time}>{timeString}</div>}
         </div>
       </div>
     </Rnd>
