@@ -1,5 +1,5 @@
 {
-  "delete-error": "Could not delete meeting. {{error}}",
+  "delete-error": "Could not delete meeting.",
   "notes": "Notes",
   "notes-placeholder": "Ex: We worked on a {{subject}} project...",
   "create-btn": "Create meeting",

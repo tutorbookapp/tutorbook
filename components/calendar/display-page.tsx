@@ -8,8 +8,8 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 
 import { Callback, Meeting } from 'lib/model';
-import { join, period } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
+import { join } from 'lib/utils';
 import snackbar from 'lib/snackbar';
 
 import styles from './display-page.module.scss';
@@ -52,7 +52,7 @@ export default function DisplayPage({
     // error is reset; similar to how it works when using the component).
     if (error)
       snackbar.notify({
-        body: t('meeting:delete-error', { error: period(error) }),
+        body: t('meeting:delete-error'),
         actions: [
           {
             label: t('common:retry'),
