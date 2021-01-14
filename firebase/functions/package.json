@@ -1,0 +1,16 @@
+{
+  "name": "functions",
+  "main": "dist/index.js",
+  "private": true,
+  "engines": {
+    "node": "12"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "firebase-admin": "^9.4.2",
+    "firebase-functions": "^3.13.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
+}

@@ -5,7 +5,7 @@
   },
   "functions": {
     "predeploy": "yarn build:functions",
-    "source": "firebase/functions/dist"
+    "source": "firebase/functions"
   },
   "storage": {
     "rules": "firebase/storage.rules"

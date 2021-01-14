@@ -1516,7 +1516,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firebase/database-types@npm:0.6.1":
+"@firebase/database-types@npm:0.6.1, @firebase/database-types@npm:^0.6.1":
   version: 0.6.1
   resolution: "@firebase/database-types@npm:0.6.1"
   dependencies:
@@ -1552,6 +1552,21 @@ __metadata:
     faye-websocket: 0.11.3
     tslib: ^1.11.1
   checksum: 4d51b4f6884053273885de66f06d659169a71bcf46690c32d02646b3cd385a4c2a22b4b57931283ef33cf9775bbe75396aaee14db29bec9752eefb802d1ee26d
+  languageName: node
+  linkType: hard
+
+"@firebase/database@npm:^0.8.1":
+  version: 0.8.2
+  resolution: "@firebase/database@npm:0.8.2"
+  dependencies:
+    "@firebase/auth-interop-types": 0.1.5
+    "@firebase/component": 0.1.21
+    "@firebase/database-types": 0.6.1
+    "@firebase/logger": 0.2.6
+    "@firebase/util": 0.3.4
+    faye-websocket: 0.11.3
+    tslib: ^1.11.1
+  checksum: 41aa0bcfffa1de666e9d7e13845bbedc136ff1a67ae26b2bbb0b1247c2871fbb5f92d9a6d29466881bb862320381326e6e41c1ccdc364c5fdeaad4ea9c880046
   languageName: node
   linkType: hard
 
@@ -4973,6 +4988,15 @@ __metadata:
   dependencies:
     follow-redirects: ^1.10.0
   checksum: 4b08ecab39040948c03cae5fa726fdcf8bc299679818179c146e779a922ce887fad9261d82ad57ad1a3aa1fcba3612f14b490fdfa2cd28fa23c190fd48517f5f
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.21.1":
+  version: 0.21.1
+  resolution: "axios@npm:0.21.1"
+  dependencies:
+    follow-redirects: ^1.10.0
+  checksum: 864fb7b5d077d236737f10adca53bf451a93f35a15271f56fba8da07265a02d26b7d881b935a6697dc6adb0549ea3e56d2eecb403edaa3bb78f6479901c10f69
   languageName: node
   linkType: hard
 
@@ -9238,6 +9262,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"firebase-admin@npm:^9.4.2":
+  version: 9.4.2
+  resolution: "firebase-admin@npm:9.4.2"
+  dependencies:
+    "@firebase/database": ^0.8.1
+    "@firebase/database-types": ^0.6.1
+    "@google-cloud/firestore": ^4.5.0
+    "@google-cloud/storage": ^5.3.0
+    "@types/node": ^10.10.0
+    dicer: ^0.3.0
+    jsonwebtoken: ^8.5.1
+    node-forge: ^0.10.0
+  dependenciesMeta:
+    "@google-cloud/firestore":
+      optional: true
+    "@google-cloud/storage":
+      optional: true
+  checksum: 9f694f1f2948ca1da25ff6676ca197e44d886fff94e0504c4e6ac41577ca3a70c45ede8c3f5a844d99e6f65c574bd25d23c155e902f4f7cd69a93fb16de3d860
+  languageName: node
+  linkType: hard
+
 "firebase-functions@npm:^3.13.0":
   version: 3.13.0
   resolution: "firebase-functions@npm:3.13.0"
@@ -9654,6 +9699,17 @@ fsevents@~2.1.2:
   checksum: 477ecaf62d4f8d788876099b35ed4b97586b331e729d2d28d0df96b598863d21c18b8a45a6cbecb6c2bf7f5e5ef1e82a053570583ef9a0ff8336683ab42b8d14
   languageName: node
   linkType: hard
+
+"functions@workspace:firebase/functions":
+  version: 0.0.0-use.local
+  resolution: "functions@workspace:firebase/functions"
+  dependencies:
+    axios: ^0.21.1
+    firebase-admin: ^9.4.2
+    firebase-functions: ^3.13.0
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
 
 "gauge@npm:~2.7.3":
   version: 2.7.4
@@ -18132,7 +18188,7 @@ resolve@1.1.7:
     timeago-react: ^3.0.1
     ts-loader: ^7.0.5
     ts-node: ^9.0.0
-    typescript: ^4.0.3
+    typescript: ^4.1.3
     url: ^0.11.0
     uuid: ^8.2.0
     vanilla-tilt: ^1.7.0
@@ -18237,23 +18293,23 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-typescript@^4.0.3:
-  version: 4.0.3
-  resolution: "typescript@npm:4.0.3"
+typescript@^4.1.3:
+  version: 4.1.3
+  resolution: "typescript@npm:4.1.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 5c892e132756a83d22030d7fb38be47cde27613f71d233dbe7faf79e4a92852c5146bfddcaf8c2da1a37d35ae8bf7b8c888fdcd763d5ad184cea6b21e7466838
+  checksum: 4f7ab1506ea22c7a1c313ec5b4285e93ce08d709ad6086d02d3096adb399ca339972ee56d1e578213c51dd0fb7b0fad50283c2d3c39642405644458ae29774f8
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.0.3#builtin<compat/typescript>":
-  version: 4.0.3
-  resolution: "typescript@patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5bf698"
+"typescript@patch:typescript@^4.1.3#builtin<compat/typescript>":
+  version: 4.1.3
+  resolution: "typescript@patch:typescript@npm%3A4.1.3#builtin<compat/typescript>::version=4.1.3&hash=5bf698"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 72db87d09f728c83062d64b5e12ed52effb6278963b6bc5c006219b22c104e02b8ce80164261de554923d3c47d894a1ca937ed542328caccb83ebaedeae98a69
+  checksum: 5637a1074cdaed15dbdc109d7e495f00971742fc169b06e758181ac6b091d086f6a7d60d9977dc4572357038c7d798e0786a043eda37d7776537a3d939416a8d
   languageName: node
   linkType: hard
 
