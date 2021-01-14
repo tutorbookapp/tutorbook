@@ -2,9 +2,13 @@
 @use 'styles/common';
 @use 'styles/typography';
 
+// TODO: Update styling for mobile usage (padding is much too large for smaller
+// viewports; i.e. mobile devices).
+
 .wrapper {
   max-height: calc(100vh - 32px);
   position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
