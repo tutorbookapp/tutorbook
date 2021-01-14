@@ -23,6 +23,9 @@ export default async function deleteUser(
     // TODO: Once we get our GCP Storage buckets organized, I should also delete
     // all of the user-uploaded media (e.g. profile photos, banner images).
 
+    // TODO: Delete this user from all meetings and matches. Notify the other
+    // people on each of those meetings/matches that the user has been deleted.
+
     await deleteAuthUser(user.id);
     await deleteUserDoc(user.id);
     await deleteUserSearchObj(user.id);

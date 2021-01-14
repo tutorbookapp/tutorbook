@@ -27,6 +27,9 @@ export default async function updateUser(
     const withPhotoUpdate = await updatePhoto(withOrgsUpdate, User);
     const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
+    // TODO: If the user's name or photo has changed, update it across all
+    // meetings and matches the user is a `Person` on.
+
     await updateUserDoc(withAuthUpdate);
     await updateUserSearchObj(withAuthUpdate);
 
