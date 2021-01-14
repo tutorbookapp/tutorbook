@@ -28,8 +28,6 @@ function CalendarPage(): JSX.Element {
     new MeetingsQuery({ hitsPerPage: 1000 })
   );
 
-  useEffect(() => console.log('Mutated:', mutatedIds), [mutatedIds]);
-
   const { t } = useTranslation();
   const { user, loggedIn } = useUser();
   const { data } = useSWR<ListMeetingsRes>(
@@ -56,7 +54,6 @@ function CalendarPage(): JSX.Element {
 
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated = false) => {
-      console.log(`Mutating (${hasBeenUpdated}) meeting (${mutated.id})...`);
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
         if (!hasBeenUpdated) mutatedMeetingIds.add(mutated.id);
