@@ -1,17 +1,21 @@
 @use 'components/dialog';
 
 .pages {
-  display: grid;
+  position: relative;
 }
 
 .page {
-  // We use grid display to be able to position each page on top of one
-  // another yet still retain their sizing to size the dialog surface.
-  // @see {@link https://stackoverflow.com/a/51949049/10023158}
-  grid-column: 1;
-  grid-row: 1;
+  position: absolute;
+  height: 100%;
+  width: 100%;
   opacity: 0;
   z-index: 1;
+  left: 0;
+  top: 0;
+
+  &:first-child {
+    position: relative;
+  }
 
   &.active {
     opacity: 1;
