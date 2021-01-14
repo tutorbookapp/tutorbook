@@ -4,8 +4,8 @@
     "indexes": "firebase/firestore.indexes.json"
   },
   "functions": {
-    "predeploy": "npm --prefix \"$RESOURCE_DIR\" run build",
-    "source": "firebase/functions"
+    "predeploy": "yarn build:functions",
+    "source": "firebase/functions/dist"
   },
   "storage": {
     "rules": "firebase/storage.rules"

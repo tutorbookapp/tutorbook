@@ -17,6 +17,7 @@
     "build:sw": "cd sw && webpack",
     "build:next": "next build",
     "build:analyze": "cross-env ANALYZE=true next build",
+    "build:functions": "cd firebase/functions && tsc",
     "build": "concurrently yarn:build:sw yarn:build:next",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "style": "pretty-quick --staged"
@@ -138,6 +139,7 @@
     "dotenv": "^8.2.0",
     "firebase": "^8.1.1",
     "firebase-admin": "^9.4.1",
+    "firebase-functions": "^3.13.0",
     "firebase-tools": "^8.16.2",
     "handlebars": "^4.7.6",
     "mixpanel-browser": "^2.39.0",

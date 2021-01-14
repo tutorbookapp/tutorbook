@@ -1,16 +1,6 @@
 import * as functions from 'firebase-functions';
+import axios from 'axios';
 
-import syncUserName from './sync-user-name';
-import addPeopleIds from './add-people-ids';
-
-export const syncUserNameUpdate = functions.firestore
-  .document('users/{user}')
-  .onWrite(syncUserName);
-
-export const addPeopleIdsRequest = functions.firestore
-  .document('requests/{request}')
-  .onWrite(addPeopleIds);
-
-export const addPeopleIdsMatch = functions.firestore
-  .document('matches/{match}')
-  .onWrite(addPeopleIds);
+export const updateMeetings = functions.pubsub
+  .schedule('every 15 minutes')
+  .onRun(() => axios.get('https://tutorbook.app/api/update-meetings'));

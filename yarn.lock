@@ -3587,6 +3587,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/body-parser@npm:*":
+  version: 1.19.0
+  resolution: "@types/body-parser@npm:1.19.0"
+  dependencies:
+    "@types/connect": "*"
+    "@types/node": "*"
+  checksum: 4576f3fde5980c1219cadbc7c523bdb1cefc3713300e18bf47ff37bb9b8176342a1dc7519008311fd8fc11413cf188a83931b9b59051aa1c2f095c1e10459369
+  languageName: node
+  linkType: hard
+
 "@types/classnames@npm:^2.2.7":
   version: 2.2.10
   resolution: "@types/classnames@npm:2.2.10"
@@ -3598,6 +3608,15 @@ __metadata:
   version: 1.1.1
   resolution: "@types/color-name@npm:1.1.1"
   checksum: 8311db94a9c4ecd247763b81e783ee49d87678b4ce6a7ee502e2bd5cea242b7357804a04855db009f713174bc654cc0c01c7303d40d757e5d710f5ac0368500f
+  languageName: node
+  linkType: hard
+
+"@types/connect@npm:*":
+  version: 3.4.34
+  resolution: "@types/connect@npm:3.4.34"
+  dependencies:
+    "@types/node": "*"
+  checksum: 6f712a0408ed119a42037bcbc38c12e053d3ffe11337221a3966c9e29a21c8455e331fe2116c426361c0b2c0e44cb3fb1f83594326e42ba34ce4723d726b7d30
   languageName: node
   linkType: hard
 
@@ -3641,6 +3660,28 @@ __metadata:
   version: 0.0.45
   resolution: "@types/estree@npm:0.0.45"
   checksum: 9d339cbcf29a96a32e9d40efc21009c2342e93c4f653294dd1ef081ae474bca9e54707e5d4a1cff90b9e3566e8bdd71ac31e0c3d24bc2ff1d3d5aa75058b3937
+  languageName: node
+  linkType: hard
+
+"@types/express-serve-static-core@npm:*":
+  version: 4.17.18
+  resolution: "@types/express-serve-static-core@npm:4.17.18"
+  dependencies:
+    "@types/node": "*"
+    "@types/qs": "*"
+    "@types/range-parser": "*"
+  checksum: 329d5ded5c6b77c40bbed136ddf34f6fbae1ec3c43dadb5309fa60cedc3de9508a78fcba756c54e0d6362127d29b114afe4fcc75dc42a44909d48a7114315dc4
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:4.17.3":
+  version: 4.17.3
+  resolution: "@types/express@npm:4.17.3"
+  dependencies:
+    "@types/body-parser": "*"
+    "@types/express-serve-static-core": "*"
+    "@types/serve-static": "*"
+  checksum: aeb57af48f97f334e8611b9b2f87a993e3de267b7836b15774575fc75ff6be424b61435076927ed34007c713792d632625b83a3b556e4b2d928f990d2a77f3fe
   languageName: node
   linkType: hard
 
@@ -3697,6 +3738,13 @@ __metadata:
   version: 4.0.1
   resolution: "@types/long@npm:4.0.1"
   checksum: ed2a125330dbf2b425b2e58b1e1151a37106ceeec973f9f191fba0bda83ed00fae6d858254022e8b6e7165fec5f0c3872b7cb5f425c753383fed54699fb63b38
+  languageName: node
+  linkType: hard
+
+"@types/mime@npm:*":
+  version: 2.0.3
+  resolution: "@types/mime@npm:2.0.3"
+  checksum: 6df548a912494f8579d548cd883be0425f30eaa2922283335c405e270600f49045a06d766460c0f0edabb41dff570c614d174d3c52215de3bddd11f190ec9ae9
   languageName: node
   linkType: hard
 
@@ -3763,6 +3811,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/qs@npm:*":
+  version: 6.9.5
+  resolution: "@types/qs@npm:6.9.5"
+  checksum: afe4721a802a4b5fa874a7d6d9fd33c9e812bb0ef90dabb050e8072be4ab2e5e817c0feacb9b4e0771d875de99f4d9738217976aeb8d36b81ccd82ded5e9fdc0
+  languageName: node
+  linkType: hard
+
+"@types/range-parser@npm:*":
+  version: 1.2.3
+  resolution: "@types/range-parser@npm:1.2.3"
+  checksum: 092fabae0ecbd728d3e4debc938cd043e97cb9f210cfec1c56ff6065c6e91666f376eb586591825d6757a058fd1a1dc4831d34e04ecfbb0800f35b8d86d38635
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:^16.9.9":
   version: 16.9.9
   resolution: "@types/react-dom@npm:16.9.9"
@@ -3813,6 +3875,16 @@ __metadata:
   version: 1.1.0
   resolution: "@types/rfdc@npm:1.1.0"
   checksum: 700769f5652c9d1c981f4290381676aa07e902e48899e8505055fe74766d9643d594ea5fc0d0687fcff74dfa1dbf8e4f5f8206b86a96adb57e1c4a4abf5c38f4
+  languageName: node
+  linkType: hard
+
+"@types/serve-static@npm:*":
+  version: 1.13.8
+  resolution: "@types/serve-static@npm:1.13.8"
+  dependencies:
+    "@types/mime": "*"
+    "@types/node": "*"
+  checksum: 39db4c0f0f1c459588609496f92c2cb084b7feca8b9f96ac5032e371f8a0f4923c32dc9b7fd005b8bb6d10aad5d9118238da4869647672441571ff20bcbe4ea4
   languageName: node
   linkType: hard
 
@@ -6805,7 +6877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cors@npm:^2.8.4":
+"cors@npm:^2.8.4, cors@npm:^2.8.5":
   version: 2.8.5
   resolution: "cors@npm:2.8.5"
   dependencies:
@@ -8702,7 +8774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.16.3, express@npm:^4.16.4":
+"express@npm:^4.16.3, express@npm:^4.16.4, express@npm:^4.17.1":
   version: 4.17.1
   resolution: "express@npm:4.17.1"
   dependencies:
@@ -9163,6 +9235,20 @@ __metadata:
     "@google-cloud/storage":
       optional: true
   checksum: 19bb0ab70fd71c270d551d9383c6515b9f6ded36c9f5ac04e62cc9226f7a52888a9501824eb6d36e7305101c45b115c53c8f5a394d26f16a42f6498b39edc8e9
+  languageName: node
+  linkType: hard
+
+"firebase-functions@npm:^3.13.0":
+  version: 3.13.0
+  resolution: "firebase-functions@npm:3.13.0"
+  dependencies:
+    "@types/express": 4.17.3
+    cors: ^2.8.5
+    express: ^4.17.1
+    lodash: ^4.17.14
+  peerDependencies:
+    firebase-admin: ^8.0.0 || ^9.0.0
+  checksum: e704f13d4e36cbceee6bd57a9343ddf80a45ae7d19be7ba03a8c1e1e939222bf63e13cd30d093cde0b3e9d7e7a9469559758007f0ba1074e27b4095593167f92
   languageName: node
   linkType: hard
 
@@ -18006,6 +18092,7 @@ resolve@1.1.7:
     eslint-plugin-react-hooks: ^4.0.8
     firebase: ^8.1.1
     firebase-admin: ^9.4.1
+    firebase-functions: ^3.13.0
     firebase-tools: ^8.16.2
     handlebars: ^4.7.6
     husky: ^4.2.5

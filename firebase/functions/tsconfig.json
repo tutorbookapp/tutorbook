@@ -1,14 +1,10 @@
 {
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "esModuleInterop": true,
     "module": "commonjs",
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "outDir": "lib",
-    "sourceMap": true,
-    "strict": true,
-    "target": "es2017"
+    "noEmit": false,
+    "outDir": "dist"
   },
-  "compileOnSave": true,
-  "include": ["src"]
+  "include": ["src/*.ts"]
 }
