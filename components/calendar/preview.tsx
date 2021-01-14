@@ -42,6 +42,9 @@ export default function MeetingPreview({
   setOpen,
   open,
 }: MeetingPreviewProps): JSX.Element {
+  // TODO: Polish state waterfall to ensure that this meeting preview's location
+  // is always in the right place and the given `meeting` is always up-to-date.
+
   const measured = useRef<boolean>(false);
 
   useEffect(() => {

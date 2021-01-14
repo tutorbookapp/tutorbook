@@ -52,6 +52,8 @@ export default function EditPage({
   useEffect(() => setLoading(loading), [loading, setLoading]);
   useEffect(() => setChecked(checked), [checked, setChecked]);
 
+  // TODO: Update the meeting's match's subjects. Right now, our back-end
+  // ignores any changes to the match data (when PUT /api/meetings/[id]).
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
       setMeeting(

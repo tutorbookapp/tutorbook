@@ -13,7 +13,7 @@ import axios from 'axios';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import { Callback, Meeting, MeetingJSON, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 import { useClickContext } from 'lib/hooks/click-outside';
 import { useContinuous } from 'lib/hooks';
@@ -28,11 +28,11 @@ const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 export interface MeetingRndProps {
   width: number;
   meeting: Meeting;
-  setPreview: (preview: {
+  setPreview: Callback<{
     meeting: Meeting;
     position: Position;
     height: number;
-  }) => void;
+  }>;
   closePreview: () => void;
 }
 
