@@ -28,7 +28,7 @@ async function getIdToken(): Promise<string | null> {
       unsubscribe();
       if (user) {
         const [err, token] = await to<string>(user.getIdToken());
-        if (err) return resolve(null);
+        if (err || !token) return resolve(null);
         return resolve(token);
       }
       return resolve(null);
