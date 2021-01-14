@@ -28,11 +28,14 @@ const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 export interface MeetingRndProps {
   width: number;
   meeting: Meeting;
-  setPreview: Callback<{
-    meeting: Meeting;
-    position: Position;
-    height: number;
-  }>;
+  setPreview: Callback<
+    | {
+        meeting: Meeting;
+        position: Position;
+        height: number;
+      }
+    | undefined
+  >;
   closePreview: () => void;
 }
 
