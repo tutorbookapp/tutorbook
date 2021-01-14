@@ -11,7 +11,6 @@ import { Callback, Meeting } from 'lib/model';
 import { join, period } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
 import snackbar from 'lib/snackbar';
-import { useClickContext } from 'lib/hooks/click-outside';
 
 import styles from './display-page.module.scss';
 import { useCalendar } from './context';
@@ -48,7 +47,6 @@ export default function DisplayPage({
     }
   }, [setLoading, setChecked, removeMeeting, meeting.id]);
 
-  const { updateEl, removeEl } = useClickContext();
   useEffect(() => {
     // TODO: Close snackbar when delete button is clicked repeatedly (i.e. when
     // error is reset; similar to how it works when using the component).
@@ -63,12 +61,8 @@ export default function DisplayPage({
         ],
         onClose: () => setError(''),
         dismissesOnAction: true,
-        ref(node: HTMLElement | null): void {
-          if (!node) return removeEl(`meeting-delete-error-${meeting.id}`);
-          return updateEl(`meeting-delete-error-${meeting.id}`, node);
-        },
       });
-  }, [error, removeEl, updateEl, deleteMeeting, meeting.id, t]);
+  }, [error, deleteMeeting, meeting.id, t]);
 
   return (
     <>
