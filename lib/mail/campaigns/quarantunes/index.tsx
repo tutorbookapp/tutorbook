@@ -2,10 +2,11 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import Analytics from 'analytics-node';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import QuaranTunesEmail from 'lib/mail/emails/quarantunes';
 import { User } from 'lib/model';
 import { db } from 'lib/api/firebase';
 import send from 'lib/mail/send';
+
+import QuaranTunesTemplate from './template';
 
 export default async function quarantunes(req: Req, res: Res): Promise<void> {
   const users = (
@@ -39,7 +40,7 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
         to: { name: user.name, email: user.email },
         subject: `Hi ${firstName}! Could you modify your QuaranTunes profile?`,
         html: renderToStaticMarkup(
-          <QuaranTunesEmail
+          <QuaranTunesTemplate
             name={firstName}
             email={user.email}
             pixel={pixel}

@@ -8,19 +8,19 @@ import {
   P,
 } from 'lib/mail/components';
 
-export interface CampaignEmailProps {
+export interface QuaranTunesTemplateProps {
   name: string;
   email: string;
   link: string;
   pixel: string;
 }
 
-export default function CampaignEmail({
+export default function QuaranTunesTemplate({
   name,
   email,
   link,
   pixel,
-}: CampaignEmailProps): JSX.Element {
+}: QuaranTunesTemplateProps): JSX.Element {
   return (
     <Email>
       <Header />

@@ -8,11 +8,11 @@ import {
   P,
 } from 'lib/mail/components';
 
-export interface GunnEmailProps {
+export interface GunnTemplateProps {
   name: string;
 }
 
-export default function GunnEmail({ name }: GunnEmailProps): JSX.Element {
+export default function GunnTemplate({ name }: GunnTemplateProps): JSX.Element {
   return (
     <Email>
       <Header />
