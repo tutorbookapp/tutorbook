@@ -1,16 +1,14 @@
 import {
   Button,
-  ContactsTable,
   Email,
   Footer,
   Header,
   Item,
   Link,
+  MeetingDisplay,
   P,
-  Quote,
 } from 'lib/mail/components';
 import { Meeting, Org, User } from 'lib/model';
-import { join } from 'lib/utils';
 
 export interface OrgDirectMeetingEmailProps {
   org: Org;
@@ -25,34 +23,36 @@ export default function OrgDirectMeetingEmail({
   recipient,
   creator,
 }: OrgDirectMeetingEmailProps): JSX.Element {
+  const calendarURL = `https://tutorbook.app/${org.id}/calendar`;
+  const isTutoring = recipient.roles.includes('tutor');
+
   return (
     <Email>
       <Header />
-      <Item>
+      <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
         <P>
-          {creator.name} requested {recipient.name} as a {join(recipient.roles)}
-          for {join(meeting.match.subjects)}:
+          {creator.name} just scheduled a new{' '}
+          {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} with{' '}
+          {recipient.name}:
         </P>
-        <Quote text={meeting.match.message} cite={creator.name} />
-        <P>Click the button below to view {org.name}&apos;s meetinges:</P>
+        <MeetingDisplay
+          meeting={meeting}
+          people={[recipient, creator]}
+          creator={creator}
+        />
         <br />
-        <Button href={`https://tutorbook.app/${org.id}/meetinges`}>
-          VIEW MATCHES
-        </Button>
+        <P>
+          To view and edit {org.name}&apos;s{' '}
+          {isTutoring ? 'lessons' : 'meetings'}, simply click the button below:
+        </P>
+        <br />
+        <Button href={calendarURL}>VIEW CALENDAR</Button>
         <br />
         <P>Or copy and paste this URL into a new tab of your browser:</P>
         <P style={{ marginBottom: '0px !important' }}>
-          <Link href={`https://tutorbook.app/${org.id}/meetinges`}>
-            {`https://tutorbook.app/${org.id}/meetinges`}
-          </Link>
+          <Link href={calendarURL}>{calendarURL}</Link>
         </P>
-        <br />
-        <P>
-          For easy communication about this meeting, you can use these email
-          addresses:
-        </P>
-        <ContactsTable contacts={[creator, recipient]} />
         <br />
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
       </Item>

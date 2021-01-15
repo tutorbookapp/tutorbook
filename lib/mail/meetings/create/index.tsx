@@ -18,12 +18,14 @@ export default async function sendEmails(
   orgAdmins: User[]
 ): Promise<void> {
   const emails: Email[] = [];
+  const isTutoring = people.some((p) => p.roles.includes('tutor'));
+  const noun = isTutoring ? 'tutoring lesson' : 'mentoring meeting';
   if (people.findIndex((p) => p.id === creator.id) < 0) {
     // Admin created meeting, send admin meeting email to all meeting people.
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
       to: people.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <MeetingTemplate
           meeting={meeting}
@@ -35,7 +37,7 @@ export default async function sendEmails(
     });
     emails.push({
       to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <OrgMeetingTemplate
           meeting={meeting}
@@ -52,7 +54,7 @@ export default async function sendEmails(
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
       to: { name: recipient.name, email: recipient.email },
-      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <DirectMeetingTemplate
           meeting={meeting}
@@ -63,7 +65,7 @@ export default async function sendEmails(
     });
     emails.push({
       to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(meeting.match.subjects)} match on Tutorbook.`,
+      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <OrgDirectMeetingTemplate
           meeting={meeting}

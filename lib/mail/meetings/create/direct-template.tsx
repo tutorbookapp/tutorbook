@@ -1,14 +1,14 @@
 import {
+  Button,
   Email,
   Footer,
   Header,
   Item,
   Link,
+  MeetingDisplay,
   P,
-  Quote,
 } from 'lib/mail/components';
 import { Meeting, User } from 'lib/model';
-import { join } from 'lib/utils';
 
 export interface DirectMeetingEmailProps {
   meeting: Meeting;
@@ -21,31 +21,53 @@ export default function DirectMeetingEmail({
   recipient,
   creator,
 }: DirectMeetingEmailProps): JSX.Element {
+  const calendarURL = 'https://tutorbook.app/calendar';
+  const isTutoring = recipient.roles.includes('tutor');
+
   return (
     <Email>
       <Header />
-      <Item>
-        <P style={{ marginTop: '0px !important' }}>
-          Hi {recipient.name.split(' ').shift()},
-        </P>
+      <Item left='48px' right='48px'>
+        <P style={{ marginTop: '0px !important' }}>Hi {recipient.firstName},</P>
         <P>
-          {creator.name} wants you as a {join(recipient.roles)} for{' '}
-          {join(meeting.match.subjects)}:
+          {creator.name} just scheduled a new{' '}
+          {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} with you:
         </P>
-        <Quote text={meeting.match.message} cite={creator.name} />
+        <MeetingDisplay
+          meeting={meeting}
+          people={[creator]}
+          creator={creator}
+        />
+        <br />
         <P>
-          If you&apos;re interested, please get in touch with {creator.name} by
-          replying to this email or using the following email address:
+          To view and edit your {isTutoring ? 'lessons' : 'meetings'}, simply
+          click the button below:
+        </P>
+        <br />
+        <Button href={calendarURL}>VIEW CALENDAR</Button>
+        <br />
+        <P>Or copy and paste this URL into a new tab of your browser:</P>
+        <P style={{ marginBottom: '0px !important' }}>
+          <Link href={calendarURL}>{calendarURL}</Link>
+        </P>
+        <br />
+        <P>
+          If you&apos;re unable to attend or if this doesn&apos;t seem like a
+          good match, please get in touch with {creator.firstName} by replying
+          to this email or by using the following contact info:
         </P>
         <P>
           <Link href={`mailto:${creator.email}`}>{creator.email}</Link>
+          <br />
+          <Link href={`tel:${creator.phone}`}>{creator.phone}</Link>
         </P>
+        <br />
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
       </Item>
       <Footer>
         <P>
-          This email was sent to you because you have a visible profile on
-          Tutorbook. You can edit or remove your profile{' '}
+          This email was sent to you because you have a profile on Tutorbook.
+          You can edit or remove your profile{' '}
           <Link href='https://tutorbook.app/profile'>here</Link>.
         </P>
         <P style={{ marginBottom: '0px !important' }}>

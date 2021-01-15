@@ -1,5 +1,8 @@
 import { CSSProperties, createContext, useContext } from 'react';
 
+import { Meeting, Org, Role, User } from 'lib/model';
+import { join } from 'lib/utils';
+
 const fontFamily = [
   '-apple-system',
   'BlinkMacSystemFont',
@@ -13,6 +16,16 @@ const fontFamily = [
   '"Helvetica Neue"',
   'sans-serif',
 ].join(',');
+const colors = {
+  background: '#ffffff',
+  onBackground: '#000000',
+  accents1: '#fafafa',
+  accents2: '#eaeaea',
+  accents3: '#999999',
+  accents4: '#888888',
+  accents5: '#666666',
+  accents6: '#444444',
+};
 const borderColor = '#dddddd';
 const borderRadius = '8px';
 
@@ -20,6 +33,7 @@ const textStyle = {
   fontFamily,
   fontSize: '18px',
   lineHeight: '28px',
+  color: colors.onBackground,
 };
 
 const quoteStyle = {
@@ -60,6 +74,7 @@ const dividerStyle = {
 const tableStyle = {
   borderCollapse: 'collapse' as CSSProperties['borderCollapse'],
   borderSpacing: '0',
+  tableLayout: 'fixed' as CSSProperties['tableLayout'],
   width: '100%',
 };
 
@@ -68,12 +83,7 @@ const rowStyle = {
   margin: '0px !important',
 };
 
-const paddedStyle = {
-  paddingLeft: '48px',
-  paddingRight: '48px',
-};
-
-const ColorContext = createContext<string>('#000000');
+const ColorContext = createContext<string>(colors.onBackground);
 const useColor = () => useContext<string>(ColorContext);
 
 interface Props {
@@ -102,7 +112,7 @@ export function Quote({ text, cite, style }: QuoteProps): JSX.Element {
   return (
     <ColorContext.Provider value={quoteStyle.color}>
       <blockquote style={{ ...quoteStyle, ...style }}>
-        <P>
+        <P style={{ marginTop: '0px' }}>
           <I>&quot;{text}&quot;</I>
         </P>
         <Cite>—{cite}</Cite>
@@ -139,6 +149,58 @@ export function Button({ href, style, children }: HrefProps): JSX.Element {
         </tr>
       </tbody>
     </table>
+  );
+}
+
+interface MeetingDisplayProps {
+  meeting: Meeting;
+  people: User[];
+  creator: User;
+  org?: Org;
+}
+
+export function MeetingDisplay({
+  meeting,
+  people,
+  creator,
+  org,
+}: MeetingDisplayProps): JSX.Element {
+  // TODO: Store the user's timezone in their profile and show the meeting time
+  // in their local timezone when sending emails, text messages, etc.
+
+  return (
+    <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
+      <Item top='24px' bottom='24px' left='24px' right='24px'>
+        <P style={{ marginTop: '0px', marginBottom: '8px' }}>
+          <b>WHO</b>
+        </P>
+        {people.map((person) => (
+          <Person {...person} org={meeting.match.org} />
+        ))}
+        <P>
+          <b>WHEN</b>
+          <br />
+          {meeting.time.toString()}
+        </P>
+        <P>
+          <b>WHERE</b>
+          <br />
+          <Link href={meeting.venue.url}>{meeting.venue.url}</Link>
+        </P>
+        <P>
+          <b>SUBJECTS</b>
+          <br />
+          {join(meeting.match.subjects)}
+        </P>
+        <P style={{ marginBottom: '8px' }}>
+          <b>MESSAGE</b>
+        </P>
+        <Quote
+          text={meeting.match.message}
+          cite={org ? `${creator.name} from ${org.name}` : creator.name}
+        />
+      </Item>
+    </div>
   );
 }
 
@@ -195,14 +257,25 @@ export function ContactsTable({ contacts }: ContactsTableProps): JSX.Element {
   );
 }
 
-type ItemProps = { top?: string; bottom?: string } & Omit<Props, 'style'>;
+type ItemProps = {
+  top?: string;
+  bottom?: string;
+  left?: string;
+  right?: string;
+} & Omit<Props, 'style'>;
 
-export function Item({ top, bottom, children }: ItemProps): JSX.Element {
+export function Item({
+  top,
+  bottom,
+  left,
+  right,
+  children,
+}: ItemProps): JSX.Element {
   return (
     <table style={tableStyle} cellPadding='0'>
       <tbody>
         <tr style={rowStyle}>
-          <td style={paddedStyle}>
+          <td style={{ paddingLeft: left, paddingRight: right }}>
             <table style={tableStyle}>
               <tbody>
                 <tr style={rowStyle}>
@@ -222,9 +295,137 @@ export function Item({ top, bottom, children }: ItemProps): JSX.Element {
   );
 }
 
+export interface UserDisplayProps {
+  org?: Org;
+  user: User;
+  subjects: string[];
+  langs: string[];
+}
+
+export function UserDisplay({
+  org,
+  user,
+  subjects,
+  langs,
+}: UserDisplayProps): JSX.Element {
+  return (
+    <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
+      <Item top='24px' bottom='24px' left='24px' right='24px'>
+        <Person {...user} org={org?.id} />
+        <P>
+          <b>ABOUT</b>
+          <br />
+          {user.bio}
+        </P>
+        <P>
+          <b>TEACHES</b>
+          <br />
+          {join(subjects)}
+        </P>
+        <P style={{ marginBottom: '0px' }}>
+          <b>SPEAKS</b>
+          <br />
+          {join(langs)}
+        </P>
+      </Item>
+    </div>
+  );
+}
+
+export interface PersonProps {
+  name: string;
+  photo: string;
+  phone: string;
+  email: string;
+  roles: Role[];
+  org?: string;
+  id: string;
+}
+
+export function Person({
+  name,
+  photo,
+  phone,
+  email,
+  roles,
+  org,
+  id,
+}: PersonProps): JSX.Element {
+  return (
+    <table style={{ ...tableStyle, marginBottom: '18px' }} cellPadding='0'>
+      <tbody>
+        <tr style={rowStyle}>
+          <td style={{ width: '112px', height: '100px' }}>
+            <a
+              style={{
+                width: '100px',
+                height: '100px',
+                textDecoration: 'none',
+                display: 'block !important',
+              }}
+              href={`https://tutorbook.app/${org || 'default'}/users/${id}`}
+            >
+              <img
+                style={{
+                  backgroundColor: colors.accents2,
+                  borderRadius: '4px',
+                }}
+                src={photo}
+                width='100px'
+                height='100px'
+                alt=''
+              />
+            </a>
+          </td>
+          <td style={{ height: '100px' }}>
+            <P
+              style={{
+                marginTop: '0px',
+                marginBottom: '0px',
+                maxHeight: '28px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {roles.length ? `${name} (${join(roles)})` : name}
+            </P>
+            <ColorContext.Provider value={linkStyle.color}>
+              <P
+                style={{
+                  marginTop: '0px',
+                  marginBottom: '0px',
+                  maxHeight: '28px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <Link href={`mailto:${email}`}>{email}</Link>
+              </P>
+              <P
+                style={{
+                  marginTop: '0px',
+                  marginBottom: '0px',
+                  maxHeight: '28px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <Link href={`tel:${phone}`}>{phone}</Link>
+              </P>
+            </ColorContext.Provider>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
 export function Header(): JSX.Element {
   return (
-    <Item top='48px' bottom='48px'>
+    <Item top='48px' bottom='48px' left='48px' right='48px'>
       <a
         style={{
           ...linkStyle,
@@ -236,10 +437,11 @@ export function Header(): JSX.Element {
         aria-label='Tutorbook'
       >
         <img
+          style={{ backgroundColor: colors.accents2, borderRadius: '4px' }}
           alt=''
           src='https://tutorbook.app/favicon/favicon-96x96.png'
-          width='64'
-          height='64'
+          width='64px'
+          height='64px'
         />
       </a>
     </Item>
@@ -249,7 +451,7 @@ export function Header(): JSX.Element {
 export function Footer({ children }: Partial<Props>): JSX.Element {
   return (
     <ColorContext.Provider value='#666666'>
-      <Item top='48px' bottom='48px'>
+      <Item top='48px' bottom='48px' left='48px' right='48px'>
         <hr style={dividerStyle} />
         <P>
           Tutorbook - <Link href='https://tutorbook.app'>tutorbook.app</Link>

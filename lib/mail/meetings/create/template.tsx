@@ -1,13 +1,12 @@
 import {
   Button,
-  ContactsTable,
   Email,
   Footer,
   Header,
   Item,
   Link,
+  MeetingDisplay,
   P,
-  Quote,
 } from 'lib/mail/components';
 import { Meeting, Org, User } from 'lib/model';
 import { join } from 'lib/utils';
@@ -25,57 +24,59 @@ export default function MeetingEmail({
   people,
   creator,
 }: MeetingEmailProps): JSX.Element {
-  const aspect = meeting.match.people.some((p) => p.roles.includes('mentor'))
-    ? 'mentoring'
-    : 'tutoring';
+  const calendarURL = 'https://tutorbook.app/calendar';
+  const isTutoring = people.some((p) => p.roles.includes('tutor'));
 
   return (
     <Email>
       <Header />
-      <Item>
+      <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>
-          Hi {join(people.map((p) => p.name.split(' ').shift()))},
+          Hi {join(people.map((p) => p.firstName))},
         </P>
         <P>
-          You have a new {aspect} {aspect === 'mentoring' ? 'match' : 'lesson'}{' '}
-          for {join(meeting.match.subjects)}.{' '}
-          {join(people.map((p) => `${p.name} is the ${join(p.roles)}`))}.
+          {creator.name} from {org.name} just scheduled a new{' '}
+          {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} between{' '}
+          {people.length > 2 ? 'all' : 'both'} of you:
         </P>
-        <P>
-          Please reply to this email with when you&apos;re available to join
-          your first {aspect === 'mentoring' ? 'video call' : 'lesson'}. Once
-          you figure out a time when everyone&apos;s available, simply click the
-          button below to join the {aspect === 'mentoring' ? 'call' : 'lesson'}:
-        </P>
-        <br />
-        <Button href='#'>
-          JOIN {aspect === 'mentoring' ? 'CALL' : 'LESSON'}
-        </Button>
-        <br />
-        <P>Or copy and paste this URL into a new tab of your browser:</P>
-        <P style={{ marginBottom: '0px !important' }}>
-          <Link href='#'>TODO</Link>
-        </P>
-        <br />
-        <P>
-          {creator.name.split(' ').shift()} from {org.name} set up this{' '}
-          {aspect === 'mentoring' ? 'match' : 'lesson'}:
-        </P>
-        <Quote
-          text={meeting.match.message}
-          cite={`${creator.name} from ${org.name}`}
+        <MeetingDisplay
+          meeting={meeting}
+          people={people}
+          creator={creator}
+          org={org}
         />
         <br />
         <P>
-          If this doesn&apos;t seem like a good match, please get in touch with{' '}
-          {creator.name.split(' ').shift()} by using the email address listed
-          below:
+          To view and edit your {isTutoring ? 'lessons' : 'meetings'}, simply
+          click the button below:
         </P>
-        <ContactsTable contacts={[creator, ...people]} />
+        <br />
+        <Button href={calendarURL}>VIEW CALENDAR</Button>
+        <br />
+        <P>Or copy and paste this URL into a new tab of your browser:</P>
+        <P style={{ marginBottom: '0px !important' }}>
+          <Link href={calendarURL}>{calendarURL}</Link>
+        </P>
+        <br />
+        <P>
+          If you&apos;re unable to attend or if this doesn&apos;t seem like a
+          good match, please get in touch with {creator.firstName} by replying
+          to this email or by using the following contact info:
+        </P>
+        <P>
+          <Link href={`mailto:${creator.email}`}>{creator.email}</Link>
+          <br />
+          <Link href={`tel:${creator.phone}`}>{creator.phone}</Link>
+        </P>
         <br />
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
       </Item>
       <Footer>
+        <P>
+          This email was sent to you because you have a profile on Tutorbook.
+          You can edit or remove your profile{' '}
+          <Link href='https://tutorbook.app/profile'>here</Link>.
+        </P>
         <P style={{ marginBottom: '0px !important' }}>
           If this message contains spam or unwanted messages let us know at{' '}
           <Link href='mailto:team@tutorbook.org'>team@tutorbook.org</Link>.

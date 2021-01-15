@@ -1,13 +1,12 @@
 import {
   Button,
-  ContactsTable,
   Email,
   Footer,
   Header,
   Item,
   Link,
+  MeetingDisplay,
   P,
-  Quote,
 } from 'lib/mail/components';
 import { Meeting, Org, User } from 'lib/model';
 import { join } from 'lib/utils';
@@ -25,35 +24,37 @@ export default function OrgMeetingEmail({
   people,
   creator,
 }: OrgMeetingEmailProps): JSX.Element {
+  const calendarURL = `https://tutorbook.app/${org.id}/calendar`;
+  const isTutoring = people.some((p) => p.roles.includes('tutor'));
+
   return (
     <Email>
       <Header />
-      <Item>
+      <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
         <P>
-          {creator.name} created a match for {join(meeting.match.subjects)} with{' '}
-          {join(people.map((p) => `${p.name} as the ${join(p.roles)}`))}:
+          {creator.name} just scheduled a new{' '}
+          {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} between{' '}
+          {join(people.map((p) => p.name))}:
         </P>
-        <Quote text={meeting.match.message} cite={creator.name} />
+        <MeetingDisplay
+          meeting={meeting}
+          people={people}
+          creator={creator}
+          org={org}
+        />
         <br />
-        <P>Click the button below to view {org.name}&apos;s matches:</P>
+        <P>
+          To view and edit {org.name}&apos;s{' '}
+          {isTutoring ? 'lessons' : 'meetings'}, simply click the button below:
+        </P>
         <br />
-        <Button href={`https://tutorbook.app/${org.id}/meetinges`}>
-          VIEW MATCHES
-        </Button>
+        <Button href={calendarURL}>VIEW CALENDAR</Button>
         <br />
         <P>Or copy and paste this URL into a new tab of your browser:</P>
         <P style={{ marginBottom: '0px !important' }}>
-          <Link href={`https://tutorbook.app/${org.id}/meetinges`}>
-            {`https://tutorbook.app/${org.id}/meetinges`}
-          </Link>
+          <Link href={calendarURL}>{calendarURL}</Link>
         </P>
-        <br />
-        <P>
-          For easy communication about this match, you can use these email
-          addresses:
-        </P>
-        <ContactsTable contacts={people} />
         <br />
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
       </Item>
