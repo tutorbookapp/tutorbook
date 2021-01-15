@@ -4,7 +4,7 @@ import { mutate } from 'swr';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
-import { APIErrorJSON } from 'lib/api/error';
+import { APIError, APIErrorJSON } from 'lib/api/error';
 import { Callback } from 'lib/model';
 import { period } from 'lib/utils';
 
@@ -12,15 +12,13 @@ export async function fetcher<T>(url: string): Promise<T> {
   const [err, res] = await to<AxiosResponse<T>, AxiosError<APIErrorJSON>>(
     axios.get<T>(url)
   );
-  const error: (description: string) => never = (description: string) => {
-    throw new Error(description);
-  };
   if (err && err.response) {
-    error(`API (${url}) responded with error: ${err.response.data.message}`);
+    const msg = `API (${url}) responded with error: ${err.response.data.message}`;
+    throw new APIError(msg, err.response.status);
   } else if (err && err.request) {
-    error(`API (${url}) did not respond.`);
+    throw new APIError(`API (${url}) did not respond.`);
   } else if (err) {
-    error(`${err.name} calling API (${url}): ${err.message}`);
+    throw new APIError(`${err.name} calling API (${url}): ${err.message}`);
   }
   return (res as AxiosResponse<T>).data;
 }
