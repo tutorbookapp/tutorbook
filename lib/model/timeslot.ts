@@ -149,7 +149,7 @@ export class Timeslot implements TimeslotInterface {
     return new Timeslot({ ...this, from, to });
   }
 
-  public toString(locale = 'en'): string {
+  public toString(locale = 'en', showTimeZone = true): string {
     const showSecondDate =
       this.from.getDate() !== this.to.getDate() ||
       this.from.getMonth() !== this.to.getMonth() ||
@@ -166,6 +166,7 @@ export class Timeslot implements TimeslotInterface {
       day: showSecondDate ? 'numeric' : undefined,
       hour: 'numeric',
       minute: 'numeric',
+      timeZoneName: showTimeZone ? 'short' : undefined,
     })}`;
   }
 
