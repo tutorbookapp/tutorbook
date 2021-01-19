@@ -175,7 +175,7 @@ export function MeetingDisplay({
           <b>WHO</b>
         </P>
         {people.map((person) => (
-          <Person {...person} org={meeting.match.org} />
+          <Person key={person.id} {...person} org={meeting.match.org} />
         ))}
         <P>
           <b>WHEN</b>
