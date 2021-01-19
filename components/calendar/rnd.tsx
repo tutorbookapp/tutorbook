@@ -33,6 +33,7 @@ interface Preview {
 }
 
 export interface MeetingRndProps {
+  now: Date;
   width: number;
   meeting: Meeting;
   preview: Preview | undefined;
@@ -41,6 +42,7 @@ export interface MeetingRndProps {
 }
 
 export default function MeetingRnd({
+  now,
   width,
   meeting: initialData,
   preview,
@@ -169,6 +171,7 @@ export default function MeetingRnd({
       style={{ cursor: dragging ? 'move' : 'pointer' }}
       className={cn(styles.meeting, {
         [styles.elevated]: dragging || preview?.meeting.id === meeting.id,
+        [styles.past]: meeting.time.to.valueOf() <= now.valueOf(),
       })}
       position={position}
       minHeight={12 * 2}

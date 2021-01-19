@@ -87,7 +87,7 @@
 
 .mdc-text-field--focused:not(.mdc-text-field--disabled):not(.mdc-text-field--invalid)
   .mdc-floating-label {
-  color: var(--primary-4);
+  color: var(--primary-6);
 }
 
 .mdc-text-field--disabled .mdc-text-field__input {

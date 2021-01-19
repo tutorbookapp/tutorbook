@@ -4,8 +4,9 @@
 .meeting {
   transition: elevation.transition-value();
   will-change: elevation.$property;
-  background: var(--primary);
+  background: var(--background);
   border-radius: 2px;
+  overflow: hidden;
   z-index: 1;
 
   &.elevated {
@@ -13,11 +14,12 @@
   }
 
   .wrapper {
+    background: var(--primary);
+    color: var(--on-primary);
     height: 100%;
     width: 100%;
 
     .content {
-      color: var(--on-primary);
       padding: 4px 0 4px 8px;
       line-height: 15px;
 
@@ -39,5 +41,9 @@
         letter-spacing: 0.05px;
       }
     }
+  }
+
+  &.past .wrapper {
+    background: var(--primary-5);
   }
 }

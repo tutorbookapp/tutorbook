@@ -218,6 +218,7 @@ export default function CalendarBody({
                     meetings.map((meeting: Meeting) => (
                       <MeetingRnd
                         key={meeting.id}
+                        now={now}
                         width={width}
                         meeting={meeting}
                         preview={preview}
