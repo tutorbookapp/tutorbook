@@ -2,10 +2,15 @@
 @use '@material/elevation';
 
 .meeting {
-  @include elevation.elevation(4);
+  transition: elevation.transition-value();
+  will-change: elevation.$property;
   background: var(--primary);
   border-radius: 2px;
   z-index: 1;
+
+  &.elevated {
+    @include elevation.elevation(4);
+  }
 
   .wrapper {
     height: 100%;

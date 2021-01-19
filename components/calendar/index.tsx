@@ -220,6 +220,7 @@ export default function CalendarBody({
                         key={meeting.id}
                         width={width}
                         meeting={meeting}
+                        preview={preview}
                         setPreview={setPreview}
                         closePreview={closePreview}
                       />

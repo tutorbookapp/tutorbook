@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { ResizeDirection } from 're-resizable';
 import axios from 'axios';
+import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -25,23 +26,24 @@ import { useCalendar } from './context';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
+interface Preview {
+  meeting: Meeting;
+  position: Position;
+  height: number;
+}
+
 export interface MeetingRndProps {
   width: number;
   meeting: Meeting;
-  setPreview: Callback<
-    | {
-        meeting: Meeting;
-        position: Position;
-        height: number;
-      }
-    | undefined
-  >;
+  preview: Preview | undefined;
+  setPreview: Callback<Preview | undefined>;
   closePreview: () => void;
 }
 
 export default function MeetingRnd({
   width,
   meeting: initialData,
+  preview,
   setPreview,
   closePreview,
 }: MeetingRndProps): JSX.Element {
@@ -165,7 +167,9 @@ export default function MeetingRnd({
     <Rnd
       data-cy='meeting-rnd'
       style={{ cursor: dragging ? 'move' : 'pointer' }}
-      className={styles.meeting}
+      className={cn(styles.meeting, {
+        [styles.elevated]: dragging || preview?.meeting.id === meeting.id,
+      })}
       position={position}
       minHeight={12 * 2}
       size={{ width: width - RND_MARGIN, height }}
