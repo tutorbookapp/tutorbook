@@ -608,7 +608,9 @@ const addResourceTimestamps = async (col) => {
   console.log(`Adding resource timestamps to ${docs.length} ${col}...`);
   await Promise.all(
     docs.map(async (d) => {
-      await d.ref.update({ created: new Date(), updated: new Date() });
+      const created = d.createTime || d.data().updated || new Date();
+      const updated = d.updateTime || d.data().created || new Date();
+      await d.ref.update({ created, updated });
     })
   );
 };
