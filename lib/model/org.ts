@@ -238,13 +238,15 @@ export class Org extends Account implements OrgInterface {
   }
 
   public static fromFirestoreDoc(snapshot: DocumentSnapshot): Org {
-    if (snapshot.data())
-      return new Org({
-        ...Org.fromFirestore(snapshot.data() as OrgFirestore),
-        ref: snapshot.ref,
-        id: snapshot.id,
-      });
-    return new Org();
+    if (!snapshot.exists) return new Org();
+    const overrides = definedVals({
+      created: snapshot.createTime?.toDate(),
+      updated: snapshot.updateTime?.toDate(),
+      ref: snapshot.ref,
+      id: snapshot.id,
+    });
+    const org = Org.fromFirestore(snapshot.data() as OrgFirestore);
+    return new Org({ ...org, ...overrides });
   }
 
   public toSearchHit(): OrgSearchHit {

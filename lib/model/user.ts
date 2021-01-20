@@ -274,13 +274,15 @@ export class User extends Account implements UserInterface {
   }
 
   public static fromFirestoreDoc(snapshot: DocumentSnapshot): User {
-    if (snapshot.data())
-      return new User({
-        ...User.fromFirestore(snapshot.data() as UserFirestore),
-        ref: snapshot.ref,
-        id: snapshot.id,
-      });
-    return new User();
+    if (!snapshot.exists) return new User();
+    const overrides = definedVals({
+      created: snapshot.createTime?.toDate(),
+      updated: snapshot.updateTime?.toDate(),
+      ref: snapshot.ref,
+      id: snapshot.id,
+    });
+    const user = User.fromFirestore(snapshot.data() as UserFirestore);
+    return new User({ ...user, ...overrides });
   }
 
   public toSearchHit(): UserSearchHit {

@@ -119,13 +119,15 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public static fromFirestoreDoc(snapshot: DocumentSnapshot): Match {
-    if (snapshot.data())
-      return new Match({
-        ...Match.fromFirestore(snapshot.data() as MatchFirestore),
-        ref: snapshot.ref,
-        id: snapshot.id,
-      });
-    return new Match();
+    if (!snapshot.exists) return new Match();
+    const overrides = definedVals({
+      created: snapshot.createTime?.toDate(),
+      updated: snapshot.updateTime?.toDate(),
+      ref: snapshot.ref,
+      id: snapshot.id,
+    });
+    const match = Match.fromFirestore(snapshot.data() as MatchFirestore);
+    return new Match({ ...match, ...overrides });
   }
 
   public toSearchHit(): MatchSearchHit {

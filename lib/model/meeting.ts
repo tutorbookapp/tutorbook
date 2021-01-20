@@ -205,13 +205,15 @@ export class Meeting extends Resource implements MeetingInterface {
   }
 
   public static fromFirestoreDoc(snapshot: DocumentSnapshot): Meeting {
-    if (snapshot.data())
-      return new Meeting({
-        ...Meeting.fromFirestore(snapshot.data() as MeetingFirestore),
-        ref: snapshot.ref,
-        id: snapshot.id,
-      });
-    return new Meeting();
+    if (!snapshot.exists) return new Meeting();
+    const overrides = definedVals({
+      created: snapshot.createTime?.toDate(),
+      updated: snapshot.updateTime?.toDate(),
+      ref: snapshot.ref,
+      id: snapshot.id,
+    });
+    const meeting = Meeting.fromFirestore(snapshot.data() as MeetingFirestore);
+    return new Meeting({ ...meeting, ...overrides });
   }
 
   public toSearchHit(): MeetingSearchHit {

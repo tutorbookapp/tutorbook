@@ -165,13 +165,15 @@ export class Account extends Resource implements AccountInterface {
   }
 
   public static fromFirestoreDoc(snapshot: DocumentSnapshot): Account {
-    if (snapshot.data())
-      return new Account({
-        ...Account.fromFirestore(snapshot.data() as AccountFirestore),
-        ref: snapshot.ref,
-        id: snapshot.id,
-      });
-    return new Account();
+    if (!snapshot.exists) return new Account();
+    const overrides = definedVals({
+      created: snapshot.createTime?.toDate(),
+      updated: snapshot.updateTime?.toDate(),
+      ref: snapshot.ref,
+      id: snapshot.id,
+    });
+    const account = Account.fromFirestore(snapshot.data() as AccountFirestore);
+    return new Account({ ...account, ...overrides });
   }
 
   public toSearchHit(): AccountSearchHit {
