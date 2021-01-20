@@ -156,7 +156,7 @@ export default function RequestForm({
     'Match Errored',
     () =>
       error && {
-        ...meeting.match.current.toSegment(),
+        ...meeting.current.match.toSegment(),
         user: user.toSegment(),
         error,
       }
