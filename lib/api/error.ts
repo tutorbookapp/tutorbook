@@ -1,5 +1,7 @@
 import { ServerResponse } from 'http';
 
+import { period } from 'lib/utils';
+
 export interface APIErrorJSON {
   message: string;
   code: number;
@@ -16,7 +18,7 @@ export interface APIErrorJSON {
  */
 export class APIError extends Error {
   public constructor(message: string, public readonly code: number = 400) {
-    super(message);
+    super(period(message));
   }
 
   public toJSON(): APIErrorJSON {
