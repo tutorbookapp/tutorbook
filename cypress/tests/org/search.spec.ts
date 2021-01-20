@@ -67,7 +67,7 @@ describe('Search page', () => {
     cy.visit(`/${school.id}/search`);
 
     cy.wait('@list-users');
-    cy.getBySel('result').should('have.length', 2).as('results');
+    cy.getBySel('result').as('results').should('have.length', 2);
     cy.get('@results')
       .eq(0)
       .should('contain', volunteer.name)
@@ -118,7 +118,7 @@ describe('Search page', () => {
     cy.percySnapshot('Search Page in Loading State');
 
     cy.wait('@list-users');
-    cy.getBySel('result').should('have.length', 2).as('results');
+    cy.getBySel('result').as('results').should('have.length', 2);
     cy.get('@results')
       .eq(0)
       .should('not.contain', volunteer.name)
