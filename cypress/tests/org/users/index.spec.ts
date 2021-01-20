@@ -10,7 +10,7 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
     .find('.mdc-snackbar__label')
     .should('have.text', label);
   cy.get('@snackbar').find('button').click();
-  cy.get('@snackbar').should('not.exist');
+  cy.get('@snackbar').should('not.be.visible');
 }
 
 // TODO: Add `cy.percySnapshot` calls to add visual snapshot testing.
@@ -228,7 +228,7 @@ describe('Users dashboard page', () => {
       .should('contain', student.name);
 
     // Search by text (using 'Nicholas' name).
-    cy.get('@query-input').type('{selectall}{del}Nicholas');
+    cy.get('@query-input').clear().type('Nicholas');
     cy.wait('@list-users');
     cy.get('@results').should('not.exist');
     cy.contains('NO USERS TO SHOW').should('be.visible');
