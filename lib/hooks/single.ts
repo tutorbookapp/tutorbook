@@ -65,9 +65,9 @@ export default function useSingle<T extends { id: string }>(
         setError(e.message);
       } else {
         // Otherwise, mutate local data with the server's response.
-        if (!dequal(res, data)) {
-          setData(res as T);
-          if (updateLocal) await updateLocal(res as T, true);
+        if (res && !dequal(res, data)) {
+          setData(res);
+          if (updateLocal) await updateLocal(res, true);
         } else if (updateLocal) {
           // Signal that local data is now in sync with server data.
           await updateLocal(data, true);

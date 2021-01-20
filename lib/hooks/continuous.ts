@@ -50,9 +50,9 @@ export default function useContinuous<T>(
     } else {
       setError('');
       setRetryCount(0);
-      lastReceivedResponse.current = res as T;
-      if (!dequal(res, data)) {
-        setData(res as T);
+      if (res && !dequal(res, data)) {
+        lastReceivedResponse.current = res;
+        setData(res);
       } else if (updateLocal) {
         // Signal that local data is now in sync with server data.
         await updateLocal(data, true);
