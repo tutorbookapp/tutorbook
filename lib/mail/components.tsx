@@ -317,6 +317,13 @@ export function UserDisplay({
           <br />
           {user.bio}
         </P>
+        {user.reference && (
+          <P>
+            <b>REFERENCE</b>
+            <br />
+            {user.reference}
+          </P>
+        )}
         <P>
           <b>TEACHES</b>
           <br />
