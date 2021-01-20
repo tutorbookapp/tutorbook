@@ -22,7 +22,6 @@ import TimeSelect from 'components/time-select';
 import {
   Aspect,
   Match,
-  MatchJSON,
   Meeting,
   MeetingJSON,
   Person,
@@ -92,7 +91,6 @@ export default function RequestForm({
   // We have to use React refs in order to access updated state information in
   // a callback that was called (and thus was also defined) before the update.
   const meeting = useRef<Meeting>(new Meeting());
-  const match = useRef<Match>(new Match());
   useEffect(() => {
     const target: Person = {
       id: user.id,
@@ -129,17 +127,16 @@ export default function RequestForm({
             handle: uuid(),
             roles: [],
           };
-    match.current = new Match({
-      people,
-      creator,
-      message,
-      org: org?.id || 'default',
-      subjects: subjects.map((s) => s.value),
-    });
     meeting.current = new Meeting({
       time,
       creator,
-      match: match.current,
+      match: new Match({
+        people,
+        creator,
+        message,
+        org: org?.id || 'default',
+        subjects: subjects.map((s) => s.value),
+      }),
     });
   }, [currentUser, user, message, subjects, time, students, org?.id, aspects]);
 
@@ -158,7 +155,11 @@ export default function RequestForm({
   useAnalytics(
     'Match Errored',
     () =>
-      error && { ...match.current.toSegment(), user: user.toSegment(), error }
+      error && {
+        ...meeting.match.current.toSegment(),
+        user: user.toSegment(),
+        error,
+      }
   );
 
   const onMessageChange = useCallback((event: FormEvent<HTMLInputElement>) => {
@@ -204,29 +205,19 @@ export default function RequestForm({
         await updateUser(User.fromJSON((res as AxiosResponse<UserJSON>).data));
       }
       const [err, res] = await to<
-        AxiosResponse<MatchJSON>,
+        AxiosResponse<MeetingJSON>,
         AxiosError<APIErrorJSON>
-      >(axios.post('/api/matches', match.current.toJSON()));
+      >(axios.post('/api/meetings', meeting.current.toJSON()));
       if (err) {
         setLoading(false);
-        setError(getErrorMessage(err, 'creating match', t));
+        setError(getErrorMessage(err, 'creating meeting', t));
       } else {
-        const created = Match.fromJSON((res as AxiosResponse<MatchJSON>).data);
+        const mtg = Meeting.fromJSON((res as AxiosResponse<MeetingJSON>).data);
         track('Match Created', {
-          ...created.toSegment(),
+          ...mtg.match.toSegment(),
           user: user.toSegment(),
         });
-        meeting.current.match = created;
-        const [e] = await to<
-          AxiosResponse<MeetingJSON>,
-          AxiosError<APIErrorJSON>
-        >(axios.post('/api/meetings', meeting.current.toJSON()));
-        if (e) {
-          setLoading(false);
-          setError(getErrorMessage(e, 'creating meeting', t));
-        } else {
-          setChecked(true);
-        }
+        setChecked(true);
       }
     },
     [user, track, currentUser, phoneRequired, phone, updateUser, t]
