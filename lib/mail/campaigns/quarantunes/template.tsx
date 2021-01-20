@@ -24,7 +24,7 @@ export default function QuaranTunesTemplate({
   return (
     <Email>
       <Header />
-      <Item>
+      <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>Hi {name},</P>
         <P>
           Please ignore any earlier emails from us. I made some mistakes when

@@ -16,7 +16,7 @@ export default function GunnTemplate({ name }: GunnTemplateProps): JSX.Element {
   return (
     <Email>
       <Header />
-      <Item>
+      <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>Hi {name},</P>
         <P>
           You have tutor profile at Gunn High School that hasn&apos;t been

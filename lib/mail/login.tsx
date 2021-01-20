@@ -12,7 +12,7 @@ export default function LoginEmail({
   return (
     <Email>
       <Header />
-      <Item>
+      <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>Hi there,</P>
         <P>
           We just received a login attempt from {location}. To complete the
