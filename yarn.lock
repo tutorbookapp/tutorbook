@@ -2874,15 +2874,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@percy/cypress@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "@percy/cypress@npm:2.3.2"
+"@percy/cypress@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "@percy/cypress@npm:2.3.3"
   dependencies:
     "@percy/agent": ~0
-    axios: ^0.20.0
+    axios: ^0.21.0
   peerDependencies:
     cypress: ^3 || ^4 || ^5
-  checksum: c3dabe9c523a1ac2cdff05394cf3a52db36704f665405941a899d903bab2ed6500989215c15b7d6f1132ff01fc37ad79fb894b59fce755afdc75457d928fb3f0
+  checksum: aef935cfde0158cc05ce2b2e54de9cb0e399c647f0b76b357809f8af1b9e7f9e26c95bc7c01dfe57f9685733daa2860c50626ffbd7c49b721a2cd54c4360df05
   languageName: node
   linkType: hard
 
@@ -4970,15 +4970,6 @@ __metadata:
   dependencies:
     follow-redirects: 1.5.10
   checksum: bad346deea24050f9953ce09bb8015f85a99a7b8f016806adccfab0b8981827d1fbee9c77c0ef7c70cc48392c1af6bbc65e07c3e88221d17282d2d5fd0a191f6
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.20.0":
-  version: 0.20.0
-  resolution: "axios@npm:0.20.0"
-  dependencies:
-    follow-redirects: ^1.10.0
-  checksum: 6cf2e963176a0d18fc457d7cb71cb6cf552193619b161fc61070d9a4db3a26a87ecfe760ba36e7af174c05a6a9898dc52cfeb5c0e62e19fddd9788739553ad73
   languageName: node
   linkType: hard
 
@@ -7224,9 +7215,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^6.2.1":
-  version: 6.2.1
-  resolution: "cypress@npm:6.2.1"
+"cypress@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "cypress@npm:6.3.0"
   dependencies:
     "@cypress/listr-verbose-renderer": ^0.4.1
     "@cypress/request": ^2.88.5
@@ -7268,7 +7259,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: 3c6e9ae747e84d0e505b33e8d28ef302a81424ab716fd8fa5620f29bbb35f079827470e0668fb24ace23c4e976523b2da2177675828f21101291a75e4a0137c5
+  checksum: 05841960db8d00fd82d25ee57004a3c292e4fc5d00ee21d2779833eee742899ee5b8346918c5201ce42b05d708a3136c9dbcf2decd57ad0fc5793e16fa6cc073
   languageName: node
   linkType: hard
 
@@ -18080,7 +18071,7 @@ resolve@1.1.7:
     "@juggle/resize-observer": ^3.2.0
     "@material/menu-surface": ^5.1.0
     "@percy/agent": ^0.28.5
-    "@percy/cypress": ^2.3.2
+    "@percy/cypress": ^2.3.3
     "@rmwc/button": ^6.1.4
     "@rmwc/checkbox": ^6.1.4
     "@rmwc/chip": ^6.1.4
@@ -18131,7 +18122,7 @@ resolve@1.1.7:
     concurrently: ^5.3.0
     cross-env: ^7.0.2
     csv-parse: ^4.12.0
-    cypress: ^6.2.1
+    cypress: ^6.3.0
     cypress-file-upload: ^4.1.1
     dequal: ^2.0.2
     dotenv: ^8.2.0
