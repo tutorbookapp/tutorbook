@@ -233,10 +233,9 @@ export default function Select<T, O extends Option<T>>({
    */
   const updateInputValue = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
-      const updatedInputValue = event.currentTarget.value;
       updateInputLine(event);
-      setInputValue((prev) => updatedInputValue || prev);
-      void updateSuggestions(updatedInputValue);
+      setInputValue(event.currentTarget.value);
+      void updateSuggestions(event.currentTarget.value);
       openSuggestions();
     },
     [updateInputLine, updateSuggestions, openSuggestions]
