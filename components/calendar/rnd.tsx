@@ -26,18 +26,12 @@ import { useCalendar } from './context';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
-interface Preview {
-  meeting: Meeting;
-  position: Position;
-  height: number;
-}
-
 export interface MeetingRndProps {
   now: Date;
   width: number;
   meeting: Meeting;
-  preview: Preview | undefined;
-  setPreview: Callback<Preview | undefined>;
+  preview: Meeting | undefined;
+  setPreview: Callback<Meeting | undefined>;
   closePreview: () => void;
 }
 
@@ -101,9 +95,9 @@ export default function MeetingRnd({
   const onClick = useCallback(
     (evt: ReactMouseEvent) => {
       evt.stopPropagation();
-      if (!dragging) setPreview({ meeting, position, height });
+      if (!dragging) setPreview(meeting);
     },
-    [setPreview, dragging, meeting, position, height]
+    [setPreview, dragging, meeting]
   );
   const onResizeStop = useCallback(() => {
     setTimeout(() => setDragging(false), 0);
@@ -170,7 +164,7 @@ export default function MeetingRnd({
       data-cy='meeting-rnd'
       style={{ cursor: dragging ? 'move' : 'pointer' }}
       className={cn(styles.meeting, {
-        [styles.elevated]: dragging || preview?.meeting.id === meeting.id,
+        [styles.elevated]: dragging || preview?.id === meeting.id,
         [styles.past]: meeting.time.to.valueOf() <= now.valueOf(),
       })}
       position={position}

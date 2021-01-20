@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import cn from 'classnames';
+import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
@@ -15,9 +16,9 @@ import useTranslation from 'next-translate/useTranslation';
 
 import LoadingDots from 'components/loading-dots';
 
-import { Meeting, Position } from 'lib/model';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { ClickContext } from 'lib/hooks/click-outside';
+import { Meeting } from 'lib/model';
 import { useClickOutside } from 'lib/hooks';
 
 import { getMeeting, getPosition } from './utils';
@@ -48,23 +49,27 @@ export default function CalendarBody({
 
   const [now, setNow] = useState<Date>(new Date());
   const [open, setOpen] = useState<boolean>(false);
-  const [preview, setPreview] = useState<{
-    meeting: Meeting;
-    position: Position;
-    height: number;
-  }>();
+  const [preview, setPreview] = useState<Meeting>();
   const closePreview = useCallback(() => setOpen(false), []);
   const { updateEl, removeEl } = useClickOutside(closePreview, open);
+
+  useEffect(() => {
+    setPreview((prev) => {
+      const idx = meetings.findIndex((m) => m.id === prev?.id);
+      if (idx < 0) {
+        closePreview();
+        return prev;
+      }
+      if (dequal(meetings[idx], prev)) return prev;
+      return meetings[idx];
+    });
+  }, [meetings, closePreview]);
 
   useEffect(() => {
     const tick = () => setNow(new Date());
     const intervalId = window.setInterval(tick, 60000);
     return () => window.clearInterval(intervalId);
   }, []);
-
-  useEffect(() => {
-    if (!meetings.some((m) => m.id === preview?.meeting.id)) setOpen(false);
-  }, [meetings, preview?.meeting.id]);
 
   useEffect(() => {
     // Scroll to 8:30am by default (assumes 48px per hour).
@@ -172,16 +177,16 @@ export default function CalendarBody({
             </div>
           );
         }),
-    [now, cellRef]
+    [now, cellRef, startingDate]
   );
 
   return (
     <ClickContext.Provider value={{ updateEl, removeEl }}>
       {preview && (
         <MeetingPreview
-          {...preview}
-          width={width}
+          meeting={preview}
           offset={{ x, y }}
+          width={width}
           onClosed={() => setPreview(undefined)}
           setOpen={setOpen}
           open={open}

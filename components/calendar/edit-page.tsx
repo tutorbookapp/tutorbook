@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useLayoutEffect } from 'react';
+import { FormEvent, useCallback, useEffect } from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
@@ -45,9 +45,9 @@ export default function EditPage({
 
   const nav = useNav();
   const prevLoading = usePrevious(loading);
-  useLayoutEffect(() => {
-    if (prevLoading && !loading && !error) nav();
-  }, [prevLoading, loading, error, nav]);
+  useEffect(() => {
+    if (prevLoading && !loading && checked) nav();
+  }, [prevLoading, loading, checked, nav]);
 
   useEffect(() => setLoading(loading), [loading, setLoading]);
   useEffect(() => setChecked(checked), [checked, setChecked]);

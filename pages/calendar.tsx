@@ -61,6 +61,8 @@ function CalendarPage(): JSX.Element {
         if (dequal([...mutatedMeetingIds], [...prev])) return prev;
         return mutatedMeetingIds;
       });
+      // TODO: Remove meeting if it is no longer within the `query` dates (but
+      // note we still want to show the loading indicator in the `Preview`).
       const idx = meetings.findIndex((m) => m.id === mutated.id);
       const updated =
         idx < 0

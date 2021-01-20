@@ -12,6 +12,7 @@ import { Callback, Meeting, Position } from 'lib/model';
 import { useClickContext } from 'lib/hooks/click-outside';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from './config';
+import { getHeight, getPosition } from './utils';
 import DisplayPage from './display-page';
 import EditPage from './edit-page';
 import styles from './preview.module.scss';
@@ -25,8 +26,6 @@ export interface MeetingPreviewProps {
   meeting: Meeting;
   offset: Position;
   width: number;
-  height: number;
-  position: Position;
   onClosed: () => void;
   setOpen: Callback<boolean>;
   open: boolean;
@@ -37,14 +36,9 @@ export default function MeetingPreview({
   offset,
   onClosed,
   width: itemWidth,
-  height: itemHeight,
-  position: itemPosition,
   setOpen,
   open,
 }: MeetingPreviewProps): JSX.Element {
-  // TODO: Polish state waterfall to ensure that this meeting preview's location
-  // is always in the right place and the given `meeting` is always up-to-date.
-
   const measured = useRef<boolean>(false);
 
   useEffect(() => {
@@ -55,6 +49,13 @@ export default function MeetingPreview({
   }, [setOpen]);
 
   const [measureRef, bounds] = useMeasure({ polyfill });
+
+  const itemPosition = useMemo(() => {
+    return getPosition(meeting.time.from, itemWidth);
+  }, [meeting.time.from, itemWidth]);
+  const itemHeight = useMemo(() => {
+    return getHeight(meeting.time);
+  }, [meeting.time]);
 
   const onLeft = useMemo(() => {
     const x = offset.x + itemPosition.x - bounds.width - PREVIEW_MARGIN;
