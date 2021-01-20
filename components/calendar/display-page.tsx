@@ -7,7 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
-import { Callback, Meeting } from 'lib/model';
+import { Callback, Meeting, User } from 'lib/model';
 import { APIErrorJSON } from 'lib/api/error';
 import { join } from 'lib/utils';
 import snackbar from 'lib/snackbar';
@@ -16,6 +16,7 @@ import styles from './display-page.module.scss';
 import { useCalendar } from './context';
 
 export interface DisplayPageProps {
+  people: User[];
   meeting: Meeting;
   openEdit: () => void;
   setLoading: Callback<boolean>;
@@ -23,6 +24,7 @@ export interface DisplayPageProps {
 }
 
 export default function DisplayPage({
+  people,
   meeting,
   openEdit,
   setLoading,
@@ -68,7 +70,7 @@ export default function DisplayPage({
     <>
       <div className={styles.content}>
         <div className={styles.people}>
-          {meeting.match.people.map((person) => (
+          {people.map((person) => (
             <Link
               href={`/${meeting.match.org}/users/${person.id}`}
               key={person.id}

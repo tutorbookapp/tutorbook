@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
@@ -8,7 +8,14 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import { Callback, Match, Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import {
+  Callback,
+  Match,
+  Meeting,
+  MeetingJSON,
+  Timeslot,
+  User,
+} from 'lib/model';
 import { usePrevious, useSingle } from 'lib/hooks';
 import { join } from 'lib/utils';
 
@@ -16,12 +23,14 @@ import styles from './edit-page.module.scss';
 import { useCalendar } from './context';
 
 export interface EditPageProps {
+  people: User[];
   meeting: Meeting;
   setLoading: Callback<boolean>;
   setChecked: Callback<boolean>;
 }
 
 export default function EditPage({
+  people,
   meeting: initialData,
   setLoading,
   setChecked,
@@ -80,6 +89,27 @@ export default function EditPage({
     [setMeeting]
   );
 
+  const subjectOptions = useMemo(() => {
+    const subjects = new Set<string>();
+    people.forEach((p) => {
+      if (p.roles.includes('tutor'))
+        p.tutoring.subjects.forEach((s) => subjects.add(s));
+      if (p.roles.includes('mentor'))
+        p.mentoring.subjects.forEach((s) => subjects.add(s));
+    });
+    return [...subjects];
+  }, [people]);
+
+  // TODO: Add support to the `TimeSelect` and the `/api/users/availability` API
+  // to query for the merged availability of multiple users (e.g. when all the
+  // people in a match are available v.s. just one person).
+  const timePersonId = useMemo(() => {
+    const idx = people.findIndex(
+      (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
+    );
+    return idx < 0 ? people[0].id || '' : people[idx].id;
+  }, [people]);
+
   return (
     <form className={styles.form} onSubmit={onSubmit}>
       <div className={styles.inputs}>
@@ -90,6 +120,7 @@ export default function EditPage({
           onChange={onSubjectsChange}
           value={meeting.match.subjects}
           className={styles.field}
+          options={subjectOptions}
           renderToPortal
           outlined
         />
@@ -99,6 +130,7 @@ export default function EditPage({
           onChange={onTimeChange}
           value={meeting.time}
           className={styles.field}
+          uid={timePersonId}
           renderToPortal
           outlined
         />

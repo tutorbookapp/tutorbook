@@ -4,11 +4,12 @@ import cn from 'classnames';
 import mergeRefs from 'react-merge-refs';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
+import useSWR from 'swr';
 
 import DialogContent from 'components/dialog';
 import { NavContext } from 'components/dialog/context';
 
-import { Callback, Meeting, Position } from 'lib/model';
+import { Callback, Meeting, Position, User, UserJSON } from 'lib/model';
 import { useClickContext } from 'lib/hooks/click-outside';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from './config';
@@ -110,6 +111,14 @@ export default function MeetingPreview({
     [updateEl, removeEl, meeting.id]
   );
 
+  const { data } = useSWR<UserJSON[]>(
+    `/api/matches/${meeting.match.id}/people`
+  );
+  const people = useMemo(() => {
+    if (data) return data.map((u) => User.fromJSON(u));
+    return meeting.match.people.map((p) => new User(p));
+  }, [data, meeting.match.people]);
+
   return (
     <div className={styles.scrimOuter}>
       <div className={styles.scrimInner}>
@@ -126,12 +135,14 @@ export default function MeetingPreview({
               checked={checked}
             >
               <DisplayPage
+                people={people}
                 meeting={meeting}
                 openEdit={openEdit}
                 setLoading={setLoading}
                 setChecked={setChecked}
               />
               <EditPage
+                people={people}
                 meeting={meeting}
                 setLoading={setLoading}
                 setChecked={setChecked}
