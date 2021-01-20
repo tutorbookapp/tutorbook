@@ -30,8 +30,10 @@ export default async function updateUser(
     // TODO: If the user's name or photo has changed, update it across all
     // meetings and matches the user is a `Person` on.
 
-    await updateUserDoc(withAuthUpdate);
-    await updateUserSearchObj(withAuthUpdate);
+    await Promise.all([
+      updateUserDoc(withAuthUpdate),
+      updateUserSearchObj(withAuthUpdate),
+    ]);
 
     res.status(200).json(withAuthUpdate.toJSON());
   } catch (e) {

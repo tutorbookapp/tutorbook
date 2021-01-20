@@ -28,8 +28,7 @@ export default async function updateMatch(
       orgIds: [body.org],
     });
 
-    await updateMatchDoc(body);
-    await updateMatchSearchObj(body);
+    await Promise.all([updateMatchDoc(body), updateMatchSearchObj(body)]);
 
     res.status(200).json(body.toJSON());
   } catch (e) {

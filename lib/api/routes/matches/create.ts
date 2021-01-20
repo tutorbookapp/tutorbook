@@ -37,7 +37,7 @@ export default async function createMatch(
     await verifyAuth(req.headers, { userId: creator.id });
 
     // Verify the creator is:
-    // a) The student him/herself OR;
+    // a) The student him/herself, OR;
     // b) Admin of the match's org (e.g. Gunn High School).
     const students = getStudents(people);
     const org = await getOrg(body.org);
