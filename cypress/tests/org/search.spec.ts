@@ -151,7 +151,7 @@ describe('Search page', () => {
       )
       .and('have.attr', 'target', '_blank');
     cy.percySnapshot('Search Page with Search Populated');
-    cy.get('@search-input').type('{selectall}{del}').should('have.value', '');
+    cy.get('@search-input').clear().should('have.value', '');
 
     // TODO: Perhaps create some `Select` component tests to test the different
     // error and content states (e.g. multiple lines of selected chips).
@@ -201,7 +201,7 @@ describe('Search page', () => {
     cy.contains('.mdc-menu-surface', 'No subjects').should('be.visible');
     cy.percySnapshot('Search Page with Subject Select Focused');
 
-    cy.focused().type('{selectall}{del}Math').should('have.value', 'Math');
+    cy.focused().clear().type('Math').should('have.value', 'Math');
     cy.contains('li:visible', 'Geometry')
       .trigger('click')
       .find('input[type="checkbox"]')

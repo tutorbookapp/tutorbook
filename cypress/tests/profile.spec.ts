@@ -31,7 +31,7 @@ describe('Profile page', () => {
     cy.percySnapshot('Profile Page');
 
     cy.clock();
-    cy.contains('Your name').type('{selectall}{del}John');
+    cy.contains('Your name').clear().type('John');
     cy.percySnapshot('Profile Page with Updated Name');
 
     cy.tick(5000);
@@ -83,7 +83,8 @@ describe('Profile page', () => {
     // guessing that the window was refocused so it tries to revalidate.
     cy.contains('Your name')
       .find('input')
-      .type('{selectall}{del}John')
+      .clear()
+      .type('John')
       .should('have.value', 'John')
       .and('have.attr', 'required');
 

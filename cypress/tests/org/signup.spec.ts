@@ -21,11 +21,11 @@ describe('Signup page', () => {
     // that feature hasn't been released (built into Cypress) yet.
     // @see {@link https://stackoverflow.com/a/55009333}
     // @see {@link https://github.com/cypress-io/cypress/issues/311}
-    cy.get('@input').type('{selectall}{del}email@example.com');
+    cy.get('@input').clear().type('email@example.com');
     cy.contains('Your phone number').find('input').focus();
     cy.get('@text-field').should('not.have.class', 'mdc-text-field--invalid');
 
-    cy.get('@input').type('{selectall}{del}email');
+    cy.get('@input').clear().type('email');
     cy.contains('Your phone number').find('input').focus();
     cy.get('@text-field').should('have.class', 'mdc-text-field--invalid');
   });

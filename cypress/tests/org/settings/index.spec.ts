@@ -53,7 +53,8 @@ describe('Org settings page', () => {
     cy.contains('Organization name')
       .find('input')
       .should('have.value', 'Tutorbook')
-      .type('{selectall}{del}TB');
+      .clear()
+      .type('TB');
     cy.get('@subtitle').should('have.text', `Configure TB's settings`);
     cy.getBySel('switcher-btn').should('have.text', 'TB');
 
@@ -61,7 +62,8 @@ describe('Org settings page', () => {
       .as('email-input')
       .find('input')
       .should('have.value', 'team@tutorbook.org')
-      .type('{selectall}{del}team');
+      .clear()
+      .type('team');
     cy.contains('Organization phone number').find('input').focus();
     cy.get('@email-input').should('have.class', 'mdc-text-field--invalid');
   });
