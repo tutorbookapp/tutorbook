@@ -82,7 +82,7 @@ describe('Login page', () => {
     cy.wait('@get-location').loading(false);
     cy.getBySel('error')
       .should('be.visible')
-      .and('have.text', 'An error occurred while logging in. Network Error.');
+      .and('contain', 'Request failed with status code 500.');
     cy.percySnapshot('Login Page with Location Error');
   });
 

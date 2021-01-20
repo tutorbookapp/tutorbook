@@ -11,7 +11,7 @@ describe('Calendar page', () => {
     cy.loading(false).percySnapshot('Login Page');
   });
 
-  it.only('creates, edits, and cancels meetings', () => {
+  it('creates, edits, and cancels meetings', () => {
     cy.setup();
     cy.login(volunteer.id);
     cy.visit('/calendar');
