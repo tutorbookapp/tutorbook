@@ -69,6 +69,7 @@ const search = algoliasearch(algoliaId, algoliaKey);
 const partition = process.env.NODE_ENV || 'test';
 const usersIdx = search.initIndex(`${partition}-users`);
 const matchesIdx = search.initIndex(`${partition}-matches`);
+const meetingsIdx = search.initIndex(`${partition}-meetings`);
 
 export interface Overrides {
   match?: Partial<MatchJSON> | null;
@@ -114,6 +115,7 @@ export default function plugins(
       await Promise.all([
         usersIdx.clearObjects(),
         matchesIdx.clearObjects(),
+        meetingsIdx.clearObjects(),
         axios.delete(clearFirestoreEndpoint),
       ]);
       return null;

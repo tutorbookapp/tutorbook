@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 import { getDaysInMonth, getDateWithDay } from 'lib/utils/time';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
@@ -118,11 +120,14 @@ function selectTime(): void {
       })
     );
 
+  // TODO: Create a meeting and assert that it's time isn't included in the
+  // times available here (e.g. a meeting from 9-9:30am removes those options).
   getTimeOptions().forEach((time: string, idx: number) => {
     cy.getBySel('time-button').eq(idx).should('have.text', time);
   });
   cy.percySnapshot('User Display Page with Date Selected');
 
+  const selectedEnd = new Date(selected.valueOf() + 30 * 60 * 1000);
   cy.getBySel('time-button').first().trigger('click');
   cy.get('@time-input')
     .should('not.be.focused')
@@ -134,7 +139,11 @@ function selectTime(): void {
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-      })} - 9:30 AM`
+      })} - ${selectedEnd.toLocaleString('en', {
+        hour: 'numeric',
+        minute: 'numeric',
+        timeZoneName: 'short',
+      })}`
     );
   cy.percySnapshot('User Display Page with Time Selected');
 }
@@ -145,7 +154,7 @@ describe('User display page', () => {
   it('shows not found error for missing users', () => {
     cy.setup(null);
     cy.logout();
-    cy.visit(`/${org.id}/users/does-not-exist`, { failOnStatusCode: false });
+    cy.visit(`/${org.id}/users/${nanoid()}`, { failOnStatusCode: false });
 
     cy.loading().percySnapshot('User Display Page in Loading State');
     cy.loading(false, { timeout: 60000 });
@@ -209,7 +218,7 @@ describe('User display page', () => {
     cy.contains('No subjects').should('be.visible');
     cy.percySnapshot('User Display Page with No Subjects');
 
-    cy.get('@subject-input').type('{selectall}{del}Computer');
+    cy.get('@subject-input').find('textarea').clear().type('Computer');
     cy.contains('li', 'Computer Science')
       .trigger('click')
       .find('input[type="checkbox"]')
@@ -233,7 +242,7 @@ describe('User display page', () => {
 
     // TODO: Make assertions about the content within our Firestore database
     // simulator and SendGrid API to ensure that it matches what we submitted.
-    cy.wait('@create-match');
+    cy.wait('@create-meeting');
 
     cy.getBySel('loader')
       .find('svg')

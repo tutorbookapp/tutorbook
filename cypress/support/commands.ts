@@ -77,6 +77,10 @@ function setup(overrides?: Overrides | null): void {
   cy.route('GET', '/api/matches*').as('list-matches');
   cy.route('PUT', '/api/matches/*').as('update-match');
 
+  cy.route('POST', '/api/meetings').as('create-meeting');
+  cy.route('GET', '/api/meetings*').as('list-meetings');
+  cy.route('PUT', '/api/meetings/*').as('update-meeting');
+
   cy.route('POST', '/api/users').as('create-user');
   cy.route('GET', '/api/users*').as('list-users');
   cy.route('GET', '/api/users/*').as('get-user');
