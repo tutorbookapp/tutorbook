@@ -147,6 +147,13 @@ export default function UserEdit({
     },
     [setUser]
   );
+  const onReferenceChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const reference = evt.currentTarget.value;
+      setUser((prev) => new User({ ...prev, reference }));
+    },
+    [setUser]
+  );
 
   const action = useMemo(() => {
     return user.id.startsWith('temp') ? 'create' : 'update';
@@ -207,6 +214,21 @@ export default function UserEdit({
               onChange={onBackgroundChange}
               className={styles.field}
               outlined
+            />
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.inputs}>
+            <TextField
+              label={t('user:reference', { org: org?.name || 'Tutorbook' })}
+              placeholder={t('common:reference-placeholder', {
+                org: org?.name || 'Tutorbook',
+              })}
+              value={user.reference}
+              onChange={onReferenceChange}
+              className={styles.field}
+              outlined
+              rows={3}
+              textarea
             />
           </div>
           <div className={styles.divider} />

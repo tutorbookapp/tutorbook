@@ -10,7 +10,6 @@ import Button from 'components/button';
 import LangSelect from 'components/lang-select';
 import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
-import RefSelect from 'components/ref-select';
 import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
 
@@ -168,10 +167,11 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     },
     [track, setUser]
   );
-  const onRefsChange = useCallback(
-    (refs: string[]) => {
-      track('User Refs Updated', { refs }, 2500);
-      setUser((prev) => new User({ ...prev, refs }));
+  const onReferenceChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const reference = evt.currentTarget.value;
+      track('User Reference Updated', { reference }, 2500);
+      setUser((prev) => new User({ ...prev, reference }));
     },
     [track, setUser]
   );
@@ -253,14 +253,20 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             </div>
             <div className={styles.divider} />
             <div className={styles.inputs}>
-              <RefSelect
-                label={t('user3rd:refs', { org: org?.name || 'Tutorbook' })}
-                placeholder={t('common:refs-placeholder')}
-                value={user.refs}
-                onChange={onRefsChange}
+              <TextField
+                label={t('user3rd:reference', {
+                  org: org?.name || 'Tutorbook',
+                })}
+                placeholder={t('common:reference-placeholder', {
+                  org: org?.name || 'Tutorbook',
+                })}
+                value={user.reference}
+                onChange={onReferenceChange}
                 className={styles.field}
-                required={org ? org.profiles.includes('refs') : false}
+                required={org ? org.profiles.includes('reference') : true}
                 outlined
+                rows={3}
+                textarea
               />
             </div>
             <div className={styles.divider} />

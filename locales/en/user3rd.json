@@ -8,7 +8,7 @@
   "phone": "Your phone number",
   "photo": "Your profile photo",
   "background": "Your banner image",
-  "refs": "How did you hear about {{org}}?",
+  "reference": "How did you hear about {{org}}?",
   "langs": "What languages do you speak?",
   "availability": "What is your weekly availability?",
   "mentoring-subjects": "What are your fields of expertise?",
