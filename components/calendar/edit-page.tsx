@@ -106,7 +106,6 @@ export default function EditPage({
           outlined
           textarea
           rows={4}
-          required
           placeholder={t('meeting:notes-placeholder', {
             subject: join(meeting.match.subjects) || 'Computer Science',
           })}
