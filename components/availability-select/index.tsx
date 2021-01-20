@@ -12,14 +12,14 @@ import {
 } from 'react';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
-import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
+import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Availability, TCallback, Timeslot } from 'lib/model';
-import { getDateWithTime, getDateWithDay } from 'lib/utils/time';
+import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { useContinuous } from 'lib/hooks';
 
 import TimeslotRnd from './timeslot-rnd';

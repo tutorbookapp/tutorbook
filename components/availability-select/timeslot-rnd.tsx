@@ -97,7 +97,7 @@ export default function TimeslotRnd({
     <Rnd
       data-cy='timeslot-rnd'
       className={styles.timeslot}
-      pos={pos}
+      position={pos}
       minHeight={12 * 4}
       size={{ width: width - 10, height }}
       onResizeStop={onResizeStop}
