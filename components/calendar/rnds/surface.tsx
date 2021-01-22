@@ -32,7 +32,7 @@ export interface RndSurfaceProps {
   setMeeting: Callback<Meeting>;
   dragging: boolean;
   setDragging: Callback<boolean>;
-  onClick: (evt: ReactMouseEvent) => void;
+  onClick?: () => void;
 }
 
 export default function RndSurface({
@@ -43,7 +43,7 @@ export default function RndSurface({
   setMeeting,
   dragging,
   setDragging,
-  onClick,
+  onClick: clickHandler,
 }: RndSurfaceProps): JSX.Element {
   const { updateEl, removeEl } = useClickContext();
   const { lang: locale } = useTranslation();
@@ -70,20 +70,27 @@ export default function RndSurface({
   }, [meeting.time]);
 
   const update = useCallback(
-    (newHeight: number, newPosition: Position) => {
-      setMeeting(
-        getMeeting(newHeight, newPosition, meeting, width, startingDate)
-      );
+    (newHeight: number, newPos: Position) => {
+      setMeeting(getMeeting(newHeight, newPos, meeting, width, startingDate));
     },
     [startingDate, width, setMeeting, meeting]
   );
 
+  const onClick = useCallback(
+    (evt: ReactMouseEvent) => {
+      evt.stopPropagation();
+      if (clickHandler) clickHandler();
+    },
+    [clickHandler]
+  );
   const onResizeStop = useCallback(() => {
-    setDragging(false);
+    // Wait a tick so `dragging` remains `true` which prevents certain event
+    // listeners from triggering (e.g. the `onClick` listener in `Calendar`).
+    setTimeout(() => setDragging(false), 0);
     setOffset({ x: 0, y: 0 });
   }, [setDragging]);
   const onDragStop = useCallback(() => {
-    setDragging(false);
+    setTimeout(() => setDragging(false), 0);
   }, [setDragging]);
   const onResize = useCallback(
     (

@@ -28,7 +28,6 @@ export default function NewMeetingRnd({
       setMeeting={setViewing}
       dragging={dragging}
       setDragging={setDragging}
-      onClick={() => {}}
     />
   );
 }

@@ -1,4 +1,4 @@
-import { RefObject } from 'react';
+import { Ref, forwardRef } from 'react';
 import cn from 'classnames';
 import { nanoid } from 'nanoid';
 import useTranslation from 'next-translate/useTranslation';
@@ -14,35 +14,36 @@ const ROWS = Array(24).fill(null);
 
 export interface CellsProps {
   now: Date;
-  cellRef: RefObject<HTMLDivElement>;
 }
 
-export function Cells({ now, cellRef }: CellsProps): JSX.Element {
-  const { startingDate } = useCalendar();
+export const Cells = forwardRef<HTMLDivElement, CellsProps>(
+  ({ now }: CellsProps, ref: Ref<HTMLDivElement>): JSX.Element => {
+    const { startingDate } = useCalendar();
 
-  return (
-    <>
-      {COLS.map((_, day) => {
-        const date = getDateWithDay(day, startingDate);
-        const today =
-          now.getFullYear() === date.getFullYear() &&
-          now.getMonth() === date.getMonth() &&
-          now.getDate() === date.getDate();
-        const { y: top } = getPosition(now);
-        return (
-          <div key={nanoid()} className={styles.cell} ref={cellRef}>
-            {today && (
-              <div style={{ top }} className={styles.indicator}>
-                <div className={styles.dot} />
-                <div className={styles.line} />
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </>
-  );
-}
+    return (
+      <>
+        {COLS.map((_, day) => {
+          const date = getDateWithDay(day, startingDate);
+          const today =
+            now.getFullYear() === date.getFullYear() &&
+            now.getMonth() === date.getMonth() &&
+            now.getDate() === date.getDate();
+          const { y: top } = getPosition(now);
+          return (
+            <div key={nanoid()} className={styles.cell} ref={ref}>
+              {today && (
+                <div style={{ top }} className={styles.indicator}>
+                  <div className={styles.dot} />
+                  <div className={styles.line} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+);
 
 export function Headers(): JSX.Element {
   return (

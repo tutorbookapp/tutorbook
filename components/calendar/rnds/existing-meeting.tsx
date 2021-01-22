@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import axios from 'axios';
 
 import { Callback, Meeting, MeetingJSON } from 'lib/model';
@@ -43,6 +43,17 @@ export default function ExistingMeetingRnd({
     mutateMeeting
   );
 
+  const onClick = useCallback(() => {
+    if (!dragging) setViewing(meeting);
+  }, [dragging, setViewing, meeting]);
+
+  useEffect(() => {
+    // Ensure `viewing` is always in sync with `meeting` b/c `useContinuous`
+    // throttles local updates to 500ms (so the calendar page's global state
+    // waterfall is not always up-to-date).
+    if (viewing?.id === meeting.id) setViewing(meeting);
+  }, [viewing, setViewing, meeting]);
+
   return (
     <RndSurface
       now={now}
@@ -52,10 +63,7 @@ export default function ExistingMeetingRnd({
       setMeeting={setMeeting}
       dragging={dragging}
       setDragging={setDragging}
-      onClick={(evt: MouseEvent) => {
-        evt.stopPropagation();
-        setViewing(meeting);
-      }}
+      onClick={onClick}
     />
   );
 }

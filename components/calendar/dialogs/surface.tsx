@@ -19,9 +19,9 @@ export interface DialogSurfaceProps {
   width: number;
   offset: Position;
   viewing: Meeting;
-  setViewing: Callback<Meeting | undefined>;
   dialogOpen: boolean;
   setDialogOpen: Callback<boolean>;
+  onClosed: () => void;
   children: ReactNode;
 }
 
@@ -29,9 +29,9 @@ export default function DialogSurface({
   width: rndWidth,
   offset,
   viewing,
-  setViewing,
   dialogOpen,
   setDialogOpen,
+  onClosed,
   children,
 }: DialogSurfaceProps): JSX.Element {
   const measured = useRef<boolean>(false);
@@ -82,9 +82,7 @@ export default function DialogSurface({
 
   // TODO: Clicking on match after closing begins should reverse animation.
   const props = useSpring({
-    onRest(): void {
-      if (!dialogOpen && measured.current) setViewing(undefined);
-    },
+    onRest: () => (!dialogOpen && measured.current ? onClosed() : undefined),
     left: rndPosition.x < rndWidth * 3 ? onRight : onLeft,
     config: { tension: 250, velocity: 50 },
     immediate: !measured.current,

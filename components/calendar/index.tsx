@@ -44,7 +44,10 @@ export default function CalendarBody({
   const [viewing, setViewing] = useState<Meeting>();
 
   const { startingDate } = useCalendar();
-  const { updateEl, removeEl } = useClickOutside(() => setDialogOpen(false));
+  const { updateEl, removeEl } = useClickOutside(
+    () => setDialogOpen(false),
+    dialogOpen
+  );
 
   const headerRef = useRef<HTMLDivElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);
@@ -81,18 +84,6 @@ export default function CalendarBody({
     return () => window.clearInterval(intervalId);
   }, []);
 
-  // TODO: Temporarily hide dialog when dragging but re-open after drag is
-  // complete if it was open before drag started (i.e. if `viewing` existed).
-  useEffect(() => {
-    if (dragging) setDialogOpen(false);
-  }, [dragging]);
-
-  useEffect(() => {
-    console.log('Is dragging?', dragging);
-    console.log('Is open?', dialogOpen);
-    console.log('Viewing:', viewing?.toString());
-  }, [dragging, dialogOpen, viewing]);
-
   useEffect(() => {
     // Scroll to 8:30am by default (assumes 48px per hour).
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
@@ -102,12 +93,19 @@ export default function CalendarBody({
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const onClick = useCallback(
     (event: MouseEvent) => {
+      if (dragging) return;
       const position = { x: event.clientX - x, y: event.clientY - y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
       setViewing(getMeeting(48, position, meeting, width, startingDate));
     },
-    [startingDate, x, y, width]
+    [dragging, startingDate, x, y, width]
   );
+
+  // Don't unmount the dialog surface if the user is dragging (in that case, we
+  // only temporarily hide the dialog until the user is finished dragging).
+  const onClosed = useCallback(() => {
+    if (!dragging) setViewing(undefined);
+  }, [dragging]);
 
   // Sync the scroll position of the main cell grid and the static headers. This
   // was inspired by the way that Google Calendar's UI is currently setup.
@@ -131,9 +129,9 @@ export default function CalendarBody({
           width={width}
           offset={{ x, y }}
           viewing={viewing}
-          setViewing={setViewing}
-          dialogOpen={dialogOpen}
+          dialogOpen={dialogOpen && !dragging}
           setDialogOpen={setDialogOpen}
+          onClosed={onClosed}
         >
           {!viewing.id.startsWith('temp') && (
             <ExistingMeetingDialog meeting={viewing} />
@@ -205,7 +203,7 @@ export default function CalendarBody({
                       setDragging={setDragging}
                     />
                   )}
-                  <Cells now={now} cellRef={cellRef} />
+                  <Cells now={now} ref={cellRef} />
                 </div>
               </div>
             </div>

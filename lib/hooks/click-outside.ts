@@ -33,7 +33,7 @@ export function useClickContext(): ClickOutsideProps {
  */
 export default function useClickOutside(
   onClickOutside: () => void,
-  lockScroll = true
+  active: boolean
 ): ClickOutsideProps {
   const clickableEls = useRef<Record<string, HTMLElement>>({});
   const updateEl = useCallback((id: string, el: HTMLElement) => {
@@ -49,19 +49,18 @@ export default function useClickOutside(
   }, []);
 
   useEffect(() => {
-    const removeClickListener = () => {
-      // Note that click events aren't triggered when scrollers are interacted
-      // with. Thus, we use mouse down events instead.
-      document.body.removeEventListener('mousedown', outsideClickListener);
-      document.body.removeEventListener('touchstart', outsideClickListener);
-    };
+    if (!active) return;
     const outsideClickListener = ({ target }: MouseEvent | TouchEvent) => {
       if (!nodeInClickable(target as Node)) onClickOutside();
+    };
+    const removeClickListener = () => {
+      document.body.removeEventListener('mousedown', outsideClickListener);
+      document.body.removeEventListener('touchstart', outsideClickListener);
     };
     document.body.addEventListener('mousedown', outsideClickListener);
     document.body.addEventListener('touchstart', outsideClickListener);
     return removeClickListener;
-  }, [onClickOutside, nodeInClickable]);
+  }, [active, onClickOutside, nodeInClickable]);
 
   const wheelEvent = useMemo(() => {
     if (!canUseDOM) return 'mousewheel';
@@ -97,19 +96,19 @@ export default function useClickOutside(
   );
 
   useEffect(() => {
+    if (!active) return;
     const enableScroll = () => {
       window.removeEventListener('DOMMouseScroll', preventDefault, false);
       window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
       window.removeEventListener('touchmove', preventDefault, wheelOpt);
       window.removeEventListener('keydown', preventScrollKeys, false);
     };
-    if (!lockScroll) return enableScroll();
     window.addEventListener('DOMMouseScroll', preventDefault, false);
     window.addEventListener(wheelEvent, preventDefault, wheelOpt);
     window.addEventListener('touchmove', preventDefault, wheelOpt);
     window.addEventListener('keydown', preventScrollKeys, false);
     return enableScroll;
-  }, [lockScroll, preventDefault, preventScrollKeys, wheelOpt, wheelEvent]);
+  }, [active, preventDefault, preventScrollKeys, wheelOpt, wheelEvent]);
 
   return { updateEl, removeEl };
 }
