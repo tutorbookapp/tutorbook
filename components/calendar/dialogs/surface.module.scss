@@ -29,7 +29,7 @@
       pointer-events: auto;
       overflow: hidden;
 
-      &.open {
+      &.visible {
         opacity: 1;
       }
     }

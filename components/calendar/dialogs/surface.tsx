@@ -5,58 +5,61 @@ import mergeRefs from 'react-merge-refs';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 
+import { NavContext } from 'components/dialog/context';
+
 import { Callback, Meeting, Position } from 'lib/model';
 import { useClickContext } from 'lib/hooks/click-outside';
 
-import { PREVIEW_MARGIN, RND_MARGIN } from './config';
-import { getHeight, getPosition } from './utils';
-import styles from './dialog.module.scss';
+import { PREVIEW_MARGIN, RND_MARGIN } from '../config';
+import { getHeight, getPosition } from '../utils';
 
-export interface CalendarDialogProps {
-  meeting: Meeting;
-  offset: Position;
+import styles from './surface.module.scss';
+
+export interface DialogSurfaceProps {
   width: number;
-  onClosed: () => void;
-  setOpen: Callback<boolean>;
-  open: boolean;
+  offset: Position;
+  viewing: Meeting;
+  setViewing: Callback<Meeting | undefined>;
+  dialogOpen: boolean;
+  setDialogOpen: Callback<boolean>;
   children: ReactNode;
 }
 
-export default function CalendarDialog({
-  meeting,
-  offset,
+export default function DialogSurface({
   width: rndWidth,
-  onClosed,
-  setOpen,
-  open,
+  offset,
+  viewing,
+  setViewing,
+  dialogOpen,
+  setDialogOpen,
   children,
-}: CalendarDialogProps): JSX.Element {
+}: DialogSurfaceProps): JSX.Element {
   const measured = useRef<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
       measured.current = true;
-      setOpen(true);
+      setDialogOpen(true);
     }, 0);
-  }, [setOpen]);
+  }, [setDialogOpen]);
 
   const [measureRef, bounds] = useMeasure({ polyfill });
 
   const rndPosition = useMemo(() => {
-    return getPosition(meeting.time.from, rndWidth);
-  }, [meeting.time.from, rndWidth]);
+    return getPosition(viewing.time.from, rndWidth);
+  }, [viewing.time.from, rndWidth]);
   const rndHeight = useMemo(() => {
-    return getHeight(meeting.time);
-  }, [meeting.time]);
+    return getHeight(viewing.time);
+  }, [viewing.time]);
 
   const onLeft = useMemo(() => {
     const x = offset.x + rndPosition.x - bounds.width - PREVIEW_MARGIN;
-    return open ? x : x + 12;
-  }, [offset.x, open, rndPosition.x, bounds.width]);
+    return dialogOpen ? x : x + 12;
+  }, [offset.x, dialogOpen, rndPosition.x, bounds.width]);
   const onRight = useMemo(() => {
     const x = offset.x + rndPosition.x + rndWidth - RND_MARGIN + PREVIEW_MARGIN;
-    return open ? x : x - 12;
-  }, [offset.x, open, rndPosition.x, rndWidth]);
+    return dialogOpen ? x : x - 12;
+  }, [offset.x, dialogOpen, rndPosition.x, rndWidth]);
 
   const alignedTop = useMemo(() => {
     return offset.y + rndPosition.y;
@@ -77,9 +80,11 @@ export default function CalendarDialog({
     return alignedCenter;
   }, [alignedTop, alignedCenter, alignedBottom, bounds.height]);
 
+  // TODO: Clicking on match after closing begins should reverse animation.
   const props = useSpring({
-    // TODO: Clicking on match after closing begins should reverse animation.
-    onRest: () => (!open && measured.current ? onClosed() : undefined),
+    onRest(): void {
+      if (!dialogOpen && measured.current) setViewing(undefined);
+    },
     left: rndPosition.x < rndWidth * 3 ? onRight : onLeft,
     config: { tension: 250, velocity: 50 },
     immediate: !measured.current,
@@ -89,10 +94,10 @@ export default function CalendarDialog({
   const { updateEl, removeEl } = useClickContext();
   const clickRef = useCallback(
     (node: HTMLElement | null) => {
-      if (!node) return removeEl(`meeting-preview-${meeting.id}`);
-      return updateEl(`meeting-preview-${meeting.id}`, node);
+      if (!node) return removeEl(`dialog-${viewing.id}`);
+      return updateEl(`dialog-${viewing.id}`, node);
     },
-    [updateEl, removeEl, meeting.id]
+    [updateEl, removeEl, viewing.id]
   );
 
   return (
@@ -101,9 +106,11 @@ export default function CalendarDialog({
         <animated.div
           style={props}
           ref={mergeRefs([measureRef, clickRef])}
-          className={cn(styles.wrapper, { [styles.open]: open })}
+          className={cn(styles.wrapper, { [styles.visible]: dialogOpen })}
         >
-          {children}
+          <NavContext.Provider value={() => setDialogOpen(false)}>
+            {children}
+          </NavContext.Provider>
         </animated.div>
       </div>
     </div>

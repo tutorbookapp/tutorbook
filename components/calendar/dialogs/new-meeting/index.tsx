@@ -2,16 +2,15 @@ import Placeholder from 'components/placeholder';
 
 import { Meeting } from 'lib/model';
 
-import styles from './create-dialog.module.scss';
+import styles from './new-meeting.module.scss';
 
-export interface CreateDialogProps {
+export interface NewMeetingDialogProps {
   meeting: Meeting;
-  closePreview: () => void;
 }
 
-export default function CreateDialog({
+export default function NewMeetingDialog({
   meeting,
-}: CreateDialogProps): JSX.Element {
+}: NewMeetingDialogProps): JSX.Element {
   return (
     <div className={styles.wrapper}>
       <Placeholder>CREATE MEETING</Placeholder>

@@ -19,8 +19,9 @@ import {
 import { usePrevious, useSingle } from 'lib/hooks';
 import { join } from 'lib/utils';
 
+import { useCalendar } from '../../context';
+
 import styles from './edit-page.module.scss';
-import { useCalendar } from './context';
 
 export interface EditPageProps {
   people: User[];

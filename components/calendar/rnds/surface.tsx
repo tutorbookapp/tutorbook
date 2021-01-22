@@ -4,64 +4,55 @@ import {
   MouseEvent as ReactMouseEvent,
   TouchEvent as ReactTouchEvent,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { ResizeDirection } from 're-resizable';
-import axios from 'axios';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import { Callback, Meeting, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 import { useClickContext } from 'lib/hooks/click-outside';
-import { useContinuous } from 'lib/hooks';
 
-import { getHeight, getMeeting, getPosition } from './utils';
-import { RND_MARGIN } from './config';
-import styles from './rnd.module.scss';
-import { useCalendar } from './context';
+import { getHeight, getMeeting, getPosition } from '../utils';
+import { RND_MARGIN } from '../config';
+import { useCalendar } from '../context';
+
+import styles from './surface.module.scss';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
-export interface MeetingRndProps {
+export interface RndSurfaceProps {
   now: Date;
   width: number;
+  elevated: boolean;
   meeting: Meeting;
-  preview: Meeting | undefined;
-  setPreview: Callback<Meeting | undefined>;
-  closePreview: () => void;
+  setMeeting: Callback<Meeting>;
+  dragging: boolean;
+  setDragging: Callback<boolean>;
+  onClick: (evt: ReactMouseEvent) => void;
 }
 
-export default function MeetingRnd({
+export default function RndSurface({
   now,
   width,
-  meeting: initialData,
-  preview,
-  setPreview,
-  closePreview,
-}: MeetingRndProps): JSX.Element {
-  const updateRemote = useCallback(async (updated: Meeting) => {
-    const url = `/api/meetings/${updated.id}`;
-    const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
-    return Meeting.fromJSON(data);
-  }, []);
-
-  const { lang: locale } = useTranslation();
-  const { startingDate, mutateMeeting } = useCalendar();
-  const { data: meeting, setData: setMeeting } = useContinuous(
-    initialData,
-    updateRemote,
-    mutateMeeting
-  );
-
+  elevated,
+  meeting,
+  setMeeting,
+  dragging,
+  setDragging,
+  onClick,
+}: RndSurfaceProps): JSX.Element {
   const { updateEl, removeEl } = useClickContext();
+  const { lang: locale } = useTranslation();
+  const { startingDate } = useCalendar();
+
   const rndRef = useCallback(
     (node: HTMLElement | null) => {
-      if (!node) return removeEl(`meeting-rnd-${meeting.id}`);
-      return updateEl(`meeting-rnd-${meeting.id}`, node);
+      if (!node) return removeEl(`rnd-${meeting.id}`);
+      return updateEl(`rnd-${meeting.id}`, node);
     },
     [updateEl, removeEl, meeting.id]
   );
@@ -87,25 +78,13 @@ export default function MeetingRnd({
     [startingDate, width, setMeeting, meeting]
   );
 
-  const [dragging, setDragging] = useState<boolean>(false);
-  useEffect(() => {
-    if (dragging) closePreview();
-  }, [dragging, closePreview]);
-
-  const onClick = useCallback(
-    (evt: ReactMouseEvent) => {
-      evt.stopPropagation();
-      if (!dragging) setPreview(meeting);
-    },
-    [setPreview, dragging, meeting]
-  );
   const onResizeStop = useCallback(() => {
-    setTimeout(() => setDragging(false), 0);
+    setDragging(false);
     setOffset({ x: 0, y: 0 });
-  }, []);
+  }, [setDragging]);
   const onDragStop = useCallback(() => {
-    setTimeout(() => setDragging(false), 0);
-  }, []);
+    setDragging(false);
+  }, [setDragging]);
   const onResize = useCallback(
     (
       e: MouseEvent | TouchEvent,
@@ -127,7 +106,7 @@ export default function MeetingRnd({
         y: dir === 'top' ? delta.height : prev.y,
       }));
     },
-    [update, position, offset]
+    [setDragging, update, position, offset]
   );
   const onDrag = useCallback(
     (
@@ -141,7 +120,7 @@ export default function MeetingRnd({
       setDragging(true);
       update(height, { x: data.x, y: data.y });
     },
-    [update, height]
+    [setDragging, update, height]
   );
 
   const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
@@ -164,7 +143,7 @@ export default function MeetingRnd({
       data-cy='meeting-rnd'
       style={{ cursor: dragging ? 'move' : 'pointer' }}
       className={cn(styles.meeting, {
-        [styles.elevated]: dragging || preview?.id === meeting.id,
+        [styles.elevated]: elevated,
         [styles.past]: meeting.time.to.valueOf() <= now.valueOf(),
       })}
       position={position}

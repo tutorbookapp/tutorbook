@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import useSWR from 'swr';
 
 import DialogContent from 'components/dialog';
-import { NavContext } from 'components/dialog/context';
 
 import { Meeting, User, UserJSON } from 'lib/model';
 
@@ -14,15 +13,13 @@ export enum Page {
   Edit,
 }
 
-export interface MeetingPreviewProps {
+export interface ExistingMeetingDialogProps {
   meeting: Meeting;
-  closePreview: () => void;
 }
 
-export default function MeetingPreview({
+export default function ExistingMeetingDialog({
   meeting,
-  closePreview,
-}: MeetingPreviewProps): JSX.Element {
+}: ExistingMeetingDialogProps): JSX.Element {
   const [active, setActive] = useState<number>(Page.Display);
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -38,27 +35,25 @@ export default function MeetingPreview({
   }, [data, meeting.match.people]);
 
   return (
-    <NavContext.Provider value={closePreview}>
-      <DialogContent
-        active={active}
-        setActive={setActive}
-        loading={loading}
-        checked={checked}
-      >
-        <DisplayPage
-          people={people}
-          meeting={meeting}
-          openEdit={openEdit}
-          setLoading={setLoading}
-          setChecked={setChecked}
-        />
-        <EditPage
-          people={people}
-          meeting={meeting}
-          setLoading={setLoading}
-          setChecked={setChecked}
-        />
-      </DialogContent>
-    </NavContext.Provider>
+    <DialogContent
+      active={active}
+      setActive={setActive}
+      loading={loading}
+      checked={checked}
+    >
+      <DisplayPage
+        people={people}
+        meeting={meeting}
+        openEdit={openEdit}
+        setLoading={setLoading}
+        setChecked={setChecked}
+      />
+      <EditPage
+        people={people}
+        meeting={meeting}
+        setLoading={setLoading}
+        setChecked={setChecked}
+      />
+    </DialogContent>
   );
 }

@@ -12,8 +12,9 @@ import { APIErrorJSON } from 'lib/api/error';
 import { join } from 'lib/utils';
 import snackbar from 'lib/snackbar';
 
+import { useCalendar } from '../../context';
+
 import styles from './display-page.module.scss';
-import { useCalendar } from './context';
 
 export interface DisplayPageProps {
   people: User[];
