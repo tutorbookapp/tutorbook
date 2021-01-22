@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import axios from 'axios';
 
-import { Callback, Meeting, MeetingJSON } from 'lib/model';
+import { Meeting, MeetingJSON, TCallback } from 'lib/model';
 import { useContinuous } from 'lib/hooks';
 
 import { useCalendar } from '../context';
@@ -12,9 +12,9 @@ export interface ExistingMeetingRndProps {
   now: Date;
   width: number;
   viewing: Meeting | undefined;
-  setViewing: Callback<Meeting | undefined>;
+  setViewing: TCallback<Meeting | undefined>;
   dragging: boolean;
-  setDragging: Callback<boolean>;
+  setDragging: TCallback<boolean>;
   meeting: Meeting;
 }
 

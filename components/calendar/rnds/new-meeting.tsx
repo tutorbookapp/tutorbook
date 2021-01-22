@@ -1,4 +1,4 @@
-import { Callback, Meeting } from 'lib/model';
+import { Meeting, TCallback } from 'lib/model';
 
 import RndSurface from './surface';
 
@@ -6,9 +6,9 @@ export interface NewMeetingRndProps {
   now: Date;
   width: number;
   viewing: Meeting;
-  setViewing: Callback<Meeting>;
+  setViewing: TCallback<Meeting>;
   dragging: boolean;
-  setDragging: Callback<boolean>;
+  setDragging: TCallback<boolean>;
 }
 
 export default function NewMeetingRnd({

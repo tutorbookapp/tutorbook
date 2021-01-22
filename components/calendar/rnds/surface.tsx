@@ -12,7 +12,7 @@ import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, Meeting, Timeslot } from 'lib/model';
+import { Meeting, TCallback, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 import { useClickContext } from 'lib/hooks/click-outside';
 
@@ -29,9 +29,9 @@ export interface RndSurfaceProps {
   width: number;
   elevated: boolean;
   meeting: Meeting;
-  setMeeting: Callback<Meeting>;
+  setMeeting: TCallback<Meeting>;
   dragging: boolean;
-  setDragging: Callback<boolean>;
+  setDragging: TCallback<boolean>;
   onClick?: () => void;
 }
 
