@@ -9,6 +9,7 @@ import {
 } from 'react';
 import cn from 'classnames';
 import { dequal } from 'dequal/lite';
+import mergeRefs from 'react-merge-refs';
 import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
@@ -23,6 +24,7 @@ import { useClickOutside } from 'lib/hooks';
 
 import { getMeeting, getPosition } from './utils';
 import CalendarDialog from './dialog';
+import CreateDialog from './create-dialog';
 import MeetingPreview from './preview';
 import MeetingRnd from './rnd';
 import styles from './calendar.module.scss';
@@ -45,7 +47,7 @@ export default function CalendarBody({
   const rowsRef = useRef<HTMLDivElement>(null);
   const ticking = useRef<boolean>(false);
 
-  const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
+  const [cellsMeasureRef, { x, y }] = useMeasure({ polyfill, scroll: true });
   const [cellRef, { width }] = useMeasure({ polyfill });
 
   const [now, setNow] = useState<Date>(new Date());
@@ -83,8 +85,7 @@ export default function CalendarBody({
     (event: MouseEvent) => {
       const position = { x: event.clientX - x, y: event.clientY - y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
-      const created = getMeeting(48, position, meeting, width, startingDate);
-      console.log('Clicked:', created.toJSON());
+      setPreview(getMeeting(48, position, meeting, width, startingDate));
     },
     [startingDate, x, y, width]
   );
@@ -181,6 +182,14 @@ export default function CalendarBody({
     [now, cellRef, startingDate]
   );
 
+  const cellsClickRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return removeEl('calendar-cells');
+      return updateEl('calendar-cells', node);
+    },
+    [updateEl, removeEl]
+  );
+
   return (
     <ClickContext.Provider value={{ updateEl, removeEl }}>
       {preview && (
@@ -192,7 +201,12 @@ export default function CalendarBody({
           setOpen={setOpen}
           open={open}
         >
-          <MeetingPreview meeting={preview} closePreview={closePreview} />
+          {!preview.id.startsWith('temp') && (
+            <MeetingPreview meeting={preview} closePreview={closePreview} />
+          )}
+          {preview.id.startsWith('temp') && (
+            <CreateDialog meeting={preview} closePreview={closePreview} />
+          )}
         </CalendarDialog>
       )}
       <div className={styles.calendar}>
@@ -221,7 +235,11 @@ export default function CalendarBody({
               <div className={styles.rows}>
                 <div className={styles.lines}>{lineCells}</div>
                 <div className={styles.space} />
-                <div className={styles.cells} onClick={onClick} ref={cellsRef}>
+                <div
+                  className={styles.cells}
+                  onClick={onClick}
+                  ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
+                >
                   {!searching &&
                     meetings.map((meeting: Meeting) => (
                       <MeetingRnd
@@ -234,6 +252,16 @@ export default function CalendarBody({
                         closePreview={closePreview}
                       />
                     ))}
+                  {preview?.id.startsWith('temp') && (
+                    <MeetingRnd
+                      now={now}
+                      width={width}
+                      meeting={preview}
+                      preview={preview}
+                      setPreview={setPreview}
+                      closePreview={closePreview}
+                    />
+                  )}
                   {dayCells}
                 </div>
               </div>
