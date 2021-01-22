@@ -22,6 +22,7 @@ import { Meeting } from 'lib/model';
 import { useClickOutside } from 'lib/hooks';
 
 import { getMeeting, getPosition } from './utils';
+import CalendarDialog from './dialog';
 import MeetingPreview from './preview';
 import MeetingRnd from './rnd';
 import styles from './calendar.module.scss';
@@ -183,14 +184,16 @@ export default function CalendarBody({
   return (
     <ClickContext.Provider value={{ updateEl, removeEl }}>
       {preview && (
-        <MeetingPreview
+        <CalendarDialog
           meeting={preview}
           offset={{ x, y }}
           width={width}
           onClosed={() => setPreview(undefined)}
           setOpen={setOpen}
           open={open}
-        />
+        >
+          <MeetingPreview meeting={preview} closePreview={closePreview} />
+        </CalendarDialog>
       )}
       <div className={styles.calendar}>
         <div className={styles.headerWrapper}>
