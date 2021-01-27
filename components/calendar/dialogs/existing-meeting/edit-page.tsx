@@ -51,7 +51,7 @@ export default function EditPage({
     loading,
     checked,
     error,
-  } = useSingle(initialData, updateRemote, mutateMeeting);
+  } = useSingle(initialData, updateRemote, mutateMeeting, { sync: true });
 
   const nav = useNav();
   const prevLoading = usePrevious(loading);
@@ -66,13 +66,10 @@ export default function EditPage({
   // ignores any changes to the match data (when PUT /api/meetings/[id]).
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setMeeting(
-        (prev) =>
-          new Meeting({
-            ...prev,
-            match: new Match({ ...prev.match, subjects }),
-          })
-      );
+      setMeeting((prev) => {
+        const match = new Match({ ...prev.match, subjects });
+        return new Meeting({ ...prev, match });
+      });
     },
     [setMeeting]
   );

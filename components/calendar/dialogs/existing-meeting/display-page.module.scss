@@ -1,7 +1,5 @@
 @use 'styles/typography';
 
-$image-size: 160px;
-
 .actions {
   border-top: 1px solid var(--accents-2);
   overflow: auto;
@@ -40,6 +38,8 @@ $image-size: 160px;
     margin: 0 8px;
     outline: none;
     border: none;
+
+    $image-size: 160px;
 
     &:first-child {
       margin-left: 0;

@@ -50,7 +50,8 @@ export default function ExistingMeetingRnd({
   useEffect(() => {
     // Ensure `viewing` is always in sync with `meeting` b/c `useContinuous`
     // throttles local updates to 500ms (so the calendar page's global state
-    // waterfall is not always up-to-date).
+    // waterfall is not always up-to-date). This is necessary to position the
+    // `DialogSurface` when dragging (for it's re-opening animation).
     if (viewing?.id === meeting.id) setViewing(meeting);
   }, [viewing, setViewing, meeting]);
 

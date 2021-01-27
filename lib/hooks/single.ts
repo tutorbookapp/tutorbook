@@ -19,6 +19,19 @@ interface SingleProps<T> {
 }
 
 /**
+ * @typedef {Object} SingleOptions
+ * @description Options for the `useSingle` hook (passed as last argument).
+ * @property [sync] - When true, the local data is kept in sync (using
+ * `updateLocal`) with the current state. Defaults to false.
+ * @property [throttle] - The timeout between `updateLocal` calls. Defaults to
+ * 500ms (i.e. wait for 500ms of no-change before calling `updateLocal`).
+ */
+export interface SingleOptions {
+  sync?: boolean;
+  throttle?: number;
+}
+
+/**
  * React hook that implements the single update form data flow. Upon explicit
  * user submission:
  * 1. Show a loading state.
@@ -36,7 +49,8 @@ interface SingleProps<T> {
 export default function useSingle<T extends { id: string }>(
   initialData: T,
   updateRemote: (data: T) => Promise<T | void>,
-  updateLocal?: (data: T, hasBeenUpdated?: boolean) => Promise<void> | void
+  updateLocal?: (data: T, hasBeenUpdated?: boolean) => Promise<void> | void,
+  options?: SingleOptions
 ): SingleProps<T> {
   const [data, setData] = useState<T>(initialData);
   const [error, setError] = useState<string>('');
@@ -85,6 +99,13 @@ export default function useSingle<T extends { id: string }>(
     // editing a profile that can be updated from multiple locations).
     setData((prev: T) => (dequal(prev, initialData) ? prev : initialData));
   }, [initialData]);
+
+  useEffect(() => {
+    if (!options?.sync || !updateLocal) return;
+    const throttle = options.throttle || 500;
+    const timeoutId = setTimeout(() => updateLocal(data, false), throttle);
+    return () => clearTimeout(timeoutId);
+  }, [data, updateLocal, options]);
 
   return {
     data,
