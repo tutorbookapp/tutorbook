@@ -4,6 +4,7 @@ import {
   SyntheticEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -142,7 +143,7 @@ export default function Select<T, O extends Option<T>>({
    * (the `TextField`) changes shape.
    * @see {@link https://github.com/jamesmfriedman/rmwc/issues/611}
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     (foundationRef.current as any)?.autoPosition_();
   });
 

@@ -26,13 +26,6 @@ import TimeslotRnd from './timeslot-rnd';
 import { getTimeslot } from './utils';
 import styles from './availability-select.module.scss';
 
-type OverridenProps =
-  | 'textarea'
-  | 'readOnly'
-  | 'onFocus'
-  | 'onBlur'
-  | 'inputRef'
-  | 'className';
 interface Props {
   value: Availability;
   onChange: TCallback<Availability>;
@@ -43,11 +36,17 @@ interface Props {
   className?: string;
 }
 
-export type AvailabilitySelectProps = Omit<
-  TextFieldHTMLProps,
-  keyof Props | OverridenProps
-> &
-  Omit<TextFieldProps, keyof Props | OverridenProps> &
+type Overrides =
+  | keyof Props
+  | 'textarea'
+  | 'readOnly'
+  | 'onFocus'
+  | 'onBlur'
+  | 'inputRef'
+  | 'className';
+
+export type AvailabilitySelectProps = Omit<TextFieldHTMLProps, Overrides> &
+  Omit<TextFieldProps, Overrides> &
   Props;
 
 /**

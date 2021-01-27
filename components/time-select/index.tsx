@@ -18,13 +18,6 @@ import { useClickContext } from 'lib/hooks/click-outside';
 import SelectSurface from './select-surface';
 import styles from './time-select.module.scss';
 
-type OverridenProps =
-  | 'textarea'
-  | 'readOnly'
-  | 'onFocus'
-  | 'onBlur'
-  | 'inputRef'
-  | 'className';
 interface Props {
   uid?: string;
   value?: Timeslot;
@@ -36,11 +29,17 @@ interface Props {
   className?: string;
 }
 
-export type TimeSelectProps = Omit<
-  TextFieldHTMLProps,
-  keyof Props | OverridenProps
-> &
-  Omit<TextFieldProps, keyof Props | OverridenProps> &
+type Overrides =
+  | keyof Props
+  | 'textarea'
+  | 'readOnly'
+  | 'onFocus'
+  | 'onBlur'
+  | 'inputRef'
+  | 'className';
+
+export type TimeSelectProps = Omit<TextFieldHTMLProps, Overrides> &
+  Omit<TextFieldProps, Overrides> &
   Props;
 
 export default memo(
@@ -62,7 +61,7 @@ export default memo(
 
     // We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
     // before toggling which ensures the user hasn't re-opened the menu.
-    // @see {@link https:bit.ly/2x9eM27}
+    // @see {@link https://bit.ly/2x9eM27}
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const timeoutId = useRef<ReturnType<typeof setTimeout>>();
 

@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use 'styles/typography';
-@use '@material/chips/_index.scss' as chips;
+@use '@material/chips';
 
 .errMenu {
   max-width: 300px;
