@@ -1,13 +1,6 @@
-@use 'sass:map';
 @use 'styles/typography';
-@use '@material/snackbar/_index.scss' as snackbar;
-@use '@material/textfield/_index.scss' as textfield;
 
 $filters-height: 56px;
-
-.dialog :global(.mdc-button__label) {
-  font-weight: 600;
-}
 
 .filters {
   height: $filters-height;
@@ -17,29 +10,6 @@ $filters-height: 56px;
   border-bottom: none;
   display: flex;
   justify-content: space-between;
-
-  .left {
-    display: flex;
-    align-items: center;
-
-    .filtersButton {
-      margin-left: 12px;
-    }
-
-    .filterChips {
-      flex-wrap: nowrap;
-      overflow: auto;
-
-      .invalid {
-        background-color: var(--error);
-        color: var(--on-error);
-
-        svg path {
-          stroke: var(--on-error);
-        }
-      }
-    }
-  }
 
   .right {
     display: flex;
@@ -61,10 +31,6 @@ $filters-height: 56px;
       input {
         @include typography.typography('body2');
       }
-    }
-
-    .menuButton {
-      margin-right: 12px;
     }
   }
 }
@@ -160,11 +126,9 @@ $filters-height: 56px;
 }
 
 .wrapper {
-  list-style: none;
   padding: 0 24px;
   max-width: var(--page-width-with-margin);
   margin: 48px auto;
-  box-sizing: border-box;
 }
 
 .empty {
@@ -172,8 +136,4 @@ $filters-height: 56px;
   padding: 24px;
   border: 1px solid var(--on-background-2);
   border-bottom: none;
-}
-
-.snackbar {
-  @include snackbar.viewport-margin(24px);
 }
