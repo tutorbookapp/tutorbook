@@ -7,6 +7,7 @@ import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
+import verifyDocExists from 'lib/api/verify/doc-exists';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 
 export type UpdateMatchRes = MatchJSON;
@@ -17,6 +18,9 @@ export default async function updateMatch(
 ): Promise<void> {
   try {
     const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);
+
+    await verifyDocExists('matches', body.id);
+
     const people = await getPeople(body.people);
 
     verifySubjectsCanBeTutored(body.subjects, people);

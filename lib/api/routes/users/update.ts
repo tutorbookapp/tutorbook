@@ -9,6 +9,7 @@ import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
+import verifyDocExists from 'lib/api/verify/doc-exists';
 
 export type UpdateUserRes = UserJSON;
 
@@ -22,6 +23,7 @@ export default async function updateUser(
     // TODO: Check the existing data, not the data that is being sent with the
     // request (e.g. b/c I could fake data and add users to my org).
     await verifyAuth(req.headers, { userId: body.id, orgIds: body.orgs });
+    await verifyDocExists('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
     const withPhotoUpdate = await updatePhoto(withOrgsUpdate, User);

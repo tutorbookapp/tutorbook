@@ -10,6 +10,7 @@ import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
+import verifyDocExists from 'lib/api/verify/doc-exists';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
@@ -25,6 +26,12 @@ export default async function updateMeeting(
       isMeetingJSON,
       Meeting
     );
+
+    await Promise.all([
+      verifyDocExists('matches', body.match.id),
+      verifyDocExists('meetings', body.id),
+    ]);
+
     const people = await getPeople(body.match.people);
 
     // TODO: Update the time verification logic to account for recur rules.

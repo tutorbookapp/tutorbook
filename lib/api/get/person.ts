@@ -1,6 +1,6 @@
 import { Person, User } from 'lib/model';
+import { addRoles, join } from 'lib/utils';
 import { APIError } from 'lib/api/error';
-import { addRoles } from 'lib/utils';
 import getUser from 'lib/api/get/user';
 
 /**
@@ -13,17 +13,18 @@ import getUser from 'lib/api/get/user';
  * @return Promise that resolve to the person's complete user data.
  */
 export default async function getPerson(
-  person: Person,
+  { id, roles, name }: Person,
   people: User[] = []
 ): Promise<User> {
-  if (!person.id) {
-    const msg = `${person.name || 'Person'} does not have uID`;
+  if (!id) {
+    const pst = roles.length ? `Person (${join(roles)})` : 'Person';
+    const msg = `${name || pst} does not have an ID`;
     throw new APIError(msg, 400);
   }
 
-  const prefetched = people[people.findIndex((p) => p.id === person.id)];
+  const prefetched = people[people.findIndex((p) => p.id === id)];
   if (prefetched) return addRoles(prefetched, prefetched.roles);
 
-  const user = await getUser(person.id);
-  return addRoles(user, person.roles);
+  const user = await getUser(id);
+  return addRoles(user, roles);
 }

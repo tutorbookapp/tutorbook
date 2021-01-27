@@ -10,7 +10,7 @@ import getStudents from 'lib/api/get/students';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
-import verifyOrgAdminsInclude from 'lib/api/verify/org-admins-include';
+import verifyIsOrgAdmin from 'lib/api/verify/is-org-admin';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 
 export type CreateMatchRes = MatchJSON;
@@ -39,10 +39,9 @@ export default async function createMatch(
     // Verify the creator is:
     // a) The student him/herself, OR;
     // b) Admin of the match's org (e.g. Gunn High School).
-    const students = getStudents(people);
+    const studentIds = getStudents(people).map((p) => p.id);
     const org = await getOrg(body.org);
-    if (!students.some((s) => s.id === creator.id))
-      verifyOrgAdminsInclude(org, creator.id);
+    if (!studentIds.includes(creator.id)) verifyIsOrgAdmin(org, creator.id);
 
     const match = await createMatchDoc(body);
     await createMatchSearchObj(match);
