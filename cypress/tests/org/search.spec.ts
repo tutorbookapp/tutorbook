@@ -17,7 +17,7 @@ describe('Search page', () => {
     });
 
     cy.getBySel('result')
-      .should('have.css', 'cursor', 'not-allowed')
+      .should('have.css', 'cursor', 'wait')
       .and('have.attr', 'disabled');
     cy.percySnapshot('Search Page in Loading State');
 
@@ -57,7 +57,7 @@ describe('Search page', () => {
     cy.percySnapshot('Search Page with Auth Dialog Error');
 
     cy.getBySel('result')
-      .should('have.css', 'cursor', 'not-allowed')
+      .should('have.css', 'cursor', 'wait')
       .and('have.attr', 'disabled');
   });
 

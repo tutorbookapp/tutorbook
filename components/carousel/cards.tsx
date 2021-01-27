@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Ripple } from '@rmwc/ripple';
+import cn from 'classnames';
 
 import Avatar from 'components/avatar';
 
@@ -59,10 +60,7 @@ export function UserCard({ user, onClick, href }: UserCardProps): JSX.Element {
 export function LoadingCard(): JSX.Element {
   return (
     <Ripple disabled>
-      <div
-        data-cy='loading-card'
-        className={`${styles.card} ${styles.disabled}`}
-      >
+      <div data-cy='loading-card' className={cn(styles.card, styles.loading)}>
         <div className={styles.img}>
           <Avatar size={160} loading />
         </div>

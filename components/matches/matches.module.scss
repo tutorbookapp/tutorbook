@@ -44,7 +44,7 @@ $filters-height: 56px;
     cursor: pointer;
 
     &.loading {
-      cursor: not-allowed;
+      cursor: wait;
     }
   }
 

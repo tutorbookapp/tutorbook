@@ -15,8 +15,8 @@ $margin: 20px;
   text-decoration: none;
   display: block;
 
-  &.disabled {
-    cursor: not-allowed;
+  &.loading {
+    cursor: wait;
   }
 
   &:first-child {
