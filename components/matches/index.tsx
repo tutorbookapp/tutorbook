@@ -9,9 +9,9 @@ import {
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextField } from '@rmwc/textfield';
 import { dequal } from 'dequal/lite';
+import { nanoid } from 'nanoid';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
-import { v4 as uuid } from 'uuid';
 
 import Header from 'components/header';
 import Pagination from 'components/pagination';
@@ -99,7 +99,7 @@ export default function Matches({
 
   const loadingRows: JSX.Element[] = useMemo(() => {
     const arr = Array(query?.hitsPerPage || 10).fill(null);
-    return arr.map(() => <LoadingRow key={uuid()} />);
+    return arr.map(() => <LoadingRow key={nanoid()} />);
   }, [query?.hitsPerPage]);
 
   return (
