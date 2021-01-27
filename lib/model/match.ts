@@ -15,6 +15,7 @@ import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
+import { join } from 'lib/utils';
 import { isJSON } from 'lib/model/json';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
@@ -100,6 +101,10 @@ export class Match extends Resource implements MatchInterface {
     const isTutee = (a: Person) => a.roles.indexOf('tutee') >= 0;
     if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
     return 'mentoring';
+  }
+
+  public toString(): string {
+    return `Match for ${join(this.subjects) || 'No Subjects'}`;
   }
 
   public toJSON(): MatchJSON {
