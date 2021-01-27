@@ -1,19 +1,43 @@
-import Placeholder from 'components/placeholder';
+import { useState } from 'react';
 
-import { Meeting } from 'lib/model';
+import DialogContent from 'components/dialog';
 
-import styles from './new-meeting.module.scss';
+import { Meeting, TCallback } from 'lib/model';
+
+import CreatePage from './create-page';
+
+export enum Page {
+  Create = 0,
+}
 
 export interface NewMeetingDialogProps {
-  meeting: Meeting;
+  viewing: Meeting;
+  setViewing: TCallback<Meeting>;
 }
 
 export default function NewMeetingDialog({
-  meeting,
+  viewing,
+  setViewing,
 }: NewMeetingDialogProps): JSX.Element {
+  const [active, setActive] = useState<number>(Page.Create);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [checked, setChecked] = useState<boolean>(false);
+
   return (
-    <div className={styles.wrapper}>
-      <Placeholder>CREATE MEETING</Placeholder>
-    </div>
+    <DialogContent
+      active={active}
+      setActive={setActive}
+      loading={loading}
+      checked={checked}
+    >
+      <CreatePage
+        people={[]}
+        viewing={viewing}
+        setViewing={setViewing}
+        setLoading={setLoading}
+        setChecked={setChecked}
+      />
+      <></>
+    </DialogContent>
   );
 }

@@ -137,7 +137,7 @@ export default function CalendarBody({
             <ExistingMeetingDialog meeting={viewing} />
           )}
           {viewing.id.startsWith('temp') && (
-            <NewMeetingDialog meeting={viewing} />
+            <NewMeetingDialog viewing={viewing} setViewing={setViewing} />
           )}
         </DialogSurface>
       )}
