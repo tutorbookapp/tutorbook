@@ -1,8 +1,9 @@
 @use 'styles/typography';
 @use 'styles/loader';
 
-$height: 125px;
 $margin: 20px;
+$image-size: 85px;
+$height: $image-size + 2 * $margin;
 
 .link {
   text-decoration: none;
@@ -31,7 +32,8 @@ $margin: 20px;
   }
 
   &.loading {
-    .img,
+    cursor: wait;
+
     .name,
     .bio {
       @include loader.loading();

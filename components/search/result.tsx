@@ -1,5 +1,5 @@
-import { SyntheticEvent, useMemo } from 'react';
 import Link from 'next/link';
+import { MouseEvent } from 'react';
 import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 
@@ -9,15 +9,12 @@ import { TCallback, User } from 'lib/model';
 
 import styles from './result.module.scss';
 
-interface ResultProps {
+interface ResultButtonProps {
   user?: User;
   className?: string;
   loading?: boolean;
   avatar?: boolean;
-}
-
-interface ResultButtonProps extends ResultProps {
-  onClick?: TCallback<SyntheticEvent<HTMLElement>>;
+  onClick?: TCallback<MouseEvent<HTMLElement>>;
 }
 
 function ResultButton({
@@ -27,14 +24,12 @@ function ResultButton({
   onClick,
   avatar = true,
 }: ResultButtonProps): JSX.Element {
-  const disabled = useMemo(() => loading || !onClick, [loading, onClick]);
-
   return (
-    <Ripple disabled={disabled} onClick={onClick}>
+    <Ripple disabled={loading || !onClick} onClick={onClick}>
       <div
         data-cy='result'
         className={cn(styles.listItem, className, {
-          [styles.disabled]: disabled,
+          [styles.disabled]: !onClick && !loading,
           [styles.loading]: loading,
           [styles.avatar]: avatar,
         })}
@@ -51,7 +46,11 @@ function ResultButton({
   );
 }
 
-interface ResultLinkProps extends ResultProps {
+interface ResultLinkProps {
+  user?: User;
+  className?: string;
+  loading?: boolean;
+  avatar?: boolean;
   href: string;
   newTab?: boolean;
 }
@@ -66,14 +65,12 @@ function ResultLink({
   newTab,
   avatar = true,
 }: ResultLinkProps): JSX.Element {
-  const disabled = useMemo(() => loading || !href, [loading, href]);
-
   return (
-    <Ripple disabled={disabled}>
+    <Ripple disabled={loading || !href}>
       <div
         data-cy='result'
         className={cn(styles.listItem, className, {
-          [styles.disabled]: disabled,
+          [styles.disabled]: !href && !loading,
           [styles.loading]: loading,
           [styles.avatar]: avatar,
         })}
