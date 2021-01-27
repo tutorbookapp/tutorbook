@@ -184,11 +184,15 @@ export default function RndSurface({
               whiteSpace: headerHeight < 45 ? 'nowrap' : 'normal',
             }}
           >
-            <span className={styles.subjects}>
-              {join(meeting.match.subjects)}
-            </span>
+            {!!meeting.match.subjects.length && (
+              <span className={styles.subjects}>
+                {join(meeting.match.subjects)}
+              </span>
+            )}
             {headerHeight < 30 && (
-              <span className={styles.time}>{`, ${timeString}`}</span>
+              <span className={styles.time}>
+                {meeting.match.subjects.length ? `, ${timeString}` : timeString}
+              </span>
             )}
           </div>
           {headerHeight > 15 && <div className={styles.time}>{timeString}</div>}
