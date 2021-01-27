@@ -30,8 +30,8 @@ export interface RndSurfaceProps {
   elevated: boolean;
   meeting: Meeting;
   setMeeting: TCallback<Meeting>;
-  dragging: boolean;
-  setDragging: TCallback<boolean>;
+  draggingId?: string;
+  setDraggingId: TCallback<string | undefined>;
   onClick?: () => void;
 }
 
@@ -41,8 +41,8 @@ export default function RndSurface({
   elevated,
   meeting,
   setMeeting,
-  dragging,
-  setDragging,
+  draggingId,
+  setDraggingId,
   onClick: clickHandler,
 }: RndSurfaceProps): JSX.Element {
   const { updateEl, removeEl } = useClickContext();
@@ -84,14 +84,14 @@ export default function RndSurface({
     [clickHandler]
   );
   const onResizeStop = useCallback(() => {
-    // Wait a tick so `dragging` remains `true` which prevents certain event
+    // Wait a tick so `draggingId` remains `true` which prevents certain event
     // listeners from triggering (e.g. the `onClick` listener in `Calendar`).
-    setTimeout(() => setDragging(false), 0);
+    setTimeout(() => setDraggingId(undefined), 0);
     setOffset({ x: 0, y: 0 });
-  }, [setDragging]);
+  }, [setDraggingId]);
   const onDragStop = useCallback(() => {
-    setTimeout(() => setDragging(false), 0);
-  }, [setDragging]);
+    setTimeout(() => setDraggingId(undefined), 0);
+  }, [setDraggingId]);
   const onResize = useCallback(
     (
       e: MouseEvent | TouchEvent,
@@ -103,7 +103,7 @@ export default function RndSurface({
       // callback can be called multiple times for the same resize delta. Thus,
       // we only want to update `position` to reflect the **difference** btwn
       // the last `delta` and the current `delta`.
-      setDragging(true);
+      setDraggingId(meeting.id);
       update(Number(ref.style.height.replace('px', '')), {
         x: position.x - (dir === 'left' ? delta.width - offset.x : 0),
         y: position.y - (dir === 'top' ? delta.height - offset.y : 0),
@@ -113,7 +113,7 @@ export default function RndSurface({
         y: dir === 'top' ? delta.height : prev.y,
       }));
     },
-    [setDragging, update, position, offset]
+    [setDraggingId, meeting.id, update, position, offset]
   );
   const onDrag = useCallback(
     (
@@ -124,10 +124,10 @@ export default function RndSurface({
       // correctly for the `onDrag` callback.
       // @see {@link https://github.com/STRML/react-draggable/issues/413}
       // @see {@link https://github.com/bokuweb/react-rnd/issues/453}
-      setDragging(true);
+      setDraggingId(meeting.id);
       update(height, { x: data.x, y: data.y });
     },
-    [setDragging, update, height]
+    [setDraggingId, meeting.id, update, height]
   );
 
   const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
@@ -148,7 +148,7 @@ export default function RndSurface({
   return (
     <Rnd
       data-cy='meeting-rnd'
-      style={{ cursor: dragging ? 'move' : 'pointer' }}
+      style={{ cursor: draggingId === meeting.id ? 'move' : 'pointer' }}
       className={cn(styles.meeting, {
         [styles.elevated]: elevated,
         [styles.past]: meeting.time.to.valueOf() <= now.valueOf(),

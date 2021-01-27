@@ -40,7 +40,7 @@ export default function CalendarBody({
 }: CalendarBodyProps): JSX.Element {
   const [now, setNow] = useState<Date>(new Date());
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [dragging, setDragging] = useState<boolean>(false);
+  const [draggingId, setDraggingId] = useState<string>();
   const [viewing, setViewing] = useState<Meeting>();
 
   const { startingDate } = useCalendar();
@@ -93,19 +93,19 @@ export default function CalendarBody({
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const onClick = useCallback(
     (event: MouseEvent) => {
-      if (dragging) return;
+      if (draggingId) return;
       const position = { x: event.clientX - x, y: event.clientY - y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
       setViewing(getMeeting(48, position, meeting, width, startingDate));
     },
-    [dragging, startingDate, x, y, width]
+    [draggingId, startingDate, x, y, width]
   );
 
-  // Don't unmount the dialog surface if the user is dragging (in that case, we
-  // only temporarily hide the dialog until the user is finished dragging).
+  // Don't unmount the dialog surface if the user is draggingId (in that case, we
+  // only temporarily hide the dialog until the user is finished draggingId).
   const onClosed = useCallback(() => {
-    if (!dragging) setViewing(undefined);
-  }, [dragging]);
+    if (!draggingId) setViewing(undefined);
+  }, [draggingId]);
 
   // Sync the scroll position of the main cell grid and the static headers. This
   // was inspired by the way that Google Calendar's UI is currently setup.
@@ -129,7 +129,7 @@ export default function CalendarBody({
           width={width}
           offset={{ x, y }}
           viewing={viewing}
-          dialogOpen={dialogOpen && !dragging}
+          dialogOpen={dialogOpen && !draggingId}
           setDialogOpen={setDialogOpen}
           onClosed={onClosed}
         >
@@ -187,8 +187,8 @@ export default function CalendarBody({
                         width={width}
                         viewing={viewing}
                         setViewing={setViewing}
-                        dragging={dragging}
-                        setDragging={setDragging}
+                        draggingId={draggingId}
+                        setDraggingId={setDraggingId}
                         meeting={meeting}
                         key={meeting.id}
                       />
@@ -199,8 +199,8 @@ export default function CalendarBody({
                       width={width}
                       viewing={viewing}
                       setViewing={setViewing}
-                      dragging={dragging}
-                      setDragging={setDragging}
+                      draggingId={draggingId}
+                      setDraggingId={setDraggingId}
                     />
                   )}
                   <Cells now={now} ref={cellRef} />

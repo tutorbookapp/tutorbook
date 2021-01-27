@@ -13,8 +13,8 @@ export interface ExistingMeetingRndProps {
   width: number;
   viewing: Meeting | undefined;
   setViewing: TCallback<Meeting | undefined>;
-  dragging: boolean;
-  setDragging: TCallback<boolean>;
+  draggingId?: string;
+  setDraggingId: TCallback<string | undefined>;
   meeting: Meeting;
 }
 
@@ -26,8 +26,8 @@ export default function ExistingMeetingRnd({
   width,
   viewing,
   setViewing,
-  dragging,
-  setDragging,
+  draggingId,
+  setDraggingId,
   meeting: initialData,
 }: ExistingMeetingRndProps): JSX.Element {
   const updateRemote = useCallback(async (updated: Meeting) => {
@@ -44,8 +44,8 @@ export default function ExistingMeetingRnd({
   );
 
   const onClick = useCallback(() => {
-    if (!dragging) setViewing(meeting);
-  }, [dragging, setViewing, meeting]);
+    if (!draggingId) setViewing(meeting);
+  }, [draggingId, setViewing, meeting]);
 
   useEffect(() => {
     // Ensure `viewing` is always in sync with `meeting` b/c `useContinuous`
@@ -59,11 +59,11 @@ export default function ExistingMeetingRnd({
     <RndSurface
       now={now}
       width={width}
-      elevated={dragging || viewing?.id === meeting.id}
+      elevated={draggingId === meeting.id || viewing?.id === meeting.id}
       meeting={meeting}
       setMeeting={setMeeting}
-      dragging={dragging}
-      setDragging={setDragging}
+      draggingId={draggingId}
+      setDraggingId={setDraggingId}
       onClick={onClick}
     />
   );

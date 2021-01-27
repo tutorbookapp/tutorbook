@@ -7,8 +7,8 @@ export interface NewMeetingRndProps {
   width: number;
   viewing: Meeting;
   setViewing: TCallback<Meeting>;
-  dragging: boolean;
-  setDragging: TCallback<boolean>;
+  draggingId?: string;
+  setDraggingId: TCallback<string | undefined>;
 }
 
 export default function NewMeetingRnd({
@@ -16,8 +16,8 @@ export default function NewMeetingRnd({
   width,
   viewing,
   setViewing,
-  dragging,
-  setDragging,
+  draggingId,
+  setDraggingId,
 }: NewMeetingRndProps): JSX.Element {
   return (
     <RndSurface
@@ -26,8 +26,8 @@ export default function NewMeetingRnd({
       elevated
       meeting={viewing}
       setMeeting={setViewing}
-      dragging={dragging}
-      setDragging={setDragging}
+      draggingId={draggingId}
+      setDraggingId={setDraggingId}
     />
   );
 }
