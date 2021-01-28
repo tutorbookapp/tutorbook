@@ -1,0 +1,223 @@
+@mixin header-wrapper($times-width) {
+  margin-left: $times-width;
+  align-items: flex-end;
+  display: flex;
+
+  .headerContent {
+    padding-left: 8px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .scroller {
+    overflow: scroll;
+    visibility: hidden;
+    flex: none;
+  }
+}
+
+@mixin headers($times-width, $cell-width) {
+  flex: none;
+  display: flex;
+
+  .space {
+    min-width: $times-width + 8px;
+    flex: none;
+  }
+
+  .titleWrapper {
+    width: $cell-width;
+    min-width: $cell-width;
+    max-width: calc(100% / 7);
+    flex: 1 0 auto;
+    overflow: hidden;
+    display: flex;
+    border-left: transparent 1px solid;
+
+    @content;
+  }
+}
+
+@mixin header-cells($times-width, $cell-width, $border-color) {
+  height: 8px;
+  display: flex;
+  flex: none;
+
+  .space {
+    width: $times-width + 8px;
+    flex: none;
+  }
+
+  .headerCell {
+    width: $cell-width;
+    min-width: $cell-width;
+    max-width: calc(100% / 7);
+    flex: 1 0 auto;
+    border-left: $border-color 1px solid;
+  }
+}
+
+@mixin grid($times-width, $cell-width, $border-color, $max-height) {
+  position: relative;
+  flex: 1 1 60%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: $max-height;
+
+  .grid {
+    display: flex;
+    overflow: hidden;
+    align-items: stretch;
+    flex: 1 1 auto;
+
+    &::before {
+      box-shadow: inset 0 1px 1px 0 rgba(var(--on-background-rgb), 0.14),
+        inset 0 2px 1px -1px rgba(var(--on-background-rgb), 0.12);
+      content: '';
+      height: 4px;
+      position: absolute;
+      width: calc(100% - 16px);
+      z-index: 3;
+    }
+
+    &::after {
+      background-image: linear-gradient(
+        to left,
+        var(--background),
+        rgba(var(--background-rgb), 0)
+      );
+      content: '';
+      height: 2px;
+      position: absolute;
+      right: 16px;
+      width: $cell-width;
+      z-index: 3;
+    }
+
+    .timesWrapper {
+      overflow-y: hidden;
+      flex: none;
+      display: flex;
+      align-items: flex-start;
+      min-width: $times-width;
+      height: auto;
+
+      &::before {
+        background-image: linear-gradient(
+          to right,
+          var(--background),
+          rgba(var(--background-rgb), 0)
+        );
+        content: '';
+        height: 2px;
+        position: absolute;
+        width: $cell-width;
+        z-index: 3;
+      }
+
+      .times {
+        position: relative;
+        background-color: var(--background);
+        box-sizing: border-box;
+        margin-left: auto;
+
+        .timeWrapper {
+          position: relative;
+          height: 48px;
+          padding-right: 8px;
+          text-align: right;
+
+          .timeLabel {
+            display: block;
+            position: relative;
+            top: -6px;
+            color: var(--accents-5);
+            font-size: 10px;
+            font-family: var(--font-sans);
+          }
+
+          &:first-child .timeLabel {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .rowsWrapper {
+      overflow-y: scroll;
+      overflow-x: auto;
+      display: flex;
+      align-items: flex-start;
+      flex: 1 1 auto;
+
+      .rows {
+        flex: none;
+        display: flex;
+        min-width: 100%;
+        overflow: hidden;
+        position: relative;
+
+        .lines {
+          border-top: $border-color 1px solid;
+
+          .line {
+            height: 48px;
+
+            &::after {
+              content: '';
+              border-bottom: $border-color 1px solid;
+              position: absolute;
+              width: 100%;
+              margin-top: -1px;
+              pointer-events: none;
+            }
+
+            &:first-child::after {
+              content: none;
+            }
+          }
+        }
+
+        .space {
+          width: 8px;
+        }
+
+        .cells {
+          display: flex;
+          flex: 1 1 auto;
+          box-sizing: border-box;
+          position: relative;
+
+          &.checkered {
+            $dark-strip: var(--accents-2);
+            $light-strip: var(--accents-1);
+            background: repeating-linear-gradient(
+              45deg,
+              $light-strip,
+              $light-strip 10px,
+              $dark-strip 10px,
+              $dark-strip 20px
+            );
+          }
+
+          .cell {
+            width: $cell-width;
+            min-width: $cell-width;
+            max-width: calc(100% / 7);
+            flex: 1 0 auto;
+            border-left: $border-color 1px solid;
+            position: relative; // Needed for current time indicator.
+
+            &:last-child {
+              border-right: $border-color 1px solid;
+            }
+          }
+        }
+      }
+    }
+  }
+}

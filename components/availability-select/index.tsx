@@ -258,15 +258,10 @@ export default memo(
         >
           <div className={styles.headerWrapper}>
             <div ref={headerRef} className={styles.headerContent}>
-              <div className={styles.headers}>
-                {weekdayCells}
-                <div className={styles.scroller} />
-              </div>
-              <div className={styles.headerCells}>
-                {headerCells}
-                <div className={styles.scroller} />
-              </div>
+              <div className={styles.headers}>{weekdayCells}</div>
+              <div className={styles.headerCells}>{headerCells}</div>
             </div>
+            <div className={styles.scroller} />
           </div>
           <div className={styles.gridWrapper}>
             <div className={styles.grid}>

@@ -1,10 +1,9 @@
-@use 'sass:map';
-@use 'sass:color';
+@use 'styles/calendar';
 @use 'styles/typography';
 
 $times-width: 50px;
 $cell-width: 100px;
-$border: var(--accents-2);
+$border-color: var(--accents-2);
 
 .textField {
   width: 100%;
@@ -25,35 +24,11 @@ $border: var(--accents-2);
 }
 
 .headerWrapper {
-  margin-left: $times-width;
-
-  .headerContent {
-    padding-left: 7px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-  }
+  @include calendar.header-wrapper($times-width);
 }
 
 .headers {
-  flex: none;
-  display: flex;
-  border-left: var(--background) 1px solid;
-
-  .space {
-    min-width: $times-width + 8px;
-    flex: none;
-  }
-
-  .titleWrapper {
-    width: $cell-width;
-    min-width: $cell-width;
-    flex: 1 0 auto;
-    overflow: hidden;
-    box-sizing: border-box;
-    display: flex;
-
+  @include calendar.headers($times-width, $cell-width) {
     .titleContent {
       margin: 0;
       text-align: center;
@@ -67,201 +42,17 @@ $border: var(--accents-2);
       }
     }
   }
-
-  .scroller {
-    overflow: scroll;
-    visibility: hidden;
-    flex: none;
-  }
 }
 
 .headerCells {
-  height: 8px;
-  display: flex;
-  flex: none;
-  border-left: $border 1px solid;
-
-  .space {
-    width: $times-width + 8px;
-    flex: none;
-  }
-
-  .headerCell {
-    width: $cell-width;
-    min-width: $cell-width;
-    flex: 1 0 auto;
-    border-right: $border 1px solid;
-
-    &:nth-last-of-type(2) {
-      border-right: var(--background) 1px solid;
-    }
-  }
-
-  .scroller {
-    overflow: scroll;
-    visibility: hidden;
-    flex: none;
-  }
+  @include calendar.header-cells($times-width, $cell-width, $border-color);
 }
 
 .gridWrapper {
-  position: relative;
-  flex: 1 1 60%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  max-height: calc(48px * 8 + 24px);
-
-  .grid {
-    display: flex;
-    overflow: hidden;
-    align-items: stretch;
-    flex: 1 1 auto;
-
-    &::before {
-      box-shadow: inset 0 1px 1px 0 rgba(var(--on-background-rgb), 0.14),
-        inset 0 2px 1px -1px rgba(var(--on-background-rgb), 0.12);
-      content: '';
-      height: 4px;
-      position: absolute;
-      width: calc(100% - 16px);
-      z-index: 505;
-    }
-
-    &::after {
-      background-image: linear-gradient(
-        to left,
-        var(--background),
-        rgba(var(--background-rgb), 0)
-      );
-      content: '';
-      height: 2px;
-      position: absolute;
-      right: 16px;
-      width: $cell-width;
-      z-index: 505;
-    }
-
-    .timesWrapper {
-      overflow-y: hidden;
-      flex: none;
-      display: flex;
-      align-items: flex-start;
-      min-width: $times-width;
-      height: auto;
-
-      &::before {
-        background-image: linear-gradient(
-          to right,
-          var(--background),
-          rgba(var(--background-rgb), 0)
-        );
-        content: '';
-        height: 2px;
-        position: absolute;
-        width: $cell-width;
-        z-index: 505;
-      }
-
-      .times {
-        position: relative;
-        background-color: var(--background);
-        box-sizing: border-box;
-        margin-left: auto;
-
-        .timeWrapper {
-          position: relative;
-          height: 48px;
-          padding-right: 8px;
-          text-align: right;
-
-          .timeLabel {
-            display: block;
-            position: relative;
-            top: -6px;
-            color: var(--accents-5);
-            font-size: 10px;
-            font-family: var(--font-sans);
-          }
-
-          &:first-child .timeLabel {
-            display: none;
-          }
-        }
-      }
-    }
-
-    .rowsWrapper {
-      overflow-y: scroll;
-      overflow-x: auto;
-      display: flex;
-      align-items: flex-start;
-      flex: 1 1 auto;
-
-      .rows {
-        flex: none;
-        display: flex;
-        min-width: 100%;
-        overflow: hidden;
-        position: relative;
-
-        .lines {
-          border-top: $border 1px solid;
-
-          .line {
-            height: 48px;
-
-            &::after {
-              content: '';
-              border-bottom: $border 1px solid;
-              position: absolute;
-              width: 100%;
-              margin-top: -1px;
-              z-index: 3;
-              pointer-events: none;
-            }
-
-            &:first-child::after {
-              content: none;
-            }
-          }
-        }
-
-        .space {
-          width: 8px;
-          border-right: $border 1px solid;
-        }
-
-        .cells {
-          display: flex;
-          flex: 1 1 auto;
-          box-sizing: border-box;
-          position: relative;
-
-          &.checkered {
-            $dark-strip: var(--accents-2);
-            $light-strip: var(--accents-1);
-            background: repeating-linear-gradient(
-              45deg,
-              $light-strip,
-              $light-strip 10px,
-              $dark-strip 10px,
-              $dark-strip 20px
-            );
-          }
-
-          .cell {
-            width: $cell-width;
-            min-width: $cell-width;
-            flex: 1 0 auto;
-            border-right: $border 1px solid;
-
-            &:last-child {
-              border-right: var(--background) 1px solid;
-            }
-          }
-        }
-      }
-    }
-  }
+  @include calendar.grid(
+    $times-width,
+    $cell-width,
+    $border-color,
+    $max-height: calc(48px * 8 + 24px)
+  );
 }
