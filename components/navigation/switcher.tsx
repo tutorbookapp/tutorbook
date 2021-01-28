@@ -27,7 +27,7 @@ export default function Switcher(): JSX.Element {
 
   const destination = useMemo(() => {
     if (!pathname.includes('[org]')) {
-      if (pathname.includes('matches')) return 'matches';
+      if (pathname.includes('calendar')) return 'calendar';
       if (pathname.includes('profile')) return 'settings';
       return 'dashboard';
     }
@@ -35,7 +35,7 @@ export default function Switcher(): JSX.Element {
   }, [pathname]);
   const personalDestination = useMemo(() => {
     if (pathname.includes('settings')) return '/profile';
-    if (pathname.includes('matches')) return '/matches';
+    if (pathname.includes('calendar')) return '/calendar';
     return '/dashboard';
   }, [pathname]);
 

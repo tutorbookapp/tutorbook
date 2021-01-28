@@ -187,8 +187,8 @@ export default function PopOverMenu({
               <PopOverLink href={`/${org.id}/users`}>
                 {t('common:users')}
               </PopOverLink>
-              <PopOverLink href={`/${org.id}/matches`}>
-                {t('common:matches')}
+              <PopOverLink href={`/${org.id}/calendar`}>
+                {t('common:calendar')}
               </PopOverLink>
               <PopOverLink href={`/${org.id}/settings`}>
                 {t('common:settings')}

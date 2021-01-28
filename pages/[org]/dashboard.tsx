@@ -7,8 +7,8 @@ import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
 import { Org } from 'lib/model';
-import { usePage } from 'lib/hooks';
 import { OrgContext } from 'lib/context/org';
+import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -44,8 +44,8 @@ function DashboardPage(): JSX.Element {
           switcher
           tabs={[
             {
-              label: t('common:overview'),
               active: true,
+              label: t('common:overview'),
               href: `/${query.org as string}/dashboard`,
             },
             {
@@ -53,8 +53,8 @@ function DashboardPage(): JSX.Element {
               href: `/${query.org as string}/users`,
             },
             {
-              label: t('common:matches'),
-              href: `/${query.org as string}/matches`,
+              label: t('common:calendar'),
+              href: `/${query.org as string}/calendar`,
             },
             {
               label: t('common:settings'),
