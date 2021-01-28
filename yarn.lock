@@ -7177,7 +7177,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:^4.12.0":
+"csv-generate@npm:^3.2.4":
+  version: 3.3.0
+  resolution: "csv-generate@npm:3.3.0"
+  checksum: 391a312eb73f013d3abd28070abf77687e0fb2e23852612f2a3d3e9173063bd8b81968d74ef8f41602e0b9acce859581a1a0dac91f192f4fdcdabebccc156e5b
+  languageName: node
+  linkType: hard
+
+"csv-parse@npm:^4.8.8":
   version: 4.12.0
   resolution: "csv-parse@npm:4.12.0"
   checksum: ed6d90b1a600b24d151f01aa0bd822bc1eea61874ec4546c3afe87e22f2f462f0839527d5d67f556dbb29b1623ad947b53761ec9c3d739b949a8e2af3d32200c
@@ -7192,6 +7199,25 @@ __metadata:
   bin:
     csv-streamify: cli.js
   checksum: a61ab1ebd35fcde52b1d2d6bd634044ee27e95e10babe28bb1b811ebd3bfff878e0554a8e6cb9de64240c889cf82f9fee00869c5545c7bbb60ab5814c6a1a711
+  languageName: node
+  linkType: hard
+
+"csv-stringify@npm:^5.3.6":
+  version: 5.6.1
+  resolution: "csv-stringify@npm:5.6.1"
+  checksum: 4387bec9f4bbd887cc1f65ed969beec77d759c33e18dd94714dd44b406b056373dc747872c8d16ad8e92f4dc3f7cd079652df91f7cd5aff37279d38b54b1e778
+  languageName: node
+  linkType: hard
+
+"csv@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "csv@npm:5.3.2"
+  dependencies:
+    csv-generate: ^3.2.4
+    csv-parse: ^4.8.8
+    csv-stringify: ^5.3.6
+    stream-transform: ^2.0.1
+  checksum: 5dab4ac1db949f10aca88a217cde6e1b95c5513656aafdcdacc6580d17a270d4792c70dd8524747edd1534f92ca39f02090c31de7cd1152be4efdce930ad1575
   languageName: node
   linkType: hard
 
@@ -13147,6 +13173,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"mixme@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "mixme@npm:0.4.0"
+  checksum: d482a92c0042b49f5963aebe8be7e5eea74cbd117002e9403d92b9ac20b1d1c9431a06cf6ad2de935ec0384c77473206d59aac2d70ac00fc86468e9b7f6d0ac6
+  languageName: node
+  linkType: hard
+
 "mixpanel-browser@npm:^2.39.0":
   version: 2.39.0
   resolution: "mixpanel-browser@npm:2.39.0"
@@ -17034,6 +17067,15 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
+"stream-transform@npm:^2.0.1":
+  version: 2.0.4
+  resolution: "stream-transform@npm:2.0.4"
+  dependencies:
+    mixme: ^0.4.0
+  checksum: 4f8ac2fc85c39c4e8830fad39bdb970a6acb84ac3981e336ec5cabcfd9f63e3a778ac127e47bb089d930e2051c9e1c56103e1440c1915156dc22eb7cb73677a6
+  languageName: node
+  linkType: hard
+
 "streamsearch@npm:0.1.2":
   version: 0.1.2
   resolution: "streamsearch@npm:0.1.2"
@@ -18121,7 +18163,7 @@ resolve@1.1.7:
     cli-progress: ^3.8.2
     concurrently: ^5.3.0
     cross-env: ^7.0.2
-    csv-parse: ^4.12.0
+    csv: ^5.3.2
     cypress: ^6.3.0
     cypress-file-upload: ^4.1.1
     dequal: ^2.0.2
@@ -18187,6 +18229,7 @@ resolve@1.1.7:
     webpack: ^5.12.3
     webpack-bundle-analyzer: ^4.3.0
     webpack-cli: ^4.3.1
+    winston: ^3.3.3
   languageName: unknown
   linkType: soft
 
@@ -19071,7 +19114,7 @@ typescript@^4.1.3:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.0.0":
+"winston@npm:^3.0.0, winston@npm:^3.3.3":
   version: 3.3.3
   resolution: "winston@npm:3.3.3"
   dependencies:
