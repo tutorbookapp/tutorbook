@@ -18,6 +18,7 @@ import useSWR from 'swr';
 import { CallbackParam, Match, MatchesQuery, TCallback } from 'lib/model';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
 import { useClickContext } from 'lib/hooks/click-outside';
+import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
 import MatchResult from './result';
@@ -95,6 +96,7 @@ export default memo(
       });
     }, []);
 
+    const { org } = useOrg();
     const { user } = useUser();
     const { data, error, isValidating } = useSWR<ListMatchesRes>(
       query ? query.endpoint : null
@@ -102,11 +104,15 @@ export default memo(
 
     useEffect(() => {
       onQueryChange((prev) => {
+        if (org) {
+          if (!prev.people.length && prev.org === org.id) return prev;
+          return new MatchesQuery({ ...prev, people: [], org: org.id });
+        }
         if (!user.id) return prev;
         const people = [{ label: user.name, value: user.id }];
         return new MatchesQuery({ ...prev, people });
       });
-    }, [user, onQueryChange]);
+    }, [org, user, onQueryChange]);
 
     useEffect(() => {
       setSearching((prev) => prev && (isValidating || !data));
