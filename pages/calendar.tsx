@@ -49,11 +49,11 @@ function CalendarPage(): JSX.Element {
 
   const meetings = useMemo(
     () => data?.meetings.map((m) => Meeting.fromJSON(m)) || [],
-    [data?.meetings]
+    [data]
   );
 
   const mutateMeeting = useCallback(
-    async (mutated: Meeting, hasBeenUpdated = false) => {
+    async (mutated: Meeting, hasBeenUpdated: boolean = false) => {
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
         if (!hasBeenUpdated) mutatedMeetingIds.add(mutated.id);
