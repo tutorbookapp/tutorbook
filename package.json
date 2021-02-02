@@ -158,7 +158,7 @@
     "sharp": "^0.27.1",
     "smartcrop-sharp": "^2.0.3",
     "styled-jsx": "^3.3.0",
-    "swr": "^0.3.8",
+    "swr": "^0.4.1",
     "timeago-react": "^3.0.1",
     "url": "^0.11.0",
     "uuid": "^8.2.0",

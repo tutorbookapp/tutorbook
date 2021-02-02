@@ -17302,14 +17302,14 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"swr@npm:^0.3.8":
-  version: 0.3.8
-  resolution: "swr@npm:0.3.8"
+"swr@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "swr@npm:0.4.1"
   dependencies:
     dequal: 2.0.2
   peerDependencies:
     react: ^16.11.0 || ^17.0.0
-  checksum: 2a971d44de4191b5fe4d523f2e18d7d022cb7c6a6c4d83b3ac3a922cfd4baac947a768cb0ee7514154d4c7dadd765de6ef8c9fcd2fe0b92b061927d18d692b1f
+  checksum: 947310e3bf8cf3cdbe25aaef344a3e178b131301c9d8ca576541cfa13d6a3541452dc2dc9b7c16097d7da8426a593d3cbb3c3cf596d38dd6e5c98e11c9309ee9
   languageName: node
   linkType: hard
 
@@ -18028,7 +18028,7 @@ resolve@1.1.7:
     smartcrop-sharp: ^2.0.3
     source-map-support: ^0.5.19
     styled-jsx: ^3.3.0
-    swr: ^0.3.8
+    swr: ^0.4.1
     terser-webpack-plugin: ^5.1.1
     timeago-react: ^3.0.1
     ts-loader: ^8.0.14
