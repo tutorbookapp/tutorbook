@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
+import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
@@ -67,6 +68,7 @@ export default function EditPage({
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
       setMeeting((prev) => {
+        if (dequal(prev.match.subjects, subjects)) return prev;
         const match = new Match({ ...prev.match, subjects });
         return new Meeting({ ...prev, match });
       });
@@ -75,7 +77,10 @@ export default function EditPage({
   );
   const onTimeChange = useCallback(
     (time: Timeslot) => {
-      setMeeting((prev) => new Meeting({ ...prev, time }));
+      setMeeting((prev) => {
+        if (dequal(prev.time, time)) return prev;
+        return new Meeting({ ...prev, time });
+      });
     },
     [setMeeting]
   );
