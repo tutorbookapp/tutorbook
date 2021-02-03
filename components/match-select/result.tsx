@@ -1,5 +1,6 @@
 import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
+import { nanoid } from 'nanoid';
 import { useMemo } from 'react';
 
 import Avatar from 'components/avatar';
@@ -29,7 +30,7 @@ export default function MatchResult({
         onClick={onClick}
       >
         {(match?.people || Array(2).fill(null)).map((person: Person | null) => (
-          <div className={styles.person}>
+          <div key={person?.id || nanoid()} className={styles.person}>
             <div className={styles.avatar}>
               <Avatar src={person?.photo} loading={!person} size={85} />
             </div>
