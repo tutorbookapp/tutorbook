@@ -370,6 +370,62 @@ const createOrg = async (org) => {
   if (err) console.log('Error creating org:', err);
 };
 
+createOrg({
+  id: 'stepup',
+  created: '2021-02-01T18:38:54.405Z',
+  updated: '2021-02-01T18:38:54.405Z',
+  name: 'Step Up Tutoring',
+  photo: '',
+  background: '',
+  email: 'dhalper@stanford.edu',
+  phone: '',
+  bio:
+    "Step Up Tutoring is a non-profit program designed to make sure your student succeed in school and have fun doing it! All tutors are college educated, eager to mentor, and in communication with your student's teacher(s). Parents of students entering 5th or 6th grade are encouraged to apply.",
+  socials: [
+    {
+      type: 'website',
+      url: 'https://www.stepuptutoring.org/home',
+    },
+    {
+      type: 'instagram',
+      url: 'https://www.instagram.com/stepuptutoringg/?hl=en',
+    },
+    {
+      type: 'facebook',
+      url: 'https://www.facebook.com/stepuptutoringg',
+    },
+  ],
+  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
+  profiles: [
+    'name',
+    'photo',
+    'email',
+    'bio',
+    'subjects',
+    'availability',
+    'langs',
+  ],
+  domains: [],
+  aspects: ['tutoring'],
+  signup: {
+    en: {
+      tutoring: {
+        body:
+          'Step Up Tutoring is a very personal and fulfilling way to provide community service. We want to ensure that ALL kids have access to the academic and social capital necessary to succeed in America. You can make a difference! Simply fill out the form below to volunteer as a tutor.',
+        header: 'Support students throughout COVID',
+        bio: '',
+      },
+    },
+  },
+  home: {
+    en: {
+      body:
+        'Step Up Tutoring is a very personal and fulfilling way to provide community service. We want to ensure that ALL kids have access to the academic and social capital necessary to succeed in America. You can make a difference! Simply click the "Become a tutor" button to volunteer.',
+      header: 'Prospective Tutors',
+    },
+  },
+});
+
 const createUser = async (user) => {
   const endpoint = 'https://develop.tutorbook.app/api/users';
   const [err] = await to(axios.post(endpoint, user));
@@ -614,7 +670,3 @@ const addResourceTimestamps = async (col) => {
     })
   );
 };
-
-addResourceTimestamps('orgs');
-addResourceTimestamps('users');
-addResourceTimestamps('matches');
