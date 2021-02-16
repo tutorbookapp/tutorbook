@@ -233,8 +233,12 @@ export class User extends Account implements UserInterface {
     });
   }
 
-  public static fromJSON(json: UserJSON): User {
-    const { availability, verifications, zooms, ...rest } = json;
+  public static fromJSON({
+    availability,
+    verifications = [],
+    zooms = [],
+    ...rest
+  }: UserJSON): User {
     return new User({
       ...rest,
       ...Account.fromJSON(rest),
@@ -260,8 +264,8 @@ export class User extends Account implements UserInterface {
 
   public static fromFirestore({
     availability,
-    verifications,
-    zooms,
+    verifications = [],
+    zooms = [],
     ...rest
   }: UserFirestore): User {
     return new User({
@@ -302,8 +306,8 @@ export class User extends Account implements UserInterface {
 
   public static fromSearchHit({
     availability,
-    verifications,
-    zooms,
+    verifications = [],
+    zooms = [],
     ...rest
   }: UserSearchHit): User {
     return new User({
