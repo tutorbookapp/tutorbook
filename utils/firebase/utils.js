@@ -219,7 +219,7 @@ const addOrgIdsToUsers = async () => {
   console.log('Fetching users...');
   const users = (await db.collection('users').get()).docs;
   const options = [...orgs, 'delete'];
-  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const endpoint = 'https://tutorbook.app/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
   await Promise.all(
     users.map(async (user) => {
@@ -262,7 +262,7 @@ const addOrgIdToMatches = async () => {
   const orgs = (await db.collection('orgs').get()).docs.map((d) => d.id);
   console.log('Fetching matches...');
   const matches = (await db.collection('matches').get()).docs;
-  const endpoint = 'https://develop.tutorbook.app/api/matches';
+  const endpoint = 'https://tutorbook.app/api/matches';
   const headers = { authorization: `Bearer ${await createToken()}` };
   await Promise.all(
     matches.map(async (match) => {
@@ -328,7 +328,7 @@ const addOrgIdToMatches = async () => {
 };
 
 const deleteUser = async (uid) => {
-  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const endpoint = 'https://tutorbook.app/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.delete(`${endpoint}/${uid}`, { headers }));
   if (err) console.error(`${err.name} deleting user (${uid}): ${err.message}`);
@@ -343,24 +343,53 @@ const convertToUserJSON = (userData) => {
   return { ...userData, availability };
 };
 
-const updateUser = async (updated) => {
-  const endpoint = 'https://develop.tutorbook.app/api/users';
+const updateUser = async (user) => {
+  const endpoint = `https://tutorbook.app/api/users/${user.id}`;
   const headers = { authorization: `Bearer ${await createToken()}` };
-
-  console.log(`Fetching user (${updated.id})...`);
-
-  const data = (await db.collection('users').doc(updated.id).get()).data();
-  const user = { ...convertToUserJSON(data), ...updated };
-
-  console.log(`Updating user (${user.name})...`, user);
-
-  const [err] = await to(
-    axios.put(`${endpoint}/${updated.id}`, user, { headers })
-  );
+  const [err] = await to(axios.put(endpoint, user, { headers }));
   if (err) {
     console.error(`${err.name} updating user (${user.name}): ${err.message}`);
     debugger;
   }
+};
+
+const deleteOrg = async (orgId) => {
+  const endpoint = `https://tutorbook.app/api/orgs/${orgId}`;
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const [err] = await to(axios.delete(endpoint, { headers }));
+  if (err) console.log('Error deleting org:', err);
+};
+
+const purgeOrg = async (orgId) => {
+  const ogs = encodeURIComponent(JSON.stringify([{ value: orgId, label: '' }]));
+  const endpoint = `https://tutorbook.app/api/users?orgs=${ogs}`;
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const {
+    data: { users },
+  } = await axios.get(endpoint, { headers });
+  await Promise.all(
+    users.map(async (user) => {
+      if (user.orgs.length === 1) {
+        console.log(`Deleting ${user.name} (${user.id})...`);
+        await deleteUser(user.id);
+      } else if (user.orgs.length > 1) {
+        if (user.orgs.indexOf(orgId) < 0) {
+          console.error("[ERROR] User doesn't have org:", user);
+          debugger;
+        }
+        user.orgs.splice(user.orgs.indexOf(orgId), 1);
+        console.log(`Updating ${user.name} (${user.id})...`);
+        user.created = new Date().toJSON();
+        user.updated = new Date().toJSON();
+        await updateUser(user);
+      } else {
+        console.error("[ERROR] User doesn't have any orgs:", user);
+        debugger;
+      }
+    })
+  );
+  console.log(`Deleting org (${orgId})...`);
+  await deleteOrg(orgId);
 };
 
 const createOrg = async (org) => {
@@ -370,64 +399,8 @@ const createOrg = async (org) => {
   if (err) console.log('Error creating org:', err);
 };
 
-createOrg({
-  id: 'stepup',
-  created: '2021-02-01T18:38:54.405Z',
-  updated: '2021-02-01T18:38:54.405Z',
-  name: 'Step Up Tutoring',
-  photo: '',
-  background: '',
-  email: 'dhalper@stanford.edu',
-  phone: '',
-  bio:
-    "Step Up Tutoring is a non-profit program designed to make sure your student succeed in school and have fun doing it! All tutors are college educated, eager to mentor, and in communication with your student's teacher(s). Parents of students entering 5th or 6th grade are encouraged to apply.",
-  socials: [
-    {
-      type: 'website',
-      url: 'https://www.stepuptutoring.org/home',
-    },
-    {
-      type: 'instagram',
-      url: 'https://www.instagram.com/stepuptutoringg/?hl=en',
-    },
-    {
-      type: 'facebook',
-      url: 'https://www.facebook.com/stepuptutoringg',
-    },
-  ],
-  members: ['1j0tRKGtpjSX33gLsLnalxvd1Tl2'],
-  profiles: [
-    'name',
-    'photo',
-    'email',
-    'bio',
-    'subjects',
-    'availability',
-    'langs',
-  ],
-  domains: [],
-  aspects: ['tutoring'],
-  signup: {
-    en: {
-      tutoring: {
-        body:
-          'Step Up Tutoring is a very personal and fulfilling way to provide community service. We want to ensure that ALL kids have access to the academic and social capital necessary to succeed in America. You can make a difference! Simply fill out the form below to volunteer as a tutor.',
-        header: 'Support students throughout COVID',
-        bio: '',
-      },
-    },
-  },
-  home: {
-    en: {
-      body:
-        'Step Up Tutoring is a very personal and fulfilling way to provide community service. We want to ensure that ALL kids have access to the academic and social capital necessary to succeed in America. You can make a difference! Simply click the "Become a tutor" button to volunteer.',
-      header: 'Prospective Tutors',
-    },
-  },
-});
-
 const createUser = async (user) => {
-  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const endpoint = 'https://tutorbook.app/api/users';
   const [err] = await to(axios.post(endpoint, user));
   if (err) console.log('Error creating user:', err);
 };
@@ -597,7 +570,7 @@ const changeDateJSONToDates = async () => {
   bar.start(matches.length, count);
   await Promise.all(
     matches.map(async (match) => {
-      const url = `https://develop.tutorbook.app/api/matches/${match.id}`;
+      const url = `https://tutorbook.app/api/matches/${match.id}`;
       const [err] = await to(axios.put(url, match, { headers }));
       if (err) {
         console.error(
