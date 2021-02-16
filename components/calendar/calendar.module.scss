@@ -6,6 +6,29 @@ $times-width: 40px;
 $cell-width: 100px;
 $border-color: var(--accents-2);
 
+.cell {
+  padding-right: 10px;
+
+  .event {
+    background: var(--primary);
+    color: var(--on-primary);
+    border-radius: 2px;
+    position: absolute;
+    font-size: 12px;
+    line-height: 15px;
+    padding: 4px 0 4px 8px;
+
+    .subjects {
+      font-weight: 600;
+    }
+
+    .time {
+      font-size: 10px;
+      letter-spacing: 0.05px;
+    }
+  }
+}
+
 .loader {
   position: absolute;
   top: 50%;

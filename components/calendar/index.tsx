@@ -11,21 +11,24 @@ import mergeRefs from 'react-merge-refs';
 import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
+import useTranslation from 'next-translate/useTranslation';
 
 import LoadingDots from 'components/loading-dots';
 
+import { Meeting, Timeslot } from 'lib/model';
 import { ClickContext } from 'lib/hooks/click-outside';
-import { Meeting } from 'lib/model';
+import { getDateWithDay } from 'lib/utils/time';
+import { join } from 'lib/utils';
 import { useClickOutside } from 'lib/hooks';
 
-import { Cells, Headers, Lines, Times, Weekdays } from './components';
 import {
   DialogSurface,
   ExistingMeetingDialog,
   NewMeetingDialog,
 } from './dialogs';
 import { ExistingMeetingRnd, NewMeetingRnd } from './rnds';
-import { getMeeting } from './utils';
+import { Headers, Lines, Times, Weekdays } from './components';
+import { getHeight, getMeeting, getPosition } from './utils';
 import styles from './calendar.module.scss';
 import { useCalendar } from './context';
 
@@ -44,6 +47,7 @@ export default function CalendarBody({
   const [viewing, setViewing] = useState<Meeting>();
 
   const { startingDate } = useCalendar();
+  const { lang: locale } = useTranslation();
   const { updateEl, removeEl } = useClickOutside(
     () => setDialogOpen(false),
     dialogOpen
@@ -180,19 +184,6 @@ export default function CalendarBody({
                   onClick={onClick}
                   ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
                 >
-                  {!searching &&
-                    meetings.map((meeting: Meeting) => (
-                      <ExistingMeetingRnd
-                        now={now}
-                        width={width}
-                        viewing={viewing}
-                        setViewing={setViewing}
-                        draggingId={draggingId}
-                        setDraggingId={setDraggingId}
-                        meeting={meeting}
-                        key={meeting.id}
-                      />
-                    ))}
                   {viewing?.id.startsWith('temp') && (
                     <NewMeetingRnd
                       now={now}
@@ -203,7 +194,123 @@ export default function CalendarBody({
                       setDraggingId={setDraggingId}
                     />
                   )}
-                  <Cells now={now} ref={cellRef} />
+                  {/*
+                   *{!searching && meetings.map((meeting: Meeting) => (
+                   *  <ExistingMeetingRnd
+                   *    now={now}
+                   *    width={width}
+                   *    viewing={viewing}
+                   *    setViewing={setViewing}
+                   *    draggingId={draggingId}
+                   *    setDraggingId={setDraggingId}
+                   *    meeting={meeting}
+                   *    key={meeting.id}
+                   *  />
+                   *))}
+                   */}
+                  {Array(7)
+                    .fill(null)
+                    .map((_, day) => {
+                      const date = getDateWithDay(day, startingDate);
+                      const today =
+                        now.getFullYear() === date.getFullYear() &&
+                        now.getMonth() === date.getMonth() &&
+                        now.getDate() === date.getDate();
+                      const { y: top } = getPosition(now);
+                      const events = meetings
+                        .filter((m) => m.time.from.getDay() === day)
+                        .sort(({ time: e1 }, { time: e2 }) => {
+                          if (e1.from < e2.from) return -1;
+                          if (e1.from > e2.from) return 1;
+                          if (e1.to < e2.to) return -1;
+                          if (e1.to > e2.to) return 1;
+                          return 0;
+                        });
+                      // Each group contains columns of events that overlap.
+                      const groups: Meeting[][][] = [];
+                      // Each column contains events that do not overlap.
+                      let columns: Meeting[][] = [];
+                      let lastEventEnding: Date | undefined;
+                      // Place each event into a column within an event group.
+                      events.forEach((e) => {
+                        // Check if a new event group needs to be started.
+                        if (lastEventEnding && e.time.from >= lastEventEnding) {
+                          // The event is later than any of the events in the
+                          // current group. There is no overlap. Output the
+                          // current event group and start a new one.
+                          groups.push(columns);
+                          columns = [];
+                          lastEventEnding = undefined;
+                        }
+
+                        // Try to place the event inside an existing column.
+                        let placed = false;
+                        columns.some((col) => {
+                          if (!e.time.overlaps(col[col.length - 1].time)) {
+                            col.push(e);
+                            placed = true;
+                          }
+                          return placed;
+                        });
+
+                        // It was not possible to place the event (it overlaps
+                        // with events in each existing column). Add a new column
+                        // to the current event group with the event in it.
+                        if (!placed) columns.push([e]);
+
+                        // Remember the last event end time of the current group.
+                        if (!lastEventEnding || e.time.to > lastEventEnding)
+                          lastEventEnding = e.time.to;
+                      });
+                      groups.push(columns);
+                      return (
+                        <div
+                          key={nanoid()}
+                          className={styles.cell}
+                          ref={cellRef}
+                        >
+                          {today && (
+                            <div style={{ top }} className={styles.indicator}>
+                              <div className={styles.dot} />
+                              <div className={styles.line} />
+                            </div>
+                          )}
+                          {groups.map((cols: Meeting[][]) =>
+                            cols.map((col: Meeting[], colIdx) =>
+                              col.map((e: Meeting) => {
+                                const left = `${(colIdx / cols.length) * 100}%`;
+                                const width = `${(1 / cols.length) * 100}%`;
+                                const { y: top } = getPosition(e.time.from);
+                                const height = getHeight(e.time);
+                                return (
+                                  <div
+                                    style={{ top, left, width, height }}
+                                    className={styles.event}
+                                  >
+                                    <div className={styles.subjects}>
+                                      {join(e.match.subjects)}
+                                    </div>
+                                    <div className={styles.time}>
+                                      {`${(
+                                        e.time || new Timeslot()
+                                      ).from.toLocaleString(locale, {
+                                        hour: 'numeric',
+                                        minute: 'numeric',
+                                      })} - ${(
+                                        e.time || new Timeslot()
+                                      ).to.toLocaleString(locale, {
+                                        hour: 'numeric',
+                                        minute: 'numeric',
+                                      })}`}
+                                    </div>
+                                  </div>
+                                );
+                              })
+                            )
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </div>
