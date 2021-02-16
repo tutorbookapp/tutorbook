@@ -34,7 +34,7 @@ interface SearchPageProps {
 function SearchPage({ org }: SearchPageProps): JSX.Element {
   usePage({ name: 'Org Search', org: org?.id });
 
-  const { user: currentUser, loggedIn } = useUser();
+  const { user: currentUser, orgs, loggedIn } = useUser();
 
   const [query, setQuery] = useState<UsersQuery>(new UsersQuery());
   const [hits, setHits] = useState<number>(query.hitsPerPage);
@@ -60,7 +60,8 @@ function SearchPage({ org }: SearchPageProps): JSX.Element {
     } else if (
       currentUser.orgs.includes(org.id) ||
       !org.domains.length ||
-      org.domains.some((d: string) => currentUser.email.endsWith(`@${d}`))
+      org.domains.some((d: string) => currentUser.email.endsWith(`@${d}`)) ||
+      orgs.some(({ id }) => id === org.id)
     ) {
       setAuth(false);
       setCanSearch(true);
@@ -68,7 +69,7 @@ function SearchPage({ org }: SearchPageProps): JSX.Element {
       setAuth(true);
       setCanSearch(false);
     }
-  }, [loggedIn, currentUser, org]);
+  }, [loggedIn, currentUser, org, orgs]);
 
   // Save the number of hits from the last successful request.
   useEffect(() => setHits((prev) => data?.hits || prev), [data?.hits]);
