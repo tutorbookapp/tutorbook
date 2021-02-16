@@ -217,15 +217,6 @@ export default function CalendarBody({
                         now.getMonth() === date.getMonth() &&
                         now.getDate() === date.getDate();
                       const { y: top } = getPosition(now);
-                      const events = meetings
-                        .filter((m) => m.time.from.getDay() === day)
-                        .sort(({ time: e1 }, { time: e2 }) => {
-                          if (e1.from < e2.from) return -1;
-                          if (e1.from > e2.from) return 1;
-                          if (e1.to < e2.to) return -1;
-                          if (e1.to > e2.to) return 1;
-                          return 0;
-                        });
 
                       // Check if two events collide (i.e. overlap).
                       function collides(a: Timeslot, b: Timeslot): boolean {
@@ -257,36 +248,48 @@ export default function CalendarBody({
                       let columns: Meeting[][] = [];
                       let lastEventEnding: Date | undefined;
                       // Place each event into a column within an event group.
-                      events.forEach((e) => {
-                        // Check if a new event group needs to be started.
-                        if (lastEventEnding && e.time.from >= lastEventEnding) {
-                          // The event is later than any of the events in the
-                          // current group. There is no overlap. Output the
-                          // current event group and start a new one.
-                          groups.push(columns);
-                          columns = [];
-                          lastEventEnding = undefined;
-                        }
-
-                        // Try to place the event inside an existing column.
-                        let placed = false;
-                        columns.some((col) => {
-                          if (!collides(col[col.length - 1].time, e.time)) {
-                            col.push(e);
-                            placed = true;
+                      meetings
+                        .filter((m) => m.time.from.getDay() === day)
+                        .sort(({ time: e1 }, { time: e2 }) => {
+                          if (e1.from < e2.from) return -1;
+                          if (e1.from > e2.from) return 1;
+                          if (e1.to < e2.to) return -1;
+                          if (e1.to > e2.to) return 1;
+                          return 0;
+                        })
+                        .forEach((e) => {
+                          // Check if a new event group needs to be started.
+                          if (
+                            lastEventEnding &&
+                            e.time.from >= lastEventEnding
+                          ) {
+                            // The event is later than any of the events in the
+                            // current group. There is no overlap. Output the
+                            // current event group and start a new one.
+                            groups.push(columns);
+                            columns = [];
+                            lastEventEnding = undefined;
                           }
-                          return placed;
+
+                          // Try to place the event inside an existing column.
+                          let placed = false;
+                          columns.some((col) => {
+                            if (!collides(col[col.length - 1].time, e.time)) {
+                              col.push(e);
+                              placed = true;
+                            }
+                            return placed;
+                          });
+
+                          // It was not possible to place the event (it overlaps
+                          // with events in each existing column). Add a new column
+                          // to the current event group with the event in it.
+                          if (!placed) columns.push([e]);
+
+                          // Remember the last event end time of the current group.
+                          if (!lastEventEnding || e.time.to > lastEventEnding)
+                            lastEventEnding = e.time.to;
                         });
-
-                        // It was not possible to place the event (it overlaps
-                        // with events in each existing column). Add a new column
-                        // to the current event group with the event in it.
-                        if (!placed) columns.push([e]);
-
-                        // Remember the last event end time of the current group.
-                        if (!lastEventEnding || e.time.to > lastEventEnding)
-                          lastEventEnding = e.time.to;
-                      });
                       groups.push(columns);
                       return (
                         <div
@@ -305,14 +308,12 @@ export default function CalendarBody({
                               col.map((e: Meeting) => {
                                 const left = `${(colIdx / cols.length) * 100}%`;
                                 const colSpan = expand(e, colIdx, cols);
-                                const width = `${
-                                  (colSpan / cols.length) * 100
-                                }%`;
-                                const { y: top } = getPosition(e.time.from);
+                                const w = `${(colSpan / cols.length) * 100}%`;
+                                const { y: t } = getPosition(e.time.from);
                                 const height = getHeight(e.time);
                                 return (
                                   <div
-                                    style={{ top, left, width, height }}
+                                    style={{ left, height, top: t, width: w }}
                                     className={styles.event}
                                   >
                                     <div className={styles.subjects}>
