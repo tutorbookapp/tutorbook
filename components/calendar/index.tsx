@@ -226,6 +226,31 @@ export default function CalendarBody({
                           if (e1.to > e2.to) return 1;
                           return 0;
                         });
+
+                      // Check if two events collide (i.e. overlap).
+                      function collides(a: Timeslot, b: Timeslot): boolean {
+                        return a.to > b.from && a.from < b.to;
+                      }
+
+                      // Expands events at the far right to use up any remaining
+                      // space. Returns the number of columns the event can
+                      // expand into, without colliding with other events.
+                      function expand(
+                        e: Meeting,
+                        colIdx: number,
+                        cols: Meeting[][]
+                      ): number {
+                        let colSpan = 1;
+                        cols.slice(colIdx + 1).some((col) =>
+                          col.some((evt: Meeting) => {
+                            if (collides(e.time, evt.time)) return true;
+                            colSpan += 1;
+                            return false;
+                          })
+                        );
+                        return colSpan;
+                      }
+
                       // Each group contains columns of events that overlap.
                       const groups: Meeting[][][] = [];
                       // Each column contains events that do not overlap.
@@ -246,7 +271,7 @@ export default function CalendarBody({
                         // Try to place the event inside an existing column.
                         let placed = false;
                         columns.some((col) => {
-                          if (!e.time.overlaps(col[col.length - 1].time)) {
+                          if (!collides(col[col.length - 1].time, e.time)) {
                             col.push(e);
                             placed = true;
                           }
@@ -279,7 +304,10 @@ export default function CalendarBody({
                             cols.map((col: Meeting[], colIdx) =>
                               col.map((e: Meeting) => {
                                 const left = `${(colIdx / cols.length) * 100}%`;
-                                const width = `${(1 / cols.length) * 100}%`;
+                                const colSpan = expand(e, colIdx, cols);
+                                const width = `${
+                                  (colSpan / cols.length) * 100
+                                }%`;
                                 const { y: top } = getPosition(e.time.from);
                                 const height = getHeight(e.time);
                                 return (
