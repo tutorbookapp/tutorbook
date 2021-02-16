@@ -1,3 +1,4 @@
+const url = require('url');
 const path = require('path');
 const dotenv = require('dotenv');
 
@@ -656,4 +657,55 @@ const addResourceTimestamps = async (col) => {
       await d.ref.update({ created, updated });
     })
   );
+};
+
+// Deletes all users that come from the old app:
+// - Anyone w/out a bio.
+const purgeGunnData = async () => {
+  const hitsPerPage = 1000;
+  const endpoint = url.format({
+    pathname: 'https://tutorbook.app/api/users',
+    query: {
+      hitsPerPage,
+      orgs: encodeURIComponent(JSON.stringify([{ value: 'gunn', label: '' }])),
+    },
+  });
+  console.log('Querying endpoint:', endpoint);
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const {
+    data: { users, hits },
+  } = await axios.get(endpoint, { headers });
+  if (hits > hitsPerPage)
+    console.warn(
+      `You'll need to run this a second time because there are more than ${hitsPerPage} (${hits}) users.`
+    );
+  let errored = 0;
+  let deleted = 0;
+  let saved = 0;
+  await Promise.all(
+    users.map(async (user) => {
+      if (!user.bio) {
+        console.log(`Deleting ${user.name} (${user.id})...`);
+        const url = `https://tutorbook.app/api/users/${user.id}`;
+        const [err] = await to(axios.delete(url, { headers }));
+        if (err) {
+          console.error(
+            `${err.name} deleting ${user.name} (${user.id}): ${err.message}`
+          );
+          errored++;
+          debugger;
+        }
+        deleted++;
+      } else {
+        console.log(
+          `Saving ${user.name} (${user.id})...`,
+          `https://tutorbook.app/gunn/users/${user.id}`
+        );
+        saved++;
+      }
+    })
+  );
+  console.log(`Deleted ${deleted} profiles.`);
+  console.log(`Errored ${errored} profiles.`);
+  console.log(`Saved ${saved} profiles.`);
 };
