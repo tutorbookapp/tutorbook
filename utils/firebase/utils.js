@@ -353,6 +353,20 @@ const updateUser = async (user) => {
   }
 };
 
+const updateUserExistingData = async (user) => {
+  const endpoint = `https://tutorbook.app/api/users/${user.id}`;
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const { data } = await axios.get(endpoint, { headers });
+  console.log(`Merging ${user.name} (${user.id}) data...`, data);
+  const updated = { ...data, ...user, updated: new Date().toJSON() };
+  console.log(`Updating ${user.name} (${user.id}) data...`, updated);
+  const [err] = await to(axios.put(endpoint, updated, { headers }));
+  if (err) {
+    console.error(`${err.name} updating user (${user.name}): ${err.message}`);
+    debugger;
+  }
+};
+
 const deleteOrg = async (orgId) => {
   const endpoint = `https://tutorbook.app/api/orgs/${orgId}`;
   const headers = { authorization: `Bearer ${await createToken()}` };
