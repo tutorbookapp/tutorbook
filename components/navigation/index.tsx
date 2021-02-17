@@ -55,6 +55,7 @@ function Logo(): JSX.Element {
 
 function DesktopNav(): JSX.Element {
   const { user, loggedIn } = useUser();
+  const { org } = useOrg();
   const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
   return (
@@ -66,7 +67,7 @@ function DesktopNav(): JSX.Element {
               {t('common:login')}
             </a>
           </Link>
-          <Link href={`/${user.orgs[0] || 'default'}/signup`}>
+          <Link href={`/${org?.id || user.orgs[0] || 'default'}/signup`}>
             <a className={`${styles.desktopLink} ${styles.signupLink}`}>
               {t('common:signup')}
             </a>
