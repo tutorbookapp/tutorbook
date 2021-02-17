@@ -9,8 +9,8 @@ import styles from './meeting-display.module.scss';
 
 export interface MeetingDisplayProps {
   now: Date;
-  left: string;
-  width: string;
+  leftPercent: number;
+  widthPercent: number;
   meeting: Meeting;
   viewing: Meeting | undefined;
   setViewing: TCallback<Meeting | undefined>;
@@ -18,8 +18,8 @@ export interface MeetingDisplayProps {
 
 export default function MeetingDisplay({
   now,
-  left,
-  width,
+  leftPercent,
+  widthPercent,
   meeting,
   viewing,
   setViewing,
@@ -27,6 +27,14 @@ export default function MeetingDisplay({
   const top = useMemo(() => getPosition(meeting.time.from).y, [
     meeting.time.from,
   ]);
+  const left = useMemo(() => {
+    if (leftPercent === 0) return '-1px';
+    return `calc(${leftPercent * 100}% + 1px)`;
+  }, [leftPercent]);
+  const width = useMemo(() => {
+    if (leftPercent === 0) return `calc(${widthPercent * 100}% + 1px)`;
+    return `calc(${widthPercent * 100}% - 1px)`;
+  }, [leftPercent, widthPercent]);
   const height = useMemo(() => getHeight(meeting.time), [meeting.time]);
 
   return (

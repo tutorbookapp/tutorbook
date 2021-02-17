@@ -209,6 +209,11 @@ export default function CalendarBody({
                   {Array(7)
                     .fill(null)
                     .map((_, day) => {
+                      // Place concurrent meetings side-by-side (like GCal).
+                      // @see {@link https://share.clickup.com/t/h/hpxh7u/WQO1OW4DQN0SIZD}
+                      // @see {@link https://stackoverflow.com/a/11323909/10023158}
+                      // @see {@link https://jsbin.com/detefuveta/edit}
+
                       // Check if two events collide (i.e. overlap).
                       function collides(a: Timeslot, b: Timeslot): boolean {
                         return a.to > b.from && a.from < b.to;
@@ -311,11 +316,10 @@ export default function CalendarBody({
                                   viewing={viewing}
                                   setViewing={setViewing}
                                   meeting={e}
-                                  width={`${
-                                    (expand(e, colIdx, cols) / cols.length) *
-                                    100
-                                  }%`}
-                                  left={`${(colIdx / cols.length) * 100}%`}
+                                  widthPercent={
+                                    expand(e, colIdx, cols) / cols.length
+                                  }
+                                  leftPercent={colIdx / cols.length}
                                 />
                               ))
                             )
