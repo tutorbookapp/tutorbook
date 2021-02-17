@@ -135,7 +135,7 @@ export default function RndSurface({
       onDrag={onDrag}
       bounds='parent'
       resizeGrid={[0, 12]}
-      dragGrid={[width, 12]}
+      dragGrid={[width + RND_MARGIN, 12]}
       enableResizing={{
         bottom: true,
         bottomLeft: false,
