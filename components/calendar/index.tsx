@@ -308,13 +308,14 @@ export default function CalendarBody({
                               col.map((e: Meeting) => (
                                 <MeetingDisplay
                                   now={now}
+                                  viewing={viewing}
+                                  setViewing={setViewing}
                                   meeting={e}
-                                  elevated={viewing?.id === e.id}
-                                  left={`${(colIdx / cols.length) * 100}%`}
                                   width={`${
                                     (expand(e, colIdx, cols) / cols.length) *
                                     100
                                   }%`}
+                                  left={`${(colIdx / cols.length) * 100}%`}
                                 />
                               ))
                             )

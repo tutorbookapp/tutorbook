@@ -45,31 +45,33 @@ export default function DialogSurface({
 
   const [measureRef, bounds] = useMeasure({ polyfill });
 
-  const rndPosition = useMemo(() => {
-    return getPosition(viewing.time.from, rndWidth);
-  }, [viewing.time.from, rndWidth]);
-  const rndHeight = useMemo(() => {
-    return getHeight(viewing.time);
-  }, [viewing.time]);
+  const rndPosition = useMemo(
+    () => getPosition(viewing.time.from, rndWidth + RND_MARGIN),
+    [viewing.time.from, rndWidth]
+  );
+  const rndHeight = useMemo(() => getHeight(viewing.time), [viewing.time]);
 
   const onLeft = useMemo(() => {
     const x = offset.x + rndPosition.x - bounds.width - PREVIEW_MARGIN;
     return dialogOpen ? x : x + 12;
   }, [offset.x, dialogOpen, rndPosition.x, bounds.width]);
   const onRight = useMemo(() => {
-    const x = offset.x + rndPosition.x + rndWidth - RND_MARGIN + PREVIEW_MARGIN;
+    const x = offset.x + rndPosition.x + rndWidth + PREVIEW_MARGIN;
     return dialogOpen ? x : x - 12;
   }, [offset.x, dialogOpen, rndPosition.x, rndWidth]);
 
-  const alignedTop = useMemo(() => {
-    return offset.y + rndPosition.y;
-  }, [offset.y, rndPosition.y]);
-  const alignedBottom = useMemo(() => {
-    return offset.y + rndPosition.y - bounds.height + rndHeight;
-  }, [offset.y, rndPosition.y, bounds.height, rndHeight]);
-  const alignedCenter = useMemo(() => {
-    return offset.y + rndPosition.y - 0.5 * (bounds.height - rndHeight);
-  }, [offset.y, rndPosition.y, bounds.height, rndHeight]);
+  const alignedTop = useMemo(() => offset.y + rndPosition.y, [
+    offset.y,
+    rndPosition.y,
+  ]);
+  const alignedBottom = useMemo(
+    () => offset.y + rndPosition.y - bounds.height + rndHeight,
+    [offset.y, rndPosition.y, bounds.height, rndHeight]
+  );
+  const alignedCenter = useMemo(
+    () => offset.y + rndPosition.y - 0.5 * (bounds.height - rndHeight),
+    [offset.y, rndPosition.y, bounds.height, rndHeight]
+  );
   const top = useMemo(() => {
     const vh = Math.max(
       document.documentElement.clientHeight || 0,

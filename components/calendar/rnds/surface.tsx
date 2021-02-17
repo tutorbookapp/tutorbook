@@ -50,10 +50,10 @@ export default function RndSurface({
   // @see {@link https://github.com/bokuweb/react-rnd/issues/457}
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
-  const position = useMemo(() => getPosition(meeting.time.from, width), [
-    meeting.time.from,
-    width,
-  ]);
+  const position = useMemo(
+    () => getPosition(meeting.time.from, width + RND_MARGIN),
+    [meeting.time.from, width]
+  );
   const height = useMemo(() => getHeight(meeting.time), [meeting.time]);
 
   const update = useCallback(
@@ -127,7 +127,7 @@ export default function RndSurface({
       })}
       position={position}
       minHeight={12 * 2}
-      size={{ width: width - RND_MARGIN, height }}
+      size={{ width: width, height }}
       onResizeStop={onResizeStop}
       onResize={onResize}
       onClick={onClick}

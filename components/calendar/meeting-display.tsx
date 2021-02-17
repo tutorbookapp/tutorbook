@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { useMemo } from 'react';
 
-import { Meeting } from 'lib/model';
+import { Meeting, TCallback } from 'lib/model';
 
 import { getHeight, getPosition } from './utils';
 import MeetingContent from './rnds/content';
@@ -12,7 +12,8 @@ export interface MeetingDisplayProps {
   left: string;
   width: string;
   meeting: Meeting;
-  elevated: boolean;
+  viewing: Meeting | undefined;
+  setViewing: TCallback<Meeting | undefined>;
 }
 
 export default function MeetingDisplay({
@@ -20,7 +21,8 @@ export default function MeetingDisplay({
   left,
   width,
   meeting,
-  elevated,
+  viewing,
+  setViewing,
 }: MeetingDisplayProps): JSX.Element {
   const top = useMemo(() => getPosition(meeting.time.from).y, [
     meeting.time.from,
@@ -31,9 +33,13 @@ export default function MeetingDisplay({
     <div
       style={{ top, left, width, height }}
       className={cn(styles.meeting, {
-        [styles.elevated]: elevated,
+        [styles.elevated]: viewing?.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}
+      onClick={(evt) => {
+        evt.stopPropagation();
+        setViewing(meeting);
+      }}
     >
       <MeetingContent meeting={meeting} height={height} />
       <span>

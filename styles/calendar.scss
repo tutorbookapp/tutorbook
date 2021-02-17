@@ -22,6 +22,7 @@
 @mixin headers($times-width, $cell-width) {
   flex: none;
   display: flex;
+  border-right: transparent 1px solid;
 
   .space {
     min-width: $times-width + 8px;
@@ -45,6 +46,7 @@
   height: 8px;
   display: flex;
   flex: none;
+  border-right: transparent 1px solid;
 
   .space {
     width: $times-width + 8px;
@@ -191,6 +193,7 @@
           flex: 1 1 auto;
           box-sizing: border-box;
           position: relative;
+          border-right: $border-color 1px solid;
 
           &.checkered {
             $dark-strip: var(--accents-2);
@@ -205,16 +208,13 @@
           }
 
           .cell {
-            width: $cell-width;
-            min-width: $cell-width;
-            max-width: calc(100% / 7);
+            width: $cell-width - 10px;
+            min-width: $cell-width - 10px;
+            max-width: calc((100% / 7) - 10px);
             flex: 1 0 auto;
             border-left: $border-color 1px solid;
-            position: relative; // Needed for current time indicator.
-
-            &:last-child {
-              border-right: $border-color 1px solid;
-            }
+            position: relative;
+            margin-right: 10px;
           }
         }
       }

@@ -93,7 +93,7 @@ $border-color: var(--accents-2);
   $color: #ea4335;
   position: absolute;
   z-index: 2;
-  right: 0;
+  right: -10px;
   left: 0;
 
   .dot {

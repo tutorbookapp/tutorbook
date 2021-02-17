@@ -10,7 +10,7 @@
   user-select: auto;
 
   &.elevated {
-    @include elevation.elevation(4);
+    @include elevation.elevation(8);
   }
 
   &.past .wrapper {
