@@ -1,12 +1,12 @@
 @use '@material/elevation';
 
 .meeting {
+  position: absolute;
   transition: elevation.transition-value();
   will-change: elevation.$property;
   background: var(--background);
   border-radius: 2px;
   overflow: hidden;
-  z-index: 1;
 
   &.elevated {
     @include elevation.elevation(4);

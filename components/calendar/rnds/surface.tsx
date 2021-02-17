@@ -10,16 +10,14 @@ import {
 import { ResizeDirection } from 're-resizable';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
-import useTranslation from 'next-translate/useTranslation';
 
-import { Meeting, TCallback, Timeslot } from 'lib/model';
-import { join } from 'lib/utils';
-import { useClickContext } from 'lib/hooks/click-outside';
+import { Meeting, TCallback } from 'lib/model';
 
 import { getHeight, getMeeting, getPosition } from '../utils';
 import { RND_MARGIN } from '../config';
 import { useCalendar } from '../context';
 
+import MeetingContent from './content';
 import styles from './surface.module.scss';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
@@ -45,29 +43,18 @@ export default function RndSurface({
   setDraggingId,
   onClick: clickHandler,
 }: RndSurfaceProps): JSX.Element {
-  const { updateEl, removeEl } = useClickContext();
-  const { lang: locale } = useTranslation();
   const { startingDate } = useCalendar();
-
-  const rndRef = useCallback(
-    (node: HTMLElement | null) => {
-      if (!node) return removeEl(`rnd-${meeting.id}`);
-      return updateEl(`rnd-${meeting.id}`, node);
-    },
-    [updateEl, removeEl, meeting.id]
-  );
 
   // Workaround for `react-rnd`'s unusual resizing behavior.
   // @see {@link https://codesandbox.io/s/1z7kjjk0pq?file=/src/index.js}
   // @see {@link https://github.com/bokuweb/react-rnd/issues/457}
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
-  const position = useMemo(() => {
-    return getPosition(meeting.time.from, width);
-  }, [meeting.time.from, width]);
-  const height = useMemo(() => {
-    return getHeight(meeting.time);
-  }, [meeting.time]);
+  const position = useMemo(() => getPosition(meeting.time.from, width), [
+    meeting.time.from,
+    width,
+  ]);
+  const height = useMemo(() => getHeight(meeting.time), [meeting.time]);
 
   const update = useCallback(
     (newHeight: number, newPos: Position) => {
@@ -130,28 +117,13 @@ export default function RndSurface({
     [setDraggingId, meeting.id, update, height]
   );
 
-  const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
-    height,
-  ]);
-  const timeString = useMemo(
-    () =>
-      `${(meeting.time || new Timeslot()).from.toLocaleString(locale, {
-        hour: 'numeric',
-        minute: 'numeric',
-      })} - ${(meeting.time || new Timeslot()).to.toLocaleString(locale, {
-        hour: 'numeric',
-        minute: 'numeric',
-      })}`,
-    [meeting.time, locale]
-  );
-
   return (
     <Rnd
       data-cy='meeting-rnd'
       style={{ cursor: draggingId === meeting.id ? 'move' : 'pointer' }}
       className={cn(styles.meeting, {
         [styles.elevated]: elevated,
-        [styles.past]: meeting.time.to.valueOf() <= now.valueOf(),
+        [styles.past]: meeting.time.to <= now,
       })}
       position={position}
       minHeight={12 * 2}
@@ -175,29 +147,7 @@ export default function RndSurface({
         topRight: false,
       }}
     >
-      <div ref={rndRef} className={styles.wrapper}>
-        <div className={styles.content}>
-          <div
-            className={styles.header}
-            style={{
-              maxHeight: headerHeight > 30 ? headerHeight - 15 : 15,
-              whiteSpace: headerHeight < 45 ? 'nowrap' : 'normal',
-            }}
-          >
-            {!!meeting.match.subjects.length && (
-              <span className={styles.subjects}>
-                {join(meeting.match.subjects)}
-              </span>
-            )}
-            {headerHeight < 30 && (
-              <span className={styles.time}>
-                {meeting.match.subjects.length ? `, ${timeString}` : timeString}
-              </span>
-            )}
-          </div>
-          {headerHeight > 15 && <div className={styles.time}>{timeString}</div>}
-        </div>
-      </div>
+      <MeetingContent meeting={meeting} height={height} />
     </Rnd>
   );
 }

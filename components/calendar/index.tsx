@@ -11,14 +11,12 @@ import mergeRefs from 'react-merge-refs';
 import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
-import useTranslation from 'next-translate/useTranslation';
 
 import LoadingDots from 'components/loading-dots';
 
 import { Meeting, Timeslot } from 'lib/model';
 import { ClickContext } from 'lib/hooks/click-outside';
 import { getDateWithDay } from 'lib/utils/time';
-import { join } from 'lib/utils';
 import { useClickOutside } from 'lib/hooks';
 
 import {
@@ -28,7 +26,8 @@ import {
 } from './dialogs';
 import { ExistingMeetingRnd, NewMeetingRnd } from './rnds';
 import { Headers, Lines, Times, Weekdays } from './components';
-import { getHeight, getMeeting, getPosition } from './utils';
+import { getMeeting, getPosition } from './utils';
+import MeetingDisplay from './meeting-display';
 import styles from './calendar.module.scss';
 import { useCalendar } from './context';
 
@@ -47,7 +46,6 @@ export default function CalendarBody({
   const [viewing, setViewing] = useState<Meeting>();
 
   const { startingDate } = useCalendar();
-  const { lang: locale } = useTranslation();
   const { updateEl, removeEl } = useClickOutside(
     () => setDialogOpen(false),
     dialogOpen
@@ -211,13 +209,6 @@ export default function CalendarBody({
                   {Array(7)
                     .fill(null)
                     .map((_, day) => {
-                      const date = getDateWithDay(day, startingDate);
-                      const today =
-                        now.getFullYear() === date.getFullYear() &&
-                        now.getMonth() === date.getMonth() &&
-                        now.getDate() === date.getDate();
-                      const { y: top } = getPosition(now);
-
                       // Check if two events collide (i.e. overlap).
                       function collides(a: Timeslot, b: Timeslot): boolean {
                         return a.to > b.from && a.from < b.to;
@@ -291,6 +282,15 @@ export default function CalendarBody({
                             lastEventEnding = e.time.to;
                         });
                       groups.push(columns);
+
+                      // Show current time indicator if today is current date.
+                      const date = getDateWithDay(day, startingDate);
+                      const today =
+                        now.getFullYear() === date.getFullYear() &&
+                        now.getMonth() === date.getMonth() &&
+                        now.getDate() === date.getDate();
+                      const { y: top } = getPosition(now);
+
                       return (
                         <div
                           key={nanoid()}
@@ -305,36 +305,18 @@ export default function CalendarBody({
                           )}
                           {groups.map((cols: Meeting[][]) =>
                             cols.map((col: Meeting[], colIdx) =>
-                              col.map((e: Meeting) => {
-                                const left = `${(colIdx / cols.length) * 100}%`;
-                                const colSpan = expand(e, colIdx, cols);
-                                const w = `${(colSpan / cols.length) * 100}%`;
-                                const { y: t } = getPosition(e.time.from);
-                                const height = getHeight(e.time);
-                                return (
-                                  <div
-                                    style={{ left, height, top: t, width: w }}
-                                    className={styles.event}
-                                  >
-                                    <div className={styles.subjects}>
-                                      {join(e.match.subjects)}
-                                    </div>
-                                    <div className={styles.time}>
-                                      {`${(
-                                        e.time || new Timeslot()
-                                      ).from.toLocaleString(locale, {
-                                        hour: 'numeric',
-                                        minute: 'numeric',
-                                      })} - ${(
-                                        e.time || new Timeslot()
-                                      ).to.toLocaleString(locale, {
-                                        hour: 'numeric',
-                                        minute: 'numeric',
-                                      })}`}
-                                    </div>
-                                  </div>
-                                );
-                              })
+                              col.map((e: Meeting) => (
+                                <MeetingDisplay
+                                  now={now}
+                                  meeting={e}
+                                  elevated={viewing?.id === e.id}
+                                  left={`${(colIdx / cols.length) * 100}%`}
+                                  width={`${
+                                    (expand(e, colIdx, cols) / cols.length) *
+                                    100
+                                  }%`}
+                                />
+                              ))
                             )
                           )}
                         </div>
