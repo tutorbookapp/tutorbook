@@ -36,6 +36,10 @@ export default function MeetingDisplay({
       })}
     >
       <MeetingContent meeting={meeting} height={height} />
+      <span>
+        <div className={styles.bottom} />
+        <div className={styles.top} />
+      </span>
     </div>
   );
 }

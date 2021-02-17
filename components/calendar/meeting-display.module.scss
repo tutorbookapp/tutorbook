@@ -6,7 +6,8 @@
   will-change: elevation.$property;
   background: var(--background);
   border-radius: 2px;
-  overflow: hidden;
+  cursor: pointer;
+  user-select: auto;
 
   &.elevated {
     @include elevation.elevation(4);
@@ -14,5 +15,23 @@
 
   &.past .wrapper {
     background: var(--primary-5);
+  }
+
+  span .bottom,
+  span .top {
+    position: absolute;
+    user-select: none;
+    width: 100%;
+    height: 10px;
+    left: 0px;
+    cursor: row-resize;
+  }
+
+  span .bottom {
+    bottom: -5px;
+  }
+
+  span .top {
+    top: -5px;
   }
 }

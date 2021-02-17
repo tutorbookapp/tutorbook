@@ -5,7 +5,6 @@
   will-change: elevation.$property;
   background: var(--background);
   border-radius: 2px;
-  overflow: hidden;
   z-index: 1;
 
   &.elevated {
