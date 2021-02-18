@@ -46,7 +46,7 @@ export interface SingleOptions {
  * locally mutate data first, then? Or should we hide the loader before the
  * remote is properly updated?
  */
-export default function useSingle<T extends { id: string }>(
+export default function useSingle<T>(
   initialData: T,
   updateRemote: (data: T) => Promise<T | void>,
   updateLocal?: (data: T, hasBeenUpdated?: boolean) => Promise<void> | void,
