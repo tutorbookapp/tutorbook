@@ -27,7 +27,6 @@
   "notes": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
   "match": {
     "id": "match",
-    "status": "new",
     "created": "2020-10-15T19:04:10",
     "updated": "2020-10-15T19:04:10",
     "creator": {
