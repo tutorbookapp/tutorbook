@@ -6,7 +6,6 @@ import Overview from 'components/overview';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
-import { Org } from 'lib/model';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -62,7 +61,7 @@ function DashboardPage(): JSX.Element {
             },
           ]}
         />
-        <Overview account={org || new Org()} />
+        <Overview />
       </Page>
     </OrgContext.Provider>
   );

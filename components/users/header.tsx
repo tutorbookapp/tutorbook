@@ -76,7 +76,7 @@ export default memo(function Header({
       )}
       <TitleHeader
         header={t('common:users')}
-        body={t('users:subtitle', { name: orgName })}
+        body={t('users:subtitle', { name: orgName ? `${orgName}'s` : 'your' })}
         actions={[
           {
             label: t('users:share-signup-link'),

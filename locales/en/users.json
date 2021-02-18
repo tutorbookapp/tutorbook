@@ -1,5 +1,5 @@
 {
-  "subtitle": "Create, edit, and match users",
+  "subtitle": "Create, edit, and match {{name}} users",
   "create-user": "Create user",
   "import-data-msg": "Could you help me import existing user data?",
   "share-search-link": "Share search link",

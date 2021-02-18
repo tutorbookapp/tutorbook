@@ -5,6 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Header from 'components/header';
 
 import { Callback, MeetingsQuery } from 'lib/model';
+import { useOrg } from 'lib/context/org';
 
 export interface CalendarHeaderProps {
   query: MeetingsQuery;
@@ -15,6 +16,7 @@ export default function CalendarHeader({
   query,
   setQuery,
 }: CalendarHeaderProps): JSX.Element {
+  const { org } = useOrg();
   const { t, lang: locale } = useTranslation();
 
   const title = useMemo(() => {
@@ -61,7 +63,7 @@ export default function CalendarHeader({
   return (
     <Header
       header={title}
-      body={t('calendar:subtitle')}
+      body={t('calendar:subtitle', { name: org ? `${org.name}'s` : 'your' })}
       actions={[
         {
           label: 'Previous week',

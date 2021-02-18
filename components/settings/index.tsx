@@ -66,7 +66,7 @@ export default function Settings({
       )}
       <Header
         header={t('common:settings')}
-        body={t('settings:subtitle', { name: org.name || 'your organization' })}
+        body={t('settings:subtitle', { name: org ? `${org.name}'s` : 'your' })}
       />
       <div className={styles.wrapper}>
         <div className={styles.left}>

@@ -5,7 +5,6 @@ import Overview from 'components/overview';
 import { TabHeader } from 'components/navigation';
 
 import { usePage } from 'lib/hooks';
-import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import overview from 'locales/en/overview.json';
@@ -13,7 +12,6 @@ import common from 'locales/en/common.json';
 
 function DashboardPage(): JSX.Element {
   const { t } = useTranslation();
-  const { user } = useUser();
 
   usePage({ name: 'Dashboard', url: '/dashboard', login: true });
 
@@ -37,7 +35,7 @@ function DashboardPage(): JSX.Element {
           },
         ]}
       />
-      <Overview account={user} />
+      <Overview />
     </Page>
   );
 }
