@@ -26,6 +26,7 @@ import styles from './edit-page.module.scss';
 export interface EditPageProps {
   people: User[];
   meeting: Meeting;
+  dialogOpen: boolean;
   setLoading: Callback<boolean>;
   setChecked: Callback<boolean>;
 }
@@ -33,6 +34,7 @@ export interface EditPageProps {
 export default function EditPage({
   people,
   meeting: initialData,
+  dialogOpen,
   setLoading,
   setChecked,
 }: EditPageProps): JSX.Element {
@@ -51,7 +53,7 @@ export default function EditPage({
     loading,
     checked,
     error,
-  } = useSingle(initialData, updateRemote, mutateMeeting, { sync: true });
+  } = useSingle(initialData, updateRemote, mutateMeeting, { sync: dialogOpen });
 
   const nav = useNav();
   const prevLoading = usePrevious(loading);

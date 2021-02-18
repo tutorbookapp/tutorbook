@@ -243,7 +243,9 @@ export default function CalendarBody({
           setDialogOpen={setDialogOpen}
           onClosed={onClosed}
         >
-          {!viewing.id.startsWith('temp') && <EditDialog meeting={viewing} />}
+          {!viewing.id.startsWith('temp') && (
+            <EditDialog meeting={viewing} dialogOpen={dialogOpen} />
+          )}
           {viewing.id.startsWith('temp') && (
             <CreateDialog viewing={viewing} setViewing={setViewing} />
           )}

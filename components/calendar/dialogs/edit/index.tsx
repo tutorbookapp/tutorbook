@@ -15,9 +15,13 @@ export enum Page {
 
 export interface EditDialogProps {
   meeting: Meeting;
+  dialogOpen: boolean;
 }
 
-export default function EditDialog({ meeting }: EditDialogProps): JSX.Element {
+export default function EditDialog({
+  meeting,
+  dialogOpen,
+}: EditDialogProps): JSX.Element {
   const [active, setActive] = useState<number>(Page.Display);
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -57,6 +61,7 @@ export default function EditDialog({ meeting }: EditDialogProps): JSX.Element {
       <EditPage
         people={people}
         meeting={meeting}
+        dialogOpen={dialogOpen}
         setLoading={setLoading}
         setChecked={setChecked}
       />
