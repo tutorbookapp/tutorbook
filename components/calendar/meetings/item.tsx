@@ -69,6 +69,7 @@ export default function MeetingItem({
         [styles.editing]: editRndVisible && editing?.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}
+      onClick={(evt) => evt.stopPropagation()}
       onMouseDown={(evt) => {
         evt.stopPropagation();
 
