@@ -1,7 +1,8 @@
+import { useCallback, useMemo } from 'react';
 import cn from 'classnames';
-import { useMemo } from 'react';
 
 import { Meeting, TCallback } from 'lib/model';
+import { useClickContext } from 'lib/hooks/click-outside';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 import { getHeight, getPosition } from '../utils';
@@ -51,6 +52,15 @@ export default function MeetingItem({
   }, [leftPercent, widthPercent]);
   const height = useMemo(() => getHeight(meeting.time), [meeting.time]);
 
+  const { updateEl, removeEl } = useClickContext();
+  const ref = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return removeEl(`meeting-item-${meeting.id}`);
+      return updateEl(`meeting-item-${meeting.id}`, node);
+    },
+    [updateEl, removeEl, meeting.id]
+  );
+
   return (
     <div
       style={{ top, left, width, height }}
@@ -65,21 +75,23 @@ export default function MeetingItem({
         // Decide what to do after mousedown:
         // - If mousemove, then edit with RND (this is a drag).
         // - If mouseup, then view (this is a click).
-        const edit = (evt: MouseEvent) => {
+        const edit = (e: MouseEvent) => {
+          e.stopPropagation();
           removeListeners();
           setEditing(meeting);
           setEventTarget('middle');
           setEventData({
-            screenX: evt.screenX,
-            screenY: evt.screenY,
-            clientX: evt.clientX,
-            clientY: evt.clientY,
-            button: evt.button,
-            buttons: evt.buttons,
+            screenX: e.screenX,
+            screenY: e.screenY,
+            clientX: e.clientX,
+            clientY: e.clientY,
+            button: e.button,
+            buttons: e.buttons,
           });
           setEditRndVisible(true);
         };
-        const view = () => {
+        const view = (e: MouseEvent) => {
+          e.stopPropagation();
           removeListeners();
           setViewing(meeting);
         };
@@ -92,7 +104,7 @@ export default function MeetingItem({
         document.addEventListener('mouseup', view, { capture: true });
       }}
     >
-      <MeetingContent meeting={meeting} height={height} />
+      <MeetingContent ref={ref} meeting={meeting} height={height} />
       <span>
         <div
           className={styles.bottom}

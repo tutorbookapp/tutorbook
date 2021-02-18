@@ -294,7 +294,6 @@ export default function CalendarBody({
                       width={width}
                       meeting={viewing}
                       setMeeting={setViewing}
-                      draggingId={draggingId}
                       setDraggingId={setDraggingId}
                     />
                   )}
@@ -304,7 +303,6 @@ export default function CalendarBody({
                       width={width}
                       meeting={editing}
                       setMeeting={setEditing}
-                      draggingId={draggingId}
                       setDraggingId={setDraggingId}
                       onEditStop={() => {
                         void onEditStop();

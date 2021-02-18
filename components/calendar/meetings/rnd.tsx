@@ -12,6 +12,7 @@ import cn from 'classnames';
 import dynamic from 'next/dynamic';
 
 import { Meeting, TCallback } from 'lib/model';
+import { useClickContext } from 'lib/hooks/click-outside';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 import { getHeight, getMeeting, getPosition } from '../utils';
@@ -28,7 +29,6 @@ export interface MeetingRndProps {
   width: number;
   meeting: Meeting;
   setMeeting: TCallback<Meeting>;
-  draggingId?: string;
   setDraggingId: TCallback<string | undefined>;
   onEditStop?: () => void;
   eventTarget?: MouseEventHackTarget;
@@ -40,7 +40,6 @@ export default function MeetingRnd({
   width,
   meeting,
   setMeeting,
-  draggingId,
   setDraggingId,
   onEditStop,
   eventTarget,
@@ -116,6 +115,15 @@ export default function MeetingRnd({
     [setDraggingId, meeting.id, update, height]
   );
 
+  const { updateEl, removeEl } = useClickContext();
+  const ref = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return removeEl(`meeting-rnd-${meeting.id}`);
+      return updateEl(`meeting-rnd-${meeting.id}`, node);
+    },
+    [updateEl, removeEl, meeting.id]
+  );
+
   return (
     <Rnd
       data-cy='meeting-rnd'
@@ -145,6 +153,7 @@ export default function MeetingRnd({
       }}
     >
       <MeetingContent
+        ref={ref}
         meeting={meeting}
         height={height}
         eventTarget={eventTarget}

@@ -1,11 +1,10 @@
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { Ref, forwardRef, memo, useEffect, useMemo, useRef } from 'react';
 import { dequal } from 'dequal/lite';
 import mergeRefs from 'react-merge-refs';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Meeting, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
-import { useClickContext } from 'lib/hooks/click-outside';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 
@@ -18,24 +17,14 @@ export interface MeetingContentProps {
   eventData?: MouseEventHackData;
 }
 
-export default memo(
-  ({
-    meeting,
-    height,
-    eventTarget,
-    eventData,
-  }: MeetingContentProps): JSX.Element => {
-    const { updateEl, removeEl } = useClickContext();
+const MeetingContent = forwardRef(
+  (
+    { meeting, height, eventTarget, eventData }: MeetingContentProps,
+    ref: Ref<HTMLElement>
+  ): JSX.Element => {
     const { lang: locale } = useTranslation();
 
     const nodeRef = useRef<HTMLElement>(null);
-    const ref = useCallback(
-      (node: HTMLElement | null) => {
-        if (!node) return removeEl(`rnd-${meeting.id}`);
-        return updateEl(`rnd-${meeting.id}`, node);
-      },
-      [updateEl, removeEl, meeting.id]
-    );
 
     useEffect(() => {
       if (!eventTarget || !eventData) return;
@@ -101,7 +90,11 @@ export default memo(
         </div>
       </div>
     );
-  },
+  }
+);
+
+export default memo(
+  MeetingContent,
   (prevProps: MeetingContentProps, nextProps: MeetingContentProps) =>
     dequal(prevProps, nextProps)
 );
