@@ -13,13 +13,11 @@ export enum Page {
   Edit,
 }
 
-export interface ExistingMeetingDialogProps {
+export interface EditDialogProps {
   meeting: Meeting;
 }
 
-export default function ExistingMeetingDialog({
-  meeting,
-}: ExistingMeetingDialogProps): JSX.Element {
+export default function EditDialog({ meeting }: EditDialogProps): JSX.Element {
   const [active, setActive] = useState<number>(Page.Display);
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);

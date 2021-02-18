@@ -10,15 +10,15 @@ export enum Page {
   Create = 0,
 }
 
-export interface NewMeetingDialogProps {
+export interface CreateDialogProps {
   viewing: Meeting;
   setViewing: TCallback<Meeting>;
 }
 
-export default function NewMeetingDialog({
+export default function CreateDialog({
   viewing,
   setViewing,
-}: NewMeetingDialogProps): JSX.Element {
+}: CreateDialogProps): JSX.Element {
   const [active, setActive] = useState<number>(Page.Create);
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
