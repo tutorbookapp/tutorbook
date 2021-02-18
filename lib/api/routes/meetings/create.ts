@@ -13,8 +13,6 @@ import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
-import getUser from 'lib/api/get/user';
-import sendEmails from 'lib/mail/meetings/create';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyIsOrgAdmin from 'lib/api/verify/is-org-admin';
@@ -41,7 +39,7 @@ export default async function createMeeting(
 
     const org = await getOrg(body.match.org);
     const creator = await getPerson(body.creator, people);
-    await verifyAuth(req.headers, { userId: creator.id });
+    await verifyAuth(req.headers, { orgIds: [org.id] });
 
     // Verify the creator exists, is sending an authorized request, and:
     // - The creator is also the creator of the meeting's match (in which case
@@ -67,6 +65,7 @@ export default async function createMeeting(
       await createMatchSearchObj(body.match);
     } else {
       // Match org cannot change (security issue if it can).
+      // TODO: Shouldn't the match people be restricted too?
       if ((originalMatch as Match).org !== body.match.org) {
         const msg = `Match org (${org.toString()}) cannot change`;
         throw new APIError(msg, 400);
@@ -82,9 +81,6 @@ export default async function createMeeting(
     body.venue = await createZoom(body, people);
     const meeting = await createMeetingDoc(body);
     await createMeetingSearchObj(meeting);
-
-    const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));
-    await sendEmails(meeting, people, creator, org, orgAdmins);
 
     res.status(200).json(meeting.toJSON());
   } catch (e) {
