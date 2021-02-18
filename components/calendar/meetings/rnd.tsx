@@ -18,31 +18,29 @@ import { RND_MARGIN } from '../config';
 import { useCalendar } from '../context';
 
 import MeetingContent from './content';
-import styles from './surface.module.scss';
+import styles from './rnd.module.scss';
 
 const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 
-export interface RndSurfaceProps {
+export interface MeetingRndProps {
   now: Date;
   width: number;
-  elevated: boolean;
   meeting: Meeting;
   setMeeting: TCallback<Meeting>;
   draggingId?: string;
   setDraggingId: TCallback<string | undefined>;
-  onClick?: () => void;
+  onEditStop?: () => void;
 }
 
-export default function RndSurface({
+export default function MeetingRnd({
   now,
   width,
-  elevated,
   meeting,
   setMeeting,
   draggingId,
   setDraggingId,
-  onClick: clickHandler,
-}: RndSurfaceProps): JSX.Element {
+  onEditStop,
+}: MeetingRndProps): JSX.Element {
   const { startingDate } = useCalendar();
 
   // Workaround for `react-rnd`'s unusual resizing behavior.
@@ -63,22 +61,20 @@ export default function RndSurface({
     [startingDate, width, setMeeting, meeting]
   );
 
-  const onClick = useCallback(
-    (evt: ReactMouseEvent) => {
-      evt.stopPropagation();
-      if (clickHandler) clickHandler();
-    },
-    [clickHandler]
-  );
+  const onClick = useCallback((evt: ReactMouseEvent) => {
+    evt.stopPropagation();
+  }, []);
   const onResizeStop = useCallback(() => {
     // Wait a tick so `draggingId` remains `true` which prevents certain event
     // listeners from triggering (e.g. the `onClick` listener in `Calendar`).
     setTimeout(() => setDraggingId(undefined), 0);
     setOffset({ x: 0, y: 0 });
-  }, [setDraggingId]);
+    if (onEditStop) onEditStop();
+  }, [setDraggingId, onEditStop]);
   const onDragStop = useCallback(() => {
     setTimeout(() => setDraggingId(undefined), 0);
-  }, [setDraggingId]);
+    if (onEditStop) onEditStop();
+  }, [setDraggingId, onEditStop]);
   const onResize = useCallback(
     (
       e: MouseEvent | TouchEvent,
@@ -122,7 +118,6 @@ export default function RndSurface({
       data-cy='meeting-rnd'
       style={{ cursor: draggingId === meeting.id ? 'move' : 'pointer' }}
       className={cn(styles.meeting, {
-        [styles.elevated]: elevated,
         [styles.past]: meeting.time.to <= now,
       })}
       position={position}

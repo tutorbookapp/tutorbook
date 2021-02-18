@@ -3,27 +3,34 @@ import { useMemo } from 'react';
 
 import { Meeting, TCallback } from 'lib/model';
 
-import { getHeight, getPosition } from './utils';
-import MeetingContent from './rnds/content';
-import styles from './meeting-display.module.scss';
+import { getHeight, getPosition } from '../utils';
 
-export interface MeetingDisplayProps {
+import MeetingContent from './content';
+import styles from './item.module.scss';
+
+export interface MeetingItemProps {
   now: Date;
+  meeting: Meeting;
   leftPercent: number;
   widthPercent: number;
-  meeting: Meeting;
-  viewing: Meeting | undefined;
-  setViewing: TCallback<Meeting | undefined>;
+  viewing?: Meeting;
+  setViewing: TCallback<Meeting>;
+  editing?: Meeting;
+  setEditing: TCallback<Meeting>;
+  setEditRndVisible: TCallback<boolean>;
 }
 
-export default function MeetingDisplay({
+export default function MeetingItem({
   now,
+  meeting,
   leftPercent,
   widthPercent,
-  meeting,
   viewing,
   setViewing,
-}: MeetingDisplayProps): JSX.Element {
+  editing,
+  setEditing,
+  setEditRndVisible,
+}: MeetingItemProps): JSX.Element {
   const top = useMemo(() => getPosition(meeting.time.from).y, [
     meeting.time.from,
   ]);
@@ -44,15 +51,30 @@ export default function MeetingDisplay({
         [styles.elevated]: viewing?.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}
-      onClick={(evt) => {
+      onMouseDown={(evt) => {
         evt.stopPropagation();
-        setViewing(meeting);
+        setEditing(meeting);
+        setEditRndVisible(true);
       }}
     >
       <MeetingContent meeting={meeting} height={height} />
       <span>
-        <div className={styles.bottom} />
-        <div className={styles.top} />
+        <div
+          className={styles.bottom}
+          onMouseDown={(evt) => {
+            evt.stopPropagation();
+            setEditing(meeting);
+            setEditRndVisible(true);
+          }}
+        />
+        <div
+          className={styles.top}
+          onMouseDown={(evt) => {
+            evt.stopPropagation();
+            setEditing(meeting);
+            setEditRndVisible(true);
+          }}
+        />
       </span>
     </div>
   );

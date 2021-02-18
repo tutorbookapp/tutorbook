@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import axios from 'axios';
 import { dequal } from 'dequal/lite';
 import mergeRefs from 'react-merge-refs';
 import { nanoid } from 'nanoid';
@@ -14,20 +15,16 @@ import useMeasure from 'react-use-measure';
 
 import LoadingDots from 'components/loading-dots';
 
-import { Meeting, Timeslot } from 'lib/model';
+import { Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import { useClickOutside, useSingle } from 'lib/hooks';
 import { ClickContext } from 'lib/hooks/click-outside';
 import { getDateWithDay } from 'lib/utils/time';
-import { useClickOutside } from 'lib/hooks';
 
-import {
-  DialogSurface,
-  ExistingMeetingDialog,
-  NewMeetingDialog,
-} from './dialogs';
-import { ExistingMeetingRnd, NewMeetingRnd } from './rnds';
+import { CreateDialog, DialogSurface, EditDialog } from './dialogs';
 import { Headers, Lines, Times, Weekdays } from './components';
 import { getMeeting, getPosition } from './utils';
-import MeetingDisplay from './meeting-display';
+import MeetingItem from './meetings/item';
+import MeetingRnd from './meetings/rnd';
 import styles from './calendar.module.scss';
 import { useCalendar } from './context';
 
@@ -40,16 +37,28 @@ export default function CalendarBody({
   searching,
   meetings,
 }: CalendarBodyProps): JSX.Element {
-  const [now, setNow] = useState<Date>(new Date());
+  const [editRndVisible, setEditRndVisible] = useState<boolean>(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [draggingId, setDraggingId] = useState<string>();
   const [viewing, setViewing] = useState<Meeting>();
+  const [now, setNow] = useState<Date>(new Date());
 
-  const { startingDate } = useCalendar();
+  const updateMeetingRemote = useCallback(async (updated: Meeting) => {
+    const url = `/api/meetings/${updated.id}`;
+    const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
+    return Meeting.fromJSON(data);
+  }, []);
+
+  const { mutateMeeting, startingDate } = useCalendar();
   const { updateEl, removeEl } = useClickOutside(
     () => setDialogOpen(false),
     dialogOpen
   );
+  const [editing, setEditing] = useState<Meeting>(new Meeting());
+  const onEditStop = useCallback(() => mutateMeeting(editing), [
+    mutateMeeting,
+    editing,
+  ]);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);
@@ -135,11 +144,9 @@ export default function CalendarBody({
           setDialogOpen={setDialogOpen}
           onClosed={onClosed}
         >
-          {!viewing.id.startsWith('temp') && (
-            <ExistingMeetingDialog meeting={viewing} />
-          )}
+          {!viewing.id.startsWith('temp') && <EditDialog meeting={viewing} />}
           {viewing.id.startsWith('temp') && (
-            <NewMeetingDialog viewing={viewing} setViewing={setViewing} />
+            <CreateDialog viewing={viewing} setViewing={setViewing} />
           )}
         </DialogSurface>
       )}
@@ -183,29 +190,29 @@ export default function CalendarBody({
                   ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
                 >
                   {viewing?.id.startsWith('temp') && (
-                    <NewMeetingRnd
+                    <MeetingRnd
                       now={now}
                       width={width}
-                      viewing={viewing}
-                      setViewing={setViewing}
+                      meeting={viewing}
+                      setMeeting={setViewing}
                       draggingId={draggingId}
                       setDraggingId={setDraggingId}
                     />
                   )}
-                  {/*
-                   *{!searching && meetings.map((meeting: Meeting) => (
-                   *  <ExistingMeetingRnd
-                   *    now={now}
-                   *    width={width}
-                   *    viewing={viewing}
-                   *    setViewing={setViewing}
-                   *    draggingId={draggingId}
-                   *    setDraggingId={setDraggingId}
-                   *    meeting={meeting}
-                   *    key={meeting.id}
-                   *  />
-                   *))}
-                   */}
+                  {editing && editRndVisible && (
+                    <MeetingRnd
+                      now={now}
+                      width={width}
+                      meeting={editing}
+                      setMeeting={setEditing}
+                      draggingId={draggingId}
+                      setDraggingId={setDraggingId}
+                      onEditStop={() => {
+                        void onEditStop();
+                        setEditRndVisible(false);
+                      }}
+                    />
+                  )}
                   {Array(7)
                     .fill(null)
                     .map((_, day) => {
@@ -228,13 +235,12 @@ export default function CalendarBody({
                         cols: Meeting[][]
                       ): number {
                         let colSpan = 1;
-                        cols.slice(colIdx + 1).some((col) =>
-                          col.some((evt: Meeting) => {
-                            if (collides(e.time, evt.time)) return true;
-                            colSpan += 1;
-                            return false;
-                          })
-                        );
+                        cols.slice(colIdx + 1).some((col) => {
+                          if (col.some((evt) => collides(e.time, evt.time)))
+                            return true;
+                          colSpan += 1;
+                          return false;
+                        });
                         return colSpan;
                       }
 
@@ -311,15 +317,19 @@ export default function CalendarBody({
                           {groups.map((cols: Meeting[][]) =>
                             cols.map((col: Meeting[], colIdx) =>
                               col.map((e: Meeting) => (
-                                <MeetingDisplay
+                                <MeetingItem
                                   now={now}
+                                  meeting={e}
                                   viewing={viewing}
                                   setViewing={setViewing}
-                                  meeting={e}
+                                  editing={editing}
+                                  setEditing={setEditing}
+                                  setEditRndVisible={setEditRndVisible}
                                   widthPercent={
                                     expand(e, colIdx, cols) / cols.length
                                   }
                                   leftPercent={colIdx / cols.length}
+                                  key={e.id}
                                 />
                               ))
                             )

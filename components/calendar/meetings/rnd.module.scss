@@ -1,0 +1,12 @@
+@use '@material/elevation';
+
+.meeting {
+  @include elevation.elevation(8);
+  background: var(--background);
+  border-radius: 2px;
+  z-index: 1;
+
+  &.past > div {
+    background: var(--primary-5);
+  }
+}

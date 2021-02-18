@@ -13,7 +13,7 @@
     @include elevation.elevation(8);
   }
 
-  &.past .wrapper {
+  &.past > div {
     background: var(--primary-5);
   }
 
