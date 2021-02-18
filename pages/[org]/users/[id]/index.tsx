@@ -20,6 +20,7 @@ import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
+import error from 'locales/en/error.json';
 import match3rd from 'locales/en/match3rd.json';
 import user from 'locales/en/user.json';
 
@@ -149,4 +150,4 @@ export const getStaticPaths: GetStaticPaths<UserDisplayPageQuery> = async () => 
   return { paths: [], fallback: true };
 };
 
-export default withI18n(UserDisplayPage, { common, match3rd, user });
+export default withI18n(UserDisplayPage, { common, error, match3rd, user });
