@@ -29,8 +29,16 @@ export default function EditDialog({ meeting }: EditDialogProps): JSX.Element {
   );
   const people = useMemo(() => {
     if (data) return data.map((u) => User.fromJSON(u));
-    return meeting.match.people.map((p) => new User(p));
-  }, [data, meeting.match.people]);
+    return meeting.match.people.map((p) => {
+      const user = new User(p);
+      if (p.roles.includes('tutor')) {
+        user.tutoring.subjects = meeting.match.subjects;
+      } else if (p.roles.includes('mentor')) {
+        user.mentoring.subjects = meeting.match.subjects;
+      }
+      return user;
+    });
+  }, [data, meeting.match.people, meeting.match.subjects]);
 
   return (
     <DialogContent
