@@ -21,10 +21,6 @@ type Timestamp = admin.firestore.Timestamp;
  * for any scenario.
  * @property id - A unique identifier for this timeslot (used as React keys and
  * thus only stored client-side as we have no use for this on our server).
- * @property [recur] - The recurrance of this timeslot as specified in
- * [RFC 5545]{@link https://tools.ietf.org/html/rfc5545#section-3.8.5}. The
- * DTSTART is ignored as it should always be the `from` value. Default value is
- * always weekly.
  * @property from - The start time and date of this timeslot (typically
  * represented by a `Date`, `Timestamp`, or UTC date string).
  * @property to - The end time and date of this timeslot (represented in the
@@ -32,28 +28,12 @@ type Timestamp = admin.firestore.Timestamp;
  */
 export interface TimeslotBase<T> {
   id: string;
-  recur: string;
   from: T;
   to: T;
 }
 
-/**
- * Interface that represents an availability time opening or slot. Note that
- * right now, we just assume that these are recurring weekly.
- */
 export type TimeslotInterface = TimeslotBase<Date>;
-
-/**
- * Interface that represents how `Timeslot`s are stored in our Firestore
- * database; with `Timestamp`s instead of `Date`s (b/c they're more accurate).
- */
 export type TimeslotFirestore = TimeslotBase<Timestamp>;
-
-/**
- * Interface that results from serializing the `Timeslot` object as JSON (i.e.
- * running `JSON.parse(JSON.stringify(timeslot))`) where the `from` and `to`
- * fields are both ISO strings.
- */
 export type TimeslotJSON = TimeslotBase<string>;
 export type TimeslotSearchHit = TimeslotBase<number>;
 export type TimeslotSegment = { from: Date; to: Date };
@@ -63,14 +43,11 @@ export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   if (!isDateJSON(json.from)) return false;
   if (!isDateJSON(json.to)) return false;
   if (typeof json.id !== 'string') return false;
-  if (typeof json.recur !== 'string') return false;
   return true;
 }
 
 export class Timeslot implements TimeslotInterface {
   public id = '';
-
-  public recur = 'RRULE:FREQ=WEEKLY';
 
   public from: Date = new Date();
 
@@ -90,9 +67,6 @@ export class Timeslot implements TimeslotInterface {
 
   /**
    * @return The duration of this timeslot in milliseconds.
-   * @todo Re-design the API of these timeslots to be a DTSTART time (i.e. the
-   * FROM time), a DURATION (i.e. the value returned by this method), and a
-   * RECUR rule.
    */
   public get duration(): number {
     return this.to.valueOf() - this.from.valueOf();
@@ -118,7 +92,6 @@ export class Timeslot implements TimeslotInterface {
    * @return Whether the starting time of this timeslot is before the starting
    * time of the other timeslot AND the ending time of this timeslot is after
    * the ending time of the other timeslot.
-   * @todo Account for recurrance rules.
    */
   public contains(other: { from: Date; to: Date }): boolean {
     return (
@@ -135,7 +108,6 @@ export class Timeslot implements TimeslotInterface {
    */
   public equalTo(other: TimeslotInterface): boolean {
     return (
-      other.recur === this.recur &&
       other.to.valueOf() === this.to.valueOf() &&
       other.from.valueOf() === this.from.valueOf()
     );
@@ -222,7 +194,6 @@ export class Timeslot implements TimeslotInterface {
     return new Timeslot({
       from: new Date(params.get('from') as string),
       to: new Date(params.get('to') as string),
-      recur: params.get('recur') || undefined,
       id: params.get('id') || undefined,
     });
   }

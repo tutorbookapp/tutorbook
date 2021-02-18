@@ -217,7 +217,6 @@ const convertToUserJSON = (userData) => {
   const availability = (userData.availability || []).map((timeslot) => ({
     to: timeslot.to.toDate().toJSON(),
     from: timeslot.from.toDate().toJSON(),
-    recur: timeslot.recur,
   }));
   return { ...userData, availability };
 };

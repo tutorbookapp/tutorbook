@@ -112,7 +112,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
 
   /**
    * @return Whether this availability overlaps at all with the given timeslot.
-   * @todo Account for recurrance rules.
    */
   public overlaps(timeslot: Timeslot): boolean {
     return this.some((t) => t.overlaps(timeslot));
@@ -121,7 +120,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   /**
    * @return Whether there is availability during a given timeslot.
    * @param timeslot - The timeslot to verify is in this availability.
-   * @todo Account for recurrance rules.
    */
   public contains(timeslot: Timeslot): boolean {
     return this.some((t) => t.contains(timeslot));

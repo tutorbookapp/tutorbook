@@ -241,7 +241,6 @@ const addOrgIdsToUsers = async () => {
         const availabilityJSON = (data.availability || []).map((timeslot) => ({
           to: timeslot.to.toDate().toJSON(),
           from: timeslot.from.toDate().toJSON(),
-          recur: timeslot.recur,
         }));
         const userJSON = {
           ...data,
@@ -290,7 +289,6 @@ const addOrgIdToMatches = async () => {
         const timesJSON = (data.times || []).map((timeslot) => ({
           to: timeslot.to.toDate().toJSON(),
           from: timeslot.from.toDate().toJSON(),
-          recur: timeslot.recur,
         }));
         const venueJSON = data.venue
           ? {
@@ -339,7 +337,6 @@ const convertToUserJSON = (userData) => {
   const availability = (userData.availability || []).map((timeslot) => ({
     to: timeslot.to.toDate().toJSON(),
     from: timeslot.from.toDate().toJSON(),
-    recur: timeslot.recur,
   }));
   return { ...userData, availability };
 };

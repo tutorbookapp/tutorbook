@@ -33,7 +33,7 @@ export default async function createMeeting(
     );
     const people = await getPeople(body.match.people);
 
-    // TODO: Update the time verification logic to account for recur rules.
+    // TODO: Actually implement availability verification.
     verifyTimeInAvailability(body.time, people);
     verifySubjectsCanBeTutored(body.match.subjects, people);
 
