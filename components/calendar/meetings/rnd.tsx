@@ -69,12 +69,14 @@ export default function MeetingRnd({
     evt.stopPropagation();
   }, []);
   const onResizeStop = useCallback(() => {
-    setDraggingId(undefined);
+    // We have to wait a tick before resetting `draggingId` to prevent new
+    // meetings from being created when the resize cursor moves ahead of RND.
+    setTimeout(() => setDraggingId(undefined), 0);
     setOffset({ x: 0, y: 0 });
     if (onEditStop) onEditStop();
   }, [setDraggingId, onEditStop]);
   const onDragStop = useCallback(() => {
-    setDraggingId(undefined);
+    setTimeout(() => setDraggingId(undefined), 0);
     if (onEditStop) onEditStop();
   }, [setDraggingId, onEditStop]);
   const onResize = useCallback(
