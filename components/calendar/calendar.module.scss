@@ -16,6 +16,7 @@ $border-color: var(--accents-2);
 }
 
 .calendar {
+  @include common.wrapper;
   padding: 12px 24px 0;
 }
 
