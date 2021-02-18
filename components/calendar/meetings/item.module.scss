@@ -17,6 +17,14 @@
     background: var(--primary-5);
   }
 
+  &.editing {
+    background: transparent;
+
+    > div {
+      background: var(--primary-3);
+    }
+  }
+
   span .bottom,
   span .top {
     position: absolute;

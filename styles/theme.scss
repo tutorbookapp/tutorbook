@@ -33,6 +33,7 @@ $highlight: #79ffe1;
 
   --primary-6: #{rgba($primary, 0.87)};
   --primary-5: #{rgba($primary, 0.6)};
+  --primary-3: #{rgba($primary, 0.38)};
 
   --snackbar-on-background: #{rgba($background, 0.87)};
   --snackbar-background: #{color.mix($on-background, $background, 80%)};
@@ -92,6 +93,7 @@ $highlight: #79ffe1;
 
   --primary-6: #{rgba($primary, 0.87)};
   --primary-5: #{rgba($primary, 0.6)};
+  --primary-3: #{rgba($primary, 0.38)};
 
   --snackbar-on-background: #{rgba($background, 0.87)};
   --snackbar-background: #{$on-background};

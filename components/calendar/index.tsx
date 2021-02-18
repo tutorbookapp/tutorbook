@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { Snackbar } from '@rmwc/snackbar';
 import axios from 'axios';
 import { dequal } from 'dequal/lite';
 import mergeRefs from 'react-merge-refs';
@@ -33,6 +34,8 @@ export interface CalendarBodyProps {
   meetings: Meeting[];
 }
 
+const initialEditData = new Meeting();
+
 export default function CalendarBody({
   searching,
   meetings,
@@ -54,11 +57,14 @@ export default function CalendarBody({
     () => setDialogOpen(false),
     dialogOpen
   );
-  const [editing, setEditing] = useState<Meeting>(new Meeting());
-  const onEditStop = useCallback(() => mutateMeeting(editing), [
-    mutateMeeting,
-    editing,
-  ]);
+  const {
+    data: editing,
+    setData: setEditing,
+    onSubmit: onEditStop,
+    loading: editLoading,
+    checked: editChecked,
+    error: editError,
+  } = useSingle<Meeting>(initialEditData, updateMeetingRemote, mutateMeeting);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);
@@ -135,6 +141,17 @@ export default function CalendarBody({
 
   return (
     <ClickContext.Provider value={{ updateEl, removeEl }}>
+      {editChecked && <Snackbar message='Updated meeting.' leading open />}
+      {editError && (
+        <Snackbar
+          message='Could not update meeting. Try again later.'
+          leading
+          open
+        />
+      )}
+      {editLoading && !editChecked && !editError && (
+        <Snackbar message='Updating meeting...' timeout={-1} leading open />
+      )}
       {viewing && (
         <DialogSurface
           width={width}
@@ -324,6 +341,7 @@ export default function CalendarBody({
                                   setViewing={setViewing}
                                   editing={editing}
                                   setEditing={setEditing}
+                                  editRndVisible={editRndVisible}
                                   setEditRndVisible={setEditRndVisible}
                                   widthPercent={
                                     expand(e, colIdx, cols) / cols.length

@@ -17,6 +17,7 @@ export interface MeetingItemProps {
   setViewing: TCallback<Meeting>;
   editing?: Meeting;
   setEditing: TCallback<Meeting>;
+  editRndVisible: boolean;
   setEditRndVisible: TCallback<boolean>;
 }
 
@@ -29,6 +30,7 @@ export default function MeetingItem({
   setViewing,
   editing,
   setEditing,
+  editRndVisible,
   setEditRndVisible,
 }: MeetingItemProps): JSX.Element {
   const top = useMemo(() => getPosition(meeting.time.from).y, [
@@ -49,6 +51,7 @@ export default function MeetingItem({
       style={{ top, left, width, height }}
       className={cn(styles.meeting, {
         [styles.elevated]: viewing?.id === meeting.id,
+        [styles.editing]: editRndVisible && editing?.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}
       onMouseDown={(evt) => {
