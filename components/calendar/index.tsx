@@ -23,6 +23,7 @@ import { getDateWithDay } from 'lib/utils/time';
 
 import { CreateDialog, DialogSurface, EditDialog } from './dialogs';
 import { Headers, Lines, Times, Weekdays } from './components';
+import { MouseEventHackData, MouseEventHackTarget } from './hack-types';
 import { getMeeting, getPosition } from './utils';
 import MeetingItem from './meetings/item';
 import MeetingRnd from './meetings/rnd';
@@ -40,6 +41,8 @@ export default function CalendarBody({
   searching,
   meetings,
 }: CalendarBodyProps): JSX.Element {
+  const [eventTarget, setEventTarget] = useState<MouseEventHackTarget>();
+  const [eventData, setEventData] = useState<MouseEventHackData>();
   const [editRndVisible, setEditRndVisible] = useState<boolean>(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [draggingId, setDraggingId] = useState<string>();
@@ -228,6 +231,8 @@ export default function CalendarBody({
                         void onEditStop();
                         setEditRndVisible(false);
                       }}
+                      eventData={eventData}
+                      eventTarget={eventTarget}
                     />
                   )}
                   {Array(7)
@@ -343,6 +348,8 @@ export default function CalendarBody({
                                   setEditing={setEditing}
                                   editRndVisible={editRndVisible}
                                   setEditRndVisible={setEditRndVisible}
+                                  setEventTarget={setEventTarget}
+                                  setEventData={setEventData}
                                   widthPercent={
                                     expand(e, colIdx, cols) / cols.length
                                   }

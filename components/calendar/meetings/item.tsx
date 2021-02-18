@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import { Meeting, TCallback } from 'lib/model';
 
+import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 import { getHeight, getPosition } from '../utils';
 
 import MeetingContent from './content';
@@ -19,6 +20,8 @@ export interface MeetingItemProps {
   setEditing: TCallback<Meeting>;
   editRndVisible: boolean;
   setEditRndVisible: TCallback<boolean>;
+  setEventData: TCallback<MouseEventHackData>;
+  setEventTarget: TCallback<MouseEventHackTarget>;
 }
 
 export default function MeetingItem({
@@ -32,6 +35,8 @@ export default function MeetingItem({
   setEditing,
   editRndVisible,
   setEditRndVisible,
+  setEventData,
+  setEventTarget,
 }: MeetingItemProps): JSX.Element {
   const top = useMemo(() => getPosition(meeting.time.from).y, [
     meeting.time.from,
@@ -50,14 +55,41 @@ export default function MeetingItem({
     <div
       style={{ top, left, width, height }}
       className={cn(styles.meeting, {
-        [styles.elevated]: viewing?.id === meeting.id,
+        [styles.elevated]: !editRndVisible && viewing?.id === meeting.id,
         [styles.editing]: editRndVisible && editing?.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}
       onMouseDown={(evt) => {
         evt.stopPropagation();
-        setEditing(meeting);
-        setEditRndVisible(true);
+
+        // Decide what to do after mousedown:
+        // - If mousemove, then edit with RND (this is a drag).
+        // - If mouseup, then view (this is a click).
+        const edit = (evt: MouseEvent) => {
+          removeListeners();
+          setEditing(meeting);
+          setEventTarget('middle');
+          setEventData({
+            screenX: evt.screenX,
+            screenY: evt.screenY,
+            clientX: evt.clientX,
+            clientY: evt.clientY,
+            button: evt.button,
+            buttons: evt.buttons,
+          });
+          setEditRndVisible(true);
+        };
+        const view = () => {
+          removeListeners();
+          setViewing(meeting);
+        };
+        const removeListeners = () => {
+          document.removeEventListener('mousemove', edit, { capture: true });
+          document.removeEventListener('mouseup', view, { capture: true });
+        };
+
+        document.addEventListener('mousemove', edit, { capture: true });
+        document.addEventListener('mouseup', view, { capture: true });
       }}
     >
       <MeetingContent meeting={meeting} height={height} />
@@ -67,6 +99,15 @@ export default function MeetingItem({
           onMouseDown={(evt) => {
             evt.stopPropagation();
             setEditing(meeting);
+            setEventTarget('bottom');
+            setEventData({
+              screenX: evt.screenX,
+              screenY: evt.screenY,
+              clientX: evt.clientX,
+              clientY: evt.clientY,
+              button: evt.button,
+              buttons: evt.buttons,
+            });
             setEditRndVisible(true);
           }}
         />
@@ -75,6 +116,15 @@ export default function MeetingItem({
           onMouseDown={(evt) => {
             evt.stopPropagation();
             setEditing(meeting);
+            setEventTarget('top');
+            setEventData({
+              screenX: evt.screenX,
+              screenY: evt.screenY,
+              clientX: evt.clientX,
+              clientY: evt.clientY,
+              button: evt.button,
+              buttons: evt.buttons,
+            });
             setEditRndVisible(true);
           }}
         />

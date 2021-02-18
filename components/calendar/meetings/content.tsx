@@ -1,24 +1,32 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import mergeRefs from 'react-merge-refs';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Meeting, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 import { useClickContext } from 'lib/hooks/click-outside';
 
+import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
+
 import styles from './content.module.scss';
 
 export interface MeetingContentProps {
   meeting: Meeting;
   height: number;
+  eventTarget?: MouseEventHackTarget;
+  eventData?: MouseEventHackData;
 }
 
 export default function MeetingContent({
   meeting,
   height,
+  eventTarget,
+  eventData,
 }: MeetingContentProps): JSX.Element {
   const { updateEl, removeEl } = useClickContext();
   const { lang: locale } = useTranslation();
 
+  const nodeRef = useRef<HTMLElement>(null);
   const ref = useCallback(
     (node: HTMLElement | null) => {
       if (!node) return removeEl(`rnd-${meeting.id}`);
@@ -26,6 +34,30 @@ export default function MeetingContent({
     },
     [updateEl, removeEl, meeting.id]
   );
+
+  useEffect(() => {
+    if (!eventTarget || !eventData) return;
+    // If I don't use `setTimeout`, TB throws a "<DraggableCore> not mounted on
+    // DragStart!" error. It goes away when waiting a tick before triggering.
+    const timeoutId = setTimeout(() => {
+      let targetEl: Node | null | undefined;
+      switch (eventTarget) {
+        case 'top':
+          targetEl = nodeRef.current?.nextSibling?.lastChild;
+          break;
+        case 'bottom':
+          targetEl = nodeRef.current?.nextSibling?.firstChild;
+          break;
+        default:
+          targetEl = nodeRef.current;
+          break;
+      }
+      targetEl?.dispatchEvent(
+        new MouseEvent('mousedown', { ...eventData, bubbles: true })
+      );
+    }, 0);
+    return () => clearTimeout(timeoutId);
+  }, [eventTarget, eventData]);
 
   const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
     height,
@@ -43,7 +75,7 @@ export default function MeetingContent({
   );
 
   return (
-    <div ref={ref} className={styles.wrapper}>
+    <div ref={mergeRefs([ref, nodeRef])} className={styles.wrapper}>
       <div className={styles.content}>
         <div
           className={styles.header}

@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic';
 
 import { Meeting, TCallback } from 'lib/model';
 
+import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 import { getHeight, getMeeting, getPosition } from '../utils';
 import { RND_MARGIN } from '../config';
 import { useCalendar } from '../context';
@@ -30,6 +31,8 @@ export interface MeetingRndProps {
   draggingId?: string;
   setDraggingId: TCallback<string | undefined>;
   onEditStop?: () => void;
+  eventTarget?: MouseEventHackTarget;
+  eventData?: MouseEventHackData;
 }
 
 export default function MeetingRnd({
@@ -40,6 +43,8 @@ export default function MeetingRnd({
   draggingId,
   setDraggingId,
   onEditStop,
+  eventTarget,
+  eventData,
 }: MeetingRndProps): JSX.Element {
   const { startingDate } = useCalendar();
 
@@ -65,14 +70,12 @@ export default function MeetingRnd({
     evt.stopPropagation();
   }, []);
   const onResizeStop = useCallback(() => {
-    // Wait a tick so `draggingId` remains `true` which prevents certain event
-    // listeners from triggering (e.g. the `onClick` listener in `Calendar`).
-    setTimeout(() => setDraggingId(undefined), 0);
+    setDraggingId(undefined);
     setOffset({ x: 0, y: 0 });
     if (onEditStop) onEditStop();
   }, [setDraggingId, onEditStop]);
   const onDragStop = useCallback(() => {
-    setTimeout(() => setDraggingId(undefined), 0);
+    setDraggingId(undefined);
     if (onEditStop) onEditStop();
   }, [setDraggingId, onEditStop]);
   const onResize = useCallback(
@@ -116,13 +119,12 @@ export default function MeetingRnd({
   return (
     <Rnd
       data-cy='meeting-rnd'
-      style={{ cursor: draggingId === meeting.id ? 'move' : 'pointer' }}
       className={cn(styles.meeting, {
         [styles.past]: meeting.time.to <= now,
       })}
       position={position}
       minHeight={12 * 2}
-      size={{ width: width, height }}
+      size={{ width, height }}
       onResizeStop={onResizeStop}
       onResize={onResize}
       onClick={onClick}
@@ -142,7 +144,12 @@ export default function MeetingRnd({
         topRight: false,
       }}
     >
-      <MeetingContent meeting={meeting} height={height} />
+      <MeetingContent
+        meeting={meeting}
+        height={height}
+        eventTarget={eventTarget}
+        eventData={eventData}
+      />
     </Rnd>
   );
 }
