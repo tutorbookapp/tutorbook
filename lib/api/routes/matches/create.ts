@@ -34,7 +34,7 @@ export default async function createMatch(
 
     // Verify the creator exists and is sending an authorized request.
     const creator = await getPerson(body.creator, people);
-    await verifyAuth(req.headers, { orgIds: [body.org] });
+    await verifyAuth(req.headers, { userId: creator.id });
 
     // Verify the creator is:
     // a) The student him/herself, OR;
