@@ -9,12 +9,12 @@ function getFilterStrings(query: MeetingsQuery): string[] {
   const from = query.from.valueOf();
 
   return [
-    // Meeting time overlaps with top of query (start is bfore query start).
-    addStringFilter(str, `(time.to > ${from} AND time.from <= ${from})`),
+    // TODO: Time overlaps with top of query (start is before query start).
+    // addStringFilter(str, `(time.to > ${from} AND time.from <= ${from})`),
     // Meeting time is contained within query (start is after and end before).
     addStringFilter(str, `(time.to <= ${to} AND time.from >= ${from})`),
-    // Meeting time overlaps with bottom of query (end is after query end).
-    addStringFilter(str, `(time.from < ${to} AND time.to >= ${to})`),
+    // TODO: Time overlaps with bottom of query (end is after query end).
+    // addStringFilter(str, `(time.from < ${to} AND time.to >= ${to})`),
   ];
 }
 
