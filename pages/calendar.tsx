@@ -97,9 +97,13 @@ function CalendarPage(): JSX.Element {
             href: '/dashboard',
           },
           {
+            label: t('common:matches'),
+            href: '/matches',
+          },
+          {
+            active: true,
             label: t('common:calendar'),
             href: '/calendar',
-            active: true,
           },
           {
             label: t('common:profile'),

@@ -1,14 +1,14 @@
 import useTranslation from 'next-translate/useTranslation';
 
-import Page from 'components/page';
 import Overview from 'components/overview';
+import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
-import overview from 'locales/en/overview.json';
 import common from 'locales/en/common.json';
+import overview from 'locales/en/overview.json';
 
 function DashboardPage(): JSX.Element {
   const { t } = useTranslation();
@@ -21,9 +21,13 @@ function DashboardPage(): JSX.Element {
         switcher
         tabs={[
           {
-            label: t('common:overview'),
             active: true,
+            label: t('common:overview'),
             href: '/dashboard',
+          },
+          {
+            label: t('common:matches'),
+            href: '/matches',
           },
           {
             label: t('common:calendar'),
