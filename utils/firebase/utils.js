@@ -643,6 +643,33 @@ const fetchQuarantunesEmails = async () => {
   debugger;
 };
 
+const stringify = require('csv-stringify/lib/sync');
+const fetchQuarantunesStringTeachers = async () => {
+  const { docs: stringTeachers } = await db
+    .collection('users')
+    .where('mentoring.subjects', 'array-contains-any', [
+      'Violin',
+      'Viola',
+      'Cello',
+    ])
+    .get();
+  const data = stringify(
+    stringTeachers
+      .filter((u) => u.data().orgs.includes('quarantunes'))
+      .map((u) => ({
+        name: u.data().name,
+        phone: u.data().phone,
+        email: u.data().email,
+        bio: u.data().bio,
+        url: `https://tutorbook.app/quarantunes/users/${u.id}`,
+      })),
+    { columns: ['name', 'phone', 'email', 'bio', 'url'] }
+  );
+  fs.writeFileSync('string-teachers.csv', data);
+};
+
+fetchQuarantunesStringTeachers();
+
 const addResourceTimestamps = async (col) => {
   console.log(`Fetching ${col}...`);
   const { docs } = await db.collection(col).get();
