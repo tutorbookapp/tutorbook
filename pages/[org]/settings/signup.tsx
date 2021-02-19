@@ -43,7 +43,7 @@ function SignupSettingsPage(): JSX.Element {
           tabs={[
             {
               label: t('common:overview'),
-              href: `/${query.org as string}/dashboard`,
+              href: `/${query.org as string}/overview`,
             },
             {
               label: t('common:users'),

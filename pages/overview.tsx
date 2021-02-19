@@ -10,20 +10,20 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import overview from 'locales/en/overview.json';
 
-function DashboardPage(): JSX.Element {
+function OverviewPage(): JSX.Element {
   const { t } = useTranslation();
 
-  usePage({ name: 'Dashboard', url: '/dashboard', login: true });
+  usePage({ name: 'Overview', url: '/overview', login: true });
 
   return (
-    <Page title='Dashboard - Tutorbook' intercom>
+    <Page title='Overview - Tutorbook' intercom>
       <TabHeader
         switcher
         tabs={[
           {
             active: true,
             label: t('common:overview'),
-            href: '/dashboard',
+            href: '/overview',
           },
           {
             label: t('common:matches'),
@@ -44,4 +44,4 @@ function DashboardPage(): JSX.Element {
   );
 }
 
-export default withI18n(DashboardPage, { common, overview });
+export default withI18n(OverviewPage, { common, overview });

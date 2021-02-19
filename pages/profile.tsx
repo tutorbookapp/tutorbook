@@ -23,7 +23,7 @@ function ProfilePage(): JSX.Element {
         tabs={[
           {
             label: t('common:overview'),
-            href: '/dashboard',
+            href: '/overview',
           },
           {
             label: t('common:matches'),

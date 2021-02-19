@@ -30,7 +30,7 @@ export default function Switcher(): JSX.Element {
       if (pathname.includes('matches')) return 'matches';
       if (pathname.includes('calendar')) return 'calendar';
       if (pathname.includes('profile')) return 'settings';
-      return 'dashboard';
+      return 'overview';
     }
     return pathname.split('/').slice(2).join('/');
   }, [pathname]);
@@ -38,7 +38,7 @@ export default function Switcher(): JSX.Element {
     if (pathname.includes('matches')) return '/matches';
     if (pathname.includes('calendar')) return '/calendar';
     if (pathname.includes('settings')) return '/profile';
-    return '/dashboard';
+    return '/overview';
   }, [pathname]);
 
   return (

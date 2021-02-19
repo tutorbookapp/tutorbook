@@ -45,7 +45,7 @@ function Logo(): JSX.Element {
   const { org } = useOrg();
 
   return (
-    <Link href={user.id ? '/dashboard' : `/${org?.id || ''}`}>
+    <Link href={user.id ? '/overview' : `/${org?.id || ''}`}>
       <a className={styles.logo}>
         <span>TB</span>
       </a>

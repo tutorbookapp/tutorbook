@@ -26,7 +26,7 @@ export default function Login(): JSX.Element {
 
   const { query } = useRouter();
   const redirect = useMemo(
-    () => decodeURIComponent((query.href as string) || 'dashboard'),
+    () => decodeURIComponent((query.href as string) || 'overview'),
     [query]
   );
   useEffect(() => {

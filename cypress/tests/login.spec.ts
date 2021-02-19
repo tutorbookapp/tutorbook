@@ -103,13 +103,13 @@ describe('Login page', () => {
     cy.percySnapshot('Login Page with API Error');
   });
 
-  it('navigates to dashboard on successful login', () => {
+  it('navigates to overview on successful login', () => {
     cy.setup({ volunteer: null, match: null, meeting: null });
     cy.login(student.id);
     cy.visit('/login');
     cy.wait('@get-account');
-    cy.url({ timeout: 60000 }).should('contain', '/dashboard');
-    cy.percySnapshot('Dashboard Page for Students');
+    cy.url({ timeout: 60000 }).should('contain', '/overview');
+    cy.percySnapshot('Overview Page for Students');
   });
 
   it('navigates to specified redirect destination', () => {

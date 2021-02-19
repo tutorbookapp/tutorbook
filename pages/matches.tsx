@@ -23,7 +23,7 @@ function MatchesPage(): JSX.Element {
         tabs={[
           {
             label: t('common:overview'),
-            href: '/dashboard',
+            href: '/overview',
           },
           {
             active: true,

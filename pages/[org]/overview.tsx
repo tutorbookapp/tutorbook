@@ -14,7 +14,7 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import overview from 'locales/en/overview.json';
 
-function DashboardPage(): JSX.Element {
+function OverviewPage(): JSX.Element {
   const { orgs } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
@@ -26,8 +26,8 @@ function DashboardPage(): JSX.Element {
   }, [orgs, query.org]);
 
   usePage({
-    name: 'Org Dashboard',
-    url: `/${query.org as string}/dashboard`,
+    name: 'Org Overview',
+    url: `/${query.org as string}/overview`,
     org: query.org as string,
     login: true,
     admin: true,
@@ -35,17 +35,14 @@ function DashboardPage(): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org }}>
-      <Page
-        title={`${org?.name || 'Loading'} - Dashboard - Tutorbook`}
-        intercom
-      >
+      <Page title={`${org?.name || 'Loading'} - Overview - Tutorbook`} intercom>
         <TabHeader
           switcher
           tabs={[
             {
               active: true,
               label: t('common:overview'),
-              href: `/${query.org as string}/dashboard`,
+              href: `/${query.org as string}/overview`,
             },
             {
               label: t('common:users'),
@@ -71,4 +68,4 @@ function DashboardPage(): JSX.Element {
   );
 }
 
-export default withI18n(DashboardPage, { common, overview });
+export default withI18n(OverviewPage, { common, overview });

@@ -36,6 +36,16 @@ module.exports = withImages({
         destination: '/:org/users/:slug*',
         permanent: true,
       },
+      {
+        source: '/dashboard',
+        destination: '/overview',
+        permanent: true,
+      },
+      {
+        source: '/:org/dashboard',
+        destination: '/:org/overview',
+        permanent: true,
+      },
     ];
   },
   webpack(config, { isServer }) {

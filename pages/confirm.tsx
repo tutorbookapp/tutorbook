@@ -66,7 +66,7 @@ function ConfirmPage(): JSX.Element {
         await mutate('/api/account', res.data, false);
       }
 
-      await push(decodeURIComponent((query.href as string) || 'dashboard'));
+      await push(decodeURIComponent((query.href as string) || 'overview'));
       return localStorage.removeItem('email');
     }
 

@@ -46,7 +46,7 @@ function UsersPage(): JSX.Element {
           tabs={[
             {
               label: t('common:overview'),
-              href: `/${params.org as string}/dashboard`,
+              href: `/${params.org as string}/overview`,
             },
             {
               active: true,

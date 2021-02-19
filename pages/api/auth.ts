@@ -82,7 +82,7 @@ async function authorize(req: Req, res: Res<void>): Promise<void> {
           .update({ zoom: { id: accountId, token: refreshToken } });
         // 4. Redirect the user back to our app (where they started).
         res.statusCode = 302;
-        res.setHeader('Location', req.query.redirect || '/dashboard');
+        res.setHeader('Location', req.query.redirect || '/overview');
         res.end();
       }
     }
