@@ -19,7 +19,7 @@
   }
 }
 
-@mixin headers($times-width, $cell-width) {
+@mixin headers($times-width, $cell-width, $border-color) {
   flex: none;
   display: flex;
   border-right: transparent 1px solid;
@@ -37,6 +37,10 @@
     overflow: hidden;
     display: flex;
     border-left: transparent 1px solid;
+
+    &:first-child {
+      border-left: $border-color 1px solid;
+    }
 
     @content;
   }
@@ -82,7 +86,8 @@
       content: '';
       height: 4px;
       position: absolute;
-      width: calc(100% - 16px);
+      left: 48px + 1px;
+      width: calc(100% - 16px - 48px);
       z-index: 3;
     }
 
@@ -117,6 +122,7 @@
         content: '';
         height: 2px;
         position: absolute;
+        left: 48px + 1px;
         width: $cell-width;
         z-index: 3;
       }

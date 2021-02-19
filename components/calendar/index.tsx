@@ -7,6 +7,9 @@ import {
   useRef,
   useState,
 } from 'react';
+import { Chip, ChipSet } from '@rmwc/chip';
+import { IconButton } from '@rmwc/icon-button';
+import { TextField } from '@rmwc/textfield';
 import { Snackbar } from '@rmwc/snackbar';
 import axios from 'axios';
 import { dequal } from 'dequal/lite';
@@ -251,114 +254,135 @@ export default function CalendarBody({
           )}
         </DialogSurface>
       )}
-      <div className={styles.calendar}>
-        <div className={styles.headerWrapper}>
-          <div ref={headerRef} className={styles.headerContent}>
-            <div className={styles.headers}>
-              <Weekdays now={now} />
-            </div>
-            <div className={styles.headerCells}>
-              <Headers />
-            </div>
+      <div className={styles.filters}>
+        <div className={styles.wrapper}>
+          <div className={styles.left}>
+            <IconButton className={styles.filtersButton} icon='filter_list' />
+            <ChipSet className={styles.filterChips}>
+              <Chip label='Pending' checkmark />
+              <Chip label='Logged' selected checkmark />
+              <Chip label='Approved' checkmark />
+            </ChipSet>
           </div>
-          <div className={styles.scroller} />
+          <div className={styles.right}>
+            <TextField
+              outlined
+              placeholder='Search meetings'
+              className={styles.searchField}
+            />
+          </div>
         </div>
-        <div className={styles.gridWrapper}>
-          <div className={styles.grid}>
-            <div className={styles.timesWrapper} ref={timesRef}>
-              <div className={styles.times}>
-                <Times />
+      </div>
+      <div className={styles.calendar}>
+        <div className={styles.wrapper}>
+          <div className={styles.headerWrapper}>
+            <div ref={headerRef} className={styles.headerContent}>
+              <div className={styles.headers}>
+                <Weekdays now={now} />
+              </div>
+              <div className={styles.headerCells}>
+                <Headers />
               </div>
             </div>
-            <div
-              className={styles.rowsWrapper}
-              onScroll={onScroll}
-              ref={rowsRef}
-            >
-              {searching && (
-                <div className={styles.loader}>
-                  <LoadingDots size={4} />
+            <div className={styles.scroller} />
+          </div>
+          <div className={styles.gridWrapper}>
+            <div className={styles.grid}>
+              <div className={styles.timesWrapper} ref={timesRef}>
+                <div className={styles.times}>
+                  <Times />
                 </div>
-              )}
-              <div className={styles.rows}>
-                <div className={styles.lines}>
-                  <Lines />
-                </div>
-                <div className={styles.space} />
-                <div
-                  className={styles.cells}
-                  onClick={onClick}
-                  ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
-                >
-                  {viewing?.id.startsWith('temp') && (
-                    <MeetingRnd
-                      now={now}
-                      width={width}
-                      meeting={viewing}
-                      setMeeting={setViewing}
-                      setDraggingId={setDraggingId}
-                    />
-                  )}
-                  {editing && editRndVisible && (
-                    <MeetingRnd
-                      now={now}
-                      width={width}
-                      meeting={editing}
-                      setMeeting={setEditing}
-                      setDraggingId={setDraggingId}
-                      onEditStop={() => {
-                        void onEditStop();
-                        setEditRndVisible(false);
-                      }}
-                      eventData={eventData}
-                      eventTarget={eventTarget}
-                    />
-                  )}
-                  {eventGroups.map((groups: Meeting[][][], day) => {
-                    // Show current time indicator if today is current date.
-                    const date = getDateWithDay(day, startingDate);
-                    const today =
-                      now.getFullYear() === date.getFullYear() &&
-                      now.getMonth() === date.getMonth() &&
-                      now.getDate() === date.getDate();
-                    const { y: top } = getPosition(now);
+              </div>
+              <div
+                className={styles.rowsWrapper}
+                onScroll={onScroll}
+                ref={rowsRef}
+              >
+                {searching && (
+                  <div className={styles.loader}>
+                    <LoadingDots size={4} />
+                  </div>
+                )}
+                <div className={styles.rows}>
+                  <div className={styles.lines}>
+                    <Lines />
+                  </div>
+                  <div className={styles.space} />
+                  <div
+                    className={styles.cells}
+                    onClick={onClick}
+                    ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
+                  >
+                    {viewing?.id.startsWith('temp') && (
+                      <MeetingRnd
+                        now={now}
+                        width={width}
+                        meeting={viewing}
+                        setMeeting={setViewing}
+                        setDraggingId={setDraggingId}
+                      />
+                    )}
+                    {editing && editRndVisible && (
+                      <MeetingRnd
+                        now={now}
+                        width={width}
+                        meeting={editing}
+                        setMeeting={setEditing}
+                        setDraggingId={setDraggingId}
+                        onEditStop={() => {
+                          void onEditStop();
+                          setEditRndVisible(false);
+                        }}
+                        eventData={eventData}
+                        eventTarget={eventTarget}
+                      />
+                    )}
+                    {eventGroups.map((groups: Meeting[][][], day) => {
+                      // Show current time indicator if today is current date.
+                      const date = getDateWithDay(day, startingDate);
+                      const today =
+                        now.getFullYear() === date.getFullYear() &&
+                        now.getMonth() === date.getMonth() &&
+                        now.getDate() === date.getDate();
+                      const { y: top } = getPosition(now);
 
-                    return (
-                      <div key={day} className={styles.cell} ref={cellRef}>
-                        {today && (
-                          <div style={{ top }} className={styles.indicator}>
-                            <div className={styles.dot} />
-                            <div className={styles.line} />
-                          </div>
-                        )}
-                        {groups
-                          .map((cols: Meeting[][]) =>
-                            cols.map((col: Meeting[], colIdx) =>
-                              col.map((e: Meeting) => (
-                                <MeetingItem
-                                  now={now}
-                                  meeting={e}
-                                  viewing={viewing}
-                                  setViewing={setViewing}
-                                  editing={editing}
-                                  setEditing={setEditing}
-                                  editRndVisible={editRndVisible}
-                                  setEditRndVisible={setEditRndVisible}
-                                  setEventTarget={setEventTarget}
-                                  setEventData={setEventData}
-                                  widthPercent={
-                                    expand(e, colIdx, cols) / cols.length
-                                  }
-                                  leftPercent={colIdx / cols.length}
-                                  key={e.id}
-                                />
-                              ))
+                      return (
+                        <div key={day} className={styles.cell} ref={cellRef}>
+                          {today && (
+                            <div style={{ top }} className={styles.indicator}>
+                              <div className={styles.dot} />
+                              <div className={styles.line} />
+                            </div>
+                          )}
+                          {groups
+                            .map((cols: Meeting[][]) =>
+                              cols.map((col: Meeting[], colIdx) =>
+                                col.map((e: Meeting) => (
+                                  <MeetingItem
+                                    now={now}
+                                    meeting={e}
+                                    viewing={viewing}
+                                    setViewing={setViewing}
+                                    editing={editing}
+                                    setEditing={setEditing}
+                                    editRndVisible={editRndVisible}
+                                    setEditRndVisible={setEditRndVisible}
+                                    setEventTarget={setEventTarget}
+                                    setEventData={setEventData}
+                                    widthPercent={
+                                      expand(e, colIdx, cols) / cols.length
+                                    }
+                                    leftPercent={colIdx / cols.length}
+                                    key={e.id}
+                                  />
+                                ))
+                              )
                             )
-                          )
-                          .flat(2)}
-                      </div>
-                    );
-                  })}
+                            .flat(2)}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>

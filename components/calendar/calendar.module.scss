@@ -1,6 +1,7 @@
 @use 'styles/common';
 @use 'styles/calendar';
 @use 'styles/typography';
+@use '@material/select';
 
 $times-width: 40px;
 $cell-width: 100px;
@@ -15,9 +16,64 @@ $border-color: var(--accents-2);
   z-index: 2;
 }
 
+.filters {
+  @include common.wrapper;
+  margin: 48px auto 0;
+
+  .wrapper {
+    $height: 56px;
+    height: $height;
+    border: 1px solid var(--accents-2);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+
+    .left {
+      display: flex;
+      align-items: center;
+
+      .filtersButton {
+        margin-left: ($height - 48px) / 2;
+      }
+
+      .filterChips {
+        flex-wrap: nowrap;
+      }
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+
+      .searchField {
+        $margin: 10px;
+        height: $height - $margin * 2;
+        margin-right: $margin;
+
+        &:not(:global(.mdc-text-field--focused)):not(:global(.mdc-text-field--invalid)) {
+          :global(.mdc-notched-outline__leading),
+          :global(.mdc-notched-outline__notch),
+          :global(.mdc-notched-outline__trailing) {
+            border-color: var(--accents-2);
+          }
+        }
+
+        input {
+          @include typography.typography('body2');
+        }
+      }
+    }
+  }
+}
+
 .calendar {
   @include common.wrapper;
-  padding: 12px 24px 0;
+
+  .wrapper {
+    margin-left: -1 * $times-width - 8px;
+    border-right: 1px solid var(--accents-2);
+  }
 }
 
 .headerWrapper {
@@ -25,7 +81,7 @@ $border-color: var(--accents-2);
 }
 
 .headers {
-  @include calendar.headers($times-width, $cell-width) {
+  @include calendar.headers($times-width, $cell-width, $border-color) {
     h2 {
       margin: 0;
       text-align: center;
