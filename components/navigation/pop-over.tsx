@@ -225,7 +225,9 @@ export default function PopOverMenu({
               const { default: firebase } = await import('lib/firebase');
               await import('firebase/auth');
               await firebase.auth().signOut();
-              await updateUser(new User());
+              // TODO: Set the default langs both here and in `pages/app` to be
+              // the current i18n locale (instead of just English by default).
+              await updateUser(new User({ langs: ['en'] }));
               window.analytics?.reset();
               Intercom('shutdown');
               Intercom('boot');
