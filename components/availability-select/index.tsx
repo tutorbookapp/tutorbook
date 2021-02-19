@@ -20,7 +20,6 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { Availability, TCallback, Timeslot } from 'lib/model';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
-import { useContinuous } from 'lib/hooks';
 
 import TimeslotRnd from './timeslot-rnd';
 import { getTimeslot } from './utils';
@@ -72,8 +71,20 @@ function AvailabilitySelect({
   const rowsRef = useRef<HTMLDivElement>(null);
   const ticking = useRef<boolean>(false);
 
+  const [availability, setAvailability] = useState<Availability>(value);
   const [cellsRef, { x, y }] = useMeasure({ polyfill, scroll: true });
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+  // Throttle the `onChange` triggers to prevent expensive re-renders when the
+  // user is in the middle of moving an RND (otherwise, it lags a bunch).
+  // TODO: Always update top-level state before submitting API requests. Right
+  // now, this is largely unecessary as it is unlikely the user will click
+  // the "Submit" or "Signup" buttons w/in 500ms of editing an RND.
+  useEffect(() => {
+    if (dequal(value, availability)) return () => {};
+    const timeoutId = setTimeout(() => onChange(availability), 500);
+    return () => clearTimeout(timeoutId);
+  }, [value, onChange, availability]);
 
   // We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
   // before toggling which ensures the user hasn't re-opened the menu.
@@ -89,19 +100,9 @@ function AvailabilitySelect({
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, []);
 
-  // TODO: Fix the `useContinuous` hook to skip this callback when the component
-  // is initially mounted (e.g. leads to invalid analytics tracking).
-  const updateRemote = useCallback(
-    async (updated: Availability) => {
-      onChange(updated);
-    },
-    [onChange]
-  );
-  const { data, setData } = useContinuous(value, updateRemote);
-
   const updateTimeslot = useCallback(
     (origIdx: number, updated?: Timeslot) => {
-      setData((prev) => {
+      setAvailability((prev) => {
         if (!updated)
           return new Availability(
             ...prev.slice(0, origIdx),
@@ -147,17 +148,17 @@ function AvailabilitySelect({
         return avail;
       });
     },
-    [setData]
+    [setAvailability]
   );
 
   // Ensure that all of the timeslots have valid React keys.
   useEffect(() => {
-    setData((prev) => {
+    setAvailability((prev) => {
       const ids = prev.map((t) => new Timeslot({ ...t, id: t.id || nanoid() }));
       if (!dequal(ids, prev)) return new Availability(...ids);
       return prev;
     });
-  }, [value, setData]);
+  }, [value, setAvailability]);
 
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
@@ -251,7 +252,7 @@ function AvailabilitySelect({
         anchorCorner='bottomStart'
         className={styles.menuSurface}
         renderToPortal={renderToPortal ? '#portal' : false}
-        data-cy='availability-select-surface'
+        availability-cy='availability-select-surface'
       >
         <div className={styles.headerWrapper}>
           <div ref={headerRef} className={styles.headerContent}>
@@ -274,7 +275,7 @@ function AvailabilitySelect({
                 <div className={styles.lines}>{lineCells}</div>
                 <div className={styles.space} />
                 <div className={styles.cells} onClick={onClick} ref={cellsRef}>
-                  {data.map((timeslot: Timeslot, origIdx: number) => (
+                  {availability.map((timeslot: Timeslot, origIdx: number) => (
                     <TimeslotRnd
                       key={timeslot.id || nanoid()}
                       value={timeslot}
@@ -293,7 +294,7 @@ function AvailabilitySelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={data
+        value={availability
           .map((t) => {
             const showSecondDate =
               t.from.getDate() !== t.to.getDate() ||
