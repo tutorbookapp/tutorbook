@@ -1,0 +1,6 @@
+{
+  "header": "Confirming Login",
+  "body": "Please wait while we validate your email login link...",
+  "invalid-link": "It looks like you may have clicked on an invalid email verification link.",
+  "no-email": "No email address was found in local storage. Make sure to open the login link on the same device you used to generate it."
+}

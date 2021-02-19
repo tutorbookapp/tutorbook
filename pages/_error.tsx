@@ -19,8 +19,10 @@ interface ErrorPageProps {
 function ErrorPage({ status, message }: ErrorPageProps): JSX.Element {
   const { t } = useTranslation();
   const header = useMemo(() => {
-    return t(`error:${status ? `${status}-` : ''}header`);
-  }, [status]);
+    if (typeof status === 'number' && [404, 400, 405, 500].includes(status))
+      return t(`error:${status}-header`);
+    return t('error:header');
+  }, [t, status]);
 
   return (
     <Page title={`${header} - Tutorbook`} intercom>
