@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import General from 'components/settings/general';
+import Matches from 'components/matches';
 import Page from 'components/page';
-import Settings from 'components/settings';
 import { TabHeader } from 'components/navigation';
 
 import { OrgContext } from 'lib/context/org';
@@ -13,10 +12,10 @@ import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import orgIntl from 'locales/en/org.json';
-import settings from 'locales/en/settings.json';
+import match from 'locales/en/match.json';
+import matches from 'locales/en/matches.json';
 
-function SettingsPage(): JSX.Element {
+function MatchesPage(): JSX.Element {
   const { orgs } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
@@ -28,8 +27,8 @@ function SettingsPage(): JSX.Element {
   }, [orgs, query.org]);
 
   usePage({
-    name: 'Org Settings',
-    url: `/${query.org as string}/settings`,
+    name: 'Org Matches',
+    url: `/${query.org as string}/matches`,
     org: query.org as string,
     login: true,
     admin: true,
@@ -37,7 +36,7 @@ function SettingsPage(): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org }}>
-      <Page title={`${org?.name || 'Loading'} - Settings - Tutorbook`}>
+      <Page title={`${org?.name || 'Loading'} - Matches - Tutorbook`}>
         <TabHeader
           switcher
           tabs={[
@@ -50,6 +49,7 @@ function SettingsPage(): JSX.Element {
               href: `/${query.org as string}/users`,
             },
             {
+              active: true,
               label: t('common:matches'),
               href: `/${query.org as string}/matches`,
             },
@@ -58,18 +58,15 @@ function SettingsPage(): JSX.Element {
               href: `/${query.org as string}/calendar`,
             },
             {
-              active: true,
               label: t('common:settings'),
               href: `/${query.org as string}/settings`,
             },
           ]}
         />
-        <Settings active='general' orgId={query.org as string}>
-          <General />
-        </Settings>
+        <Matches org />
       </Page>
     </OrgContext.Provider>
   );
 }
 
-export default withI18n(SettingsPage, { common, settings, org: orgIntl });
+export default withI18n(MatchesPage, { common, match, matches });

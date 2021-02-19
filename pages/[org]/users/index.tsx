@@ -54,6 +54,10 @@ function UsersPage(): JSX.Element {
               href: `/${params.org as string}/users`,
             },
             {
+              label: t('common:matches'),
+              href: `/${params.org as string}/matches`,
+            },
+            {
               label: t('common:calendar'),
               href: `/${params.org as string}/calendar`,
             },
