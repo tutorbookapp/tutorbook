@@ -14,6 +14,7 @@
     "dev:next": "cross-env NODE_OPTIONS='--inspect' next dev -p 3000",
     "dev:cy": "cross-env NODE_ENV=development PERCY_BRANCH=local percy exec -- cypress open",
     "dev": "cross-env NODE_ENV=development concurrently yarn:dev:db yarn:dev:next yarn:dev:cy",
+    "seed": "cross-env NODE_ENV=development NO_COLOR=1 cypress run --spec cypress/tests/seed.ts",
     "build:sw": "cd sw && webpack",
     "build:next": "next build",
     "build:analyze": "cross-env ANALYZE=true next build",
