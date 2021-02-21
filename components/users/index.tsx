@@ -3,17 +3,14 @@ import { dequal } from 'dequal/lite';
 
 import Pagination from 'components/pagination';
 
-import { CallbackParam, Org, UsersQuery } from 'lib/model';
+import { CallbackParam, UsersQuery } from 'lib/model';
+import { useOrg } from 'lib/context/org';
 
 import FiltersSheet from './filters-sheet';
 import Header from './header';
 import ResultsList from './results-list';
 import SearchBar from './search-bar';
 import styles from './users.module.scss';
-
-interface UsersProps {
-  org?: Org;
-}
 
 /**
  * The "Users" view is a fully filterable list of users that can be clicked on
@@ -27,7 +24,9 @@ interface UsersProps {
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/87}
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/75}
  */
-export default function Users({ org }: UsersProps): JSX.Element {
+export default function Users(): JSX.Element {
+  const { org } = useOrg();
+
   const [searching, setSearching] = useState<boolean>(true);
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
