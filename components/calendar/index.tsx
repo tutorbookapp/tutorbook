@@ -7,10 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Chip, ChipSet } from '@rmwc/chip';
-import { IconButton } from '@rmwc/icon-button';
-import { TextField } from '@rmwc/textfield';
 import { Snackbar } from '@rmwc/snackbar';
+import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import { dequal } from 'dequal/lite';
 import mergeRefs from 'react-merge-refs';
@@ -20,7 +18,13 @@ import useMeasure from 'react-use-measure';
 
 import LoadingDots from 'components/loading-dots';
 
-import { Meeting, MeetingJSON, Timeslot } from 'lib/model';
+import {
+  Callback,
+  Meeting,
+  MeetingJSON,
+  MeetingsQuery,
+  Timeslot,
+} from 'lib/model';
 import { useClickOutside, useSingle } from 'lib/hooks';
 import { ClickContext } from 'lib/hooks/click-outside';
 import { getDateWithDay } from 'lib/utils/time';
@@ -35,6 +39,8 @@ import styles from './calendar.module.scss';
 import { useCalendar } from './context';
 
 export interface CalendarBodyProps {
+  query: MeetingsQuery;
+  setQuery: Callback<MeetingsQuery>;
   searching: boolean;
   meetings: Meeting[];
 }
@@ -61,6 +67,8 @@ function expand(e: Meeting, colIdx: number, cols: Meeting[][]): number {
 }
 
 export default function CalendarBody({
+  query,
+  setQuery,
   searching,
   meetings,
 }: CalendarBodyProps): JSX.Element {
@@ -256,19 +264,17 @@ export default function CalendarBody({
       )}
       <div className={styles.filters}>
         <div className={styles.wrapper}>
-          <div className={styles.left}>
-            <IconButton className={styles.filtersButton} icon='filter_list' />
-            <ChipSet className={styles.filterChips}>
-              <Chip label='Pending' checkmark />
-              <Chip label='Logged' selected checkmark />
-              <Chip label='Approved' checkmark />
-            </ChipSet>
-          </div>
+          <div className={styles.left} />
           <div className={styles.right}>
             <TextField
               outlined
               placeholder='Search meetings'
               className={styles.searchField}
+              value={query.search}
+              onChange={(evt) => {
+                const search = evt.currentTarget.value;
+                setQuery((prev) => new MeetingsQuery({ ...prev, search }));
+              }}
             />
           </div>
         </div>

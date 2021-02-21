@@ -1,3 +1,4 @@
+@use 'styles/sizes';
 @use 'styles/calendar';
 @use 'styles/typography';
 
@@ -10,7 +11,7 @@ $border-color: var(--accents-2);
 }
 
 .menuSurface {
-  max-width: min(#{var(--page-width-with-margin)}, calc(-32px + 100vw));
+  max-width: min(#{sizes.$page-width-with-margin}, calc(-32px + 100vw));
   overflow: hidden;
   display: flex;
   visibility: hidden;
@@ -28,7 +29,7 @@ $border-color: var(--accents-2);
 }
 
 .headers {
-  @include calendar.headers($times-width, $cell-width) {
+  @include calendar.headers($times-width, $cell-width, $border-color) {
     .titleContent {
       margin: 0;
       text-align: center;

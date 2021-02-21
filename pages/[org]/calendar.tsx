@@ -131,7 +131,12 @@ function OrgCalendarPage(): JSX.Element {
           value={{ mutateMeeting, removeMeeting, startingDate: query.from }}
         >
           <CalendarHeader query={query} setQuery={setQuery} />
-          <CalendarBody searching={!data} meetings={meetings} />
+          <CalendarBody
+            query={query}
+            setQuery={setQuery}
+            searching={!data}
+            meetings={meetings}
+          />
         </CalendarContext.Provider>
       </Page>
     </OrgContext.Provider>
