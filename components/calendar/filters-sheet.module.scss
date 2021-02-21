@@ -1,17 +1,22 @@
 @use 'styles/typography';
 @use 'styles/query-form';
 @use 'styles/common';
+@use 'styles/sizes';
 
 @use 'config';
 
 .wrapper {
   overflow: hidden;
   position: absolute;
-  left: config.$times-width + 8px;
+  left: 0;
   top: 0;
   height: 100%;
   border-left: 1px solid var(--accents-2);
   box-sizing: border-box;
+
+  @media (min-width: config.$breakpoint) {
+    left: config.$times-width + 8px;
+  }
 
   @include query-form.core-styles(true);
 
@@ -19,6 +24,10 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
-    padding: 24px config.$times-width + 8px + 24px 24px 24px;
+    padding: 24px;
+
+    @media (min-width: config.$breakpoint) {
+      padding-right: config.$times-width + 8px + 24px;
+    }
   }
 }

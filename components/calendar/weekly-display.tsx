@@ -277,6 +277,7 @@ function WeeklyDisplay({
             <div className={styles.timesWrapper} ref={timesRef}>
               <div className={styles.times}>
                 <Times />
+                <div className={styles.spacer} />
               </div>
             </div>
             <div

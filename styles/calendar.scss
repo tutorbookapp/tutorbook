@@ -12,6 +12,7 @@
     flex-direction: column;
     overflow: hidden;
     position: relative;
+    border-right: transparent 1px solid;
   }
 
   .scroller {
@@ -22,9 +23,9 @@
 }
 
 @mixin headers($times-width, $cell-width, $border-color, $border-left: false) {
+  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
   flex: none;
   display: flex;
-  border-right: transparent 1px solid;
 
   .space {
     min-width: $times-width + 8px;
@@ -41,7 +42,7 @@
     border-left: transparent 1px solid;
 
     @if $border-left {
-      @media (min-width: sizes.$page-width + 2 * ($times-width + 8px)) {
+      @media (min-width: $breakpoint) {
         &:first-child {
           border-left: $border-color 1px solid;
         }
@@ -56,7 +57,6 @@
   height: 8px;
   display: flex;
   flex: none;
-  border-right: transparent 1px solid;
 
   .space {
     width: $times-width + 8px;
@@ -79,6 +79,7 @@
   $max-height,
   $border-left: false
 ) {
+  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
   position: relative;
   flex: 1 1 60%;
   display: flex;
@@ -102,7 +103,7 @@
       z-index: 3;
 
       @if $border-left {
-        @media (min-width: sizes.$page-width + 2 * ($times-width + 8px)) {
+        @media (min-width: $breakpoint) {
           left: $times-width + 8px + 1px;
           width: calc(100% - #{16px + $times-width + 8px});
         }
@@ -144,7 +145,7 @@
         z-index: 3;
 
         @if $border-left {
-          @media (min-width: sizes.$page-width + 2 * ($times-width + 8px)) {
+          @media (min-width: $breakpoint) {
             left: $times-width + 8px + 1px;
           }
         }
@@ -173,6 +174,14 @@
           &:first-child .timeLabel {
             display: none;
           }
+        }
+
+        .spacer {
+          height: 20px;
+          display: block;
+          visibility: hidden;
+          overflow-y: hidden;
+          max-width: 80px;
         }
       }
     }

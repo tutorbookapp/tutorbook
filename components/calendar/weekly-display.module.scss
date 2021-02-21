@@ -16,8 +16,15 @@
 
 .wrapper {
   border-right: 1px solid var(--accents-2);
+  border-left: 1px solid var(--accents-2);
+  padding-left: 8px;
   overflow: hidden;
   flex: 1 1 auto;
+
+  @media (min-width: config.$breakpoint) {
+    border-left: none;
+    padding-left: 0;
+  }
 }
 
 .headerWrapper {

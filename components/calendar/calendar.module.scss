@@ -11,13 +11,8 @@
     display: flex;
     position: relative;
 
-    // TODO: Add styling for when viewport height exceeds calendar height.
-    @media (min-width: sizes.$page-width + 2 * (config.$times-width + 8px)) {
-      // There must be at least 48px of margin on each side of the page for the
-      // times to show properly. Otherwise, they are outside of the viewport.
+    @media (min-width: config.$breakpoint) {
       margin-left: -1 * config.$times-width - 8px;
-      border-left: none;
-      padding-left: 0;
     }
   }
 }

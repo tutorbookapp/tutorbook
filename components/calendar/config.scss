@@ -1,4 +1,10 @@
+@use 'styles/sizes';
+
 $times-width: 40px;
 $cell-width: 100px;
 $border-color: var(--accents-2);
 $filters-height: 56px;
+
+// There must be at least 48px of margin on each side of the page for the times
+// to show properly. Otherwise, they are outside of the viewport edge.
+$breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
