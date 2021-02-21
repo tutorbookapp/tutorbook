@@ -1,10 +1,10 @@
 @use '@material/elevation';
 @use 'styles/typography';
+@use 'styles/common';
 
 .wrapper {
-  max-width: var(--page-width-with-margin);
+  @include common.wrapper;
   padding: 48px 24px;
-  margin: 0 auto;
 
   // TODO: Why is this flex display needed to properly size the no results
   // placeholder? It's what makes it work in the users dashboard...

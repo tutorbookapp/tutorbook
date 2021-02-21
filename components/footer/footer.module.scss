@@ -1,10 +1,12 @@
+@use 'styles/sizes';
+
 footer.footer {
   background: var(--accents-1);
   border-top: 1px solid var(--accents-2);
-  padding: calc(1.5 * var(--gap)) var(--gap) var(--gap);
+  padding: 36px 24px 24px;
 
   nav {
-    max-width: var(--page-width);
+    max-width: sizes.$page-width;
     margin: 0 auto;
     display: flex;
     flex-wrap: nowrap;
@@ -12,17 +14,17 @@ footer.footer {
   }
 
   section {
-    max-width: var(--page-width);
+    max-width: sizes.$page-width;
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--gap) 0;
+    padding: 24px 0;
   }
 
   &.formWidth nav,
   &.formWidth section {
-    max-width: var(--form-width);
+    max-width: sizes.$form-width;
   }
 
   span {
@@ -41,7 +43,7 @@ footer.footer {
     }
 
     span {
-      margin-bottom: var(--gap);
+      margin-bottom: 24px;
     }
   }
 }

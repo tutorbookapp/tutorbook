@@ -1,4 +1,4 @@
-@use 'sass:map';
+@use 'styles/sizes';
 
 .wrapper {
   position: sticky;
@@ -8,7 +8,7 @@
   width: 100%;
   max-width: 100%;
   background-color: var(--header-background);
-  min-height: var(--header-height);
+  min-height: sizes.$header-height;
   transition: box-shadow 0.1s ease 0s;
   box-shadow: var(--header-border-bottom);
   z-index: 4;
@@ -16,7 +16,7 @@
 
 .header {
   width: 100%;
-  max-width: var(--page-width-with-margin);
+  max-width: sizes.$page-width-with-margin;
   margin: auto;
   display: flex;
   flex-direction: row;
@@ -30,7 +30,7 @@
 }
 
 .formWidth .header {
-  max-width: var(--form-width-with-margin);
+  max-width: sizes.$form-width-with-margin;
 }
 
 .center {
@@ -54,7 +54,7 @@
 }
 
 .avatar {
-  width: calc(var(--header-height) - 24px);
+  width: sizes.$header-height - 24px;
   border-radius: 4px;
   background: none;
   border: none;
@@ -73,7 +73,7 @@ button.avatar {
 .logo {
   display: flex;
   align-items: center;
-  height: var(--header-height);
+  height: sizes.$header-height;
   cursor: pointer;
   margin-right: 10px;
   text-decoration: none;
@@ -154,7 +154,7 @@ button.avatar {
   position: fixed;
   right: 0;
   left: 0;
-  top: calc(var(--header-height) - 1px);
+  top: sizes.$header-height - 1px;
   bottom: 0;
   overflow-y: scroll;
 }

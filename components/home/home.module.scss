@@ -1,4 +1,4 @@
-@use 'sass:map';
+@use 'styles/sizes';
 @use 'styles/common';
 @use 'styles/loader';
 @use 'styles/socials';
@@ -32,7 +32,7 @@
 }
 
 .content {
-  @include common.wrapper(var(--form-width-with-margin));
+  @include common.wrapper(sizes.$form-width-with-margin);
   padding: 48px 24px;
   display: flex;
 
@@ -97,7 +97,7 @@
 
     .sticky {
       position: sticky;
-      top: calc(var(--header-height) + 24px);
+      top: sizes.$header-height + 24px;
     }
   }
 }
@@ -105,7 +105,7 @@
 .background {
   height: 45vh;
   max-height: 400px;
-  margin-top: calc(-1 * var(--header-height));
+  margin-top: -1 * sizes.$header-height;
   background: var(--accents-2);
   position: relative;
   font-size: 0;

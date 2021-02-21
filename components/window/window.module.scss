@@ -55,7 +55,7 @@
 
 .traffic {
   display: none;
-  margin-left: var(--gap-half);
+  margin-left: 12px;
 }
 
 .traffic.show {
@@ -77,7 +77,7 @@
 }
 
 .body.padding {
-  padding-top: var(--gap-half);
+  padding-top: 12px;
 }
 
 .title {
@@ -99,7 +99,7 @@
 .titleRight {
   font-weight: 700;
   justify-content: flex-end;
-  padding-right: var(--space-4x);
+  padding-right: 16px;
 }
 
 .caret {

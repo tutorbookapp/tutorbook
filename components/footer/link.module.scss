@@ -1,7 +1,7 @@
 @use 'styles/common';
 
 li.link {
-  padding: var(--gap-quarter) 0;
+  padding: 8px 0;
 
   a {
     @include common.link;

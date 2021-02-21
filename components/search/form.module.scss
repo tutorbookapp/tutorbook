@@ -1,4 +1,5 @@
 @use '@material/elevation';
+@use 'styles/sizes';
 
 .form {
   @include elevation.elevation(0);
@@ -9,7 +10,7 @@
   display: none;
   position: sticky;
   z-index: 3;
-  top: calc(var(--header-height) + 12px);
+  top: sizes.$header-height + 12px;
   margin-bottom: 24px;
   width: 100%;
 }

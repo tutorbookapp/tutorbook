@@ -1,4 +1,5 @@
 @use 'styles/typography';
+@use 'styles/common';
 
 $filters-height: 56px;
 
@@ -126,8 +127,7 @@ $filters-height: 56px;
 }
 
 .wrapper {
-  padding: 0 24px;
-  max-width: var(--page-width-with-margin);
+  @include common.wrapper;
   margin: 48px auto;
 }
 

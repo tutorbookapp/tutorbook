@@ -1,8 +1,8 @@
-@use 'sass:map';
-@use 'styles/typography';
 @use '@material/elevation';
+@use 'styles/typography';
+@use 'styles/sizes';
 
-@mixin wrapper($width: var(--page-width-with-margin)) {
+@mixin wrapper($width: sizes.$page-width-with-margin) {
   max-width: $width;
   margin: 0 auto;
   padding: 0 24px;

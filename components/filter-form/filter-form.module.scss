@@ -1,4 +1,4 @@
-@use 'sass:map';
+@use 'styles/sizes';
 @use 'styles/query-form';
 @use 'styles/typography';
 @use '@material/elevation';
@@ -6,7 +6,7 @@
 .search {
   border: 1px solid var(--accents-2);
   background: var(--background);
-  height: calc(var(--header-height) - 24px);
+  height: sizes.$header-height - 24px;
   align-items: center;
   display: inline-flex;
   position: relative;

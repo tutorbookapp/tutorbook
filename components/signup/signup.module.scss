@@ -1,4 +1,4 @@
-@use 'sass:map';
+@use 'styles/sizes';
 @use 'styles/common';
 @use 'styles/loader';
 @use 'styles/typography';
@@ -6,7 +6,7 @@
 @include common.card-styles;
 
 .wrapper {
-  @include common.wrapper(var(--form-width-with-margin));
+  @include common.wrapper(sizes.$form-width-with-margin);
   margin: 60px auto;
   box-sizing: border-box;
 

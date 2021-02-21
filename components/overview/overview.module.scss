@@ -1,7 +1,7 @@
+@use 'styles/common';
+
 .wrapper {
-  list-style: none;
-  padding: 0 24px;
-  max-width: var(--page-width-with-margin);
+  @include common.wrapper;
   margin: 48px auto;
-  box-sizing: border-box;
+  list-style: none;
 }

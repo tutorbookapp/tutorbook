@@ -1,5 +1,5 @@
-@use 'sass:map';
 @use 'styles/common';
+@use 'styles/sizes';
 
 .wrapper {
   @include common.wrapper;
@@ -12,7 +12,7 @@
 
     .links {
       position: sticky;
-      top: calc(var(--header-height) + 24px);
+      top: sizes.$header-height + 24px;
 
       > a {
         display: block;

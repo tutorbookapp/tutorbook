@@ -1,4 +1,4 @@
-@use 'sass:map';
+@use 'styles/sizes';
 
 $cutoff: 700px;
 
@@ -10,7 +10,7 @@ $cutoff: 700px;
     display: flex;
     align-items: center;
     padding: 0 24px;
-    width: var(--page-width-with-margin);
+    width: sizes.$page-width-with-margin;
     max-width: 100%;
     margin: 0 auto 48px;
     box-sizing: border-box;
@@ -61,7 +61,7 @@ $cutoff: 700px;
     align-items: center;
     margin-bottom: 24px;
     padding: 0 24px;
-    width: var(--page-width-with-margin);
+    width: sizes.$page-width-with-margin;
     max-width: 100%;
     margin: 0 auto 24px;
     box-sizing: border-box;
