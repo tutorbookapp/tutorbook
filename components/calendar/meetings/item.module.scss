@@ -19,6 +19,7 @@
 
   &.editing {
     background: transparent;
+    cursor: move;
 
     > div {
       background: var(--primary-3);
