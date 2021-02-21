@@ -25,6 +25,8 @@ export interface DialogSurfaceProps {
   children: ReactNode;
 }
 
+// TODO: Close this dialog and re-open or otherwise prevent these expensive
+// positioning calculations when opening and closing the FiltersSheet.
 export default function DialogSurface({
   width: rndWidth,
   offset,

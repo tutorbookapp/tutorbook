@@ -1,192 +1,23 @@
 @use 'styles/sizes';
 @use 'styles/common';
-@use 'styles/calendar';
-@use 'styles/typography';
-@use '@material/select';
 
-$times-width: 40px;
-$cell-width: 100px;
-$border-color: var(--accents-2);
-$filters-height: 56px;
+@use 'config';
 
-.loader {
-  position: absolute;
-  top: 50%;
-  bottom: 50%;
-  left: 50%;
-  right: 50%;
-  z-index: 2;
-}
-
-.filters {
+.wrapper {
   @include common.wrapper;
   margin: 48px auto 0;
 
-  .wrapper {
-    height: $filters-height;
-    border: 1px solid var(--accents-2);
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+  .content {
     display: flex;
-    justify-content: space-between;
-
-    .left {
-      display: flex;
-      align-items: center;
-
-      .filtersButton {
-        margin-left: ($filters-height - 48px) / 2;
-      }
-
-      .filterChips {
-        flex-wrap: nowrap;
-      }
-    }
-
-    .right {
-      display: flex;
-      align-items: center;
-
-      .searchField {
-        $margin: 10px;
-        height: $filters-height - $margin * 2;
-        margin-right: $margin;
-
-        &:not(:global(.mdc-text-field--focused)):not(:global(.mdc-text-field--invalid)) {
-          :global(.mdc-notched-outline__leading),
-          :global(.mdc-notched-outline__notch),
-          :global(.mdc-notched-outline__trailing) {
-            border-color: var(--accents-2);
-          }
-        }
-
-        input {
-          @include typography.typography('body2');
-        }
-      }
-    }
-  }
-}
-.calendar {
-  @include common.wrapper;
-
-  .wrapper {
-    border-right: 1px solid var(--accents-2);
-    border-left: 1px solid var(--accents-2);
-    padding-left: 8px;
+    position: relative;
 
     // TODO: Add styling for when viewport height exceeds calendar height.
-    @media (min-width: sizes.$page-width + 2 * ($times-width + 8px)) {
+    @media (min-width: sizes.$page-width + 2 * (config.$times-width + 8px)) {
       // There must be at least 48px of margin on each side of the page for the
       // times to show properly. Otherwise, they are outside of the viewport.
-      margin-left: -1 * $times-width - 8px;
+      margin-left: -1 * config.$times-width - 8px;
       border-left: none;
       padding-left: 0;
     }
-  }
-}
-
-.headerWrapper {
-  @include calendar.header-wrapper($times-width);
-}
-
-.headers {
-  @include calendar.headers(
-    $times-width,
-    $cell-width,
-    $border-color,
-    $border-left: true
-  ) {
-    h2 {
-      margin: 0;
-      text-align: center;
-      width: 100%;
-
-      .weekday {
-        line-height: 32px;
-        position: relative;
-        color: var(--accents-5);
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.8px;
-        margin-left: 0;
-        margin-top: 8px;
-        text-indent: 0.8px;
-        text-transform: uppercase;
-      }
-
-      .date {
-        color: var(--accents-6);
-        position: relative;
-        font-size: 26px;
-        letter-spacing: -2.6px;
-        text-indent: -2.6px;
-        font-weight: 400;
-        font-variant: tabular-nums;
-        font-feature-settings: 'tnum' 1;
-        border-radius: 100%;
-        line-height: 46px;
-        height: 46px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: -8px;
-        width: 46px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      &.today .weekday {
-        color: var(--primary);
-      }
-
-      &.today .date {
-        color: var(--on-primary);
-        background: var(--primary);
-      }
-    }
-  }
-}
-
-.headerCells {
-  @include calendar.header-cells($times-width, $cell-width, $border-color);
-}
-
-.gridWrapper {
-  @include calendar.grid(
-    $times-width,
-    $cell-width,
-    $border-color,
-    $max-height: calc(100vh - #{sizes.$header-height + 86px + $filters-height}),
-    $border-left: true
-  );
-}
-
-.indicator {
-  $color: #ea4335;
-  position: absolute;
-  z-index: 2;
-  right: -10px;
-  left: 0;
-
-  .dot {
-    background: $color;
-    border-radius: 50%;
-    content: '';
-    position: absolute;
-    height: 12px;
-    margin-left: -6.5px;
-    margin-top: -5px;
-    width: 12px;
-    left: 0;
-    top: 0;
-  }
-
-  .line {
-    border-top: $color solid 2px;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    left: 0;
   }
 }

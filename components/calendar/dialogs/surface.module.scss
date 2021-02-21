@@ -1,7 +1,8 @@
 @use '@material/dialog';
 
 .scrimOuter {
-  position: absolute;
+  z-index: dialog.$z-index;
+  position: fixed;
   pointer-events: none;
   width: 0;
   height: 0;

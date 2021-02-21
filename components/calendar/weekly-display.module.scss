@@ -1,0 +1,131 @@
+@use 'styles/sizes';
+@use 'styles/common';
+@use 'styles/calendar';
+@use '@material/select';
+
+@use 'config';
+
+.loader {
+  position: absolute;
+  top: 50%;
+  bottom: 50%;
+  left: 50%;
+  right: 50%;
+  z-index: 2;
+}
+
+.wrapper {
+  border-right: 1px solid var(--accents-2);
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.headerWrapper {
+  @include calendar.header-wrapper(config.$times-width);
+}
+
+.headers {
+  @include calendar.headers(
+    config.$times-width,
+    config.$cell-width,
+    config.$border-color,
+    $border-left: true
+  ) {
+    h2 {
+      margin: 0;
+      text-align: center;
+      width: 100%;
+
+      .weekday {
+        line-height: 32px;
+        position: relative;
+        color: var(--accents-5);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.8px;
+        margin-left: 0;
+        margin-top: 8px;
+        text-indent: 0.8px;
+        text-transform: uppercase;
+      }
+
+      .date {
+        color: var(--accents-6);
+        position: relative;
+        font-size: 26px;
+        letter-spacing: -2.6px;
+        text-indent: -2.6px;
+        font-weight: 400;
+        font-variant: tabular-nums;
+        font-feature-settings: 'tnum' 1;
+        border-radius: 100%;
+        line-height: 46px;
+        height: 46px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -8px;
+        width: 46px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      &.today .weekday {
+        color: var(--primary);
+      }
+
+      &.today .date {
+        color: var(--on-primary);
+        background: var(--primary);
+      }
+    }
+  }
+}
+
+.headerCells {
+  @include calendar.header-cells(
+    config.$times-width,
+    config.$cell-width,
+    config.$border-color
+  );
+}
+
+.gridWrapper {
+  @include calendar.grid(
+    config.$times-width,
+    config.$cell-width,
+    config.$border-color,
+    $max-height:
+      calc(100vh - #{sizes.$header-height + 86px + config.$filters-height}),
+    $border-left: true
+  );
+}
+
+.indicator {
+  $color: #ea4335;
+  position: absolute;
+  z-index: 2;
+  right: -10px;
+  left: 0;
+
+  .dot {
+    background: $color;
+    border-radius: 50%;
+    content: '';
+    position: absolute;
+    height: 12px;
+    margin-left: -6.5px;
+    margin-top: -5px;
+    width: 12px;
+    left: 0;
+    top: 0;
+  }
+
+  .line {
+    border-top: $color solid 2px;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    left: 0;
+  }
+}

@@ -1,0 +1,24 @@
+@use 'styles/typography';
+@use 'styles/query-form';
+@use 'styles/common';
+
+@use 'config';
+
+.wrapper {
+  overflow: hidden;
+  position: absolute;
+  left: config.$times-width + 8px;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid var(--accents-2);
+  box-sizing: border-box;
+
+  @include query-form.core-styles(true);
+
+  .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    padding: 24px config.$times-width + 8px + 24px 24px 24px;
+  }
+}
