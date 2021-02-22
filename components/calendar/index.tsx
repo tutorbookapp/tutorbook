@@ -5,6 +5,7 @@ import { dequal } from 'dequal/lite';
 import { Meeting, MeetingsQuery } from 'lib/model';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { useOrg } from 'lib/context/org';
+import { useUser } from 'lib/context/user';
 
 import { CalendarContext } from './context';
 import FiltersSheet from './filters-sheet';
@@ -13,7 +14,15 @@ import SearchBar from './search-bar';
 import WeeklyDisplay from './weekly-display';
 import styles from './calendar.module.scss';
 
-export default function Calendar(): JSX.Element {
+export interface CalendarProps {
+  org?: boolean;
+  user?: boolean;
+}
+
+export default function Calendar({
+  org: byOrg,
+  user: byUser,
+}: CalendarProps): JSX.Element {
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(
@@ -21,10 +30,16 @@ export default function Calendar(): JSX.Element {
   );
 
   const { org } = useOrg();
-  const { data } = useSWR<ListMeetingsRes>(query.org ? query.endpoint : null, {
-    revalidateOnFocus: !mutatedIds.size,
-    revalidateOnReconnect: !mutatedIds.size,
-  });
+  const { user } = useUser();
+  const { data } = useSWR<ListMeetingsRes>(
+    (byOrg && query.org) || (byUser && query.people.length)
+      ? query.endpoint
+      : null,
+    {
+      revalidateOnFocus: !mutatedIds.size,
+      revalidateOnReconnect: !mutatedIds.size,
+    }
+  );
   const meetings = useMemo(
     () => data?.meetings.map((m) => Meeting.fromJSON(m)) || [],
     [data?.meetings]
@@ -32,10 +47,18 @@ export default function Calendar(): JSX.Element {
 
   useEffect(() => {
     setQuery((prev) => {
-      if (!org || org.id === prev.org) return prev;
+      if (!byOrg || !org || org.id === prev.org) return prev;
       return new MeetingsQuery({ ...prev, org: org.id });
     });
-  }, [org]);
+  }, [byOrg, org]);
+  useEffect(() => {
+    setQuery((prev) => {
+      if (!byUser || !user) return prev;
+      const people = [{ label: user.name, value: user.id }];
+      if (dequal(prev.people, people)) return prev;
+      return new MeetingsQuery({ ...prev, people });
+    });
+  }, [byUser, user]);
 
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated = false) => {

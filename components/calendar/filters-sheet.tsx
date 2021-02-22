@@ -24,7 +24,7 @@ function FiltersSheet({
   return (
     <animated.div className={styles.wrapper} style={props}>
       <div className={styles.content} style={{ width }}>
-        <Placeholder>COMING SOON</Placeholder>
+        <Placeholder>FILTERS COMING SOON</Placeholder>
       </div>
     </animated.div>
   );

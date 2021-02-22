@@ -64,14 +64,15 @@ export default function Matches({
 
   useEffect(() => {
     onQueryChange((prev) => {
-      if (!org || !byOrg) return prev;
+      if (!byOrg || !org || org.id === prev.org) return prev;
       return new MatchesQuery({ ...prev, org: org.id });
     });
   }, [byOrg, org, onQueryChange]);
   useEffect(() => {
     onQueryChange((prev) => {
-      if (!user.id || !byUser) return prev;
+      if (!byUser || !user) return prev;
       const people = [{ label: user.name, value: user.id }];
+      if (dequal(prev.people, people)) return prev;
       return new MatchesQuery({ ...prev, people });
     });
   }, [byUser, user, onQueryChange]);

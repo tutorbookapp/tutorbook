@@ -64,7 +64,7 @@ function OrgCalendarPage(): JSX.Element {
             },
           ]}
         />
-        <Calendar />
+        <Calendar org />
       </Page>
     </OrgContext.Provider>
   );
