@@ -9,21 +9,25 @@ export interface SearchBarProps {
   query: MeetingsQuery;
   setQuery: Callback<MeetingsQuery>;
   setFiltersOpen: Callback<boolean>;
+  showFiltersButton?: boolean;
 }
 
 export default function SearchBar({
   query,
   setQuery,
   setFiltersOpen,
+  showFiltersButton,
 }: SearchBarProps): JSX.Element {
   return (
     <div className={styles.filters}>
       <div className={styles.left}>
-        <IconButton
-          className={styles.filtersButton}
-          onClick={() => setFiltersOpen((prev) => !prev)}
-          icon='filter_list'
-        />
+        {showFiltersButton && (
+          <IconButton
+            className={styles.filtersButton}
+            onClick={() => setFiltersOpen((prev) => !prev)}
+            icon='filter_list'
+          />
+        )}
       </div>
       <div className={styles.right}>
         <TextField
