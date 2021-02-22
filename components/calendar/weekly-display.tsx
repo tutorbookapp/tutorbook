@@ -107,11 +107,29 @@ function WeeklyDisplay({
     [updateEl, removeEl]
   );
 
-  // TODO: This measure value lags behind the `useSpring()` value when the
-  // FiltersSheet is animating open and closed. We should instead measure the
-  // overall wrapper position and then add the `useSpring()` value ourselves.
-  const [cellsMeasureRef, { x, y }] = useMeasure({ polyfill, scroll: true });
+  const [rowsMeasureRef, rowsMeasure] = useMeasure({ polyfill });
+  const [cellsMeasureIsCorrect, setCellsMeasureIsCorrect] = useState(false);
+  const [cellsMeasureRef, cellsMeasure] = useMeasure({
+    polyfill,
+    scroll: true,
+  });
   const [cellRef, { width: cellWidth }] = useMeasure({ polyfill });
+
+  // See: https://github.com/pmndrs/react-use-measure/issues/37
+  // Current workaround is to listen for scrolls on the parent div. Once
+  // the user scrolls, we know that the `rowsMeasure.x` is no longer correct
+  // but that the `cellsMeasure.x` is correct.
+  const offset = useMemo(
+    () => ({
+      x: cellsMeasureIsCorrect ? cellsMeasure.x : rowsMeasure.x + 8,
+      y: cellsMeasure.y,
+    }),
+    [cellsMeasureIsCorrect, cellsMeasure.x, cellsMeasure.y, rowsMeasure.x]
+  );
+
+  useEffect(() => {
+    setCellsMeasureIsCorrect(false);
+  }, [filtersOpen]);
 
   useEffect(() => {
     setViewing((prev) => {
@@ -142,11 +160,11 @@ function WeeklyDisplay({
   const onClick = useCallback(
     (event: MouseEvent) => {
       if (draggingId) return;
-      const position = { x: event.clientX - x, y: event.clientY - y };
+      const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
-      setViewing(getMeeting(48, position, meeting, cellWidth, startingDate));
+      setViewing(getMeeting(48, pos, meeting, cellWidth, startingDate));
     },
-    [draggingId, startingDate, x, y, cellWidth]
+    [draggingId, startingDate, offset, cellWidth]
   );
 
   // Don't unmount the dialog surface if the user is draggingId (in that case, we
@@ -159,6 +177,7 @@ function WeeklyDisplay({
   // was inspired by the way that Google Calendar's UI is currently setup.
   // @see {@link https://mzl.la/35OIC9y}
   const onScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+    setCellsMeasureIsCorrect(true);
     const { scrollTop, scrollLeft } = event.currentTarget;
     if (!ticking.current) {
       requestAnimationFrame(() => {
@@ -246,7 +265,7 @@ function WeeklyDisplay({
       {viewing && (
         <DialogSurface
           width={cellWidth}
-          offset={{ x, y }}
+          offset={offset}
           viewing={viewing}
           dialogOpen={dialogOpen && !draggingId}
           setDialogOpen={setDialogOpen}
@@ -283,7 +302,7 @@ function WeeklyDisplay({
             <div
               className={styles.rowsWrapper}
               onScroll={onScroll}
-              ref={rowsRef}
+              ref={mergeRefs([rowsMeasureRef, rowsRef])}
             >
               {searching && (
                 <div className={styles.loader}>

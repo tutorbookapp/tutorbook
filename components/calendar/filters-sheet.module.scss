@@ -27,7 +27,7 @@
     padding: 24px;
 
     @media (min-width: config.$breakpoint) {
-      padding-right: config.$times-width + 8px + 24px;
+      padding-right: config.$times-width + 24px;
     }
   }
 }

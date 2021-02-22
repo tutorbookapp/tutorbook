@@ -15309,15 +15309,15 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"react-use-measure@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "react-use-measure@npm:2.0.1"
+"react-use-measure@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "react-use-measure@npm:2.0.3"
   dependencies:
     debounce: ^1.2.0
   peerDependencies:
     react: ">=16.13"
     react-dom: ">=16.13"
-  checksum: fc50d88f33c295b3a17be550675dc555f63e92b9c3d4349f9fc72ea50d367a0b12f24e9a98e2a9bc80c411bbedc97ce48d7831c22f7684bb0406906bf21318c1
+  checksum: 6da11414b2973bf3fe01cbfb9c1da5bd2df1cbcb86372bb4e69eda0635b849d661c6622a83a78e4b6c1520f3672e5913ef9580b48651d92fe96574f4375eb519
   languageName: node
   linkType: hard
 
@@ -18002,7 +18002,7 @@ resolve@^1.18.1:
     react-merge-refs: ^1.1.0
     react-rnd: ^10.2.1
     react-spring: ^8.0.27
-    react-use-measure: ^2.0.1
+    react-use-measure: ^2.0.3
     release: ^6.3.0
     rfdc: ^1.1.4
     sass: ^1.29.0
