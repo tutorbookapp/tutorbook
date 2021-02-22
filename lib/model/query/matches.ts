@@ -5,6 +5,7 @@ import construct from 'lib/model/construct';
 export interface MatchesQueryInterface extends QueryInterface {
   org?: string;
   people: Option<string>[];
+  subjects: Option<string>[];
 }
 
 export type MatchesQueryJSON = MatchesQueryInterface;
@@ -21,6 +22,8 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
 
   public people: Option<string>[] = [];
 
+  public subjects: Option<string>[] = [];
+
   public constructor(query: Partial<MatchesQueryInterface> = {}) {
     super(query);
     construct<MatchesQueryInterface>(this, query);
@@ -32,8 +35,9 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
     }
 
     const query = super.getURLQuery();
-    if (this.people.length) query.people = encode(this.people);
     if (this.org) query.org = encodeURIComponent(this.org);
+    if (this.people.length) query.people = encode(this.people);
+    if (this.subjects.length) query.subjects = encode(this.subjects);
     return query;
   }
 
@@ -45,6 +49,7 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
     return new MatchesQuery({
       ...Query.fromURLParams(params),
       people: decode(params.people),
+      subjects: decode(params.subjects),
       org: params.org ? decodeURIComponent(params.org) : undefined,
     });
   }

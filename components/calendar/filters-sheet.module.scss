@@ -20,14 +20,8 @@
 
   @include query-form.core-styles(true);
 
-  .content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 100%;
-    padding: 24px;
-
-    @media (min-width: config.$breakpoint) {
-      padding-right: config.$times-width + 24px;
-    }
+  .form {
+    max-height: 100%;
+    overflow: auto;
   }
 }

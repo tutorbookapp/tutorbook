@@ -16,7 +16,7 @@ export interface FiltersSheetProps {
   open: boolean;
 }
 
-export default memo(function FiltersSheet({
+function FiltersSheet({
   query,
   setQuery,
   open,
@@ -40,28 +40,29 @@ export default memo(function FiltersSheet({
 
   return (
     <animated.div className={styles.wrapper} style={props}>
-      <div className={styles.content} style={{ width }}>
-        <h4 className={styles.header}>More filters</h4>
-        <form className={styles.form}>
-          <SubjectSelect
-            label={t('query:subjects')}
-            onSelectedChange={onSubjectsChange}
-            selected={query.subjects}
-            placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
-            aspect={query.aspect}
-            className={styles.field}
-            outlined
-          />
-          <LangSelect
-            label={t('query:langs')}
-            placeholder={t('common:langs-placeholder')}
-            onSelectedChange={onLangsChange}
-            selected={query.langs}
-            className={styles.field}
-            outlined
-          />
-        </form>
-      </div>
+      <form className={styles.form} style={{ width }}>
+        <SubjectSelect
+          label={t('query:subjects')}
+          onSelectedChange={onSubjectsChange}
+          selected={query.subjects}
+          placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
+          aspect={query.aspect}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <LangSelect
+          label={t('query:langs')}
+          placeholder={t('common:langs-placeholder')}
+          onSelectedChange={onLangsChange}
+          selected={query.langs}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+      </form>
     </animated.div>
   );
-});
+}
+
+export default memo(FiltersSheet);

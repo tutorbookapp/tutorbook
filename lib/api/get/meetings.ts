@@ -4,6 +4,7 @@ import { addOptionsFilter, addStringFilter, list } from 'lib/api/search';
 function getFilterStrings(query: MeetingsQuery): string[] {
   let str = query.org ? `match.org:${query.org}` : '';
   str = addOptionsFilter(str, query.people, 'match.people.id', 'OR');
+  str = addOptionsFilter(str, query.subjects, 'match.subjects', 'OR');
 
   const to = query.to.valueOf();
   const from = query.from.valueOf();

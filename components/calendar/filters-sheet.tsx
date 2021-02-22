@@ -1,9 +1,10 @@
 import { animated, useSpring } from 'react-spring';
-import { memo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
-import Placeholder from 'components/placeholder';
+import SubjectSelect from 'components/subject-select';
+import UserSelect from 'components/user-select';
 
-import { Callback, MeetingsQuery } from 'lib/model';
+import { Callback, MeetingsQuery, Option } from 'lib/model';
 
 import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';
@@ -12,20 +13,54 @@ export interface FiltersSheetProps {
   query: MeetingsQuery;
   setQuery: Callback<MeetingsQuery>;
   filtersOpen: boolean;
+  timesOutsideMaxWidth: boolean;
 }
 
 function FiltersSheet({
   query,
   setQuery,
   filtersOpen,
+  timesOutsideMaxWidth,
 }: FiltersSheetProps): JSX.Element {
-  const props = useSpring({ config, width: filtersOpen ? width : 0 });
+  const wrapperWidth = useMemo(
+    () => (timesOutsideMaxWidth ? width + 56 : width),
+    [timesOutsideMaxWidth]
+  );
+  const props = useSpring({ config, width: filtersOpen ? wrapperWidth : 0 });
+
+  const onSubjectsChange = useCallback(
+    (subjects: Option<string>[]) => {
+      setQuery((prev) => new MeetingsQuery({ ...prev, subjects, page: 0 }));
+    },
+    [setQuery]
+  );
+  const onPeopleChange = useCallback(
+    (people: Option<string>[]) => {
+      setQuery((prev) => new MeetingsQuery({ ...prev, people, page: 0 }));
+    },
+    [setQuery]
+  );
 
   return (
     <animated.div className={styles.wrapper} style={props}>
-      <div className={styles.content} style={{ width }}>
-        <Placeholder>FILTERS COMING SOON</Placeholder>
-      </div>
+      <form className={styles.form} style={{ width }}>
+        <SubjectSelect
+          label='Subjects'
+          onSelectedChange={onSubjectsChange}
+          selected={query.subjects}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <UserSelect
+          label='People'
+          onSelectedChange={onPeopleChange}
+          selected={query.people}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+      </form>
     </animated.div>
   );
 }

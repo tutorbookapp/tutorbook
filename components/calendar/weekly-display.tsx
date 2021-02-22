@@ -38,6 +38,7 @@ export interface WeeklyDisplayProps {
   searching: boolean;
   meetings: Meeting[];
   filtersOpen: boolean;
+  timesOutsideMaxWidth: boolean;
 }
 
 const COLS = Array(7).fill(null);
@@ -65,6 +66,7 @@ function WeeklyDisplay({
   searching,
   meetings,
   filtersOpen,
+  timesOutsideMaxWidth,
 }: WeeklyDisplayProps): JSX.Element {
   const [eventTarget, setEventTarget] = useState<MouseEventHackTarget>();
   const [eventData, setEventData] = useState<MouseEventHackData>();
@@ -247,7 +249,11 @@ function WeeklyDisplay({
       }),
     [meetings]
   );
-  const props = useSpring({ config, marginLeft: filtersOpen ? width : 0 });
+  const marginLeft = useMemo(
+    () => (timesOutsideMaxWidth ? width + 56 : width),
+    [timesOutsideMaxWidth]
+  );
+  const props = useSpring({ config, marginLeft: filtersOpen ? marginLeft : 0 });
 
   return (
     <ClickContext.Provider value={{ updateEl, removeEl }}>

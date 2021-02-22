@@ -5,6 +5,6 @@ $cell-width: 100px;
 $border-color: var(--accents-2);
 $filters-height: 56px;
 
-// There must be at least 48px of margin on each side of the page for the times
+// There must be at least 56px of margin on each side of the page for the times
 // to show properly. Otherwise, they are outside of the viewport edge.
-$breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
+$breakpoint: sizes.$page-width + 2 * ($times-width + 8px + 8px);
