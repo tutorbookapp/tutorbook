@@ -8,15 +8,11 @@
 .wrapper {
   overflow: hidden;
   position: absolute;
-  left: 0;
+  right: 0;
   top: 0;
   height: 100%;
-  border-left: 1px solid var(--accents-2);
+  border-right: 1px solid var(--accents-2);
   box-sizing: border-box;
-
-  @media (min-width: config.$breakpoint) {
-    left: config.$times-width + 8px;
-  }
 
   @include query-form.core-styles(true);
 

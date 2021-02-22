@@ -1,5 +1,5 @@
 import { animated, useSpring } from 'react-spring';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback } from 'react';
 
 import SubjectSelect from 'components/subject-select';
 import UserSelect from 'components/user-select';
@@ -13,20 +13,14 @@ export interface FiltersSheetProps {
   query: MeetingsQuery;
   setQuery: Callback<MeetingsQuery>;
   filtersOpen: boolean;
-  timesOutsideMaxWidth: boolean;
 }
 
 function FiltersSheet({
   query,
   setQuery,
   filtersOpen,
-  timesOutsideMaxWidth,
 }: FiltersSheetProps): JSX.Element {
-  const wrapperWidth = useMemo(
-    () => (timesOutsideMaxWidth ? width + 56 : width),
-    [timesOutsideMaxWidth]
-  );
-  const props = useSpring({ config, width: filtersOpen ? wrapperWidth : 0 });
+  const props = useSpring({ config, width: filtersOpen ? width : 0 });
 
   const onSubjectsChange = useCallback(
     (subjects: Option<string>[]) => {

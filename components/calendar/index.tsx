@@ -6,9 +6,7 @@ import { Meeting, MeetingsQuery } from 'lib/model';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
-import { useWindowSize } from 'lib/hooks';
 
-import { BREAKPOINT } from './config';
 import { CalendarContext } from './context';
 import FiltersSheet from './filters-sheet';
 import Header from './header';
@@ -30,14 +28,6 @@ export default function Calendar({
   const [query, setQuery] = useState<MeetingsQuery>(
     new MeetingsQuery({ hitsPerPage: 1000 })
   );
-
-  // TODO: I should figure out a way to do this using pure CSS @media rules
-  // instead of changing the `useSpring` values (which causes an awkward
-  // animation between positions when the times move inside/outside max width).
-  const { width } = useWindowSize();
-  const timesOutsideMaxWidth = useMemo(() => !width || width >= BREAKPOINT, [
-    width,
-  ]);
 
   const { org } = useOrg();
   const { user } = useUser();
@@ -118,17 +108,15 @@ export default function Calendar({
           showFiltersButton={byOrg}
         />
         <div className={styles.content}>
-          <FiltersSheet
-            query={query}
-            setQuery={setQuery}
-            filtersOpen={filtersOpen}
-            timesOutsideMaxWidth={timesOutsideMaxWidth}
-          />
           <WeeklyDisplay
             searching={!data}
             meetings={meetings}
             filtersOpen={filtersOpen}
-            timesOutsideMaxWidth={timesOutsideMaxWidth}
+          />
+          <FiltersSheet
+            query={query}
+            setQuery={setQuery}
+            filtersOpen={filtersOpen}
           />
         </div>
       </div>
