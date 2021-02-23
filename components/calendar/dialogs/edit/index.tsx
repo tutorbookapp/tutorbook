@@ -1,9 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
-import useSWR from 'swr';
+import { useCallback, useState } from 'react';
 
 import DialogContent from 'components/dialog';
 
-import { Meeting, User, UserJSON } from 'lib/model';
+import { Meeting } from 'lib/model';
+import { usePeople } from 'lib/hooks';
 
 import DisplayPage from './display-page';
 import EditPage from './edit-page';
@@ -27,22 +27,7 @@ export default function EditDialog({
   const [checked, setChecked] = useState<boolean>(false);
 
   const openEdit = useCallback(() => setActive(Page.Edit), []);
-
-  const { data } = useSWR<UserJSON[]>(
-    `/api/matches/${meeting.match.id}/people`
-  );
-  const people = useMemo(() => {
-    if (data) return data.map((u) => User.fromJSON(u));
-    return meeting.match.people.map((p) => {
-      const user = new User(p);
-      if (p.roles.includes('tutor')) {
-        user.tutoring.subjects = meeting.match.subjects;
-      } else if (p.roles.includes('mentor')) {
-        user.mentoring.subjects = meeting.match.subjects;
-      }
-      return user;
-    });
-  }, [data, meeting.match.people, meeting.match.subjects]);
+  const people = usePeople(meeting.match);
 
   return (
     <DialogContent

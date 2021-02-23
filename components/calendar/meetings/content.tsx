@@ -5,6 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { Meeting, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
+import { usePeople } from 'lib/hooks';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 
@@ -50,6 +51,17 @@ const MeetingContent = forwardRef(
       return () => clearTimeout(timeoutId);
     }, [eventTarget, eventData]);
 
+    const people = usePeople(meeting.match);
+    const headerString = useMemo(() => {
+      const student = people.find(
+        (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
+      );
+      const studentName = student?.name;
+      const subjects = join(meeting.match.subjects);
+      if (studentName && subjects) return `${studentName} for ${subjects}`;
+      if (subjects) return subjects;
+      return '';
+    }, [people, meeting.match.subjects]);
     const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
       height,
     ]);
@@ -69,20 +81,18 @@ const MeetingContent = forwardRef(
       <div ref={mergeRefs([ref, nodeRef])} className={styles.wrapper}>
         <div className={styles.content}>
           <div
-            className={styles.header}
+            className={styles.headerWrapper}
             style={{
               maxHeight: headerHeight > 30 ? headerHeight - 15 : 15,
               whiteSpace: headerHeight < 45 ? 'nowrap' : 'normal',
             }}
           >
-            {!!meeting.match.subjects.length && (
-              <span className={styles.subjects}>
-                {join(meeting.match.subjects)}
-              </span>
+            {headerString && (
+              <span className={styles.header}>{headerString}</span>
             )}
             {headerHeight < 30 && (
               <span className={styles.time}>
-                {meeting.match.subjects.length ? `, ${timeString}` : timeString}
+                {headerString ? `, ${timeString}` : timeString}
               </span>
             )}
           </div>
