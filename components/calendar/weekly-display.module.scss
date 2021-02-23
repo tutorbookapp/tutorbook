@@ -38,7 +38,7 @@
 }
 
 .headerWrapper {
-  @include calendar.header-wrapper(config.$times-width);
+  @include calendar.header-wrapper(config.$times-width, $border-left: true);
 }
 
 .headers {

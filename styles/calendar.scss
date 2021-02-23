@@ -1,6 +1,7 @@
 @use 'styles/sizes';
 
-@mixin header-wrapper($times-width) {
+@mixin header-wrapper($times-width, $border-left: false) {
+  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
   margin-left: $times-width;
   align-items: flex-end;
   display: flex;
@@ -13,6 +14,13 @@
     overflow: hidden;
     position: relative;
     border-right: transparent 1px solid;
+
+    @if $border-left {
+      @media (min-width: $breakpoint) {
+        padding-left: 0;
+        margin-left: 8px;
+      }
+    }
   }
 
   .scroller {
