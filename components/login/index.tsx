@@ -13,30 +13,15 @@ import getLocation from 'lib/utils/location';
 import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useTrack } from 'lib/hooks';
-import { useUser } from 'lib/context/user';
 
 import styles from './login.module.scss';
 
 export default function Login(): JSX.Element {
-  const { loggedIn } = useUser();
-
+  const { query } = useRouter();
   const { t } = useTranslation();
+
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
-  const { query } = useRouter();
-  const redirect = useMemo(
-    () => decodeURIComponent((query.href as string) || 'overview'),
-    [query]
-  );
-  useEffect(() => {
-    if (loggedIn) {
-      void Router.push(redirect);
-    }
-  }, [redirect, loggedIn]);
-  useEffect(() => {
-    void Router.prefetch(redirect);
-  }, [redirect]);
 
   useEffect(() => {
     if (!loading) {
@@ -51,6 +36,10 @@ export default function Login(): JSX.Element {
   }, [error]);
 
   const track = useTrack();
+  const redirect = useMemo(
+    () => decodeURIComponent((query.href as string) || 'overview'),
+    [query.href]
+  );
 
   const [email, setEmail] = useState<string>('');
   const loginWithEmail = useCallback(
@@ -72,9 +61,12 @@ export default function Login(): JSX.Element {
         track('Email Login Errored', { error: period(e.message) });
         return setError(period(e.message));
       }
-      return Router.push(`/awaiting-confirm?email=${email}`);
+      return Router.push({
+        pathname: '/awaiting-confirm',
+        query: { email, href: query.href },
+      });
     },
-    [track, email, redirect]
+    [track, email, redirect, query.href]
   );
 
   const loginWithGoogle = useCallback(async () => {

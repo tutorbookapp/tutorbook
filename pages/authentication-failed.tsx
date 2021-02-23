@@ -6,7 +6,7 @@ import Notification from 'components/notification';
 import Page from 'components/page';
 
 import { period } from 'lib/utils';
-import { usePage } from 'lib/hooks';
+import { useLoginPage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import auth from 'locales/en/auth.json';
@@ -16,7 +16,7 @@ function AuthenticationFailedPage(): JSX.Element {
   const { query } = useRouter();
   const { t } = useTranslation();
 
-  usePage({ name: 'Authenticated Failed' });
+  useLoginPage({ name: 'Authenticated Failed' });
 
   return (
     <Page title='Authentication Failed - Tutorbook' intercom>

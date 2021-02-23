@@ -4,7 +4,7 @@ import { EmptyHeader } from 'components/navigation';
 import Notification from 'components/notification';
 import Page from 'components/page';
 
-import { usePage } from 'lib/hooks';
+import { useLoginPage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
@@ -12,7 +12,7 @@ import common from 'locales/en/common.json';
 function AwaitingConfirmPage(): JSX.Element {
   const { query } = useRouter();
 
-  usePage({ name: 'Awaiting Confirmation' });
+  useLoginPage({ name: 'Awaiting Confirmation' });
 
   return (
     <Page title='Awaiting Confirmation - Tutorbook' intercom>

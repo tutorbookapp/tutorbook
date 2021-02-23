@@ -1,10 +1,9 @@
-import NProgress from 'nprogress';
+import Router, { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { dequal } from 'dequal/lite';
 import { mutate } from 'swr';
 import to from 'await-to-js';
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import { EmptyHeader } from 'components/navigation';
@@ -12,43 +11,44 @@ import Notification from 'components/notification';
 import Page from 'components/page';
 
 import { User, UserJSON } from 'lib/model';
-import { usePage, useTrack } from 'lib/hooks';
-import { period } from 'lib/utils';
+import { useLoginPage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
 import confirm from 'locales/en/confirm.json';
 
 function ConfirmPage(): JSX.Element {
-  const { query, push } = useRouter();
+  // TODO: Update or replace `next-translate` i18n solution because `t` keeps
+  // changing which prevents us from using it in the `loginWithEmail` effect.
   const { t } = useTranslation();
+  const { query } = useRouter();
 
-  usePage({ name: 'Confirm' });
+  useLoginPage({ name: 'Confirm' });
 
-  const track = useTrack();
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    let canceled = false;
+    if (!error) return;
+    void Router.push({
+      pathname: '/authentication-failed',
+      query: { error, href: query.href },
+    });
+  }, [error, query.href]);
 
-    async function error(msg: string): Promise<void> {
-      if (canceled) return;
-      track('Email Login Errored', { error: period(msg) });
-      await push(`/authentication-failed?error=${encodeURIComponent(msg)}`);
-    }
-
-    async function signupWithEmail(): Promise<void> {
-      NProgress.start();
-
+  useEffect(() => {
+    // TODO: Abort if the page has been unmounted (so that we don't have state
+    // updates on unmounted components). See: https://bit.ly/37Fp4WT
+    async function loginWithEmail(): Promise<void> {
       const { default: firebase } = await import('lib/firebase');
       await import('firebase/auth');
 
       const auth = firebase.auth();
       if (!auth.isSignInWithEmailLink(window.location.href))
-        return error(t('confirm:invalid-link'));
+        return setError(confirm['invalid-link']);
       const email = localStorage.getItem('email');
-      if (!email) return error(t('confirm:no-email'));
+      if (!email) return setError(confirm['no-email']);
       const [signInErr, cred] = await to(auth.signInWithEmailLink(email));
-      if (signInErr || !cred?.user) return error(signInErr?.message || '');
+      if (signInErr || !cred?.user) return setError(signInErr?.message || '');
       const user = new User({
         id: cred.user.uid,
         name: cred.user.displayName as string,
@@ -63,21 +63,15 @@ function ConfirmPage(): JSX.Element {
       const [createErr, res] = await to(
         axios.put<UserJSON>('/api/account', user.toJSON())
       );
-      if (createErr || !res) return error(createErr?.message || '');
-      if (!dequal(res.data, user.toJSON())) {
+      if (createErr || !res) return setError(createErr?.message || '');
+      if (!dequal(res.data, user.toJSON()))
         await mutate('/api/account', res.data, false);
-      }
 
-      await push(decodeURIComponent((query.href as string) || 'overview'));
       return localStorage.removeItem('email');
     }
 
-    void signupWithEmail();
-
-    return () => {
-      canceled = true;
-    };
-  }, [t, track, query, push]);
+    void loginWithEmail();
+  }, []);
 
   return (
     <Page title='Confirming Login - Tutorbook'>
