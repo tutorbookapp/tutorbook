@@ -29,8 +29,10 @@
     height: 100%;
 
     .nav {
-      padding: 12px;
+      display: flex;
+      justify-content: space-between;
       border-bottom: 1px solid var(--accents-2);
+      padding: 12px 14px;
 
       .btn {
         font-size: 18px;

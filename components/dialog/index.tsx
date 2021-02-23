@@ -1,5 +1,6 @@
 import { animated, useSprings } from 'react-spring';
 import { IconButton } from '@rmwc/icon-button';
+import Link from 'next/link';
 import cn from 'classnames';
 
 import Loader from 'components/loader';
@@ -16,6 +17,7 @@ interface DialogContentProps {
   checked?: boolean;
   children: JSX.Element[];
   nestedPages?: number[];
+  link?: string;
 }
 
 /**
@@ -42,6 +44,7 @@ export default function DialogContent({
   checked,
   children,
   nestedPages = [],
+  link,
 }: DialogContentProps): JSX.Element {
   const springs = useSprings(
     children.length,
@@ -73,6 +76,11 @@ export default function DialogContent({
                   className={styles.btn}
                   onClick={() => (idx === 0 ? nav() : setActive(0))}
                 />
+                {link && (
+                  <Link href={link}>
+                    <IconButton icon='open_in_new' className={styles.btn} />
+                  </Link>
+                )}
               </div>
             )}
             <NavContext.Provider value={() => setActive(0)}>

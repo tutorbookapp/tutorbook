@@ -35,6 +35,7 @@ export default function EditDialog({
       setActive={setActive}
       loading={loading}
       checked={checked}
+      link={`/${meeting.match.org}/matches/${meeting.match.id}`}
     >
       <DisplayPage
         people={people}
