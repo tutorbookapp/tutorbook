@@ -6,6 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { Meeting, Timeslot } from 'lib/model';
 import { join } from 'lib/utils';
 import { usePeople } from 'lib/hooks';
+import { useUser } from 'lib/context/user';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 
@@ -24,6 +25,7 @@ const MeetingContent = forwardRef(
     ref: Ref<HTMLElement>
   ): JSX.Element => {
     const { lang: locale } = useTranslation();
+    const { user } = useUser();
 
     const nodeRef = useRef<HTMLElement>(null);
 
@@ -53,15 +55,27 @@ const MeetingContent = forwardRef(
 
     const people = usePeople(meeting.match);
     const headerString = useMemo(() => {
+      const subjects = join(meeting.match.subjects);
       const student = people.find(
         (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
       );
-      const studentName = student?.name;
-      const subjects = join(meeting.match.subjects);
-      if (studentName && subjects) return `${studentName} for ${subjects}`;
-      if (subjects) return subjects;
+      const volunteer = people.find(
+        (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
+      );
+      if (student?.id === user.id) {
+        // Students care more about the subjects than their teacher's name.
+        if (volunteer?.name && subjects)
+          return `${subjects} with ${volunteer.name}`;
+        if (volunteer?.name) return volunteer.name;
+        if (subjects) return subjects;
+      } else {
+        // Volunteers and orgs care more about the student than the subjects.
+        if (student?.name && subjects) return `${student.name} for ${subjects}`;
+        if (student?.name) return student.name;
+        if (subjects) return subjects;
+      }
       return '';
-    }, [people, meeting.match.subjects]);
+    }, [people, meeting.match.subjects, user.id]);
     const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
       height,
     ]);
