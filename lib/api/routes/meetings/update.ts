@@ -1,8 +1,11 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model';
+import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
+import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
+import sendEmails from 'lib/mail/meetings/update';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
@@ -39,11 +42,14 @@ export default async function updateMeeting(
     verifySubjectsCanBeTutored(body.match.subjects, people);
 
     // TODO: Compare the previous data with the requested updates to ensure that
-    // the creator hasn't changed (if it has, users could bypass these checks).
-    await verifyAuth(req.headers, {
+    // the people and org haven't changed (prevent check bypassing).
+    const { uid } = await verifyAuth(req.headers, {
       userIds: body.match.people.map((p) => p.id),
       orgIds: [body.match.org],
     });
+
+    const org = await getOrg(body.match.org);
+    const updater = await getPerson({ id: uid }, people);
 
     // TODO: Certain users can update certain statuses:
     // - Admins can change 'pending' or 'logged' to 'approved'.
@@ -57,6 +63,7 @@ export default async function updateMeeting(
       updateMatchSearchObj(body.match),
       updateMeetingDoc(body),
       updateMeetingSearchObj(body),
+      sendEmails(body, people, updater, org),
     ]);
 
     res.status(200).json(body.toJSON());

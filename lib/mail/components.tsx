@@ -155,7 +155,7 @@ export function Button({ href, style, children }: HrefProps): JSX.Element {
 interface MeetingDisplayProps {
   meeting: Meeting;
   people: User[];
-  creator: User;
+  creator?: User;
   org?: Org;
 }
 
@@ -187,18 +187,22 @@ export function MeetingDisplay({
           <br />
           <Link href={meeting.venue.url}>{meeting.venue.url}</Link>
         </P>
-        <P>
+        <P style={!creator ? { marginBottom: '0px' } : undefined}>
           <b>SUBJECTS</b>
           <br />
           {join(meeting.match.subjects)}
         </P>
-        <P style={{ marginBottom: '8px' }}>
-          <b>MESSAGE</b>
-        </P>
-        <Quote
-          text={meeting.match.message}
-          cite={org ? `${creator.name} from ${org.name}` : creator.name}
-        />
+        {creator && (
+          <>
+            <P style={{ marginBottom: '8px' }}>
+              <b>MESSAGE</b>
+            </P>
+            <Quote
+              text={meeting.match.message}
+              cite={org ? `${creator.name} from ${org.name}` : creator.name}
+            />
+          </>
+        )}
       </Item>
     </div>
   );

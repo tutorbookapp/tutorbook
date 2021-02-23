@@ -13,11 +13,11 @@ import getUser from 'lib/api/get/user';
  * @return Promise that resolve to the person's complete user data.
  */
 export default async function getPerson(
-  { id, roles, name }: Person,
+  { id, roles, name }: Partial<Person> & { id: string },
   people: User[] = []
 ): Promise<User> {
   if (!id) {
-    const pst = roles.length ? `Person (${join(roles)})` : 'Person';
+    const pst = roles?.length ? `Person (${join(roles)})` : 'Person';
     const msg = `${name || pst} does not have an ID`;
     throw new APIError(msg, 400);
   }
@@ -26,5 +26,5 @@ export default async function getPerson(
   if (prefetched) return addRoles(prefetched, prefetched.roles);
 
   const user = await getUser(id);
-  return addRoles(user, roles);
+  return addRoles(user, roles || []);
 }
