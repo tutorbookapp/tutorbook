@@ -164,8 +164,9 @@ export function getTimeslots(
  * @param baseline - The baseline, weekly availability.
  * @param month - The month to get timeslots for.
  * @param year - The year to get timeslots for.
+ * @param [booked] - Booked availability slots.
  * @return Availability full of 30 min timeslots in 15 min intervals for the
- * requested month's date range.
+ * requested month's date range. Excludes timeslots from the past.
  */
 export function getMonthsTimeslots(
   baseline: Availability,
@@ -173,6 +174,12 @@ export function getMonthsTimeslots(
   year: number,
   booked?: Availability
 ): Availability {
+  // If month or year is in past, we know there are no timeslots.
+  const now = new Date();
+  const timeslots = new Availability();
+  if (year < now.getFullYear()) return timeslots;
+  if (year === now.getFullYear() && month < now.getMonth()) return timeslots;
+
   const interval = 15;
   const duration = 30;
   const daysInMonth = getDaysInMonth(month, year);
@@ -180,7 +187,6 @@ export function getMonthsTimeslots(
 
   // Split each of the availability timeslots into 30 min timeslots in 15 min
   // intervals. This assumes there is no overlap between the baseline timeslots.
-  const timeslots = new Availability();
   baseline.sort().forEach((timeslot) => {
     let from = roundStartTime(timeslot.from, interval);
     while (from.valueOf() <= timeslot.to.valueOf() - duration * 6e4) {
@@ -198,7 +204,7 @@ export function getMonthsTimeslots(
             from: new Date(year, month, date, fromHrs, fromMins),
             to: new Date(year, month, date, toHrs, toMins),
           });
-          if (!booked?.overlaps(t)) timeslots.push(t);
+          if (t.from > now && !booked?.overlaps(t)) timeslots.push(t);
         }
         date += 1;
       }
