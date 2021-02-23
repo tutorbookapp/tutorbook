@@ -20,10 +20,20 @@
   padding-left: 8px;
   overflow: hidden;
   flex: 1 1 auto;
+  position: relative;
 
   @media (min-width: config.$breakpoint) {
     border-left: none;
     padding-left: 0;
+
+    &::before {
+      position: absolute;
+      left: config.$times-width + 8px;
+      top: 0;
+      bottom: 0;
+      content: '';
+      border-left: 1px solid var(--accents-2);
+    }
   }
 }
 
@@ -35,8 +45,7 @@
   @include calendar.headers(
     config.$times-width,
     config.$cell-width,
-    config.$border-color,
-    $border-left: true
+    config.$border-color
   ) {
     h2 {
       margin: 0;
@@ -93,7 +102,8 @@
   @include calendar.header-cells(
     config.$times-width,
     config.$cell-width,
-    config.$border-color
+    config.$border-color,
+    $border-left: true
   );
 }
 
