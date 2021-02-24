@@ -16,7 +16,11 @@ function StudentsPage(): JSX.Element {
   usePage({ name: 'Students Landing' });
 
   return (
-    <Page title='Support at scale - Tutorbook' intercom>
+    <Page
+      title='Find your perfect volunteer tutor or mentor - Tutorbook'
+      description='Looking for a tutor or mentor? Tutorbook connects you with qualified volunteer tutors and expert mentors, all for free. Book your first meeting today.'
+      intercom
+    >
       <TabHeader
         tabs={[
           {
@@ -32,9 +36,6 @@ function StudentsPage(): JSX.Element {
       />
       <Hero />
       <About />
-      <div style={{ marginBottom: '60px' }}>
-        <Hero />
-      </div>
     </Page>
   );
 }

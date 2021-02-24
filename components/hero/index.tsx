@@ -21,8 +21,9 @@ export default function Hero(): JSX.Element {
   return (
     <div data-cy='hero' className={styles.hero}>
       <div className={styles.wrapper}>
-        <div className={styles.title}>
-          <Title>{t(`about:hero-title`)}</Title>
+        <div className={styles.content}>
+          <Title>{t('about:hero-header')}</Title>
+          <h3>{t('about:hero-body')}</h3>
         </div>
         <div className={styles.card}>
           <SearchForm />

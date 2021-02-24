@@ -59,17 +59,6 @@ export default function About(): JSX.Element {
           }}
           flipped
         />
-        <SpotlightMsg
-          label={t('about:step-four-label')}
-          headline={t('about:step-four-title')}
-          body={t('about:step-four-body')}
-          img={VolunteerEmails}
-          cta={{
-            label: t('about:learn-more'),
-            href: 'https://github.com/tutorbookapp/tutorbook/issues/82',
-          }}
-          gray
-        />
       </div>
     </>
   );

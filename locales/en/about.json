@@ -1,9 +1,10 @@
 {
-  "hero-title": "Learn from and work with an expert.",
+  "hero-header": "Find your next perfect volunteer tutor or mentor",
+  "hero-body": "Book a meeting with your perfect tutor or mentor. Free forever cause they're awesome volunteers!",
   "what-title": "What is Tutorbook?",
-  "what-first": "Tutorbook is a free, online platform that connects students with expert mentors and volunteer tutors.",
-  "what-second": "We're connecting 9-12 students with expert mentors to collaborate on projects they're both passionate about (e.g. writing a research paper or releasing a music album together).",
-  "what-third": "We're also connecting K-12 students with free, volunteer tutors to make sure that no one loses out on education amidst COVID-19.",
+  "what-first": "Tutorbook is a free online platform that connects students with volunteer tutors and expert mentors.",
+  "what-second": "We're also connecting K-12 students with volunteer tutors to make sure that no one loses out on education amidst COVID-19.",
+  "what-third": "We're connecting 9-12 students with expert mentors to collaborate on projects they're both passionate about (e.g. writing a research paper or releasing a music album together).",
   "step-one-label": "Step #1",
   "step-one-title": "Volunteer registers",
   "step-one-body": "The volunteer tutor or mentor signs up and creates their profile.",
@@ -15,8 +16,5 @@
   "step-three-title": "Student requests a volunteer",
   "step-three-body": "The student searches, signs up and requests a tutor or mentor.",
   "step-three-cta": "Search volunteers",
-  "step-four-label": "Step #4",
-  "step-four-title": "Virtual lessons setup via email relay",
-  "step-four-body": "The student and volunteer communicate via email relay to setup virtual lessons. No direct contact info is ever shared.",
   "learn-more": "Learn more"
 }

@@ -1,9 +1,11 @@
 @use 'styles/common';
+@use 'styles/typography';
 
 @include common.card-styles;
 
 .wrapper {
   @include common.wrapper;
+  text-align: center;
 }
 
 .hero {
@@ -14,10 +16,19 @@
   }
 }
 
-.title {
-  text-align: initial;
-  max-width: 600px;
+.content {
+  display: inline-block;
   padding-bottom: 48px;
+
+  h1 {
+    max-width: 800px;
+  }
+
+  h3 {
+    @include typography.typography('body1');
+    color: var(--accents-5);
+    margin: 12px 0 0;
+  }
 
   @media (max-width: 800px) {
     padding-bottom: 24px;
