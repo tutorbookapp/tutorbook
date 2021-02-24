@@ -51,6 +51,11 @@ $margin: 20px;
   top: $margin;
   width: calc(100% - #{$height + $margin});
   height: 24px;
+
+  &.loading {
+    @include loader.loading();
+    border-radius: 4px;
+  }
 }
 
 .bio {
@@ -66,12 +71,9 @@ $margin: 20px;
   height: $height - (2 * $margin + 24px);
 
   &.loading {
+    @include loader.loading();
     height: $height - (3 * $margin + 24px);
     top: 2 * $margin + 24px;
+    border-radius: 4px;
   }
-}
-
-.loading {
-  @include loader.loading();
-  border-radius: 4px;
 }

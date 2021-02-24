@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
-import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
+import { useEffect } from 'react';
 
 import { User, UserJSON, UsersQuery } from 'lib/model';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { useOrg } from 'lib/context/org';
 
-import Carousel from './carousel';
 import { LoadingCard, UserCard } from './cards';
+import Carousel from './carousel';
 
 interface Props {
   query: UsersQuery;
@@ -30,7 +30,7 @@ export default function UserCarousel({ query, onClick }: Props): JSX.Element {
             .map((u: UserJSON) => User.fromJSON(u))
             .map((user: User) => (
               <UserCard
-                key={user.id || uuid()}
+                key={user.id}
                 user={user}
                 onClick={onClick ? () => onClick(user) : undefined}
                 href={
@@ -47,7 +47,7 @@ export default function UserCarousel({ query, onClick }: Props): JSX.Element {
           {Array(6)
             .fill(null)
             .map(() => (
-              <LoadingCard key={uuid()} />
+              <LoadingCard key={nanoid()} />
             ))}
         </Carousel>
       )}
