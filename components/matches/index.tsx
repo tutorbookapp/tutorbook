@@ -111,7 +111,7 @@ export default function Matches({
     <>
       <Header
         header={t('common:matches')}
-        body={t('matches:org-subtitle', {
+        body={t('matches:subtitle', {
           name: org ? `${org.name}'s` : 'your',
         })}
         actions={[

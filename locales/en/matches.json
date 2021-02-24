@@ -1,6 +1,5 @@
 {
-  "org-subtitle": "View {{name}} ongoing matches",
-  "subtitle": "Your upcoming matches",
+  "subtitle": "View {{name}} ongoing matches",
   "empty": "NO MATCHES TO SHOW",
   "search-placeholder": "Search matches",
   "import-data-msg": "Could you help me import some existing matches?",
