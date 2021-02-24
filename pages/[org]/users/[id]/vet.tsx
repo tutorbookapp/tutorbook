@@ -74,7 +74,7 @@ export const getStaticProps: GetStaticProps<
       getOrg(ctx.params.org),
       getUser(ctx.params.id),
     ]);
-    const props = await getPageProps();
+    const { props } = await getPageProps();
     return {
       props: { org: org.toJSON(), user: user.toJSON(), ...props },
       revalidate: 1,

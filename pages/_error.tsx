@@ -38,7 +38,7 @@ function ErrorPage({ status, message, ...props }: ErrorPageProps): JSX.Element {
 ErrorPage.getInitialProps = async (
   ctx: NextPageContext
 ): Promise<ErrorPageProps> => {
-  const props = await getPageProps();
+  const { props } = await getPageProps();
   const status = ctx.res?.statusCode || ctx.err?.statusCode;
   return { status, message: ctx.err?.message, ...props };
 };

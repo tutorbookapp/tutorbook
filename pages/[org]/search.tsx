@@ -223,7 +223,7 @@ export const getStaticProps: GetStaticProps<
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) return { notFound: true };
-  const props = await getPageProps();
+  const { props } = await getPageProps();
   return {
     props: { org: Org.fromFirestoreDoc(doc).toJSON(), ...props },
     revalidate: 1,

@@ -132,7 +132,7 @@ export const getStaticProps: GetStaticProps<
       getSubjectLabels(user.tutoring.subjects),
       getSubjectLabels(user.mentoring.subjects),
     ]);
-    const props = await getPageProps();
+    const { props } = await getPageProps();
     // Note that because Next.js cannot expose the `req` object when fetching
     // static props, there are a couple of possible data change flashes:
     // 1. If the user is an admin, the user's full name and the "edit" and "vet"

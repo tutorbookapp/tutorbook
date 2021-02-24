@@ -71,7 +71,7 @@ export const getStaticProps: GetStaticProps<
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) return { notFound: true };
   const org = Org.fromFirestoreDoc(doc);
-  const props = await getPageProps();
+  const { props } = await getPageProps();
   return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
 };
 

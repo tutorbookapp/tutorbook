@@ -5,7 +5,7 @@ export interface PageProps {
   orgs: OrgJSON[];
 }
 
-export async function getPageProps(): Promise<PageProps> {
+export async function getPageProps(): Promise<{ props: PageProps }> {
   const { docs } = await db.collection('orgs').get();
   const orgs = docs.map((d) => Org.fromFirestoreDoc(d).toJSON());
   return { props: { orgs } };
