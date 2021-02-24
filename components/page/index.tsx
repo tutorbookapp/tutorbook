@@ -9,7 +9,7 @@ import Segment from 'components/segment';
 import styles from './page.module.scss';
 
 export interface PageProps {
-  title?: string;
+  title: string;
   description?: string;
   children: ReactNode;
   formWidth?: boolean;
@@ -35,11 +35,8 @@ export default function Page({
   return (
     <>
       <Head>
-        <title>{title || t('common:meta-title')}</title>
-        <meta
-          name='description'
-          content={description || t('common:meta-description')}
-        />
+        <title>{title}</title>
+        {description && <meta name='description' content={description} />}
         <meta charSet='UTF-8' />
         <meta name='viewport' content='width=device-width,initial-scale=1.0' />
         <link
