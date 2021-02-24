@@ -12,7 +12,10 @@ function LoginPage(): JSX.Element {
   useLoginPage({ name: 'Login' });
 
   return (
-    <Page title='Login - Tutorbook'>
+    <Page
+      title='Login - Tutorbook'
+      description='Welcome to Tutorbook. Login with Google or email to manage your organization, onboard volunteers, match students, schedule lessons, and scale your tutoring and mentoring programs.'
+    >
       <EmptyHeader />
       <Login />
     </Page>
