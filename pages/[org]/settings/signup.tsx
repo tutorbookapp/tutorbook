@@ -7,7 +7,7 @@ import Settings from 'components/settings';
 import Signup from 'components/settings/signup';
 import { TabHeader } from 'components/navigation';
 
-import { PageProps, getPageProps } from 'lib/page';
+import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -77,5 +77,6 @@ function SignupSettingsPage(props: PageProps): JSX.Element {
 }
 
 export const getStaticProps = getPageProps;
+export const getStaticPaths = getPagePaths;
 
 export default withI18n(SignupSettingsPage, { common, settings, org: orgIntl });

@@ -7,7 +7,7 @@ import Page from 'components/page';
 import Settings from 'components/settings';
 import { TabHeader } from 'components/navigation';
 
-import { PageProps, getPageProps } from 'lib/page';
+import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -77,5 +77,6 @@ function HomeSettingsPage(props: PageProps): JSX.Element {
 }
 
 export const getStaticProps = getPageProps;
+export const getStaticPaths = getPagePaths;
 
 export default withI18n(HomeSettingsPage, { common, settings, org: orgIntl });
