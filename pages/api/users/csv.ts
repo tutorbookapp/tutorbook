@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import stringify from 'csv-stringify';
 
 import { UsersQuery, UsersQueryURL, isUsersQueryURL } from 'lib/model';
+import csv from 'lib/api/csv';
 import getUsers from 'lib/api/get/users';
 import { handle } from 'lib/api/error';
 import { join } from 'lib/utils';
@@ -24,78 +24,49 @@ export default async function users(
       return;
     }
 
-    const stringifier = stringify();
     const query = verifyQuery<UsersQuery, UsersQueryURL>(
       req.query,
       isUsersQueryURL,
       UsersQuery
     );
 
+    await verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) });
+
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
     // when we start scaling up (and have orgs with more than 1000 users each).
     query.hitsPerPage = 1000;
 
-    stringifier.write([
-      'ID',
-      'Name',
-      'Email',
-      'Phone',
-      'About',
-      'Reference',
-      'Languages',
-      'Mentoring Subjects',
-      'Tutoring Subjects',
-      'Mentoring Searches',
-      'Tutoring Searches',
-      'Profile Image URL',
-      'Banner Image URL',
-      'Website URL',
-      'LinkedIn URL',
-      'Twitter URL',
-      'Facebook URL',
-      'Instagram URL',
-      'GitHub URL',
-      'IndieHackers URL',
-      'Created',
-      'Last Updated',
-    ]);
-
-    await verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) });
+    const { results } = await getUsers(query);
 
     // TODO: Replace the language codes with their actual i18n names.
-    (await getUsers(query)).results.forEach((user) =>
-      stringifier.write([
-        user.id,
-        user.name,
-        user.email,
-        user.phone,
-        user.bio,
-        user.reference,
-        join(user.langs),
-        join(user.mentoring.subjects),
-        join(user.tutoring.subjects),
-        join(user.mentoring.searches),
-        join(user.tutoring.searches),
-        user.photo,
-        user.background,
-        user.website,
-        user.linkedin,
-        user.twitter,
-        user.facebook,
-        user.instagram,
-        user.github,
-        user.indiehackers,
-        user.created.toString(),
-        user.updated.toString(),
-      ])
+    csv(
+      res,
+      'users',
+      results.map((user) => ({
+        ID: user.id,
+        Name: user.name,
+        Email: user.email,
+        Phone: user.phone,
+        About: user.bio,
+        Reference: user.reference,
+        Languages: join(user.langs),
+        'Mentoring Subjects': join(user.mentoring.subjects),
+        'Tutoring Subjects': join(user.tutoring.subjects),
+        'Mentoring Searches': join(user.mentoring.searches),
+        'Tutoring Searches': join(user.tutoring.searches),
+        'Profile Image URL': user.photo,
+        'Banner Image URL': user.background,
+        'Website URL': user.website,
+        'LinkedIn URL': user.linkedin,
+        'Twitter URL': user.twitter,
+        'Facebook URL': user.facebook,
+        'Instagram URL': user.instagram,
+        'GitHub URL': user.github,
+        'IndieHackers URL': user.indiehackers,
+        Created: user.created.toString(),
+        'Last Updated': user.updated.toString(),
+      }))
     );
-
-    res.writeHead(200, {
-      'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment;filename=users.csv',
-    });
-    stringifier.pipe(res);
-    stringifier.end();
   } catch (e) {
     handle(e, res);
   }
