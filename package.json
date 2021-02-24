@@ -166,6 +166,9 @@
     "uuid": "^8.2.0",
     "vanilla-tilt": "^1.7.0"
   },
+  "browser": {
+    "firebase-admin": false
+  },
   "resolutions": {
     "webpack": "^5.4.0"
   },
