@@ -33,7 +33,9 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
         </Group>
         <Group label={t('common:footer-orgs')}>
           {orgs.map((org) => (
-            <Link href={`/${org.id}`}>{org.name}</Link>
+            <Link key={org.id} href={`/${org.id}`}>
+              {org.name}
+            </Link>
           ))}
         </Group>
         <Group label={t('common:footer-resources')}>
