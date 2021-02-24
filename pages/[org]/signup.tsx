@@ -3,20 +3,21 @@ import { ParsedUrlQuery } from 'querystring';
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
 
 import { AspectHeader, EmptyHeader } from 'components/navigation';
-import Signup from 'components/signup';
 import Page from 'components/page';
+import Signup from 'components/signup';
 
-import { isAspect, Aspect, Org, OrgJSON } from 'lib/model';
+import { Aspect, Org, OrgJSON, isAspect } from 'lib/model';
 import { OrgContext } from 'lib/context/org';
 import { db } from 'lib/api/firebase';
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
-import user3rd from 'locales/en/user3rd.json';
-import signup from 'locales/en/signup.json';
 import common from 'locales/en/common.json';
+import signup from 'locales/en/signup.json';
+import user3rd from 'locales/en/user3rd.json';
 
 interface SignupPageProps {
   org?: OrgJSON;
@@ -24,6 +25,7 @@ interface SignupPageProps {
 
 function SignupPage({ org }: SignupPageProps): JSX.Element {
   const { query } = useRouter();
+  const { lang: locale } = useTranslation();
   const [aspect, setAspect] = useState<Aspect>(() => {
     if (!org) return 'mentoring';
     return org.aspects[0] || 'mentoring';
@@ -40,7 +42,11 @@ function SignupPage({ org }: SignupPageProps): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title={`${org?.name || 'Loading'} - Signup - Tutorbook`} formWidth>
+      <Page
+        title={`${org?.name || 'Loading'} - Signup - Tutorbook`}
+        description={org ? org.signup[locale][aspect]?.body : undefined}
+        formWidth
+      >
         {(!org || org.aspects.length === 2) && (
           <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
         )}

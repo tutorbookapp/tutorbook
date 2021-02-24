@@ -6,6 +6,7 @@ import useSWR, { mutate } from 'swr';
 import NProgress from 'nprogress';
 import Router from 'next/router';
 import { dequal } from 'dequal/lite';
+import useTranslation from 'next-translate/useTranslation';
 
 import AuthDialog from 'components/auth-dialog';
 import Page from 'components/page';
@@ -34,6 +35,7 @@ interface SearchPageProps {
 function SearchPage({ org }: SearchPageProps): JSX.Element {
   usePage({ name: 'Org Search', org: org?.id });
 
+  const { t } = useTranslation();
   const { user: currentUser, orgs, loggedIn } = useUser();
 
   const [query, setQuery] = useState<UsersQuery>(new UsersQuery());
@@ -182,7 +184,13 @@ function SearchPage({ org }: SearchPageProps): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title={`${org?.name || 'Loading'} - Search - Tutorbook`}>
+      <Page
+        title={`${org?.name || 'Loading'} - Search - Tutorbook`}
+        description={t('search:description', {
+          name: org?.name || 'this organization',
+          bio: org?.bio ? ` ${org.bio}` : '',
+        })}
+      >
         <QueryHeader
           aspects={org ? org.aspects : ['mentoring', 'tutoring']}
           query={query}
