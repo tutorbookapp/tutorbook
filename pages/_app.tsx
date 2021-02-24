@@ -115,13 +115,6 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     void installServiceWorker();
   }, []);
 
-  // Dynamically import our Firebase SDK initialization (because it's so big) to
-  // connect Google Analytics with our Firebase project automatically.
-  useEffect(() => {
-    const initFirebaseAndAnalytics = () => import('lib/firebase');
-    void initFirebaseAndAnalytics();
-  }, []);
-
   // Initially set theme using system preferences, cache settings when changed.
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof localStorage === 'undefined') return 'system';
