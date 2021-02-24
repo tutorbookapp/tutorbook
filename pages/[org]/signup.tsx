@@ -10,6 +10,7 @@ import Page from 'components/page';
 import Signup from 'components/signup';
 
 import { Aspect, Org, OrgJSON, isAspect } from 'lib/model';
+import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { db } from 'lib/api/firebase';
 import { usePage } from 'lib/hooks';
@@ -19,11 +20,11 @@ import common from 'locales/en/common.json';
 import signup from 'locales/en/signup.json';
 import user3rd from 'locales/en/user3rd.json';
 
-interface SignupPageProps {
+interface SignupPageProps extends PageProps {
   org?: OrgJSON;
 }
 
-function SignupPage({ org }: SignupPageProps): JSX.Element {
+function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
   const { query } = useRouter();
   const { lang: locale } = useTranslation();
   const [aspect, setAspect] = useState<Aspect>(() => {
@@ -46,6 +47,7 @@ function SignupPage({ org }: SignupPageProps): JSX.Element {
         title={`${org?.name || 'Loading'} - Signup - Tutorbook`}
         description={org ? org.signup[locale][aspect]?.body : undefined}
         formWidth
+        {...props}
       >
         {(!org || org.aspects.length === 2) && (
           <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
@@ -69,7 +71,8 @@ export const getStaticProps: GetStaticProps<
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) return { notFound: true };
   const org = Org.fromFirestoreDoc(doc);
-  return { props: { org: org.toJSON() }, revalidate: 1 };
+  const props = await getPageProps();
+  return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SignupPageQuery> = async () => {

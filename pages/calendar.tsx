@@ -4,6 +4,7 @@ import Calendar from 'components/calendar';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
@@ -12,13 +13,13 @@ import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 import meeting from 'locales/en/meeting.json';
 
-function CalendarPage(): JSX.Element {
+function CalendarPage(props: PageProps): JSX.Element {
   const { t } = useTranslation();
 
   usePage({ name: 'Calendar', url: '/calendar', login: true });
 
   return (
-    <Page title='Calendar - Tutorbook'>
+    <Page title='Calendar - Tutorbook' {...props}>
       <TabHeader
         switcher
         tabs={[
@@ -45,5 +46,7 @@ function CalendarPage(): JSX.Element {
     </Page>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(CalendarPage, { calendar, common, match, meeting });

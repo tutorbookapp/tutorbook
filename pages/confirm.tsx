@@ -10,6 +10,7 @@ import { EmptyHeader } from 'components/navigation';
 import Notification from 'components/notification';
 import Page from 'components/page';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model';
 import { useLoginPage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
@@ -17,7 +18,7 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import confirm from 'locales/en/confirm.json';
 
-function ConfirmPage(): JSX.Element {
+function ConfirmPage(props: PageProps): JSX.Element {
   // TODO: Update or replace `next-translate` i18n solution because `t` keeps
   // changing which prevents us from using it in the `loginWithEmail` effect.
   const { t } = useTranslation();
@@ -74,7 +75,7 @@ function ConfirmPage(): JSX.Element {
   }, []);
 
   return (
-    <Page title='Confirming Login - Tutorbook'>
+    <Page title='Confirming Login - Tutorbook' {...props}>
       <EmptyHeader />
       <Notification header={t('confirm:header')}>
         <p>{t('confirm:body')}</p>
@@ -82,5 +83,7 @@ function ConfirmPage(): JSX.Element {
     </Page>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(ConfirmPage, { common, confirm });

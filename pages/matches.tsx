@@ -4,6 +4,7 @@ import Matches from 'components/matches';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
@@ -11,13 +12,13 @@ import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 import matches from 'locales/en/matches.json';
 
-function MatchesPage(): JSX.Element {
+function MatchesPage(props: PageProps): JSX.Element {
   const { t } = useTranslation();
 
   usePage({ name: 'Matches', url: '/matches', login: true });
 
   return (
-    <Page title='Matches - Tutorbook'>
+    <Page title='Matches - Tutorbook' {...props}>
       <TabHeader
         switcher
         tabs={[
@@ -44,5 +45,7 @@ function MatchesPage(): JSX.Element {
     </Page>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(MatchesPage, { common, match, matches });

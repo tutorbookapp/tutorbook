@@ -14,6 +14,7 @@ import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
 
 import { CallbackParam, Org, OrgJSON, User, UsersQuery } from 'lib/model';
+import { PageProps, getPageProps } from 'lib/page';
 import { useAnalytics, usePage, useTrack } from 'lib/hooks';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
@@ -28,11 +29,11 @@ import match3rd from 'locales/en/match3rd.json';
 import query3rd from 'locales/en/query3rd.json';
 import search from 'locales/en/search.json';
 
-interface SearchPageProps {
+interface SearchPageProps extends PageProps {
   org?: OrgJSON;
 }
 
-function SearchPage({ org }: SearchPageProps): JSX.Element {
+function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   usePage({ name: 'Org Search', org: org?.id });
 
   const { t } = useTranslation();
@@ -190,6 +191,7 @@ function SearchPage({ org }: SearchPageProps): JSX.Element {
           name: org?.name || 'this organization',
           bio: org?.bio ? ` ${org.bio}` : '',
         })}
+        {...props}
       >
         <QueryHeader
           aspects={org ? org.aspects : ['mentoring', 'tutoring']}
@@ -221,7 +223,11 @@ export const getStaticProps: GetStaticProps<
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) return { notFound: true };
-  return { props: { org: Org.fromFirestoreDoc(doc).toJSON() }, revalidate: 1 };
+  const props = await getPageProps();
+  return {
+    props: { org: Org.fromFirestoreDoc(doc).toJSON(), ...props },
+    revalidate: 1,
+  };
 };
 
 export const getStaticPaths: GetStaticPaths<SearchPageQuery> = async () => {

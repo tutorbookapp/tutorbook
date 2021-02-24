@@ -1,14 +1,15 @@
 import { ReactNode, useEffect } from 'react';
 import Head from 'next/head';
 import cn from 'classnames';
-import useTranslation from 'next-translate/useTranslation';
 
 import Footer from 'components/footer';
 import Segment from 'components/segment';
 
+import { PageProps } from 'lib/page';
+
 import styles from './page.module.scss';
 
-export interface PageProps {
+export interface PageComponentProps extends PageProps {
   title: string;
   description?: string;
   children: ReactNode;
@@ -17,16 +18,15 @@ export interface PageProps {
   intercom?: boolean;
 }
 
-export default function Page({
+export default function PageComponent({
   title,
+  orgs,
   description,
   children,
   formWidth,
   borderless,
   intercom,
-}: PageProps): JSX.Element {
-  const { t } = useTranslation();
-
+}: PageComponentProps): JSX.Element {
   useEffect(() => {
     if (intercom) return document.body.classList.add('intercom');
     return document.body.classList.remove('intercom');
@@ -149,7 +149,7 @@ export default function Page({
       >
         {children}
       </div>
-      <Footer formWidth={formWidth} />
+      <Footer formWidth={formWidth} orgs={orgs} />
       <Segment intercom={intercom} />
     </>
   );

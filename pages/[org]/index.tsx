@@ -9,6 +9,7 @@ import Home from 'components/home';
 import Page from 'components/page';
 
 import { Org, OrgJSON } from 'lib/model';
+import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { db } from 'lib/api/firebase';
 import { usePage } from 'lib/hooks';
@@ -17,11 +18,11 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import home from 'locales/en/home.json';
 
-interface HomePageProps {
+interface HomePageProps extends PageProps {
   org?: OrgJSON;
 }
 
-function HomePage({ org: initialData }: HomePageProps): JSX.Element {
+function HomePage({ org: initialData, ...props }: HomePageProps): JSX.Element {
   const { query } = useRouter();
   const { data: org } = useSWR(
     typeof query.org === 'string' ? `/api/orgs/${query.org}` : null,
@@ -37,6 +38,7 @@ function HomePage({ org: initialData }: HomePageProps): JSX.Element {
         description={org?.bio}
         formWidth
         intercom
+        {...props}
       >
         <EmptyHeader formWidth />
         <Home org={org ? Org.fromJSON(org) : undefined} />
@@ -57,7 +59,8 @@ export const getStaticProps: GetStaticProps<
   const doc = await db.collection('orgs').doc(ctx.params.org).get();
   if (!doc.exists) return { notFound: true };
   const org = Org.fromFirestoreDoc(doc);
-  return { props: { org: org.toJSON() }, revalidate: 1 };
+  const props = await getPageProps();
+  return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<HomePageQuery> = async () => {

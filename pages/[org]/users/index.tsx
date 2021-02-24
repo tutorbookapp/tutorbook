@@ -6,6 +6,7 @@ import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 import Users from 'components/users';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -19,7 +20,7 @@ import users from 'locales/en/users.json';
 import request from 'locales/en/request.json';
 import search from 'locales/en/search.json';
 
-function UsersPage(): JSX.Element {
+function UsersPage(props: PageProps): JSX.Element {
   const { orgs } = useUser();
   const { query: params } = useRouter();
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ function UsersPage(): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org }}>
-      <Page title={`${org?.name || 'Loading'} - Users - Tutorbook`}>
+      <Page title={`${org?.name || 'Loading'} - Users - Tutorbook`} {...props}>
         <TabHeader
           switcher
           tabs={[
@@ -72,6 +73,8 @@ function UsersPage(): JSX.Element {
     </OrgContext.Provider>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(UsersPage, {
   common,

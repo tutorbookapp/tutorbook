@@ -12,12 +12,13 @@ import SearchImage from 'components/landing/imgs/search.png';
 import SignupImage from 'components/landing/imgs/signup.png';
 import VettingImage from 'components/landing/imgs/vetting.png';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
 
-function OrgsPage(): JSX.Element {
+function OrgsPage(props: PageProps): JSX.Element {
   usePage({ name: 'Orgs Landing' });
 
   return (
@@ -26,6 +27,7 @@ function OrgsPage(): JSX.Element {
       description='Tutorbook is the best way to manage virtual tutoring and mentoring programs. Simple tutoring management software to onboard volunteers, match students, schedule lessons, and scale your organization.'
       borderless
       intercom
+      {...props}
     >
       <TabHeader
         tabs={[
@@ -88,5 +90,7 @@ function OrgsPage(): JSX.Element {
     </Page>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(OrgsPage, { common });

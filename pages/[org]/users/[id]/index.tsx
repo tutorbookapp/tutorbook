@@ -11,6 +11,7 @@ import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
 import { Aspect, Org, OrgJSON, User, UserJSON, isAspect } from 'lib/model';
+import { PageProps, getPageProps } from 'lib/page';
 import { getLangLabels, getSubjectLabels } from 'lib/utils';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
@@ -26,7 +27,7 @@ import user from 'locales/en/user.json';
 
 // We send the `subjects` and `langs` of the user properly translated as props
 // so as to avoid a flash of invalid data (e.g. locale codes instead of labels).
-interface UserDisplayPageProps {
+interface UserDisplayPageProps extends PageProps {
   org?: OrgJSON;
   user?: UserJSON;
   langs?: string[];
@@ -38,6 +39,7 @@ function UserDisplayPage({
   user: initialData,
   langs: initialLangs,
   subjects: initialSubjects,
+  ...props
 }: UserDisplayPageProps): JSX.Element {
   const { query } = useRouter();
 
@@ -92,7 +94,11 @@ function UserDisplayPage({
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title={`${data?.name || 'Loading'} - Tutorbook`} formWidth>
+      <Page
+        title={`${data?.name || 'Loading'} - Tutorbook`}
+        formWidth
+        {...props}
+      >
         <EmptyHeader formWidth />
         <UserDisplay
           user={data ? User.fromJSON(data) : undefined}
@@ -126,6 +132,7 @@ export const getStaticProps: GetStaticProps<
       getSubjectLabels(user.tutoring.subjects),
       getSubjectLabels(user.mentoring.subjects),
     ]);
+    const props = await getPageProps();
     // Note that because Next.js cannot expose the `req` object when fetching
     // static props, there are a couple of possible data change flashes:
     // 1. If the user is an admin, the user's full name and the "edit" and "vet"
@@ -138,6 +145,7 @@ export const getStaticProps: GetStaticProps<
         org: org.toJSON(),
         subjects: { tutoring, mentoring },
         user: getTruncatedUser(user).toJSON(),
+        ...props,
       },
       revalidate: 1,
     };

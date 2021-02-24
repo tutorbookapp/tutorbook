@@ -16,6 +16,7 @@ import {
   User,
   UserJSON,
 } from 'lib/model';
+import { PageProps, getPageProps } from 'lib/page';
 import { APIError } from 'lib/api/error';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
@@ -26,7 +27,7 @@ import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 import matches from 'locales/en/matches.json';
 
-function MatchDisplayPage(): JSX.Element {
+function MatchDisplayPage(props: PageProps): JSX.Element {
   const { loggedIn } = useUser();
   const { query } = useRouter();
   const { data: org, error: orgError } = useSWR<OrgJSON, APIError>(
@@ -64,7 +65,7 @@ function MatchDisplayPage(): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title='Match - Tutorbook'>
+      <Page title='Match - Tutorbook' {...props}>
         <EmptyHeader />
         <MatchDisplay
           match={match ? Match.fromJSON(match) : undefined}
@@ -77,5 +78,7 @@ function MatchDisplayPage(): JSX.Element {
     </OrgContext.Provider>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(MatchDisplayPage, { common, match, matches });

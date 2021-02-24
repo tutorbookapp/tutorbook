@@ -7,6 +7,7 @@ import Settings from 'components/settings';
 import Signup from 'components/settings/signup';
 import { TabHeader } from 'components/navigation';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -16,7 +17,7 @@ import common from 'locales/en/common.json';
 import orgIntl from 'locales/en/org.json';
 import settings from 'locales/en/settings.json';
 
-function SignupSettingsPage(): JSX.Element {
+function SignupSettingsPage(props: PageProps): JSX.Element {
   const { orgs } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
@@ -37,7 +38,10 @@ function SignupSettingsPage(): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org }}>
-      <Page title={`${org?.name || 'Loading'} - Signup - Settings - Tutorbook`}>
+      <Page
+        title={`${org?.name || 'Loading'} - Signup - Settings - Tutorbook`}
+        {...props}
+      >
         <TabHeader
           switcher
           tabs={[
@@ -71,5 +75,7 @@ function SignupSettingsPage(): JSX.Element {
     </OrgContext.Provider>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(SignupSettingsPage, { common, settings, org: orgIntl });

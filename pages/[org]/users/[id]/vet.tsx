@@ -9,6 +9,7 @@ import Page from 'components/page';
 import UserVet from 'components/user/vet';
 
 import { Org, OrgJSON, User, UserJSON } from 'lib/model';
+import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
 import getUser from 'lib/api/get/user';
@@ -18,7 +19,7 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import user from 'locales/en/user.json';
 
-interface UserVetPageProps {
+interface UserVetPageProps extends PageProps {
   user?: UserJSON;
   org?: OrgJSON;
 }
@@ -26,6 +27,7 @@ interface UserVetPageProps {
 function UserVetPage({
   user: initialData,
   org,
+  ...props
 }: UserVetPageProps): JSX.Element {
   const { query } = useRouter();
   const { data } = useSWR<UserJSON>(
@@ -43,7 +45,11 @@ function UserVetPage({
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page title={`${data?.name || 'Loading'} - Tutorbook`} formWidth>
+      <Page
+        title={`${data?.name || 'Loading'} - Tutorbook`}
+        formWidth
+        {...props}
+      >
         <EmptyHeader formWidth />
         <UserVet user={data ? User.fromJSON(data) : undefined} />
       </Page>
@@ -68,7 +74,11 @@ export const getStaticProps: GetStaticProps<
       getOrg(ctx.params.org),
       getUser(ctx.params.id),
     ]);
-    return { props: { org: org.toJSON(), user: user.toJSON() }, revalidate: 1 };
+    const props = await getPageProps();
+    return {
+      props: { org: org.toJSON(), user: user.toJSON(), ...props },
+      revalidate: 1,
+    };
   } catch (e) {
     return { notFound: true };
   }

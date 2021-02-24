@@ -1,6 +1,7 @@
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
+import { OrgJSON } from 'lib/model';
 import { useUser } from 'lib/context/user';
 
 import Group from './group';
@@ -9,9 +10,10 @@ import styles from './footer.module.scss';
 
 export interface FooterProps {
   formWidth?: boolean;
+  orgs: OrgJSON[];
 }
 
-export default function Footer({ formWidth }: FooterProps): JSX.Element {
+export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
   const { t } = useTranslation();
   const { user } = useUser();
 
@@ -28,6 +30,11 @@ export default function Footer({ formWidth }: FooterProps): JSX.Element {
           <Link href='https://github.com/tutorbookapp/tutorbook/issues/new/choose'>
             {t('common:footer-issue')}
           </Link>
+        </Group>
+        <Group label={t('common:footer-orgs')}>
+          {orgs.map((org) => (
+            <Link href={`/${org.id}`}>{org.name}</Link>
+          ))}
         </Group>
         <Group label={t('common:footer-resources')}>
           <Link href='https://intercom.help/tutorbook'>

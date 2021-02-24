@@ -6,6 +6,7 @@ import Overview from 'components/overview';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -14,7 +15,7 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import overview from 'locales/en/overview.json';
 
-function OverviewPage(): JSX.Element {
+function OverviewPage(props: PageProps): JSX.Element {
   const { orgs } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
@@ -35,7 +36,11 @@ function OverviewPage(): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org }}>
-      <Page title={`${org?.name || 'Loading'} - Overview - Tutorbook`} intercom>
+      <Page
+        title={`${org?.name || 'Loading'} - Overview - Tutorbook`}
+        intercom
+        {...props}
+      >
         <TabHeader
           switcher
           tabs={[
@@ -67,5 +72,7 @@ function OverviewPage(): JSX.Element {
     </OrgContext.Provider>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(OverviewPage, { common, overview });

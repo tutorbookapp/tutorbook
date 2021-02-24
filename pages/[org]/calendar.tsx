@@ -6,6 +6,7 @@ import Calendar from 'components/calendar';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
+import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { usePage } from 'lib/hooks';
 import { useUser } from 'lib/context/user';
@@ -16,7 +17,7 @@ import common from 'locales/en/common.json';
 import match from 'locales/en/match.json';
 import meeting from 'locales/en/meeting.json';
 
-function OrgCalendarPage(): JSX.Element {
+function OrgCalendarPage(props: PageProps): JSX.Element {
   const { orgs } = useUser();
   const { query } = useRouter();
   const { t } = useTranslation();
@@ -37,7 +38,10 @@ function OrgCalendarPage(): JSX.Element {
 
   return (
     <OrgContext.Provider value={{ org }}>
-      <Page title={`${org?.name || 'Loading'} - Calendar - Tutorbook`}>
+      <Page
+        title={`${org?.name || 'Loading'} - Calendar - Tutorbook`}
+        {...props}
+      >
         <TabHeader
           switcher
           tabs={[
@@ -69,5 +73,7 @@ function OrgCalendarPage(): JSX.Element {
     </OrgContext.Provider>
   );
 }
+
+export const getStaticProps = getPageProps;
 
 export default withI18n(OrgCalendarPage, { calendar, common, match, meeting });
