@@ -42,6 +42,10 @@ export interface SocialInterface {
   url: string;
 }
 
+function getSocial(socials: SocialInterface[], type: SocialTypeAlias): string {
+  return (socials.find((s) => s.type === type) || { url: '' }).url;
+}
+
 export function isSocial(json: unknown): json is SocialInterface {
   const socialTypes = [
     'website',
@@ -141,6 +145,34 @@ export class Account extends Resource implements AccountInterface {
 
   public get clone(): Account {
     return new Account(clone(this));
+  }
+
+  public get website(): string {
+    return getSocial(this.socials, 'website');
+  }
+
+  public get linkedin(): string {
+    return getSocial(this.socials, 'linkedin');
+  }
+
+  public get twitter(): string {
+    return getSocial(this.socials, 'twitter');
+  }
+
+  public get facebook(): string {
+    return getSocial(this.socials, 'facebook');
+  }
+
+  public get instagram(): string {
+    return getSocial(this.socials, 'instagram');
+  }
+
+  public get github(): string {
+    return getSocial(this.socials, 'github');
+  }
+
+  public get indiehackers(): string {
+    return getSocial(this.socials, 'indiehackers');
   }
 
   public async validatePhone(): Promise<void> {

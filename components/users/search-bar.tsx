@@ -15,11 +15,7 @@ export interface SearchBarProps {
   setOpen: Callback<boolean>;
 }
 
-export default memo(function SearchBar({
-  query,
-  setQuery,
-  setOpen,
-}: SearchBarProps): JSX.Element {
+function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
   const { t } = useTranslation();
   const { org } = useOrg();
 
@@ -55,6 +51,9 @@ export default memo(function SearchBar({
       return new UsersQuery({ ...prev, visible, page: 0 });
     });
   }, [setQuery]);
+  const downloadResults = useCallback(() => {
+    window.open(query.getURL('/api/users/csv'));
+  }, [query]);
 
   return (
     <div className={styles.filters}>
@@ -64,6 +63,7 @@ export default memo(function SearchBar({
           onClick={toggleFiltersOpen}
           icon='filter_list'
         />
+        <IconButton icon='download' onClick={downloadResults} />
         <ChipSet className={styles.filterChips}>
           <Chip
             label={t('users:filters-not-vetted')}
@@ -125,4 +125,6 @@ export default memo(function SearchBar({
       </div>
     </div>
   );
-});
+}
+
+export default memo(SearchBar);

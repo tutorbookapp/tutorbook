@@ -7083,6 +7083,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-stringify@npm:^5.6.2":
+  version: 5.6.2
+  resolution: "csv-stringify@npm:5.6.2"
+  checksum: e4a30ab9631b739b14130042f558700298856724f0674e50700198057b9d7cf0dd64097b933b6243d050139c085ba365977f80f392d863c64fe4800ce8e06023
+  languageName: node
+  linkType: hard
+
 "csv@npm:^5.3.2":
   version: 5.3.2
   resolution: "csv@npm:5.3.2"
@@ -17950,6 +17957,7 @@ resolve@^1.18.1:
     concurrently: ^5.3.0
     cross-env: ^7.0.2
     csv: ^5.3.2
+    csv-stringify: ^5.6.2
     cypress: ^6.5.0
     cypress-file-upload: ^5.0.2
     dequal: ^2.0.2
