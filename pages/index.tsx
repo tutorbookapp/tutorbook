@@ -16,13 +16,17 @@ import { usePage } from 'lib/hooks';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import landing from 'locales/en/landing.json';
 
 function OrgsPage(): JSX.Element {
   usePage({ name: 'Orgs Landing' });
 
   return (
-    <Page title='Support at scale - Tutorbook' intercom borderless>
+    <Page
+      title='Connect students with tutors and mentors - Tutorbook'
+      description='Tutorbook is the best way to manage virtual tutoring and mentoring programs. Simple tutoring management software to onboard volunteers, match students, schedule lessons, and scale your organization.'
+      borderless
+      intercom
+    >
       <TabHeader
         tabs={[
           {
@@ -36,7 +40,10 @@ function OrgsPage(): JSX.Element {
           },
         ]}
       />
-      <HeroTitle />
+      <HeroTitle
+        header='Connect students with tutors and mentors'
+        body='One app to manage everything. Onboard volunteers, match students, and scale your organization.'
+      />
       <Screenshots />
       <UseCases />
       <Spotlight
@@ -74,10 +81,12 @@ function OrgsPage(): JSX.Element {
         vid='/demos/matching.mp4'
         img={MatchingImage}
       />
-      <ContactCTA />
+      <ContactCTA
+        header='Student support at scale'
+        body='The best way to manage tutoring and mentoring programs.'
+      />
     </Page>
   );
 }
 
-// TODO: Finish porting over the static text contact into i18n JSON files.
-export default withI18n(OrgsPage, { common, landing });
+export default withI18n(OrgsPage, { common });

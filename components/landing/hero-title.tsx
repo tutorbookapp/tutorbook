@@ -1,17 +1,21 @@
-import useTranslation from 'next-translate/useTranslation';
-
 import Title from 'components/title';
 
 import styles from './hero-title.module.scss';
 
-export default function HeroTitle(): JSX.Element {
-  const { t } = useTranslation();
+export interface HeroTitleProps {
+  header: string;
+  body: string;
+}
 
+export default function HeroTitle({
+  header,
+  body,
+}: HeroTitleProps): JSX.Element {
   return (
     <div className={styles.wrapper}>
       <div className={styles.content}>
-        <Title>{t('landing:hero-header')}</Title>
-        <h3>{t('landing:hero-body')}</h3>
+        <Title>{header}</Title>
+        <h3>{body}</h3>
       </div>
     </div>
   );
