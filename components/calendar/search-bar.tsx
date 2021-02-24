@@ -1,5 +1,6 @@
 import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
+import { useCallback } from 'react';
 
 import { Callback, MeetingsQuery } from 'lib/model';
 
@@ -9,25 +10,30 @@ export interface SearchBarProps {
   query: MeetingsQuery;
   setQuery: Callback<MeetingsQuery>;
   setFiltersOpen: Callback<boolean>;
-  showFiltersButton?: boolean;
+  byOrg?: boolean;
 }
 
 export default function SearchBar({
   query,
   setQuery,
   setFiltersOpen,
-  showFiltersButton,
+  byOrg,
 }: SearchBarProps): JSX.Element {
+  const downloadResults = useCallback(() => {
+    window.open(query.getURL('/api/meetings/csv'));
+  }, [query]);
+
   return (
     <div className={styles.filters}>
       <div className={styles.left}>
-        {showFiltersButton && (
+        {byOrg && (
           <IconButton
             className={styles.filtersButton}
             onClick={() => setFiltersOpen((prev) => !prev)}
             icon='filter_list'
           />
         )}
+        {byOrg && <IconButton icon='download' onClick={downloadResults} />}
       </div>
       <div className={styles.right}>
         <TextField

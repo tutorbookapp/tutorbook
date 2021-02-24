@@ -1,18 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { UsersQuery, UsersQueryURL, isUsersQueryURL } from 'lib/model';
+import { MatchesQuery, MatchesQueryURL, isMatchesQueryURL } from 'lib/model';
 import csv from 'lib/api/csv';
-import getUsers from 'lib/api/get/users';
+import getMatches from 'lib/api/get/matches';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';
 
 /**
- * GET - Downloads a CSV list of the filtered users.
+ * GET - Downloads a CSV list of the filtered matches.
  *
  * Requires admin authentication.
  */
-export default async function users(
+export default async function matches(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
@@ -23,25 +23,25 @@ export default async function users(
   }
 
   try {
-    const query = verifyQuery<UsersQuery, UsersQueryURL>(
+    const query = verifyQuery<MatchesQuery, MatchesQueryURL>(
       req.query,
-      isUsersQueryURL,
-      UsersQuery
+      isMatchesQueryURL,
+      MatchesQuery
     );
 
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
-    // when we start scaling up (and have orgs with more than 1000 users each).
+    // when we scale up (and have orgs with more than 1000 matches each).
     query.hitsPerPage = 1000;
+    query.org = query.org || 'default';
 
-    await verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) });
+    await verifyAuth(req.headers, { orgIds: [query.org] });
 
-    const { results } = await getUsers(query);
+    const { results } = await getMatches(query);
 
-    // TODO: Replace the language codes with their actual i18n names.
     csv(
       res,
-      'users',
-      results.map((user) => user.toCSV())
+      'matches',
+      results.map((meeting) => meeting.toCSV())
     );
   } catch (e) {
     handle(e, res);

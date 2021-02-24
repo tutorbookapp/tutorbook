@@ -36,6 +36,7 @@ import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
+import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
@@ -317,5 +318,33 @@ export class User extends Account implements UserInterface {
       verifications: verifications.map((v) => Verification.fromSearchHit(v)),
       zooms: zooms.map((z) => ZoomUser.fromSearchHit(z)),
     });
+  }
+
+  // TODO: Replace the language codes with their actual i18n names.
+  public toCSV(): Record<string, string> {
+    return {
+      'User ID': this.id,
+      'User Name': this.name,
+      'User Email': this.email,
+      'User Phone': this.phone,
+      'User Bio': this.bio,
+      'User Reference': this.reference,
+      'User Languages': join(this.langs),
+      'Mentoring Subjects': join(this.mentoring.subjects),
+      'Tutoring Subjects': join(this.tutoring.subjects),
+      'Mentoring Searches': join(this.mentoring.searches),
+      'Tutoring Searches': join(this.tutoring.searches),
+      'Profile Image URL': this.photo,
+      'Banner Image URL': this.background,
+      'Website URL': this.website,
+      'LinkedIn URL': this.linkedin,
+      'Twitter URL': this.twitter,
+      'Facebook URL': this.facebook,
+      'Instagram URL': this.instagram,
+      'GitHub URL': this.github,
+      'IndieHackers URL': this.indiehackers,
+      'User Created': this.created.toString(),
+      'User Last Updated': this.updated.toString(),
+    };
   }
 }

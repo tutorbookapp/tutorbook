@@ -105,7 +105,7 @@ export default function Calendar({
           query={query}
           setQuery={setQuery}
           setFiltersOpen={setFiltersOpen}
-          showFiltersButton={byOrg}
+          byOrg={byOrg}
         />
         <div className={styles.content}>
           <WeeklyDisplay

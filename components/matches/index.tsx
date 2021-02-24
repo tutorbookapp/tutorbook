@@ -7,6 +7,7 @@ import {
   DataTableRow,
 } from '@rmwc/data-table';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
@@ -61,6 +62,9 @@ export default function Matches({
       return updated;
     });
   }, []);
+  const downloadResults = useCallback(() => {
+    if (query) window.open(query.getURL('/api/matches/csv'));
+  }, [query]);
 
   useEffect(() => {
     onQueryChange((prev) => {
@@ -120,7 +124,15 @@ export default function Matches({
       />
       <div className={styles.wrapper}>
         <div className={styles.filters}>
-          <div className={styles.left} />
+          <div className={styles.left}>
+            {byOrg && (
+              <IconButton
+                className={styles.downloadButton}
+                onClick={downloadResults}
+                icon='download'
+              />
+            )}
+          </div>
           <div className={styles.right}>
             <TextField
               outlined

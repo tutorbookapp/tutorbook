@@ -246,4 +246,16 @@ export class Meeting extends Resource implements MeetingInterface {
       id: objectID,
     });
   }
+
+  public toCSV(): Record<string, string> {
+    return {
+      'Meeting ID': this.id,
+      'Meeting Notes': this.notes,
+      'Meeting Start': this.time.from.toString(),
+      'Meeting End': this.time.to.toString(),
+      'Meeting Created': this.created.toString(),
+      'Meeting Last Updated': this.updated.toString(),
+      ...this.match.toCSV(),
+    };
+  }
 }

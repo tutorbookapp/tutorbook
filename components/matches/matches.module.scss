@@ -11,6 +11,15 @@ $filters-height: 56px;
   display: flex;
   justify-content: space-between;
 
+  .left {
+    display: flex;
+    align-items: center;
+
+    .downloadButton {
+      margin-left: ($filters-height - 48px) / 2;
+    }
+  }
+
   .right {
     display: flex;
     align-items: center;

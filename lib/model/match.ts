@@ -15,8 +15,8 @@ import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-import { join } from 'lib/utils';
 import { isJSON } from 'lib/model/json';
+import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
@@ -103,6 +103,18 @@ export class Match extends Resource implements MatchInterface {
     return 'mentoring';
   }
 
+  public get volunteer(): Person | undefined {
+    return this.people.find(
+      (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
+    );
+  }
+
+  public get student(): Person | undefined {
+    return this.people.find(
+      (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
+    );
+  }
+
   public toString(): string {
     return `Match for ${join(this.subjects) || 'No Subjects'}`;
   }
@@ -148,6 +160,22 @@ export class Match extends Resource implements MatchInterface {
 
   public static fromSearchHit({ objectID, ...hit }: MatchSearchHit): Match {
     return new Match({ ...hit, ...Resource.fromSearchHit(hit), id: objectID });
+  }
+
+  public toCSV(): Record<string, string> {
+    return {
+      'Match ID': this.id,
+      'Match Subjects': join(this.subjects),
+      'Match Message': this.message,
+      'Match Created': this.created.toString(),
+      'Match Last Updated': this.updated.toString(),
+      'Volunteer ID': this.volunteer?.id || '',
+      'Volunteer Name': this.volunteer?.name || '',
+      'Volunteer Photo URL': this.volunteer?.photo || '',
+      'Student ID': this.student?.id || '',
+      'Student Name': this.student?.name || '',
+      'Student Photo URL': this.student?.photo || '',
+    };
   }
 
   public toSegment(): MatchSegment {
