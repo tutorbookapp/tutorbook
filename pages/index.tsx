@@ -52,35 +52,40 @@ function OrgsPage(props: PageProps): JSX.Element {
         num={1}
         header='Share your landing page'
         body='Customize a landing page for your organization to share on social media.'
-        vid='/demos/landing.mp4'
+        mp4='/demos/landing.mp4'
+        webm='/demos/landing.webm'
         img={LandingImage}
       />
       <Spotlight
         num={2}
         header='Onboard volunteers'
         body='Onboard new volunteers via a fully customizable signup page.'
-        vid='/demos/signup.mp4'
+        mp4='/demos/signup.mp4'
+        webm='/demos/signup.webm'
         img={SignupImage}
       />
       <Spotlight
         num={3}
         header='Vet new volunteers'
         body='Meet with new volunteers before adding them to your secure search view.'
-        vid='/demos/vetting.mp4'
+        mp4='/demos/vetting.mp4'
+        webm='/demos/vetting.webm'
         img={VettingImage}
       />
       <Spotlight
         num={4}
         header='Share your search link'
         body='Students can search your vetted volunteers and send them requests directly.'
-        vid='/demos/search.mp4'
+        mp4='/demos/search.mp4'
+        webm='/demos/search.webm'
         img={SearchImage}
       />
       <Spotlight
         num={5}
         header='Schedule appointments'
         body='Match volunteers and schedule meeting times via your admin dashboard.'
-        vid='/demos/matching.mp4'
+        mp4='/demos/matching.mp4'
+        webm='/demos/matching.webm'
         img={MatchingImage}
       />
       <ContactCTA

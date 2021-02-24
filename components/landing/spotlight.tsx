@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import Video from 'components/video';
 
 import styles from './spotlight.module.scss';
@@ -6,7 +8,8 @@ export interface SpotlightProps {
   num: number;
   header: string;
   body: string;
-  vid: string;
+  mp4: string;
+  webm: string;
   img: string;
 }
 
@@ -14,7 +17,8 @@ export default function Spotlight({
   num,
   header,
   body,
-  vid,
+  mp4,
+  webm,
   img,
 }: SpotlightProps): JSX.Element {
   return (
@@ -30,12 +34,18 @@ export default function Spotlight({
         <div className={styles.right}>
           <div>
             <div className={styles.label}>Replaces</div>
-            <img src={img} alt='Logos of replaced software' />
+            <Image
+              src={img}
+              width={280}
+              height={24}
+              layout='fixed'
+              alt='Logos of replaced software'
+            />
           </div>
         </div>
       </div>
       <div className={styles.video}>
-        <Video src={vid} autoplay loop />
+        <Video mp4={mp4} webm={webm} />
       </div>
     </div>
   );

@@ -43,14 +43,20 @@ function toggleSelection(value: string): void {
 }
 
 export interface VideoProps {
-  src: string;
+  mp4: string;
+  webm: string;
+  poster?: string;
   autoplay?: boolean;
+  muted?: boolean;
   loop?: boolean;
 }
 
 export default function Video({
-  src,
+  mp4,
+  webm,
+  poster,
   autoplay,
+  muted,
   loop,
 }: VideoProps): JSX.Element {
   const ref = useRef<HTMLVideoElement>(null);
@@ -126,14 +132,19 @@ export default function Video({
         <div className={styles.container}>
           <video
             ref={ref}
+            poster={poster}
             onTimeUpdate={updateProgress}
             onDurationChange={updateProgress}
+            preload={autoplay ? 'none' : 'auto'}
             autoPlay={autoplay}
-            preload='auto'
+            muted={muted}
             loop={loop}
-            src={src}
             playsInline
-          />
+          >
+            <source src={webm} type='video/webm' />
+            <source src={mp4} type='video/mp4' />
+            <track default kind='captions' srcLang='en' />
+          </video>
           <div className={cn(styles.controls, { [styles.visible]: visible })}>
             <button
               className={styles.play}

@@ -101,11 +101,11 @@ figure.wrapper {
     pointer-events: none;
   }
 
-  div.controls progress[value]:-webkit-progress-bar {
+  progress[value]::-webkit-progress-bar {
     background-color: var(--accents-2);
   }
 
-  div.controls progress[value]:-webkit-progress-value {
+  progress[value]::-webkit-progress-value {
     background-color: var(--on-background);
   }
 
