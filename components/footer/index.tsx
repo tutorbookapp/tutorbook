@@ -10,7 +10,7 @@ import styles from './footer.module.scss';
 
 export interface FooterProps {
   formWidth?: boolean;
-  orgs: OrgJSON[];
+  orgs?: OrgJSON[];
 }
 
 export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
@@ -32,7 +32,7 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
           </Link>
         </Group>
         <Group label={t('common:footer-orgs')}>
-          {orgs.map((org) => (
+          {(orgs || []).map((org) => (
             <Link key={org.id} href={`/${org.id}`}>
               {org.name}
             </Link>
