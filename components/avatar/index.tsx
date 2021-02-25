@@ -8,6 +8,7 @@ import styles from './avatar.module.scss';
 
 interface AvatarProps {
   size: number | 'dynamic';
+  priority?: boolean;
   loading?: boolean;
   src?: string;
 }
@@ -22,6 +23,7 @@ interface AvatarProps {
  */
 export default function Avatar({
   size,
+  priority,
   loading,
   src = '',
 }: AvatarProps): JSX.Element {
@@ -31,12 +33,14 @@ export default function Avatar({
     <div className={cn(styles.wrapper, { [styles.loading]: loading })}>
       {!loading && !!src && !validPhoto(src) && (
         <div className={styles.photoWrapper}>
-          <img className={styles.photo} data-cy='avatar' src={src} alt='' />
+          {priority && <link rel='preload' as='image' href={src} />}
+          <img data-cy='avatar' className={styles.photo} src={src} alt='' />
         </div>
       )}
       {!loading && !!src && validPhoto(src) && size !== 'dynamic' && (
         <Image
           data-cy='avatar'
+          priority={priority}
           layout='fixed'
           height={size}
           width={size}
@@ -51,6 +55,7 @@ export default function Avatar({
             layout='fill'
             objectFit='cover'
             objectPosition='center 50%'
+            priority={priority}
             src={src}
             alt=''
           />

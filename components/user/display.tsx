@@ -41,6 +41,7 @@ export default function UserDisplay({
       <div className={styles.background}>
         {(user?.background || user?.photo) && (
           <Image
+            priority
             layout='fill'
             objectFit='cover'
             data-cy='backdrop'
@@ -60,7 +61,7 @@ export default function UserDisplay({
             rel='noreferrer'
             tabIndex={-1}
           >
-            <Avatar size='dynamic' loading={!user} src={user?.photo} />
+            <Avatar size='dynamic' loading={!user} src={user?.photo} priority />
             {currentUser.id !== user?.id && admin && (
               <div className={styles.actions}>
                 <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>

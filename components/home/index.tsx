@@ -39,6 +39,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
         <div className={styles.background}>
           {org?.background && (
             <Image
+              priority
               layout='fill'
               objectFit='cover'
               data-cy='backdrop'
@@ -58,7 +59,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
               rel='noreferrer'
               tabIndex={-1}
             >
-              <Avatar size={120} loading={!org} src={org?.photo} />
+              <Avatar size={120} loading={!org} src={org?.photo} priority />
             </a>
             <div>
               <h1 data-cy='name' className={styles.name}>
