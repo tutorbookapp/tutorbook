@@ -17,6 +17,9 @@ export type Tag = 'not-vetted' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 /**
  * All the supported filters for the search view.
  * @extends {QueryInterface}
+ * @property parents - Parents that the user has to have.
+ * @property orgs - Orgs that the user has to belong to.
+ * @property tags - Algolia search index tags the user must have.
  * @property aspect - Whether to filter by mentoring or tutoring subjects.
  * @property langs - The languages that the user can speak.
  * @property subjects - Subjects that the user can tutor or mentor.
@@ -26,6 +29,7 @@ export type Tag = 'not-vetted' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
  * their visibility) which is why this property exists.
  */
 export interface UsersQueryInterface extends QueryInterface {
+  parents: string[];
   orgs: string[];
   tags: Tag[];
   aspect: Aspect;
@@ -47,6 +51,8 @@ export function isUsersQueryURL(query: unknown): query is UsersQueryURL {
 }
 
 export class UsersQuery extends Query implements UsersQueryInterface {
+  public parents: string[] = [];
+
   public orgs: string[] = [];
 
   public tags: Tag[] = [];
@@ -81,6 +87,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
     }
 
     const query = super.getURLQuery();
+    if (this.parents.length) query.parents = encode(this.parents);
     if (this.orgs.length) query.orgs = encode(this.orgs);
     if (this.tags.length) query.tags = encode(this.tags);
     if (this.aspect !== 'tutoring') query.aspect = this.aspect;
@@ -99,6 +106,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
 
     return new UsersQuery({
       ...super.fromURLParams(params),
+      parents: decode<string>(params.parents),
       orgs: decode<string>(params.orgs),
       tags: decode<Tag>(params.tags),
       langs: decode<Option<string>>(params.langs),

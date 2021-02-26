@@ -67,10 +67,7 @@ export default function UserSelect({
       if (user.id)
         promises.push(
           axios.get<ListUsersRes>(
-            new UsersQuery({
-              search,
-              parents: [{ label: user.name, value: user.id }],
-            }).endpoint
+            new UsersQuery({ search, parents: [user.id] }).endpoint
           )
         );
       const suggestions: UserOption[] = [];

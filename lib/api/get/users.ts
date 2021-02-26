@@ -21,6 +21,7 @@ function getFilterStrings(query: UsersQuery): string[] {
   let str = '';
   if (typeof query.visible === 'boolean')
     str = addStringFilter(str, `visible=${query.visible ? 1 : 0}`);
+  str = addArrayFilter(str, query.parents, 'parents', 'OR');
   str = addArrayFilter(str, query.orgs, 'orgs', 'OR');
   str = addArrayFilter(str, query.tags, '_tags');
   str = addOptionsFilter(str, query.subjects, `${query.aspect}.subjects`);
