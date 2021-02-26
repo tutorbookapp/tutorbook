@@ -1,3 +1,4 @@
+@use 'styles/typography';
 @use 'styles/query-form';
 @use 'styles/common';
 
@@ -15,5 +16,23 @@
   .form {
     max-height: 100%;
     overflow: auto;
+
+    h6 {
+      @include typography.typography('subtitle2');
+      color: var(--accents-6);
+      margin: 16px 0 8px;
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    .checkbox {
+      margin-left: -8px;
+
+      &.first {
+        margin-top: 16px;
+      }
+    }
   }
 }

@@ -20,6 +20,30 @@ export function addStringFilter(base: string, filter: string): string {
 }
 
 /**
+ * Adds an array of filters to an existing filter string.
+ * @param base - The existing filter string (e.g. `visible:true`).
+ * @param filters - The array of filters to add.
+ * @param attr - The attribute the `filters` are for (e.g. `lang`).
+ * @param concat - Whether each option must be `AND` or `OR`.
+ * @return The filter string with all the `Option` filters added.
+ */
+export function addArrayFilter(
+  base: string,
+  filters: string[],
+  attr: string,
+  concat: 'OR' | 'AND' = 'AND'
+): string {
+  const addAND = base.length && !base.endsWith(' AND ') && filters.length;
+  let filterString = addAND ? `${base} AND ` : base;
+  filters.forEach((filter, idx) => {
+    filterString += idx === 0 ? '(' : ` ${concat} `;
+    filterString += `${attr}:"${filter}"`;
+    if (idx === filters.length - 1) filterString += ')';
+  });
+  return filterString;
+}
+
+/**
  * Adds `Option` filters to an existing filter string.
  * @param base - The existing filter string (e.g. `visible:true`).
  * @param filters - The `Option` filters (we filter by their `value` prop).
@@ -33,14 +57,12 @@ export function addOptionsFilter(
   attr: string,
   concat: 'OR' | 'AND' = 'AND'
 ): string {
-  const addAND = base.length && !base.endsWith(' AND ') && filters.length;
-  let filterString = addAND ? `${base} AND ` : base;
-  for (let i = 0; i < filters.length; i += 1) {
-    filterString += i === 0 ? '(' : ` ${concat} `;
-    filterString += `${attr}:"${filters[i].value}"`;
-    if (i === filters.length - 1) filterString += ')';
-  }
-  return filterString;
+  return addArrayFilter(
+    base,
+    filters.map((f) => f.value),
+    attr,
+    concat
+  );
 }
 
 /**

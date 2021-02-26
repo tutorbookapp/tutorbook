@@ -1,5 +1,10 @@
 import { User, UsersQuery } from 'lib/model';
-import { addOptionsFilter, addStringFilter, list } from 'lib/api/search';
+import {
+  addArrayFilter,
+  addOptionsFilter,
+  addStringFilter,
+  list,
+} from 'lib/api/search';
 
 /**
  * Creates and returns the filter string to search our Algolia index based on
@@ -16,11 +21,10 @@ function getFilterStrings(query: UsersQuery): string[] {
   let str = '';
   if (typeof query.visible === 'boolean')
     str = addStringFilter(str, `visible=${query.visible ? 1 : 0}`);
-  str = addOptionsFilter(str, query.orgs, 'orgs', 'OR');
-  str = addOptionsFilter(str, query.tags, '_tags');
+  str = addArrayFilter(str, query.orgs, 'orgs', 'OR');
+  str = addArrayFilter(str, query.tags, '_tags');
   str = addOptionsFilter(str, query.subjects, `${query.aspect}.subjects`);
   str = addOptionsFilter(str, query.langs, 'langs');
-  str = addOptionsFilter(str, query.parents, 'parents');
   if (!query.availability.length) return [str];
   return query.availability.map((timeslot) =>
     addStringFilter(

@@ -1,34 +1,37 @@
+import { Aspect, isAspect } from 'lib/model/aspect';
 import { Availability, AvailabilityJSON } from 'lib/model/availability';
 import { Option, Query, QueryInterface } from 'lib/model/query/base';
-import { Aspect } from 'lib/model/aspect';
 import construct from 'lib/model/construct';
 
 /**
  * Various tags that are added to the Algolia users search during indexing (via
- * the `firebase/functions/src/algolia.ts` GCP serverless function).
+ * the `lib/api/algolia.ts` API back-end module).
+ * @property not-vetted - User doesn't have any verifications.
+ * @property tutor - User is a tutor in at least one match.
+ * @property tutee - User is a tutee in at least one match.
+ * @property mentor - User is a mentor in at least one match.
+ * @property mentee - User is a mentee in at least one match.
  */
-export type Tag = 'not-vetted';
+export type Tag = 'not-vetted' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
 /**
  * All the supported filters for the search view.
  * @extends {QueryInterface}
- * @property aspect - The currently filtered aspect (i.e. tutors or mentors).
- * @property langs - The languages that the user can speak; OR category.
- * @property subjects - The subjects the user can tutor/mentor for; OR category.
- * @property availability - When the user is available; OR category.
- * @property parents - The parents that the user is a child to; OR category.
+ * @property aspect - Whether to filter by mentoring or tutoring subjects.
+ * @property langs - The languages that the user can speak.
+ * @property subjects - Subjects that the user can tutor or mentor.
+ * @property availability - When the user is available.
  * @property [visible] - Regular users can only ever see users where this is
  * `true`. Organization admins, however, can see all their users (regardless of
  * their visibility) which is why this property exists.
  */
 export interface UsersQueryInterface extends QueryInterface {
-  orgs: Option<string>[];
-  tags: Option<Tag>[];
+  orgs: string[];
+  tags: Tag[];
   aspect: Aspect;
   langs: Option<string>[];
   subjects: Option<string>[];
   availability: Availability;
-  parents: Option<string>[];
   visible?: boolean;
 }
 
@@ -44,19 +47,17 @@ export function isUsersQueryURL(query: unknown): query is UsersQueryURL {
 }
 
 export class UsersQuery extends Query implements UsersQueryInterface {
-  public orgs: Option<string>[] = [];
+  public orgs: string[] = [];
 
-  public tags: Option<Tag>[] = [];
+  public tags: Tag[] = [];
 
   public aspect: Aspect = 'tutoring';
+
+  public langs: Option<string>[] = [];
 
   public subjects: Option<string>[] = [];
 
   public availability: Availability = new Availability();
-
-  public langs: Option<string>[] = [];
-
-  public parents: Option<string>[] = [];
 
   public visible?: boolean;
 
@@ -75,7 +76,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
   // @see {@link https://www.npmjs.com/package/serialize-query-params}
   // @see {@link https://github.com/pbeshai/use-query-params}
   protected getURLQuery(): Record<string, string | number | boolean> {
-    function encode(p?: Option<any>[]): string {
+    function encode(p?: any[]): string {
       return encodeURIComponent(JSON.stringify(p));
     }
 
@@ -87,28 +88,26 @@ export class UsersQuery extends Query implements UsersQueryInterface {
     if (this.subjects.length) query.subjects = encode(this.subjects);
     if (this.availability.length)
       query.availability = this.availability.toURLParam();
-    if (this.parents.length) query.parents = encode(this.parents);
     if (typeof this.visible === 'boolean') query.visible = this.visible;
     return query;
   }
 
   public static fromURLParams(params: UsersQueryURL): UsersQuery {
-    function decode<T = string>(p?: string): Option<T>[] {
-      return p ? (JSON.parse(decodeURIComponent(p)) as Option<T>[]) : [];
+    function decode<T>(p?: string): T[] {
+      return p ? (JSON.parse(decodeURIComponent(p)) as T[]) : [];
     }
 
     return new UsersQuery({
       ...super.fromURLParams(params),
-      orgs: decode(params.orgs),
-      tags: decode(params.tags),
-      parents: decode(params.parents),
-      langs: decode(params.langs),
-      subjects: decode(params.subjects),
+      orgs: decode<string>(params.orgs),
+      tags: decode<Tag>(params.tags),
+      langs: decode<Option<string>>(params.langs),
+      subjects: decode<Option<string>>(params.subjects),
       visible: params.visible ? params.visible === 'true' : undefined,
       availability: params.availability
         ? Availability.fromURLParam(params.availability)
         : new Availability(),
-      aspect: (params.aspect as Aspect) || 'tutoring',
+      aspect: isAspect(params.aspect) ? params.aspect : 'tutoring',
     });
   }
 

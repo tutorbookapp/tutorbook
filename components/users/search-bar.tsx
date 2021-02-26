@@ -1,13 +1,14 @@
 import { Chip, ChipSet } from '@rmwc/chip';
-import { FormEvent, memo, useCallback } from 'react';
+import { FormEvent, memo } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, Option, Tag, UsersQuery } from 'lib/model';
+import { Callback, UsersQuery } from 'lib/model';
 import { useOrg } from 'lib/context/org';
 
 import styles from './search-bar.module.scss';
+import { toggleTag } from './utils';
 
 export interface SearchBarProps {
   query: UsersQuery;
@@ -15,79 +16,64 @@ export interface SearchBarProps {
   setOpen: Callback<boolean>;
 }
 
+// TODO: Don't include both the "User types" filters in the FilterSheet and the
+// aspect chips in this SearchBar. Instead, refactor the UsersQuery data model
+// to have `tutoring.subjects` and `mentoring.subjects` at the same time.
 function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
   const { t } = useTranslation();
   const { org } = useOrg();
-
-  const toggleFiltersOpen = useCallback(() => {
-    setOpen((prev: boolean) => !prev);
-  }, [setOpen]);
-  const toggleVettedFilter = useCallback(() => {
-    setQuery((prev: UsersQuery) => {
-      const tags: Option<Tag>[] = Array.from(prev.tags);
-      const idx = tags.findIndex((a) => a.value === 'not-vetted');
-      if (idx < 0) {
-        tags.push({
-          label: t('users:filters-not-vetted'),
-          value: 'not-vetted',
-        });
-      } else {
-        tags.splice(idx, 1);
-      }
-      return new UsersQuery({ ...prev, tags, page: 0 });
-    });
-  }, [t, setQuery]);
-  const toggleVisibleFilter = useCallback(() => {
-    setQuery((prev: UsersQuery) => {
-      const { visible: vprev } = prev;
-      const visible = vprev !== true ? true : undefined;
-      return new UsersQuery({ ...prev, visible, page: 0 });
-    });
-  }, [setQuery]);
-  const toggleHiddenFilter = useCallback(() => {
-    setQuery((prev: UsersQuery) => {
-      const { visible: vprev } = prev;
-      const visible = vprev !== false ? false : undefined;
-      return new UsersQuery({ ...prev, visible, page: 0 });
-    });
-  }, [setQuery]);
-  const downloadResults = useCallback(() => {
-    window.open(query.getURL('/api/users/csv'));
-  }, [query]);
 
   return (
     <div className={styles.filters}>
       <div className={styles.left}>
         <IconButton
           className={styles.filtersButton}
-          onClick={toggleFiltersOpen}
+          onClick={() => setOpen((prev) => !prev)}
           icon='filter_list'
         />
-        <IconButton icon='download' onClick={downloadResults} />
+        <IconButton
+          onClick={() => window.open(query.getURL('/api/users/csv'))}
+          icon='download'
+        />
         <ChipSet className={styles.filterChips}>
           <Chip
             label={t('users:filters-not-vetted')}
             checkmark
-            onInteraction={toggleVettedFilter}
-            selected={
-              query.tags.findIndex((a) => a.value === 'not-vetted') >= 0
-            }
+            onInteraction={() => {
+              setQuery((prev) => {
+                const tags = toggleTag(prev.tags, 'not-vetted');
+                return new UsersQuery({ ...prev, tags, page: 0 });
+              });
+            }}
+            selected={query.tags.includes('not-vetted')}
           />
           <Chip
             label={t('users:filters-visible')}
             checkmark
-            onInteraction={toggleVisibleFilter}
+            onInteraction={() => {
+              setQuery((prev) => {
+                const { visible: vprev } = prev;
+                const visible = vprev !== true ? true : undefined;
+                return new UsersQuery({ ...prev, visible, page: 0 });
+              });
+            }}
             selected={query.visible === true}
           />
           <Chip
             label={t('users:filters-hidden')}
             checkmark
-            onInteraction={toggleHiddenFilter}
+            onInteraction={() => {
+              setQuery((prev) => {
+                const { visible: vprev } = prev;
+                const visible = vprev !== false ? false : undefined;
+                return new UsersQuery({ ...prev, visible, page: 0 });
+              });
+            }}
             selected={query.visible === false}
           />
-          {(!org || org.aspects.length === 2) && (
+          {org?.aspects.length === 2 && (
             <Chip
-              label={t('common:mentors')}
+              label={t('common:mentoring')}
               checkmark
               onInteraction={() => {
                 const aspect = 'mentoring';
@@ -96,9 +82,9 @@ function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
               selected={query.aspect === 'mentoring'}
             />
           )}
-          {(!org || org.aspects.length === 2) && (
+          {org?.aspects.length === 2 && (
             <Chip
-              label={t('common:tutors')}
+              label={t('common:tutoring')}
               checkmark
               onInteraction={() => {
                 const aspect = 'tutoring';
