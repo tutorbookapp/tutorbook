@@ -122,27 +122,6 @@ const users = async () => {
   );
 };
 
-/**
- * Helper function to trigger an update operation on all of our current `users`
- * documents (which will then be synced with the Algolia search index via our
- * GCP Function).
- *
- * This is useful for when the Algolia search index gets out of sync due to
- * known errors with that GCP Function (e.g. when I forgot to update the Algolia
- * API keys).
- */
-const triggerUpdate = async (collectionId = 'users') => {
-  const resources = (await db.collection(collectionId).get()).docs;
-  await Promise.all(
-    resources.map(async (resource) => {
-      const original = resource.data();
-      await resource.ref.set({ ...original, temp: '' });
-      delete original.temp; // Just in case. This shouldn't be in use anyways.
-      await resource.ref.set(original);
-    })
-  );
-};
-
 const removeTemp = async (collectionId = 'users') => {
   const resources = (await db.collection(collectionId).get()).docs;
   await Promise.all(
@@ -681,27 +660,38 @@ const addResourceTimestamps = async (col) => {
   );
 };
 
-const triggerPeopleRoleTagsUpdate = async () => {
-  console.log('Fetching matches...');
-  const pathname = 'https://develop.tutorbook.app/api/matches';
+const triggerUpdate = async (col = 'users', filters = {}) => {
+  console.log(`Fetching ${col}...`);
+  const pathname = `https://develop.tutorbook.app/api/${col}`;
   const endpoint = url.format({
     pathname,
-    query: {
-      hitsPerPage: 1000,
-      org: 'quarantunes',
-    },
+    query: { ...filters, hitsPerPage: 1000 },
   });
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
   const headers = { authorization: `Bearer ${await createToken()}` };
   const { data } = await axios.get(endpoint, { headers });
   if (data.hits > 1000) console.warn(`More hits (${data.hits}) than 1000.`);
-  console.log(`Updating ${data.hits} matches...`);
-  await Promise.all(
-    data.matches.map((res) => {
-      return axios.put(`${pathname}/${res.id}`, res, { headers });
-    })
-  );
-  console.log(`Updated ${data.hits} matches.`);
+  console.log(`Updating ${data.hits} ${col}...`);
+  let count = 0;
+  bar.start(data[col].length, count);
+  for (const res of data[col]) {
+    if (!res.created) res.created = new Date().toJSON();
+    if (!res.updated) res.updated = new Date().toJSON();
+    const [err] = await to(
+      axios.put(`${pathname}/${res.id}`, res, { headers })
+    );
+    bar.update((count += 1));
+    if (err) {
+      console.error(`${err.name} updating ${res.name} (${res.id}):`, res);
+      debugger;
+    }
+  }
+  console.log(`Updated ${data.hits} ${col}.`);
 };
+
+triggerUpdate('users', {
+  orgs: encodeURIComponent(JSON.stringify(['quarantunes'])),
+});
 
 // Deletes all users that come from the old app:
 // - Anyone w/out a bio.
