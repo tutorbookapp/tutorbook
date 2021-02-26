@@ -660,7 +660,7 @@ const addResourceTimestamps = async (col) => {
   );
 };
 
-const triggerUpdate = async (col = 'users', filters = {}) => {
+const triggerUpdate = async (col = 'users', filters = {}, throttle = false) => {
   console.log(`Fetching ${col}...`);
   const pathname = `https://develop.tutorbook.org/api/${col}`;
   const endpoint = url.format({
@@ -674,24 +674,35 @@ const triggerUpdate = async (col = 'users', filters = {}) => {
   console.log(`Updating ${data.hits} ${col}...`);
   let count = 0;
   bar.start(data[col].length, count);
-  for (const res of data[col]) {
-    if (!res.created) res.created = new Date().toJSON();
-    if (!res.updated) res.updated = new Date().toJSON();
-    const [err] = await to(
-      axios.put(`${pathname}/${res.id}`, res, { headers })
-    );
-    bar.update((count += 1));
-    if (err) {
-      console.error(`${err.name} updating ${res.name} (${res.id}):`, res);
-      debugger;
+  if (throttle) {
+    for (const res of data[col]) {
+      const [err] = await to(
+        axios.put(`${pathname}/${res.id}`, res, { headers })
+      );
+      bar.update((count += 1));
+      if (err) {
+        console.error(`${err.name} updating ${res.name} (${res.id}):`, res);
+        debugger;
+      }
     }
+  } else {
+    await Promise.all(
+      data[col].map(async (res) => {
+        const [err] = await to(
+          axios.put(`${pathname}/${res.id}`, res, { headers })
+        );
+        bar.update((count += 1));
+        if (err) {
+          console.error(`${err.name} updating ${res.name} (${res.id}):`, res);
+          debugger;
+        }
+      })
+    );
   }
-  console.log(`Updated ${data.hits} ${col}.`);
+  console.log(`\nUpdated ${data.hits} ${col}.`);
 };
 
-triggerUpdate('users', {
-  orgs: encodeURIComponent(JSON.stringify(['quarantunes'])),
-});
+triggerUpdate('matches', { org: 'quarantunes' });
 
 // Deletes all users that come from the old app:
 // - Anyone w/out a bio.
