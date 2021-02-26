@@ -61,10 +61,7 @@ export default function UserSelect({
       if (orgs.length)
         promises.push(
           axios.get<ListUsersRes>(
-            new UsersQuery({
-              search,
-              orgs: orgs.map(({ id, name }) => ({ label: name, value: id })),
-            }).endpoint
+            new UsersQuery({ search, orgs: orgs.map((o) => o.id) }).endpoint
           )
         );
       if (user.id)
