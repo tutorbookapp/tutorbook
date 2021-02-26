@@ -7,6 +7,7 @@ import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
 
 import { Callback, Option, UsersQuery } from 'lib/model';
+import { useOrg } from 'lib/context/org';
 
 import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';
@@ -23,9 +24,10 @@ function FiltersSheet({
   setQuery,
   open,
 }: FiltersSheetProps): JSX.Element {
-  const props = useSpring({ config, width: open ? width : 0 });
-
   const { t } = useTranslation();
+  const { org } = useOrg();
+
+  const props = useSpring({ config, width: open ? width : 0 });
 
   const onSubjectsChange = useCallback(
     (subjects: Option<string>[]) => {
@@ -64,50 +66,58 @@ function FiltersSheet({
           outlined
         />
         <h6>{t('users:roles')}</h6>
-        <Checkbox
-          className={styles.checkbox}
-          label={t('common:mentors')}
-          onChange={() => {
-            setQuery((prev) => {
-              const tags = toggleTag(prev.tags, 'mentor');
-              return new UsersQuery({ ...prev, tags, page: 0 });
-            });
-          }}
-          checked={query.tags.includes('mentor')}
-        />
-        <Checkbox
-          className={styles.checkbox}
-          label={t('common:mentees')}
-          onChange={() => {
-            setQuery((prev) => {
-              const tags = toggleTag(prev.tags, 'mentee');
-              return new UsersQuery({ ...prev, tags, page: 0 });
-            });
-          }}
-          checked={query.tags.includes('mentee')}
-        />
-        <Checkbox
-          className={styles.checkbox}
-          label={t('common:tutors')}
-          onChange={() => {
-            setQuery((prev) => {
-              const tags = toggleTag(prev.tags, 'tutor');
-              return new UsersQuery({ ...prev, tags, page: 0 });
-            });
-          }}
-          checked={query.tags.includes('tutor')}
-        />
-        <Checkbox
-          className={styles.checkbox}
-          label={t('common:tutees')}
-          onChange={() => {
-            setQuery((prev) => {
-              const tags = toggleTag(prev.tags, 'tutee');
-              return new UsersQuery({ ...prev, tags, page: 0 });
-            });
-          }}
-          checked={query.tags.includes('tutee')}
-        />
+        {(!org || org.aspects.includes('mentoring')) && (
+          <>
+            <Checkbox
+              className={styles.checkbox}
+              label={t('common:mentors')}
+              onChange={() => {
+                setQuery((prev) => {
+                  const tags = toggleTag(prev.tags, 'mentor');
+                  return new UsersQuery({ ...prev, tags, page: 0 });
+                });
+              }}
+              checked={query.tags.includes('mentor')}
+            />
+            <Checkbox
+              className={styles.checkbox}
+              label={t('common:mentees')}
+              onChange={() => {
+                setQuery((prev) => {
+                  const tags = toggleTag(prev.tags, 'mentee');
+                  return new UsersQuery({ ...prev, tags, page: 0 });
+                });
+              }}
+              checked={query.tags.includes('mentee')}
+            />
+          </>
+        )}
+        {(!org || org.aspects.includes('tutoring')) && (
+          <>
+            <Checkbox
+              className={styles.checkbox}
+              label={t('common:tutors')}
+              onChange={() => {
+                setQuery((prev) => {
+                  const tags = toggleTag(prev.tags, 'tutor');
+                  return new UsersQuery({ ...prev, tags, page: 0 });
+                });
+              }}
+              checked={query.tags.includes('tutor')}
+            />
+            <Checkbox
+              className={styles.checkbox}
+              label={t('common:tutees')}
+              onChange={() => {
+                setQuery((prev) => {
+                  const tags = toggleTag(prev.tags, 'tutee');
+                  return new UsersQuery({ ...prev, tags, page: 0 });
+                });
+              }}
+              checked={query.tags.includes('tutee')}
+            />
+          </>
+        )}
       </form>
     </animated.div>
   );
