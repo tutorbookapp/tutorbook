@@ -8,6 +8,9 @@
 [![Coverage Status](https://img.shields.io/codecov/c/gh/tutorbookapp/tutorbook)](https://codecov.io/gh/tutorbookapp/tutorbook)
 [![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
 
+💥 Attention: This project needs your help! If you're interested in helping with
+Tutorbook and becoming a contributor or maintainer, please message me.
+
 **[Tutorbook](https://tutorbook.org) is the best way to manage tutoring and
 mentoring programs (virtually).** See the
 [`ROADMAP`](https://github.com/tutorbookapp/tutorbook/blob/develop/ROADMAP.md)
