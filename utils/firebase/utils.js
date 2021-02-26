@@ -668,8 +668,6 @@ const fetchQuarantunesStringTeachers = async () => {
   fs.writeFileSync('string-teachers.csv', data);
 };
 
-fetchQuarantunesStringTeachers();
-
 const addResourceTimestamps = async (col) => {
   console.log(`Fetching ${col}...`);
   const { docs } = await db.collection(col).get();
@@ -681,6 +679,28 @@ const addResourceTimestamps = async (col) => {
       await d.ref.update({ created, updated });
     })
   );
+};
+
+const triggerPeopleRoleTagsUpdate = async () => {
+  console.log('Fetching matches...');
+  const pathname = 'https://develop.tutorbook.app/api/matches';
+  const endpoint = url.format({
+    pathname,
+    query: {
+      hitsPerPage: 1000,
+      org: 'quarantunes',
+    },
+  });
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  const { data } = await axios.get(endpoint, { headers });
+  if (data.hits > 1000) console.warn(`More hits (${data.hits}) than 1000.`);
+  console.log(`Updating ${data.hits} matches...`);
+  await Promise.all(
+    data.matches.map((res) => {
+      return axios.put(`${pathname}/${res.id}`, res, { headers });
+    })
+  );
+  console.log(`Updated ${data.hits} matches.`);
 };
 
 // Deletes all users that come from the old app:
