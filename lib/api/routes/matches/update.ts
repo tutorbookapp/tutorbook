@@ -5,6 +5,7 @@ import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
+import updatePeopleRoles from 'lib/api/update/people-roles';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyDocExists from 'lib/api/verify/doc-exists';
@@ -32,7 +33,11 @@ export default async function updateMatch(
       orgIds: [body.org],
     });
 
-    await Promise.all([updateMatchDoc(body), updateMatchSearchObj(body)]);
+    await Promise.all([
+      updateMatchDoc(body),
+      updateMatchSearchObj(body),
+      updatePeopleRoles(people),
+    ]);
 
     res.status(200).json(body.toJSON());
   } catch (e) {

@@ -10,7 +10,7 @@ import clone from 'lib/utils/clone';
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 
-const client = algoliasearch(algoliaId, algoliaKey);
+export const client = algoliasearch(algoliaId, algoliaKey);
 
 export function updateFilterableAttrs(
   indexId: string,

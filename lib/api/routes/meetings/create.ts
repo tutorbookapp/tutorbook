@@ -15,6 +15,7 @@ import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
 import getUser from 'lib/api/get/user';
 import sendEmails from 'lib/mail/meetings/create';
+import updatePeopleRoles from 'lib/api/update/people-roles';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyIsOrgAdmin from 'lib/api/verify/is-org-admin';
@@ -64,10 +65,14 @@ export default async function createMeeting(
 
       // Create match (b/c it doesn't already exist).
       body.match = await createMatchDoc(body.match);
-      await createMatchSearchObj(body.match);
+      await Promise.all([
+        createMatchSearchObj(body.match),
+        updatePeopleRoles(people),
+      ]);
     } else {
       // Match org cannot change (security issue if it can).
-      // TODO: Shouldn't the match people be restricted too?
+      // TODO: Nothing in the match should be able to change (because this API
+      // endpoint doesn't update any resources, it only creates them).
       if ((originalMatch as Match).org !== body.match.org) {
         const msg = `Match org (${org.toString()}) cannot change`;
         throw new APIError(msg, 400);
