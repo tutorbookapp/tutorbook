@@ -43,7 +43,7 @@ function FiltersSheet({
   return (
     <animated.div className={styles.wrapper} style={props}>
       <form className={styles.form} style={{ width }}>
-        <h6>Filters</h6>
+        <h6>{t('users:filters')}</h6>
         <SubjectSelect
           label={t('query:subjects')}
           onSelectedChange={onSubjectsChange}
@@ -63,7 +63,7 @@ function FiltersSheet({
           renderToPortal
           outlined
         />
-        <h6>User types</h6>
+        <h6>{t('users:roles')}</h6>
         <Checkbox
           className={styles.checkbox}
           label={t('common:mentors')}

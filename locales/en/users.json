@@ -4,6 +4,8 @@
   "import-data-msg": "Could you help me import existing user data?",
   "share-search-link": "Share search link",
   "share-signup-link": "Share signup link",
+  "filters": "Filters",
+  "roles": "User roles",
   "filters-not-vetted": "Not vetted",
   "filters-visible": "Visible in search",
   "filters-hidden": "Hidden from search",
