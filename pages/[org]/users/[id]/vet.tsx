@@ -46,7 +46,7 @@ function UserVetPage({
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page
-        title={`${data?.name || 'Loading'} - Tutorbook`}
+        title={`${data?.name || 'Loading'} - Vet - Tutorbook`}
         formWidth
         {...props}
       >

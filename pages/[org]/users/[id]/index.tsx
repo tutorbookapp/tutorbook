@@ -96,6 +96,7 @@ function UserDisplayPage({
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page
         title={`${data?.name || 'Loading'} - Tutorbook`}
+        description={data?.bio}
         formWidth
         {...props}
       >
