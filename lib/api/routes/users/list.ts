@@ -31,8 +31,7 @@ export default async function listUsers(
     const { results, hits } = await getUsers(query);
 
     // TODO: Don't completely error; instead, conditionally truncated users.
-    const orgIds = query.orgs.map((o) => o.value);
-    const [err] = await to(verifyAuth(req.headers, { orgIds }));
+    const [err] = await to(verifyAuth(req.headers, { orgIds: query.orgs }));
     const users = err ? results.map(getTruncatedUser) : results;
 
     res.status(200).json({ hits, users: users.map((u) => u.toJSON()) });

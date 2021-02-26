@@ -112,7 +112,7 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
       const updated = new UsersQuery({ ...prev, visible: true });
       if (!org) return dequal(prev, updated) ? prev : updated;
       if (!org.aspects.includes(prev.aspect)) [updated.aspect] = org.aspects;
-      updated.orgs = [{ value: org.id, label: org.name }];
+      updated.orgs = [org.id];
       return dequal(prev, updated) ? prev : updated;
     });
   }, [org, query]);

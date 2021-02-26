@@ -33,7 +33,7 @@ export default async function users(
     // when we start scaling up (and have orgs with more than 1000 users each).
     query.hitsPerPage = 1000;
 
-    await verifyAuth(req.headers, { orgIds: query.orgs.map((o) => o.value) });
+    await verifyAuth(req.headers, { orgIds: query.orgs });
 
     const { results } = await getUsers(query);
 

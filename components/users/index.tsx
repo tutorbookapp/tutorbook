@@ -31,7 +31,7 @@ export default function Users(): JSX.Element {
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({
-      orgs: org ? [{ label: org.name, value: org.id }] : [],
+      orgs: org ? [org.id] : [],
       aspect: org?.aspects[0] || 'tutoring',
       hitsPerPage: 5,
     })
@@ -52,11 +52,10 @@ export default function Users(): JSX.Element {
   useEffect(() => {
     onQueryChange((prev) => {
       if (!org) return prev;
-      const orgs = [{ label: org.name, value: org.id }];
       const aspect = org.aspects.includes(prev.aspect)
         ? prev.aspect
         : org.aspects[0];
-      return new UsersQuery({ ...prev, orgs, aspect });
+      return new UsersQuery({ ...prev, orgs: [org.id], aspect });
     });
   }, [org, onQueryChange]);
 
