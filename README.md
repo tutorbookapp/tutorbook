@@ -56,55 +56,73 @@ in their `mentoring.subjects` property).
 An org is a school or nonprofit or other business entity that is using TB to
 manage their tutoring and mentoring programs.
 
-### `Request`
-
-A request is a job post. Typically created by parents or teachers, it comprises
-of:
-
-- The student who needs help (e.g. "Nicholas Chiang").
-  - When the student is available (this is included in the student's profile).
-- The subjects he/she needs help with (e.g. "AP Computer Science A"). This is
-  also added to the student's profile under their `tutoring.searches` property.
-- A concise description of what specifically the student is struggling with
-  (e.g. "Nicholas doesn't understand Java arrays and sorting algorithms").
-
-**Note:** Requests can also be created by admins (and often are). For example,
-an admin might need to migrate the results of a Google Form to Tutorbook (by
-creating the requests all at once and then fulfilling them over time).
-
-Once created, a request is fulfilled by an admin, who searches on behalf of the
-student and creates a match (between the student and an appropriate
-tutor/mentor).
-
 ### `Match`
 
 A match is a pairing of people (typically between a single student and a single
-tutor/mentor, but there can be group pairings as well). Matches can specify
-times (e.g. "Every Monday at 3-4pm") and meeting venues (e.g. "Use this Zoom
-meeting room" or "Use this Google Meet link").
+tutor/mentor, but there can be group pairings as well). Matches are simply
+containers for [meetings](#meeting).
 
 - Students create matches when they "send a request" to a tutor/mentor from the
   search view.
 - Admins can directly create matches (e.g. when migrating from an existing
   system, admins know who's matched with whom).
-- Admins can create matches to fulfill requests (e.g. a teacher requests help
-  for their struggling student and the admin finds that help).
 
-Upon creation, Tutorbook sends an email to everyone in the match (all of the
-`attendees`) with everyone's anonymous contact info.
+### `Meeting`
 
-Tutorbook has a system like
-[Craigslist's](https://www.craigslist.org/about/anonymize) where each attendee
-in each match has a unique anonymous email address (e.g.
-`88626b40-49c7-bd16-a845-ece7527cded7@mail.tutorbook.org`). Emails can then be
-intercepted by Tutorbook and added to the in-app communications timeline before
-being relayed to their intended recipients.
+A meeting is exactly that: a meeting between the people in a [match](#match)
+with a specific time and venue (e.g. a specific Zoom link). In order to support
+[complex recurrence rules](#recurring-meetings), a meeting's time consists of:
+
+- **Start date:** The start time of the first meeting instance.
+- **Duration:** The meeting's duration in milliseconds. Stored in milliseconds
+  to match JavaScript's `Date` object precision.
+- **End date:** The last possible meeting end time. If a meeting is recurring,
+  this will be the end time of the last meeting instance in that recurring
+  range. Or, if the recurring range is infinite, we use [JavaScript's max
+  date](https://stackoverflow.com/questions/11526504/minimum-and-maximum-date)
+  (Fri Sep 12 275760) which is more than sufficient.
+- **RRULE:** The time's recurrence rule as defined in [the iCalendar
+  RFC](https://tools.ietf.org/html/rfc5545). This is used server-side by
+  [`rrule`](https://www.npmjs.com/package/rrule) to calculate individual
+  meeting instances that are then sent to the client. It is manipulated
+  client-side when users select a recurrence rule or choose to add an
+  exception to a recurring meeting.
+
+Upon creation, Tutorbook sends an email to all of the `people` in the new
+meeting's match with the meeting time, venue, and everyone's contact info.
 
 ## Design Specifications
 
 Summarized here are descriptions of common data flow patterns and design specs.
 These are some of the front-end design guidelines that TB follows in order to
 maintain consistency and display predictable behavior.
+
+### Recurring Meetings
+
+Recurring events are always a struggle to implement. There are [many](https://stackoverflow.com/questions/85699/whats-the-best-way-to-model-recurring-events-in-a-calendar-application) [resources](https://github.com/bmoeskau/Extensible/blob/master/recurrence-overview.md) [available](https://medium.com/@ScullWM/design-and-manage-recurring-events-fb43676e711a)
+that are meant to make implementing such recurrence rules easier.
+
+TB's entire recurrence stack is quite simple:
+
+1. Meetings specify complex `RRULE` recur rules with support for event
+   exceptions and everything else supported by [`rrule`](https://www.npmjs.com/package/rrule).
+2. At index time, the last possible end date is stored in our Algolia index to
+   [make querying data more efficient](https://github.com/bmoeskau/Extensible/blob/master/recurrence-overview.md#storage-and-retrieval).
+3. When a meeting range is requested, our API parses the recur rules for
+   meetings within the requested range (i.e. both the start date and recur end
+   date are within the requested date range) and sends the client individual
+   meeting instances.
+4. When availability is requested, our API again parses the recur rules for
+   meetings within the requested availability range and excludes the resulting
+   individual meeting instances from the user's weekly availability.
+
+Editing and updating recurring meetings is intuitive:
+
+- When a user updates a single event instance (choosing not to update all
+  recurring events), an exception is added to the recurring event's `RRULE` and
+  a new regular (i.e non-recurring) meeting is created.
+- When a user deletes a single event instance (choosing not to delete all
+  recurring events), an exception is added to the recurring event's `RRULE`.
 
 ### Analytics
 
