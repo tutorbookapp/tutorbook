@@ -38,6 +38,7 @@
   .mdc-notched-outline__trailing {
   border-color: var(--on-background-3);
 }
+
 .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover
   .mdc-notched-outline
   .mdc-notched-outline__leading,
@@ -128,6 +129,48 @@
 
 .mdc-chip__checkmark-path {
   stroke: var(--on-background);
+}
+
+.mdc-select--outlined:not(.mdc-select--disabled) .mdc-notched-outline__leading,
+.mdc-select--outlined:not(.mdc-select--disabled) .mdc-notched-outline__notch,
+.mdc-select--outlined:not(.mdc-select--disabled)
+  .mdc-notched-outline__trailing {
+  border-color: var(--on-background-3);
+}
+
+.mdc-select--outlined:not(.mdc-select--disabled):not(.mdc-select--focused)
+  .mdc-select__selected-text:hover
+  ~ .mdc-notched-outline
+  .mdc-notched-outline__leading,
+.mdc-select--outlined:not(.mdc-select--disabled):not(.mdc-select--focused)
+  .mdc-select__selected-text:hover
+  ~ .mdc-notched-outline
+  .mdc-notched-outline__notch,
+.mdc-select--outlined:not(.mdc-select--disabled):not(.mdc-select--focused)
+  .mdc-select__selected-text:hover
+  ~ .mdc-notched-outline
+  .mdc-notched-outline__trailing {
+  border-color: var(--on-background-6);
+}
+
+.mdc-select:not(.mdc-select--disabled):not(.mdc-select--invalid)
+  .mdc-floating-label {
+  color: var(--on-background-5);
+}
+
+.mdc-select--focused:not(.mdc-select--disabled):not(.mdc-select--invalid)
+  .mdc-floating-label {
+  color: var(--primary-6);
+}
+
+.mdc-select--outlined.mdc-select--disabled .mdc-notched-outline__leading,
+.mdc-select--outlined.mdc-select--disabled .mdc-notched-outline__notch,
+.mdc-select--outlined.mdc-select--disabled .mdc-notched-outline__trailing {
+  border-color: var(--on-background-1);
+}
+
+.mdc-select--disabled .mdc-floating-label {
+  color: var(--on-background-3);
 }
 
 .mdc-select:not(.mdc-select--disabled) .mdc-select__selected-text {
