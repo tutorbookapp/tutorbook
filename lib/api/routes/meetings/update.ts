@@ -42,9 +42,9 @@ export default async function updateMeeting(
       original: body.toJSON(),
     });
 
-    const [matchDoc, meetingDoc] = await Promise.all([
-      verifyDocExists('matches', body.match.id),
+    const [meetingDoc] = await Promise.all([
       verifyDocExists('meetings', body.parentId || body.id),
+      verifyDocExists('matches', body.match.id),
     ]);
     const original = Meeting.fromFirestoreDoc(meetingDoc);
     const people = await getPeople(body.match.people);
