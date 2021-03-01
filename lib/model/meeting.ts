@@ -61,6 +61,7 @@ export type MeetingStatus = 'created' | 'pending' | 'logged' | 'approved';
  * @property time - Time of the meeting (e.g. Tuesday 3:00 - 3:30 PM).
  * @property creator - The person who logged the meeting (typically the tutor).
  * @property notes - Notes about the meeting (e.g. what they worked on).
+ * @property [parentId] - The recurring parent meeting ID (if any).
  */
 export interface MeetingInterface extends ResourceInterface {
   status: MeetingStatus;
@@ -70,6 +71,7 @@ export interface MeetingInterface extends ResourceInterface {
   time: Timeslot;
   notes: string;
   ref?: DocumentReference;
+  parentId?: string;
   id: string;
 }
 
@@ -106,6 +108,7 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
   if (typeof json.notes !== 'string') return false;
+  if (json.parentId && typeof json.parentId !== 'string') return false;
   if (typeof json.id !== 'string') return false;
   return true;
 }
@@ -128,6 +131,8 @@ export class Meeting extends Resource implements MeetingInterface {
   public time = new Timeslot();
 
   public notes = '';
+
+  public parentId?: string;
 
   public id = '';
 

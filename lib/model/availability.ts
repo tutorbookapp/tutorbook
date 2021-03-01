@@ -11,14 +11,6 @@ import { getDate, getMonthsTimeslots, sameDate } from 'lib/utils/time';
 import clone from 'lib/utils/clone';
 
 /**
- * One's schedule contains all your booked timeslots (the inverse of one's
- * availability).
- * @deprecated We have no use of this for now (though we might in the future
- * when we implement a dashboard view).
- */
-export type ScheduleAlias = TimeslotInterface[];
-
-/**
  * One's availability contains all your open timeslots (the inverse of one's
  * schedule).
  */
@@ -63,9 +55,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    * avail.sort(); // Returns [past, now, future] sort.
    */
   public sort(): this {
-    return super.sort((timeslotA, timeslotB) => {
-      return timeslotA.from.valueOf() - timeslotB.from.valueOf();
-    });
+    return super.sort((a, b) => a.from.valueOf() - b.from.valueOf());
   }
 
   public static full(month: number, year: number): Availability {
@@ -99,15 +89,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
    */
   public onDate(date: Date): Availability {
     return new Availability(...this.filter((t) => timeslotOnDate(t, date)));
-  }
-
-  /**
-   * @return Whether or not this availability contains the exact given timeslot.
-   * @deprecated I'm not sure where I would need to use this, but whereever I do
-   * it should be removed.
-   */
-  public hasTimeslot(timeslot: TimeslotInterface): boolean {
-    return this.some((t) => t.equalTo(timeslot));
   }
 
   /**
@@ -189,19 +170,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     });
     this.length = 0;
     updated.forEach((time: Timeslot) => this.push(time));
-  }
-
-  /**
-   * Returns whether two availabilities contain all the same timeslots.
-   * @param other - The other availability to check against.
-   * @return Whether this availability contained all the same timeslots as the
-   * other availability.
-   * @deprecated We should just use a `dequal` which should do the same thing.
-   */
-  public equalTo(other: Availability): boolean {
-    if (!other.every((t: Timeslot) => this.hasTimeslot(t))) return false;
-    if (!this.every((t: Timeslot) => other.hasTimeslot(t))) return false;
-    return true;
   }
 
   public toString(locale = 'en'): string {

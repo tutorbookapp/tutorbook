@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 import { isDateJSON, isJSON } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
+import definedVals from 'lib/model/defined-vals';
 
 /**
  * This is a painful workaround as we then import the entire Firebase library
@@ -18,31 +19,36 @@ type Timestamp = admin.firestore.Timestamp;
 
 /**
  * A timeslot is a window of time and provides all the necessary scheduling data
- * for any scenario.
+ * for any scenario (including support for complex rrules used server-side).
+ * @typedef {Object} TimeslotInterface
  * @property id - A unique identifier for this timeslot (used as React keys and
  * thus only stored client-side as we have no use for this on our server).
- * @property from - The start time and date of this timeslot (typically
- * represented by a `Date`, `Timestamp`, or UTC date string).
- * @property to - The end time and date of this timeslot (represented in the
- * same format as the `from` property).
+ * @property from - The start time of this particular timeslot instance.
+ * @property to - The end time of this particular timeslot instance.
+ * @property recur - The timeslot's recurrence rule (uses the iCal RFC string).
+ * @property [last] - The timeslot's last possible end time. Undefined
+ * client-side; only used server-side for querying recurring timeslots.
  */
-export interface TimeslotBase<T> {
+export interface TimeslotInterface<T = Date> {
   id: string;
   from: T;
   to: T;
+  recur: string;
+  last?: T;
 }
 
-export type TimeslotInterface = TimeslotBase<Date>;
-export type TimeslotFirestore = TimeslotBase<Timestamp>;
-export type TimeslotJSON = TimeslotBase<string>;
-export type TimeslotSearchHit = TimeslotBase<number>;
+export type TimeslotFirestore = TimeslotInterface<Timestamp>;
+export type TimeslotJSON = TimeslotInterface<string>;
+export type TimeslotSearchHit = TimeslotInterface<number>;
 export type TimeslotSegment = { from: Date; to: Date };
 
 export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   if (!isJSON(json)) return false;
+  if (typeof json.id !== 'string') return false;
   if (!isDateJSON(json.from)) return false;
   if (!isDateJSON(json.to)) return false;
-  if (typeof json.id !== 'string') return false;
+  if (typeof json.recur !== 'string') return false;
+  if (json.last && !isDateJSON(json.last)) return false;
   return true;
 }
 
@@ -52,6 +58,11 @@ export class Timeslot implements TimeslotInterface {
   public from: Date = new Date();
 
   public to: Date = new Date();
+
+  // TODO: Should I prefill this with `RRULE:COUNT=1` for single instances?
+  public recur = '';
+
+  public last?: Date;
 
   /**
    * Constructor that takes advantage of Typescript's shorthand assignment.
@@ -77,6 +88,7 @@ export class Timeslot implements TimeslotInterface {
    * 1. (Contained) Timeslot contains the given timeslot, OR;
    * 2. (Overlap Start) Timeslot contains the given timeslot's start time, OR;
    * 3. (Overlap End) Timeslot contains the given timeslot's end time.
+   * @todo Why can't we use this in the calendar positioning logic?
    */
   public overlaps(other: { from: Date; to: Date }): boolean {
     return (
@@ -143,12 +155,13 @@ export class Timeslot implements TimeslotInterface {
   }
 
   public toFirestore(): TimeslotFirestore {
-    const { from, to, ...rest } = this;
-    return {
+    const { from, to, last, ...rest } = this;
+    return definedVals({
       ...rest,
       from: (from as unknown) as Timestamp,
       to: (to as unknown) as Timestamp,
-    };
+      last: last ? ((last as unknown) as Timestamp) : undefined,
+    });
   }
 
   public static fromFirestore(data: TimeslotFirestore): Timeslot {
@@ -156,12 +169,18 @@ export class Timeslot implements TimeslotInterface {
       ...data,
       from: data.from.toDate(),
       to: data.to.toDate(),
+      last: data.last?.toDate(),
     });
   }
 
   public toJSON(): TimeslotJSON {
-    const { from, to, ...rest } = this;
-    return { ...rest, from: from.toJSON(), to: to.toJSON() };
+    const { from, to, last, ...rest } = this;
+    return definedVals({
+      ...rest,
+      from: from.toJSON(),
+      to: to.toJSON(),
+      last: last?.toJSON(),
+    });
   }
 
   public static fromJSON(json: TimeslotJSON): Timeslot {
@@ -169,12 +188,18 @@ export class Timeslot implements TimeslotInterface {
       ...json,
       from: new Date(json.from),
       to: new Date(json.to),
+      last: json.last ? new Date(json.last) : undefined,
     });
   }
 
   public toSearchHit(): TimeslotSearchHit {
-    const { from, to, ...rest } = this;
-    return { ...rest, from: from.valueOf(), to: to.valueOf() };
+    const { from, to, last, ...rest } = this;
+    return definedVals({
+      ...rest,
+      from: from.valueOf(),
+      to: to.valueOf(),
+      last: last?.valueOf(),
+    });
   }
 
   public static fromSearchHit(hit: TimeslotSearchHit): Timeslot {
@@ -182,6 +207,7 @@ export class Timeslot implements TimeslotInterface {
       ...hit,
       from: new Date(hit.from),
       to: new Date(hit.to),
+      last: hit.last ? new Date(hit.last) : undefined,
     });
   }
 
@@ -192,9 +218,13 @@ export class Timeslot implements TimeslotInterface {
   public static fromURLParam(param: string): Timeslot {
     const params: URLSearchParams = new URLSearchParams(param);
     return new Timeslot({
+      id: params.get('id') || undefined,
       from: new Date(params.get('from') as string),
       to: new Date(params.get('to') as string),
-      id: params.get('id') || undefined,
+      recur: params.get('recur') || undefined,
+      last: params.get('last')
+        ? new Date(params.get('last') as string)
+        : undefined,
     });
   }
 
