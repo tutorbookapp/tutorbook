@@ -50,9 +50,9 @@ export default function TimeslotRnd({
   const remove = useCallback(() => onChange(undefined), [onChange]);
   const update = useCallback(
     (newHeight: number, newPosition: Position) => {
-      onChange(getTimeslot(newHeight, newPosition, value.id, width));
+      onChange(getTimeslot(newHeight, newPosition, value, width));
     },
-    [width, onChange, value.id]
+    [width, onChange, value]
   );
 
   const onClick = useCallback((e: ReactMouseEvent) => e.stopPropagation(), []);

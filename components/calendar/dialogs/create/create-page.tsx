@@ -5,6 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
 import MatchSelect from 'components/match-select';
+import RecurSelect from 'components/recur-select';
 import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
@@ -39,6 +40,7 @@ export default function CreatePage({
   setLoading,
   setChecked,
 }: CreatePageProps): JSX.Element {
+  // TODO: Revalidate local data after creation to account for recur rules.
   const updateRemote = useCallback(async (updated: Meeting) => {
     const created = new Meeting(clone({ ...updated, id: '' })).toJSON();
     const { data } = await axios.post<MeetingJSON>('/api/meetings', created);
@@ -89,7 +91,18 @@ export default function CreatePage({
     [setMeeting]
   );
   const onTimeChange = useCallback(
-    (time: Timeslot) => setMeeting((prev) => new Meeting({ ...prev, time })),
+    (time: Timeslot) => {
+      setMeeting((prev) => new Meeting({ ...prev, time }));
+    },
+    [setMeeting]
+  );
+  const onRecurChange = useCallback(
+    (recur: string) => {
+      setMeeting((prev) => {
+        const time = new Timeslot({ ...prev.time, recur });
+        return new Meeting({ ...prev, time });
+      });
+    },
     [setMeeting]
   );
   const onNotesChange = useCallback(
@@ -139,6 +152,13 @@ export default function CreatePage({
           className={styles.field}
           uid={timePersonId}
           renderToPortal
+          outlined
+        />
+        <RecurSelect
+          label='Select recurrence'
+          className={styles.field}
+          onChange={onRecurChange}
+          value={meeting.time.recur}
           outlined
         />
         <TextField

@@ -9,7 +9,7 @@ export function getMeeting(
   width: number,
   reference: Date = new Date(0)
 ): Meeting {
-  const time = getTimeslot(height, position, '', width, reference);
+  const time = getTimeslot(height, position, meeting.time, width, reference);
   return new Meeting({ ...meeting, time });
 }
 

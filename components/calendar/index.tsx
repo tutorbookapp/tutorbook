@@ -80,17 +80,17 @@ export default function Calendar({
       // Note: If we ever need to use the `hits` property, we'll have to update
       // this callback function to properly cache and reuse the previous value.
       const json = updated.map((m) => m.toJSON());
-      await mutate(query.endpoint, { meetings: json }, false);
+      await mutate(query.endpoint, { meetings: json }, hasBeenUpdated);
     },
     [query.endpoint, meetings]
   );
   const removeMeeting = useCallback(
-    async (meetingId: string) => {
+    async (meetingId: string, hasBeenDeleted = false) => {
       const idx = meetings.findIndex((m) => m.id === meetingId);
       if (idx < 0) return;
       const updated = [...meetings.slice(0, idx), ...meetings.slice(idx + 1)];
       const json = updated.map((m) => m.toJSON());
-      await mutate(query.endpoint, { meetings: json }, false);
+      await mutate(query.endpoint, { meetings: json }, hasBeenDeleted);
     },
     [query.endpoint, meetings]
   );

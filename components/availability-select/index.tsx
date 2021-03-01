@@ -165,7 +165,8 @@ function AvailabilitySelect({
   const onClick = useCallback(
     (event: MouseEvent) => {
       const position = { x: event.clientX - x, y: event.clientY - y };
-      updateTimeslot(-1, getTimeslot(48, position, nanoid()));
+      const original = new Timeslot({ id: nanoid() });
+      updateTimeslot(-1, getTimeslot(48, position, original));
     },
     [x, y, updateTimeslot]
   );

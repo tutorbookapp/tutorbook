@@ -20,7 +20,7 @@ export function getHeight(timeslot: Timeslot): number {
 export function getTimeslot(
   height: number,
   position: Position,
-  timeslotId?: string,
+  original?: Timeslot,
   width: number = WIDTH,
   reference: Date = new Date(0)
 ): Timeslot {
@@ -43,5 +43,5 @@ export function getTimeslot(
   const start = getDate(weekday, hours, mins, 0, 0, reference);
   const end = new Date(start.valueOf() + minsDuration * 60000);
 
-  return new Timeslot({ from: start, to: end, id: timeslotId });
+  return new Timeslot({ ...original, from: start, to: end });
 }

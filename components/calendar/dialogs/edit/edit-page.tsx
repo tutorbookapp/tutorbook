@@ -4,6 +4,7 @@ import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
+import RecurSelect from 'components/recur-select';
 import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
@@ -39,7 +40,8 @@ export default function EditPage({
   setChecked,
 }: EditPageProps): JSX.Element {
   const updateRemote = useCallback(async (updated: Meeting) => {
-    const url = `/api/meetings/${updated.id}`;
+    // TODO: The REST API URL that we use actually doesn't matter.
+    const url = `/api/meetings/${updated.parentId || updated.id}`;
     const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
     return Meeting.fromJSON(data);
   }, []);
@@ -81,6 +83,15 @@ export default function EditPage({
   const onTimeChange = useCallback(
     (time: Timeslot) => {
       setMeeting((prev) => new Meeting({ ...prev, time }));
+    },
+    [setMeeting]
+  );
+  const onRecurChange = useCallback(
+    (recur: string) => {
+      setMeeting((prev) => {
+        const time = new Timeslot({ ...prev.time, recur });
+        return new Meeting({ ...prev, time });
+      });
     },
     [setMeeting]
   );
@@ -135,6 +146,13 @@ export default function EditPage({
           className={styles.field}
           uid={timePersonId}
           renderToPortal
+          outlined
+        />
+        <RecurSelect
+          label='Recurrence'
+          className={styles.field}
+          onChange={onRecurChange}
+          value={meeting.time.recur}
           outlined
         />
         <TextField

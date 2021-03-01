@@ -39,14 +39,15 @@ export default function DisplayPage({
     setError('');
     setChecked(false);
     setLoading(true);
-    const [err] = await to(axios.delete(`/api/meetings/${meeting.id}`));
+    const endpoint = `/api/meetings/${meeting.parentId || meeting.id}`;
+    const [err] = await to(axios.delete(endpoint));
     if (err) {
       const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
       setLoading(false);
       setError(e.message);
     } else {
       setChecked(true);
-      setTimeout(() => removeMeeting(meeting.id), 1000);
+      setTimeout(() => removeMeeting(meeting.id, true), 1000);
     }
   }, [setLoading, setChecked, removeMeeting, meeting.id]);
 
