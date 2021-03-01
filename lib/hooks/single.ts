@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { AxiosError } from 'axios';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
@@ -58,6 +58,8 @@ export default function useSingle<T>(
   const [checked, setChecked] = useState<boolean>(false);
   const [validations, setValidations] = useState<Validations>({});
 
+  const lastReceivedResponse = useRef<T>(initialData);
+
   const onSubmit = useCallback(
     async (evt?: FormEvent) => {
       // Validate submission data.
@@ -80,7 +82,9 @@ export default function useSingle<T>(
       } else {
         // Otherwise, mutate local data with the server's response.
         if (res && !dequal(res, data)) {
+          lastReceivedResponse.current = res;
           setData(res);
+          // TODO: This is unnecessary if `options.sync` is true.
           if (updateLocal) await updateLocal(res, true);
         } else if (updateLocal) {
           // Signal that local data is now in sync with server data.
@@ -103,7 +107,9 @@ export default function useSingle<T>(
   useEffect(() => {
     if (!options?.sync || !updateLocal) return;
     const throttle = options.throttle || 500;
-    const timeoutId = setTimeout(() => updateLocal(data, false), throttle);
+    const timeoutId = setTimeout(() => {
+      void updateLocal(data, dequal(lastReceivedResponse.current, data));
+    }, throttle);
     return () => clearTimeout(timeoutId);
   }, [data, updateLocal, options]);
 
