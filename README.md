@@ -73,20 +73,21 @@ A meeting is exactly that: a meeting between the people in a [match](#match)
 with a specific time and venue (e.g. a specific Zoom link). In order to support
 [complex recurrence rules](#recurring-meetings), a meeting's time consists of:
 
-- **Start date:** The start time of the first meeting instance.
-- **Duration:** The meeting's duration in milliseconds. Stored in milliseconds
-  to match JavaScript's `Date` object precision.
-- **End date:** The last possible meeting end time. If a meeting is recurring,
-  this will be the end time of the last meeting instance in that recurring
-  range. Or, if the recurring range is infinite, we use [JavaScript's max
-  date](https://stackoverflow.com/questions/11526504/minimum-and-maximum-date)
-  (Fri Sep 12 275760) which is more than sufficient.
-- **RRULE:** The time's recurrence rule as defined in [the iCalendar
+- **From:** The start time of this particular meeting instance.
+- **To:** The end time of this particular meeting instance.
+- **Recur:** The time's recurrence rule as defined in [the iCalendar
   RFC](https://tools.ietf.org/html/rfc5545). This is used server-side by
   [`rrule`](https://www.npmjs.com/package/rrule) to calculate individual
   meeting instances that are then sent to the client. It is manipulated
   client-side when users select a recurrence rule or choose to add an
   exception to a recurring meeting.
+- **Last:** The last possible meeting end time. If a meeting is recurring,
+  this will be the end time of the last meeting instance in that recurring
+  range. Or, if the recurring range is infinite, we use [JavaScript's max
+  date](https://stackoverflow.com/questions/11526504/minimum-and-maximum-date)
+  (Fri Sep 12 275760) which is more than sufficient. This is calculated and
+  assigned server-side using [`rrule`](https://www.npmjs.com/package/rrule). It
+  is completely ignored client-side (in favor of the `to` property).
 
 Upon creation, Tutorbook sends an email to all of the `people` in the new
 meeting's match with the meeting time, venue, and everyone's contact info.
