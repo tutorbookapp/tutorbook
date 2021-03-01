@@ -74,9 +74,13 @@ function WeeklyDisplay({
   const [viewing, setViewing] = useState<Meeting>();
   const [now, setNow] = useState<Date>(new Date());
 
+  const originalEditing = useRef<Meeting>(initialEditData);
   const updateMeetingRemote = useCallback(async (updated: Meeting) => {
     const url = `/api/meetings/${updated.id}`;
-    const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
+    const { data } = await axios.put<MeetingJSON>(url, {
+      ...updated.toJSON(),
+      options: { original: originalEditing.current.toJSON() },
+    });
     return Meeting.fromJSON(data);
   }, []);
 
@@ -93,6 +97,11 @@ function WeeklyDisplay({
     checked: editChecked,
     error: editError,
   } = useSingle<Meeting>(initialEditData, updateMeetingRemote, mutateMeeting);
+
+  useEffect(() => {
+    if (editing.id !== originalEditing.current.id)
+      originalEditing.current = editing;
+  }, [editing]);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);

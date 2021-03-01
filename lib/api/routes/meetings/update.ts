@@ -20,9 +20,12 @@ import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyDocExists from 'lib/api/verify/doc-exists';
+import verifyOptions from 'lib/api/verify/options';
+import verifyRecurIncludesTime from 'lib/api/verify/recur-includes-time';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
+export type UpdateMeetingOptions = { original: MeetingJSON };
 export type UpdateMeetingRes = MeetingJSON;
 
 export default async function updateMeeting(
@@ -35,6 +38,9 @@ export default async function updateMeeting(
       isMeetingJSON,
       Meeting
     );
+    const options = verifyOptions<UpdateMeetingOptions>(req.body, {
+      original: body.toJSON(),
+    });
 
     const [matchDoc, meetingDoc] = await Promise.all([
       verifyDocExists('matches', body.match.id),
@@ -62,7 +68,7 @@ export default async function updateMeeting(
     // - Admins can change 'approved' to 'pending' or 'logged'.
     // - Meeting people can change 'pending' to 'logged'.
 
-    if (original.time.recur) {
+    if (original.id !== body.id && original.time.recur) {
       // User is updating a recurring meeting. By default, we only update this
       // meeting and all future meetings:
       // 1. Create a new recurring meeting using this meeting's data.
@@ -72,16 +78,24 @@ export default async function updateMeeting(
       body.id = '';
       body.parentId = undefined;
       body.venue = await createZoom(body, people);
+
+      // Ensure that the `until` value isn't before the `time.from` value (which
+      // would prevent *any* meeting instances from being calculated).
+      body.time.recur = verifyRecurIncludesTime(body.time);
       body.time.last = getLastTime(body.time);
 
       const meeting = await createMeetingDoc(body);
       await createMeetingSearchObj(meeting);
 
-      // TODO: We need to know the start time of the meeting instance before it
+      // TODO: We need to know the start date of the meeting instance before it
       // was updated. Otherwise, we can't properly exclude it from the original.
       original.time.recur = RRule.optionsToString({
         ...RRule.parseString(original.time.recur),
-        until: body.time.from, // TODO: Replace with time before update.
+        until: new Date(
+          new Date(options.original.time.from).getFullYear(),
+          new Date(options.original.time.from).getMonth(),
+          new Date(options.original.time.from).getDate()
+        ),
       });
       original.time.last = getLastTime(original.time);
 
