@@ -83,11 +83,10 @@ with a specific time and venue (e.g. a specific Zoom link). In order to support
   exception to a recurring meeting.
 - **Last:** The last possible meeting end time. If a meeting is recurring,
   this will be the end time of the last meeting instance in that recurring
-  range. Or, if the recurring range is infinite, we use [JavaScript's max
-  date](https://stackoverflow.com/questions/11526504/minimum-and-maximum-date)
-  (Fri Sep 12 275760) which is more than sufficient. This is calculated and
-  assigned server-side using [`rrule`](https://www.npmjs.com/package/rrule). It
-  is completely ignored client-side (in favor of the `to` property).
+  range. Or, if the recurring range is infinite, we use Firestore's max date
+  (Dec 31 9999) which is more than sufficient. This is calculated and assigned
+  server-side using [`rrule`](https://www.npmjs.com/package/rrule). It is
+  completely ignored client-side (in favor of the `to` property).
 
 Upon creation, Tutorbook sends an email to all of the `people` in the new
 meeting's match with the meeting time, venue, and everyone's contact info.

@@ -8,6 +8,7 @@ import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import createZoom from 'lib/api/create/zoom';
+import getLastTime from 'lib/api/get/last-time';
 import getMatch from 'lib/api/get/match';
 import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
@@ -86,6 +87,8 @@ export default async function createMeeting(
     }
 
     body.venue = await createZoom(body, people);
+    body.time.last = getLastTime(body.time);
+
     const meeting = await createMeetingDoc(body);
     await createMeetingSearchObj(meeting);
 
