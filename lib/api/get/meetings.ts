@@ -35,29 +35,23 @@ export default async function getMeetings(
   const filters = getFilterStrings(query);
   const data = await list('meetings', query, Meeting.fromSearchHit, filters);
   let { hits } = data;
-  const meetings = data.results
-    .map((meeting) => {
-      if (!meeting.time.recur) return [meeting];
-      const options = RRule.parseString(meeting.time.recur);
-      const rrule = new RRule({ ...options, dtstart: meeting.time.from });
-      // TODO: What if meeting instance starts before window but end is within?
-      const starts = rrule.between(query.from, query.to);
-      console.log('Starts:', starts.map((s) => s.toString()).join(', '));
-      hits += starts.length - 1;
-      return starts.map(
-        (start) =>
-          new Meeting({
-            ...meeting,
-            id: nanoid(),
-            parentId: meeting.id,
-            time: new Timeslot({
-              ...meeting.time,
-              from: start,
-              to: new Date(start.valueOf() + meeting.time.duration),
-            }),
-          })
-      );
-    })
-    .flat();
-  return { hits, results: meetings };
+  const meetings = data.results.map((meeting) => {
+    if (!meeting.time.recur) return [meeting];
+    const options = RRule.parseString(meeting.time.recur);
+    const rrule = new RRule({ ...options, dtstart: meeting.time.from });
+    // TODO: What if meeting instance starts before window but end is within?
+    const startTimes = rrule.between(query.from, query.to);
+    hits += startTimes.length - 1;
+    return startTimes.map((startTime) => {
+      if (startTime.valueOf() === meeting.time.from.valueOf()) return meeting;
+      const to = new Date(startTime.valueOf() + meeting.time.duration);
+      return new Meeting({
+        ...meeting,
+        id: nanoid(),
+        parentId: meeting.id,
+        time: new Timeslot({ ...meeting.time, to, from: startTime }),
+      });
+    });
+  });
+  return { hits, results: meetings.flat() };
 }
