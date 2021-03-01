@@ -1,6 +1,11 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
+import { RRule } from 'rrule';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model';
+import createMeetingDoc from 'lib/api/create/meeting-doc';
+import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
+import createZoom from 'lib/api/create/zoom';
+import getLastTime from 'lib/api/get/last-time';
 import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
@@ -31,11 +36,11 @@ export default async function updateMeeting(
       Meeting
     );
 
-    await Promise.all([
+    const [matchDoc, meetingDoc] = await Promise.all([
       verifyDocExists('matches', body.match.id),
-      verifyDocExists('meetings', body.id),
+      verifyDocExists('meetings', body.parentId || body.id),
     ]);
-
+    const original = Meeting.fromFirestoreDoc(meetingDoc);
     const people = await getPeople(body.match.people);
 
     // TODO: Actually implement availability verification.
@@ -57,20 +62,54 @@ export default async function updateMeeting(
     // - Admins can change 'approved' to 'pending' or 'logged'.
     // - Meeting people can change 'pending' to 'logged'.
 
-    body.venue = await updateZoom(body, people);
+    if (original.time.recur) {
+      // User is updating a recurring meeting. By default, we only update this
+      // meeting and all future meetings:
+      // 1. Create a new recurring meeting using this meeting's data.
+      // 2. Add 'until' to original's recur rule to exclude this meeting.
+      // 3. Send the created meeting data to the client.
 
-    // TODO: Should I send a 200 status code *and then* send emails? Would that
-    // make the front-end feel faster? Or is that a bad development practice?
-    await Promise.all([
-      updateMatchDoc(body.match),
-      updateMatchSearchObj(body.match),
-      updateMeetingDoc(body),
-      updateMeetingSearchObj(body),
-      sendEmails(body, people, updater, org),
-      updatePeopleRoles(people),
-    ]);
+      body.id = '';
+      body.parentId = undefined;
+      body.venue = await createZoom(body, people);
+      body.time.last = getLastTime(body.time);
 
-    res.status(200).json(body.toJSON());
+      const meeting = await createMeetingDoc(body);
+      await createMeetingSearchObj(meeting);
+
+      // TODO: We need to know the start time of the meeting instance before it
+      // was updated. Otherwise, we can't properly exclude it from the original.
+      original.time.recur = RRule.optionsToString({
+        ...RRule.parseString(original.time.recur),
+        until: body.time.from, // TODO: Replace with time before update.
+      });
+      original.time.last = getLastTime(original.time);
+
+      await Promise.all([
+        updateMeetingDoc(original),
+        updateMeetingSearchObj(original),
+        sendEmails(meeting, people, updater, org),
+        updatePeopleRoles(people),
+      ]);
+
+      res.status(200).json(meeting.toJSON());
+    } else {
+      body.venue = await updateZoom(body, people);
+      body.time.last = getLastTime(body.time);
+
+      // TODO: Should I send a 200 status code *and then* send emails? Would that
+      // make the front-end feel faster? Or is that a bad development practice?
+      await Promise.all([
+        updateMatchDoc(body.match),
+        updateMatchSearchObj(body.match),
+        updateMeetingDoc(body),
+        updateMeetingSearchObj(body),
+        sendEmails(body, people, updater, org),
+        updatePeopleRoles(people),
+      ]);
+
+      res.status(200).json(body.toJSON());
+    }
   } catch (e) {
     handle(e, res);
   }
