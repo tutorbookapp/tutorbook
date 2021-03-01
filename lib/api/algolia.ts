@@ -3,6 +3,7 @@ import {
   SaveObjectResponse,
   SetSettingsResponse,
 } from '@algolia/client-search';
+import { WaitablePromise } from '@algolia/client-common';
 import algoliasearch from 'algoliasearch';
 
 import clone from 'lib/utils/clone';
@@ -15,28 +16,26 @@ export const client = algoliasearch(algoliaId, algoliaKey);
 export function updateFilterableAttrs(
   indexId: string,
   attrs: string[]
-): Promise<SetSettingsResponse> {
+): WaitablePromise<SetSettingsResponse> {
   const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
   const attributesForFaceting = attrs.map((attr) => `filterOnly(${attr})`);
-  return (idx.setSettings({ attributesForFaceting }) as unknown) as Promise<
-    SetSettingsResponse
-  >;
+  return idx.setSettings({ attributesForFaceting });
 }
 
 export function deleteObj(
   indexId: string,
   objId: string
-): Promise<DeleteResponse> {
+): WaitablePromise<DeleteResponse> {
   const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
-  return (idx.deleteObject(objId) as unknown) as Promise<DeleteResponse>;
+  return idx.deleteObject(objId);
 }
 
 export default function index<T extends { toSearchHit: () => object }>(
   indexId: string,
   obj: T,
   tags?: string[]
-): Promise<SaveObjectResponse> {
+): WaitablePromise<SaveObjectResponse> {
   const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
   const idxObj = clone({ ...obj.toSearchHit(), _tags: tags });
-  return (idx.saveObject(idxObj) as unknown) as Promise<SaveObjectResponse>;
+  return idx.saveObject(idxObj);
 }
