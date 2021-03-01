@@ -91,7 +91,7 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
         </Group>
       </nav>
       <section>
-        <span>Copyright &copy; 2020 Tutorbook. All rights reserved.</span>
+        <span>Copyright &copy; 2021 Tutorbook. All rights reserved.</span>
       </section>
     </footer>
   );
