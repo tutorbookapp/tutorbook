@@ -1,4 +1,7 @@
-import { Meeting, MeetingsQuery } from 'lib/model';
+import { RRule } from 'rrule';
+import { nanoid } from 'nanoid';
+
+import { Meeting, MeetingsQuery, Timeslot } from 'lib/model';
 import { addOptionsFilter, addStringFilter, list } from 'lib/api/search';
 
 function getFilterStrings(query: MeetingsQuery): string[] {
@@ -9,19 +12,52 @@ function getFilterStrings(query: MeetingsQuery): string[] {
   const to = query.to.valueOf();
   const from = query.from.valueOf();
 
+  const endWithin = `time.last >= ${from} AND time.last <= ${to}`;
+  const startWithin = `time.from >= ${from} AND time.from <= ${to}`;
+
   return [
-    // TODO: Time overlaps with top of query (start is before query start).
-    // addStringFilter(str, `(time.to > ${from} AND time.from <= ${from})`),
-    // Meeting time is contained within query (start is after and end before).
-    addStringFilter(str, `(time.to <= ${to} AND time.from >= ${from})`),
-    // TODO: Time overlaps with bottom of query (end is after query end).
-    // addStringFilter(str, `(time.from < ${to} AND time.to >= ${to})`),
+    // Start is before window but end is within.
+    addStringFilter(str, `(time.from < ${from} AND ${endWithin})`),
+    // Both start and end are within window.
+    addStringFilter(str, `(${startWithin} AND ${endWithin})`),
+    // End is after window but start is within.
+    addStringFilter(str, `(time.last > ${to} AND ${startWithin})`),
+    // Start is before window and end is after.
+    addStringFilter(str, `(time.from < ${from} AND time.last > ${to})`),
   ];
 }
 
+// TODO: Generate instance meetings (from recurring parent meetings returned by
+// query) within requested time window and send those to the client.
 export default async function getMeetings(
   query: MeetingsQuery
 ): Promise<{ hits: number; results: Meeting[] }> {
   const filters = getFilterStrings(query);
-  return list('meetings', query, Meeting.fromSearchHit, filters);
+  const data = await list('meetings', query, Meeting.fromSearchHit, filters);
+  let { hits } = data;
+  const meetings = data.results
+    .map((meeting) => {
+      if (!meeting.time.recur) return [meeting];
+      const options = RRule.parseString(meeting.time.recur);
+      const rrule = new RRule({ ...options, dtstart: meeting.time.from });
+      // TODO: What if meeting instance starts before window but end is within?
+      const starts = rrule.between(query.from, query.to);
+      console.log('Starts:', starts.map((s) => s.toString()).join(', '));
+      hits += starts.length - 1;
+      return starts.map(
+        (start) =>
+          new Meeting({
+            ...meeting,
+            id: nanoid(),
+            parentId: meeting.id,
+            time: new Timeslot({
+              ...meeting.time,
+              from: start,
+              to: new Date(start.valueOf() + meeting.time.duration),
+            }),
+          })
+      );
+    })
+    .flat();
+  return { hits, results: meetings };
 }
