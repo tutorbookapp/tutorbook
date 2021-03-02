@@ -25,7 +25,7 @@ type Timestamp = admin.firestore.Timestamp;
  * thus only stored client-side as we have no use for this on our server).
  * @property from - The start time of this particular timeslot instance.
  * @property to - The end time of this particular timeslot instance.
- * @property recur - The timeslot's recurrence rule (uses the iCal RFC string).
+ * @property [recur] - The timeslot's recurrence rule (as an iCal RFC string).
  * @property [last] - The timeslot's last possible end time. Undefined
  * client-side; only used server-side for querying recurring timeslots.
  */
@@ -33,7 +33,7 @@ export interface TimeslotInterface<T = Date> {
   id: string;
   from: T;
   to: T;
-  recur: string;
+  recur?: string;
   last?: T;
 }
 
@@ -47,7 +47,7 @@ export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   if (typeof json.id !== 'string') return false;
   if (!isDateJSON(json.from)) return false;
   if (!isDateJSON(json.to)) return false;
-  if (typeof json.recur !== 'string') return false;
+  if (json.recur && typeof json.recur !== 'string') return false;
   if (json.last && !isDateJSON(json.last)) return false;
   return true;
 }
@@ -59,8 +59,7 @@ export class Timeslot implements TimeslotInterface {
 
   public to: Date = new Date();
 
-  // TODO: Should I prefill this with `RRULE:COUNT=1` for single instances?
-  public recur = '';
+  public recur?: string;
 
   public last?: Date;
 
