@@ -3,7 +3,7 @@
 [![Release Version](https://img.shields.io/github/v/release/tutorbookapp/tutorbook?color=brightgreen)](https://github.com/tutorbookapp/tutorbook/releases/)
 [![Website Status](https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Ftutorbook.org%2F)](https://tutorbook.org/)
 [![Maintainability](https://img.shields.io/codeclimate/maintainability/tutorbookapp/tutorbook)](https://codeclimate.com/github/tutorbookapp/tutorbook)
-[![Build Status](https://api.travis-ci.com/tutorbookapp/tutorbook.svg?branch=develop)](https://travis-ci.com/github/tutorbookapp/tutorbook)
+[![Build Status](https://img.shields.io/github/workflow/status/tutorbookapp/tutorbook/Integration%20Tests)](https://github.com/tutorbookapp/tutorbook/actions)
 [![Integration Tests](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/i6oq5i/develop&style=flat)](https://dashboard.cypress.io/projects/i6oq5i/runs)
 [![Coverage Status](https://img.shields.io/codecov/c/gh/tutorbookapp/tutorbook)](https://codecov.io/gh/tutorbookapp/tutorbook)
 [![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
