@@ -67,7 +67,6 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: build
-      - run: yarn start:next &
-      - run: yarn wait-on http-get://localhost:3000
+      - run: yarn start:next & yarn wait-on http-get://localhost:3000
       - run: yarn start:cy --record --parallel --headless --group ${{ matrix.browser }} -b ${{ matrix.browser }}
       - uses: codecov/codecov-action@v1
