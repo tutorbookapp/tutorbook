@@ -2,14 +2,9 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 
-import {
-  Availability,
-  SocialInterface,
-  Subjects,
-  User,
-  UserJSON,
-  isUserJSON,
-} from 'lib/model';
+import { Subjects, User, UserJSON, isUserJSON } from 'lib/model/user';
+import { Availability } from 'lib/model/availability';
+import { SocialInterface } from 'lib/model/account';
 import clone from 'lib/utils/clone';
 import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';

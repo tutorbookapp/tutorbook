@@ -9,11 +9,12 @@ import { AspectHeader, EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import Signup from 'components/signup';
 
-import { Aspect, Org, OrgJSON, isAspect } from 'lib/model';
+import { Aspect, isAspect } from 'lib/model/aspect';
+import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { db } from 'lib/api/firebase';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';

@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react';
 
-import { Meeting, MeetingsQuery } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { MeetingsQuery } from 'lib/model/query/meetings';
 
 export interface CalendarContextValue {
   startingDate: Date;

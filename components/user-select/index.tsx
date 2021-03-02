@@ -5,8 +5,10 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
 
-import { Option, User, UserJSON, UsersQuery } from 'lib/model';
+import { User, UserJSON } from 'lib/model/user';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import { Option } from 'lib/model/query/base';
+import { UsersQuery } from 'lib/model/query/users';
 import { useUser } from 'lib/context/user';
 
 export interface UserOption extends Option<string> {

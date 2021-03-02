@@ -6,10 +6,12 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
 
-import { Aspect, GradeAlias, Option } from 'lib/model';
+import { Aspect } from 'lib/model/aspect';
+import { GradeAlias } from 'lib/model/user';
+import { Option } from 'lib/model/query/base';
 import { intersection } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
-import { usePrevious } from 'lib/hooks';
+import usePrevious from 'lib/hooks/previous';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;

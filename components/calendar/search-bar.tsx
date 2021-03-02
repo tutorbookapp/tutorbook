@@ -2,7 +2,8 @@ import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import { useCallback } from 'react';
 
-import { Callback, MeetingsQuery } from 'lib/model';
+import { Callback } from 'lib/model/callback';
+import { MeetingsQuery } from 'lib/model/query/meetings';
 
 import styles from './search-bar.module.scss';
 

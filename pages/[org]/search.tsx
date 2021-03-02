@@ -13,14 +13,19 @@ import Page from 'components/page';
 import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
 
-import { CallbackParam, Org, OrgJSON, User, UsersQuery } from 'lib/model';
+import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
-import { useAnalytics, usePage, useTrack } from 'lib/hooks';
+import { CallbackParam } from 'lib/model/callback';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
+import { User } from 'lib/model/user';
+import { UsersQuery } from 'lib/model/query/users';
 import clone from 'lib/utils/clone';
 import { db } from 'lib/api/firebase';
 import { prefetch } from 'lib/fetch';
+import useAnalytics from 'lib/hooks/analytics';
+import usePage from 'lib/hooks/page';
+import useTrack from 'lib/hooks/track';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 

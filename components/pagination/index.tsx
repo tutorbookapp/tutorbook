@@ -3,7 +3,8 @@ import { IconButton } from '@rmwc/icon-button';
 import { Select } from '@rmwc/select';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, Query } from 'lib/model';
+import { Callback } from 'lib/model/callback';
+import { Query } from 'lib/model/query';
 
 import styles from './pagination.module.scss';
 

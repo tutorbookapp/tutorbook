@@ -13,11 +13,16 @@ import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
 
-import { Aspect, Availability, User, UserJSON } from 'lib/model';
-import { useAnalytics, useSingle, useSocialProps, useTrack } from 'lib/hooks';
+import { User, UserJSON } from 'lib/model/user';
+import { Aspect } from 'lib/model/aspect';
+import { Availability } from 'lib/model/availability';
 import { ValidationsContext } from 'lib/context/validations';
 import { signup } from 'lib/firebase/signup';
+import useAnalytics from 'lib/hooks/analytics';
 import { useOrg } from 'lib/context/org';
+import useSingle from 'lib/hooks/single';
+import useSocialProps from 'lib/hooks/social-props';
+import useTrack from 'lib/hooks/track';
 import { useUser } from 'lib/context/user';
 
 import styles from './signup.module.scss';

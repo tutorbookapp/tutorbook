@@ -1,6 +1,9 @@
 import { CSSProperties, createContext, useContext } from 'react';
 
-import { Meeting, Org, Role, User } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { Org } from 'lib/model/org';
+import { Role } from 'lib/model/person';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
 const fontFamily = [

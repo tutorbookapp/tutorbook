@@ -19,23 +19,19 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 import TimeSelect from 'components/time-select';
 
-import {
-  Aspect,
-  Match,
-  Meeting,
-  MeetingJSON,
-  Person,
-  Timeslot,
-  User,
-  UserJSON,
-  isAspect,
-} from 'lib/model';
+import { Aspect, isAspect } from 'lib/model/aspect';
+import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { User, UserJSON } from 'lib/model/user';
 import { join, period } from 'lib/utils';
-import { useAnalytics, useTrack } from 'lib/hooks';
 import { APIErrorJSON } from 'lib/api/error';
+import { Match } from 'lib/model/match';
+import { Person } from 'lib/model/person';
+import { Timeslot } from 'lib/model/timeslot';
 import { getErrorMessage } from 'lib/fetch';
 import { signupWithGoogle } from 'lib/firebase/signup';
+import useAnalytics from 'lib/hooks/analytics';
 import { useOrg } from 'lib/context/org';
+import useTrack from 'lib/hooks/track';
 import { useUser } from 'lib/context/user';
 
 import styles from './request-form.module.scss';

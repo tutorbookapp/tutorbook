@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { MatchesQuery, MatchesQueryURL, isMatchesQueryURL } from 'lib/model';
+import {
+  MatchesQuery,
+  MatchesQueryURL,
+  isMatchesQueryURL,
+} from 'lib/model/query/matches';
 import csv from 'lib/api/csv';
 import getMatches from 'lib/api/get/matches';
 import { handle } from 'lib/api/error';

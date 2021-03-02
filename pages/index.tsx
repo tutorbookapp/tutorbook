@@ -13,7 +13,7 @@ import SignupImage from 'components/landing/imgs/signup.png';
 import VettingImage from 'components/landing/imgs/vetting.png';
 
 import { PageProps, getPageProps } from 'lib/page';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';

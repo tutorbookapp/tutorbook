@@ -9,16 +9,14 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import {
-  Callback,
-  Match,
-  Meeting,
-  MeetingJSON,
-  Timeslot,
-  User,
-} from 'lib/model';
-import { usePrevious, useSingle } from 'lib/hooks';
+import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Callback } from 'lib/model/callback';
+import { Match } from 'lib/model/match';
+import { Timeslot } from 'lib/model/timeslot';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
+import usePrevious from 'lib/hooks/previous';
+import useSingle from 'lib/hooks/single';
 
 import { useCalendar } from '../../context';
 

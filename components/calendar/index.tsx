@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { dequal } from 'dequal/lite';
 
-import { Meeting, MeetingsQuery } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { MeetingsQuery } from 'lib/model/query/meetings';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';

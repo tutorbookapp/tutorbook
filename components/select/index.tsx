@@ -18,9 +18,10 @@ import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 import to from 'await-to-js';
 import { nanoid } from 'nanoid';
 
-import { Option, TCallback } from 'lib/model';
+import { Option } from 'lib/model/query/base';
+import { TCallback } from 'lib/model/callback';
 import { useClickContext } from 'lib/hooks/click-outside';
-import { usePrevious } from 'lib/hooks';
+import usePrevious from 'lib/hooks/previous';
 
 import SelectHint from './select-hint';
 import styles from './select.module.scss';

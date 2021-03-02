@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
 
-import { Match, User, UserJSON } from 'lib/model';
+import { User, UserJSON } from 'lib/model/user';
+import { Match } from 'lib/model/match';
 
 export default function usePeople(match: Match): User[] {
   const { data } = useSWR<UserJSON[]>(`/api/matches/${match.id}/people`);

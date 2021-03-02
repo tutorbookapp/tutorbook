@@ -9,7 +9,10 @@ import dotenv from 'dotenv';
 import firebase from 'firebase-admin';
 import { percyHealthCheck } from '@percy/cypress/task';
 
-import { MatchJSON, MeetingJSON, OrgJSON, UserJSON } from 'lib/model';
+import { MatchJSON } from 'lib/model/match';
+import { MeetingJSON } from 'lib/model/meeting';
+import { OrgJSON } from 'lib/model/org';
+import { UserJSON } from 'lib/model/user';
 
 import admin from 'cypress/fixtures/users/admin.json';
 import match from 'cypress/fixtures/match.json';

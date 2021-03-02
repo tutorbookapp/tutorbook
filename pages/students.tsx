@@ -4,7 +4,7 @@ import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
 import { PageProps, getPageProps } from 'lib/page';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import about from 'locales/en/about.json';

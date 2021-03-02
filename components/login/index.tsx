@@ -12,7 +12,7 @@ import { APIErrorJSON } from 'lib/api/error';
 import getLocation from 'lib/utils/location';
 import { period } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
-import { useTrack } from 'lib/hooks';
+import useTrack from 'lib/hooks/track';
 
 import styles from './login.module.scss';
 

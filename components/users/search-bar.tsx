@@ -4,7 +4,8 @@ import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Callback, UsersQuery } from 'lib/model';
+import { Callback } from 'lib/model/callback';
+import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
 
 import styles from './search-bar.module.scss';

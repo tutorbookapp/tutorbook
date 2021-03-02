@@ -10,14 +10,16 @@ import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
-import { Aspect, Org, OrgJSON, User, UserJSON, isAspect } from 'lib/model';
+import { Aspect, isAspect } from 'lib/model/aspect';
+import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
+import { User, UserJSON } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/utils';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';

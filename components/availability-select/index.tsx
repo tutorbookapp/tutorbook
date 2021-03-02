@@ -18,8 +18,10 @@ import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Availability, TCallback, Timeslot } from 'lib/model';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
+import { Availability } from 'lib/model/availability';
+import { TCallback } from 'lib/model/callback';
+import { Timeslot } from 'lib/model/timeslot';
 
 import TimeslotRnd from './timeslot-rnd';
 import { getTimeslot } from './utils';

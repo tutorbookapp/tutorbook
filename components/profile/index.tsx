@@ -10,13 +10,12 @@ import LangSelect from 'components/lang-select';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 
-import { Availability, User, UserJSON } from 'lib/model';
-import {
-  useAnalytics,
-  useContinuous,
-  useSocialProps,
-  useTrack,
-} from 'lib/hooks';
+import { User, UserJSON } from 'lib/model/user';
+import { Availability } from 'lib/model/availability';
+import useAnalytics from 'lib/hooks/analytics';
+import useContinuous from 'lib/hooks/continuous';
+import useSocialProps from 'lib/hooks/social-props';
+import useTrack from 'lib/hooks/track';
 import { useUser } from 'lib/context/user';
 
 import styles from './profile.module.scss';

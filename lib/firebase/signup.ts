@@ -3,7 +3,7 @@ import { dequal } from 'dequal/lite';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 
-import { User, UserInterface, UserJSON } from 'lib/model';
+import { User, UserInterface, UserJSON } from 'lib/model/user';
 import { APIErrorJSON } from 'lib/api/error';
 
 export async function signup(user: User): Promise<User> {

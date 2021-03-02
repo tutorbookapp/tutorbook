@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import { Org } from 'lib/model';
+import { Org } from 'lib/model/org';
 
 export interface OrgContextValue {
   org?: Org;

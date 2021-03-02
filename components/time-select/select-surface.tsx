@@ -17,13 +17,15 @@ import useMeasure from 'react-use-measure';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Availability, AvailabilityJSON, TCallback, Timeslot } from 'lib/model';
+import { Availability, AvailabilityJSON } from 'lib/model/availability';
 import {
   getDate,
   getDaysInMonth,
   getMonthsApart,
   getWeekdayOfFirst,
 } from 'lib/utils/time';
+import { TCallback } from 'lib/model/callback';
+import { Timeslot } from 'lib/model/timeslot';
 
 import styles from './time-select.module.scss';
 

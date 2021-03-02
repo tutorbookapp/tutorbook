@@ -6,20 +6,14 @@ import { EmptyHeader } from 'components/navigation';
 import MatchDisplay from 'components/match/display';
 import Page from 'components/page';
 
-import {
-  Match,
-  MatchJSON,
-  Meeting,
-  MeetingJSON,
-  Org,
-  OrgJSON,
-  User,
-  UserJSON,
-} from 'lib/model';
+import { Match, MatchJSON } from 'lib/model/match';
+import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Org, OrgJSON } from 'lib/model/org';
+import { User, UserJSON } from 'lib/model/user';
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { APIError } from 'lib/api/error';
 import { OrgContext } from 'lib/context/org';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 

@@ -1,4 +1,4 @@
-import { Tag } from 'lib/model';
+import { Tag } from 'lib/model/query/users';
 
 export function toggleTag(prev: Tag[], tag: Tag): Tag[] {
   const tags = Array.from(prev);

@@ -1,6 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Meeting, MeetingsQuery } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { MeetingsQuery } from 'lib/model/query/meetings';
 import clone from 'lib/utils/clone';
 import getMeetings from 'lib/api/get/meetings';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';

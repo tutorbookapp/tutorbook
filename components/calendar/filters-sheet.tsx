@@ -4,7 +4,9 @@ import { memo, useCallback } from 'react';
 import SubjectSelect from 'components/subject-select';
 import UserSelect from 'components/user-select';
 
-import { Callback, MeetingsQuery, Option } from 'lib/model';
+import { Callback } from 'lib/model/callback';
+import { MeetingsQuery } from 'lib/model/query/meetings';
+import { Option } from 'lib/model/query/base';
 
 import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';

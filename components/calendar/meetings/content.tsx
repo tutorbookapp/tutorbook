@@ -3,9 +3,10 @@ import { dequal } from 'dequal/lite';
 import mergeRefs from 'react-merge-refs';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Meeting, Timeslot } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { Timeslot } from 'lib/model/timeslot';
 import { join } from 'lib/utils';
-import { usePeople } from 'lib/hooks';
+import usePeople from 'lib/hooks/people';
 import { useUser } from 'lib/context/user';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';

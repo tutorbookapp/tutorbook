@@ -10,17 +10,15 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import {
-  Match,
-  Meeting,
-  MeetingJSON,
-  TCallback,
-  Timeslot,
-  User,
-} from 'lib/model';
-import { usePrevious, useSingle } from 'lib/hooks';
+import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Match } from 'lib/model/match';
+import { TCallback } from 'lib/model/callback';
+import { Timeslot } from 'lib/model/timeslot';
+import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import { join } from 'lib/utils';
+import usePrevious from 'lib/hooks/previous';
+import useSingle from 'lib/hooks/single';
 import { useUser } from 'lib/context/user';
 
 import styles from './create-page.module.scss';

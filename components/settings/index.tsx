@@ -1,14 +1,14 @@
-import { useCallback, useEffect, ReactNode } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
 import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
-import useTranslation from 'next-translate/useTranslation';
-import cn from 'classnames';
-import axios from 'axios';
 import Link from 'next/link';
+import axios from 'axios';
+import cn from 'classnames';
+import useTranslation from 'next-translate/useTranslation';
 
 import Header from 'components/header';
 
-import { Org, OrgJSON } from 'lib/model';
-import { useContinuous } from 'lib/hooks';
+import { Org, OrgJSON } from 'lib/model/org';
+import useContinuous from 'lib/hooks/continuous';
 import { useUser } from 'lib/context/user';
 
 import { SettingsContext } from './context';

@@ -11,7 +11,8 @@ import { ResizeDirection } from 're-resizable';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 
-import { Meeting, TCallback } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { TCallback } from 'lib/model/callback';
 import { useClickContext } from 'lib/hooks/click-outside';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';

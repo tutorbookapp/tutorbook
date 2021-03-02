@@ -9,7 +9,9 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 import LoadingDots from 'components/loading-dots';
 
-import { Match, Meeting, User } from 'lib/model';
+import { Match } from 'lib/model/match';
+import { Meeting } from 'lib/model/meeting';
+import { User } from 'lib/model/user';
 import { join, period } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 

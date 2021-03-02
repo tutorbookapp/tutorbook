@@ -7,7 +7,9 @@ import useMeasure from 'react-use-measure';
 
 import { NavContext } from 'components/dialog/context';
 
-import { Callback, Meeting, Position } from 'lib/model';
+import { Callback } from 'lib/model/callback';
+import { Meeting } from 'lib/model/meeting';
+import { Position } from 'lib/model/position';
 import { useClickContext } from 'lib/hooks/click-outside';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from '../config';

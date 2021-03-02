@@ -6,7 +6,9 @@ import useTranslation from 'next-translate/useTranslation';
 import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
 
-import { Callback, Option, UsersQuery } from 'lib/model';
+import { Callback } from 'lib/model/callback';
+import { Option } from 'lib/model/query/base';
+import { UsersQuery } from 'lib/model/query/users';
 
 import styles from './filter-form.module.scss';
 

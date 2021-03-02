@@ -8,7 +8,7 @@ import Users from 'components/users';
 
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 

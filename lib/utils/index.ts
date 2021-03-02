@@ -1,7 +1,9 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import algoliasearch from 'algoliasearch/lite';
 
-import { Option, Role, User } from 'lib/model';
+import { Option } from 'lib/model/query/base';
+import { Role } from 'lib/model/person';
+import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;

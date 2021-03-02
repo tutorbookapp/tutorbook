@@ -1,6 +1,7 @@
 import { getTimeslot } from 'components/availability-select/utils';
 
-import { Meeting, Position } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { Position } from 'lib/model/position';
 
 export function getMeeting(
   height: number,

@@ -9,7 +9,7 @@ import Avatar from 'components/avatar';
 import Button from 'components/button';
 import RequestForm from 'components/user/request-form';
 
-import { User } from 'lib/model';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';

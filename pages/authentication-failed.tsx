@@ -7,7 +7,7 @@ import Page from 'components/page';
 
 import { PageProps, getPageProps } from 'lib/page';
 import { period } from 'lib/utils';
-import { useLoginPage } from 'lib/hooks';
+import useLoginPage from 'lib/hooks/login-page';
 import { withI18n } from 'lib/intl';
 
 import auth from 'locales/en/auth.json';

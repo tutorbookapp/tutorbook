@@ -7,7 +7,9 @@ import { v4 as uuid } from 'uuid';
 import Placeholder from 'components/placeholder';
 import Result from 'components/search/result';
 
-import { Callback, User, UserJSON, UsersQuery } from 'lib/model';
+import { User, UserJSON } from 'lib/model/user';
+import { Callback } from 'lib/model/callback';
+import { UsersQuery } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import clone from 'lib/utils/clone';
 import { prefetch } from 'lib/fetch';

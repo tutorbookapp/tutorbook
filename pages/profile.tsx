@@ -5,7 +5,7 @@ import Profile from 'components/profile';
 import { TabHeader } from 'components/navigation';
 
 import { PageProps, getPageProps } from 'lib/page';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';

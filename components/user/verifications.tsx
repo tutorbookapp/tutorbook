@@ -16,9 +16,11 @@ import axios from 'axios';
 import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Aspect, Check, User, UserJSON, Verification } from 'lib/model';
+import { Check, Verification } from 'lib/model/verification';
+import { User, UserJSON } from 'lib/model/user';
+import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
-import { useContinuous } from 'lib/hooks';
+import useContinuous from 'lib/hooks/continuous';
 import { useUser } from 'lib/context/user';
 
 import styles from './verifications.module.scss';

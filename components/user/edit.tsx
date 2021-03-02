@@ -13,9 +13,11 @@ import PhotoInput from 'components/photo-input';
 import Result from 'components/search/result';
 import SubjectSelect from 'components/subject-select';
 
-import { Availability, User, UserJSON } from 'lib/model';
-import { useSingle, useSocialProps } from 'lib/hooks';
+import { User, UserJSON } from 'lib/model/user';
+import { Availability } from 'lib/model/availability';
 import { useOrg } from 'lib/context/org';
+import useSingle from 'lib/hooks/single';
+import useSocialProps from 'lib/hooks/social-props';
 
 import styles from './edit.module.scss';
 

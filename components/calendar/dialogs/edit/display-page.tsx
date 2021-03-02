@@ -7,8 +7,10 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
-import { Callback, Meeting, User } from 'lib/model';
 import { APIErrorJSON } from 'lib/api/error';
+import { Callback } from 'lib/model/callback';
+import { Meeting } from 'lib/model/meeting';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import snackbar from 'lib/snackbar';
 

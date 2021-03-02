@@ -1,7 +1,7 @@
 import { FormEvent, useCallback, useMemo } from 'react';
 import { Select, SelectHTMLProps, SelectProps } from '@rmwc/select';
 
-import { TCallback } from 'lib/model';
+import { TCallback } from 'lib/model/callback';
 
 const rrules: Record<string, string> = {
   Daily: 'RRULE:FREQ=DAILY',

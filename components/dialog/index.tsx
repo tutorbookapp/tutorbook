@@ -5,7 +5,7 @@ import cn from 'classnames';
 
 import Loader from 'components/loader';
 
-import { Callback } from 'lib/model';
+import { Callback } from 'lib/model/callback';
 
 import { NavContext, useNav } from './context';
 import styles from './dialog.module.scss';

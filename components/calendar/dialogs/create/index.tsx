@@ -2,7 +2,8 @@ import { useState } from 'react';
 
 import DialogContent from 'components/dialog';
 
-import { Meeting, TCallback } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { TCallback } from 'lib/model/callback';
 
 import CreatePage from './create-page';
 

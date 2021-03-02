@@ -12,7 +12,8 @@ import { ResizeDirection } from 're-resizable';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import { TCallback, Timeslot } from 'lib/model';
+import { TCallback } from 'lib/model/callback';
+import { Timeslot } from 'lib/model/timeslot';
 
 import { WIDTH, getHeight, getPosition, getTimeslot } from './utils';
 import styles from './timeslot-rnd.module.scss';

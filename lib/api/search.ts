@@ -1,6 +1,6 @@
 import algoliasearch from 'algoliasearch';
 
-import { Option, Query } from 'lib/model';
+import { Option, Query } from 'lib/model/query/base';
 import { APIError } from 'lib/api/error';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;

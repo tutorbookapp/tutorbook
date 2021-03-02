@@ -19,10 +19,11 @@ import useMeasure from 'react-use-measure';
 
 import LoadingDots from 'components/loading-dots';
 
-import { Meeting, MeetingJSON, Timeslot } from 'lib/model';
-import { useClickOutside, useSingle } from 'lib/hooks';
-import { ClickContext } from 'lib/hooks/click-outside';
+import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
+import { Timeslot } from 'lib/model/timeslot';
 import { getDateWithDay } from 'lib/utils/time';
+import useSingle from 'lib/hooks/single';
 
 import { CreateDialog, DialogSurface, EditDialog } from './dialogs';
 import { Headers, Lines, Times, Weekdays } from './components';

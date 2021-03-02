@@ -5,7 +5,7 @@ import Notification from 'components/notification';
 import Page from 'components/page';
 
 import { PageProps, getPageProps } from 'lib/page';
-import { usePage } from 'lib/hooks';
+import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';

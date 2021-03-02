@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react';
 
 import DialogContent from 'components/dialog';
 
-import { Meeting } from 'lib/model';
-import { usePeople } from 'lib/hooks';
+import { Meeting } from 'lib/model/meeting';
+import usePeople from 'lib/hooks/people';
 
 import DisplayPage from './display-page';
 import EditPage from './edit-page';

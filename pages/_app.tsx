@@ -5,12 +5,13 @@ import { SnackbarQueue } from '@rmwc/snackbar';
 
 import NProgress from 'components/nprogress';
 
-import { Org, OrgJSON, User, UserJSON } from 'lib/model';
+import { Org, OrgJSON } from 'lib/model/org';
+import { User, UserJSON } from 'lib/model/user';
 import { Theme, ThemeContext } from 'lib/context/theme';
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { fetcher } from 'lib/fetch';
 import snackbar from 'lib/snackbar';
-import { useTrack } from 'lib/hooks';
+import useTrack from 'lib/hooks/track';
 
 import 'styles/global.scss';
 

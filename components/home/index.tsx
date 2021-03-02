@@ -7,7 +7,7 @@ import Avatar from 'components/avatar';
 import Button from 'components/button';
 
 import Link from 'lib/intl/link';
-import { Org } from 'lib/model';
+import { Org } from 'lib/model/org';
 import { join } from 'lib/utils';
 
 import styles from './home.module.scss';

@@ -12,7 +12,8 @@ import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import useTranslation from 'next-translate/useTranslation';
 
-import { TCallback, Timeslot } from 'lib/model';
+import { TCallback } from 'lib/model/callback';
+import { Timeslot } from 'lib/model/timeslot';
 import { useClickContext } from 'lib/hooks/click-outside';
 
 import SelectSurface from './select-surface';
