@@ -19,8 +19,8 @@ function inverse(record: Record<string, string>): Record<string, string> {
 }
 
 export type RecurSelectProps = {
-  value: string;
-  onChange: TCallback<string>;
+  value?: string;
+  onChange: TCallback<string | undefined>;
 } & Omit<SelectProps, 'value' | 'onChange'> &
   Omit<SelectHTMLProps, 'value' | 'onChange'>;
 
@@ -33,11 +33,14 @@ export default function RecurSelect({
 }: RecurSelectProps): JSX.Element {
   const onSelectChange = useCallback(
     (evt: FormEvent<HTMLSelectElement>) => {
-      onChange(rrules[evt.currentTarget.value] || '');
+      onChange(rrules[evt.currentTarget.value] || undefined);
     },
     [onChange]
   );
-  const selectValue = useMemo(() => inverse(rrules)[value] || '', [value]);
+  const selectValue = useMemo(
+    () => (value ? inverse(rrules)[value] || '' : ''),
+    [value]
+  );
 
   return (
     <Select

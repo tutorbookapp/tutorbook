@@ -95,7 +95,7 @@ export default function CreatePage({
     [setMeeting]
   );
   const onRecurChange = useCallback(
-    (recur: string) => {
+    (recur?: string) => {
       setMeeting((prev) => {
         const time = new Timeslot({ ...prev.time, recur });
         return new Meeting({ ...prev, time });
