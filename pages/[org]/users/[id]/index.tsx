@@ -14,7 +14,7 @@ import { Aspect, isAspect } from 'lib/model/aspect';
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
-import { getLangLabels, getSubjectLabels } from 'lib/utils';
+import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
