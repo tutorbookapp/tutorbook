@@ -30,6 +30,7 @@ jobs:
             ~/.cache/Cypress
             ~/.cache/yarn
             .next/cache
+            node_modules
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
       - run: yarn start:db & yarn wait-on http-get://localhost:8080
@@ -37,7 +38,9 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build
-          path: .next
+          path: |
+            .next
+            public/sw.js
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -57,6 +60,7 @@ jobs:
             ~/.cache/Cypress
             ~/.cache/yarn
             .next/cache
+            node_modules
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
       - run: yarn start:db & yarn wait-on http-get://localhost:8080
