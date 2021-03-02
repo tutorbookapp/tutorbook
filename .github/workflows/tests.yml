@@ -25,10 +25,14 @@ jobs:
           node-version: '12'
       - uses: actions/cache@v2
         with:
-          path: ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-${{ hashFiles('~/.cache/firebase/emulators/**') }}
+          path: |
+            ~/.cache/firebase/emulators
+            ~/.cache/Cypress
+            ~/.cache/yarn
+            .next/cache
+          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
-      - run: yarn start:db && yarn wait-on 'http-get://localhost:8080'
+      - run: yarn start:db & yarn wait-on http-get://localhost:8080
       - run: yarn build
       - uses: actions/upload-artifact@v2
         with:
@@ -48,13 +52,17 @@ jobs:
           node-version: '12'
       - uses: actions/cache@v2
         with:
-          path: ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-${{ hashFiles('~/.cache/firebase/emulators/**') }}
+          path: |
+            ~/.cache/firebase/emulators
+            ~/.cache/Cypress
+            ~/.cache/yarn
+            .next/cache
+          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
-      - run: yarn start:db && yarn wait-on 'http-get://localhost:8080'
+      - run: yarn start:db & yarn wait-on http-get://localhost:8080
       - uses: actions/download-artifact@v2
         with:
           name: build
-      - run: yarn start:next &>/dev/null & yarn wait-on 'http://localhost:3000'
+      - run: yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
       - run: yarn start:cy --record --parallel --headless --group ${{ matrix.browser }} -b ${{ matrix.browser }}
       - uses: codecov/codecov-action@v1
