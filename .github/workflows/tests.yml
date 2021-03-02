@@ -23,6 +23,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '12'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-${{ hashFiles('~/.cache/firebase/emulators/**') }}
       - run: yarn install --immutable --immutable-cache
       - run: yarn start:db && yarn wait-on 'http-get://localhost:8080'
       - run: yarn build
@@ -42,6 +46,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '12'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-${{ hashFiles('~/.cache/firebase/emulators/**') }}
       - run: yarn install --immutable --immutable-cache
       - run: yarn start:db && yarn wait-on 'http-get://localhost:8080'
       - uses: actions/download-artifact@v2
