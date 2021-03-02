@@ -1,0 +1,46 @@
+name: Integration Tests
+
+on:
+  push:
+  pull_request:
+
+env:
+  NODE_ENV: test
+  PERCY_PARALLEL_NONCE: github.run_id
+  PERCY_PARALLEL_TOTAL: 9
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - run: yarn install --immutable --immutable-cache
+      - run: yarn start:db && yarn wait-on http-get://localhost:8080
+      - run: yarn build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: .next
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [electron, firefox, chrome]
+        parallel: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - run: yarn install --immutable --immutable-cache
+      - run: yarn start:db && yarn wait-on http-get://localhost:8080
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+      - run: yarn start:next &>/dev/null & yarn wait-on http://localhost:3000
+      - run: yarn start:cy --record --parallel --headless --group ${{ matrix.browser }} -b ${{ matrix.browser }}
+      - run: bash <(curl -s https://codecov.io/bash)
