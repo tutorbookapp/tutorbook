@@ -48,6 +48,11 @@ const app = admin.initializeApp({
 const db = app.firestore();
 const auth = app.auth();
 
+const algoliasearch = require('algoliasearch');
+const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
+const algoliaKey = process.env.ALGOLIA_ADMIN_KEY;
+const client = algoliasearch(algoliaId, algoliaKey);
+
 const firebase = require('firebase/app');
 require('firebase/auth');
 
@@ -660,28 +665,81 @@ const addResourceTimestamps = async (col) => {
   );
 };
 
+const meetingDocToSearchObj = (doc) => {
+  const data = doc.data();
+  return {
+    objectID: doc.id || data.id,
+    created: doc.createTime.toMillis(),
+    updated: doc.updateTime.toMillis(),
+    status: data.status || 'created',
+    creator: data.creator,
+    notes: data.notes || '',
+    time: {
+      id: data.time.id || '',
+      from: data.time.from.toMillis(),
+      to: data.time.to.toMillis(),
+      last: data.time.last
+        ? data.time.last.toMillis()
+        : data.time.to.toMillis(),
+    },
+    venue: {
+      ...data.venue,
+      created: data.venue.created.toMillis(),
+      updated: data.venue.updated.toMillis(),
+    },
+    match: {
+      ...data.match,
+      created: data.match.created.toMillis(),
+      updated: data.match.updated.toMillis(),
+      objectID: data.match.id,
+      id: undefined,
+    },
+  };
+};
+
+const addMeetingLast = async () => {
+  console.log('Fetching meetings...');
+
+  const idx = client.initIndex(`${env}-meetings`);
+  const { docs } = await db.collection('meetings').get();
+
+  console.log(`Updating ${docs.length} meetings...`);
+
+  await idx.saveObjects(docs.map(meetingDocToSearchObj));
+
+  console.log(`Updated ${docs.length} meetings.`);
+};
+
 const triggerUpdate = async (col = 'users', filters = {}, throttle = false) => {
   console.log(`Fetching ${col}...`);
-  const pathname = `https://develop.tutorbook.org/api/${col}`;
+  const fetchPathname = `https://tutorbook.org/api/${col}`;
+  const updatePathname = `https://develop.tutorbook.org/api/${col}`;
   const endpoint = url.format({
-    pathname,
+    pathname: fetchPathname,
     query: { ...filters, hitsPerPage: 1000 },
   });
   const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
   const headers = { authorization: `Bearer ${await createToken()}` };
+  console.log('Fetching...', endpoint);
   const { data } = await axios.get(endpoint, { headers });
   if (data.hits > 1000) console.warn(`More hits (${data.hits}) than 1000.`);
+  debugger;
   console.log(`Updating ${data.hits} ${col}...`);
   let count = 0;
   bar.start(data[col].length, count);
   if (throttle) {
     for (const res of data[col]) {
       const [err] = await to(
-        axios.put(`${pathname}/${res.id}`, res, { headers })
+        axios.put(`${updatePathname}/${res.id}`, res, { headers })
       );
       bar.update((count += 1));
       if (err) {
-        console.error(`${err.name} updating ${res.name} (${res.id}):`, res);
+        console.error(
+          `${err.name} updating (${res.id}): ${
+            err.response ? err.response.data.message : err.message
+          }`,
+          res
+        );
         debugger;
       }
     }
@@ -689,20 +747,24 @@ const triggerUpdate = async (col = 'users', filters = {}, throttle = false) => {
     await Promise.all(
       data[col].map(async (res) => {
         const [err] = await to(
-          axios.put(`${pathname}/${res.id}`, res, { headers })
+          axios.put(`${updatePathname}/${res.id}`, res, { headers })
         );
         bar.update((count += 1));
         if (err) {
-          console.error(`${err.name} updating ${res.name} (${res.id}):`, res);
+          console.error(
+            `${err.name} updating (${res.id}): ${
+              err.response ? err.response.data.message : err.message
+            }`,
+            res
+          );
           debugger;
         }
       })
     );
   }
+  bar.stop();
   console.log(`\nUpdated ${data.hits} ${col}.`);
 };
-
-triggerUpdate('matches', { org: 'quarantunes' });
 
 // Deletes all users that come from the old app:
 // - Anyone w/out a bio.
