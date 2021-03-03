@@ -23,7 +23,7 @@ export default function OrgDirectMeetingEmail({
   recipient,
   creator,
 }: OrgDirectMeetingEmailProps): JSX.Element {
-  const calendarURL = `https://tutorbook.app/${org.id}/calendar`;
+  const calendarURL = `https://tutorbook.org/${org.id}/calendar`;
   const isTutoring = recipient.roles.includes('tutor');
 
   return (

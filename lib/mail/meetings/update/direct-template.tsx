@@ -21,7 +21,7 @@ export default function DirectMeetingEmail({
   recipient,
   updater,
 }: DirectMeetingEmailProps): JSX.Element {
-  const calendarURL = 'https://tutorbook.app/calendar';
+  const calendarURL = 'https://tutorbook.org/calendar';
   const isTutoring = recipient.roles.includes('tutor');
 
   return (
@@ -64,7 +64,7 @@ export default function DirectMeetingEmail({
         <P>
           This email was sent to you because you have a profile on Tutorbook.
           You can edit or remove your profile{' '}
-          <Link href='https://tutorbook.app/profile'>here</Link>.
+          <Link href='https://tutorbook.org/profile'>here</Link>.
         </P>
         <P style={{ marginBottom: '0px !important' }}>
           If this message contains spam or unwanted messages let us know at{' '}

@@ -61,7 +61,7 @@ export default function QuaranTunesTemplate({
           Julia Segal
           <br />
           Founder of{' '}
-          <Link href='https://tutorbook.app/quarantunes'>QuaranTunes</Link>
+          <Link href='https://tutorbook.org/quarantunes'>QuaranTunes</Link>
         </P>
         <img alt='' src={pixel} />
       </Item>

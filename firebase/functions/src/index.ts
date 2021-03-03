@@ -3,4 +3,4 @@ import axios from 'axios';
 
 export const updateMeetings = functions.pubsub
   .schedule('every 15 minutes')
-  .onRun(() => axios.get('https://tutorbook.app/api/update-meetings'));
+  .onRun(() => axios.get('https://tutorbook.org/api/update-meetings'));

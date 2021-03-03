@@ -73,9 +73,9 @@ function getPhotoURL(photo, width = 500, height = 500) {
 }
 
 async function downloadFile(url, filename = uuid()) {
-  if (url === 'https://tutorbook.app/app/img/male.png') return './male.png';
-  if (url === 'https://tutorbook.app/app/img/female.png') return './female.png';
-  if (url === 'https://tutorbook.app/app/img/loading.gif') return './male.png';
+  if (url === 'https://tutorbook.org/app/img/male.png') return './male.png';
+  if (url === 'https://tutorbook.org/app/img/female.png') return './female.png';
+  if (url === 'https://tutorbook.org/app/img/loading.gif') return './male.png';
   const [err, res] = await to(axios.get(url, { responseType: 'stream' }));
   if (err) {
     console.error(`${err.name} fetching (${url}): ${err.message}`);
@@ -193,7 +193,7 @@ function getUsers() {
 }
 
 async function createUser(user) {
-  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const endpoint = 'https://develop.tutorbook.org/api/users';
   const [err] = await to(axios.post(endpoint, user));
   if (err) {
     console.log(
@@ -222,7 +222,7 @@ const convertToUserJSON = (userData) => {
 };
 
 async function updateUser(updated) {
-  const endpoint = 'https://develop.tutorbook.app/api/users';
+  const endpoint = 'https://develop.tutorbook.org/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
 
   console.log(`Fetching user (${updated.id})...`);

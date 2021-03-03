@@ -85,9 +85,9 @@ function getSubjects(id) {
 }
 
 async function downloadFile(url, filename = uuid()) {
-  if (url === 'https://tutorbook.app/app/img/male.png') return './male.png';
-  if (url === 'https://tutorbook.app/app/img/female.png') return './female.png';
-  if (url === 'https://tutorbook.app/app/img/loading.gif') return './male.png';
+  if (url === 'https://tutorbook.org/app/img/male.png') return './male.png';
+  if (url === 'https://tutorbook.org/app/img/female.png') return './female.png';
+  if (url === 'https://tutorbook.org/app/img/loading.gif') return './male.png';
   const [err, res] = await to(axios.get(url, { responseType: 'stream' }));
   if (err) {
     console.error(`${err.name} fetching (${url}): ${err.message}`);

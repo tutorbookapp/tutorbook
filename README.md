@@ -116,7 +116,7 @@ that object (e.g. Viewed, Installed, Created).
 
 ### Zoom Integration
 
-TB ([Tutorbook](https://tutorbook.app)) creates new recurring Zoom meetings for
+TB ([Tutorbook](https://tutorbook.org)) creates new recurring Zoom meetings for
 every [match](#match). To do so, TB stores Zoom OAuth refresh tokens and account
 IDs within [user](#user) and [org](#org) profiles.
 

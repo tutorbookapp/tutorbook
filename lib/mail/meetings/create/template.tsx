@@ -24,7 +24,7 @@ export default function MeetingEmail({
   people,
   creator,
 }: MeetingEmailProps): JSX.Element {
-  const calendarURL = 'https://tutorbook.app/calendar';
+  const calendarURL = 'https://tutorbook.org/calendar';
   const isTutoring = people.some((p) => p.roles.includes('tutor'));
 
   return (
@@ -75,7 +75,7 @@ export default function MeetingEmail({
         <P>
           This email was sent to you because you have a profile on Tutorbook.
           You can edit or remove your profile{' '}
-          <Link href='https://tutorbook.app/profile'>here</Link>.
+          <Link href='https://tutorbook.org/profile'>here</Link>.
         </P>
         <P style={{ marginBottom: '0px !important' }}>
           If this message contains spam or unwanted messages let us know at{' '}

@@ -34,12 +34,12 @@ export function getPhotoFilename(url: string): string {
 
 /**
  * Essentially the same as the above function except much more lenient (i.e.
- * allows `assets.tutorbook.app` images when testing and developing).
+ * allows `assets.tutorbook.org` images when testing and developing).
  * @param url - The URL to check (typically a profile photo URL).
  * @return Whether or not that image is stored with us in a managed location.
  */
 export function validPhoto(url: string): boolean {
-  const asset = /https:\/\/assets\.tutorbook\.app\/(.*)/;
+  const asset = /https:\/\/assets\.tutorbook\.org\/(.*)/;
   return !!asset.exec(url) || !!getPhotoFilename(url);
 }
 

@@ -18,7 +18,7 @@ async function sendLoginLink(req: Req, res: Res<void>): Promise<void> {
     throw new APIError('Request body must contain a redirect', 400);
   const actionCodeSettings = {
     url: `http://${
-      req.headers.host || 'tutorbook.app'
+      req.headers.host || 'tutorbook.org'
     }/confirm?href=${encodeURIComponent(req.body.redirect)}`,
   };
   const [err, link] = await to<string, FirebaseError>(

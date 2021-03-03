@@ -24,7 +24,7 @@ export default function OrgMeetingEmail({
   people,
   creator,
 }: OrgMeetingEmailProps): JSX.Element {
-  const calendarURL = `https://tutorbook.app/${org.id}/calendar`;
+  const calendarURL = `https://tutorbook.org/${org.id}/calendar`;
   const isTutoring = people.some((p) => p.roles.includes('tutor'));
 
   return (

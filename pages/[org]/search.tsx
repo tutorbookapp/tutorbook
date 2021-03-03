@@ -163,7 +163,7 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   // @see {@link https://segment.com/docs/connections/spec/ecommerce/v2/#product-list-filtered}
   // @see {@link https://segment.com/academy/collecting-data/naming-conventions-for-clean-data}
   const url = useMemo(() => {
-    if (typeof window === 'undefined') return 'https://tutorbook.app';
+    if (typeof window === 'undefined') return 'https://tutorbook.org';
     return `${window.location.protocol}//${window.location.host}`;
   }, []);
   useAnalytics(

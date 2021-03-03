@@ -25,12 +25,12 @@ export default function GunnTemplate({ name }: GunnTemplateProps): JSX.Element {
         </P>
         <P>To login and update your profile, click the button below:</P>
         <br />
-        <Button href='https://tutorbook.app/profile'>UPDATE PROFILE</Button>
+        <Button href='https://tutorbook.org/profile'>UPDATE PROFILE</Button>
         <br />
         <P>Or copy and paste this URL into a new tab of your browser:</P>
         <P style={{ marginBottom: '0px !important' }}>
-          <Link href='https://tutorbook.app/profile'>
-            {'https://tutorbook.app/profile'}
+          <Link href='https://tutorbook.org/profile'>
+            {'https://tutorbook.org/profile'}
           </Link>
         </P>
         <br />

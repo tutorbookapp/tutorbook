@@ -16,7 +16,7 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
       .get()
   ).docs.map((d) => User.fromFirestoreDoc(d));
   const analytics = new Analytics(process.env.SEGMENT_KEY as string);
-  const baseURL = 'https://tutorbook.app';
+  const baseURL = 'https://tutorbook.org';
   await Promise.all(
     users.map(async (user: User) => {
       analytics.identify({ userId: user.id, traits: user.toSegment() });

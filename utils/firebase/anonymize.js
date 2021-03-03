@@ -5,7 +5,7 @@
  * @description
  * This script anonymizes the data backed up from the `default` database
  * partition for use in the `test` database partition (during development). As
- * specified in our [Privacy Policy]{@link https://tutorbook.app/legal#privacy},
+ * specified in our [Privacy Policy]{@link https://tutorbook.org/legal#privacy},
  * we **always** anonymize data for development purposes.
  *
  * @usage

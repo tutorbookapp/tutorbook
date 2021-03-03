@@ -374,7 +374,7 @@ export function Person({
                 textDecoration: 'none',
                 display: 'block !important',
               }}
-              href={`https://tutorbook.app/${org || 'default'}/users/${id}`}
+              href={`https://tutorbook.org/${org || 'default'}/users/${id}`}
             >
               <img
                 style={{
@@ -444,13 +444,13 @@ export function Header(): JSX.Element {
           height: '64px',
           display: 'block !important',
         }}
-        href='https://tutorbook.app'
+        href='https://tutorbook.org'
         aria-label='Tutorbook'
       >
         <img
           style={{ backgroundColor: colors.accents2, borderRadius: '4px' }}
           alt=''
-          src='https://tutorbook.app/favicon/favicon-96x96.png'
+          src='https://tutorbook.org/favicon/favicon-96x96.png'
           width='64px'
           height='64px'
         />
@@ -465,7 +465,7 @@ export function Footer({ children }: Partial<Props>): JSX.Element {
       <Item top='48px' bottom='48px' left='48px' right='48px'>
         <hr style={dividerStyle} />
         <P>
-          Tutorbook - <Link href='https://tutorbook.app'>tutorbook.app</Link>
+          Tutorbook - <Link href='https://tutorbook.org'>tutorbook.org</Link>
         </P>
         {children}
       </Item>

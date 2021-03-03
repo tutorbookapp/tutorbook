@@ -48,5 +48,5 @@ var axios_1 = __importDefault(require('axios'));
 exports.updateMeetings = functions.pubsub
   .schedule('every 15 minutes')
   .onRun(function () {
-    return axios_1.default.get('https://tutorbook.app/api/update-meetings');
+    return axios_1.default.get('https://tutorbook.org/api/update-meetings');
   });

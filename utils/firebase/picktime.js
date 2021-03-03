@@ -21,7 +21,7 @@ const logger = winston.createLogger({
 });
 
 const env = 'production';
-const apiDomain = 'https://develop.tutorbook.app';
+const apiDomain = 'https://develop.tutorbook.org';
 logger.info(`Loading ${env} environment variables...`);
 [
   path.resolve(__dirname, '../../.env'),

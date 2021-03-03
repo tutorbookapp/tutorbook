@@ -63,9 +63,9 @@ export default async function updatePhoto<T extends Account>(
   account: T,
   Model: Constructor<T>
 ): Promise<T> {
-  // Skip 'assets.tutorbook.app' photos that are used during integration tests.
+  // Skip 'assets.tutorbook.org' photos that are used during integration tests.
   if (/test-tutorbook\.appspot\.com/.exec(account.photo)) return account;
-  if (/assets\.tutorbook\.app/.exec(account.photo)) return account;
+  if (/assets\.tutorbook\.org/.exec(account.photo)) return account;
   if (!account.photo) return account;
 
   // Download the image, crop and/or resize it to 500x500 pixels, and upload the

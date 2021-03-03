@@ -23,7 +23,7 @@ export default function OrgUserTemplate({
   langs,
   org,
 }: OrgUserTemplateProps): JSX.Element {
-  const userDialogURL = `https://tutorbook.app/${org.id}/users/${user.id}`;
+  const userDialogURL = `https://tutorbook.org/${org.id}/users/${user.id}`;
 
   return (
     <Email>
@@ -35,7 +35,7 @@ export default function OrgUserTemplate({
         <br />
         <P>
           To view {user.name}&apos;s new profile and add it to{' '}
-          <Link href={`https://tutorbook.app/${org.id}/search`}>
+          <Link href={`https://tutorbook.org/${org.id}/search`}>
             {org.name}&apos;s search page
           </Link>
           , simply click the button below:

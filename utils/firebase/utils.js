@@ -199,7 +199,7 @@ const addOrgIdsToUsers = async () => {
   console.log('Fetching users...');
   const users = (await db.collection('users').get()).docs;
   const options = [...orgs, 'delete'];
-  const endpoint = 'https://tutorbook.app/api/users';
+  const endpoint = 'https://tutorbook.org/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
   await Promise.all(
     users.map(async (user) => {
@@ -241,7 +241,7 @@ const addOrgIdToMatches = async () => {
   const orgs = (await db.collection('orgs').get()).docs.map((d) => d.id);
   console.log('Fetching matches...');
   const matches = (await db.collection('matches').get()).docs;
-  const endpoint = 'https://tutorbook.app/api/matches';
+  const endpoint = 'https://tutorbook.org/api/matches';
   const headers = { authorization: `Bearer ${await createToken()}` };
   await Promise.all(
     matches.map(async (match) => {
@@ -306,7 +306,7 @@ const addOrgIdToMatches = async () => {
 };
 
 const deleteUser = async (uid) => {
-  const endpoint = 'https://tutorbook.app/api/users';
+  const endpoint = 'https://tutorbook.org/api/users';
   const headers = { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.delete(`${endpoint}/${uid}`, { headers }));
   if (err) console.error(`${err.name} deleting user (${uid}): ${err.message}`);
@@ -321,7 +321,7 @@ const convertToUserJSON = (userData) => {
 };
 
 const updateUser = async (user) => {
-  const endpoint = `https://tutorbook.app/api/users/${user.id}`;
+  const endpoint = `https://tutorbook.org/api/users/${user.id}`;
   const headers = { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.put(endpoint, user, { headers }));
   if (err) {
@@ -331,7 +331,7 @@ const updateUser = async (user) => {
 };
 
 const updateUserExistingData = async (user) => {
-  const endpoint = `https://tutorbook.app/api/users/${user.id}`;
+  const endpoint = `https://tutorbook.org/api/users/${user.id}`;
   const headers = { authorization: `Bearer ${await createToken()}` };
   const { data } = await axios.get(endpoint, { headers });
   console.log(`Merging ${user.name} (${user.id}) data...`, data);
@@ -345,7 +345,7 @@ const updateUserExistingData = async (user) => {
 };
 
 const deleteOrg = async (orgId) => {
-  const endpoint = `https://tutorbook.app/api/orgs/${orgId}`;
+  const endpoint = `https://tutorbook.org/api/orgs/${orgId}`;
   const headers = { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.delete(endpoint, { headers }));
   if (err) console.log('Error deleting org:', err);
@@ -353,7 +353,7 @@ const deleteOrg = async (orgId) => {
 
 const purgeOrg = async (orgId) => {
   const ogs = encodeURIComponent(JSON.stringify([{ value: orgId, label: '' }]));
-  const endpoint = `https://tutorbook.app/api/users?orgs=${ogs}`;
+  const endpoint = `https://tutorbook.org/api/users?orgs=${ogs}`;
   const headers = { authorization: `Bearer ${await createToken()}` };
   const {
     data: { users },
@@ -384,14 +384,14 @@ const purgeOrg = async (orgId) => {
 };
 
 const createOrg = async (org) => {
-  const endpoint = 'https://tutorbook.app/api/orgs';
+  const endpoint = 'https://tutorbook.org/api/orgs';
   const headers = { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.post(endpoint, org, { headers }));
   if (err) console.log('Error creating org:', err);
 };
 
 const createUser = async (user) => {
-  const endpoint = 'https://tutorbook.app/api/users';
+  const endpoint = 'https://tutorbook.org/api/users';
   const [err] = await to(axios.post(endpoint, user));
   if (err) console.log('Error creating user:', err);
 };
@@ -469,7 +469,7 @@ const updatePhotoCrops = async () => {
   bar.start(users.length, count);
   await Promise.all(
     users.map(async (user) => {
-      const url = `https://tutorbook.app/api/users/${user.id}`;
+      const url = `https://tutorbook.org/api/users/${user.id}`;
       const [err] = await to(axios.put(url, user, { headers }));
       if (err) {
         console.error(
@@ -496,7 +496,7 @@ const retryFailures = async () => {
   bar.start(users.length, count);
   await Promise.all(
     users.map(async (user) => {
-      const url = `https://tutorbook.app/api/users/${user.id}`;
+      const url = `https://tutorbook.org/api/users/${user.id}`;
       const [err] = await to(axios.put(url, user, { headers }));
       if (err) {
         console.error(
@@ -561,7 +561,7 @@ const changeDateJSONToDates = async () => {
   bar.start(matches.length, count);
   await Promise.all(
     matches.map(async (match) => {
-      const url = `https://tutorbook.app/api/matches/${match.id}`;
+      const url = `https://tutorbook.org/api/matches/${match.id}`;
       const [err] = await to(axios.put(url, match, { headers }));
       if (err) {
         console.error(
@@ -640,7 +640,7 @@ const fetchQuarantunesStringTeachers = async () => {
         phone: u.data().phone,
         email: u.data().email,
         bio: u.data().bio,
-        url: `https://tutorbook.app/quarantunes/users/${u.id}`,
+        url: `https://tutorbook.org/quarantunes/users/${u.id}`,
       })),
     { columns: ['name', 'phone', 'email', 'bio', 'url'] }
   );
@@ -662,7 +662,7 @@ const addResourceTimestamps = async (col) => {
 
 const triggerUpdate = async (col = 'users', filters = {}) => {
   console.log(`Fetching ${col}...`);
-  const pathname = `https://develop.tutorbook.app/api/${col}`;
+  const pathname = `https://develop.tutorbook.org/api/${col}`;
   const endpoint = url.format({
     pathname,
     query: { ...filters, hitsPerPage: 1000 },
@@ -698,7 +698,7 @@ triggerUpdate('users', {
 const purgeGunnData = async () => {
   const hitsPerPage = 1000;
   const endpoint = url.format({
-    pathname: 'https://tutorbook.app/api/users',
+    pathname: 'https://tutorbook.org/api/users',
     query: {
       hitsPerPage,
       orgs: encodeURIComponent(JSON.stringify([{ value: 'gunn', label: '' }])),
@@ -720,7 +720,7 @@ const purgeGunnData = async () => {
     users.map(async (user) => {
       if (!user.bio) {
         console.log(`Deleting ${user.name} (${user.id})...`);
-        const url = `https://tutorbook.app/api/users/${user.id}`;
+        const url = `https://tutorbook.org/api/users/${user.id}`;
         const [err] = await to(axios.delete(url, { headers }));
         if (err) {
           console.error(
@@ -733,7 +733,7 @@ const purgeGunnData = async () => {
       } else {
         console.log(
           `Saving ${user.name} (${user.id})...`,
-          `https://tutorbook.app/gunn/users/${user.id}`
+          `https://tutorbook.org/gunn/users/${user.id}`
         );
         saved++;
       }

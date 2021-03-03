@@ -19,7 +19,7 @@ export default function Browser({ url, refresh }: BrowserProps): JSX.Element {
           <i className={styles.lock}>
             <LockIcon />
           </i>
-          <a href={url}>{`tutorbook.app${url}`}</a>
+          <a href={url}>{`tutorbook.org${url}`}</a>
           <button className={styles.refresh} type='button' onClick={refresh}>
             <RefreshIcon />
           </button>
