@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { Snackbar } from '@rmwc/snackbar';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { dequal } from 'dequal/lite';
+import to from 'await-to-js';
 
 import DialogContent from 'components/dialog';
 
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
+import { APIErrorJSON } from 'lib/api/error';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Position } from 'lib/model/position';
@@ -218,6 +220,28 @@ export default function Calendar({
     ]
   );
 
+  const [deleteError, setDeleteError] = useState<string>('');
+  const deleteMeeting = useCallback(async () => {
+    setDeleteError('');
+    setEditChecked(false);
+    setEditLoading(true);
+    const [err] = await to(axios.delete(`/api/meetings/${editing.id}`));
+    if (err) {
+      const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
+      setEditLoading(false);
+      setDeleteError(e.message);
+    } else {
+      setEditChecked(true);
+      setTimeout(() => {
+        const idx = meetings.findIndex((m) => m.id === editing.id);
+        if (idx < 0) return;
+        const updated = [...meetings.slice(0, idx), ...meetings.slice(idx + 1)];
+        const json = updated.map((m) => m.toJSON());
+        void mutate(query.endpoint, { meetings: json }, true);
+      }, 1000);
+    }
+  }, [setEditLoading, setEditChecked, query.endpoint, meetings, editing.id]);
+
   return (
     <CalendarStateContext.Provider value={calendarState}>
       <ClickContext.Provider value={clickContextValue}>
@@ -234,6 +258,13 @@ export default function Calendar({
             open
           />
         )}
+        {deleteError && (
+          <Snackbar
+            message='Could not delete meeting. Try again later'
+            leading
+            open
+          />
+        )}
         {dialog && (
           <DialogSurface width={width} offset={offset}>
             <DialogContent page={dialogPage}>
@@ -242,6 +273,7 @@ export default function Calendar({
                 setPage={setDialogPage}
                 loading={editLoading}
                 checked={editChecked}
+                deleteMeeting={deleteMeeting}
               />
               <EditPage
                 people={people}

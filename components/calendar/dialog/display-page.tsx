@@ -19,6 +19,7 @@ export interface DisplayPageProps {
   setPage: Callback<number>;
   loading: boolean;
   checked: boolean;
+  deleteMeeting: () => Promise<void>;
 }
 
 export default function DisplayPage({
@@ -26,6 +27,7 @@ export default function DisplayPage({
   setPage,
   loading,
   checked,
+  deleteMeeting,
 }: DisplayPageProps): JSX.Element {
   const { editing } = useCalendarState();
   const nav = useNav();
@@ -72,7 +74,7 @@ export default function DisplayPage({
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
           <Chip icon='edit' label='Edit meeting' onClick={() => setPage(1)} />
-          <Chip icon='delete' label='Delete meeting' />
+          <Chip icon='delete' label='Delete meeting' onClick={deleteMeeting} />
         </ChipSet>
       </div>
     </div>
