@@ -131,7 +131,7 @@ export default function MeetingRnd({
   return (
     <Rnd
       data-cy='editing-rnd'
-      className={cn(styles.editing, {
+      className={cn(styles.meeting, {
         [styles.past]: editing.time.to <= now,
       })}
       position={position}
