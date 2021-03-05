@@ -99,16 +99,6 @@ export default function Calendar({
     },
     [query.endpoint, meetings]
   );
-  const removeMeeting = useCallback(
-    async (meetingId: string, hasBeenDeleted = false) => {
-      const idx = meetings.findIndex((m) => m.id === meetingId);
-      if (idx < 0) return;
-      const updated = [...meetings.slice(0, idx), ...meetings.slice(idx + 1)];
-      const json = updated.map((m) => m.toJSON());
-      await mutate(query.endpoint, { meetings: json }, hasBeenDeleted);
-    },
-    [query.endpoint, meetings]
-  );
 
   const [rnd, setRnd] = useState<boolean>(false);
   const [dialog, setDialog] = useState<boolean>(false);

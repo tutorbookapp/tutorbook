@@ -13,8 +13,8 @@ import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import { Chip } from '@rmwc/chip';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
-import to from 'await-to-js';
 import { nanoid } from 'nanoid';
+import to from 'await-to-js';
 
 import { Option } from 'lib/model/query/base';
 import { TCallback } from 'lib/model/callback';

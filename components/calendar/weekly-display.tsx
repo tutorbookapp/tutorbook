@@ -95,7 +95,6 @@ function WeeklyDisplay({
   const {
     rnd,
     setRnd,
-    editing,
     setEditing,
     dragging,
     setDialog,

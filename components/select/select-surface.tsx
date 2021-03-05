@@ -7,10 +7,11 @@ import { Option } from 'lib/model/query/base';
 
 import styles from './select.module.scss';
 
+// TODO: Debug why the `updateSelected` type doesn't work with `Select`.
 export interface SelectSurfaceProps<T, O extends Option<T> = Option<T>> {
   suggestions: O[];
   noResultsMessage: string;
-  updateSelected: (option: O, event?: MouseEvent) => void;
+  updateSelected: (option: any, event?: MouseEvent) => void;
   errored: boolean;
   value: O[];
 }
