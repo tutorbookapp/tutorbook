@@ -118,8 +118,4 @@ const MeetingContent = forwardRef(
   }
 );
 
-export default memo(
-  MeetingContent,
-  (prevProps: MeetingContentProps, nextProps: MeetingContentProps) =>
-    dequal(prevProps, nextProps)
-);
+export default memo(MeetingContent, dequal);

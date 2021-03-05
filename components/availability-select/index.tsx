@@ -332,8 +332,4 @@ function AvailabilitySelect({
   );
 }
 
-export default memo(
-  AvailabilitySelect,
-  (prevProps: AvailabilitySelectProps, nextProps: AvailabilitySelectProps) =>
-    dequal(prevProps, nextProps)
-);
+export default memo(AvailabilitySelect, dequal);

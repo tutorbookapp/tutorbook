@@ -9,10 +9,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
-import { Checkbox } from '@rmwc/checkbox';
 import { Chip } from '@rmwc/chip';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 import to from 'await-to-js';
@@ -24,6 +22,7 @@ import { useClickContext } from 'lib/hooks/click-outside';
 import usePrevious from 'lib/hooks/previous';
 
 import SelectHint from './select-hint';
+import SelectSurface from './select-surface';
 import styles from './select.module.scss';
 
 type TextFieldPropOverrides = 'textarea' | 'onFocus' | 'onBlur';
@@ -313,34 +312,13 @@ export default function Select<T, O extends Option<T>>({
         renderToPortal={renderToPortal ? '#portal' : false}
         className={!suggestions.length ? styles.errMenu : ''}
       >
-        <List>
-          {!suggestions.length && (
-            <div className={styles.noResults}>
-              {errored ? 'Errored, try again' : noResultsMessage}
-            </div>
-          )}
-          {suggestions.map((opt) => (
-            <ListItem
-              key={
-                typeof opt.value === 'string' || typeof opt.value === 'number'
-                  ? opt.value
-                  : opt.label
-              }
-              onClick={(event: MouseEvent) => updateSelected(opt, event)}
-              className={styles.menuItem}
-            >
-              <ListItemGraphic
-                icon={
-                  <Checkbox
-                    checked={value.some((s) => s.value === opt.value)}
-                    readOnly
-                  />
-                }
-              />
-              {opt.label}
-            </ListItem>
-          ))}
-        </List>
+        <SelectSurface
+          suggestions={suggestions}
+          noResultsMessage={noResultsMessage}
+          updateSelected={updateSelected}
+          errored={errored}
+          value={value}
+        />
       </MenuSurface>
       <SelectHint open={suggestionsOpen}>
         <TextField
