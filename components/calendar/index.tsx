@@ -25,7 +25,7 @@ import usePeople from 'lib/hooks/people';
 import useSingle from 'lib/hooks/single';
 import { useUser } from 'lib/context/user';
 
-import { CalendarStateContext } from './state';
+import { CalendarStateContext, DialogPage } from './state';
 import CreatePage from './dialog/create-page';
 import DialogSurface from './dialog/surface';
 import DisplayPage from './dialog/display-page';
@@ -88,7 +88,7 @@ export default function Calendar({
   const [rnd, setRnd] = useState<boolean>(false);
   const [dialog, setDialog] = useState<boolean>(false);
   const [dragging, setDragging] = useState<boolean>(false);
-  const [dialogPage, setDialogPage] = useState<number>(0);
+  const [dialogPage, setDialogPage] = useState<DialogPage>(DialogPage.Display);
   const [recurDialog, setRecurDialog] = useState<boolean>(false);
   const [action, setAction] = useState<MeetingAction>('future');
 
@@ -168,15 +168,6 @@ export default function Calendar({
     setEditError('');
   }, [dialog, setEditLoading, setEditChecked, setEditError]);
 
-  // Open to the correct dialog page when viewing/creating different meetings.
-  useEffect(() => {
-    if (editing.id.startsWith('temp')) {
-      setDialogPage(2);
-    } else {
-      setDialogPage(0);
-    }
-  }, [editing.id]);
-
   // Save the meeting state before an edit so that our back-end can modify recur
   // rules properly (adding the correct `UNTIL` exceptions).
   useEffect(() => {
@@ -226,6 +217,7 @@ export default function Calendar({
       setRnd,
       dialog,
       setDialog,
+      setDialogPage,
       dragging,
       setDragging,
       start: query.from,
@@ -308,21 +300,18 @@ export default function Calendar({
             <DialogContent page={dialogPage}>
               <DisplayPage
                 people={people}
-                setPage={setDialogPage}
                 loading={editLoading}
                 checked={editChecked}
                 deleteMeeting={deleteMeeting}
               />
               <EditPage
                 people={people}
-                setPage={setDialogPage}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
               />
               <CreatePage
                 people={people}
-                setPage={setDialogPage}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}

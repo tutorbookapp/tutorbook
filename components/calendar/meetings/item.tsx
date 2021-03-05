@@ -5,9 +5,9 @@ import { Meeting } from 'lib/model/meeting';
 import { TCallback } from 'lib/model/callback';
 import { useClickContext } from 'lib/hooks/click-outside';
 
+import { DialogPage, useCalendarState } from '../state';
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 import { getHeight, getPosition } from '../utils';
-import { useCalendarState } from '../state';
 
 import MeetingContent from './content';
 import styles from './item.module.scss';
@@ -58,6 +58,7 @@ export default function MeetingItem({
     setRnd,
     dialog,
     setDialog,
+    setDialogPage,
   } = useCalendarState();
 
   return (
@@ -94,6 +95,7 @@ export default function MeetingItem({
           e.stopPropagation();
           removeListeners();
           setEditing(meeting);
+          setDialogPage(DialogPage.Display);
           setDialog(true);
         };
         const removeListeners = () => {

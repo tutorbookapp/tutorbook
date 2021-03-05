@@ -23,6 +23,7 @@ import { getDateWithDay } from 'lib/utils/time';
 import { useClickContext } from 'lib/hooks/click-outside';
 import { useUser } from 'lib/context/user';
 
+import { DialogPage, useCalendarState } from './state';
 import { Headers, Lines, Times, Weekdays } from './components';
 import { MouseEventHackData, MouseEventHackTarget } from './hack-types';
 import { config, width } from './spring-animation';
@@ -31,7 +32,6 @@ import { getMeeting, getPosition } from './utils';
 import MeetingItem from './meetings/item';
 import MeetingRnd from './meetings/rnd';
 import styles from './weekly-display.module.scss';
-import { useCalendarState } from './state';
 
 export interface WeeklyDisplayProps {
   searching: boolean;
@@ -97,6 +97,7 @@ function WeeklyDisplay({
     setEditing,
     dragging,
     setDialog,
+    setDialogPage,
     start,
   } = useCalendarState();
 
@@ -112,10 +113,21 @@ function WeeklyDisplay({
         creator: user.toPerson(),
       });
       setEditing(getMeeting(48, pos, creating, cellWidth, start));
+      setDialogPage(DialogPage.Create);
       setDialog(true);
       setRnd(true);
     },
-    [user, setEditing, setDialog, setRnd, dragging, start, offset, cellWidth]
+    [
+      user,
+      setEditing,
+      setDialog,
+      setDialogPage,
+      setRnd,
+      dragging,
+      start,
+      offset,
+      cellWidth,
+    ]
   );
 
   // Sync the scroll position of the main cell grid and the static headers. This

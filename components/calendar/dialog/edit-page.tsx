@@ -9,7 +9,6 @@ import RecurSelect from 'components/recur-select';
 import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 
-import { Callback } from 'lib/model/callback';
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
@@ -17,13 +16,12 @@ import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
 
-import { useCalendarState } from '../state';
+import { DialogPage, useCalendarState } from '../state';
 
 import styles from './page.module.scss';
 
 export interface EditPageProps {
   people: User[];
-  setPage: Callback<number>;
   loading: boolean;
   checked: boolean;
   error: string;
@@ -31,18 +29,17 @@ export interface EditPageProps {
 
 export default function EditPage({
   people,
-  setPage,
   loading,
   checked,
   error,
 }: EditPageProps): JSX.Element {
-  const { editing, setEditing, onEditStop } = useCalendarState();
+  const { editing, setEditing, onEditStop, setDialogPage } = useCalendarState();
   const { t } = useTranslation();
 
   const prevLoading = usePrevious(loading);
   useEffect(() => {
-    if (prevLoading && !loading && checked) setPage(0);
-  }, [prevLoading, loading, checked, setPage]);
+    if (prevLoading && !loading && checked) setDialogPage(DialogPage.Display);
+  }, [prevLoading, loading, checked, setDialogPage]);
 
   // TODO: Update the meeting's match's subjects. Right now, our back-end
   // ignores any changes to the match data (when PUT /api/meetings/[id]).
@@ -109,7 +106,7 @@ export default function EditPage({
         <IconButton
           icon='close'
           className={styles.btn}
-          onClick={() => setPage(0)}
+          onClick={() => setDialogPage(DialogPage.Display)}
         />
       </div>
       <form className={styles.form} onSubmit={onEditStop}>

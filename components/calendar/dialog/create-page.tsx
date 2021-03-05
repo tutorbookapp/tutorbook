@@ -11,7 +11,6 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import { Callback } from 'lib/model/callback';
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
@@ -19,13 +18,12 @@ import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
 
-import { useCalendarState } from '../state';
+import { DialogPage, useCalendarState } from '../state';
 
 import styles from './page.module.scss';
 
 export interface CreatePageProps {
   people: User[];
-  setPage: Callback<number>;
   loading: boolean;
   checked: boolean;
   error: string;
@@ -33,19 +31,18 @@ export interface CreatePageProps {
 
 export default function CreatePage({
   people,
-  setPage,
   loading,
   checked,
   error,
 }: CreatePageProps): JSX.Element {
-  const { editing, setEditing, onEditStop } = useCalendarState();
+  const { editing, setEditing, onEditStop, setDialogPage } = useCalendarState();
   const { t } = useTranslation();
   const nav = useNav();
 
   const prevLoading = usePrevious(loading);
   useEffect(() => {
-    if (prevLoading && !loading && checked) setPage(0);
-  }, [prevLoading, loading, checked, setPage]);
+    if (prevLoading && !loading && checked) setDialogPage(DialogPage.Display);
+  }, [prevLoading, loading, checked, setDialogPage]);
 
   const onMatchChange = useCallback(
     (match?: Match) => {

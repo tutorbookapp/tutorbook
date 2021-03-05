@@ -6,17 +6,15 @@ import Avatar from 'components/avatar';
 import Loader from 'components/loader';
 import { useNav } from 'components/dialog/context';
 
-import { Callback } from 'lib/model/callback';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
-import { useCalendarState } from '../state';
+import { DialogPage, useCalendarState } from '../state';
 
 import styles from './page.module.scss';
 
 export interface DisplayPageProps {
   people: User[];
-  setPage: Callback<number>;
   loading: boolean;
   checked: boolean;
   deleteMeeting: () => Promise<void>;
@@ -24,12 +22,11 @@ export interface DisplayPageProps {
 
 export default function DisplayPage({
   people,
-  setPage,
   loading,
   checked,
   deleteMeeting,
 }: DisplayPageProps): JSX.Element {
-  const { editing } = useCalendarState();
+  const { editing, setDialogPage } = useCalendarState();
   const nav = useNav();
 
   return (
@@ -73,7 +70,11 @@ export default function DisplayPage({
       </div>
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
-          <Chip icon='edit' label='Edit meeting' onClick={() => setPage(1)} />
+          <Chip
+            icon='edit'
+            label='Edit meeting'
+            onClick={() => setDialogPage(DialogPage.Edit)}
+          />
           <Chip icon='delete' label='Delete meeting' onClick={deleteMeeting} />
         </ChipSet>
       </div>
