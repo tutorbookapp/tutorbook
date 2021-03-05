@@ -1,7 +1,10 @@
 @use 'styles/sizes';
 
-@mixin header-wrapper($times-width, $border-left: false) {
-  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
+@mixin header-wrapper(
+  $times-width,
+  $border-left: false,
+  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px + 8px)
+) {
   margin-left: $times-width;
   align-items: flex-end;
   display: flex;
@@ -56,9 +59,9 @@
   $times-width,
   $cell-width,
   $border-color,
-  $border-left: false
+  $border-left: false,
+  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px + 8px)
 ) {
-  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
   height: 8px;
   display: flex;
   flex: none;
@@ -90,9 +93,9 @@
   $cell-width,
   $border-color,
   $max-height,
-  $border-left: false
+  $border-left: false,
+  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px + 8px)
 ) {
-  $breakpoint: sizes.$page-width + 2 * ($times-width + 8px);
   position: relative;
   flex: 1 1 60%;
   display: flex;

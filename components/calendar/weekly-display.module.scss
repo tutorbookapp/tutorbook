@@ -38,7 +38,11 @@
 }
 
 .headerWrapper {
-  @include calendar.header-wrapper(config.$times-width, $border-left: true);
+  @include calendar.header-wrapper(
+    config.$times-width,
+    $border-left: true,
+    $breakpoint: config.$breakpoint
+  );
 }
 
 .headers {
@@ -103,7 +107,8 @@
     config.$times-width,
     config.$cell-width,
     config.$border-color,
-    $border-left: true
+    $border-left: true,
+    $breakpoint: config.$breakpoint
   );
 }
 
@@ -114,7 +119,8 @@
     config.$border-color,
     $max-height:
       calc(100vh - #{sizes.$header-height + 86px + config.$filters-height}),
-    $border-left: true
+    $border-left: true,
+    $breakpoint: config.$breakpoint
   );
 }
 
