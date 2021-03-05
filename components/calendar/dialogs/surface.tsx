@@ -14,22 +14,18 @@ import useMeasure from 'react-use-measure';
 
 import { NavContext } from 'components/dialog/context';
 
-import { Callback } from 'lib/model/callback';
-import { Meeting } from 'lib/model/meeting';
 import { Position } from 'lib/model/position';
 import { useClickContext } from 'lib/hooks/click-outside';
 
 import { PREVIEW_MARGIN, RND_MARGIN } from '../config';
 import { getHeight, getPosition } from '../utils';
+import { useCalendarState } from '../state';
 
 import styles from './surface.module.scss';
 
 export interface DialogSurfaceProps {
   width: number;
   offset: Position;
-  viewing: Meeting;
-  dialogOpen: boolean;
-  setDialogOpen: Callback<boolean>;
   onClosed: () => void;
   children: ReactNode;
 }
@@ -39,12 +35,11 @@ export interface DialogSurfaceProps {
 export default function DialogSurface({
   width: rndWidth,
   offset,
-  viewing,
-  dialogOpen,
-  setDialogOpen,
   onClosed,
   children,
 }: DialogSurfaceProps): JSX.Element {
+  const { editing, dialog, setDialog } = useCalendarState();
+
   const measured = useRef<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
 
@@ -58,19 +53,19 @@ export default function DialogSurface({
   const [measureRef, bounds] = useMeasure({ polyfill });
 
   const rndPosition = useMemo(
-    () => getPosition(viewing.time.from, rndWidth + RND_MARGIN),
-    [viewing.time.from, rndWidth]
+    () => getPosition(editing.time.from, rndWidth + RND_MARGIN),
+    [editing.time.from, rndWidth]
   );
-  const rndHeight = useMemo(() => getHeight(viewing.time), [viewing.time]);
+  const rndHeight = useMemo(() => getHeight(editing.time), [editing.time]);
 
   const onLeft = useMemo(() => {
     const x = offset.x + rndPosition.x - bounds.width - PREVIEW_MARGIN;
-    return visible && dialogOpen ? x : x + 12;
-  }, [offset.x, visible, dialogOpen, rndPosition.x, bounds.width]);
+    return visible && dialog ? x : x + 12;
+  }, [offset.x, visible, dialog, rndPosition.x, bounds.width]);
   const onRight = useMemo(() => {
     const x = offset.x + rndPosition.x + rndWidth + PREVIEW_MARGIN;
-    return visible && dialogOpen ? x : x - 12;
-  }, [offset.x, visible, dialogOpen, rndPosition.x, rndWidth]);
+    return visible && dialog ? x : x - 12;
+  }, [offset.x, visible, dialog, rndPosition.x, rndWidth]);
 
   const alignedTop = useMemo(() => offset.y + rndPosition.y, [
     offset.y,
@@ -85,6 +80,7 @@ export default function DialogSurface({
     [offset.y, rndPosition.y, bounds.height, rndHeight]
   );
   const top = useMemo(() => {
+    if (!process.browser) return alignedCenter;
     const vh = Math.max(
       document.documentElement.clientHeight || 0,
       window.innerHeight || 0
@@ -96,7 +92,7 @@ export default function DialogSurface({
 
   // TODO: Clicking on match after closing begins should reverse animation.
   const props = useSpring({
-    onRest: () => (!dialogOpen && measured.current ? onClosed() : undefined),
+    onRest: () => (!dialog && measured.current ? onClosed() : undefined),
     left: rndPosition.x < rndWidth * 3 ? onRight : onLeft,
     config: { tension: 250, velocity: 50 },
     immediate: !measured.current,
@@ -106,10 +102,10 @@ export default function DialogSurface({
   const { updateEl, removeEl } = useClickContext();
   const clickRef = useCallback(
     (node: HTMLElement | null) => {
-      if (!node) return removeEl(`dialog-${viewing.id}`);
-      return updateEl(`dialog-${viewing.id}`, node);
+      if (!node) return removeEl(`dialog-${editing.id}`);
+      return updateEl(`dialog-${editing.id}`, node);
     },
-    [updateEl, removeEl, viewing.id]
+    [updateEl, removeEl, editing.id]
   );
 
   return (
@@ -119,10 +115,10 @@ export default function DialogSurface({
           style={props}
           ref={mergeRefs([measureRef, clickRef])}
           className={cn(styles.wrapper, {
-            [styles.visible]: dialogOpen && visible,
+            [styles.visible]: dialog && visible,
           })}
         >
-          <NavContext.Provider value={() => setDialogOpen(false)}>
+          <NavContext.Provider value={() => setDialog(false)}>
             {children}
           </NavContext.Provider>
         </animated.div>

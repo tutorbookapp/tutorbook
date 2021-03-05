@@ -11,14 +11,12 @@ import { ResizeDirection } from 're-resizable';
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 
-import { Meeting } from 'lib/model/meeting';
-import { TCallback } from 'lib/model/callback';
 import { useClickContext } from 'lib/hooks/click-outside';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 import { getHeight, getMeeting, getPosition } from '../utils';
 import { RND_MARGIN } from '../config';
-import { useCalendar } from '../context';
+import { useCalendarState } from '../state';
 
 import MeetingContent from './content';
 import styles from './rnd.module.scss';
@@ -28,10 +26,6 @@ const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 export interface MeetingRndProps {
   now: Date;
   width: number;
-  editing: Meeting;
-  setEditing: TCallback<Meeting>;
-  setIsDragging: TCallback<boolean>;
-  onEditStop?: () => void;
   eventTarget?: MouseEventHackTarget;
   eventData?: MouseEventHackData;
 }
@@ -39,14 +33,17 @@ export interface MeetingRndProps {
 export default function MeetingRnd({
   now,
   width,
-  editing,
-  setEditing,
-  setIsDragging,
-  onEditStop,
   eventTarget,
   eventData,
 }: MeetingRndProps): JSX.Element {
-  const { startingDate } = useCalendar();
+  const {
+    editing,
+    setEditing,
+    onEditStop,
+    setDragging,
+    setRnd,
+    start,
+  } = useCalendarState();
 
   // Workaround for `react-rnd`'s unusual resizing behavior.
   // @see {@link https://codesandbox.io/s/1z7kjjk0pq?file=/src/index.js}
@@ -60,10 +57,10 @@ export default function MeetingRnd({
   const height = useMemo(() => getHeight(editing.time), [editing.time]);
 
   const update = useCallback(
-    (newHeight: number, newPos: Position) => {
-      setEditing(getMeeting(newHeight, newPos, editing, width, startingDate));
+    (newHeight: number, newPosition: Position) => {
+      setEditing(getMeeting(newHeight, newPosition, editing, width, start));
     },
-    [startingDate, width, setEditing, editing]
+    [start, width, setEditing, editing]
   );
 
   const onClick = useCallback((evt: ReactMouseEvent) => {
@@ -72,14 +69,18 @@ export default function MeetingRnd({
   const onResizeStop = useCallback(() => {
     // We have to wait a tick before resetting `draggingId` to prevent new
     // editings from being created when the resize cursor moves ahead of RND.
-    setTimeout(() => setIsDragging(false), 0);
+    setTimeout(() => setDragging(false), 0);
     setOffset({ x: 0, y: 0 });
-    if (onEditStop) onEditStop();
-  }, [setIsDragging, onEditStop]);
+    if (editing.id.startsWith('temp')) return;
+    onEditStop();
+    setRnd(false);
+  }, [setDragging, onEditStop, setRnd, editing.id]);
   const onDragStop = useCallback(() => {
-    setTimeout(() => setIsDragging(false), 0);
-    if (onEditStop) onEditStop();
-  }, [setIsDragging, onEditStop]);
+    setTimeout(() => setDragging(false), 0);
+    if (editing.id.startsWith('temp')) return;
+    onEditStop();
+    setRnd(false);
+  }, [setDragging, onEditStop, setRnd, editing.id]);
   const onResize = useCallback(
     (
       e: MouseEvent | TouchEvent,
@@ -91,7 +92,7 @@ export default function MeetingRnd({
       // callback can be called multiple times for the same resize delta. Thus,
       // we only want to update `position` to reflect the **difference** btwn
       // the last `delta` and the current `delta`.
-      setIsDragging(true);
+      setDragging(true);
       update(Number(ref.style.height.replace('px', '')), {
         x: position.x - (dir === 'left' ? delta.width - offset.x : 0),
         y: position.y - (dir === 'top' ? delta.height - offset.y : 0),
@@ -101,7 +102,7 @@ export default function MeetingRnd({
         y: dir === 'top' ? delta.height : prev.y,
       }));
     },
-    [setIsDragging, update, position, offset]
+    [setDragging, update, position, offset]
   );
   const onDrag = useCallback(
     (
@@ -112,10 +113,10 @@ export default function MeetingRnd({
       // correctly for the `onDrag` callback.
       // @see {@link https://github.com/STRML/react-draggable/issues/413}
       // @see {@link https://github.com/bokuweb/react-rnd/issues/453}
-      setIsDragging(true);
+      setDragging(true);
       update(height, { x: data.x, y: data.y });
     },
-    [setIsDragging, update, height]
+    [setDragging, update, height]
   );
 
   const { updateEl, removeEl } = useClickContext();

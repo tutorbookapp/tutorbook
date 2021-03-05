@@ -16,7 +16,7 @@ import usePeople from 'lib/hooks/people';
 import useSingle from 'lib/hooks/single';
 import { useUser } from 'lib/context/user';
 
-import { CalendarContext } from './context';
+import { CalendarStateContext } from './state';
 import CreatePage from './dialogs/create/create-page';
 import DialogSurface from './dialogs/surface';
 import DisplayPage from './dialogs/edit/display-page';
@@ -110,25 +110,21 @@ export default function Calendar({
     [query.endpoint, meetings]
   );
 
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [rndVisible, setRndVisible] = useState<boolean>(false);
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [rnd, setRnd] = useState<boolean>(false);
+  const [dialog, setDialog] = useState<boolean>(false);
+  const [dragging, setDragging] = useState<boolean>(false);
   const [dialogPage, setDialogPage] = useState<number>(0);
 
-  const originalEditing = useRef<Meeting>(initialEditData);
+  const original = useRef<Meeting>(initialEditData);
   const updateMeetingRemote = useCallback(async (updated: Meeting) => {
     const url = `/api/meetings/${updated.id}`;
     const { data: updatedMeeting } = await axios.put<MeetingJSON>(url, {
       ...updated.toJSON(),
-      options: { original: originalEditing.current.toJSON() },
+      options: { original: original.current.toJSON() },
     });
     return Meeting.fromJSON(updatedMeeting);
   }, []);
 
-  const { updateEl, removeEl } = useClickOutside(
-    () => setDialogOpen(false),
-    dialogOpen
-  );
   const {
     data: editing,
     setData: setEditing,
@@ -141,8 +137,7 @@ export default function Calendar({
   const people = usePeople(editing.match);
 
   useEffect(() => {
-    if (editing.id !== originalEditing.current.id)
-      originalEditing.current = editing;
+    if (editing.id !== original.current.id) original.current = editing;
   }, [editing]);
 
   useEffect(() => {
@@ -150,7 +145,7 @@ export default function Calendar({
       if (prev?.id.startsWith('temp')) return prev;
       const idx = meetings.findIndex((m) => m.id === prev?.id);
       if (idx < 0) {
-        setDialogOpen(false);
+        setDialog(false);
         return prev;
       }
       if (dequal(meetings[idx], prev)) return prev;
@@ -161,17 +156,30 @@ export default function Calendar({
   // Don't unmount the dialog surface if the user is draggingId (in that case, we
   // only temporarily hide the dialog until the user is finished draggingId).
   const onClosed = useCallback(() => {
-    if (!isDragging) setEditing(initialEditData);
-  }, [setEditing, isDragging]);
+    if (!dragging) setEditing(initialEditData);
+  }, [setEditing, dragging]);
 
   const [width, setWidth] = useState<number>(0);
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
+  const clickContextValue = useClickOutside(() => setDialog(false), dialog);
+
   return (
-    <CalendarContext.Provider
-      value={{ mutateMeeting, removeMeeting, startingDate: query.from }}
+    <CalendarStateContext.Provider
+      value={{
+        editing,
+        setEditing,
+        onEditStop,
+        rnd,
+        setRnd,
+        dialog,
+        setDialog,
+        dragging,
+        setDragging,
+        start: query.from,
+      }}
     >
-      <ClickContext.Provider value={{ updateEl, removeEl }}>
+      <ClickContext.Provider value={clickContextValue}>
         {editChecked && <Snackbar message='Updated meeting.' leading open />}
         {editError && (
           <Snackbar
@@ -184,14 +192,7 @@ export default function Calendar({
           <Snackbar message='Updating meeting...' timeout={-1} leading open />
         )}
         {editing && (
-          <DialogSurface
-            width={width}
-            offset={offset}
-            viewing={editing}
-            dialogOpen={dialogOpen && !isDragging}
-            setDialogOpen={setDialogOpen}
-            onClosed={onClosed}
-          >
+          <DialogSurface width={width} offset={offset} onClosed={onClosed}>
             <DialogContent
               active={dialogPage}
               setActive={setDialogPage}
@@ -199,25 +200,15 @@ export default function Calendar({
               checked={editChecked}
               link={`/${editing.match.org}/matches/${editing.match.id}`}
             >
-              <DisplayPage
-                people={people}
-                meeting={editing}
-                openEdit={() => setDialogPage(1)}
-              />
+              <DisplayPage people={people} openEdit={() => setDialogPage(1)} />
               <EditPage
                 people={people}
-                meeting={editing}
-                setMeeting={setEditing}
-                onSubmit={onEditStop}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
               />
               <CreatePage
                 people={people}
-                meeting={editing}
-                setMeeting={setEditing}
-                onSubmit={onEditStop}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
@@ -238,15 +229,6 @@ export default function Calendar({
               searching={!data}
               meetings={meetings}
               filtersOpen={filtersOpen}
-              editing={editing}
-              setEditing={setEditing}
-              onEditStop={onEditStop}
-              rndVisible={rndVisible}
-              setRndVisible={setRndVisible}
-              dialogOpen={dialogOpen}
-              setDialogOpen={setDialogOpen}
-              isDragging={isDragging}
-              setIsDragging={setIsDragging}
               width={width}
               setWidth={setWidth}
               offset={offset}
@@ -260,6 +242,6 @@ export default function Calendar({
           </div>
         </div>
       </ClickContext.Provider>
-    </CalendarContext.Provider>
+    </CalendarStateContext.Provider>
   );
 }

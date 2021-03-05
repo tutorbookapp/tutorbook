@@ -7,6 +7,7 @@ import { useClickContext } from 'lib/hooks/click-outside';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
 import { getHeight, getPosition } from '../utils';
+import { useCalendarState } from '../state';
 
 import MeetingContent from './content';
 import styles from './item.module.scss';
@@ -16,12 +17,6 @@ export interface MeetingItemProps {
   meeting: Meeting;
   leftPercent: number;
   widthPercent: number;
-  editing: Meeting;
-  setEditing: TCallback<Meeting>;
-  rndVisible: boolean;
-  setRndVisible: TCallback<boolean>;
-  dialogOpen: boolean;
-  setDialogOpen: TCallback<boolean>;
   setEventData: TCallback<MouseEventHackData>;
   setEventTarget: TCallback<MouseEventHackTarget>;
 }
@@ -31,12 +26,6 @@ export default function MeetingItem({
   meeting,
   leftPercent,
   widthPercent,
-  editing,
-  setEditing,
-  rndVisible,
-  setRndVisible,
-  dialogOpen,
-  setDialogOpen,
   setEventData,
   setEventTarget,
 }: MeetingItemProps): JSX.Element {
@@ -62,12 +51,14 @@ export default function MeetingItem({
     [updateEl, removeEl, meeting.id]
   );
 
+  const { editing, setEditing, rnd, setRnd, setDialog } = useCalendarState();
+
   return (
     <div
       style={{ top, left, width, height }}
       className={cn(styles.meeting, {
-        [styles.elevated]: !rndVisible && editing.id === meeting.id,
-        [styles.editing]: rndVisible && editing.id === meeting.id,
+        [styles.elevated]: !rnd && editing.id === meeting.id,
+        [styles.editing]: rnd && editing.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}
       onClick={(evt) => evt.stopPropagation()}
@@ -90,13 +81,13 @@ export default function MeetingItem({
             button: e.button,
             buttons: e.buttons,
           });
-          setRndVisible(true);
+          setRnd(true);
         };
         const view = (e: MouseEvent) => {
           e.stopPropagation();
           removeListeners();
           setEditing(meeting);
-          setDialogOpen(true);
+          setDialog(true);
         };
         const removeListeners = () => {
           document.removeEventListener('mousemove', edit, { capture: true });
@@ -123,7 +114,7 @@ export default function MeetingItem({
               button: evt.button,
               buttons: evt.buttons,
             });
-            setRndVisible(true);
+            setRnd(true);
           }}
         />
         <div
@@ -140,7 +131,7 @@ export default function MeetingItem({
               button: evt.button,
               buttons: evt.buttons,
             });
-            setRndVisible(true);
+            setRnd(true);
           }}
         />
       </span>

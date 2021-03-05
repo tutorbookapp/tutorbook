@@ -6,7 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 
 import styles from './weekly-display.module.scss';
-import { useCalendar } from './context';
+import { useCalendarState } from './state';
 
 const COLS = Array(7).fill(null);
 const ROWS = Array(24).fill(null);
@@ -58,12 +58,12 @@ export interface WeekdaysProps {
 export const Weekdays = memo(
   ({ now }: WeekdaysProps): JSX.Element => {
     const { lang: locale } = useTranslation();
-    const { startingDate } = useCalendar();
+    const { start } = useCalendarState();
 
     return (
       <>
         {COLS.map((_, day) => {
-          const date = getDateWithDay(day, startingDate);
+          const date = getDateWithDay(day, start);
           const today =
             now.getFullYear() === date.getFullYear() &&
             now.getMonth() === date.getMonth() &&

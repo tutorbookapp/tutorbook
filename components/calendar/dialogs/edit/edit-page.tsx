@@ -16,13 +16,12 @@ import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
 
+import { useCalendarState } from '../../state';
+
 import styles from './edit-page.module.scss';
 
 export interface EditPageProps {
   people: User[];
-  meeting: Meeting;
-  setMeeting: Callback<Meeting>;
-  onSubmit: (evt: FormEvent) => void;
   loading: boolean;
   checked: boolean;
   error: string;
@@ -30,13 +29,11 @@ export interface EditPageProps {
 
 export default function EditPage({
   people,
-  meeting,
-  setMeeting,
-  onSubmit,
   loading,
   checked,
   error,
 }: EditPageProps): JSX.Element {
+  const { editing, setEditing, onEditStop } = useCalendarState();
   const { t } = useTranslation();
 
   const nav = useNav();
@@ -49,7 +46,7 @@ export default function EditPage({
   // ignores any changes to the match data (when PUT /api/meetings/[id]).
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setMeeting(
+      setEditing(
         (prev) =>
           new Meeting({
             ...prev,
@@ -57,29 +54,29 @@ export default function EditPage({
           })
       );
     },
-    [setMeeting]
+    [setEditing]
   );
   const onTimeChange = useCallback(
     (time: Timeslot) => {
-      setMeeting((prev) => new Meeting({ ...prev, time }));
+      setEditing((prev) => new Meeting({ ...prev, time }));
     },
-    [setMeeting]
+    [setEditing]
   );
   const onRecurChange = useCallback(
     (recur?: string) => {
-      setMeeting((prev) => {
+      setEditing((prev) => {
         const time = new Timeslot({ ...prev.time, recur });
         return new Meeting({ ...prev, time });
       });
     },
-    [setMeeting]
+    [setEditing]
   );
   const onNotesChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const notes = evt.currentTarget.value;
-      setMeeting((prev) => new Meeting({ ...prev, notes }));
+      setEditing((prev) => new Meeting({ ...prev, notes }));
     },
-    [setMeeting]
+    [setEditing]
   );
 
   const subjectOptions = useMemo(() => {
@@ -104,14 +101,14 @@ export default function EditPage({
   }, [people]);
 
   return (
-    <form className={styles.form} onSubmit={onSubmit}>
+    <form className={styles.form} onSubmit={onEditStop}>
       <div className={styles.inputs}>
         <SubjectSelect
           required
           autoOpenMenu
           label={t('common:subjects')}
           onChange={onSubjectsChange}
-          value={meeting.match.subjects}
+          value={editing.match.subjects}
           className={styles.field}
           options={subjectOptions}
           renderToPortal
@@ -121,7 +118,7 @@ export default function EditPage({
           required
           label={t('common:time')}
           onChange={onTimeChange}
-          value={meeting.time}
+          value={editing.time}
           className={styles.field}
           uid={timePersonId}
           renderToPortal
@@ -131,7 +128,7 @@ export default function EditPage({
           label='Recurrence'
           className={styles.field}
           onChange={onRecurChange}
-          value={meeting.time.recur}
+          value={editing.time.recur}
           outlined
         />
         <TextField
@@ -139,12 +136,12 @@ export default function EditPage({
           textarea
           rows={4}
           placeholder={t('meeting:notes-placeholder', {
-            subject: join(meeting.match.subjects) || 'Computer Science',
+            subject: join(editing.match.subjects) || 'Computer Science',
           })}
           label={t('meeting:notes')}
           className={styles.field}
           onChange={onNotesChange}
-          value={meeting.notes}
+          value={editing.notes}
         />
         <Button
           className={styles.btn}

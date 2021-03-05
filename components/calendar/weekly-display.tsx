@@ -30,21 +30,12 @@ import { getMeeting, getPosition } from './utils';
 import MeetingItem from './meetings/item';
 import MeetingRnd from './meetings/rnd';
 import styles from './weekly-display.module.scss';
-import { useCalendar } from './context';
+import { useCalendarState } from './state';
 
 export interface WeeklyDisplayProps {
   searching: boolean;
   meetings: Meeting[];
   filtersOpen: boolean;
-  editing: Meeting;
-  setEditing: Callback<Meeting>;
-  onEditStop: () => void;
-  rndVisible: boolean;
-  setRndVisible: Callback<boolean>;
-  dialogOpen: boolean;
-  setDialogOpen: Callback<boolean>;
-  isDragging: boolean;
-  setIsDragging: Callback<boolean>;
   width: number;
   setWidth: Callback<number>;
   offset: Position;
@@ -55,15 +46,6 @@ function WeeklyDisplay({
   searching,
   meetings,
   filtersOpen,
-  editing,
-  setEditing,
-  onEditStop,
-  rndVisible,
-  setRndVisible,
-  dialogOpen,
-  setDialogOpen,
-  isDragging,
-  setIsDragging,
   width: cellWidth,
   setWidth: setCellWidth,
   offset,
@@ -108,18 +90,26 @@ function WeeklyDisplay({
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, []);
 
+  const {
+    rnd,
+    editing,
+    setEditing,
+    dragging,
+    setDialog,
+    start,
+  } = useCalendarState();
+
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
-  const { startingDate } = useCalendar();
   const onClick = useCallback(
     (event: MouseEvent) => {
-      if (isDragging) return;
+      if (dragging) return;
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
-      setEditing(getMeeting(48, pos, meeting, cellWidth, startingDate));
-      setDialogOpen(true);
+      setEditing(getMeeting(48, pos, meeting, cellWidth, start));
+      setDialog(true);
     },
-    [setEditing, setDialogOpen, isDragging, startingDate, offset, cellWidth]
+    [setEditing, setDialog, dragging, start, offset, cellWidth]
   );
 
   // Sync the scroll position of the main cell grid and the static headers. This
@@ -128,21 +118,18 @@ function WeeklyDisplay({
   const headerRef = useRef<HTMLDivElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);
   const ticking = useRef<boolean>(false);
-  const onScroll = useCallback(
-    (event: UIEvent<HTMLDivElement>) => {
-      setCellsMeasureIsCorrect(true);
-      const { scrollTop, scrollLeft } = event.currentTarget;
-      if (!ticking.current) {
-        requestAnimationFrame(() => {
-          if (timesRef.current) timesRef.current.scrollTop = scrollTop;
-          if (headerRef.current) headerRef.current.scrollLeft = scrollLeft;
-          ticking.current = false;
-        });
-        ticking.current = true;
-      }
-    },
-    [setCellsMeasureIsCorrect]
-  );
+  const onScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+    setCellsMeasureIsCorrect(true);
+    const { scrollTop, scrollLeft } = event.currentTarget;
+    if (!ticking.current) {
+      requestAnimationFrame(() => {
+        if (timesRef.current) timesRef.current.scrollTop = scrollTop;
+        if (headerRef.current) headerRef.current.scrollLeft = scrollLeft;
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
+  }, []);
 
   const eventGroups = useMemo(() => placeMeetings(meetings), [meetings]);
   const props = useSpring({ config, marginRight: filtersOpen ? width : 0 });
@@ -207,25 +194,17 @@ function WeeklyDisplay({
                 onClick={onClick}
                 ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
               >
-                {editing.id && rndVisible && (
+                {editing.id && rnd && (
                   <MeetingRnd
                     now={now}
                     width={cellWidth}
-                    editing={editing}
-                    setEditing={setEditing}
-                    setIsDragging={setIsDragging}
-                    onEditStop={() => {
-                      if (editing.id.startsWith('temp')) return;
-                      void onEditStop();
-                      setRndVisible(false);
-                    }}
                     eventData={eventData}
                     eventTarget={eventTarget}
                   />
                 )}
                 {eventGroups.map((groups: Meeting[][][], day) => {
                   // Show current time indicator if today is current date.
-                  const date = getDateWithDay(day, startingDate);
+                  const date = getDateWithDay(day, start);
                   const today =
                     now.getFullYear() === date.getFullYear() &&
                     now.getMonth() === date.getMonth() &&
@@ -247,12 +226,6 @@ function WeeklyDisplay({
                               <MeetingItem
                                 now={now}
                                 meeting={e}
-                                rndVisible={rndVisible}
-                                setRndVisible={setRndVisible}
-                                dialogOpen={dialogOpen}
-                                setDialogOpen={setDialogOpen}
-                                editing={editing}
-                                setEditing={setEditing}
                                 setEventTarget={setEventTarget}
                                 setEventData={setEventData}
                                 widthPercent={
