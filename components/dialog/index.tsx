@@ -45,7 +45,7 @@ export default function DialogContent({
         <animated.div
           key={idx}
           style={springs[idx]}
-          className={cn(styles.page, { [styles.page]: page === idx })}
+          className={cn(styles.page, { [styles.active]: page === idx })}
         >
           {child}
         </animated.div>
