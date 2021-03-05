@@ -1,6 +1,5 @@
 import { FormEvent, useCallback, useEffect, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
-import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
@@ -9,55 +8,42 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Callback } from 'lib/model/callback';
 import { Match } from 'lib/model/match';
+import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
-import useSingle from 'lib/hooks/single';
-
-import { useCalendar } from '../../context';
 
 import styles from './edit-page.module.scss';
 
 export interface EditPageProps {
   people: User[];
   meeting: Meeting;
-  dialogOpen: boolean;
+  setMeeting: Callback<Meeting>;
+  onSubmit: (evt: FormEvent) => void;
+  loading: boolean;
+  checked: boolean;
+  error: string;
 }
 
 export default function EditPage({
   people,
-  meeting: initialData,
-  dialogOpen,
+  meeting,
+  setMeeting,
+  onSubmit,
+  loading,
+  checked,
+  error,
 }: EditPageProps): JSX.Element {
-  const updateRemote = useCallback(async (updated: Meeting) => {
-    // TODO: The REST API URL that we use actually doesn't matter.
-    const url = `/api/meetings/${updated.parentId || updated.id}`;
-    const { data } = await axios.put<MeetingJSON>(url, updated.toJSON());
-    return Meeting.fromJSON(data);
-  }, []);
-
   const { t } = useTranslation();
-  const { mutateMeeting } = useCalendar();
-  const {
-    data: meeting,
-    setData: setMeeting,
-    onSubmit,
-    loading,
-    checked,
-    error,
-  } = useSingle(initialData, updateRemote, mutateMeeting, { sync: dialogOpen });
 
   const nav = useNav();
   const prevLoading = usePrevious(loading);
   useEffect(() => {
     if (prevLoading && !loading && checked) nav();
   }, [prevLoading, loading, checked, nav]);
-
-  useEffect(() => console.log('Edit loading:', loading), [loading]);
-  useEffect(() => console.log('Edit checked:', checked), [checked]);
 
   // TODO: Update the meeting's match's subjects. Right now, our back-end
   // ignores any changes to the match data (when PUT /api/meetings/[id]).

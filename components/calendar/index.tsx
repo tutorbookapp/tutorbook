@@ -207,12 +207,20 @@ export default function Calendar({
               <EditPage
                 people={people}
                 meeting={editing}
-                dialogOpen={dialogOpen}
+                setMeeting={setEditing}
+                onSubmit={onEditStop}
+                loading={editLoading}
+                checked={editChecked}
+                error={editError}
               />
               <CreatePage
                 people={people}
-                viewing={editing}
-                setViewing={setEditing}
+                meeting={editing}
+                setMeeting={setEditing}
+                onSubmit={onEditStop}
+                loading={editLoading}
+                checked={editChecked}
+                error={editError}
               />
             </DialogContent>
           </DialogSurface>

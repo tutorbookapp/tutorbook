@@ -1,6 +1,5 @@
 import { FormEvent, useCallback, useEffect, useMemo } from 'react';
 import { TextField } from '@rmwc/textfield';
-import axios from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
@@ -10,47 +9,38 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Callback } from 'lib/model/callback';
 import { Match } from 'lib/model/match';
-import { TCallback } from 'lib/model/callback';
+import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
-import clone from 'lib/utils/clone';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
-import useSingle from 'lib/hooks/single';
 import { useUser } from 'lib/context/user';
 
 import styles from './create-page.module.scss';
 
 export interface CreatePageProps {
   people: User[];
-  viewing: Meeting;
-  setViewing: TCallback<Meeting>;
+  meeting: Meeting;
+  setMeeting: Callback<Meeting>;
+  onSubmit: (evt: FormEvent) => void;
+  loading: boolean;
+  checked: boolean;
+  error: string;
 }
 
 export default function CreatePage({
   people,
-  viewing,
-  setViewing,
+  meeting,
+  setMeeting,
+  onSubmit,
+  loading,
+  checked,
+  error,
 }: CreatePageProps): JSX.Element {
-  // TODO: Revalidate local data after creation to account for recur rules.
-  const updateRemote = useCallback(async (updated: Meeting) => {
-    const created = new Meeting(clone({ ...updated, id: '' })).toJSON();
-    const { data } = await axios.post<MeetingJSON>('/api/meetings', created);
-    return Meeting.fromJSON(data);
-  }, []);
-
   const { user } = useUser();
   const { t } = useTranslation();
-  const {
-    data: meeting,
-    setData: setMeeting,
-    onSubmit,
-    loading,
-    checked,
-    error,
-  } = useSingle(viewing, updateRemote, setViewing, { sync: true });
 
   useEffect(() => {
     setMeeting((prev) => new Meeting({ ...prev, creator: user.toPerson() }));
@@ -61,9 +51,6 @@ export default function CreatePage({
   useEffect(() => {
     if (prevLoading && !loading && checked) nav();
   }, [prevLoading, loading, checked, nav]);
-
-  useEffect(() => console.log('Create loading:', loading), [loading]);
-  useEffect(() => console.log('Create checked:', checked), [checked]);
 
   const onMatchChange = useCallback(
     (match?: Match) => {
