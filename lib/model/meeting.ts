@@ -41,6 +41,15 @@ type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
 
 /**
+ * @typedef MeetingAction
+ * @description Action to take when updating recurring meetings.
+ * @property all - Update all of the recurring meetings.
+ * @property future - Update this and all future meetings.
+ * @property this - Only update this meeting instance.
+ */
+export type MeetingAction = 'all' | 'future' | 'this';
+
+/**
  * A meeting's status starts as `pending`, becomes `logged` once a tutor or
  * student confirms they've attended the meeting, and finally becomes `approved`
  * once an org admin (or an automation they've setup) approves the logged hours.

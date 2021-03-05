@@ -2233,6 +2233,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/radio@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@material/radio@npm:5.1.0"
+  dependencies:
+    "@material/animation": ^5.1.0
+    "@material/base": ^5.1.0
+    "@material/density": ^5.1.0
+    "@material/dom": ^5.1.0
+    "@material/feature-targeting": ^5.1.0
+    "@material/ripple": ^5.1.0
+    "@material/theme": ^5.1.0
+    "@material/touch-target": ^5.1.0
+    tslib: ^1.9.3
+  checksum: 625eaff5aad8a96351ede20c9de2be31dbb331c44be475f72705a959b855ebba14bff744d8cb18708df9e79473c3ce612e347fe6e03e0b467e4f009678599cb5
+  languageName: node
+  linkType: hard
+
 "@material/ripple@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/ripple@npm:5.1.0"
@@ -3139,6 +3156,23 @@ __metadata:
     react: ^16.3.x
     react-dom: ^16.3.x
   checksum: 3348dcaf63a8a062bf3eb2db13075d7d0c4aac9390f17ddaa7463259d7ffeebb8886eeda9c2583ef006f53d03ada27111adcc19ad65e001987b13caeade7c5c6
+  languageName: node
+  linkType: hard
+
+"@rmwc/radio@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "@rmwc/radio@npm:6.1.4"
+  dependencies:
+    "@material/radio": ^5.1.0
+    "@rmwc/base": ^6.1.4
+    "@rmwc/formfield": ^6.1.4
+    "@rmwc/ripple": ^6.1.4
+    "@rmwc/toggleable": ^6.1.4
+    "@rmwc/types": ^6.0.5
+  peerDependencies:
+    react: ^16.3.x
+    react-dom: ^16.3.x
+  checksum: 74ca91a5691b6a107b6605cd68262540e01f6169d6802e294dafdc122448c19d3ed288e0f2547f1e0ee916c2a824b7ea043bb832a1d26e1268608b461d7e263f
   languageName: node
   linkType: hard
 
@@ -17978,6 +18012,7 @@ resolve@^1.18.1:
     "@rmwc/icon-button": ^6.1.4
     "@rmwc/list": ^6.1.4
     "@rmwc/menu": ^6.1.4
+    "@rmwc/radio": ^6.1.4
     "@rmwc/ripple": ^6.1.4
     "@rmwc/select": ^6.1.4
     "@rmwc/snackbar": ^6.1.4

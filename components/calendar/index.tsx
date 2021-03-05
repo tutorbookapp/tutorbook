@@ -1,13 +1,20 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import axios, { AxiosError } from 'axios';
 import useSWR, { mutate } from 'swr';
 import { Snackbar } from '@rmwc/snackbar';
-import axios, { AxiosError } from 'axios';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 
 import DialogContent from 'components/dialog';
 
-import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
 import { APIErrorJSON } from 'lib/api/error';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
@@ -25,6 +32,7 @@ import DisplayPage from './dialog/display-page';
 import EditPage from './dialog/edit-page';
 import FiltersSheet from './filters-sheet';
 import Header from './header';
+import RecurDialog from './recur-dialog';
 import SearchBar from './search-bar';
 import WeeklyDisplay from './weekly-display';
 import styles from './calendar.module.scss';
@@ -81,6 +89,8 @@ export default function Calendar({
   const [dialog, setDialog] = useState<boolean>(false);
   const [dragging, setDragging] = useState<boolean>(false);
   const [dialogPage, setDialogPage] = useState<number>(0);
+  const [recurDialog, setRecurDialog] = useState<boolean>(false);
+  const [action, setAction] = useState<MeetingAction>('future');
 
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated = false) => {
@@ -112,22 +122,25 @@ export default function Calendar({
   );
 
   const original = useRef<Meeting>(initialEditData);
-  const updateMeetingRemote = useCallback(async (updated: Meeting) => {
-    if (updated.id.startsWith('temp')) {
-      const url = '/api/meetings';
-      const { data: createdMeeting } = await axios.post<MeetingJSON>(
-        url,
-        updated.toJSON()
-      );
-      return Meeting.fromJSON(createdMeeting);
-    }
-    const url = `/api/meetings/${updated.id}`;
-    const { data: updatedMeeting } = await axios.put<MeetingJSON>(url, {
-      ...updated.toJSON(),
-      options: { original: original.current.toJSON() },
-    });
-    return Meeting.fromJSON(updatedMeeting);
-  }, []);
+  const updateMeetingRemote = useCallback(
+    async (updated: Meeting) => {
+      if (updated.id.startsWith('temp')) {
+        const url = '/api/meetings';
+        const { data: createdMeeting } = await axios.post<MeetingJSON>(
+          url,
+          updated.toJSON()
+        );
+        return Meeting.fromJSON(createdMeeting);
+      }
+      const url = `/api/meetings/${updated.id}`;
+      const { data: updatedMeeting } = await axios.put<MeetingJSON>(url, {
+        ...updated.toJSON(),
+        options: { action, original: original.current.toJSON() },
+      });
+      return Meeting.fromJSON(updatedMeeting);
+    },
+    [action]
+  );
 
   // TODO: Having a single editing state is good for simplicity and most uses.
   // However, if a user were to drag an RND and then view another meeting while
@@ -135,7 +148,7 @@ export default function Calendar({
   const {
     data: editing,
     setData: setEditing,
-    onSubmit: onEditStop,
+    onSubmit: onEditSubmit,
     loading: editLoading,
     setLoading: setEditLoading,
     checked: editChecked,
@@ -185,8 +198,19 @@ export default function Calendar({
     });
   }, [setEditing, meetings]);
 
-  const [width, setWidth] = useState<number>(0);
+  // TODO: Update offset when the `MDCDialog` adds body scroll lock (which makes
+  // the body scrollbar disappear, moving the `fixed` position values).
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
+  const [width, setWidth] = useState<number>(0);
+
+  const onEditStop = useCallback(
+    (evt?: FormEvent) => {
+      if (evt) evt.preventDefault();
+      if (editing.parentId) return setRecurDialog(true);
+      return onEditSubmit();
+    },
+    [editing.parentId, onEditSubmit]
+  );
 
   // TODO: Clicking outside the dialog doesn't animate it closed. Instead, it
   // completely removes the dialog from the React tree (and thus also the DOM).
@@ -263,6 +287,20 @@ export default function Calendar({
             message='Could not delete meeting. Try again later'
             leading
             open
+          />
+        )}
+        {recurDialog && (
+          <RecurDialog
+            action={action}
+            setAction={setAction}
+            onClose={(evt) => {
+              if (evt.detail.action === 'ok') {
+                void onEditSubmit();
+              } else {
+                setEditing(original.current);
+              }
+            }}
+            onClosed={() => setRecurDialog(false)}
           />
         )}
         {dialog && (

@@ -120,6 +120,7 @@
     "@rmwc/icon-button": "^6.1.4",
     "@rmwc/list": "^6.1.4",
     "@rmwc/menu": "^6.1.4",
+    "@rmwc/radio": "^6.1.4",
     "@rmwc/ripple": "^6.1.4",
     "@rmwc/select": "^6.1.4",
     "@rmwc/snackbar": "^6.1.4",
