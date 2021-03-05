@@ -17,10 +17,10 @@ import useSingle from 'lib/hooks/single';
 import { useUser } from 'lib/context/user';
 
 import { CalendarStateContext } from './state';
-import CreatePage from './dialogs/create/create-page';
-import DialogSurface from './dialogs/surface';
-import DisplayPage from './dialogs/edit/display-page';
-import EditPage from './dialogs/edit/edit-page';
+import CreatePage from './dialog/create-page';
+import DialogSurface from './dialog/surface';
+import DisplayPage from './dialog/display-page';
+import EditPage from './dialog/edit-page';
 import FiltersSheet from './filters-sheet';
 import Header from './header';
 import SearchBar from './search-bar';
@@ -156,7 +156,11 @@ export default function Calendar({
   // Don't unmount the dialog surface if the user is draggingId (in that case, we
   // only temporarily hide the dialog until the user is finished draggingId).
   const onClosed = useCallback(() => {
-    if (!dragging) setEditing(initialEditData);
+    console.log('Dialog closed.');
+    if (!dragging) {
+      setEditing(initialEditData);
+      console.log('Edit data reset.');
+    }
   }, [setEditing, dragging]);
 
   const [width, setWidth] = useState<number>(0);
@@ -191,7 +195,7 @@ export default function Calendar({
         {editLoading && !editChecked && !editError && (
           <Snackbar message='Updating meeting...' timeout={-1} leading open />
         )}
-        {editing && (
+        {editing.id && (
           <DialogSurface width={width} offset={offset} onClosed={onClosed}>
             <DialogContent
               active={dialogPage}

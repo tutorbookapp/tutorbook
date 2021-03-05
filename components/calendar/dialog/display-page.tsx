@@ -7,7 +7,7 @@ import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
-import { useCalendarState } from '../../state';
+import { useCalendarState } from '../state';
 
 import styles from './display-page.module.scss';
 

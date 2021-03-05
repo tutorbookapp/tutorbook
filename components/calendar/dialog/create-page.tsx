@@ -17,7 +17,7 @@ import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
 import { useUser } from 'lib/context/user';
 
-import { useCalendarState } from '../../state';
+import { useCalendarState } from '../state';
 
 import styles from './create-page.module.scss';
 

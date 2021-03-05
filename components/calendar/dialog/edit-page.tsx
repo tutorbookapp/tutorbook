@@ -16,7 +16,7 @@ import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
 
-import { useCalendarState } from '../../state';
+import { useCalendarState } from '../state';
 
 import styles from './edit-page.module.scss';
 
