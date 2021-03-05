@@ -10,7 +10,6 @@ import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
-import { Callback } from 'lib/model/callback';
 import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
@@ -26,16 +25,12 @@ export interface EditPageProps {
   people: User[];
   meeting: Meeting;
   dialogOpen: boolean;
-  setLoading: Callback<boolean>;
-  setChecked: Callback<boolean>;
 }
 
 export default function EditPage({
   people,
   meeting: initialData,
   dialogOpen,
-  setLoading,
-  setChecked,
 }: EditPageProps): JSX.Element {
   const updateRemote = useCallback(async (updated: Meeting) => {
     // TODO: The REST API URL that we use actually doesn't matter.
@@ -61,8 +56,8 @@ export default function EditPage({
     if (prevLoading && !loading && checked) nav();
   }, [prevLoading, loading, checked, nav]);
 
-  useEffect(() => setLoading(loading), [loading, setLoading]);
-  useEffect(() => setChecked(checked), [checked, setChecked]);
+  useEffect(() => console.log('Edit loading:', loading), [loading]);
+  useEffect(() => console.log('Edit checked:', checked), [checked]);
 
   // TODO: Update the meeting's match's subjects. Right now, our back-end
   // ignores any changes to the match data (when PUT /api/meetings/[id]).
@@ -119,7 +114,7 @@ export default function EditPage({
     const idx = people.findIndex(
       (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
     );
-    return idx < 0 ? people[0].id || '' : people[idx].id;
+    return idx < 0 ? (people[0] || { id: '' }).id : people[idx].id;
   }, [people]);
 
   return (

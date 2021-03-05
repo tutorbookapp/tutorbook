@@ -4,17 +4,23 @@ import { Snackbar } from '@rmwc/snackbar';
 import axios from 'axios';
 import { dequal } from 'dequal/lite';
 
+import DialogContent from 'components/dialog';
+
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Position } from 'lib/model/position';
 import { useOrg } from 'lib/context/org';
+import usePeople from 'lib/hooks/people';
 import useSingle from 'lib/hooks/single';
 import { useUser } from 'lib/context/user';
 
-import { CreateDialog, DialogSurface, EditDialog } from './dialogs';
 import { CalendarContext } from './context';
+import CreatePage from './dialogs/create/create-page';
+import DialogSurface from './dialogs/surface';
+import DisplayPage from './dialogs/edit/display-page';
+import EditPage from './dialogs/edit/edit-page';
 import FiltersSheet from './filters-sheet';
 import Header from './header';
 import SearchBar from './search-bar';
@@ -104,6 +110,7 @@ export default function Calendar({
     [query.endpoint, meetings]
   );
 
+  const [dialogPage, setDialogPage] = useState<number>(0);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [draggingId, setDraggingId] = useState<string>();
   const [viewing, setViewing] = useState<Meeting>();
@@ -158,6 +165,8 @@ export default function Calendar({
   const [width, setWidth] = useState<number>(0);
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
+  const people = usePeople(editing.match);
+
   return (
     <CalendarContext.Provider
       value={{ mutateMeeting, removeMeeting, startingDate: query.from }}
@@ -183,12 +192,29 @@ export default function Calendar({
             setDialogOpen={setDialogOpen}
             onClosed={onClosed}
           >
-            {!viewing.id.startsWith('temp') && (
-              <EditDialog meeting={viewing} dialogOpen={dialogOpen} />
-            )}
-            {viewing.id.startsWith('temp') && (
-              <CreateDialog viewing={viewing} setViewing={setViewing} />
-            )}
+            <DialogContent
+              active={dialogPage}
+              setActive={setDialogPage}
+              loading={editLoading}
+              checked={editChecked}
+              link={`/${editing.match.org}/matches/${editing.match.id}`}
+            >
+              <DisplayPage
+                people={people}
+                meeting={editing}
+                openEdit={() => setDialogPage(1)}
+              />
+              <EditPage
+                people={people}
+                meeting={editing}
+                dialogOpen={dialogOpen}
+              />
+              <CreatePage
+                people={people}
+                viewing={editing}
+                setViewing={setEditing}
+              />
+            </DialogContent>
           </DialogSurface>
         )}
         <Header query={query} setQuery={setQuery} />

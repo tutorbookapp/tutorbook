@@ -8,7 +8,6 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 
 import { APIErrorJSON } from 'lib/api/error';
-import { Callback } from 'lib/model/callback';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
@@ -22,16 +21,12 @@ export interface DisplayPageProps {
   people: User[];
   meeting: Meeting;
   openEdit: () => void;
-  setLoading: Callback<boolean>;
-  setChecked: Callback<boolean>;
 }
 
 export default function DisplayPage({
   people,
   meeting,
   openEdit,
-  setLoading,
-  setChecked,
 }: DisplayPageProps): JSX.Element {
   const { t } = useTranslation();
   const { removeMeeting } = useCalendar();
@@ -39,19 +34,22 @@ export default function DisplayPage({
   const [error, setError] = useState<string>('');
   const deleteMeeting = useCallback(async () => {
     setError('');
-    setChecked(false);
-    setLoading(true);
+    console.log('Delete checked:', false);
+    console.log('Delete loading:', true);
     const endpoint = `/api/meetings/${meeting.parentId || meeting.id}`;
     const [err] = await to(axios.delete(endpoint));
     if (err) {
       const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
-      setLoading(false);
+      console.log('Delete loading:', false);
       setError(e.message);
     } else {
-      setChecked(true);
-      setTimeout(() => removeMeeting(meeting.id, true), 1000);
+      console.log('Delete checked:', true);
+      setTimeout(() => {
+        // TODO: Locally mutate and remove all meetings with `parentId`.
+        void removeMeeting(meeting.parentId || meeting.id, true);
+      }, 1000);
     }
-  }, [setLoading, setChecked, removeMeeting, meeting.id]);
+  }, [removeMeeting, meeting.id, meeting.parentId]);
 
   useEffect(() => {
     // TODO: Close snackbar when delete button is clicked repeatedly (i.e. when

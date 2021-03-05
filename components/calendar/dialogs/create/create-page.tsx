@@ -27,16 +27,12 @@ export interface CreatePageProps {
   people: User[];
   viewing: Meeting;
   setViewing: TCallback<Meeting>;
-  setLoading: TCallback<boolean>;
-  setChecked: TCallback<boolean>;
 }
 
 export default function CreatePage({
   people,
   viewing,
   setViewing,
-  setLoading,
-  setChecked,
 }: CreatePageProps): JSX.Element {
   // TODO: Revalidate local data after creation to account for recur rules.
   const updateRemote = useCallback(async (updated: Meeting) => {
@@ -66,8 +62,8 @@ export default function CreatePage({
     if (prevLoading && !loading && checked) nav();
   }, [prevLoading, loading, checked, nav]);
 
-  useEffect(() => setLoading(loading), [loading, setLoading]);
-  useEffect(() => setChecked(checked), [checked, setChecked]);
+  useEffect(() => console.log('Create loading:', loading), [loading]);
+  useEffect(() => console.log('Create checked:', checked), [checked]);
 
   const onMatchChange = useCallback(
     (match?: Match) => {
