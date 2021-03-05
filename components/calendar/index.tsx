@@ -3,13 +3,12 @@ import useSWR, { mutate } from 'swr';
 import { Snackbar } from '@rmwc/snackbar';
 import axios from 'axios';
 import { dequal } from 'dequal/lite';
-import { ResizeObserver as polyfill } from '@juggle/resize-observer';
-import useMeasure from 'react-use-measure';
 
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { MeetingsQuery } from 'lib/model/query/meetings';
+import { Position } from 'lib/model/position';
 import { useOrg } from 'lib/context/org';
 import useSingle from 'lib/hooks/single';
 import { useUser } from 'lib/context/user';
@@ -156,29 +155,8 @@ export default function Calendar({
     if (!draggingId) setViewing(undefined);
   }, [draggingId]);
 
-  const [rowsMeasureRef, rowsMeasure] = useMeasure({ polyfill });
-  const [cellsMeasureIsCorrect, setCellsMeasureIsCorrect] = useState(false);
-  const [cellsMeasureRef, cellsMeasure] = useMeasure({
-    polyfill,
-    scroll: true,
-  });
-  const [cellMeasureRef, { width: cellWidth }] = useMeasure({ polyfill });
-
-  // See: https://github.com/pmndrs/react-use-measure/issues/37
-  // Current workaround is to listen for scrolls on the parent div. Once
-  // the user scrolls, we know that the `rowsMeasure.x` is no longer correct
-  // but that the `cellsMeasure.x` is correct.
-  const offset = useMemo(
-    () => ({
-      x: cellsMeasureIsCorrect ? cellsMeasure.x : rowsMeasure.x + 8,
-      y: cellsMeasure.y,
-    }),
-    [cellsMeasureIsCorrect, cellsMeasure.x, cellsMeasure.y, rowsMeasure.x]
-  );
-
-  useEffect(() => {
-    setCellsMeasureIsCorrect(false);
-  }, [filtersOpen]);
+  const [width, setWidth] = useState<number>(0);
+  const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
   return (
     <CalendarContext.Provider
@@ -198,7 +176,7 @@ export default function Calendar({
         )}
         {viewing && (
           <DialogSurface
-            width={cellWidth}
+            width={width}
             offset={offset}
             viewing={viewing}
             dialogOpen={dialogOpen && !draggingId}
@@ -233,12 +211,10 @@ export default function Calendar({
               setViewing={setViewing}
               draggingId={draggingId}
               setDraggingId={setDraggingId}
-              rowsMeasureRef={rowsMeasureRef}
-              cellsMeasureRef={cellsMeasureRef}
-              cellMeasureRef={cellMeasureRef}
-              cellWidth={cellWidth}
+              width={width}
+              setWidth={setWidth}
               offset={offset}
-              setCellsMeasureIsCorrect={setCellsMeasureIsCorrect}
+              setOffset={setOffset}
             />
             <FiltersSheet
               query={query}

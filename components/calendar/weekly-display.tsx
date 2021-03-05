@@ -1,6 +1,5 @@
 import {
   MouseEvent,
-  Ref,
   UIEvent,
   memo,
   useCallback,
@@ -12,6 +11,8 @@ import {
 import { animated, useSpring } from 'react-spring';
 import mergeRefs from 'react-merge-refs';
 import { nanoid } from 'nanoid';
+import { ResizeObserver as polyfill } from '@juggle/resize-observer';
+import useMeasure from 'react-use-measure';
 
 import LoadingDots from 'components/loading-dots';
 
@@ -42,12 +43,10 @@ export interface WeeklyDisplayProps {
   setViewing: Callback<Meeting | undefined>;
   draggingId?: string;
   setDraggingId: Callback<string | undefined>;
-  rowsMeasureRef: Ref<HTMLDivElement>;
-  cellsMeasureRef: Ref<HTMLDivElement>;
-  cellMeasureRef: Ref<HTMLDivElement>;
-  cellWidth: number;
+  width: number;
+  setWidth: Callback<number>;
   offset: Position;
-  setCellsMeasureIsCorrect: Callback<boolean>;
+  setOffset: Callback<Position>;
 }
 
 function WeeklyDisplay({
@@ -61,40 +60,47 @@ function WeeklyDisplay({
   setViewing,
   draggingId,
   setDraggingId,
-  rowsMeasureRef,
-  cellsMeasureRef,
-  cellMeasureRef,
-  cellWidth,
+  width: cellWidth,
+  setWidth: setCellWidth,
   offset,
-  setCellsMeasureIsCorrect,
+  setOffset,
 }: WeeklyDisplayProps): JSX.Element {
-  const [eventTarget, setEventTarget] = useState<MouseEventHackTarget>();
-  const [eventData, setEventData] = useState<MouseEventHackData>();
-  const [editRndVisible, setEditRndVisible] = useState<boolean>(false);
-  const [now, setNow] = useState<Date>(new Date());
+  const [cellsMeasureIsCorrect, setCellsMeasureIsCorrect] = useState(false);
+  const [rowsMeasureRef, rowsMeasure] = useMeasure({ polyfill });
+  const [cellsMeasureRef, cellsMeasure] = useMeasure({
+    polyfill,
+    scroll: true,
+  });
+  const [cellMeasureRef, cellMeasure] = useMeasure({ polyfill });
 
-  const headerRef = useRef<HTMLDivElement>(null);
-  const timesRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setCellWidth(cellMeasure.width);
+  }, [setCellWidth, cellMeasure.width]);
+
+  // See: https://github.com/pmndrs/react-use-measure/issues/37
+  // Current workaround is to listen for scrolls on the parent div. Once
+  // the user scrolls, we know that the `rowsMeasure.x` is no longer correct
+  // but that the `cellsMeasure.x` is correct.
+  useEffect(() => {
+    setOffset({
+      x: cellsMeasureIsCorrect ? cellsMeasure.x : rowsMeasure.x + 8,
+      y: cellsMeasure.y,
+    });
+  }, [
+    setOffset,
+    cellsMeasureIsCorrect,
+    cellsMeasure.x,
+    cellsMeasure.y,
+    rowsMeasure.x,
+  ]);
+
+  useEffect(() => {
+    setCellsMeasureIsCorrect(false);
+  }, [filtersOpen]);
+
+  // Scroll to 8:30am by default (assumes 48px per hour).
   const rowsRef = useRef<HTMLDivElement>(null);
-  const ticking = useRef<boolean>(false);
-
-  const { updateEl, removeEl } = useClickContext();
-  const cellsClickRef = useCallback(
-    (node: HTMLElement | null) => {
-      if (!node) return removeEl('calendar-cells');
-      return updateEl('calendar-cells', node);
-    },
-    [updateEl, removeEl]
-  );
-
   useEffect(() => {
-    const tick = () => setNow(new Date());
-    const intervalId = window.setInterval(tick, 60000);
-    return () => window.clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
-    // Scroll to 8:30am by default (assumes 48px per hour).
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, []);
 
@@ -114,6 +120,9 @@ function WeeklyDisplay({
   // Sync the scroll position of the main cell grid and the static headers. This
   // was inspired by the way that Google Calendar's UI is currently setup.
   // @see {@link https://mzl.la/35OIC9y}
+  const headerRef = useRef<HTMLDivElement>(null);
+  const timesRef = useRef<HTMLDivElement>(null);
+  const ticking = useRef<boolean>(false);
   const onScroll = useCallback(
     (event: UIEvent<HTMLDivElement>) => {
       setCellsMeasureIsCorrect(true);
@@ -132,6 +141,26 @@ function WeeklyDisplay({
 
   const eventGroups = useMemo(() => placeMeetings(meetings), [meetings]);
   const props = useSpring({ config, marginRight: filtersOpen ? width : 0 });
+
+  const [eventTarget, setEventTarget] = useState<MouseEventHackTarget>();
+  const [eventData, setEventData] = useState<MouseEventHackData>();
+  const [editRndVisible, setEditRndVisible] = useState<boolean>(false);
+
+  const [now, setNow] = useState<Date>(new Date());
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    const intervalId = window.setInterval(tick, 60000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  const { updateEl, removeEl } = useClickContext();
+  const cellsClickRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return removeEl('calendar-cells');
+      return updateEl('calendar-cells', node);
+    },
+    [updateEl, removeEl]
+  );
 
   return (
     <animated.div className={styles.wrapper} style={props}>
