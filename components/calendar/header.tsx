@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -13,10 +13,7 @@ export interface CalendarHeaderProps {
   setQuery: Callback<MeetingsQuery>;
 }
 
-export default function CalendarHeader({
-  query,
-  setQuery,
-}: CalendarHeaderProps): JSX.Element {
+function CalendarHeader({ query, setQuery }: CalendarHeaderProps): JSX.Element {
   const { org } = useOrg();
   const { t, lang: locale } = useTranslation();
 
@@ -82,3 +79,5 @@ export default function CalendarHeader({
     />
   );
 }
+
+export default memo(CalendarHeader, dequal);

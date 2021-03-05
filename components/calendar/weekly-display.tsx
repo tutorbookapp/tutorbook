@@ -21,6 +21,7 @@ import { Meeting } from 'lib/model/meeting';
 import { Position } from 'lib/model/position';
 import { getDateWithDay } from 'lib/utils/time';
 import { useClickContext } from 'lib/hooks/click-outside';
+import { useUser } from 'lib/context/user';
 
 import { Headers, Lines, Times, Weekdays } from './components';
 import { MouseEventHackData, MouseEventHackTarget } from './hack-types';
@@ -103,18 +104,22 @@ function WeeklyDisplay({
 
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
+  const { user } = useUser();
   const onClick = useCallback(
     (event: MouseEvent) => {
       if (dragging) return;
-      console.log('Creating meeting...');
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
-      const meeting = new Meeting({ id: `temp-${nanoid()}` });
-      setEditing(getMeeting(48, pos, meeting, cellWidth, start));
+      const creating = new Meeting({
+        id: `temp-${nanoid()}`,
+        creator: user.toPerson(),
+      });
+      setEditing(getMeeting(48, pos, creating, cellWidth, start));
       setDialogPage(2);
       setDialog(true);
       setRnd(true);
     },
     [
+      user,
       setEditing,
       setDialog,
       setDialogPage,

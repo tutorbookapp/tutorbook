@@ -14,8 +14,11 @@ interface SingleProps<T> {
   setValidations: Callback<Validations>;
   onSubmit: (evt?: FormEvent) => Promise<void>;
   loading: boolean;
+  setLoading: Callback<boolean>;
   checked: boolean;
+  setChecked: Callback<boolean>;
   error: string;
+  setError: Callback<string>;
 }
 
 /**
@@ -120,7 +123,10 @@ export default function useSingle<T>(
     setValidations,
     onSubmit,
     error,
+    setError,
     loading,
+    setLoading,
     checked,
+    setChecked,
   };
 }

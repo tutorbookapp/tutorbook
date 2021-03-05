@@ -1,6 +1,7 @@
+import { memo, useCallback } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
-import { useCallback } from 'react';
+import { dequal } from 'dequal/lite';
 
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
@@ -14,7 +15,7 @@ export interface SearchBarProps {
   byOrg?: boolean;
 }
 
-export default function SearchBar({
+function SearchBar({
   query,
   setQuery,
   setFiltersOpen,
@@ -51,3 +52,5 @@ export default function SearchBar({
     </div>
   );
 }
+
+export default memo(SearchBar, dequal);

@@ -34,11 +34,19 @@ export default function DialogSurface({
   offset,
   children,
 }: DialogSurfaceProps): JSX.Element {
-  const { editing, setDialog } = useCalendarState();
+  const { editing, setDialog, dragging } = useCalendarState();
 
   const measured = useRef<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
 
+  // Remove dialog when dragging an existing meeting. This mimics GCal behavior
+  // and prevents awkward loading states shown within the dialog display page.
+  useEffect(() => {
+    if (editing.id.startsWith('temp')) return;
+    setVisible((prev) => prev && !dragging);
+  }, [editing.id, dragging]);
+
+  // Only show dialog once it has been measured and positioned accordingly.
   useEffect(() => {
     setTimeout(() => {
       measured.current = true;
@@ -56,12 +64,12 @@ export default function DialogSurface({
 
   const onLeft = useMemo(() => {
     const x = offset.x + rndPosition.x - bounds.width - PREVIEW_MARGIN;
-    return visible ? x : x + 12;
-  }, [offset.x, visible, rndPosition.x, bounds.width]);
+    return visible && !dragging ? x : x + 12;
+  }, [offset.x, dragging, visible, rndPosition.x, bounds.width]);
   const onRight = useMemo(() => {
     const x = offset.x + rndPosition.x + rndWidth + PREVIEW_MARGIN;
-    return visible ? x : x - 12;
-  }, [offset.x, visible, rndPosition.x, rndWidth]);
+    return visible && !dragging ? x : x - 12;
+  }, [offset.x, dragging, visible, rndPosition.x, rndWidth]);
 
   const alignedTop = useMemo(() => offset.y + rndPosition.y, [
     offset.y,
@@ -91,7 +99,7 @@ export default function DialogSurface({
     onRest: () => (!visible && measured.current ? setDialog(false) : undefined),
     left: rndPosition.x < rndWidth * 3 ? onRight : onLeft,
     config: { tension: 250, velocity: 50 },
-    immediate: !measured.current,
+    immediate: !measured.current || dragging,
     top,
   });
 
@@ -110,7 +118,9 @@ export default function DialogSurface({
         <animated.div
           style={props}
           ref={mergeRefs([measureRef, clickRef])}
-          className={cn(styles.wrapper, { [styles.visible]: visible })}
+          className={cn(styles.wrapper, {
+            [styles.visible]: visible && !dragging,
+          })}
         >
           <NavContext.Provider value={() => setVisible(false)}>
             {children}

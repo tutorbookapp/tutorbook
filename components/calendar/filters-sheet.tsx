@@ -1,5 +1,6 @@
 import { animated, useSpring } from 'react-spring';
 import { memo, useCallback } from 'react';
+import { dequal } from 'dequal/lite';
 
 import SubjectSelect from 'components/subject-select';
 import UserSelect from 'components/user-select';
@@ -61,4 +62,4 @@ function FiltersSheet({
   );
 }
 
-export default memo(FiltersSheet);
+export default memo(FiltersSheet, dequal);

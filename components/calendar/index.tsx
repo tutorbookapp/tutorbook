@@ -75,8 +75,15 @@ export default function Calendar({
     });
   }, [byUser, user]);
 
+  const [rnd, setRnd] = useState<boolean>(false);
+  const [dialog, setDialog] = useState<boolean>(false);
+  const [dragging, setDragging] = useState<boolean>(false);
+  const [dialogPage, setDialogPage] = useState<number>(0);
+
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated = false) => {
+      // Don't locally update meetings that have yet to be created.
+      if (mutated.id.startsWith('temp')) return;
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
         if (!hasBeenUpdated) mutatedMeetingIds.add(mutated.id);
@@ -96,14 +103,11 @@ export default function Calendar({
       // this callback function to properly cache and reuse the previous value.
       const json = updated.map((m) => m.toJSON());
       await mutate(query.endpoint, { meetings: json }, hasBeenUpdated);
+      // Remove the RND once there is a meeting item to replace it.
+      if (idx < 0) setRnd(false);
     },
     [query.endpoint, meetings]
   );
-
-  const [rnd, setRnd] = useState<boolean>(false);
-  const [dialog, setDialog] = useState<boolean>(false);
-  const [dragging, setDragging] = useState<boolean>(false);
-  const [dialogPage, setDialogPage] = useState<number>(0);
 
   const original = useRef<Meeting>(initialEditData);
   const updateMeetingRemote = useCallback(async (updated: Meeting) => {
@@ -128,22 +132,38 @@ export default function Calendar({
     setData: setEditing,
     onSubmit: onEditStop,
     loading: editLoading,
+    setLoading: setEditLoading,
     checked: editChecked,
+    setChecked: setEditChecked,
     error: editError,
+    setError: setEditError,
   } = useSingle<Meeting>(initialEditData, updateMeetingRemote, mutateMeeting);
 
   const people = usePeople(editing.match);
 
+  // Reset loading/checked/error state when dialog closes so we don't show
+  // snackbars for messages already shown in the dialog.
+  useEffect(() => {
+    if (dialog) return;
+    setEditLoading(false);
+    setEditChecked(false);
+    setEditError('');
+  }, [dialog, setEditLoading, setEditChecked, setEditError]);
+
+  // Save the meeting state before an edit so that our back-end can modify recur
+  // rules properly (adding the correct `UNTIL` exceptions).
   useEffect(() => {
     if (editing.id !== original.current.id) original.current = editing;
   }, [editing]);
 
+  // Sync the editing state with our SWR meetings state. If a meeting is updated
+  // elsewhere, we want the editing state to reflect those updates.
   useEffect(() => {
     setEditing((prev) => {
       if (prev?.id.startsWith('temp')) return prev;
       const idx = meetings.findIndex((m) => m.id === prev?.id);
       if (idx < 0) {
-        setDialog(false);
+        setDialog(false); // TODO: Animate the dialog closed before removing.
         return prev;
       }
       if (dequal(meetings[idx], prev)) return prev;
@@ -154,23 +174,40 @@ export default function Calendar({
   const [width, setWidth] = useState<number>(0);
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
+  // TODO: Clicking outside the dialog doesn't animate it closed. Instead, it
+  // completely removes the dialog from the React tree (and thus also the DOM).
+  // This prevents expensive updates when animating the filter sheet open, but
+  // it also gets rid of the nice closing animation...
   const clickContextValue = useClickOutside(() => setDialog(false), dialog);
+  const calendarState = useMemo(
+    () => ({
+      editing,
+      setEditing,
+      onEditStop,
+      rnd,
+      setRnd,
+      dialog,
+      setDialog,
+      dragging,
+      setDragging,
+      start: query.from,
+    }),
+    [
+      editing,
+      setEditing,
+      onEditStop,
+      rnd,
+      setRnd,
+      dialog,
+      setDialog,
+      dragging,
+      setDragging,
+      query.from,
+    ]
+  );
 
   return (
-    <CalendarStateContext.Provider
-      value={{
-        editing,
-        setEditing,
-        onEditStop,
-        rnd,
-        setRnd,
-        dialog,
-        setDialog,
-        dragging,
-        setDragging,
-        start: query.from,
-      }}
-    >
+    <CalendarStateContext.Provider value={calendarState}>
       <ClickContext.Provider value={clickContextValue}>
         {!dialog && editLoading && !editChecked && !editError && (
           <Snackbar message='Updating meeting...' timeout={-1} leading open />

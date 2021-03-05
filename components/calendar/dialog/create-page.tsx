@@ -15,7 +15,6 @@ import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
-import { useUser } from 'lib/context/user';
 
 import { useCalendarState } from '../state';
 
@@ -35,15 +34,7 @@ export default function CreatePage({
   error,
 }: CreatePageProps): JSX.Element {
   const { editing, setEditing, onEditStop } = useCalendarState();
-  const { user } = useUser();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    setEditing((prev) => {
-      if (prev.creator.id) return prev;
-      return new Meeting({ ...prev, creator: user.toPerson() });
-    });
-  }, [user, setEditing]);
 
   const nav = useNav();
   const prevLoading = usePrevious(loading);
