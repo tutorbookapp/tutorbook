@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 import Avatar from 'components/avatar';
 
-import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 

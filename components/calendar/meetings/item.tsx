@@ -69,6 +69,7 @@ export default function MeetingItem({
         // - If mousemove, then edit with RND (this is a drag).
         // - If mouseup, then view (this is a click).
         const edit = (e: MouseEvent) => {
+          console.log('Editing meeting...');
           e.stopPropagation();
           removeListeners();
           setEditing(meeting);
@@ -84,6 +85,7 @@ export default function MeetingItem({
           setRnd(true);
         };
         const view = (e: MouseEvent) => {
+          console.log('Viewing meeting...');
           e.stopPropagation();
           removeListeners();
           setEditing(meeting);

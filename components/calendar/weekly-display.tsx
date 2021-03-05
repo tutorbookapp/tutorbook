@@ -92,6 +92,7 @@ function WeeklyDisplay({
 
   const {
     rnd,
+    setRnd,
     editing,
     setEditing,
     dragging,
@@ -104,12 +105,14 @@ function WeeklyDisplay({
   const onClick = useCallback(
     (event: MouseEvent) => {
       if (dragging) return;
+      console.log('Creating meeting...');
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
       setEditing(getMeeting(48, pos, meeting, cellWidth, start));
       setDialog(true);
+      setRnd(true);
     },
-    [setEditing, setDialog, dragging, start, offset, cellWidth]
+    [setEditing, setDialog, setRnd, dragging, start, offset, cellWidth]
   );
 
   // Sync the scroll position of the main cell grid and the static headers. This
