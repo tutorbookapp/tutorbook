@@ -26,19 +26,15 @@ import styles from './surface.module.scss';
 export interface DialogSurfaceProps {
   width: number;
   offset: Position;
-  onClosed: () => void;
   children: ReactNode;
 }
 
-// TODO: Close this dialog and re-open or otherwise prevent these expensive
-// positioning calculations when opening and closing the FiltersSheet.
 export default function DialogSurface({
   width: rndWidth,
   offset,
-  onClosed,
   children,
 }: DialogSurfaceProps): JSX.Element {
-  const { editing, dialog, setDialog } = useCalendarState();
+  const { editing, setDialog } = useCalendarState();
 
   const measured = useRef<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -60,12 +56,12 @@ export default function DialogSurface({
 
   const onLeft = useMemo(() => {
     const x = offset.x + rndPosition.x - bounds.width - PREVIEW_MARGIN;
-    return visible && dialog ? x : x + 12;
-  }, [offset.x, visible, dialog, rndPosition.x, bounds.width]);
+    return visible ? x : x + 12;
+  }, [offset.x, visible, rndPosition.x, bounds.width]);
   const onRight = useMemo(() => {
     const x = offset.x + rndPosition.x + rndWidth + PREVIEW_MARGIN;
-    return visible && dialog ? x : x - 12;
-  }, [offset.x, visible, dialog, rndPosition.x, rndWidth]);
+    return visible ? x : x - 12;
+  }, [offset.x, visible, rndPosition.x, rndWidth]);
 
   const alignedTop = useMemo(() => offset.y + rndPosition.y, [
     offset.y,
@@ -92,7 +88,7 @@ export default function DialogSurface({
 
   // TODO: Clicking on match after closing begins should reverse animation.
   const props = useSpring({
-    onRest: () => (!dialog && measured.current ? onClosed() : undefined),
+    onRest: () => (!visible && measured.current ? setDialog(false) : undefined),
     left: rndPosition.x < rndWidth * 3 ? onRight : onLeft,
     config: { tension: 250, velocity: 50 },
     immediate: !measured.current,
@@ -102,10 +98,10 @@ export default function DialogSurface({
   const { updateEl, removeEl } = useClickContext();
   const clickRef = useCallback(
     (node: HTMLElement | null) => {
-      if (!node) return removeEl(`dialog-${editing.id}`);
-      return updateEl(`dialog-${editing.id}`, node);
+      if (!node) return removeEl('meeting-dialog');
+      return updateEl('meeting-dialog', node);
     },
-    [updateEl, removeEl, editing.id]
+    [updateEl, removeEl]
   );
 
   return (
@@ -114,11 +110,9 @@ export default function DialogSurface({
         <animated.div
           style={props}
           ref={mergeRefs([measureRef, clickRef])}
-          className={cn(styles.wrapper, {
-            [styles.visible]: dialog && visible,
-          })}
+          className={cn(styles.wrapper, { [styles.visible]: visible })}
         >
-          <NavContext.Provider value={() => setDialog(false)}>
+          <NavContext.Provider value={() => setVisible(false)}>
             {children}
           </NavContext.Provider>
         </animated.div>

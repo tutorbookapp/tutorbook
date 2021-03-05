@@ -51,13 +51,20 @@ export default function MeetingItem({
     [updateEl, removeEl, meeting.id]
   );
 
-  const { editing, setEditing, rnd, setRnd, setDialog } = useCalendarState();
+  const {
+    editing,
+    setEditing,
+    rnd,
+    setRnd,
+    dialog,
+    setDialog,
+  } = useCalendarState();
 
   return (
     <div
       style={{ top, left, width, height }}
       className={cn(styles.meeting, {
-        [styles.elevated]: !rnd && editing.id === meeting.id,
+        [styles.elevated]: !rnd && dialog && editing.id === meeting.id,
         [styles.editing]: rnd && editing.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}

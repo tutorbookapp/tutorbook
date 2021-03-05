@@ -122,10 +122,10 @@ export default function MeetingRnd({
   const { updateEl, removeEl } = useClickContext();
   const ref = useCallback(
     (node: HTMLElement | null) => {
-      if (!node) return removeEl(`editing-rnd-${editing.id}`);
-      return updateEl(`editing-rnd-${editing.id}`, node);
+      if (!node) return removeEl('meeting-rnd');
+      return updateEl('meeting-rnd', node);
     },
-    [updateEl, removeEl, editing.id]
+    [updateEl, removeEl]
   );
 
   return (

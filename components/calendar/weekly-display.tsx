@@ -36,6 +36,7 @@ export interface WeeklyDisplayProps {
   searching: boolean;
   meetings: Meeting[];
   filtersOpen: boolean;
+  setDialogPage: Callback<number>;
   width: number;
   setWidth: Callback<number>;
   offset: Position;
@@ -46,6 +47,7 @@ function WeeklyDisplay({
   searching,
   meetings,
   filtersOpen,
+  setDialogPage,
   width: cellWidth,
   setWidth: setCellWidth,
   offset,
@@ -109,10 +111,20 @@ function WeeklyDisplay({
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
       setEditing(getMeeting(48, pos, meeting, cellWidth, start));
+      setDialogPage(2);
       setDialog(true);
       setRnd(true);
     },
-    [setEditing, setDialog, setRnd, dragging, start, offset, cellWidth]
+    [
+      setEditing,
+      setDialog,
+      setDialogPage,
+      setRnd,
+      dragging,
+      start,
+      offset,
+      cellWidth,
+    ]
   );
 
   // Sync the scroll position of the main cell grid and the static headers. This
@@ -197,7 +209,7 @@ function WeeklyDisplay({
                 onClick={onClick}
                 ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
               >
-                {editing.id && rnd && (
+                {rnd && (
                   <MeetingRnd
                     now={now}
                     width={cellWidth}

@@ -117,6 +117,14 @@ export default function Calendar({
 
   const original = useRef<Meeting>(initialEditData);
   const updateMeetingRemote = useCallback(async (updated: Meeting) => {
+    if (updated.id.startsWith('temp')) {
+      const url = '/api/meetings';
+      const { data: createdMeeting } = await axios.post<MeetingJSON>(
+        url,
+        updated.toJSON()
+      );
+      return Meeting.fromJSON(createdMeeting);
+    }
     const url = `/api/meetings/${updated.id}`;
     const { data: updatedMeeting } = await axios.put<MeetingJSON>(url, {
       ...updated.toJSON(),
@@ -153,16 +161,6 @@ export default function Calendar({
     });
   }, [setEditing, meetings]);
 
-  // Don't unmount the dialog surface if the user is draggingId (in that case, we
-  // only temporarily hide the dialog until the user is finished draggingId).
-  const onClosed = useCallback(() => {
-    console.log('Dialog closed.');
-    if (!dragging) {
-      setEditing(initialEditData);
-      console.log('Edit data reset.');
-    }
-  }, [setEditing, dragging]);
-
   const [width, setWidth] = useState<number>(0);
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
@@ -184,19 +182,21 @@ export default function Calendar({
       }}
     >
       <ClickContext.Provider value={clickContextValue}>
-        {editChecked && <Snackbar message='Updated meeting.' leading open />}
-        {editError && (
+        {!dialog && editLoading && !editChecked && !editError && (
+          <Snackbar message='Updating meeting...' timeout={-1} leading open />
+        )}
+        {!dialog && editChecked && (
+          <Snackbar message='Updated meeting.' leading open />
+        )}
+        {!dialog && editError && (
           <Snackbar
             message='Could not update meeting. Try again later.'
             leading
             open
           />
         )}
-        {editLoading && !editChecked && !editError && (
-          <Snackbar message='Updating meeting...' timeout={-1} leading open />
-        )}
-        {editing.id && (
-          <DialogSurface width={width} offset={offset} onClosed={onClosed}>
+        {dialog && (
+          <DialogSurface width={width} offset={offset}>
             <DialogContent
               active={dialogPage}
               setActive={setDialogPage}
@@ -233,6 +233,7 @@ export default function Calendar({
               searching={!data}
               meetings={meetings}
               filtersOpen={filtersOpen}
+              setDialogPage={setDialogPage}
               width={width}
               setWidth={setWidth}
               offset={offset}

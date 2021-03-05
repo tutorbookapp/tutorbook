@@ -39,7 +39,10 @@ export default function CreatePage({
   const { t } = useTranslation();
 
   useEffect(() => {
-    setEditing((prev) => new Meeting({ ...prev, creator: user.toPerson() }));
+    setEditing((prev) => {
+      if (prev.creator.id) return prev;
+      return new Meeting({ ...prev, creator: user.toPerson() });
+    });
   }, [user, setEditing]);
 
   const nav = useNav();

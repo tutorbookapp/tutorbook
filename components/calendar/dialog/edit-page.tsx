@@ -8,7 +8,6 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import { Callback } from 'lib/model/callback';
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
