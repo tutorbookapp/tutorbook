@@ -21,25 +21,4 @@
     opacity: 1;
     z-index: 4;
   }
-
-  .wrapper {
-    flex-direction: column;
-    position: relative;
-    display: flex;
-    height: 100%;
-
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--accents-2);
-      padding: 12px 14px;
-
-      .btn {
-        font-size: 18px;
-        padding: 9px;
-        width: 36px;
-        height: 36px;
-      }
-    }
-  }
 }

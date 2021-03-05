@@ -127,6 +127,9 @@ export default function Calendar({
     return Meeting.fromJSON(updatedMeeting);
   }, []);
 
+  // TODO: Having a single editing state is good for simplicity and most uses.
+  // However, if a user were to drag an RND and then view another meeting while
+  // that RND is still updating, we would run into issues...
   const {
     data: editing,
     setData: setEditing,
@@ -149,6 +152,15 @@ export default function Calendar({
     setEditChecked(false);
     setEditError('');
   }, [dialog, setEditLoading, setEditChecked, setEditError]);
+
+  // Open to the correct dialog page when viewing/creating different meetings.
+  useEffect(() => {
+    if (editing.id.startsWith('temp')) {
+      setDialogPage(2);
+    } else {
+      setDialogPage(0);
+    }
+  }, [editing.id]);
 
   // Save the meeting state before an edit so that our back-end can modify recur
   // rules properly (adding the correct `UNTIL` exceptions).
@@ -224,22 +236,23 @@ export default function Calendar({
         )}
         {dialog && (
           <DialogSurface width={width} offset={offset}>
-            <DialogContent
-              active={dialogPage}
-              setActive={setDialogPage}
-              loading={editLoading}
-              checked={editChecked}
-              link={`/${editing.match.org}/matches/${editing.match.id}`}
-            >
-              <DisplayPage people={people} openEdit={() => setDialogPage(1)} />
+            <DialogContent page={dialogPage}>
+              <DisplayPage
+                people={people}
+                setPage={setDialogPage}
+                loading={editLoading}
+                checked={editChecked}
+              />
               <EditPage
                 people={people}
+                setPage={setDialogPage}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
               />
               <CreatePage
                 people={people}
+                setPage={setDialogPage}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
@@ -260,7 +273,6 @@ export default function Calendar({
               searching={!data}
               meetings={meetings}
               filtersOpen={filtersOpen}
-              setDialogPage={setDialogPage}
               width={width}
               setWidth={setWidth}
               offset={offset}

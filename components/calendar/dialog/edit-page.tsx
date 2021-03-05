@@ -1,13 +1,15 @@
 import { FormEvent, useCallback, useEffect, useMemo } from 'react';
+import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
+import Loader from 'components/loader';
 import RecurSelect from 'components/recur-select';
 import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
-import { useNav } from 'components/dialog/context';
 
+import { Callback } from 'lib/model/callback';
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
@@ -17,10 +19,11 @@ import usePrevious from 'lib/hooks/previous';
 
 import { useCalendarState } from '../state';
 
-import styles from './form.module.scss';
+import styles from './page.module.scss';
 
 export interface EditPageProps {
   people: User[];
+  setPage: Callback<number>;
   loading: boolean;
   checked: boolean;
   error: string;
@@ -28,6 +31,7 @@ export interface EditPageProps {
 
 export default function EditPage({
   people,
+  setPage,
   loading,
   checked,
   error,
@@ -35,11 +39,10 @@ export default function EditPage({
   const { editing, setEditing, onEditStop } = useCalendarState();
   const { t } = useTranslation();
 
-  const nav = useNav();
   const prevLoading = usePrevious(loading);
   useEffect(() => {
-    if (prevLoading && !loading && checked) nav();
-  }, [prevLoading, loading, checked, nav]);
+    if (prevLoading && !loading && checked) setPage(0);
+  }, [prevLoading, loading, checked, setPage]);
 
   // TODO: Update the meeting's match's subjects. Right now, our back-end
   // ignores any changes to the match data (when PUT /api/meetings/[id]).
@@ -100,57 +103,67 @@ export default function EditPage({
   }, [people]);
 
   return (
-    <form className={styles.form} onSubmit={onEditStop}>
-      <div className={styles.inputs}>
-        <SubjectSelect
-          required
-          autoOpenMenu
-          label={t('common:subjects')}
-          onChange={onSubjectsChange}
-          value={editing.match.subjects}
-          className={styles.field}
-          options={subjectOptions}
-          renderToPortal
-          outlined
-        />
-        <TimeSelect
-          required
-          label={t('common:time')}
-          onChange={onTimeChange}
-          value={editing.time}
-          className={styles.field}
-          uid={timePersonId}
-          renderToPortal
-          outlined
-        />
-        <RecurSelect
-          label='Recurrence'
-          className={styles.field}
-          onChange={onRecurChange}
-          value={editing.time.recur}
-          outlined
-        />
-        <TextField
-          outlined
-          textarea
-          rows={4}
-          placeholder={t('meeting:notes-placeholder', {
-            subject: join(editing.match.subjects) || 'Computer Science',
-          })}
-          label={t('meeting:notes')}
-          className={styles.field}
-          onChange={onNotesChange}
-          value={editing.notes}
-        />
-        <Button
+    <div className={styles.wrapper}>
+      <Loader active={!!loading} checked={!!checked} />
+      <div className={styles.nav}>
+        <IconButton
+          icon='close'
           className={styles.btn}
-          label={t('meeting:update-btn')}
-          disabled={loading}
-          raised
-          arrow
+          onClick={() => setPage(0)}
         />
-        {!!error && <div className={styles.error}>{error}</div>}
       </div>
-    </form>
+      <form className={styles.form} onSubmit={onEditStop}>
+        <div className={styles.inputs}>
+          <SubjectSelect
+            required
+            autoOpenMenu
+            label={t('common:subjects')}
+            onChange={onSubjectsChange}
+            value={editing.match.subjects}
+            className={styles.field}
+            options={subjectOptions}
+            renderToPortal
+            outlined
+          />
+          <TimeSelect
+            required
+            label={t('common:time')}
+            onChange={onTimeChange}
+            value={editing.time}
+            className={styles.field}
+            uid={timePersonId}
+            renderToPortal
+            outlined
+          />
+          <RecurSelect
+            label='Recurrence'
+            className={styles.field}
+            onChange={onRecurChange}
+            value={editing.time.recur}
+            outlined
+          />
+          <TextField
+            outlined
+            textarea
+            rows={4}
+            placeholder={t('meeting:notes-placeholder', {
+              subject: join(editing.match.subjects) || 'Computer Science',
+            })}
+            label={t('meeting:notes')}
+            className={styles.field}
+            onChange={onNotesChange}
+            value={editing.notes}
+          />
+          <Button
+            className={styles.btn}
+            label={t('meeting:update-btn')}
+            disabled={loading}
+            raised
+            arrow
+          />
+          {!!error && <div className={styles.error}>{error}</div>}
+        </div>
+      </form>
+    </div>
   );
 }

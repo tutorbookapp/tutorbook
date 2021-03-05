@@ -1,4 +1,55 @@
 @use 'styles/typography';
+@use 'styles/common';
+
+.wrapper {
+  flex-direction: column;
+  position: relative;
+  display: flex;
+  height: 100%;
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--accents-2);
+    padding: 12px 14px;
+
+    .btn {
+      font-size: 18px;
+      padding: 9px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+}
+
+.form {
+  overflow: auto;
+  height: 100%;
+
+  .divider {
+    @include common.divider;
+  }
+
+  .inputs {
+    margin: 24px auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+
+    .field {
+      @include common.field;
+    }
+
+    .btn {
+      margin: 8px 0 0;
+      width: 100%;
+    }
+
+    .error {
+      @include common.error;
+    }
+  }
+}
 
 .actions {
   border-top: 1px solid var(--accents-2);

@@ -34,7 +34,7 @@ export default function DialogSurface({
   offset,
   children,
 }: DialogSurfaceProps): JSX.Element {
-  const { editing, setDialog, dragging } = useCalendarState();
+  const { editing, setDialog, dragging, setRnd } = useCalendarState();
 
   const measured = useRef<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -94,7 +94,6 @@ export default function DialogSurface({
     return alignedCenter;
   }, [alignedTop, alignedCenter, alignedBottom, bounds.height]);
 
-  // TODO: Clicking on match after closing begins should reverse animation.
   const props = useSpring({
     onRest: () => (!visible && measured.current ? setDialog(false) : undefined),
     left: rndPosition.x < rndWidth * 3 ? onRight : onLeft,
@@ -112,6 +111,11 @@ export default function DialogSurface({
     [updateEl, removeEl]
   );
 
+  const navContextValue = useCallback(() => {
+    setVisible(false);
+    setRnd(false);
+  }, [setRnd]);
+
   return (
     <div className={styles.scrimOuter}>
       <div className={styles.scrimInner}>
@@ -122,7 +126,7 @@ export default function DialogSurface({
             [styles.visible]: visible && !dragging,
           })}
         >
-          <NavContext.Provider value={() => setVisible(false)}>
+          <NavContext.Provider value={navContextValue}>
             {children}
           </NavContext.Provider>
         </animated.div>

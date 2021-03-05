@@ -1,28 +1,44 @@
 import { Chip, ChipSet } from '@rmwc/chip';
+import { IconButton } from '@rmwc/icon-button';
 import Link from 'next/link';
 
 import Avatar from 'components/avatar';
+import Loader from 'components/loader';
+import { useNav } from 'components/dialog/context';
 
+import { Callback } from 'lib/model/callback';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
 import { useCalendarState } from '../state';
 
-import styles from './display-page.module.scss';
+import styles from './page.module.scss';
 
 export interface DisplayPageProps {
   people: User[];
-  openEdit: () => void;
+  setPage: Callback<number>;
+  loading: boolean;
+  checked: boolean;
 }
 
 export default function DisplayPage({
   people,
-  openEdit,
+  setPage,
+  loading,
+  checked,
 }: DisplayPageProps): JSX.Element {
   const { editing } = useCalendarState();
+  const nav = useNav();
 
   return (
-    <>
+    <div className={styles.wrapper}>
+      <Loader active={!!loading} checked={!!checked} />
+      <div className={styles.nav}>
+        <IconButton icon='close' className={styles.btn} onClick={nav} />
+        <Link href={`/${editing.match.org}/matches/${editing.match.id}`}>
+          <IconButton icon='open_in_new' className={styles.btn} />
+        </Link>
+      </div>
       <div className={styles.content}>
         <div className={styles.people}>
           {people.map((person) => (
@@ -55,10 +71,10 @@ export default function DisplayPage({
       </div>
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
-          <Chip icon='edit' label='Edit meeting' onClick={openEdit} />
+          <Chip icon='edit' label='Edit meeting' onClick={() => setPage(1)} />
           <Chip icon='delete' label='Delete meeting' />
         </ChipSet>
       </div>
-    </>
+    </div>
   );
 }
