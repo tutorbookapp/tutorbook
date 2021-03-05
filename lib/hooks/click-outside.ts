@@ -36,12 +36,6 @@ export default function useClickOutside(
   active: boolean
 ): ClickOutsideProps {
   const clickableEls = useRef<Record<string, HTMLElement>>({});
-  const updateEl = useCallback((id: string, el: HTMLElement) => {
-    clickableEls.current[id] = el;
-  }, []);
-  const removeEl = useCallback((id: string) => {
-    delete clickableEls.current[id];
-  }, []);
 
   const nodeInClickable = useCallback((el: Node) => {
     const clickable = Object.values(clickableEls.current);
@@ -110,5 +104,13 @@ export default function useClickOutside(
     return enableScroll;
   }, [active, preventDefault, preventScrollKeys, wheelOpt, wheelEvent]);
 
-  return { updateEl, removeEl };
+  const updateEl = useCallback((id: string, el: HTMLElement) => {
+    clickableEls.current[id] = el;
+  }, []);
+  const removeEl = useCallback((id: string) => {
+    delete clickableEls.current[id];
+  }, []);
+  const props = useMemo(() => ({ updateEl, removeEl }), [updateEl, removeEl]);
+
+  return props;
 }
