@@ -18,7 +18,7 @@ import usePrevious from 'lib/hooks/previous';
 
 import { useCalendarState } from '../state';
 
-import styles from './edit-page.module.scss';
+import styles from './form.module.scss';
 
 export interface EditPageProps {
   people: User[];

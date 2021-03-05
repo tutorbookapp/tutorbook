@@ -1,8 +1,8 @@
 @use 'styles/common';
 
 .form {
-  height: 100%;
   overflow: auto;
+  height: 100%;
 
   .divider {
     @include common.divider;

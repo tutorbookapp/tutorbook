@@ -19,7 +19,7 @@ import { useUser } from 'lib/context/user';
 
 import { useCalendarState } from '../state';
 
-import styles from './create-page.module.scss';
+import styles from './form.module.scss';
 
 export interface CreatePageProps {
   people: User[];
