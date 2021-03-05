@@ -39,10 +39,12 @@ export interface WeeklyDisplayProps {
   editing: Meeting;
   setEditing: Callback<Meeting>;
   onEditStop: () => void;
-  viewing?: Meeting;
-  setViewing: Callback<Meeting | undefined>;
-  draggingId?: string;
-  setDraggingId: Callback<string | undefined>;
+  rndVisible: boolean;
+  setRndVisible: Callback<boolean>;
+  dialogOpen: boolean;
+  setDialogOpen: Callback<boolean>;
+  isDragging: boolean;
+  setIsDragging: Callback<boolean>;
   width: number;
   setWidth: Callback<number>;
   offset: Position;
@@ -56,10 +58,12 @@ function WeeklyDisplay({
   editing,
   setEditing,
   onEditStop,
-  viewing,
-  setViewing,
-  draggingId,
-  setDraggingId,
+  rndVisible,
+  setRndVisible,
+  dialogOpen,
+  setDialogOpen,
+  isDragging,
+  setIsDragging,
   width: cellWidth,
   setWidth: setCellWidth,
   offset,
@@ -109,12 +113,13 @@ function WeeklyDisplay({
   const { startingDate } = useCalendar();
   const onClick = useCallback(
     (event: MouseEvent) => {
-      if (draggingId) return;
+      if (isDragging) return;
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
       const meeting = new Meeting({ id: `temp-${nanoid()}` });
-      setViewing(getMeeting(48, pos, meeting, cellWidth, startingDate));
+      setEditing(getMeeting(48, pos, meeting, cellWidth, startingDate));
+      setDialogOpen(true);
     },
-    [setViewing, draggingId, startingDate, offset, cellWidth]
+    [setEditing, setDialogOpen, isDragging, startingDate, offset, cellWidth]
   );
 
   // Sync the scroll position of the main cell grid and the static headers. This
@@ -144,7 +149,6 @@ function WeeklyDisplay({
 
   const [eventTarget, setEventTarget] = useState<MouseEventHackTarget>();
   const [eventData, setEventData] = useState<MouseEventHackData>();
-  const [editRndVisible, setEditRndVisible] = useState<boolean>(false);
 
   const [now, setNow] = useState<Date>(new Date());
   useEffect(() => {
@@ -203,25 +207,17 @@ function WeeklyDisplay({
                 onClick={onClick}
                 ref={mergeRefs([cellsMeasureRef, cellsClickRef])}
               >
-                {viewing?.id.startsWith('temp') && (
+                {editing.id && rndVisible && (
                   <MeetingRnd
                     now={now}
                     width={cellWidth}
-                    meeting={viewing}
-                    setMeeting={setViewing}
-                    setDraggingId={setDraggingId}
-                  />
-                )}
-                {editing && editRndVisible && (
-                  <MeetingRnd
-                    now={now}
-                    width={cellWidth}
-                    meeting={editing}
-                    setMeeting={setEditing}
-                    setDraggingId={setDraggingId}
+                    editing={editing}
+                    setEditing={setEditing}
+                    setIsDragging={setIsDragging}
                     onEditStop={() => {
+                      if (editing.id.startsWith('temp')) return;
                       void onEditStop();
-                      setEditRndVisible(false);
+                      setRndVisible(false);
                     }}
                     eventData={eventData}
                     eventTarget={eventTarget}
@@ -251,12 +247,12 @@ function WeeklyDisplay({
                               <MeetingItem
                                 now={now}
                                 meeting={e}
-                                viewing={viewing}
-                                setViewing={setViewing}
+                                rndVisible={rndVisible}
+                                setRndVisible={setRndVisible}
+                                dialogOpen={dialogOpen}
+                                setDialogOpen={setDialogOpen}
                                 editing={editing}
                                 setEditing={setEditing}
-                                editRndVisible={editRndVisible}
-                                setEditRndVisible={setEditRndVisible}
                                 setEventTarget={setEventTarget}
                                 setEventData={setEventData}
                                 widthPercent={

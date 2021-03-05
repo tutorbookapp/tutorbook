@@ -16,12 +16,12 @@ export interface MeetingItemProps {
   meeting: Meeting;
   leftPercent: number;
   widthPercent: number;
-  viewing?: Meeting;
-  setViewing: TCallback<Meeting>;
-  editing?: Meeting;
+  editing: Meeting;
   setEditing: TCallback<Meeting>;
-  editRndVisible: boolean;
-  setEditRndVisible: TCallback<boolean>;
+  rndVisible: boolean;
+  setRndVisible: TCallback<boolean>;
+  dialogOpen: boolean;
+  setDialogOpen: TCallback<boolean>;
   setEventData: TCallback<MouseEventHackData>;
   setEventTarget: TCallback<MouseEventHackTarget>;
 }
@@ -31,12 +31,12 @@ export default function MeetingItem({
   meeting,
   leftPercent,
   widthPercent,
-  viewing,
-  setViewing,
   editing,
   setEditing,
-  editRndVisible,
-  setEditRndVisible,
+  rndVisible,
+  setRndVisible,
+  dialogOpen,
+  setDialogOpen,
   setEventData,
   setEventTarget,
 }: MeetingItemProps): JSX.Element {
@@ -66,8 +66,8 @@ export default function MeetingItem({
     <div
       style={{ top, left, width, height }}
       className={cn(styles.meeting, {
-        [styles.elevated]: !editRndVisible && viewing?.id === meeting.id,
-        [styles.editing]: editRndVisible && editing?.id === meeting.id,
+        [styles.elevated]: !rndVisible && editing.id === meeting.id,
+        [styles.editing]: rndVisible && editing.id === meeting.id,
         [styles.past]: meeting.time.to <= now,
       })}
       onClick={(evt) => evt.stopPropagation()}
@@ -90,12 +90,13 @@ export default function MeetingItem({
             button: e.button,
             buttons: e.buttons,
           });
-          setEditRndVisible(true);
+          setRndVisible(true);
         };
         const view = (e: MouseEvent) => {
           e.stopPropagation();
           removeListeners();
-          setViewing(meeting);
+          setEditing(meeting);
+          setDialogOpen(true);
         };
         const removeListeners = () => {
           document.removeEventListener('mousemove', edit, { capture: true });
@@ -122,7 +123,7 @@ export default function MeetingItem({
               button: evt.button,
               buttons: evt.buttons,
             });
-            setEditRndVisible(true);
+            setRndVisible(true);
           }}
         />
         <div
@@ -139,7 +140,7 @@ export default function MeetingItem({
               button: evt.button,
               buttons: evt.buttons,
             });
-            setEditRndVisible(true);
+            setRndVisible(true);
           }}
         />
       </span>

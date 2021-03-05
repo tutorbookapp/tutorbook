@@ -28,9 +28,9 @@ const Rnd = dynamic<Props>(() => import('react-rnd').then((m) => m.Rnd));
 export interface MeetingRndProps {
   now: Date;
   width: number;
-  meeting: Meeting;
-  setMeeting: TCallback<Meeting>;
-  setDraggingId: TCallback<string | undefined>;
+  editing: Meeting;
+  setEditing: TCallback<Meeting>;
+  setIsDragging: TCallback<boolean>;
   onEditStop?: () => void;
   eventTarget?: MouseEventHackTarget;
   eventData?: MouseEventHackData;
@@ -39,9 +39,9 @@ export interface MeetingRndProps {
 export default function MeetingRnd({
   now,
   width,
-  meeting,
-  setMeeting,
-  setDraggingId,
+  editing,
+  setEditing,
+  setIsDragging,
   onEditStop,
   eventTarget,
   eventData,
@@ -54,16 +54,16 @@ export default function MeetingRnd({
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
 
   const position = useMemo(
-    () => getPosition(meeting.time.from, width + RND_MARGIN),
-    [meeting.time.from, width]
+    () => getPosition(editing.time.from, width + RND_MARGIN),
+    [editing.time.from, width]
   );
-  const height = useMemo(() => getHeight(meeting.time), [meeting.time]);
+  const height = useMemo(() => getHeight(editing.time), [editing.time]);
 
   const update = useCallback(
     (newHeight: number, newPos: Position) => {
-      setMeeting(getMeeting(newHeight, newPos, meeting, width, startingDate));
+      setEditing(getMeeting(newHeight, newPos, editing, width, startingDate));
     },
-    [startingDate, width, setMeeting, meeting]
+    [startingDate, width, setEditing, editing]
   );
 
   const onClick = useCallback((evt: ReactMouseEvent) => {
@@ -71,15 +71,15 @@ export default function MeetingRnd({
   }, []);
   const onResizeStop = useCallback(() => {
     // We have to wait a tick before resetting `draggingId` to prevent new
-    // meetings from being created when the resize cursor moves ahead of RND.
-    setTimeout(() => setDraggingId(undefined), 0);
+    // editings from being created when the resize cursor moves ahead of RND.
+    setTimeout(() => setIsDragging(false), 0);
     setOffset({ x: 0, y: 0 });
     if (onEditStop) onEditStop();
-  }, [setDraggingId, onEditStop]);
+  }, [setIsDragging, onEditStop]);
   const onDragStop = useCallback(() => {
-    setTimeout(() => setDraggingId(undefined), 0);
+    setTimeout(() => setIsDragging(false), 0);
     if (onEditStop) onEditStop();
-  }, [setDraggingId, onEditStop]);
+  }, [setIsDragging, onEditStop]);
   const onResize = useCallback(
     (
       e: MouseEvent | TouchEvent,
@@ -91,7 +91,7 @@ export default function MeetingRnd({
       // callback can be called multiple times for the same resize delta. Thus,
       // we only want to update `position` to reflect the **difference** btwn
       // the last `delta` and the current `delta`.
-      setDraggingId(meeting.id);
+      setIsDragging(true);
       update(Number(ref.style.height.replace('px', '')), {
         x: position.x - (dir === 'left' ? delta.width - offset.x : 0),
         y: position.y - (dir === 'top' ? delta.height - offset.y : 0),
@@ -101,7 +101,7 @@ export default function MeetingRnd({
         y: dir === 'top' ? delta.height : prev.y,
       }));
     },
-    [setDraggingId, meeting.id, update, position, offset]
+    [setIsDragging, update, position, offset]
   );
   const onDrag = useCallback(
     (
@@ -112,26 +112,26 @@ export default function MeetingRnd({
       // correctly for the `onDrag` callback.
       // @see {@link https://github.com/STRML/react-draggable/issues/413}
       // @see {@link https://github.com/bokuweb/react-rnd/issues/453}
-      setDraggingId(meeting.id);
+      setIsDragging(true);
       update(height, { x: data.x, y: data.y });
     },
-    [setDraggingId, meeting.id, update, height]
+    [setIsDragging, update, height]
   );
 
   const { updateEl, removeEl } = useClickContext();
   const ref = useCallback(
     (node: HTMLElement | null) => {
-      if (!node) return removeEl(`meeting-rnd-${meeting.id}`);
-      return updateEl(`meeting-rnd-${meeting.id}`, node);
+      if (!node) return removeEl(`editing-rnd-${editing.id}`);
+      return updateEl(`editing-rnd-${editing.id}`, node);
     },
-    [updateEl, removeEl, meeting.id]
+    [updateEl, removeEl, editing.id]
   );
 
   return (
     <Rnd
-      data-cy='meeting-rnd'
-      className={cn(styles.meeting, {
-        [styles.past]: meeting.time.to <= now,
+      data-cy='editing-rnd'
+      className={cn(styles.editing, {
+        [styles.past]: editing.time.to <= now,
       })}
       position={position}
       minHeight={12 * 2}
@@ -157,7 +157,7 @@ export default function MeetingRnd({
     >
       <MeetingContent
         ref={ref}
-        meeting={meeting}
+        meeting={editing}
         height={height}
         eventTarget={eventTarget}
         eventData={eventData}

@@ -110,10 +110,10 @@ export default function Calendar({
     [query.endpoint, meetings]
   );
 
-  const [dialogPage, setDialogPage] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [rndVisible, setRndVisible] = useState<boolean>(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [draggingId, setDraggingId] = useState<string>();
-  const [viewing, setViewing] = useState<Meeting>();
+  const [dialogPage, setDialogPage] = useState<number>(0);
 
   const originalEditing = useRef<Meeting>(initialEditData);
   const updateMeetingRemote = useCallback(async (updated: Meeting) => {
@@ -138,9 +138,7 @@ export default function Calendar({
     error: editError,
   } = useSingle<Meeting>(initialEditData, updateMeetingRemote, mutateMeeting);
 
-  useEffect(() => {
-    if (viewing) setDialogOpen(true);
-  }, [viewing]);
+  const people = usePeople(editing.match);
 
   useEffect(() => {
     if (editing.id !== originalEditing.current.id)
@@ -148,7 +146,7 @@ export default function Calendar({
   }, [editing]);
 
   useEffect(() => {
-    setViewing((prev) => {
+    setEditing((prev) => {
       if (prev?.id.startsWith('temp')) return prev;
       const idx = meetings.findIndex((m) => m.id === prev?.id);
       if (idx < 0) {
@@ -158,18 +156,16 @@ export default function Calendar({
       if (dequal(meetings[idx], prev)) return prev;
       return meetings[idx];
     });
-  }, [meetings]);
+  }, [setEditing, meetings]);
 
   // Don't unmount the dialog surface if the user is draggingId (in that case, we
   // only temporarily hide the dialog until the user is finished draggingId).
   const onClosed = useCallback(() => {
-    if (!draggingId) setViewing(undefined);
-  }, [draggingId]);
+    if (!isDragging) setEditing(initialEditData);
+  }, [setEditing, isDragging]);
 
   const [width, setWidth] = useState<number>(0);
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
-
-  const people = usePeople(editing.match);
 
   return (
     <CalendarContext.Provider
@@ -187,12 +183,12 @@ export default function Calendar({
         {editLoading && !editChecked && !editError && (
           <Snackbar message='Updating meeting...' timeout={-1} leading open />
         )}
-        {viewing && (
+        {editing && (
           <DialogSurface
             width={width}
             offset={offset}
-            viewing={viewing}
-            dialogOpen={dialogOpen && !draggingId}
+            viewing={editing}
+            dialogOpen={dialogOpen && !isDragging}
             setDialogOpen={setDialogOpen}
             onClosed={onClosed}
           >
@@ -245,10 +241,12 @@ export default function Calendar({
               editing={editing}
               setEditing={setEditing}
               onEditStop={onEditStop}
-              viewing={viewing}
-              setViewing={setViewing}
-              draggingId={draggingId}
-              setDraggingId={setDraggingId}
+              rndVisible={rndVisible}
+              setRndVisible={setRndVisible}
+              dialogOpen={dialogOpen}
+              setDialogOpen={setDialogOpen}
+              isDragging={isDragging}
+              setIsDragging={setIsDragging}
               width={width}
               setWidth={setWidth}
               offset={offset}
