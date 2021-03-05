@@ -139,6 +139,10 @@ export default function Calendar({
   } = useSingle<Meeting>(initialEditData, updateMeetingRemote, mutateMeeting);
 
   useEffect(() => {
+    if (viewing) setDialogOpen(true);
+  }, [viewing]);
+
+  useEffect(() => {
     if (editing.id !== originalEditing.current.id)
       originalEditing.current = editing;
   }, [editing]);

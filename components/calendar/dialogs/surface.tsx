@@ -1,4 +1,11 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { animated, useSpring } from 'react-spring';
 import cn from 'classnames';
 import mergeRefs from 'react-merge-refs';
@@ -39,13 +46,14 @@ export default function DialogSurface({
   children,
 }: DialogSurfaceProps): JSX.Element {
   const measured = useRef<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
       measured.current = true;
-      setDialogOpen(true);
+      setVisible(true);
     }, 0);
-  }, [setDialogOpen]);
+  }, []);
 
   const [measureRef, bounds] = useMeasure({ polyfill });
 
@@ -57,12 +65,12 @@ export default function DialogSurface({
 
   const onLeft = useMemo(() => {
     const x = offset.x + rndPosition.x - bounds.width - PREVIEW_MARGIN;
-    return dialogOpen ? x : x + 12;
-  }, [offset.x, dialogOpen, rndPosition.x, bounds.width]);
+    return visible && dialogOpen ? x : x + 12;
+  }, [offset.x, visible, dialogOpen, rndPosition.x, bounds.width]);
   const onRight = useMemo(() => {
     const x = offset.x + rndPosition.x + rndWidth + PREVIEW_MARGIN;
-    return dialogOpen ? x : x - 12;
-  }, [offset.x, dialogOpen, rndPosition.x, rndWidth]);
+    return visible && dialogOpen ? x : x - 12;
+  }, [offset.x, visible, dialogOpen, rndPosition.x, rndWidth]);
 
   const alignedTop = useMemo(() => offset.y + rndPosition.y, [
     offset.y,
@@ -110,7 +118,9 @@ export default function DialogSurface({
         <animated.div
           style={props}
           ref={mergeRefs([measureRef, clickRef])}
-          className={cn(styles.wrapper, { [styles.visible]: dialogOpen })}
+          className={cn(styles.wrapper, {
+            [styles.visible]: dialogOpen && visible,
+          })}
         >
           <NavContext.Provider value={() => setDialogOpen(false)}>
             {children}
