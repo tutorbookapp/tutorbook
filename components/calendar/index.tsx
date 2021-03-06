@@ -302,6 +302,7 @@ export default function Calendar({
         {(recurEdit || recurDelete) && (
           <RecurDialog
             title={`${recurEdit ? 'Edit' : 'Delete'} recurring meeting`}
+            options={recurEdit ? ['all', 'this', 'future'] : ['all']}
             action={action}
             setAction={setAction}
             onClose={(evt) => {

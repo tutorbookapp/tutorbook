@@ -6,7 +6,7 @@ import {
   DialogOnCloseEventT,
   DialogTitle,
 } from '@rmwc/dialog';
-import { FormEvent, useCallback } from 'react';
+import { FormEvent, useCallback, useEffect } from 'react';
 import { Radio } from '@rmwc/radio';
 
 import { Callback } from 'lib/model/callback';
@@ -17,6 +17,7 @@ import styles from './recur-dialog.module.scss';
 
 export interface RecurDialogProps {
   title: string;
+  options: MeetingAction[];
   action: MeetingAction;
   setAction: Callback<MeetingAction>;
   onClose: (evt: DialogOnCloseEventT) => void;
@@ -25,6 +26,7 @@ export interface RecurDialogProps {
 
 export default function RecurDialog({
   title,
+  options,
   action,
   setAction,
   onClose,
@@ -45,6 +47,10 @@ export default function RecurDialog({
     [setAction]
   );
 
+  useEffect(() => {
+    setAction((prev) => (options.includes(prev) ? prev : options[0] || prev));
+  }, [setAction, options]);
+
   return (
     <Dialog
       open
@@ -60,6 +66,7 @@ export default function RecurDialog({
           onChange={onChange}
           className={styles.radio}
           checked={action === 'this'}
+          disabled={!options.includes('this')}
         >
           This meeting
         </Radio>
@@ -68,6 +75,7 @@ export default function RecurDialog({
           onChange={onChange}
           className={styles.radio}
           checked={action === 'future'}
+          disabled={!options.includes('future')}
         >
           This and following meetings
         </Radio>
@@ -76,6 +84,7 @@ export default function RecurDialog({
           onChange={onChange}
           className={styles.radio}
           checked={action === 'all'}
+          disabled={!options.includes('all')}
         >
           All meetings
         </Radio>
