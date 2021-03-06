@@ -7,11 +7,7 @@ import { db } from 'lib/api/firebase';
 export default async function updateMeetingDoc(
   meeting: Meeting
 ): Promise<void> {
-  const ref = db
-    .collection('matches')
-    .doc(meeting.match.id)
-    .collection('meetings')
-    .doc(meeting.id);
+  const ref = db.collection('meetings').doc(meeting.id);
   const [e] = await to(ref.set(meeting.toFirestore()));
   if (e) {
     const m = `${e.name} updating meeting (${meeting.toString()}) in database`;
