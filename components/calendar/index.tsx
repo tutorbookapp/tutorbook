@@ -93,19 +93,18 @@ export default function Calendar({
   const [action, setAction] = useState<MeetingAction>('future');
 
   const mutateMeeting = useCallback(
-    async (mutated: Meeting, hasBeenUpdated = false) => {
+    async (mutated: Meeting, hasBeenUpdated: boolean, sentToAPI: Meeting) => {
       // Don't locally update meetings that have yet to be created.
       if (mutated.id.startsWith('temp')) return;
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
-        if (!hasBeenUpdated) mutatedMeetingIds.add(mutated.id);
-        if (hasBeenUpdated) mutatedMeetingIds.delete(mutated.id);
-        if (dequal([...mutatedMeetingIds], [...prev])) return prev;
+        if (!hasBeenUpdated) mutatedMeetingIds.add(sentToAPI.id);
+        if (hasBeenUpdated) mutatedMeetingIds.delete(sentToAPI.id);
         return mutatedMeetingIds;
       });
       // TODO: Remove meeting if it is no longer within the `query` dates (but
       // note we still want to show the loading indicator in the `Preview`).
-      const idx = meetings.findIndex((m) => m.id === mutated.id);
+      const idx = meetings.findIndex((m) => m.id === sentToAPI.id);
       const updated =
         idx < 0
           ? [...meetings, mutated]

@@ -52,7 +52,11 @@ export interface SingleOptions {
 export default function useSingle<T>(
   initialData: T,
   updateRemote: (data: T) => Promise<T | void>,
-  updateLocal?: (data: T, hasBeenUpdated?: boolean) => Promise<void> | void,
+  updateLocal?: (
+    data: T,
+    hasBeenUpdated: boolean,
+    dataSentToAPI: T
+  ) => Promise<void> | void,
   options?: SingleOptions
 ): SingleProps<T> {
   const [data, setData] = useState<T>(initialData);
@@ -73,7 +77,7 @@ export default function useSingle<T>(
       setChecked(false);
       setLoading(true);
       // Immediately mutate local data.
-      if (updateLocal) await updateLocal(data, false);
+      if (updateLocal) await updateLocal(data, false, data);
       // Update remote data with POST or PUT API request.
       const [err, res] = await to(updateRemote(data));
       if (err) {
@@ -88,10 +92,10 @@ export default function useSingle<T>(
           lastReceivedResponse.current = res;
           setData(res);
           // TODO: This is unnecessary if `options.sync` is true.
-          if (updateLocal) await updateLocal(res, true);
+          if (updateLocal) await updateLocal(res, true, data);
         } else if (updateLocal) {
           // Signal that local data is now in sync with server data.
-          await updateLocal(data, true);
+          await updateLocal(data, true, data);
         }
         setChecked(true);
         // Hide the loading state. Data has been updated.
@@ -111,7 +115,7 @@ export default function useSingle<T>(
     if (!options?.sync || !updateLocal) return;
     const throttle = options.throttle || 500;
     const timeoutId = setTimeout(() => {
-      void updateLocal(data, dequal(lastReceivedResponse.current, data));
+      void updateLocal(data, dequal(lastReceivedResponse.current, data), data);
     }, throttle);
     return () => clearTimeout(timeoutId);
   }, [data, updateLocal, options]);
