@@ -23,9 +23,11 @@ export default async function deleteMeeting(
       orgIds: [meeting.match.org],
     });
 
-    await deleteZoom(meeting.id);
-    await deleteMeetingDoc(meeting.id);
-    await deleteMeetingSearchObj(meeting.id);
+    await Promise.all([
+      deleteZoom(meeting.id),
+      deleteMeetingDoc(meeting.id),
+      deleteMeetingSearchObj(meeting.id),
+    ]);
 
     res.status(200).end();
   } catch (e) {

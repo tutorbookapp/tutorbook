@@ -22,8 +22,10 @@ export default async function deleteMatch(
       orgIds: [match.org],
     });
 
-    await deleteMatchDoc(match.id);
-    await deleteMatchSearchObj(match.id);
+    await Promise.all([
+      deleteMatchDoc(match.id),
+      deleteMatchSearchObj(match.id),
+    ]);
 
     res.status(200).end();
   } catch (e) {
