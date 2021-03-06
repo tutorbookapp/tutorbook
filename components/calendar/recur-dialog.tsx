@@ -54,10 +54,10 @@ export default function RecurDialog({
       <DialogTitle className={styles.title}>Edit recurring meeting</DialogTitle>
       <DialogContent className={styles.content}>
         <Radio
-          value='all'
+          value='this'
           onChange={onChange}
           className={styles.radio}
-          checked={action === 'all'}
+          checked={action === 'this'}
         >
           This meeting
         </Radio>
@@ -70,10 +70,10 @@ export default function RecurDialog({
           This and following meetings
         </Radio>
         <Radio
-          value='this'
+          value='all'
           onChange={onChange}
           className={styles.radio}
-          checked={action === 'this'}
+          checked={action === 'all'}
         >
           All meetings
         </Radio>
