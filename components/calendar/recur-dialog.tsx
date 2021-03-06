@@ -16,6 +16,7 @@ import { useClickContext } from 'lib/hooks/click-outside';
 import styles from './recur-dialog.module.scss';
 
 export interface RecurDialogProps {
+  title: string;
   action: MeetingAction;
   setAction: Callback<MeetingAction>;
   onClose: (evt: DialogOnCloseEventT) => void;
@@ -23,6 +24,7 @@ export interface RecurDialogProps {
 }
 
 export default function RecurDialog({
+  title,
   action,
   setAction,
   onClose,
@@ -51,7 +53,7 @@ export default function RecurDialog({
       onClosed={onClosed}
       className={styles.dialog}
     >
-      <DialogTitle className={styles.title}>Edit recurring meeting</DialogTitle>
+      <DialogTitle className={styles.title}>{title}</DialogTitle>
       <DialogContent className={styles.content}>
         <Radio
           value='this'

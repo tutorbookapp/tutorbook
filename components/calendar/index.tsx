@@ -89,7 +89,8 @@ export default function Calendar({
   const [dialog, setDialog] = useState<boolean>(false);
   const [dragging, setDragging] = useState<boolean>(false);
   const [dialogPage, setDialogPage] = useState<DialogPage>(DialogPage.Display);
-  const [recurDialog, setRecurDialog] = useState<boolean>(false);
+  const [recurDelete, setRecurDelete] = useState<boolean>(false);
+  const [recurEdit, setRecurEdit] = useState<boolean>(false);
   const [action, setAction] = useState<MeetingAction>('future');
 
   const mutateMeeting = useCallback(
@@ -195,7 +196,7 @@ export default function Calendar({
   const onEditStop = useCallback(
     (evt?: FormEvent) => {
       if (evt) evt.preventDefault();
-      if (editing.parentId) return setRecurDialog(true);
+      if (editing.parentId) return setRecurEdit(true);
       return onEditSubmit();
     },
     [editing.parentId, onEditSubmit]
@@ -235,16 +236,14 @@ export default function Calendar({
   );
 
   const [deleteError, setDeleteError] = useState<string>('');
-  const deleteMeeting = useCallback(async () => {
+  const onDeleteSubmit = useCallback(async () => {
     setDeleteError('');
     setEditChecked(false);
     setEditLoading(true);
-    // TODO: Give the choice to delete:
-    // - Only this meeting.
-    // - This and following meetings.
-    // - All meetings.
     const url = `/api/meetings/${editing.parentId || editing.id}`;
-    const [err] = await to(axios.delete(url));
+    const [err] = await to(
+      axios.delete(url, { data: { options: { action } } })
+    );
     if (err) {
       const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
       setEditLoading(false);
@@ -266,7 +265,16 @@ export default function Calendar({
     meetings,
     editing.parentId,
     editing.id,
+    action,
   ]);
+  const onDeleteStop = useCallback(
+    (evt?: FormEvent) => {
+      if (evt) evt.preventDefault();
+      if (editing.parentId) return setRecurDelete(true);
+      return onDeleteSubmit();
+    },
+    [editing.parentId, onDeleteSubmit]
+  );
 
   return (
     <CalendarStateContext.Provider value={calendarState}>
@@ -291,18 +299,23 @@ export default function Calendar({
             open
           />
         )}
-        {recurDialog && (
+        {(recurEdit || recurDelete) && (
           <RecurDialog
+            title={`${recurEdit ? 'Edit' : 'Delete'} recurring meeting`}
             action={action}
             setAction={setAction}
             onClose={(evt) => {
               if (evt.detail.action === 'ok') {
-                void onEditSubmit();
+                if (recurEdit) void onEditSubmit();
+                if (recurDelete) void onDeleteSubmit();
               } else {
                 setEditing(original.current);
               }
             }}
-            onClosed={() => setRecurDialog(false)}
+            onClosed={() => {
+              setRecurEdit(false);
+              setRecurDelete(false);
+            }}
           />
         )}
         {dialog && (
@@ -312,7 +325,7 @@ export default function Calendar({
                 people={people}
                 loading={editLoading}
                 checked={editChecked}
-                deleteMeeting={deleteMeeting}
+                onDeleteStop={onDeleteStop}
               />
               <EditPage
                 people={people}

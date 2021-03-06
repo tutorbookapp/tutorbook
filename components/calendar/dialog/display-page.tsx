@@ -17,14 +17,14 @@ export interface DisplayPageProps {
   people: User[];
   loading: boolean;
   checked: boolean;
-  deleteMeeting: () => Promise<void>;
+  onDeleteStop: () => void;
 }
 
 export default function DisplayPage({
   people,
   loading,
   checked,
-  deleteMeeting,
+  onDeleteStop,
 }: DisplayPageProps): JSX.Element {
   const { editing, setDialogPage } = useCalendarState();
   const nav = useNav();
@@ -75,7 +75,7 @@ export default function DisplayPage({
             label='Edit meeting'
             onClick={() => setDialogPage(DialogPage.Edit)}
           />
-          <Chip icon='delete' label='Delete meeting' onClick={deleteMeeting} />
+          <Chip icon='delete' label='Delete meeting' onClick={onDeleteStop} />
         </ChipSet>
       </div>
     </div>
