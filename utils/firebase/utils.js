@@ -310,9 +310,9 @@ const addOrgIdToMatches = async () => {
   );
 };
 
-const deleteUser = async (uid) => {
+const deleteUser = async (uid, heads) => {
   const endpoint = 'https://tutorbook.org/api/users';
-  const headers = { authorization: `Bearer ${await createToken()}` };
+  const headers = heads || { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.delete(`${endpoint}/${uid}`, { headers }));
   if (err) console.error(`${err.name} deleting user (${uid}): ${err.message}`);
 };
@@ -325,9 +325,9 @@ const convertToUserJSON = (userData) => {
   return { ...userData, availability };
 };
 
-const updateUser = async (user) => {
+const updateUser = async (user, heads) => {
   const endpoint = `https://tutorbook.org/api/users/${user.id}`;
-  const headers = { authorization: `Bearer ${await createToken()}` };
+  const headers = heads || { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.put(endpoint, user, { headers }));
   if (err) {
     console.error(`${err.name} updating user (${user.name}): ${err.message}`);
@@ -349,25 +349,29 @@ const updateUserExistingData = async (user) => {
   }
 };
 
-const deleteOrg = async (orgId) => {
+const deleteMatch = async (matchId, heads) => {
+  const endpoint = `https://tutorbook.org/api/matches/${matchId}`;
+  const headers = heads || { authorization: `Bearer ${await createToken()}` };
+  const [err] = await to(axios.delete(endpoint, { headers }));
+  if (err) console.log('Error deleting match:', err);
+};
+
+const deleteOrg = async (orgId, heads) => {
   const endpoint = `https://tutorbook.org/api/orgs/${orgId}`;
-  const headers = { authorization: `Bearer ${await createToken()}` };
+  const headers = heads || { authorization: `Bearer ${await createToken()}` };
   const [err] = await to(axios.delete(endpoint, { headers }));
   if (err) console.log('Error deleting org:', err);
 };
 
-const purgeOrg = async (orgId) => {
-  const ogs = encodeURIComponent(JSON.stringify([{ value: orgId, label: '' }]));
+const purgeOrgUsers = async (orgId, headers, dry = false) => {
+  const ogs = encodeURIComponent(JSON.stringify([orgId]));
   const endpoint = `https://tutorbook.org/api/users?orgs=${ogs}`;
-  const headers = { authorization: `Bearer ${await createToken()}` };
-  const {
-    data: { users },
-  } = await axios.get(endpoint, { headers });
+  const { data } = await axios.get(endpoint, { headers });
   await Promise.all(
-    users.map(async (user) => {
+    data.users.map(async (user) => {
       if (user.orgs.length === 1) {
         console.log(`Deleting ${user.name} (${user.id})...`);
-        await deleteUser(user.id);
+        if (!dry) await deleteUser(user.id, headers);
       } else if (user.orgs.length > 1) {
         if (user.orgs.indexOf(orgId) < 0) {
           console.error("[ERROR] User doesn't have org:", user);
@@ -375,17 +379,48 @@ const purgeOrg = async (orgId) => {
         }
         user.orgs.splice(user.orgs.indexOf(orgId), 1);
         console.log(`Updating ${user.name} (${user.id})...`);
-        user.created = new Date().toJSON();
+        user.created = user.created || new Date().toJSON();
         user.updated = new Date().toJSON();
-        await updateUser(user);
+        if (!dry) await updateUser(user, headers);
       } else {
         console.error("[ERROR] User doesn't have any orgs:", user);
         debugger;
       }
     })
   );
+};
+
+const purgeOrgMeetings = async (orgId, headers, dry = false) => {
+  const endpoint = `https://tutorbook.org/api/meetings?org=${orgId}`;
+  const { data } = await axios.get(endpoint, { headers });
+  await Promise.all(
+    data.meetings.map(async (meeting) => {
+      console.log(`Deleting meeting (${meeting.id})...`);
+      if (!dry) await deleteMeeting(meeting.id, headers);
+    })
+  );
+};
+
+const purgeOrgMatches = async (orgId, headers, dry = false) => {
+  const endpoint = `https://tutorbook.org/api/matches?org=${orgId}`;
+  const { data } = await axios.get(endpoint, { headers });
+  await Promise.all(
+    data.matches.map(async (match) => {
+      console.log(`Deleting match (${match.id})...`);
+      if (!dry) await deleteMatch(match.id, headers);
+    })
+  );
+};
+
+const purgeOrg = async (orgId, dry = false) => {
+  const headers = { authorization: `Bearer ${await createToken()}` };
+  await Promise.all([
+    purgeOrgUsers(orgId, headers, dry),
+    purgeOrgMatches(orgId, headers, dry),
+    purgeOrgMeetings(orgId, headers, dry),
+  ]);
   console.log(`Deleting org (${orgId})...`);
-  await deleteOrg(orgId);
+  if (!dry) await deleteOrg(orgId);
 };
 
 const createOrg = async (org) => {
