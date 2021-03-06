@@ -120,7 +120,8 @@ export default async function updateMeeting(
         // 3. Send the created meeting to the client.
         body.id = '';
         body.parentId = undefined;
-        body.time.recur = '';
+        body.time.recur = undefined;
+        body.time.exdates = undefined;
         body.time.last = getLastTime(body.time);
         body.venue = await createZoom(body, people);
 
