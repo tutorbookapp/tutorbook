@@ -124,9 +124,8 @@ export default function Calendar({
   const updateMeetingRemote = useCallback(
     async (updated: Meeting) => {
       if (updated.id.startsWith('temp')) {
-        const url = '/api/meetings';
         const { data: createdMeeting } = await axios.post<MeetingJSON>(
-          url,
+          '/api/meetings',
           updated.toJSON()
         );
         return Meeting.fromJSON(createdMeeting);
@@ -240,7 +239,12 @@ export default function Calendar({
     setDeleteError('');
     setEditChecked(false);
     setEditLoading(true);
-    const [err] = await to(axios.delete(`/api/meetings/${editing.id}`));
+    // TODO: Give the choice to delete:
+    // - Only this meeting.
+    // - This and following meetings.
+    // - All meetings.
+    const url = `/api/meetings/${editing.parentId || editing.id}`;
+    const [err] = await to(axios.delete(url));
     if (err) {
       const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
       setEditLoading(false);
@@ -255,7 +259,14 @@ export default function Calendar({
         void mutate(query.endpoint, { meetings: json }, true);
       }, 1000);
     }
-  }, [setEditLoading, setEditChecked, query.endpoint, meetings, editing.id]);
+  }, [
+    setEditLoading,
+    setEditChecked,
+    query.endpoint,
+    meetings,
+    editing.parentId,
+    editing.id,
+  ]);
 
   return (
     <CalendarStateContext.Provider value={calendarState}>
