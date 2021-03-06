@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 
-import { isDateJSON, isJSON } from 'lib/model/json';
+import { isArray, isDateJSON, isJSON } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -25,6 +25,7 @@ type Timestamp = admin.firestore.Timestamp;
  * thus only stored client-side as we have no use for this on our server).
  * @property from - The start time of this particular timeslot instance.
  * @property to - The end time of this particular timeslot instance.
+ * @property [exdates] - Dates to exclude from the timeslot's recurrence rule.
  * @property [recur] - The timeslot's recurrence rule (as an iCal RFC string).
  * @property [last] - The timeslot's last possible end time. Undefined
  * client-side; only used server-side for querying recurring timeslots.
@@ -33,6 +34,7 @@ export interface TimeslotInterface<T = Date> {
   id: string;
   from: T;
   to: T;
+  exdates?: T[];
   recur?: string;
   last?: T;
 }
@@ -48,6 +50,7 @@ export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
   if (!isDateJSON(json.from)) return false;
   if (!isDateJSON(json.to)) return false;
   if (json.recur && typeof json.recur !== 'string') return false;
+  if (json.exdates && !isArray(json.exdates, isDateJSON)) return false;
   if (json.last && !isDateJSON(json.last)) return false;
   return true;
 }
@@ -58,6 +61,8 @@ export class Timeslot implements TimeslotInterface {
   public from: Date = new Date();
 
   public to: Date = new Date();
+
+  public exdates?: Date[];
 
   public recur?: string;
 
@@ -154,11 +159,12 @@ export class Timeslot implements TimeslotInterface {
   }
 
   public toFirestore(): TimeslotFirestore {
-    const { from, to, last, ...rest } = this;
+    const { from, to, exdates, last, ...rest } = this;
     return definedVals({
       ...rest,
       from: (from as unknown) as Timestamp,
       to: (to as unknown) as Timestamp,
+      exdates: exdates ? ((exdates as unknown[]) as Timestamp[]) : undefined,
       last: last ? ((last as unknown) as Timestamp) : undefined,
     });
   }
@@ -168,16 +174,18 @@ export class Timeslot implements TimeslotInterface {
       ...data,
       from: data.from.toDate(),
       to: data.to.toDate(),
+      exdates: data.exdates?.map((d) => d.toDate()),
       last: data.last?.toDate(),
     });
   }
 
   public toJSON(): TimeslotJSON {
-    const { from, to, last, ...rest } = this;
+    const { from, to, exdates, last, ...rest } = this;
     return definedVals({
       ...rest,
       from: from.toJSON(),
       to: to.toJSON(),
+      exdates: exdates?.map((d) => d.toJSON()),
       last: last?.toJSON(),
     });
   }
@@ -187,16 +195,18 @@ export class Timeslot implements TimeslotInterface {
       ...json,
       from: new Date(json.from),
       to: new Date(json.to),
+      exdates: json.exdates?.map((d) => new Date(d)),
       last: json.last ? new Date(json.last) : undefined,
     });
   }
 
   public toSearchHit(): TimeslotSearchHit {
-    const { from, to, last, ...rest } = this;
+    const { from, to, exdates, last, ...rest } = this;
     return definedVals({
       ...rest,
       from: from.valueOf(),
       to: to.valueOf(),
+      exdates: exdates?.map((d) => d.valueOf()),
       last: last?.valueOf(),
     });
   }
@@ -206,6 +216,7 @@ export class Timeslot implements TimeslotInterface {
       ...hit,
       from: new Date(hit.from),
       to: new Date(hit.to),
+      exdates: hit.exdates?.map((d) => new Date(d)),
       last: hit.last ? new Date(hit.last) : undefined,
     });
   }
@@ -214,16 +225,13 @@ export class Timeslot implements TimeslotInterface {
     return encodeURIComponent(JSON.stringify(this));
   }
 
+  // TODO: Add exdate, recur, and last support to this if needed.
   public static fromURLParam(param: string): Timeslot {
     const params: URLSearchParams = new URLSearchParams(param);
     return new Timeslot({
       id: params.get('id') || undefined,
       from: new Date(params.get('from') as string),
       to: new Date(params.get('to') as string),
-      recur: params.get('recur') || undefined,
-      last: params.get('last')
-        ? new Date(params.get('last') as string)
-        : undefined,
     });
   }
 

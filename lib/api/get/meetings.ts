@@ -1,4 +1,4 @@
-import { RRule } from 'rrule';
+import { RRule, RRuleSet } from 'rrule';
 import { nanoid } from 'nanoid';
 
 import { Meeting, MeetingsQuery, Timeslot } from 'lib/model';
@@ -38,9 +38,11 @@ export default async function getMeetings(
   const meetings = data.results.map((meeting) => {
     if (!meeting.time.recur) return [meeting];
     const options = RRule.parseString(meeting.time.recur);
-    const rrule = new RRule({ ...options, dtstart: meeting.time.from });
+    const rruleset = new RRuleSet();
+    rruleset.rrule(new RRule({ ...options, dtstart: meeting.time.from }));
+    (meeting.time.exdates || []).forEach((d) => rruleset.exdate(d));
     // TODO: What if meeting instance starts before window but end is within?
-    const startTimes = rrule.between(query.from, query.to);
+    const startTimes = rruleset.between(query.from, query.to);
     hits += startTimes.length - 1;
     return startTimes.map((startTime) => {
       if (startTime.valueOf() === meeting.time.from.valueOf()) return meeting;
