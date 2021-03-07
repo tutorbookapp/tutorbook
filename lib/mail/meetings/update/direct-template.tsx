@@ -30,8 +30,8 @@ export default function DirectMeetingEmail({
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>Hi {recipient.firstName},</P>
         <P>
-          {updater.name} just updated a{' '}
-          {isTutoring ? 'tutoring lesson' : 'meeting'} with you:
+          {updater.name} updated a {isTutoring ? 'tutoring lesson' : 'meeting'}{' '}
+          with you:
         </P>
         <MeetingDisplay
           show='description'

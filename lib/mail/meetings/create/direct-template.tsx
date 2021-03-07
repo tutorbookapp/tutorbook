@@ -30,7 +30,7 @@ export default function DirectMeetingEmail({
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>Hi {recipient.firstName},</P>
         <P>
-          {creator.name} just scheduled a new{' '}
+          {creator.name} scheduled a new{' '}
           {isTutoring ? 'tutoring lesson' : 'meeting'} with you:
         </P>
         <MeetingDisplay

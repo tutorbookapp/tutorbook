@@ -35,7 +35,7 @@ export default function MeetingEmail({
           Hi {join(people.map((p) => p.firstName))},
         </P>
         <P>
-          {creator.name} from {org.name} just scheduled a new{' '}
+          {creator.name} from {org.name} scheduled a new{' '}
           {isTutoring ? 'tutoring lesson' : 'meeting'} between{' '}
           {people.length > 2 ? 'all' : 'both'} of you:
         </P>
