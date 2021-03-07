@@ -53,7 +53,7 @@ export function period(msg: string): string {
  * Capitalizes the first letter of the given string.
  */
 export function caps(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
 /**
@@ -67,9 +67,9 @@ export function intersection<A extends unknown, B extends unknown>(
   compare: (a: A, b: B) => boolean = (a, b) => a === b
 ): Array<A> {
   if (!arrB) return arrA.filter(Boolean);
-  return arrA.filter((itemA: A) => {
-    return arrB.findIndex((itemB: B) => compare(itemA, itemB)) > -1;
-  });
+  return arrA.filter(
+    (itemA: A) => arrB.findIndex((itemB: B) => compare(itemA, itemB)) > -1
+  );
 }
 
 /**

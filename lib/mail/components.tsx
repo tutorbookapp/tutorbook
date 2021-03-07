@@ -1,10 +1,11 @@
 import { CSSProperties, createContext, useContext } from 'react';
+import { RRule } from 'rrule';
 
+import { caps, join } from 'lib/utils';
 import { Meeting } from 'lib/model/meeting';
 import { Org } from 'lib/model/org';
 import { Role } from 'lib/model/person';
 import { User } from 'lib/model/user';
-import { join } from 'lib/utils';
 
 const fontFamily = [
   '-apple-system',
@@ -170,6 +171,10 @@ export function MeetingDisplay({
 }: MeetingDisplayProps): JSX.Element {
   // TODO: Store the user's timezone in their profile and show the meeting time
   // in their local timezone when sending emails, text messages, etc.
+  const rrule = new RRule({
+    ...RRule.parseString(meeting.time.recur || ''),
+    dtstart: meeting.time.from,
+  });
 
   return (
     <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
@@ -185,6 +190,13 @@ export function MeetingDisplay({
           <br />
           {meeting.time.toString()}
         </P>
+        {meeting.time.recur && rrule.isFullyConvertibleToText() && (
+          <P>
+            <b>RECURRING</b>
+            <br />
+            {caps(rrule.toText())}
+          </P>
+        )}
         <P>
           <b>WHERE</b>
           <br />
