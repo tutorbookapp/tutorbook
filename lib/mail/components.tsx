@@ -157,16 +157,18 @@ export function Button({ href, style, children }: HrefProps): JSX.Element {
 }
 
 interface MeetingDisplayProps {
+  show?: 'message' | 'description';
   meeting: Meeting;
   people: User[];
-  creator?: User;
+  sender: User;
   org?: Org;
 }
 
 export function MeetingDisplay({
+  show = 'message',
   meeting,
   people,
-  creator,
+  sender,
   org,
 }: MeetingDisplayProps): JSX.Element {
   // TODO: Store the user's timezone in their profile and show the meeting time
@@ -202,19 +204,26 @@ export function MeetingDisplay({
           <br />
           <Link href={meeting.venue.url}>{meeting.venue.url}</Link>
         </P>
-        <P style={!creator ? { marginBottom: '0px' } : undefined}>
+        <P>
           <b>SUBJECTS</b>
           <br />
           {join(meeting.match.subjects)}
         </P>
-        {creator && (
+        {show === 'description' && (
+          <P style={{ marginBottom: '0px' }}>
+            <b>DESCRIPTION</b>
+            <br />
+            {meeting.description}
+          </P>
+        )}
+        {show === 'message' && (
           <>
             <P style={{ marginBottom: '8px' }}>
               <b>MESSAGE</b>
             </P>
             <Quote
               text={meeting.match.message}
-              cite={org ? `${creator.name} from ${org.name}` : creator.name}
+              cite={org ? `${sender.name} from ${org.name}` : sender.name}
             />
           </>
         )}

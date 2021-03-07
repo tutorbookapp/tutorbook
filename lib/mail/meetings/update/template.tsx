@@ -39,7 +39,13 @@ export default function MeetingEmail({
           {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} between{' '}
           {people.length > 2 ? 'all' : 'both'} of you:
         </P>
-        <MeetingDisplay meeting={meeting} people={people} org={org} />
+        <MeetingDisplay
+          show='description'
+          meeting={meeting}
+          people={people}
+          sender={updater}
+          org={org}
+        />
         <br />
         <P>
           To view and edit your {isTutoring ? 'lessons' : 'meetings'}, simply

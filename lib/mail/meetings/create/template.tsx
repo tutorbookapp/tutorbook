@@ -40,9 +40,10 @@ export default function MeetingEmail({
           {people.length > 2 ? 'all' : 'both'} of you:
         </P>
         <MeetingDisplay
+          show='message'
           meeting={meeting}
           people={people}
-          creator={creator}
+          sender={creator}
           org={org}
         />
         <br />

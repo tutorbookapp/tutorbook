@@ -33,7 +33,12 @@ export default function DirectMeetingEmail({
           {updater.name} just updated a{' '}
           {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} with you:
         </P>
-        <MeetingDisplay meeting={meeting} people={[updater]} />
+        <MeetingDisplay
+          show='description'
+          meeting={meeting}
+          people={[updater]}
+          sender={updater}
+        />
         <br />
         <P>
           To view and edit your {isTutoring ? 'lessons' : 'meetings'}, simply

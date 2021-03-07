@@ -37,9 +37,10 @@ export default function OrgDirectMeetingEmail({
           {recipient.name}:
         </P>
         <MeetingDisplay
+          show='message'
           meeting={meeting}
           people={[recipient, creator]}
-          creator={creator}
+          sender={creator}
         />
         <br />
         <P>

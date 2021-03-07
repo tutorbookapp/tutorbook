@@ -38,9 +38,10 @@ export default function OrgMeetingEmail({
           {join(people.map((p) => p.name))}:
         </P>
         <MeetingDisplay
+          show='message'
           meeting={meeting}
           people={people}
-          creator={creator}
+          sender={creator}
           org={org}
         />
         <br />

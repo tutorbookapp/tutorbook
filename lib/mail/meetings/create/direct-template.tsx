@@ -34,9 +34,10 @@ export default function DirectMeetingEmail({
           {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} with you:
         </P>
         <MeetingDisplay
+          show='message'
           meeting={meeting}
           people={[creator]}
-          creator={creator}
+          sender={creator}
         />
         <br />
         <P>
