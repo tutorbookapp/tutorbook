@@ -36,7 +36,7 @@ export default function MeetingEmail({
         </P>
         <P>
           {updater.name} from {org.name} just updated a{' '}
-          {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} between{' '}
+          {isTutoring ? 'tutoring lesson' : 'meeting'} between{' '}
           {people.length > 2 ? 'all' : 'both'} of you:
         </P>
         <MeetingDisplay

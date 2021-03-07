@@ -16,7 +16,7 @@ export default async function sendEmails(
 ): Promise<void> {
   const emails: Email[] = [];
   const isTutoring = people.some((p) => p.roles.includes('tutor'));
-  const noun = isTutoring ? 'tutoring lesson' : 'mentoring meeting';
+  const noun = isTutoring ? 'tutoring lesson' : 'meeting';
   if (people.findIndex((p) => p.id === updater.id) < 0) {
     // Admin updated meeting, send email to all meeting people.
     emails.push({

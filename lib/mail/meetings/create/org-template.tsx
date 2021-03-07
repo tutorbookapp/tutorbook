@@ -34,7 +34,7 @@ export default function OrgMeetingEmail({
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
         <P>
           {creator.name} just scheduled a new{' '}
-          {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} between{' '}
+          {isTutoring ? 'tutoring lesson' : 'meeting'} between{' '}
           {join(people.map((p) => p.name))}:
         </P>
         <MeetingDisplay

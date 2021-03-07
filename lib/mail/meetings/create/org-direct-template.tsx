@@ -33,8 +33,7 @@ export default function OrgDirectMeetingEmail({
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
         <P>
           {creator.name} just scheduled a new{' '}
-          {isTutoring ? 'tutoring lesson' : 'mentoring meeting'} with{' '}
-          {recipient.name}:
+          {isTutoring ? 'tutoring lesson' : 'meeting'} with {recipient.name}:
         </P>
         <MeetingDisplay
           show='message'
