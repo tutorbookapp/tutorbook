@@ -60,9 +60,9 @@ export default function MeetingEmail({
         </P>
         <br />
         <P>
-          If you&apos;re unable to attend or if this doesn&apos;t seem like a
-          good match, please get in touch with {updater.firstName} by replying
-          to this email or by using the following contact info:
+          If you&apos;re unable to attend or if this seems like a mistake,
+          please get in touch with {updater.firstName} by replying to this email
+          or by using the following contact info:
         </P>
         <P>
           <Link href={`mailto:${updater.email}`}>{updater.email}</Link>
