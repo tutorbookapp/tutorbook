@@ -22,6 +22,7 @@ export default async function getPerson(
     throw new APIError(msg, 400);
   }
 
+  // TODO: Why do I need to call `addRoles` at all here? Aren't they there?
   const prefetched = people[people.findIndex((p) => p.id === id)];
   if (prefetched) return addRoles(prefetched, prefetched.roles);
 
