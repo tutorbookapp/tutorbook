@@ -86,6 +86,14 @@ export default function CreatePage({
     [setEditing]
   );
 
+  useEffect(() => {
+    if (editing.match.message)
+      setEditing((prev) => {
+        if (prev.description) return prev;
+        return new Meeting({ ...prev, description: editing.match.message });
+      });
+  }, [setEditing, editing.match.message]);
+
   // TODO: Add support to the `TimeSelect` and the `/api/users/availability` API
   // to query for the merged availability of multiple users (e.g. when all the
   // people in a match are available v.s. just one person).
