@@ -3,6 +3,9 @@ import { Select, SelectHTMLProps, SelectProps } from '@rmwc/select';
 
 import { TCallback } from 'lib/model/callback';
 
+// TODO: If the given value has an `until` property, render it as another
+// pre-selected option. This allows users to reset the `until` property if
+// necessary BUT we should still keep any explicit `exdates`.
 const rrules: Record<string, string> = {
   Daily: 'RRULE:FREQ=DAILY',
   Weekly: 'RRULE:FREQ=WEEKLY',
