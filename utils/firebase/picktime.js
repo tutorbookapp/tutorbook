@@ -215,7 +215,7 @@ function generateMatchMessage(row) {
   return row[fields.bookingNotes] || '';
 }
 
-function generateMeetingNotes(row) {
+function generateMeetingDescription(row) {
   return row[fields.bookingNotes] || '';
 }
 
@@ -366,7 +366,7 @@ async function convertPicktimeRow(row, headers) {
       created: new Date().toJSON(),
     },
     time: getMeetingTime(row[fields.date]),
-    notes: generateMeetingNotes(row),
+    description: generateMeetingDescription(row),
     updated: new Date().toJSON(),
     created: new Date().toJSON(),
     id: '',

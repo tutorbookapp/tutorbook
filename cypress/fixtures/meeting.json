@@ -23,7 +23,7 @@
     "name": "Nicholas Chiang",
     "id": "admin"
   },
-  "notes": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
+  "description": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
   "match": {
     "id": "match",
     "created": "2020-10-15T19:04:10",

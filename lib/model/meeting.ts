@@ -69,7 +69,7 @@ export type MeetingStatus = 'created' | 'pending' | 'logged' | 'approved';
  * @property venue - Link to the meeting venue (e.g. Zoom or Jitsi).
  * @property time - Time of the meeting (e.g. Tuesday 3:00 - 3:30 PM).
  * @property creator - The person who logged the meeting (typically the tutor).
- * @property notes - Notes about the meeting (e.g. what they worked on).
+ * @property description - Notes about the meeting (e.g. what they worked on).
  * @property [parentId] - The recurring parent meeting ID (if any).
  */
 export interface MeetingInterface extends ResourceInterface {
@@ -78,7 +78,7 @@ export interface MeetingInterface extends ResourceInterface {
   match: Match;
   venue: Venue;
   time: Timeslot;
-  notes: string;
+  description: string;
   ref?: DocumentReference;
   parentId?: string;
   id: string;
@@ -116,7 +116,7 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isMatchJSON(json.match)) return false;
   if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
-  if (typeof json.notes !== 'string') return false;
+  if (typeof json.description !== 'string') return false;
   if (json.parentId && typeof json.parentId !== 'string') return false;
   if (typeof json.id !== 'string') return false;
   return true;
@@ -139,7 +139,7 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public time = new Timeslot();
 
-  public notes = '';
+  public description = '';
 
   public parentId?: string;
 
@@ -264,7 +264,7 @@ export class Meeting extends Resource implements MeetingInterface {
   public toCSV(): Record<string, string> {
     return {
       'Meeting ID': this.id,
-      'Meeting Notes': this.notes,
+      'Meeting Description': this.description,
       'Meeting Start': this.time.from.toString(),
       'Meeting End': this.time.to.toString(),
       'Meeting Created': this.created.toString(),

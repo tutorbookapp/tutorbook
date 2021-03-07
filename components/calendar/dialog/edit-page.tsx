@@ -70,10 +70,10 @@ export default function EditPage({
     },
     [setEditing]
   );
-  const onNotesChange = useCallback(
+  const onDescriptionChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
-      const notes = evt.currentTarget.value;
-      setEditing((prev) => new Meeting({ ...prev, notes }));
+      const description = evt.currentTarget.value;
+      setEditing((prev) => new Meeting({ ...prev, description }));
     },
     [setEditing]
   );
@@ -143,13 +143,13 @@ export default function EditPage({
             outlined
             textarea
             rows={4}
-            placeholder={t('meeting:notes-placeholder', {
+            placeholder={t('meeting:description-placeholder', {
               subject: join(editing.match.subjects) || 'Computer Science',
             })}
-            label={t('meeting:notes')}
+            label={t('meeting:description')}
             className={styles.field}
-            onChange={onNotesChange}
-            value={editing.notes}
+            onChange={onDescriptionChange}
+            value={editing.description}
           />
           <Button
             className={styles.btn}
