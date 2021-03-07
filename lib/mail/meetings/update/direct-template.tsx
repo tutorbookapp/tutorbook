@@ -66,11 +66,6 @@ export default function DirectMeetingEmail({
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
       </Item>
       <Footer>
-        <P>
-          This email was sent to you because you have a profile on Tutorbook.
-          You can edit or remove your profile{' '}
-          <Link href='https://tutorbook.org/profile'>here</Link>.
-        </P>
         <P style={{ marginBottom: '0px !important' }}>
           If this message contains spam or unwanted messages let us know at{' '}
           <Link href='mailto:team@tutorbook.org'>team@tutorbook.org</Link>.
