@@ -60,7 +60,7 @@ export default function MeetingEmail({
         </P>
         <br />
         <P>
-          If this seems like a mistake, please get in touch with{' '}
+          If this cancellation seems like a mistake, please get in touch with{' '}
           {deleter.firstName} by replying to this email or by using the
           following contact info:
         </P>
