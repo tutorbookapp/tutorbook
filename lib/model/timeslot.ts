@@ -147,14 +147,14 @@ export class Timeslot implements TimeslotInterface {
       this.from.getMonth() !== this.to.getMonth() ||
       this.from.getFullYear() !== this.to.getFullYear();
     return `${this.from.toLocaleString(locale, {
-      timeZone,
+      timeZone: timeZone || 'America/Los_Angeles',
       weekday: 'long',
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
     })} - ${this.to.toLocaleString(locale, {
-      timeZone,
+      timeZone: timeZone || 'America/Los_Angeles',
       weekday: showSecondDate ? 'long' : undefined,
       month: showSecondDate ? 'long' : undefined,
       day: showSecondDate ? 'numeric' : undefined,
