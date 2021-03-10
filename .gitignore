@@ -13,6 +13,9 @@ node_modules
 /coverage
 /.nyc_output/
 
+# Email Previews
+pages/mail.tsx
+
 # Next.js
 /.next/
 /out/
