@@ -42,11 +42,16 @@ var __importDefault =
     return mod && mod.__esModule ? mod : { default: mod };
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.updateMeetings = void 0;
+exports.sendReminders = void 0;
 var functions = __importStar(require('firebase-functions'));
 var axios_1 = __importDefault(require('axios'));
-exports.updateMeetings = functions.pubsub
-  .schedule('every 15 minutes')
+// eslint-disable-next-line import/prefer-default-export
+exports.sendReminders = functions.pubsub
+  .schedule('every 24 hours')
   .onRun(function () {
-    return axios_1.default.get('https://tutorbook.org/api/update-meetings');
+    var token = functions.config().remind.token;
+    var headers = { Authorization: 'Bearer ' + token };
+    return axios_1.default.get('https://tutorbook.org/api/remind', {
+      headers: headers,
+    });
   });
