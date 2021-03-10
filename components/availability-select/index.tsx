@@ -88,6 +88,17 @@ function AvailabilitySelect({
     return () => clearTimeout(timeoutId);
   }, [value, onChange, availability]);
 
+  // Sync with controlled data and ensure all timeslots have valid React keys.
+  useEffect(() => {
+    setAvailability((prev) => {
+      const updated = new Availability(
+        ...value.map((t) => new Timeslot({ ...t, id: t.id || nanoid() }))
+      );
+      if (dequal(prev, updated)) return prev;
+      return updated;
+    });
+  }, [value]);
+
   // We use `setTimeout` and `clearTimeout` to wait a "tick" on a blur event
   // before toggling which ensures the user hasn't re-opened the menu.
   // @see {@link https:bit.ly/2x9eM27}
@@ -102,65 +113,53 @@ function AvailabilitySelect({
     if (rowsRef.current) rowsRef.current.scrollTop = 48 * 8 + 24;
   }, []);
 
-  const updateTimeslot = useCallback(
-    (origIdx: number, updated?: Timeslot) => {
-      setAvailability((prev) => {
-        if (!updated)
-          return new Availability(
-            ...prev.slice(0, origIdx),
-            ...prev.slice(origIdx + 1)
-          );
-        let avail: Availability;
-        if (origIdx < 0) {
-          avail = new Availability(...prev, updated).sort();
-        } else {
-          avail = new Availability(
-            ...prev.slice(0, origIdx),
-            updated,
-            ...prev.slice(origIdx + 1)
-          ).sort();
-        }
-        const idx = avail.findIndex((t) => t.id === updated.id);
-        const last = avail[idx - 1];
-        if (last && last.from.getDay() === updated.from.getDay()) {
-          // Contained within another timeslot.
-          if (last.to.valueOf() >= updated.to.valueOf())
-            return new Availability(
-              ...avail.slice(0, idx),
-              ...avail.slice(idx + 1)
-            );
-          // Overlapping with end of another timeslot.
-          if (last.to.valueOf() >= updated.from.valueOf())
-            return new Availability(
-              ...avail.slice(0, idx - 1),
-              new Timeslot({ ...last, to: updated.to }),
-              ...avail.slice(idx + 1)
-            );
-        }
-        const next = avail[idx + 1];
-        if (next && next.from.getDay() === updated.from.getDay()) {
-          // Overlapping with start of another timeslot.
-          if (next.from.valueOf() <= updated.to.valueOf())
-            return new Availability(
-              ...avail.slice(0, idx),
-              new Timeslot({ ...next, from: updated.from }),
-              ...avail.slice(idx + 2)
-            );
-        }
-        return avail;
-      });
-    },
-    [setAvailability]
-  );
-
-  // Ensure that all of the timeslots have valid React keys.
-  useEffect(() => {
+  const updateTimeslot = useCallback((origIdx: number, updated?: Timeslot) => {
     setAvailability((prev) => {
-      const ids = prev.map((t) => new Timeslot({ ...t, id: t.id || nanoid() }));
-      if (!dequal(ids, prev)) return new Availability(...ids);
-      return prev;
+      if (!updated)
+        return new Availability(
+          ...prev.slice(0, origIdx),
+          ...prev.slice(origIdx + 1)
+        );
+      let avail: Availability;
+      if (origIdx < 0) {
+        avail = new Availability(...prev, updated).sort();
+      } else {
+        avail = new Availability(
+          ...prev.slice(0, origIdx),
+          updated,
+          ...prev.slice(origIdx + 1)
+        ).sort();
+      }
+      const idx = avail.findIndex((t) => t.id === updated.id);
+      const last = avail[idx - 1];
+      if (last && last.from.getDay() === updated.from.getDay()) {
+        // Contained within another timeslot.
+        if (last.to.valueOf() >= updated.to.valueOf())
+          return new Availability(
+            ...avail.slice(0, idx),
+            ...avail.slice(idx + 1)
+          );
+        // Overlapping with end of another timeslot.
+        if (last.to.valueOf() >= updated.from.valueOf())
+          return new Availability(
+            ...avail.slice(0, idx - 1),
+            new Timeslot({ ...last, to: updated.to }),
+            ...avail.slice(idx + 1)
+          );
+      }
+      const next = avail[idx + 1];
+      if (next && next.from.getDay() === updated.from.getDay()) {
+        // Overlapping with start of another timeslot.
+        if (next.from.valueOf() <= updated.to.valueOf())
+          return new Availability(
+            ...avail.slice(0, idx),
+            new Timeslot({ ...next, from: updated.from }),
+            ...avail.slice(idx + 2)
+          );
+      }
+      return avail;
     });
-  }, [value, setAvailability]);
+  }, []);
 
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
