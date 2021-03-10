@@ -31,9 +31,8 @@ export default function ReminderEmail({
           Hi {join(people.map((p) => p.firstName))},
         </P>
         <P>
-          This is just a friendly 24 hour reminder of a{' '}
-          {isTutoring ? 'tutoring lesson' : 'meeting'} between{' '}
-          {people.length > 2 ? 'all' : 'both'} of you:
+          This is just a friendly 24 hour reminder of your{' '}
+          {isTutoring ? 'tutoring lesson' : 'meeting'} together:
         </P>
         <MeetingDisplay
           show='description'
