@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR, { SWRConfig, mutate } from 'swr';
 import { AppProps } from 'next/app';
+import axios from 'axios';
 
 import NProgress from 'components/nprogress';
 
 import { Org, OrgJSON } from 'lib/model/org';
-import { User, UserJSON } from 'lib/model/user';
 import { Theme, ThemeContext } from 'lib/context/theme';
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
+import { User, UserJSON } from 'lib/model/user';
 import { fetcher } from 'lib/fetch';
 import useTrack from 'lib/hooks/track';
 
@@ -44,7 +45,13 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
   // effect from within the `withI18n` HOC) to properly set these `langs`.
   const user = useMemo(
-    () => (data ? User.fromJSON(data) : new User({ langs: ['en'] })),
+    () =>
+      data
+        ? User.fromJSON(data)
+        : new User({
+            langs: ['en'],
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          }),
     [data]
   );
   const loggedIn = useMemo(() => {
@@ -80,8 +87,10 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   useEffect(() => {
     void updateUser((prev) => {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (prev.timezone === timezone) return prev;
-      return new User({ ...prev, timezone });
+      if (prev.timezone === timezone || !prev.id) return prev;
+      const updated = new User({ ...prev, timezone });
+      void axios.put<UserJSON>(`/api/users/${updated.id}`, updated.toJSON());
+      return updated;
     });
   }, [updateUser]);
 
