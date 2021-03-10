@@ -47,6 +47,8 @@ export default async function updateMeeting(
       isMeetingJSON,
       Meeting
     );
+
+    // TODO: Verify the option data types just like we do for the request body.
     const options = verifyOptions<UpdateMeetingOptions>(req.body, {
       original: body.toJSON(),
       action: 'future',

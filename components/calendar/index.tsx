@@ -241,9 +241,8 @@ export default function Calendar({
     setEditChecked(false);
     setEditLoading(true);
     const url = `/api/meetings/${editing.parentId || editing.id}`;
-    const [err] = await to(
-      axios.delete(url, { data: { options: { action } } })
-    );
+    const options = { action, deleting: original.current.toJSON() };
+    const [err] = await to(axios.delete(url, { data: { options } }));
     if (err) {
       const e = (err as AxiosError<APIErrorJSON>).response?.data || err;
       setEditLoading(false);
@@ -302,7 +301,6 @@ export default function Calendar({
         {(recurEdit || recurDelete) && (
           <RecurDialog
             title={`${recurEdit ? 'Edit' : 'Delete'} recurring meeting`}
-            options={recurEdit ? ['all', 'this', 'future'] : ['all']}
             action={action}
             setAction={setAction}
             onClose={(evt) => {
