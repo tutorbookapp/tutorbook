@@ -182,7 +182,7 @@ export class User extends Account implements UserInterface {
 
   public reference = '';
 
-  public timezone = Intl.DateTimeFormat().resolvedOptions().timezone;
+  public timezone = '';
 
   public token?: string;
 
