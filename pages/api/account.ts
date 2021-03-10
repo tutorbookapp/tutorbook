@@ -86,6 +86,8 @@ function mergeUsers(overrides: User, baseline: User): User {
     visible: overrides.visible || baseline.visible,
     featured: mergeArrays(overrides.featured, baseline.featured),
     roles: mergeArrays(overrides.roles, baseline.roles),
+    reference: overrides.reference || baseline.reference,
+    timezone: overrides.timezone || baseline.timezone,
   });
 }
 
