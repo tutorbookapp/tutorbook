@@ -1,4 +1,6 @@
 {
+  "loading": "Updating user...",
+  "checked": "Updated user.",
   "error": "Could not update user. Retry in {{count}} seconds.",
   "update-btn": "Update user",
   "create-btn": "Create user",

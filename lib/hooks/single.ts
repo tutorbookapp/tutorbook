@@ -65,6 +65,8 @@ export default function useSingle<T>(
   const [checked, setChecked] = useState<boolean>(false);
   const [validations, setValidations] = useState<Validations>({});
 
+  // The given changes are always initially saved; we don't want to show an
+  // unnecessary "Saved changes" snackbar when the user first opens a page.
   const lastReceivedResponse = useRef<T>(initialData);
 
   const onSubmit = useCallback(
@@ -108,7 +110,11 @@ export default function useSingle<T>(
   useEffect(() => {
     // Initial data takes precedence over local component-scoped data (e.g. when
     // editing a profile that can be updated from multiple locations).
-    setData((prev: T) => (dequal(prev, initialData) ? prev : initialData));
+    setData((prev: T) => {
+      if (dequal(prev, initialData)) return prev;
+      lastReceivedResponse.current = initialData;
+      return initialData;
+    });
   }, [initialData]);
 
   useEffect(() => {

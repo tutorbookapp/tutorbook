@@ -1,5 +1,7 @@
 {
   "subtitle": "Configure {{name}} settings",
+  "loading": "Updating settings...",
+  "checked": "Updated settings.",
   "error": "Could not update settings. Retry in {{count}} seconds.",
   "retry": "Retry",
   "general": "General",

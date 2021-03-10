@@ -52,11 +52,15 @@ export default function VerificationsTable({
     await mutate(`/api/users/${updated.id}`, updated.toJSON(), false);
   }, []);
 
-  const { data: user, setData: setUser, error, timeout, retry } = useContinuous(
-    initialData,
-    updateRemote,
-    updateLocal
-  );
+  const {
+    data: user,
+    setData: setUser,
+    loading,
+    checked,
+    error,
+    retry,
+    timeout,
+  } = useContinuous(initialData, updateRemote, updateLocal);
 
   const org = useMemo(() => {
     const idx = orgs.findIndex((o) => user.orgs.includes(o.id));
@@ -65,20 +69,18 @@ export default function VerificationsTable({
   }, [orgs, user.orgs]);
 
   const getChecked = useCallback(
-    (c: Check) => {
-      return user.verifications.some((v) => v.checks.includes(c));
-    },
+    (c: Check) => user.verifications.some((v) => v.checks.includes(c)),
     [user.verifications]
   );
   const setChecked = useCallback(
     (evt: FormEvent<HTMLInputElement>, c: Check) => {
-      const { checked } = evt.currentTarget;
+      const enabled = evt.currentTarget.checked;
       return setUser((prev) => {
         const verifications = clone(prev.verifications).map(
           (v) => new Verification(v)
         );
         const idx = verifications.findIndex((v) => v.checks.includes(c));
-        if (idx < 0 && checked) {
+        if (idx < 0 && enabled) {
           verifications.push(
             new Verification({
               org,
@@ -89,7 +91,7 @@ export default function VerificationsTable({
               updated: new Date(),
             })
           );
-        } else if (idx >= 0 && !checked) {
+        } else if (idx >= 0 && !enabled) {
           verifications.splice(idx, 1);
         }
         return new User({ ...prev, verifications });
@@ -98,20 +100,20 @@ export default function VerificationsTable({
     [currentUser.id, org, setUser]
   );
 
-  const someChecked = useMemo(() => {
-    return user.verifications.length > 0;
-  }, [user.verifications]);
-  const allChecked = useMemo(() => {
-    return checks.every((c) => {
-      return user.verifications.some((v) => v.checks.includes(c));
-    });
-  }, [user.verifications]);
+  const someChecked = useMemo(() => user.verifications.length > 0, [
+    user.verifications,
+  ]);
+  const allChecked = useMemo(
+    () =>
+      checks.every((c) => user.verifications.some((v) => v.checks.includes(c))),
+    [user.verifications]
+  );
 
   const toggleAll = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
-      const { checked } = evt.currentTarget;
+      const enabled = evt.currentTarget.checked;
       return setUser((prev) => {
-        if (!checked) return new User({ ...prev, verifications: [] });
+        if (!enabled) return new User({ ...prev, verifications: [] });
         const verifications = clone(prev.verifications).map(
           (v) => new Verification(v)
         );
@@ -185,10 +187,10 @@ export default function VerificationsTable({
 
   const onFeaturedChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
-      const { checked } = evt.currentTarget;
+      const isFeatured = evt.currentTarget.checked;
       return setUser((prev) => {
         const featured: Aspect[] = [];
-        if (!checked) return new User({ ...prev, featured });
+        if (!isFeatured) return new User({ ...prev, featured });
         if (prev.tutoring.subjects.length) featured.push('tutoring');
         if (prev.mentoring.subjects.length) featured.push('mentoring');
         return new User({ ...prev, featured });
@@ -199,6 +201,10 @@ export default function VerificationsTable({
 
   return (
     <>
+      {loading && (
+        <Snackbar message={t('user:loading')} timeout={-1} leading open />
+      )}
+      {checked && <Snackbar message={t('user:checked')} leading open />}
       {error && (
         <Snackbar
           message={t('user:error', { count: timeout / 1000 })}

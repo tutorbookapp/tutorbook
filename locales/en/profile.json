@@ -1,5 +1,7 @@
 {
   "subtitle": "Update your profile",
+  "loading": "Updating profile...",
+  "checked": "Updated profile.",
   "error": "Could not update profile. Retry in {{count}} seconds.",
   "view-profile": "View profile"
 }

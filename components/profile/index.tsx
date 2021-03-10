@@ -35,9 +35,15 @@ export default function Profile(): JSX.Element {
     [track]
   );
 
-  const { error, retry, timeout, data: user, setData: setUser } = useContinuous<
-    User
-  >(local, updateRemote, updateLocal);
+  const {
+    data: user,
+    setData: setUser,
+    loading,
+    checked,
+    error,
+    retry,
+    timeout,
+  } = useContinuous(local, updateRemote, updateLocal);
 
   useAnalytics(
     'Profile Errored',
@@ -118,6 +124,10 @@ export default function Profile(): JSX.Element {
 
   return (
     <>
+      {loading && (
+        <Snackbar message={t('profile:loading')} timeout={-1} leading open />
+      )}
+      {checked && <Snackbar message={t('profile:checked')} leading open />}
       {error && (
         <Snackbar
           message={t('profile:error', { count: timeout / 1000 })}

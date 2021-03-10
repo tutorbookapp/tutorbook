@@ -42,9 +42,15 @@ export default function Settings({
     return Org.fromJSON(data);
   }, []);
 
-  const { error, retry, timeout, data: org, setData: setOrg } = useContinuous<
-    Org
-  >(emptyOrg, updateRemote, updateLocal);
+  const {
+    data: org,
+    setData: setOrg,
+    loading,
+    checked,
+    error,
+    retry,
+    timeout,
+  } = useContinuous(emptyOrg, updateRemote, updateLocal);
 
   useEffect(() => {
     const idx = orgs.findIndex((o: Org) => o.id === orgId);
@@ -53,6 +59,10 @@ export default function Settings({
 
   return (
     <>
+      {loading && (
+        <Snackbar message={t('settings:loading')} timeout={-1} leading open />
+      )}
+      {checked && <Snackbar message={t('settings:checked')} leading open />}
       {error && (
         <Snackbar
           message={t('settings:error', { count: timeout / 1000 })}
