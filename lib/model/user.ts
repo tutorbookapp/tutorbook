@@ -76,6 +76,8 @@ export function isSubjects(json: unknown): json is Subjects {
  * @property featured - Aspects in which this user is first in search results.
  * @property roles - Always empty unless in context of match or request.
  * @property reference - How the user heard about TB or the org they're joining.
+ * @property timezone - The user's time zone (e.g. America/Los_Angeles). This is
+ * collected by our front-end and used by our back-end when sending reminders.
  * @property [token] - The user's Firebase Authentication JWT `idToken`.
  * @property [hash] - The user's Intercom HMAC for identity verifications.
  * @todo Add a `zoom` prop that contains the user's personal Zoom OAuth token
@@ -95,6 +97,7 @@ export interface UserInterface extends AccountInterface {
   featured: Aspect[];
   roles: Role[];
   reference: string;
+  timezone: string;
   token?: string;
   hash?: string;
 }
@@ -144,6 +147,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isArray(json.featured, isAspect)) return false;
   if (!isArray(json.roles, isRole)) return false;
   if (typeof json.reference !== 'string') return false;
+  if (typeof json.timezone !== 'string') return false;
   if (json.token && typeof json.token !== 'string') return false;
   if (json.hash && typeof json.hash !== 'string') return false;
   return true;
@@ -177,6 +181,8 @@ export class User extends Account implements UserInterface {
   public roles: Role[] = [];
 
   public reference = '';
+
+  public timezone = Intl.DateTimeFormat().resolvedOptions().timezone;
 
   public token?: string;
 

@@ -137,18 +137,24 @@ export class Timeslot implements TimeslotInterface {
     return new Timeslot({ ...this, from, to });
   }
 
-  public toString(locale = 'en', showTimeZone = true): string {
+  public toString(
+    locale = 'en',
+    timeZone = 'America/Los_Angeles',
+    showTimeZone = true
+  ): string {
     const showSecondDate =
       this.from.getDate() !== this.to.getDate() ||
       this.from.getMonth() !== this.to.getMonth() ||
       this.from.getFullYear() !== this.to.getFullYear();
     return `${this.from.toLocaleString(locale, {
+      timeZone,
       weekday: 'long',
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
     })} - ${this.to.toLocaleString(locale, {
+      timeZone,
       weekday: showSecondDate ? 'long' : undefined,
       month: showSecondDate ? 'long' : undefined,
       day: showSecondDate ? 'numeric' : undefined,

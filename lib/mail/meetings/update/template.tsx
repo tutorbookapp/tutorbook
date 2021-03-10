@@ -41,6 +41,7 @@ export default function MeetingEmail({
         </P>
         <MeetingDisplay
           show='description'
+          timeZone={people[0].timezone}
           meeting={meeting}
           people={people}
           sender={updater}

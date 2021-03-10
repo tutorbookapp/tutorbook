@@ -35,6 +35,7 @@ export default function DirectMeetingEmail({
         </P>
         <MeetingDisplay
           show='message'
+          timeZone={recipient.timezone}
           meeting={meeting}
           people={[creator]}
           sender={creator}

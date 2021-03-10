@@ -41,11 +41,12 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // reset during client-side page navigation.
   const userLoaded = useRef<boolean>(false);
   const { data, error } = useSWR<UserJSON, Error>('/api/account', fetcher);
-  const user = useMemo(() => {
-    // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
-    // effect from within the `withI18n` HOC) to properly set these `langs`.
-    return data ? User.fromJSON(data) : new User({ langs: ['en'] });
-  }, [data]);
+  // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
+  // effect from within the `withI18n` HOC) to properly set these `langs`.
+  const user = useMemo(
+    () => (data ? User.fromJSON(data) : new User({ langs: ['en'] })),
+    [data]
+  );
   const loggedIn = useMemo(() => {
     if (user.id) {
       userLoaded.current = true;
@@ -74,6 +75,16 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     [user, loggedIn]
   );
 
+  // Update the currently signed-in user's timezone if it has changed.
+  // @see {@link https://stackoverflow.com/a/34602679/10023158}
+  useEffect(() => {
+    void updateUser((prev) => {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (prev.timezone === timezone) return prev;
+      return new User({ ...prev, timezone });
+    });
+  }, [updateUser]);
+
   // Only trigger the `User Signed In` event if the user was logged out before.
   const track = useTrack();
   const prevLoggedIn = useRef<boolean | undefined>(loggedIn);
@@ -88,9 +99,10 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
 
   // Consumers can update local app-wide org data (proxy to SWR's mutate FN).
   const { data: orgsData } = useSWR<OrgJSON[]>('/api/orgs', fetcher);
-  const orgs = useMemo(() => {
-    return orgsData ? orgsData.map((o: OrgJSON) => Org.fromJSON(o)) : [];
-  }, [orgsData]);
+  const orgs = useMemo(
+    () => (orgsData ? orgsData.map((o) => Org.fromJSON(o)) : []),
+    [orgsData]
+  );
   const updateOrg = useCallback(
     async (id: string, param: UpdateOrgParam) => {
       const idx = orgs.findIndex((org: Org) => org.id === id);

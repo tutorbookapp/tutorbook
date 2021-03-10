@@ -158,6 +158,7 @@ export function Button({ href, style, children }: HrefProps): JSX.Element {
 
 interface MeetingDisplayProps {
   show?: 'message' | 'description';
+  timeZone: string;
   meeting: Meeting;
   people: User[];
   sender: User;
@@ -166,6 +167,7 @@ interface MeetingDisplayProps {
 
 export function MeetingDisplay({
   show = 'message',
+  timeZone,
   meeting,
   people,
   sender,
@@ -190,7 +192,7 @@ export function MeetingDisplay({
         <P>
           <b>WHEN</b>
           <br />
-          {meeting.time.toString()}
+          {meeting.time.toString('en', timeZone)}
         </P>
         {meeting.time.recur && rrule.isFullyConvertibleToText() && (
           <P>

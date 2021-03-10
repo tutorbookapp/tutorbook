@@ -39,6 +39,7 @@ export default function OrgMeetingEmail({
         </P>
         <MeetingDisplay
           show='message'
+          timeZone={creator.timezone}
           meeting={meeting}
           people={people}
           sender={creator}
