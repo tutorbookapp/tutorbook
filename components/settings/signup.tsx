@@ -1,12 +1,12 @@
-import { useCallback, FormEvent } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Aspect } from 'lib/model/aspect';
 import { Org } from 'lib/model/org';
 
-import { useSettings } from './context';
 import styles from './settings.module.scss';
+import { useSettings } from './context';
 
 export default function Signup(): JSX.Element {
   const { t, lang: locale } = useTranslation();

@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
 import Link from 'next/link';
 import axios from 'axios';
@@ -20,8 +20,6 @@ export interface SettingsProps {
   children: ReactNode;
 }
 
-const emptyOrg = new Org();
-
 export default function Settings({
   orgId,
   active,
@@ -42,6 +40,10 @@ export default function Settings({
     return Org.fromJSON(data);
   }, []);
 
+  const initialData = useMemo(
+    () => orgs.find((o) => o.id === orgId) || new Org(),
+    [orgId, orgs]
+  );
   const {
     data: org,
     setData: setOrg,
@@ -50,12 +52,9 @@ export default function Settings({
     error,
     retry,
     timeout,
-  } = useContinuous(emptyOrg, updateRemote, updateLocal);
+  } = useContinuous(initialData, updateRemote, updateLocal);
 
-  useEffect(() => {
-    const idx = orgs.findIndex((o: Org) => o.id === orgId);
-    if (idx >= 0) setOrg(orgs[idx]);
-  }, [orgs, orgId, setOrg]);
+  const settingsContextValue = useMemo(() => ({ org, setOrg }), [org, setOrg]);
 
   return (
     <>
@@ -99,7 +98,7 @@ export default function Settings({
           </div>
         </div>
         <div className={styles.right}>
-          <SettingsContext.Provider value={{ org, setOrg }}>
+          <SettingsContext.Provider value={settingsContextValue}>
             {children}
           </SettingsContext.Provider>
         </div>

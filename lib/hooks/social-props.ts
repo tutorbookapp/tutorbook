@@ -1,5 +1,5 @@
-import { useCallback, FormEvent } from 'react';
-import { TextFieldProps, TextFieldHTMLProps } from '@rmwc/textfield';
+import { FormEvent, useCallback } from 'react';
+import { TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Account, SocialInterface, SocialTypeAlias } from 'lib/model/account';

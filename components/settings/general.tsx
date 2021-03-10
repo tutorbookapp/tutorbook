@@ -1,4 +1,4 @@
-import { useCallback, FormEvent } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -7,8 +7,8 @@ import PhotoInput from 'components/photo-input';
 import { Org } from 'lib/model/org';
 import useSocialProps from 'lib/hooks/social-props';
 
-import { useSettings } from './context';
 import styles from './settings.module.scss';
+import { useSettings } from './context';
 
 export default function General(): JSX.Element {
   const { t } = useTranslation();
