@@ -35,6 +35,7 @@
     }
   ],
   "reference": "",
+  "timezone": "America/Los_Angeles",
   "roles": [],
   "featured": ["tutoring"],
   "orgs": ["default", "gunn"],
