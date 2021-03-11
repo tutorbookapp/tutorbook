@@ -5,6 +5,8 @@ import to from 'await-to-js';
 import { Subjects, User, UserJSON, isUserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { SocialInterface } from 'lib/model/account';
+import { Timeslot } from 'lib/model/timeslot';
+import { Verification } from 'lib/model/verification';
 import clone from 'lib/utils/clone';
 import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';
@@ -27,10 +29,19 @@ function mergeSocials(
   return socials;
 }
 
-function mergeArrays<T>(overrides: T[], baseline: T[]): T[] {
-  const merged = clone(overrides);
+interface ModelInterface<T> {
+  new (model: T): T;
+}
+
+function mergeArrays<T>(
+  overrides: T[],
+  baseline: T[],
+  Model?: ModelInterface<T>
+): T[] {
+  const merged = clone(overrides).map((m) => (Model ? new Model(m) : m));
   baseline.forEach((i) => {
-    if (!merged.some((im) => dequal(im, i))) merged.push(clone(i));
+    if (!merged.some((im) => dequal(im, i)))
+      merged.push(Model ? new Model(clone(i)) : clone(i));
   });
   return merged;
 }
@@ -40,7 +51,7 @@ function mergeAvailability(
   overrides: Availability,
   baseline: Availability
 ): Availability {
-  return new Availability(...mergeArrays(overrides, baseline));
+  return new Availability(...mergeArrays(overrides, baseline, Timeslot));
 }
 
 function mergeSubjects(overrides: Subjects, baseline: Subjects): Subjects {
@@ -82,7 +93,11 @@ function mergeUsers(overrides: User, baseline: User): User {
     tutoring: mergeSubjects(overrides.tutoring, baseline.tutoring),
     langs: mergeArrays(overrides.langs, baseline.langs),
     parents: mergeArrays(overrides.parents, baseline.parents),
-    verifications: mergeArrays(overrides.verifications, baseline.verifications),
+    verifications: mergeArrays(
+      overrides.verifications,
+      baseline.verifications,
+      Verification
+    ),
     visible: overrides.visible || baseline.visible,
     featured: mergeArrays(overrides.featured, baseline.featured),
     roles: mergeArrays(overrides.roles, baseline.roles),
