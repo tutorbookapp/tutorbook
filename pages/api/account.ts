@@ -109,8 +109,10 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   const withPhotoUpdate = await updatePhoto(withOrgsUpdate, User);
   const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
-  await updateUserDoc(withAuthUpdate);
-  await updateUserSearchObj(withAuthUpdate);
+  await Promise.all([
+    updateUserDoc(withAuthUpdate),
+    updateUserSearchObj(withAuthUpdate),
+  ]);
 
   res.status(200).json(withAuthUpdate.toJSON());
 }
