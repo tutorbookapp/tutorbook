@@ -1,8 +1,8 @@
+import { useCallback, useMemo } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import Image from 'next/image';
 import Link from 'next/link';
 import cn from 'classnames';
-import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
@@ -12,6 +12,7 @@ import RequestForm from 'components/user/request-form';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
+import useTrack from 'lib/hooks/track';
 import { useUser } from 'lib/context/user';
 
 import styles from './display.module.scss';
@@ -35,6 +36,12 @@ export default function UserDisplay({
     orgs,
     user?.orgs,
   ]);
+
+  const track = useTrack();
+  const openPicktime = useCallback(() => {
+    track('Match Linked Clicked');
+    if (org?.matchURL) window.open(org.matchURL);
+  }, [track, org]);
 
   return (
     <div data-cy='user-display' className={cn({ [styles.loading]: !user })}>
@@ -134,7 +141,7 @@ export default function UserDisplay({
                 {t('common:picktime-body', { org: org.name, user: user.name })}
               </p>
               <Button
-                href={org.matchURL}
+                onClick={openPicktime}
                 label={t('common:picktime-btn')}
                 raised
                 arrow
