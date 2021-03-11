@@ -89,7 +89,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       if (prev.timezone === timezone || !prev.id) return prev;
       const updated = new User({ ...prev, timezone });
-      void axios.put<UserJSON>(`/api/users/${updated.id}`, updated.toJSON());
+      void axios.put<UserJSON>('/api/account', updated.toJSON());
       return updated;
     });
   }, [updateUser]);
