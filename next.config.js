@@ -61,9 +61,6 @@ module.exports = withImages({
         })
       );
     }
-    // Only include the recharts graphing modules we actually need.
-    // @see {@link https://github.com/recharts/babel-plugin-recharts}
-    defaultLoaders.babel.query.plugins.push('recharts');
     config.module.rules.push({
       test: /\.hbs$/,
       use: 'raw-loader',
