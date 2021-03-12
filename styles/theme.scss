@@ -19,6 +19,13 @@ $highlight: #79ffe1;
   --on-background: #{$on-background};
   --on-error: #{$on-error};
 
+  --accents-6: #999;
+  --accents-5: #888;
+  --accents-4: #666;
+  --accents-3: #444;
+  --accents-2: #333;
+  --accents-1: #111;
+
   --selection: #{$highlight};
 
   --background-rgb: 255, 255, 255;
@@ -28,7 +35,7 @@ $highlight: #79ffe1;
   --on-background-5: #{rgba($on-background, 0.6)};
   --on-background-4: #{rgba($on-background, 0.54)};
   --on-background-3: #{rgba($on-background, 0.38)};
-  --on-background-2: #{rgba($on-background, 0.12)};
+  --on-background-2: var(--accents-2);
   --on-background-1: #{rgba($on-background, 0.06)};
 
   --primary-6: #{rgba($primary, 0.87)};
@@ -85,6 +92,13 @@ $highlight: #79ffe1;
   --on-background: #{$on-background};
   --on-error: #{$on-error};
 
+  --accents-6: #999;
+  --accents-5: #888;
+  --accents-4: #666;
+  --accents-3: #444;
+  --accents-2: #333;
+  --accents-1: #111;
+
   --selection: #{color.adjust($highlight, $saturation: -10%, $lightness: -40%)};
 
   --background-rgb: 18, 18, 18;
@@ -94,7 +108,7 @@ $highlight: #79ffe1;
   --on-background-5: #{rgba($on-background, 0.6)};
   --on-background-4: #{rgba($on-background, 0.54)};
   --on-background-3: #{rgba($on-background, 0.38)};
-  --on-background-2: #{rgba($on-background, 0.12)};
+  --on-background-2: var(--accents-2);
   --on-background-1: #{rgba($on-background, 0.06)};
 
   --primary-6: #{rgba($primary, 0.87)};
@@ -107,13 +121,6 @@ $highlight: #79ffe1;
 
   --title-left: #{$primary};
   --title-right: #{color.adjust($primary, $hue: -25%, $lightness: 10%)};
-
-  --accents-6: #999;
-  --accents-5: #888;
-  --accents-4: #666;
-  --accents-3: #444;
-  --accents-2: #333;
-  --accents-1: #111;
 
   --header-background: #{rgba($background, 0.8)};
   --shadow-large: 0 0 0 1px var(--accents-2);
