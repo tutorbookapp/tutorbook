@@ -1,3 +1,4 @@
+import { CartesianGrid, Line, LineChart, ResponsiveContainer } from 'recharts';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -27,6 +28,19 @@ function Label({ percent, positive, negative }: LabelProps): JSX.Element {
     </span>
   );
 }
+
+const data = [
+  { name: 'Page A', uv: 1000, pv: 2400, amt: 2400, uvError: [75, 20] },
+  { name: 'Page B', uv: 300, pv: 4567, amt: 2400, uvError: [90, 40] },
+  { name: 'Page C', uv: 280, pv: 1398, amt: 2400, uvError: 40 },
+  { name: 'Page D', uv: 200, pv: 9800, amt: 2400, uvError: 20 },
+  { name: 'Page E', uv: 278, pv: null, amt: 2400, uvError: 28 },
+  { name: 'Page F', uv: 189, pv: 4800, amt: 2400, uvError: [90, 20] },
+  { name: 'Page G', uv: 189, pv: 4800, amt: 2400, uvError: [28, 40] },
+  { name: 'Page H', uv: 189, pv: 4800, amt: 2400, uvError: 28 },
+  { name: 'Page I', uv: 189, pv: 4800, amt: 2400, uvError: 28 },
+  { name: 'Page J', uv: 189, pv: 4800, amt: 2400, uvError: [15, 60] },
+];
 
 export default function Overview(): JSX.Element {
   const { t } = useTranslation();
@@ -73,6 +87,12 @@ export default function Overview(): JSX.Element {
             <div>546 Recurring</div>
           </div>
         </dl>
+        <ResponsiveContainer height={450} width='100%' className={styles.chart}>
+          <LineChart data={data}>
+            <CartesianGrid />
+            <Line type='monotone' dataKey='uv' stroke='var(--primary)' />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </>
   );

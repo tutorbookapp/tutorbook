@@ -5,8 +5,7 @@
 
   .numbers {
     display: flex;
-    padding: 56px 0;
-    margin: 0;
+    margin: 56px 0;
 
     .number {
       flex-grow: 1;
@@ -45,6 +44,21 @@
         line-height: 14px;
         color: var(--accents-6);
       }
+    }
+  }
+
+  .chart {
+    margin-bottom: 72px;
+
+    :global(.recharts-cartesian-grid) line {
+      // Ensure that our 1px lines actually stay 1px (to match other borders).
+      // @see {@link https://stackoverflow.com/a/34229584/10023158}
+      shape-rendering: crispedges;
+      stroke: var(--accents-2);
+    }
+
+    :global(.recharts-cartesian-grid-vertical) line {
+      stroke-dasharray: 8;
     }
   }
 }
