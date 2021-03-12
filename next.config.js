@@ -48,7 +48,7 @@ module.exports = withImages({
       },
     ];
   },
-  webpack(config, { isServer }) {
+  webpack(config, { isServer, defaultLoaders }) {
     if (!isServer && process.env.ANALYZE === 'true') {
       // Only run the bundle analyzer for the client-side chunks.
       // @see {@link https://github.com/vercel/next.js/issues/15481}
@@ -61,6 +61,9 @@ module.exports = withImages({
         })
       );
     }
+    // Only include the recharts graphing modules we actually need.
+    // @see {@link https://github.com/recharts/babel-plugin-recharts}
+    defaultLoaders.babel.query.plugins.push('recharts');
     config.module.rules.push({
       test: /\.hbs$/,
       use: 'raw-loader',
