@@ -30,16 +30,132 @@ function Label({ percent, positive, negative }: LabelProps): JSX.Element {
 }
 
 const data = [
-  { name: 'Page A', uv: 1000, pv: 2400, amt: 2400, uvError: [75, 20] },
-  { name: 'Page B', uv: 300, pv: 4567, amt: 2400, uvError: [90, 40] },
-  { name: 'Page C', uv: 280, pv: 1398, amt: 2400, uvError: 40 },
-  { name: 'Page D', uv: 200, pv: 9800, amt: 2400, uvError: 20 },
-  { name: 'Page E', uv: 278, pv: null, amt: 2400, uvError: 28 },
-  { name: 'Page F', uv: 189, pv: 4800, amt: 2400, uvError: [90, 20] },
-  { name: 'Page G', uv: 189, pv: 4800, amt: 2400, uvError: [28, 40] },
-  { name: 'Page H', uv: 189, pv: 4800, amt: 2400, uvError: 28 },
-  { name: 'Page I', uv: 189, pv: 4800, amt: 2400, uvError: 28 },
-  { name: 'Page J', uv: 189, pv: 4800, amt: 2400, uvError: [15, 60] },
+  {
+    date: new Date(2020, 1, 25),
+    volunteers: 154,
+    students: 138,
+    matches: 321,
+    meetings: 1432,
+  },
+  {
+    date: new Date(2020, 1, 26),
+    volunteers: 159,
+    students: 138,
+    matches: 335,
+    meetings: 1362,
+  },
+  {
+    date: new Date(2020, 1, 27),
+    volunteers: 162,
+    students: 140,
+    matches: 346,
+    meetings: 1532,
+  },
+  {
+    date: new Date(2020, 1, 28),
+    volunteers: 180,
+    students: 141,
+    matches: 456,
+    meetings: 1689,
+  },
+  {
+    date: new Date(2020, 1, 29),
+    volunteers: 180,
+    students: 141,
+    matches: 567,
+    meetings: 1745,
+  },
+  {
+    date: new Date(2020, 1, 30),
+    volunteers: 159,
+    students: 138,
+    matches: 335,
+    meetings: 1362,
+  },
+  {
+    date: new Date(2020, 2, 1),
+    volunteers: 162,
+    students: 140,
+    matches: 346,
+    meetings: 1532,
+  },
+  {
+    date: new Date(2020, 2, 2),
+    volunteers: 180,
+    students: 141,
+    matches: 456,
+    meetings: 1689,
+  },
+  {
+    date: new Date(2020, 2, 3),
+    volunteers: 180,
+    students: 141,
+    matches: 567,
+    meetings: 1745,
+  },
+  {
+    date: new Date(2020, 2, 4),
+    volunteers: 182,
+    students: 148,
+    matches: 534,
+    meetings: 2340,
+  },
+  {
+    date: new Date(2020, 2, 5),
+    volunteers: 183,
+    students: 162,
+    matches: 528,
+    meetings: 4356,
+  },
+  {
+    date: new Date(2020, 2, 6),
+    volunteers: 190,
+    students: 184,
+    matches: 517,
+    meetings: 3478,
+  },
+  {
+    date: new Date(2020, 2, 7),
+    volunteers: 203,
+    students: 203,
+    matches: 449,
+    meetings: 4570,
+  },
+  {
+    date: new Date(2020, 2, 8),
+    volunteers: 234,
+    students: 214,
+    matches: 348,
+    meetings: 4967,
+  },
+  {
+    date: new Date(2020, 2, 9),
+    volunteers: 190,
+    students: 184,
+    matches: 517,
+    meetings: 3478,
+  },
+  {
+    date: new Date(2020, 2, 10),
+    volunteers: 203,
+    students: 203,
+    matches: 449,
+    meetings: 4570,
+  },
+  {
+    date: new Date(2020, 2, 11),
+    volunteers: 234,
+    students: 214,
+    matches: 348,
+    meetings: 4967,
+  },
+  {
+    date: new Date(2020, 2, 12),
+    volunteers: 258,
+    students: 218,
+    matches: 443,
+    meetings: 5425,
+  },
 ];
 
 export default function Overview(): JSX.Element {
@@ -89,8 +205,28 @@ export default function Overview(): JSX.Element {
         </dl>
         <ResponsiveContainer height={450} width='100%' className={styles.chart}>
           <LineChart data={data}>
-            <CartesianGrid />
-            <Line type='monotone' dataKey='uv' stroke='var(--primary)' />
+            <CartesianGrid stroke='var(--accents-2)' />
+            <Line
+              type='monotone'
+              dataKey='volunteers'
+              stroke='var(--primary)'
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              type='monotone'
+              dataKey='students'
+              stroke='#f38200'
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              type='monotone'
+              dataKey='matches'
+              stroke='#f30071'
+              strokeWidth={2}
+              dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

@@ -54,7 +54,6 @@
       // Ensure that our 1px lines actually stay 1px (to match other borders).
       // @see {@link https://stackoverflow.com/a/34229584/10023158}
       shape-rendering: crispedges;
-      stroke: var(--accents-2);
     }
 
     :global(.recharts-cartesian-grid-vertical) line {
