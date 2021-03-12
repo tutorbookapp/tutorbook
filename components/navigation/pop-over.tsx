@@ -182,9 +182,8 @@ export default function PopOverMenu({
             <Fragment key={org.id}>
               <div className={styles.line} />
               <PopOverAccountHeader account={org} />
-              <PopOverLink href={`/${org.id}`}>{t('common:home')}</PopOverLink>
-              <PopOverLink href={`/${org.id}/search`}>
-                {t('common:search')}
+              <PopOverLink href={`/${org.id}/overview`}>
+                {t('common:overview')}
               </PopOverLink>
               <PopOverLink href={`/${org.id}/users`}>
                 {t('common:users')}
