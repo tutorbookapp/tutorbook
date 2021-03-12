@@ -9,8 +9,8 @@
   max-width: 100%;
   background-color: var(--header-background);
   min-height: sizes.$header-height;
-  transition: box-shadow 0.1s ease 0s;
-  box-shadow: var(--header-border-bottom);
+  max-height: sizes.$header-height;
+  border-bottom: 1px solid var(--accents-2);
   z-index: 4;
 }
 
