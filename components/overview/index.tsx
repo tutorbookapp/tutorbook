@@ -1,11 +1,24 @@
-import { CartesianGrid, Line, LineChart, ResponsiveContainer } from 'recharts';
+import {
+  CartesianGrid,
+  DotProps,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Header from 'components/header';
 
+import { caps } from 'lib/utils';
+import { sameDate } from 'lib/utils/time';
 import { useOrg } from 'lib/context/org';
 
+import data from './data';
 import styles from './overview.module.scss';
 
 interface LabelProps {
@@ -29,137 +42,34 @@ function Label({ percent, positive, negative }: LabelProps): JSX.Element {
   );
 }
 
-const data = [
-  {
-    date: new Date(2020, 1, 25),
-    volunteers: 154,
-    students: 138,
-    matches: 321,
-    meetings: 1432,
-  },
-  {
-    date: new Date(2020, 1, 26),
-    volunteers: 159,
-    students: 138,
-    matches: 335,
-    meetings: 1362,
-  },
-  {
-    date: new Date(2020, 1, 27),
-    volunteers: 162,
-    students: 140,
-    matches: 346,
-    meetings: 1532,
-  },
-  {
-    date: new Date(2020, 1, 28),
-    volunteers: 180,
-    students: 141,
-    matches: 456,
-    meetings: 1689,
-  },
-  {
-    date: new Date(2020, 1, 29),
-    volunteers: 180,
-    students: 141,
-    matches: 567,
-    meetings: 1745,
-  },
-  {
-    date: new Date(2020, 1, 30),
-    volunteers: 159,
-    students: 138,
-    matches: 335,
-    meetings: 1362,
-  },
-  {
-    date: new Date(2020, 2, 1),
-    volunteers: 162,
-    students: 140,
-    matches: 346,
-    meetings: 1532,
-  },
-  {
-    date: new Date(2020, 2, 2),
-    volunteers: 180,
-    students: 141,
-    matches: 456,
-    meetings: 1689,
-  },
-  {
-    date: new Date(2020, 2, 3),
-    volunteers: 180,
-    students: 141,
-    matches: 567,
-    meetings: 1745,
-  },
-  {
-    date: new Date(2020, 2, 4),
-    volunteers: 182,
-    students: 148,
-    matches: 534,
-    meetings: 2340,
-  },
-  {
-    date: new Date(2020, 2, 5),
-    volunteers: 183,
-    students: 162,
-    matches: 528,
-    meetings: 4356,
-  },
-  {
-    date: new Date(2020, 2, 6),
-    volunteers: 190,
-    students: 184,
-    matches: 517,
-    meetings: 3478,
-  },
-  {
-    date: new Date(2020, 2, 7),
-    volunteers: 203,
-    students: 203,
-    matches: 449,
-    meetings: 4570,
-  },
-  {
-    date: new Date(2020, 2, 8),
-    volunteers: 234,
-    students: 214,
-    matches: 348,
-    meetings: 4967,
-  },
-  {
-    date: new Date(2020, 2, 9),
-    volunteers: 190,
-    students: 184,
-    matches: 517,
-    meetings: 3478,
-  },
-  {
-    date: new Date(2020, 2, 10),
-    volunteers: 203,
-    students: 203,
-    matches: 449,
-    meetings: 4570,
-  },
-  {
-    date: new Date(2020, 2, 11),
-    volunteers: 234,
-    students: 214,
-    matches: 348,
-    meetings: 4967,
-  },
-  {
-    date: new Date(2020, 2, 12),
-    volunteers: 258,
-    students: 218,
-    matches: 443,
-    meetings: 5425,
-  },
-];
+interface CustomDotProps extends DotProps {
+  value: number;
+}
+
+function CustomDot({ cx, cy, fill, value }: CustomDotProps): JSX.Element {
+  return (
+    <g className={styles.dot}>
+      <circle
+        fill={fill}
+        strokeOpacity={0.1}
+        strokeWidth={12}
+        stroke={fill}
+        cx={cx}
+        cy={cy}
+        r={Math.min((8 * value) / 250, 8)}
+      />
+    </g>
+  );
+}
+
+interface TickProps {
+  x: number;
+  y: number;
+  payload: { value: number };
+}
 
 export default function Overview(): JSX.Element {
-  const { t } = useTranslation();
+  const { t, lang: locale } = useTranslation();
   const { org } = useOrg();
 
   return (
@@ -205,25 +115,105 @@ export default function Overview(): JSX.Element {
         </dl>
         <ResponsiveContainer height={450} width='100%' className={styles.chart}>
           <LineChart data={data}>
-            <CartesianGrid stroke='var(--accents-2)' />
+            <Tooltip
+              cursor={false}
+              allowEscapeViewBox={{ x: false, y: true }}
+              content={({ label, payload }: TooltipProps<number, string>) => (
+                <div className={styles.tooltip}>
+                  <div className={styles.header}>
+                    {new Date(label).toLocaleString(locale, {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </div>
+                  <table>
+                    {payload?.map(({ name, value }) => (
+                      <tr className={name ? styles[name] : undefined}>
+                        <td>{value}</td>
+                        <td>{caps(name || '')}</td>
+                      </tr>
+                    ))}
+                  </table>
+                </div>
+              )}
+            />
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray='8'
+              stroke='var(--accents-2)'
+            />
+            <YAxis
+              width={38}
+              tickMargin={8}
+              tickLine={false}
+              axisLine={false}
+              tick={({ x, y, payload }: TickProps) => (
+                <text
+                  fontSize='14px'
+                  type='number'
+                  width='30'
+                  x={x - 30}
+                  y={y}
+                  stroke='none'
+                  fill='var(--accents-5)'
+                  textAnchor='start'
+                >
+                  <tspan x={x - 30} dy='0.355em'>
+                    {payload.value}
+                  </tspan>
+                </text>
+              )}
+            />
+            <XAxis
+              height={28}
+              dataKey='date'
+              tickMargin={12}
+              tickLine={false}
+              axisLine={false}
+              tick={({ x, y, payload }: TickProps) => (
+                <text
+                  fontSize='14px'
+                  height='30'
+                  type='text'
+                  x={x}
+                  y={y}
+                  stroke='none'
+                  fill='var(--accents-5)'
+                  textAnchor='middle'
+                >
+                  <tspan x={x} dy='0.71em'>
+                    {sameDate(new Date(payload.value), new Date())
+                      ? 'Today'
+                      : new Date(payload.value).toLocaleString(locale, {
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                  </tspan>
+                </text>
+              )}
+            />
+            <Line
+              type='monotone'
+              dataKey='matches'
+              stroke='var(--analytics-matches)'
+              activeDot={CustomDot}
+              strokeWidth={2}
+              dot={false}
+            />
             <Line
               type='monotone'
               dataKey='volunteers'
-              stroke='var(--primary)'
+              stroke='var(--analytics-volunteers)'
+              activeDot={CustomDot}
               strokeWidth={2}
               dot={false}
             />
             <Line
               type='monotone'
               dataKey='students'
-              stroke='#f38200'
-              strokeWidth={2}
-              dot={false}
-            />
-            <Line
-              type='monotone'
-              dataKey='matches'
-              stroke='#f30071'
+              stroke='var(--analytics-students)'
+              activeDot={CustomDot}
               strokeWidth={2}
               dot={false}
             />
