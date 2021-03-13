@@ -36,6 +36,8 @@ export default function index<
   // TODO: Also save all of the "not" tags (e.g. `not-vetted`) because Algolia
   // doesn't support filtering by missing values or missing tags.
   const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
+  // TODO: Don't store tags both in "tags" and in "_tags". Instead, we should
+  // convert "tags" to "_tags" in the user search object like "objectID".
   const idxObj = clone({ ...obj.toSearchHit(), _tags: obj.tags });
   return idx.saveObject(idxObj);
 }
