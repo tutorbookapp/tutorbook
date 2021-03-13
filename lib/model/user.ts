@@ -33,13 +33,29 @@ import {
   isZoomUserJSON,
 } from 'lib/model/zoom-user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
-import { Tag } from 'lib/model/query/users';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
+
+/**
+ * Various tags that are added to the Algolia users search during indexing (via
+ * the `lib/api/algolia.ts` API back-end module). For in-depth explanations of
+ * each one, reference the link included below.
+ * @see {@link https://github.com/tutorbookapp/tutorbook/tree/TAGS.md}
+ */
+export type UserTag =
+  | 'vetted' // Has at least one verification.
+  | 'matched' // In at least one match.
+  | 'meeting' // Has at least one meeting.
+  | Role; // Has this role in at least one match.
+
+export function isUserTag(tag: unknown): tag is UserTag {
+  if (typeof tag !== 'string') return false;
+  return ['vetted', 'matched', 'meeting'].includes(tag) || isRole(tag);
+}
 
 /**
  * Right now, we only support traditional K-12 grade levels (e.g. 'Freshman'
@@ -75,6 +91,7 @@ export function isSubjects(json: unknown): json is Subjects {
  * @property visible - Whether or not this user appears in search results.
  * @property featured - Aspects in which this user is first in search results.
  * @property roles - Always empty unless in context of match or request.
+ * @property tags - An array of user tags used for analytics and filtering.
  * @property reference - How the user heard about TB or the org they're joining.
  * @property timezone - The user's time zone (e.g. America/Los_Angeles). This is
  * collected by our front-end and used by our back-end when sending reminders.
@@ -96,6 +113,7 @@ export interface UserInterface extends AccountInterface {
   visible: boolean;
   featured: Aspect[];
   roles: Role[];
+  tags: UserTag[];
   reference: string;
   timezone: string;
   token?: string;
@@ -146,6 +164,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (typeof json.visible !== 'boolean') return false;
   if (!isArray(json.featured, isAspect)) return false;
   if (!isArray(json.roles, isRole)) return false;
+  if (!isArray(json.tags, isUserTag)) return false;
   if (typeof json.reference !== 'string') return false;
   if (typeof json.timezone !== 'string') return false;
   if (json.token && typeof json.token !== 'string') return false;
@@ -180,6 +199,8 @@ export class User extends Account implements UserInterface {
 
   public roles: Role[] = [];
 
+  public tags: UserTag[] = [];
+
   public reference = '';
 
   public timezone = '';
@@ -213,15 +234,17 @@ export class User extends Account implements UserInterface {
   // 1. Add a `role` property to users that is match-specific.
   // 2. Use the `roles` property to store each role the user has ever been.
   // 3. Algolia tags are only used to determine if a user has subjects or not.
-  public get tags(): Tag[] {
-    const tags: Tag[] = [];
-    if (!this.verifications.length) tags.push('not-vetted');
-    if (this.mentoring.subjects.length) tags.push('mentor');
-    if (this.mentoring.searches.length) tags.push('mentee');
-    if (this.tutoring.subjects.length) tags.push('tutor');
-    if (this.tutoring.searches.length) tags.push('tutee');
-    return tags;
-  }
+  /*
+   *public get tags(): Tag[] {
+   *  const tags: Tag[] = [];
+   *  if (!this.verifications.length) tags.push('not-vetted');
+   *  if (this.mentoring.subjects.length) tags.push('mentor');
+   *  if (this.mentoring.searches.length) tags.push('mentee');
+   *  if (this.tutoring.subjects.length) tags.push('tutor');
+   *  if (this.tutoring.searches.length) tags.push('tutee');
+   *  return tags;
+   *}
+   */
 
   public get firstName(): string {
     return this.name.split(' ')[0];
@@ -352,6 +375,7 @@ export class User extends Account implements UserInterface {
       'User Bio': this.bio,
       'User Reference': this.reference,
       'User Languages': join(this.langs),
+      'User Tags': join(this.tags),
       'Mentoring Subjects': join(this.mentoring.subjects),
       'Tutoring Subjects': join(this.tutoring.subjects),
       'Mentoring Searches': join(this.mentoring.searches),

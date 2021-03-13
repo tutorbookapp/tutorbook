@@ -1,18 +1,8 @@
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { Availability, AvailabilityJSON } from 'lib/model/availability';
 import { Option, Query, QueryInterface } from 'lib/model/query/base';
+import { UserTag } from 'lib/model/user';
 import construct from 'lib/model/construct';
-
-/**
- * Various tags that are added to the Algolia users search during indexing (via
- * the `lib/api/algolia.ts` API back-end module).
- * @property not-vetted - User doesn't have any verifications.
- * @property tutor - User is a tutor in at least one match.
- * @property tutee - User is a tutee in at least one match.
- * @property mentor - User is a mentor in at least one match.
- * @property mentee - User is a mentee in at least one match.
- */
-export type Tag = 'not-vetted' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
 /**
  * All the supported filters for the search view.
@@ -31,7 +21,7 @@ export type Tag = 'not-vetted' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
 export interface UsersQueryInterface extends QueryInterface {
   parents: string[];
   orgs: string[];
-  tags: Tag[];
+  tags: UserTag[];
   aspect: Aspect;
   langs: Option<string>[];
   subjects: Option<string>[];
@@ -55,7 +45,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
 
   public orgs: string[] = [];
 
-  public tags: Tag[] = [];
+  public tags: UserTag[] = [];
 
   public aspect: Aspect = 'tutoring';
 
@@ -108,7 +98,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
       ...super.fromURLParams(params),
       parents: decode<string>(params.parents),
       orgs: decode<string>(params.orgs),
-      tags: decode<Tag>(params.tags),
+      tags: decode<UserTag>(params.tags),
       langs: decode<Option<string>>(params.langs),
       subjects: decode<Option<string>>(params.subjects),
       visible: params.visible ? params.visible === 'true' : undefined,

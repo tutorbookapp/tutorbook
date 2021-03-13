@@ -11,15 +11,21 @@ import {
   ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
+import { isArray, isJSON } from 'lib/model/json';
 import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-import { isJSON } from 'lib/model/json';
 import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
+
+export type MatchTag = 'meeting'; // Match has at least one meeting.
+
+export function isMatchTag(tag: unknown): tag is MatchTag {
+  return tag === 'meeting';
+}
 
 /**
  * Represents a tutoring lesson or mentoring appointment.
@@ -36,6 +42,7 @@ export interface MatchInterface extends ResourceInterface {
   people: Person[];
   creator: Person;
   message: string;
+  tags: MatchTag[];
   ref?: DocumentReference;
   id: string;
 }
@@ -62,6 +69,7 @@ export function isMatchJSON(json: unknown): json is MatchJSON {
   if (json.people.some((p) => !isPerson(p))) return false;
   if (!isPerson(json.creator)) return false;
   if (typeof json.message !== 'string') return false;
+  if (!isArray(json.tags, isMatchTag)) return false;
   if (typeof json.id !== 'string') return false;
   return true;
 }
@@ -82,6 +90,8 @@ export class Match extends Resource implements MatchInterface {
   };
 
   public message = '';
+
+  public tags: MatchTag[] = [];
 
   public ref?: DocumentReference;
 
@@ -167,6 +177,7 @@ export class Match extends Resource implements MatchInterface {
       'Match ID': this.id,
       'Match Subjects': join(this.subjects),
       'Match Message': this.message,
+      'Match Tags': join(this.tags),
       'Match Created': this.created.toString(),
       'Match Last Updated': this.updated.toString(),
       'Volunteer ID': this.volunteer?.id || '',

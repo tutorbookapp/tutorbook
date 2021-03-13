@@ -32,13 +32,20 @@ import {
   VenueSearchHit,
   isVenueJSON,
 } from 'lib/model/venue';
+import { isArray, isJSON } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-import { isJSON } from 'lib/model/json';
+import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
+
+export type MeetingTag = 'recurring'; // Meeting is recurring (has rrule).
+
+export function isMeetingTag(tag: unknown): tag is MeetingTag {
+  return tag === 'recurring';
+}
 
 /**
  * @typedef MeetingAction
@@ -79,8 +86,9 @@ export interface MeetingInterface extends ResourceInterface {
   venue: Venue;
   time: Timeslot;
   description: string;
-  ref?: DocumentReference;
+  tags: MeetingTag[];
   parentId?: string;
+  ref?: DocumentReference;
   id: string;
 }
 
@@ -117,6 +125,7 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
   if (typeof json.description !== 'string') return false;
+  if (!isArray(json.tags, isMeetingTag)) return false;
   if (json.parentId && typeof json.parentId !== 'string') return false;
   if (typeof json.id !== 'string') return false;
   return true;
@@ -140,6 +149,8 @@ export class Meeting extends Resource implements MeetingInterface {
   public time = new Timeslot();
 
   public description = '';
+
+  public tags: MeetingTag[] = [];
 
   public parentId?: string;
 
@@ -267,6 +278,7 @@ export class Meeting extends Resource implements MeetingInterface {
       'Meeting Description': this.description,
       'Meeting Start': this.time.from.toString(),
       'Meeting End': this.time.to.toString(),
+      'Meeting Tags': join(this.tags),
       'Meeting Created': this.created.toString(),
       'Meeting Last Updated': this.updated.toString(),
       ...this.match.toCSV(),
