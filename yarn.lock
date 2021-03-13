@@ -4612,19 +4612,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"analytics-node@npm:^3.4.0-beta.3":
-  version: 3.4.0-beta.3
-  resolution: "analytics-node@npm:3.4.0-beta.3"
+"analytics-node@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "analytics-node@npm:4.0.1"
   dependencies:
     "@segment/loosely-validate-event": ^2.0.0
-    axios: ^0.19.2
+    axios: ^0.21.1
     axios-retry: ^3.0.2
     lodash.isstring: ^4.0.1
     md5: ^2.2.1
     ms: ^2.0.0
     remove-trailing-slash: ^0.1.0
     uuid: ^3.2.1
-  checksum: 8f4482e4ff051fa21d30e1ffcd0710ff255ecaad315cd21c63e0475ffa147c0935f1ce3f4fa0930883895c9da7dce3c5eba02884dcb732519d739d39ad3654e6
+  checksum: e92c4ebe312bb176d24a037c837ee15575bc68ec7ab3461f6d96d2a06bd7b6821ab7886d3e76e714e3041ce6428a1f2dc53bdb4b6f841dfa8e6cef2c3fb8f319
   languageName: node
   linkType: hard
 
@@ -18465,7 +18465,7 @@ resolve@^1.18.1:
     "@typescript-eslint/parser": ^4.14.2
     accept-language-parser: ^1.5.0
     algoliasearch: ^4.3.1
-    analytics-node: ^3.4.0-beta.3
+    analytics-node: ^4.0.1
     await-to-js: ^2.1.1
     axios: ^0.21.0
     babel-eslint: ^10.1.0
