@@ -61,10 +61,20 @@ in their `mentoring.subjects` property).
 - **Meeting** - Has at least one meeting. Set whenever a meeting is created,
   updated, or deleted.
 
+Users also have role-based tags (tutor/tutee/mentor/mentee) that are set when:
+
+1. The user is created or updated. Ex: If a user has `tutoring.subjects`, they
+   are a tutor and thus get the `tutor` tag.
+2. A match is created or updated. Ex: If a user is a `tutor` in at least one
+   match at some point in time, they are a tutor and thus get the `tutor` tag.
+
+Role tags are never removed: once a user has been a tutor at least once, they
+will always be considered a tutor.
+
 ### `Org`
 
-An org is a school, nonprofit, or other business entity that is using Tutorbook
-to manage their tutoring and/or mentoring programs.
+An org is a school, nonprofit, or other business entity that is using TB to
+manage tutoring and/or mentoring programs.
 
 ### `Match`
 

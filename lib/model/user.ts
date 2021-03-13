@@ -229,23 +229,6 @@ export class User extends Account implements UserInterface {
     return new User(clone(this));
   }
 
-  // TODO: This overrides the existing tags so we don't know if the user has a
-  // role in a specific match. Decide how that's going to work, either:
-  // 1. Add a `role` property to users that is match-specific.
-  // 2. Use the `roles` property to store each role the user has ever been.
-  // 3. Algolia tags are only used to determine if a user has subjects or not.
-  /*
-   *public get tags(): Tag[] {
-   *  const tags: Tag[] = [];
-   *  if (!this.verifications.length) tags.push('not-vetted');
-   *  if (this.mentoring.subjects.length) tags.push('mentor');
-   *  if (this.mentoring.searches.length) tags.push('mentee');
-   *  if (this.tutoring.subjects.length) tags.push('tutor');
-   *  if (this.tutoring.searches.length) tags.push('tutee');
-   *  return tags;
-   *}
-   */
-
   public get firstName(): string {
     return this.name.split(' ')[0];
   }
