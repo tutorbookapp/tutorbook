@@ -6,8 +6,9 @@ import {
   MatchesQueryURL,
   isMatchesQueryURL,
 } from 'lib/model';
-import { handle } from 'lib/api/error';
 import getMatches from 'lib/api/get/matches';
+import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';
 
@@ -27,13 +28,15 @@ export default async function listMatches(
       MatchesQuery
     );
 
-    await verifyAuth(req.headers, {
+    const { uid } = await verifyAuth(req.headers, {
       userIds: query.people.map((p) => p.value),
       orgIds: query.org ? [query.org] : undefined,
     });
 
     const { results, hits } = await getMatches(query);
     res.status(200).json({ hits, matches: results.map((m) => m.toJSON()) });
+
+    segment.track({ userId: uid, event: 'Matches Listed' });
   } catch (e) {
     handle(e, res);
   }

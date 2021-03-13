@@ -8,6 +8,7 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import updatePeopleRoles from 'lib/api/update/people-roles';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
@@ -48,6 +49,12 @@ export default async function createMatch(
     await Promise.all([createMatchSearchObj(match), updatePeopleRoles(people)]);
 
     res.status(201).json(match.toJSON());
+
+    segment.track({
+      userId: creator.id,
+      event: 'Match Created',
+      properties: match.toSegment(),
+    });
   } catch (e) {
     handle(e, res);
   }

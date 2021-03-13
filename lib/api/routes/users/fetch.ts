@@ -7,6 +7,7 @@ import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
@@ -28,6 +29,13 @@ export default async function fetchUser(
         hash: attrs?.uid === userId ? getUserHash(userId) : undefined,
       })
     );
+
+    if (attrs?.uid)
+      segment.track({
+        userId: attrs?.uid,
+        event: 'User Fetched',
+        properties: user.toSegment(),
+      });
   } catch (e) {
     handle(e, res);
   }

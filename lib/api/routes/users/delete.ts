@@ -5,6 +5,7 @@ import deleteUserDoc from 'lib/api/delete/user-doc';
 import deleteUserSearchObj from 'lib/api/delete/user-search-obj';
 import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
@@ -18,7 +19,10 @@ export default async function deleteUser(
     const id = verifyQueryId(req.query);
     const user = await getUser(id);
 
-    await verifyAuth(req.headers, { userId: user.id, orgIds: user.orgs });
+    const { uid } = await verifyAuth(req.headers, {
+      userId: user.id,
+      orgIds: user.orgs,
+    });
 
     // TODO: Once we get our GCP Storage buckets organized, I should also delete
     // all of the user-uploaded media (e.g. profile photos, banner images).
@@ -33,6 +37,12 @@ export default async function deleteUser(
     ]);
 
     res.status(200).end();
+
+    segment.track({
+      userId: uid,
+      event: 'User Deleted',
+      properties: user.toSegment(),
+    });
   } catch (e) {
     handle(e, res);
   }

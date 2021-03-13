@@ -1,8 +1,9 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Org, OrgJSON, isOrgJSON } from 'lib/model';
-import { handle } from 'lib/api/error';
 import getOrg from 'lib/api/get/org';
+import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import updateOrgDoc from 'lib/api/update/org-doc';
 import updatePhoto from 'lib/api/update/photo';
 import verifyAuth from 'lib/api/verify/auth';
@@ -20,11 +21,16 @@ export default async function updateOrg(
 ): Promise<void> {
   try {
     const body = verifyBody<Org, OrgJSON>(req.body, isOrgJSON, Org);
-    await verifyAuth(req.headers, { orgIds: [body.id] });
+    const { uid } = await verifyAuth(req.headers, { orgIds: [body.id] });
     const prev = await getOrg(body.id);
     verifyMembersUnchanged(prev, body);
     const org = await updateOrgDoc(await updatePhoto(body, Org));
     res.status(200).json(org.toJSON());
+    segment.track({
+      userId: uid,
+      event: 'Org Updated',
+      properties: org.toSegment(),
+    });
   } catch (e) {
     handle(e, res);
   }

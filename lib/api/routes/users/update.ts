@@ -2,6 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { User, UserJSON, isUserJSON } from 'lib/model';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserDoc from 'lib/api/update/user-doc';
@@ -22,22 +23,29 @@ export default async function updateUser(
 
     // TODO: Check the existing data, not the data that is being sent with the
     // request (e.g. b/c I could fake data and add users to my org).
-    await verifyAuth(req.headers, { userId: body.id, orgIds: body.orgs });
+    const { uid } = await verifyAuth(req.headers, {
+      userId: body.id,
+      orgIds: body.orgs,
+    });
     await verifyDocExists('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
     const withPhotoUpdate = await updatePhoto(withOrgsUpdate, User);
-    const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
+    const user = await updateAuthUser(withPhotoUpdate);
 
     // TODO: If the user's name or photo has changed, update it across all
     // meetings and matches the user is a `Person` on.
 
-    await Promise.all([
-      updateUserDoc(withAuthUpdate),
-      updateUserSearchObj(withAuthUpdate),
-    ]);
+    await Promise.all([updateUserDoc(user), updateUserSearchObj(user)]);
 
-    res.status(200).json(withAuthUpdate.toJSON());
+    res.status(200).json(user.toJSON());
+
+    segment.identify({ userId: user.id, traits: user.toSegment() });
+    segment.track({
+      userId: uid,
+      event: 'User Updated',
+      properties: user.toSegment(),
+    });
   } catch (e) {
     handle(e, res);
   }

@@ -4,6 +4,7 @@ import { MeetingJSON } from 'lib/model';
 import getMatch from 'lib/api/get/match';
 import getMatchMeetings from 'lib/api/get/match-meetings';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
@@ -20,12 +21,18 @@ export default async function fetchMeetings(
       getMatchMeetings(id),
     ]);
 
-    await verifyAuth(req.headers, {
+    const { uid } = await verifyAuth(req.headers, {
       userIds: match.people.map((p) => p.id),
       orgIds: [match.org],
     });
 
     res.status(200).json(meetings.map((m) => m.toJSON()));
+
+    segment.track({
+      userId: uid,
+      event: 'Match Meetings Fetched',
+      properties: match.toSegment(),
+    });
   } catch (e) {
     handle(e, res);
   }

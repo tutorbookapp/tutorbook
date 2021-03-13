@@ -11,6 +11,7 @@ import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
@@ -119,6 +120,12 @@ export default async function deleteMeeting(
     }
 
     res.status(200).end();
+
+    segment.track({
+      userId: uid,
+      event: 'Meeting Deleted',
+      properties: deleting.toSegment(),
+    });
   } catch (e) {
     handle(e, res);
   }

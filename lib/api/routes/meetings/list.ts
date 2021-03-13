@@ -8,6 +8,7 @@ import {
   isMeetingsQueryURL,
 } from 'lib/model';
 import getMeetings from 'lib/api/get/meetings';
+import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';
 
@@ -32,13 +33,15 @@ export default async function listMeetings(
     // b) The person whose matches are being requested.
     if (query.people.length !== 1 && !query.org)
       throw new APIError('You must filter meetings by org or people', 400);
-    await verifyAuth(req.headers, {
+    const { uid } = await verifyAuth(req.headers, {
       userId: query.people.length === 1 ? query.people[0].value : undefined,
       orgIds: query.org ? [query.org] : undefined,
     });
 
     const { results, hits } = await getMeetings(query);
     res.status(200).json({ hits, meetings: results.map((m) => m.toJSON()) });
+
+    segment.track({ userId: uid, event: 'Meetings Listed' });
   } catch (e) {
     handle(e, res);
   }

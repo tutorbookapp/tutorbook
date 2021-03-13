@@ -15,6 +15,7 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
 import getUser from 'lib/api/get/user';
+import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
 import updatePeopleRoles from 'lib/api/update/people-roles';
 import verifyAuth from 'lib/api/verify/auth';
@@ -70,6 +71,12 @@ export default async function createMeeting(
         createMatchSearchObj(body.match),
         updatePeopleRoles(people),
       ]);
+
+      segment.track({
+        userId: creator.id,
+        event: 'Match Created',
+        properties: body.match.toSegment(),
+      });
     } else {
       // Match org cannot change (security issue if it can).
       // TODO: Nothing in the match should be able to change (because this API
@@ -96,6 +103,12 @@ export default async function createMeeting(
     await sendEmails(meeting, people, creator, org, orgAdmins);
 
     res.status(200).json(meeting.toJSON());
+
+    segment.track({
+      userId: creator.id,
+      event: 'Meeting Created',
+      properties: meeting.toSegment(),
+    });
   } catch (e) {
     handle(e, res);
   }

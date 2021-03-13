@@ -1,8 +1,9 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { OrgJSON } from 'lib/model';
-import { handle } from 'lib/api/error';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
+import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 
 export type ListOrgsRes = OrgJSON[];
@@ -21,6 +22,7 @@ export default async function listOrgs(
     const { uid } = await verifyAuth(req.headers);
     const orgs = await getOrgsByAdminId(uid);
     res.status(200).json(orgs.map((o) => o.toJSON()));
+    segment.track({ userId: uid, event: 'Orgs Listed' });
   } catch (e) {
     handle(e, res);
   }

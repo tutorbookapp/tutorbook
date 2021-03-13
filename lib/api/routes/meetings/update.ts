@@ -16,6 +16,7 @@ import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
@@ -115,6 +116,12 @@ export default async function updateMeeting(
         ]);
 
         res.status(200).json(body.toJSON());
+
+        segment.track({
+          userId: uid,
+          event: 'Meeting Updated',
+          properties: body.toSegment(),
+        });
       } else if (options.action === 'this') {
         // Update this meeting only:
         // 1. Create a new non-recurring meeting using this meeting's data.
@@ -155,6 +162,12 @@ export default async function updateMeeting(
         ]);
 
         res.status(200).json(newMeeting.toJSON());
+
+        segment.track({
+          userId: uid,
+          event: 'Meeting Updated',
+          properties: newMeeting.toSegment(),
+        });
       } else {
         // Update this and all following meetings:
         // 1. Create a new recurring meeting using this meeting's data.
@@ -190,6 +203,12 @@ export default async function updateMeeting(
         ]);
 
         res.status(200).json(newRecurringMeeting.toJSON());
+
+        segment.track({
+          userId: uid,
+          event: 'Meeting Updated',
+          properties: newRecurringMeeting.toSegment(),
+        });
       }
     } else {
       body.venue = await updateZoom(body, people);
@@ -207,6 +226,12 @@ export default async function updateMeeting(
       ]);
 
       res.status(200).json(body.toJSON());
+
+      segment.track({
+        userId: uid,
+        event: 'Meeting Updated',
+        properties: body.toSegment(),
+      });
     }
   } catch (e) {
     handle(e, res);
