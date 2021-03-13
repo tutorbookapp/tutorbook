@@ -63,8 +63,8 @@ in their `mentoring.subjects` property).
 
 ### `Org`
 
-An org is a school or nonprofit or other business entity that is using TB to
-manage their tutoring and mentoring programs.
+An org is a school, nonprofit, or other business entity that is using Tutorbook
+to manage their tutoring and/or mentoring programs.
 
 ### `Match`
 
