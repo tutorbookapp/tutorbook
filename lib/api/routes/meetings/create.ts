@@ -3,6 +3,7 @@ import to from 'await-to-js';
 
 import { APIError, handle } from 'lib/api/error';
 import { Match, Meeting, MeetingJSON, isMeetingJSON } from 'lib/model';
+import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
@@ -77,6 +78,8 @@ export default async function createMeeting(
         event: 'Match Created',
         properties: body.match.toSegment(),
       });
+
+      await analytics(body.match, 'created');
     } else {
       // Match org cannot change (security issue if it can).
       // TODO: Nothing in the match should be able to change (because this API
@@ -109,6 +112,8 @@ export default async function createMeeting(
       event: 'Meeting Created',
       properties: meeting.toSegment(),
     });
+
+    await analytics(meeting, 'created');
   } catch (e) {
     handle(e, res);
   }

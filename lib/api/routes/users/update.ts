@@ -1,6 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { User, UserJSON, isUserJSON } from 'lib/model';
+import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
@@ -8,6 +9,7 @@ import updatePhoto from 'lib/api/update/photo';
 import updateUserDoc from 'lib/api/update/user-doc';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserSearchObj from 'lib/api/update/user-search-obj';
+import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyDocExists from 'lib/api/verify/doc-exists';
@@ -27,10 +29,11 @@ export default async function updateUser(
       userId: body.id,
       orgIds: body.orgs,
     });
-    await verifyDocExists('users', body.id);
+    const originalDoc = await verifyDocExists('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
-    const withPhotoUpdate = await updatePhoto(withOrgsUpdate, User);
+    const withTagsUpdate = updateUserTags(withOrgsUpdate);
+    const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
     const user = await updateAuthUser(withPhotoUpdate);
 
     // TODO: If the user's name or photo has changed, update it across all
@@ -46,6 +49,8 @@ export default async function updateUser(
       event: 'User Updated',
       properties: user.toSegment(),
     });
+
+    await analytics(user, 'updated', User.fromFirestoreDoc(originalDoc));
   } catch (e) {
     handle(e, res);
   }

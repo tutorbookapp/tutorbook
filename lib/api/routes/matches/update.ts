@@ -1,6 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, MatchJSON, isMatchJSON } from 'lib/model';
+import analytics from 'lib/api/analytics';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
@@ -47,6 +48,8 @@ export default async function updateMatch(
       event: 'Match Updated',
       properties: body.toSegment(),
     });
+
+    await analytics(body, 'updated');
   } catch (e) {
     handle(e, res);
   }

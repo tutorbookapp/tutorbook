@@ -8,6 +8,7 @@ import {
   isMeetingJSON,
 } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
+import analytics from 'lib/api/analytics';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import createZoom from 'lib/api/create/zoom';
@@ -122,6 +123,8 @@ export default async function updateMeeting(
           event: 'Meeting Updated',
           properties: body.toSegment(),
         });
+
+        await analytics(body, 'updated');
       } else if (options.action === 'this') {
         // Update this meeting only:
         // 1. Create a new non-recurring meeting using this meeting's data.
@@ -168,6 +171,8 @@ export default async function updateMeeting(
           event: 'Meeting Updated',
           properties: newMeeting.toSegment(),
         });
+
+        await analytics(newMeeting, 'updated');
       } else {
         // Update this and all following meetings:
         // 1. Create a new recurring meeting using this meeting's data.
@@ -209,6 +214,8 @@ export default async function updateMeeting(
           event: 'Meeting Updated',
           properties: newRecurringMeeting.toSegment(),
         });
+
+        await analytics(newRecurringMeeting, 'updated');
       }
     } else {
       body.venue = await updateZoom(body, people);
@@ -232,6 +239,8 @@ export default async function updateMeeting(
         event: 'Meeting Updated',
         properties: body.toSegment(),
       });
+
+      await analytics(body, 'updated');
     }
   } catch (e) {
     handle(e, res);

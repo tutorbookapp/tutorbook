@@ -1,5 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
+import analytics from 'lib/api/analytics';
 import deleteMatchDoc from 'lib/api/delete/match-doc';
 import deleteMatchSearchObj from 'lib/api/delete/match-search-obj';
 import getMatch from 'lib/api/get/match';
@@ -35,6 +36,8 @@ export default async function deleteMatch(
       event: 'Match Deleted',
       properties: match.toSegment(),
     });
+
+    await analytics(match, 'deleted');
   } catch (e) {
     handle(e, res);
   }

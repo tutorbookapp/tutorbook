@@ -2,6 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
 import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
+import analytics from 'lib/api/analytics';
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
 import deleteZoom from 'lib/api/delete/zoom';
@@ -126,6 +127,11 @@ export default async function deleteMeeting(
       event: 'Meeting Deleted',
       properties: deleting.toSegment(),
     });
+
+    // TODO: Ensure that this updates the org statistics as expected (e.g. we
+    // don't want to decrease the total # of meetings if only a single meeting
+    // instance is deleted and it's parent recurring meeting remains).
+    await analytics(deleting, 'deleted');
   } catch (e) {
     handle(e, res);
   }

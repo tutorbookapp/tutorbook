@@ -1,6 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, MatchJSON, isMatchJSON } from 'lib/model';
+import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import getOrg from 'lib/api/get/org';
@@ -55,6 +56,8 @@ export default async function createMatch(
       event: 'Match Created',
       properties: match.toSegment(),
     });
+
+    await analytics(match, 'created');
   } catch (e) {
     handle(e, res);
   }
