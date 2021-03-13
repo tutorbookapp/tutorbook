@@ -37,7 +37,8 @@ Parents and teachers use Tutorbook to:
 ## Terminology and Data Model
 
 This is a high-level overview of the various resources ("things") manipulated by
-and created through the app.
+and created through the app. Resources may also specify "tags" (filterable
+attributes) that are [totaled daily for our in-app analytics](#analytics).
 
 **Note:** This section is not a complete technical definition of our data model.
 Instead, please refer to
@@ -50,6 +51,15 @@ A user is a person. This person could be a tutor, mentor, student, admin or all
 of them at the same time. Those roles are not inscribed on each user but rather
 implied by role-specific properties (e.g. a mentor will have subjects specified
 in their `mentoring.subjects` property).
+
+#### Tags
+
+- **Vetted** - Has at least one verification. Set when the user is created,
+  updated, or deleted.
+- **Matched** - In at least one match. Set whenever a match is created, updated,
+  or deleted.
+- **Meeting** - Has at least one meeting. Set whenever a meeting is created,
+  updated, or deleted.
 
 ### `Org`
 
@@ -66,6 +76,11 @@ containers for [meetings](#meeting).
   search view.
 - Admins can directly create matches (e.g. when migrating from an existing
   system, admins know who's matched with whom).
+
+#### Tags
+
+- **Meeting** - Has at least one meeting. Set whenever a meeting is created,
+  updated, or deleted.
 
 ### `Meeting`
 
@@ -90,6 +105,11 @@ with a specific time and venue (e.g. a specific Zoom link). In order to support
 
 Upon creation, Tutorbook sends an email to all of the `people` in the new
 meeting's match with the meeting time, venue, and everyone's contact info.
+
+#### Tags
+
+- **Recurring** - Is recurring (has an `rrule`). Set when the meeting is
+  created, updated, or deleted.
 
 ## Design Specifications
 
