@@ -30,12 +30,12 @@ export function deleteObj(
   return idx.deleteObject(objId);
 }
 
-export default function index<T extends { toSearchHit: () => object }>(
-  indexId: string,
-  obj: T,
-  tags?: string[]
-): WaitablePromise<SaveObjectResponse> {
+export default function index<
+  T extends { toSearchHit: () => object; tags?: string[] }
+>(indexId: string, obj: T): WaitablePromise<SaveObjectResponse> {
+  // TODO: Also save all of the "not" tags (e.g. `not-vetted`) because Algolia
+  // doesn't support filtering by missing values or missing tags.
   const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
-  const idxObj = clone({ ...obj.toSearchHit(), _tags: tags });
+  const idxObj = clone({ ...obj.toSearchHit(), _tags: obj.tags });
   return idx.saveObject(idxObj);
 }
