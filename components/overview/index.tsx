@@ -56,7 +56,7 @@ function CustomDot({ cx, cy, fill, value }: CustomDotProps): JSX.Element {
         stroke={fill}
         cx={cx}
         cy={cy}
-        r={Math.min((8 * value) / 250, 8)}
+        r={Math.max(4, Math.min(8 * (value / 250), 8))}
       />
     </g>
   );
@@ -128,12 +128,14 @@ export default function Overview(): JSX.Element {
                     })}
                   </div>
                   <table>
-                    {payload?.map(({ name, value }) => (
-                      <tr className={name ? styles[name] : undefined}>
-                        <td>{value}</td>
-                        <td>{caps(name || '')}</td>
-                      </tr>
-                    ))}
+                    <tbody>
+                      {payload?.map(({ name, value }) => (
+                        <tr className={name ? styles[name] : undefined}>
+                          <td>{value}</td>
+                          <td>{caps(name || '')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
                   </table>
                 </div>
               )}
