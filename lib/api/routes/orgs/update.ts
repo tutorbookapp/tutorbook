@@ -26,6 +26,8 @@ export default async function updateOrg(
     verifyMembersUnchanged(prev, body);
     const org = await updateOrgDoc(await updatePhoto(body, Org));
     res.status(200).json(org.toJSON());
+
+    // TODO: Use `segment.group` calls to associate all admins with updated org.
     segment.track({
       userId: uid,
       event: 'Org Updated',
