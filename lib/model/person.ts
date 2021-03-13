@@ -1,10 +1,10 @@
 import { isArray, isJSON } from 'lib/model/json';
 
-export type Role = 'parent' | 'tutor' | 'tutee' | 'mentor' | 'mentee';
+export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
 export function isRole(param: unknown): param is Role {
   if (typeof param !== 'string') return false;
-  return ['parent', 'tutor', 'tutee', 'mentor', 'mentee'].includes(param);
+  return ['tutor', 'tutee', 'mentor', 'mentee'].includes(param);
 }
 
 /**
