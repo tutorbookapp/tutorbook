@@ -55,6 +55,7 @@ export type MatchFirestore = Omit<MatchInterface, keyof Resource> &
   ResourceFirestore;
 
 export interface MatchSegment {
+  id: string;
   message: string;
   subjects: string[];
 }
@@ -190,6 +191,6 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toSegment(): MatchSegment {
-    return { message: this.message, subjects: this.subjects };
+    return { id: this.id, message: this.message, subjects: this.subjects };
   }
 }

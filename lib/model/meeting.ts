@@ -7,6 +7,7 @@ import {
   MatchFirestore,
   MatchJSON,
   MatchSearchHit,
+  MatchSegment,
   isMatchJSON,
 } from 'lib/model/match';
 import { Person, isPerson } from 'lib/model/person';
@@ -113,6 +114,14 @@ export type MeetingSearchHit = ObjectWithObjectID &
     venue: VenueSearchHit;
     match: MatchSearchHit;
   };
+
+export interface MeetingSegment {
+  id: string;
+  description: string;
+  start: Date;
+  end: Date;
+  match: MatchSegment;
+}
 
 export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isResourceJSON(json)) return false;
@@ -282,6 +291,16 @@ export class Meeting extends Resource implements MeetingInterface {
       'Meeting Created': this.created.toString(),
       'Meeting Last Updated': this.updated.toString(),
       ...this.match.toCSV(),
+    };
+  }
+
+  public toSegment(): MeetingSegment {
+    return {
+      id: this.id,
+      description: this.description,
+      start: this.time.from,
+      end: this.time.to,
+      match: this.match.toSegment(),
     };
   }
 }

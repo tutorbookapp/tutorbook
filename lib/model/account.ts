@@ -235,7 +235,6 @@ export class Account extends Resource implements AccountInterface {
   }
 
   public toSegment(): Record<string, string> {
-    const website = this.socials.filter((s) => s.type === 'website')[0];
     return {
       id: this.id,
       name: this.name,
@@ -243,7 +242,7 @@ export class Account extends Resource implements AccountInterface {
       phone: this.phone,
       avatar: this.photo,
       description: this.bio,
-      website: website?.url,
+      website: this.website,
     };
   }
 }
