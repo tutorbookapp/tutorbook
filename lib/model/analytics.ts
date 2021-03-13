@@ -24,7 +24,7 @@ type DocumentReference = admin.firestore.DocumentReference;
  * @description We collect totals based on data model tags. Because they're
  * filterable tags, org admins can then filter and see what's in these totals.
  */
-type TagTotals<Tag extends string> = { total: number } & {
+export type TagTotals<Tag extends string> = { total: number } & {
   [key in Tag]: number;
 };
 
@@ -33,20 +33,14 @@ type TagTotals<Tag extends string> = { total: number } & {
  * @extends Resource
  * @description A day of org analytics. Created when the first even triggers and
  * is updated until 24 hours have passed (and a new analytics doc is created).
- * @property mentors - The number of mentors an org has.
- * @property mentees - The number of mentees an org has.
- * @property tutors - The number of tutors an org has.
- * @property tutees - The number of tutees an org has.
- * @property matches - The number of matches an org has.
- * @property meetings - The number of meetings an org has.
  */
 export interface AnalyticsInterface extends ResourceInterface {
-  mentors: TagTotals<Exclude<UserTag, Role>>;
-  mentees: TagTotals<Exclude<UserTag, Role>>;
-  tutors: TagTotals<Exclude<UserTag, Role>>;
-  tutees: TagTotals<Exclude<UserTag, Role>>;
-  matches: TagTotals<MatchTag>;
-  meetings: TagTotals<MeetingTag>;
+  mentor: TagTotals<Exclude<UserTag, Role>>;
+  mentee: TagTotals<Exclude<UserTag, Role>>;
+  tutor: TagTotals<Exclude<UserTag, Role>>;
+  tutee: TagTotals<Exclude<UserTag, Role>>;
+  match: TagTotals<MatchTag>;
+  meeting: TagTotals<MeetingTag>;
   ref?: DocumentReference;
   id: string;
 }
@@ -60,37 +54,37 @@ export type AnalyticsFirestore = Omit<AnalyticsInterface, keyof Resource> &
   ResourceFirestore;
 
 export class Analytics extends Resource implements AnalyticsInterface {
-  public mentors: TagTotals<Exclude<UserTag, Role>> = {
+  public mentor: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
     matched: 0,
     meeting: 0,
   };
 
-  public mentees: TagTotals<Exclude<UserTag, Role>> = {
+  public mentee: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
     matched: 0,
     meeting: 0,
   };
 
-  public tutors: TagTotals<Exclude<UserTag, Role>> = {
+  public tutor: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
     matched: 0,
     meeting: 0,
   };
 
-  public tutees: TagTotals<Exclude<UserTag, Role>> = {
+  public tutee: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
     matched: 0,
     meeting: 0,
   };
 
-  public matches: TagTotals<MatchTag> = { total: 0, meeting: 0 };
+  public match: TagTotals<MatchTag> = { total: 0, meeting: 0 };
 
-  public meetings: TagTotals<MeetingTag> = { total: 0, recurring: 0 };
+  public meeting: TagTotals<MeetingTag> = { total: 0, recurring: 0 };
 
   public id = '';
 
