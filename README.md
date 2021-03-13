@@ -132,6 +132,19 @@ and the server. When defining events, we use Segment's recommended
 Each event name includes an object (e.g. Product, Application) and an action on
 that object (e.g. Viewed, Installed, Created).
 
+TB also has in-app analytics features for orgs to use. We collect a few totals
+every day (based on Algolia tags) and store them in a Firestore subcollection
+(`/orgs/<orgId>/analytics`). Those totals are constantly being updated as API
+requests come in (e.g. when a new user is created, we increment the "Total
+Users" statistic by one) and thus are always up-to-date. All of those totals
+are based on filterable tags (e.g. "Total Users Matched") which allows admins to
+view all the users/matches/meetings that have certain tags, answering questions
+like:
+
+- Who are the students or volunteers that aren't matched? Why aren't they?
+- Who doesn't have meetings? Why don't they?
+- Which students aren't donating money? Why aren't they?
+
 ### Zoom Integration
 
 TB ([Tutorbook](https://tutorbook.org)) creates new recurring Zoom meetings for
