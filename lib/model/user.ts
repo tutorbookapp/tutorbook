@@ -33,10 +33,10 @@ import {
   isZoomUserJSON,
 } from 'lib/model/zoom-user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
+import { join, notTags } from 'lib/utils';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
@@ -53,6 +53,8 @@ export type UserTag =
   | Role; // Has this role in at least one match.
 
 export type UserHitTag = UserTag | 'not-vetted' | 'not-matched' | 'not-meeting';
+
+const NOT_TAGS: UserHitTag[] = ['not-vetted', 'not-matched', 'not-meeting'];
 
 export function isUserTag(tag: unknown): tag is UserTag {
   if (typeof tag !== 'string') return false;
@@ -329,7 +331,7 @@ export class User extends Account implements UserInterface {
       availability: availability.toSearchHit(),
       verifications: verifications.map((v) => v.toSearchHit()),
       zooms: zooms.map((z) => z.toSearchHit()),
-      _tags: [...tags, ...tags.map((t) => `not-${t}` as UserHitTag)],
+      _tags: [...tags, ...notTags(tags, NOT_TAGS)],
       token: undefined,
       hash: undefined,
       ref: undefined,

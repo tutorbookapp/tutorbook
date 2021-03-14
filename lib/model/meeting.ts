@@ -34,10 +34,10 @@ import {
   isVenueJSON,
 } from 'lib/model/venue';
 import { isArray, isJSON } from 'lib/model/json';
+import { join, notTags } from 'lib/utils';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
@@ -45,6 +45,8 @@ type DocumentReference = admin.firestore.DocumentReference;
 export type MeetingTag = 'recurring'; // Meeting is recurring (has rrule).
 
 export type MeetingHitTag = MeetingTag | 'not-recurring';
+
+const NOT_TAGS: MeetingHitTag[] = ['not-recurring'];
 
 export function isMeetingTag(tag: unknown): tag is MeetingTag {
   return tag === 'recurring';
@@ -264,7 +266,7 @@ export class Meeting extends Resource implements MeetingInterface {
       time: time.toSearchHit(),
       venue: venue.toSearchHit(),
       match: match.toSearchHit(),
-      _tags: [...tags, ...tags.map((t) => `not-${t}` as MeetingHitTag)],
+      _tags: [...tags, ...notTags(tags, NOT_TAGS)],
       ref: undefined,
       id: undefined,
       objectID: id,

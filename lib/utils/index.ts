@@ -32,6 +32,15 @@ export function validPhoto(url: string): boolean {
 }
 
 /**
+ * Returns the `not-` tags that correspond to the given tags.
+ * e.g. given tags ['meeting', 'vetted'] we would return ['not-matched']
+ *      ['meeting', 'not-matched', 'vetted']
+ */
+export function notTags<T extends string>(tags: T[], nots: T[]): T[] {
+  return nots.filter((t) => !tags.includes(t.replace('not-', '') as T));
+}
+
+/**
  * Adds roles to a given user object.
  * @param user - The user to add roles to.
  * @param roles - The roles to add.

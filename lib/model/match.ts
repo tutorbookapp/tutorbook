@@ -12,11 +12,11 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
+import { join, notTags } from 'lib/utils';
 import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-import { join } from 'lib/utils';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
@@ -24,6 +24,8 @@ type DocumentReference = admin.firestore.DocumentReference;
 export type MatchTag = 'meeting'; // Match has at least one meeting.
 
 export type MatchHitTag = MatchTag | 'not-meeting';
+
+const NOT_TAGS: MatchHitTag[] = ['not-meeting'];
 
 export function isMatchTag(tag: unknown): tag is MatchTag {
   return tag === 'meeting';
@@ -165,7 +167,7 @@ export class Match extends Resource implements MatchInterface {
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
-      _tags: [...tags, ...tags.map((t) => `not-${t}` as MatchHitTag)],
+      _tags: [...tags, ...notTags(tags, NOT_TAGS)],
       ref: undefined,
       id: undefined,
       objectID: id,
