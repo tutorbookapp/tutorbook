@@ -44,6 +44,8 @@ type DocumentReference = admin.firestore.DocumentReference;
 
 export type MeetingTag = 'recurring'; // Meeting is recurring (has rrule).
 
+export type MeetingHitTag = MeetingTag | 'not-recurring';
+
 export function isMeetingTag(tag: unknown): tag is MeetingTag {
   return tag === 'recurring';
 }
@@ -108,11 +110,15 @@ export type MeetingFirestore = Omit<
     match: MatchFirestore;
   };
 export type MeetingSearchHit = ObjectWithObjectID &
-  Omit<MeetingInterface, keyof Resource | 'time' | 'venue' | 'match' | 'id'> &
+  Omit<
+    MeetingInterface,
+    keyof Resource | 'time' | 'venue' | 'match' | 'id' | 'tags'
+  > &
   ResourceSearchHit & {
     time: TimeslotSearchHit;
     venue: VenueSearchHit;
     match: MatchSearchHit;
+    _tags: MeetingHitTag[];
   };
 
 export interface MeetingSegment {
@@ -251,13 +257,14 @@ export class Meeting extends Resource implements MeetingInterface {
   }
 
   public toSearchHit(): MeetingSearchHit {
-    const { time, venue, match, id, ...rest } = this;
+    const { time, venue, match, tags, id, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
       time: time.toSearchHit(),
       venue: venue.toSearchHit(),
       match: match.toSearchHit(),
+      _tags: [...tags, ...tags.map((t) => `not-${t}` as MeetingHitTag)],
       ref: undefined,
       id: undefined,
       objectID: id,
@@ -268,6 +275,7 @@ export class Meeting extends Resource implements MeetingInterface {
     time,
     venue,
     match,
+    _tags = [],
     objectID,
     ...rest
   }: MeetingSearchHit): Meeting {
@@ -277,6 +285,7 @@ export class Meeting extends Resource implements MeetingInterface {
       time: Timeslot.fromSearchHit(time),
       venue: Venue.fromSearchHit(venue),
       match: Match.fromSearchHit(match),
+      tags: _tags.filter(isMeetingTag),
       id: objectID,
     });
   }

@@ -52,6 +52,8 @@ export type UserTag =
   | 'meeting' // Has at least one meeting.
   | Role; // Has this role in at least one match.
 
+export type UserHitTag = UserTag | 'not-vetted' | 'not-matched' | 'not-meeting';
+
 export function isUserTag(tag: unknown): tag is UserTag {
   if (typeof tag !== 'string') return false;
   return ['vetted', 'matched', 'meeting'].includes(tag) || isRole(tag);
@@ -142,12 +144,13 @@ export type UserFirestore = Omit<
 
 export type UserSearchHit = Omit<
   UserInterface,
-  keyof Account | 'availability' | 'verifications' | 'zooms'
+  keyof Account | 'availability' | 'verifications' | 'zooms' | 'tags'
 > &
   AccountSearchHit & {
     availability: AvailabilitySearchHit;
     verifications: VerificationSearchHit[];
     zooms: ZoomUserSearchHit[];
+    _tags: UserHitTag[];
   };
 
 export function isUserJSON(json: unknown): json is UserJSON {
@@ -319,13 +322,14 @@ export class User extends Account implements UserInterface {
   }
 
   public toSearchHit(): UserSearchHit {
-    const { availability, verifications, zooms, ...rest } = this;
+    const { availability, verifications, zooms, tags, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
       availability: availability.toSearchHit(),
       verifications: verifications.map((v) => v.toSearchHit()),
       zooms: zooms.map((z) => z.toSearchHit()),
+      _tags: [...tags, ...tags.map((t) => `not-${t}` as UserHitTag)],
       token: undefined,
       hash: undefined,
       ref: undefined,
@@ -337,6 +341,7 @@ export class User extends Account implements UserInterface {
     availability,
     verifications = [],
     zooms = [],
+    _tags = [],
     ...rest
   }: UserSearchHit): User {
     return new User({
@@ -345,6 +350,7 @@ export class User extends Account implements UserInterface {
       availability: Availability.fromSearchHit(availability),
       verifications: verifications.map((v) => Verification.fromSearchHit(v)),
       zooms: zooms.map((z) => ZoomUser.fromSearchHit(z)),
+      tags: _tags.filter(isUserTag),
     });
   }
 

@@ -23,6 +23,8 @@ type DocumentReference = admin.firestore.DocumentReference;
 
 export type MatchTag = 'meeting'; // Match has at least one meeting.
 
+export type MatchHitTag = MatchTag | 'not-meeting';
+
 export function isMatchTag(tag: unknown): tag is MatchTag {
   return tag === 'meeting';
 }
@@ -49,8 +51,8 @@ export interface MatchInterface extends ResourceInterface {
 
 export type MatchJSON = Omit<MatchInterface, keyof Resource> & ResourceJSON;
 export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, keyof Resource | 'id'> &
-  ResourceSearchHit;
+  Omit<MatchInterface, keyof Resource | 'id' | 'tags'> &
+  ResourceSearchHit & { _tags: MatchHitTag[] };
 export type MatchFirestore = Omit<MatchInterface, keyof Resource> &
   ResourceFirestore;
 
@@ -159,18 +161,28 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toSearchHit(): MatchSearchHit {
-    const { id, ...rest } = this;
+    const { tags, id, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
+      _tags: [...tags, ...tags.map((t) => `not-${t}` as MatchHitTag)],
       ref: undefined,
       id: undefined,
       objectID: id,
     });
   }
 
-  public static fromSearchHit({ objectID, ...hit }: MatchSearchHit): Match {
-    return new Match({ ...hit, ...Resource.fromSearchHit(hit), id: objectID });
+  public static fromSearchHit({
+    _tags = [],
+    objectID,
+    ...hit
+  }: MatchSearchHit): Match {
+    return new Match({
+      ...hit,
+      ...Resource.fromSearchHit(hit),
+      tags: _tags.filter(isMatchTag),
+      id: objectID,
+    });
   }
 
   public toCSV(): Record<string, string> {
