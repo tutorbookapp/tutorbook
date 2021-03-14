@@ -2,12 +2,18 @@ import { RRule, RRuleSet } from 'rrule';
 import { nanoid } from 'nanoid';
 
 import { Meeting, MeetingsQuery, Timeslot } from 'lib/model';
-import { addOptionsFilter, addStringFilter, list } from 'lib/api/search';
+import {
+  addArrayFilter,
+  addOptionsFilter,
+  addStringFilter,
+  list,
+} from 'lib/api/search';
 
 function getFilterStrings(query: MeetingsQuery): string[] {
   let str = query.org ? `match.org:${query.org}` : '';
   str = addOptionsFilter(str, query.people, 'match.people.id', 'OR');
   str = addOptionsFilter(str, query.subjects, 'match.subjects', 'OR');
+  str = addArrayFilter(str, query.tags, '_tags');
 
   const to = query.to.valueOf();
   const from = query.from.valueOf();

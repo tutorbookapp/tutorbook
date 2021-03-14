@@ -3,9 +3,11 @@ import { memo, useCallback } from 'react';
 import { dequal } from 'dequal/lite';
 
 import SubjectSelect from 'components/subject-select';
+import TagSelect from 'components/tag-select';
 import UserSelect from 'components/user-select';
 
 import { Callback } from 'lib/model/callback';
+import { MeetingHitTag } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Option } from 'lib/model/query/base';
 
@@ -37,6 +39,12 @@ function FiltersSheet({
     },
     [setQuery]
   );
+  const onTagsChange = useCallback(
+    (tags: MeetingHitTag[]) => {
+      setQuery((prev) => new MeetingsQuery({ ...prev, tags, page: 0 }));
+    },
+    [setQuery]
+  );
 
   return (
     <animated.div className={styles.wrapper} style={props}>
@@ -53,6 +61,15 @@ function FiltersSheet({
           label='People'
           onSelectedChange={onPeopleChange}
           selected={query.people}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <TagSelect
+          label='Tags'
+          placeholder='Ex: Recurring'
+          onChange={onTagsChange}
+          value={query.tags}
           className={styles.field}
           renderToPortal
           outlined

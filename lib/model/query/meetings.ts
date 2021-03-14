@@ -4,9 +4,11 @@ import {
   MatchesQueryJSON,
   isMatchesQueryURL,
 } from 'lib/model/query/matches';
+import { MeetingHitTag } from 'lib/model/meeting';
 import construct from 'lib/model/construct';
 
 export interface MeetingsQueryInterface extends MatchesQueryInterface {
+  tags: MeetingHitTag[];
   from: Date;
   to: Date;
 }
@@ -28,8 +30,7 @@ export function isMeetingsQueryURL(query: unknown): query is MeetingsQueryURL {
 
 export class MeetingsQuery extends MatchesQuery
   implements MeetingsQueryInterface {
-  // TODO: Will there ever be more than 1000 meetings to display at once?
-  public hitsPerPage = 1000;
+  public tags: MeetingHitTag[] = [];
 
   // Start query on the most recent Sunday at 12am.
   public from = new Date(
@@ -44,6 +45,9 @@ export class MeetingsQuery extends MatchesQuery
     new Date().getMonth(),
     new Date().getDate() - new Date().getDay() + 7
   );
+
+  // TODO: Will there ever be more than 1000 meetings to display at once?
+  public hitsPerPage = 1000;
 
   public constructor(query: Partial<MeetingsQueryInterface> = {}) {
     super(query);
