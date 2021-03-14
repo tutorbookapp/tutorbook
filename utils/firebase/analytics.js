@@ -38,6 +38,28 @@ const app = admin.initializeApp({
 });
 const db = app.firestore();
 
+async function downloadData(orgId) {
+  console.log(`Fetching (${orgId}) data...`);
+  const [users, matches, meetings] = (
+    await Promise.all([
+      db.collection('users').where('orgs', 'array-contains', orgId).get(),
+      db.collection('matches').where('org', '==', orgId).get(),
+      db.collection('meetings').where('match.org', '==', orgId).get(),
+    ])
+  ).map((s) =>
+    s.docs.map((d) => ({
+      ...d.data(),
+      created: d.createTime ? d.createTime.toDate() : new Date(),
+      updated: d.updateTime ? d.updateTime.toDate() : new Date(),
+    }))
+  );
+
+  console.log('Saving as JSON...');
+  fs.writeFileSync(`./${orgId}-users.json`, JSON.stringify(users));
+  fs.writeFileSync(`./${orgId}-matches.json`, JSON.stringify(matches));
+  fs.writeFileSync(`./${orgId}-meetings.json`, JSON.stringify(meetings));
+}
+
 /**
  * Script that creates the analytics documents for org activity by:
  * 1. Fetching all org users, meetings, and matches.
@@ -49,17 +71,16 @@ const db = app.firestore();
  */
 async function main(orgId, dryRun = false) {
   console.log(`Fetching (${orgId}) data...`);
-  const [usersData, matchesData] = await Promise.all([
-    db.collection('users').where('orgs', 'array-contains', orgId).get(),
-    db.collection('matches').where('org', '==', orgId).get(),
-  ]);
+  const usersData = require(`./${orgId}-users.json`);
+  const matchesData = require(`./${orgId}-matches.json`);
+  const meetingsData = require(`./${orgId}-meetings.json`);
 
   console.log('Updating tags...');
-  const users = usersData.docs
-    .map((doc) => {
-      const user = { tags: [], ...doc.data() };
-      const created = doc.createTime ? doc.createTime.toDate() : new Date();
-      const updated = doc.updateTime ? doc.updateTime.toDate() : new Date();
+  const users = usersData
+    .map((data) => {
+      const user = { tags: [], ...data };
+      const created = new Date(data.created || new Date());
+      const updated = new Date(data.updated || new Date());
       const tags = [];
       if (user.mentoring.subjects.length || user.tags.includes('mentor'))
         tags.push('mentor');
@@ -73,17 +94,47 @@ async function main(orgId, dryRun = false) {
       return { ...user, created, updated, tags };
     })
     .sort((a, b) => a.created - b.created);
-  const matches = matchesData.docs
-    .map((doc) => {
+  const matches = matchesData
+    .map((data) => {
       // TODO: Once I implement the tag updating API logic, add it here as well.
-      const match = doc.data();
-      const created = doc.createTime ? doc.createTime.toDate() : new Date();
-      const updated = doc.updateTime ? doc.updateTime.toDate() : new Date();
+      const match = data;
+      const created = new Date(data.created || new Date());
+      const updated = new Date(data.updated || new Date());
+      match.people.forEach(({ id: personId }) => {
+        const person = users.find((p) => p.id === personId);
+        if (!person) return;
+        if (!person.tags.includes('matched')) person.tags.push('matched');
+      });
       return { ...match, created, updated, tags: [] };
+    })
+    .sort((a, b) => a.created - b.created);
+  const meetings = meetingsData
+    .map((data) => {
+      // TODO: Once I implement the tag updating API logic, add it here as well.
+      const meeting = data;
+      const created = new Date(data.created || new Date());
+      const updated = new Date(data.updated || new Date());
+      meeting.match.people.forEach(({ id: personId }) => {
+        const person = users.find((p) => p.id === personId);
+        if (!person) return;
+        if (!person.tags.includes('meeting')) person.tags.push('meeting');
+      });
+      return { ...meeting, created, updated, tags: [] };
     })
     .sort((a, b) => a.created - b.created);
 
   console.log('Creating timeline...');
+  const now = new Date();
+  const current = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const firstUser = users[0].created.valueOf();
+  const firstMatch = matches[0].created.valueOf();
+  const firstMeeting = meetings[0].created.valueOf();
+  const first = new Date(Math.min(firstUser, firstMatch, firstMeeting));
+  const start = new Date(
+    first.getFullYear(),
+    first.getMonth(),
+    first.getDate() - 1
+  );
   const timeline = [];
   const empty = {
     mentor: { total: 0, vetted: 0, matched: 0, meeting: 0 },
@@ -93,6 +144,12 @@ async function main(orgId, dryRun = false) {
     match: { total: 0, meeting: 0 },
     meeting: { total: 0, recurring: 0 },
   };
+
+  let date = start;
+  while (date <= current) {
+    timeline.push(clone({ date, ...empty }));
+    date = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+  }
 
   function isRole(role) {
     if (typeof role !== 'string') return false;
@@ -106,52 +163,54 @@ async function main(orgId, dryRun = false) {
     });
   }
 
+  function prevDate(date, other) {
+    const prev = new Date(
+      other.getFullYear(),
+      other.getMonth(),
+      other.getDate() - 1
+    );
+    return (
+      date.getFullYear() === prev.getFullYear() &&
+      date.getMonth() === prev.getMonth() &&
+      date.getDate() === prev.getDate()
+    );
+  }
+
+  function sameDate(date, other) {
+    return (
+      date.getFullYear() === other.getFullYear() &&
+      date.getMonth() === other.getMonth() &&
+      date.getDate() === other.getDate()
+    );
+  }
+
   console.log(`Adding ${users.length} users to timeline...`);
   users.forEach((user) => {
-    const existing = timeline.find(
-      (nums) => nums.date.valueOf() >= user.created.valueOf() - 864e5
-    );
-    if (existing) {
+    const current = timeline.find((n) => sameDate(n.date, user.created));
+    const currentIdx = timeline.indexOf(current);
+    timeline.slice(currentIdx).forEach((nums) => {
       user.tags.forEach((role) => {
-        if (isRole(role)) updateTags(role, existing, user.tags);
+        if (isRole(role)) updateTags(role, nums, user.tags);
       });
-    } else {
-      const latest = clone(timeline[timeline.length - 1] || empty);
-      user.tags.forEach((role) => {
-        if (isRole(role)) updateTags(role, latest, user.tags);
-      });
-      latest.date = user.created;
-      timeline.push(latest);
-    }
+    });
   });
 
   console.log(`Adding ${matches.length} matches to timeline...`);
-  matches.forEach((match, idx) => {
-    const existing = timeline.find(
-      (nums) => nums.date.valueOf() >= match.created.valueOf() - 864e5
-    );
-    let current;
-    if (existing) {
-      updateTags('match', existing, match.tags);
-      current = existing.match;
-    } else {
-      const latest = clone(timeline[timeline.length - 1] || empty);
-      updateTags('match', latest, match.tags);
-      latest.date = match.created;
-      timeline.push(latest);
-      current = latest.match;
-    }
-    if (idx === matches.length - 1) {
-      // Ensure that the timeline numbers following the last match include the
-      // latest match numbers.
-      timeline
-        .filter(
-          (nums) => nums.date.valueOf() >= match.created.valueOf() - 864e5
-        )
-        .forEach((nums) => {
-          nums.match = current;
-        });
-    }
+  matches.forEach((match) => {
+    const current = timeline.find((n) => sameDate(n.date, match.created));
+    const currentIdx = timeline.indexOf(current);
+    timeline.slice(currentIdx).forEach((nums) => {
+      updateTags('match', nums, match.tags);
+    });
+  });
+
+  console.log(`Adding ${meetings.length} meetings to timeline...`);
+  meetings.forEach((meeting) => {
+    const current = timeline.find((n) => sameDate(n.date, meeting.created));
+    const currentIdx = timeline.indexOf(current);
+    timeline.slice(currentIdx).forEach((nums) => {
+      updateTags('meeting', nums, meeting.tags);
+    });
   });
 
   console.log('Writing timeline to JSON...');
