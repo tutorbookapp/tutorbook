@@ -5,7 +5,9 @@ import { User, UserJSON } from 'lib/model/user';
 import { Match } from 'lib/model/match';
 
 export default function usePeople(match: Match): User[] {
-  const { data } = useSWR<UserJSON[]>(`/api/matches/${match.id}/people`);
+  const { data } = useSWR<UserJSON[]>(
+    match.id ? `/api/matches/${match.id}/people` : null
+  );
   const people = useMemo(() => {
     if (data) return data.map((u) => User.fromJSON(u));
     return match.people.map((p) => {
