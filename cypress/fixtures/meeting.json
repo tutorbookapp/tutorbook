@@ -1,5 +1,6 @@
 {
   "id": "meeting",
+  "tags": [],
   "status": "pending",
   "created": "2020-10-20T19:03:00",
   "updated": "2020-10-20T19:03:00",
@@ -26,6 +27,7 @@
   "description": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
   "match": {
     "id": "match",
+    "tags": [],
     "created": "2020-10-15T19:04:10",
     "updated": "2020-10-15T19:04:10",
     "creator": {
