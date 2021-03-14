@@ -10,7 +10,10 @@ import {
   YAxis,
 } from 'recharts';
 import cn from 'classnames';
+import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
+
+import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
 
 import Header from 'components/header';
 
@@ -18,7 +21,6 @@ import { caps } from 'lib/utils';
 import { sameDate } from 'lib/utils/time';
 import { useOrg } from 'lib/context/org';
 
-import data from './data';
 import styles from './overview.module.scss';
 
 interface LabelProps {
@@ -27,16 +29,14 @@ interface LabelProps {
   negative?: boolean;
 }
 
-function Label({ percent, positive, negative }: LabelProps): JSX.Element {
+function Label({ percent }: LabelProps): JSX.Element {
   return (
     <span
       className={cn(styles.label, {
-        [styles.positive]: positive,
-        [styles.negative]: negative,
+        [styles.positive]: percent > 0,
+        [styles.negative]: percent <= 0,
       })}
     >
-      {positive && '+'}
-      {negative && '-'}
       {`${percent}%`}
     </span>
   );
@@ -69,9 +69,14 @@ interface TickProps {
 }
 
 export default function Overview(): JSX.Element {
-  const { t, lang: locale } = useTranslation();
   const { org } = useOrg();
+  const { t, lang: locale } = useTranslation();
+  const { data } = useSWR<AnalyticsRes>(`/api/orgs/${org?.id || ''}/analytics`);
 
+  // TODO: Ensure that the scale on the chart isn't dependent on the data points
+  // being equally spaced out. Instead, it should be relative to the data point
+  // `date` value.
+  // @see {@link http://recharts.org/en-US/api/XAxis#scale}
   return (
     <>
       <Header
@@ -83,38 +88,38 @@ export default function Overview(): JSX.Element {
           <div className={styles.number}>
             <dt>
               Volunteers
-              <Label percent={12.5} positive />
+              <Label percent={data?.volunteers.change || 12.5} />
             </dt>
-            <dd>258</dd>
-            <div>189 Matched</div>
+            <dd>{data?.volunteers.total || 258}</dd>
+            <div>{data?.volunteers.matched || 189} Matched</div>
           </div>
           <div className={styles.number}>
             <dt>
               Students
-              <Label percent={12.5} positive />
+              <Label percent={data?.students.change || 12.5} />
             </dt>
-            <dd>218</dd>
-            <div>218 Matched</div>
+            <dd>{data?.students.total || 218}</dd>
+            <div>{data?.students.matched || 218} Matched</div>
           </div>
           <div className={styles.number}>
             <dt>
               Matches
-              <Label percent={2.3} negative />
+              <Label percent={data?.matches.change || -2.3} />
             </dt>
-            <dd>443</dd>
-            <div>85% Meeting</div>
+            <dd>{data?.matches.total || 443}</dd>
+            <div>{data?.matches.meeting || 413} Meeting</div>
           </div>
           <div className={styles.number}>
             <dt>
               Meetings
-              <Label percent={32.5} positive />
+              <Label percent={data?.meetings.change || 32.5} />
             </dt>
-            <dd>5,425</dd>
-            <div>546 Recurring</div>
+            <dd>{data?.meetings.total || 5425}</dd>
+            <div>{data?.meetings.recurring || 546} Recurring</div>
           </div>
         </dl>
         <ResponsiveContainer height={450} width='100%' className={styles.chart}>
-          <LineChart data={data}>
+          <LineChart data={data?.timeline}>
             <Tooltip
               cursor={false}
               allowEscapeViewBox={{ x: false, y: true }}
