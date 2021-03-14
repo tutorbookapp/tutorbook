@@ -2,9 +2,9 @@ import { isArray, isJSON } from 'lib/model/json';
 
 export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee';
 
-export function isRole(param: unknown): param is Role {
-  if (typeof param !== 'string') return false;
-  return ['tutor', 'tutee', 'mentor', 'mentee'].includes(param);
+export function isRole(role: unknown): role is Role {
+  if (typeof role !== 'string') return false;
+  return ['tutor', 'tutee', 'mentor', 'mentee'].includes(role);
 }
 
 /**
