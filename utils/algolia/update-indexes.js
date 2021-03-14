@@ -1,7 +1,7 @@
 const path = require('path');
 const dotenv = require('dotenv');
 
-const env = process.env.NODE_ENV || 'test';
+const env = process.env.NODE_ENV || 'production';
 console.log(`Loading ${env} environment variables...`);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
