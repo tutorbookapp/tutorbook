@@ -41,13 +41,15 @@ interface UniqueSelectProps<T, O extends Option<T> = Option<T>> {
   onBlurred?: () => any;
 }
 
-type Overrides<T> = TextFieldPropOverrides | keyof UniqueSelectProps<T>;
+type Overrides<T, O extends Option<T> = Option<T>> =
+  | TextFieldPropOverrides
+  | keyof UniqueSelectProps<T, O>;
 
 export type SelectProps<T, O extends Option<T> = Option<T>> = Omit<
   TextFieldHTMLProps,
-  Overrides<T>
+  Overrides<T, O>
 > &
-  Omit<TextFieldProps, Overrides<T>> &
+  Omit<TextFieldProps, Overrides<T, O>> &
   UniqueSelectProps<T, O>;
 
 /**
