@@ -81,7 +81,7 @@ export default function Analytics(): JSX.Element {
       data || {
         volunteers: { change: 12.5, total: 258, matched: 189 },
         students: { change: 12.5, total: 218, matched: 218 },
-        matches: { change: -2.3, total: 443, meeting: 413 },
+        matches: { change: -2.3, total: 443, perVolunteer: 2 },
         meetings: { change: 32.5, total: 5425, recurring: 546 },
         timeline: [],
       },
@@ -128,7 +128,7 @@ export default function Analytics(): JSX.Element {
               <Label percent={nums.matches.change} />
             </dt>
             <dd>{nums.matches.total}</dd>
-            <div>{nums.matches.meeting} Meeting</div>
+            <div>{nums.matches.perVolunteer} Average Per Volunteer</div>
           </div>
           <div className={styles.number}>
             <dt>

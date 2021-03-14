@@ -32,7 +32,7 @@ export interface AnalyticsSnapshot {
 export interface AnalyticsRes {
   volunteers: { change: number; total: number; matched: number };
   students: { change: number; total: number; matched: number };
-  matches: { change: number; total: number; meeting: number };
+  matches: { change: number; total: number; perVolunteer: number };
   meetings: { change: number; total: number; recurring: number };
   timeline: AnalyticsSnapshot[];
 }
@@ -115,7 +115,11 @@ export default async function analytics(
         matches: {
           change: getPercentChange(lastWeek.match.total, current.match.total),
           total: current.match.total,
-          meeting: current.match.meeting,
+          // TODO: This "average per volunteer" statistic is *really* hacky and
+          // isn't really the mean of the # of matches each volunteer have.
+          perVolunteer: Math.round(
+            current.match.total / current.volunteer.matched
+          ),
         },
         meetings: {
           change: getPercentChange(
