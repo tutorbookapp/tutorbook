@@ -81,7 +81,7 @@ export default async function analytics(
         .doc(orgId)
         .collection('analytics')
         .orderBy('created', 'desc')
-        .where('created', '>=', new Date().valueOf() - 157788e5)
+        .where('created', '>=', new Date(new Date().valueOf() - 157788e5))
         .get();
 
       // Analytics snapshots going backwards in time (i.e. latest first).
