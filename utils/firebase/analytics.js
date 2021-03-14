@@ -24,6 +24,7 @@ console.log(
 
 const fs = require('fs');
 const clone = require('rfdc')();
+const progress = require('cli-progress');
 const admin = require('firebase-admin');
 const app = admin.initializeApp({
   credential: admin.credential.cert({
@@ -38,8 +39,16 @@ const app = admin.initializeApp({
 });
 const db = app.firestore();
 
+const client = require('algoliasearch')(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+  process.env.ALGOLIA_ADMIN_KEY
+);
+const usersIdx = client.initIndex(`${env}-users`);
+const matchesIdx = client.initIndex(`${env}-matches`);
+const meetingsIdx = client.initIndex(`${env}-meetings`);
+
 async function downloadData(orgId) {
-  console.log(`Fetching (${orgId}) data...`);
+  console.log(`Downloading (${orgId}) data...`);
   const [users, matches, meetings] = (
     await Promise.all([
       db.collection('users').where('orgs', 'array-contains', orgId).get(),
@@ -60,22 +69,63 @@ async function downloadData(orgId) {
   fs.writeFileSync(`./${orgId}-meetings.json`, JSON.stringify(meetings));
 }
 
-/**
- * Script that creates the analytics documents for org activity by:
- * 1. Fetching all org users, meetings, and matches.
- * 2. Updating the tags on all of those resources.
- * 3. Iterating over those resources, trying to add to existing analytics doc
- *    (within 24 hours of resource create timestamp). If we can't, create a new
- *    analytics doc and insert it into the growing timeline.
- * 4. Uploading the created timeline to Firestore.
- */
-async function main(orgId, dryRun = false) {
+async function uploadTimeline(orgId, timeline) {
+  console.log(`Creating ${timeline.length} database records...`);
+  await Promise.all(
+    timeline.map(async (nums) => {
+      const ref = db
+        .collection('orgs')
+        .doc(orgId)
+        .collection('analytics')
+        .doc();
+      nums.created = nums.updated = new Date();
+      nums.id = ref.id;
+      await ref.set(nums);
+    })
+  );
+}
+
+async function updateResourceTags(orgId, dryRun = false) {
   console.log(`Fetching (${orgId}) data...`);
   const usersData = require(`./${orgId}-users.json`);
   const matchesData = require(`./${orgId}-matches.json`);
   const meetingsData = require(`./${orgId}-meetings.json`);
 
   console.log('Updating tags...');
+  const [users, matches, meetings] = tag(usersData, matchesData, meetingsData);
+
+  console.log(
+    `Updating ${users.length} users, ${matches.length} matches, and ${meetings.length} meetings...`
+  );
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  let count = 0;
+  bar.start(users.length + matches.length + meetings.length, count);
+
+  async function updateDoc(collectionId, docId, tags) {
+    await db.collection(collectionId).doc(docId).update({ tags });
+    bar.update((count += 1));
+  }
+
+  function resourceToObj(resource) {
+    return { objectID: resource.id, _tags: resource.tags };
+  }
+
+  if (dryRun) return;
+
+  await Promise.all([
+    ...users.map((u) => updateDoc('users', u.id, u.tags)),
+    usersIdx.partialUpdateObjects(users.map(resourceToObj)),
+    ...matches.map((m) => updateDoc('matches', m.id, m.tags)),
+    matchesIdx.partialUpdateObjects(matches.map(resourceToObj)),
+    ...meetings.map((m) => updateDoc('meetings', m.id, m.tags)),
+    meetingsIdx.partialUpdateObjects(meetings.map(resourceToObj)),
+  ]);
+
+  bar.stop();
+  console.log('\nUpdate resource tags.');
+}
+
+function tag(usersData, matchesData, meetingsData) {
   const users = usersData
     .map((data) => {
       const user = { tags: [], ...data };
@@ -114,14 +164,50 @@ async function main(orgId, dryRun = false) {
       const meeting = data;
       const created = new Date(data.created || new Date());
       const updated = new Date(data.updated || new Date());
+      const tags = [];
+      if (meeting.time.recur) tags.push('recurring');
       meeting.match.people.forEach(({ id: personId }) => {
         const person = users.find((p) => p.id === personId);
         if (!person) return;
         if (!person.tags.includes('meeting')) person.tags.push('meeting');
       });
-      return { ...meeting, created, updated, tags: [] };
+      return { ...meeting, created, updated, tags };
     })
     .sort((a, b) => a.created - b.created);
+
+  function addNotTags(resource, nots) {
+    const tags = [
+      ...resource.tags,
+      ...nots.filter((t) => !resource.tags.includes(t.replace('not-', ''))),
+    ];
+    return { ...resource, tags };
+  }
+
+  return [
+    users.map((u) =>
+      addNotTags(u, [
+        'not-mentor',
+        'not-mentee',
+        'not-tutor',
+        'not-tutee',
+        'not-vetted',
+        'not-matched',
+        'not-meeting',
+      ])
+    ),
+    matches.map((m) => addNotTags(m, ['not-meeting'])),
+    meetings.map((m) => addNotTags(m, ['not-recurring'])),
+  ];
+}
+
+function generateTimeline(orgId) {
+  console.log(`Fetching (${orgId}) data...`);
+  const usersData = require(`./${orgId}-users.json`);
+  const matchesData = require(`./${orgId}-matches.json`);
+  const meetingsData = require(`./${orgId}-meetings.json`);
+
+  console.log('Updating tags...');
+  const [users, matches, meetings] = tag(usersData, matchesData, meetingsData);
 
   console.log('Creating timeline...');
   const now = new Date();
@@ -159,7 +245,7 @@ async function main(orgId, dryRun = false) {
   function updateTags(key, nums, tags) {
     nums[key].total += 1;
     tags.forEach((tag) => {
-      if (!isRole(tag)) nums[key][tag] += 1;
+      if (!isRole(tag) && !tag.startsWith('not-')) nums[key][tag] += 1;
     });
   }
 
@@ -216,21 +302,22 @@ async function main(orgId, dryRun = false) {
   console.log('Writing timeline to JSON...');
   fs.writeFileSync('./timeline.json', JSON.stringify(timeline, null, 2));
 
-  if (dryRun) return;
-
-  console.log(`Creating ${timeline.length} database records...`);
-  await Promise.all(
-    timeline.map(async (nums) => {
-      const ref = db
-        .collection('orgs')
-        .doc(orgId)
-        .collection('analytics')
-        .doc();
-      nums.created = nums.updated = new Date();
-      nums.id = ref.id;
-      await ref.set(nums);
-    })
-  );
+  return timeline;
 }
 
-main('quarantunes');
+/**
+ * Script that creates the analytics documents for org activity by:
+ * 1. Fetching all org users, meetings, and matches.
+ * 2. Updating the tags on all of those resources.
+ * 3. Iterating over those resources, trying to add to existing analytics doc
+ *    (within 24 hours of resource create timestamp). If we can't, create a new
+ *    analytics doc and insert it into the growing timeline.
+ * 4. Uploading the created timeline to Firestore.
+ */
+async function main(orgId) {
+  await downloadData(orgId);
+  await Promise.all([
+    uploadTimeline(orgId, generateTimeline(orgId)),
+    updateResourceTags(orgId),
+  ]);
+}
