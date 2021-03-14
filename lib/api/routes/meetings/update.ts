@@ -21,8 +21,10 @@ import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
+import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
+import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleRoles from 'lib/api/update/people-roles';
 import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
@@ -83,6 +85,8 @@ export default async function updateMeeting(
     // - Admins can change 'approved' to 'pending' or 'logged'.
     // - Meeting people can change 'pending' to 'logged'.
 
+    // TODO: Ensure that we update the match when subjects change on a recurring
+    // meeting update (e.g. when only updating instance, create new match?).
     if (original.id !== body.id && original.time.recur) {
       // User is updating a recurring meeting. We will either:
       // - Update all meetings.
@@ -107,12 +111,14 @@ export default async function updateMeeting(
         updatedOriginal.parentId = undefined;
         updatedOriginal.venue = await updateZoom(updatedOriginal, people);
 
+        const withTagsUpdate = updateMeetingTags(updatedOriginal);
+
         // TODO: Ensure the emails that are being sent display the time's rrule
         // in a human readable format (e.g. 'Weekly on Tuesdays 3-4pm').
         await Promise.all([
-          updateMeetingDoc(updatedOriginal),
-          updateMeetingSearchObj(updatedOriginal),
-          sendEmails(updatedOriginal, people, updater, org),
+          updateMeetingDoc(withTagsUpdate),
+          updateMeetingSearchObj(withTagsUpdate),
+          sendEmails(withTagsUpdate, people, updater, org),
           updatePeopleRoles(people),
         ]);
 
@@ -137,7 +143,8 @@ export default async function updateMeeting(
         body.time.last = getLastTime(body.time);
         body.venue = await createZoom(body, people);
 
-        const newMeeting = await createMeetingDoc(body);
+        const withTagsUpdate = updateMeetingTags(body);
+        const newMeeting = await createMeetingDoc(withTagsUpdate);
         await createMeetingSearchObj(newMeeting);
 
         // TODO: Exdates have to be exact dates that would otherwise be
@@ -157,9 +164,11 @@ export default async function updateMeeting(
         original.time.last = getLastTime(original.time);
         original.venue = await updateZoom(original, people);
 
+        const originalWithTagsUpdate = updateMeetingTags(original);
+
         await Promise.all([
-          updateMeetingDoc(original),
-          updateMeetingSearchObj(original),
+          updateMeetingDoc(originalWithTagsUpdate),
+          updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newMeeting, people, updater, org),
           updatePeopleRoles(people),
         ]);
@@ -184,7 +193,8 @@ export default async function updateMeeting(
         body.time.last = getLastTime(body.time);
         body.venue = await createZoom(body, people);
 
-        const newRecurringMeeting = await createMeetingDoc(body);
+        const withTagsUpdate = updateMeetingTags(body);
+        const newRecurringMeeting = await createMeetingDoc(withTagsUpdate);
         await createMeetingSearchObj(newRecurringMeeting);
 
         // TODO: This `until` property should be 12am (on the original meeting
@@ -200,9 +210,11 @@ export default async function updateMeeting(
         original.time.last = getLastTime(original.time);
         original.venue = await updateZoom(original, people);
 
+        const originalWithTagsUpdate = updateMeetingTags(original);
+
         await Promise.all([
-          updateMeetingDoc(original),
-          updateMeetingSearchObj(original),
+          updateMeetingDoc(originalWithTagsUpdate),
+          updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newRecurringMeeting, people, updater, org),
           updatePeopleRoles(people),
         ]);
@@ -220,27 +232,31 @@ export default async function updateMeeting(
     } else {
       body.venue = await updateZoom(body, people);
       body.time.last = getLastTime(body.time);
+      body.match = updateMatchTags(body.match);
+
+      const meeting = updateMeetingTags(body);
 
       // TODO: Should I send a 200 status code *and then* send emails? Would that
       // make the front-end feel faster? Or is that a bad development practice?
       await Promise.all([
-        updateMatchDoc(body.match),
-        updateMatchSearchObj(body.match),
-        updateMeetingDoc(body),
-        updateMeetingSearchObj(body),
-        sendEmails(body, people, updater, org),
+        updateMatchDoc(meeting.match),
+        updateMatchSearchObj(meeting.match),
+        updateMeetingDoc(meeting),
+        updateMeetingSearchObj(meeting),
+        sendEmails(meeting, people, updater, org),
         updatePeopleRoles(people),
       ]);
 
-      res.status(200).json(body.toJSON());
+      res.status(200).json(meeting.toJSON());
 
       segment.track({
         userId: uid,
         event: 'Meeting Updated',
-        properties: body.toSegment(),
+        properties: meeting.toSegment(),
       });
 
-      await analytics(body, 'updated');
+      // TODO: Should we also track the match update?
+      await analytics(meeting, 'updated');
     }
   } catch (e) {
     handle(e, res);

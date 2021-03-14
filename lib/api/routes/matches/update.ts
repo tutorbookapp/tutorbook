@@ -7,6 +7,7 @@ import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
+import updateMatchTags from 'lib/api/update/match-tags';
 import updatePeopleRoles from 'lib/api/update/people-roles';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
@@ -35,21 +36,23 @@ export default async function updateMatch(
       orgIds: [body.org],
     });
 
+    const match = updateMatchTags(body);
+
     await Promise.all([
-      updateMatchDoc(body),
-      updateMatchSearchObj(body),
+      updateMatchDoc(match),
+      updateMatchSearchObj(match),
       updatePeopleRoles(people),
     ]);
 
-    res.status(200).json(body.toJSON());
+    res.status(200).json(match.toJSON());
 
     segment.track({
       userId: uid,
       event: 'Match Updated',
-      properties: body.toSegment(),
+      properties: match.toSegment(),
     });
 
-    await analytics(body, 'updated');
+    await analytics(match, 'updated');
   } catch (e) {
     handle(e, res);
   }

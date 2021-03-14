@@ -10,6 +10,7 @@ import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
+import updateMatchTags from 'lib/api/update/match-tags';
 import updatePeopleRoles from 'lib/api/update/people-roles';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
@@ -46,7 +47,7 @@ export default async function createMatch(
     const org = await getOrg(body.org);
     if (!studentIds.includes(creator.id)) verifyIsOrgAdmin(org, creator.id);
 
-    const match = await createMatchDoc(body);
+    const match = await createMatchDoc(updateMatchTags(body));
     await Promise.all([createMatchSearchObj(match), updatePeopleRoles(people)]);
 
     res.status(201).json(match.toJSON());

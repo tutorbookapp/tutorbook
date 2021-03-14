@@ -18,6 +18,8 @@ import getStudents from 'lib/api/get/students';
 import getUser from 'lib/api/get/user';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
+import updateMatchTags from 'lib/api/update/match-tags';
+import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleRoles from 'lib/api/update/people-roles';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
@@ -67,7 +69,7 @@ export default async function createMeeting(
       if (!studentIds.includes(creator.id)) verifyIsOrgAdmin(org, creator.id);
 
       // Create match (b/c it doesn't already exist).
-      body.match = await createMatchDoc(body.match);
+      body.match = await createMatchDoc(updateMatchTags(body.match));
       await Promise.all([
         createMatchSearchObj(body.match),
         updatePeopleRoles(people),
@@ -99,7 +101,7 @@ export default async function createMeeting(
     body.venue = await createZoom(body, people);
     body.time.last = getLastTime(body.time);
 
-    const meeting = await createMeetingDoc(body);
+    const meeting = await createMeetingDoc(updateMeetingTags(body));
     await createMeetingSearchObj(meeting);
 
     const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));
