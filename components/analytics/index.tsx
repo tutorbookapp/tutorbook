@@ -10,6 +10,7 @@ import {
   YAxis,
 } from 'recharts';
 import cn from 'classnames';
+import { useMemo } from 'react';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -21,7 +22,7 @@ import { caps } from 'lib/utils';
 import { sameDate } from 'lib/utils/time';
 import { useOrg } from 'lib/context/org';
 
-import fallbackTimeline from './data';
+import defaultData from './data';
 import styles from './analytics.module.scss';
 
 interface LabelProps {
@@ -72,7 +73,11 @@ interface TickProps {
 export default function Analytics(): JSX.Element {
   const { org } = useOrg();
   const { t, lang: locale } = useTranslation();
-  const { data } = useSWR<AnalyticsRes>(`/api/orgs/${org?.id || ''}/analytics`);
+  const { data } = useSWR<AnalyticsRes>(
+    org?.id ? `/api/orgs/${org.id}/analytics` : null
+  );
+
+  const nums = useMemo(() => data || defaultData, [data]);
 
   // TODO: Ensure that the scale on the chart isn't dependent on the data points
   // being equally spaced out. Instead, it should be relative to the data point
@@ -89,38 +94,38 @@ export default function Analytics(): JSX.Element {
           <div className={styles.number}>
             <dt>
               Volunteers
-              <Label percent={data?.volunteers.change || 12.5} />
+              <Label percent={nums.volunteers.change} />
             </dt>
-            <dd>{data?.volunteers.total || 258}</dd>
-            <div>{data?.volunteers.matched || 189} Matched</div>
+            <dd>{nums.volunteers.total}</dd>
+            <div>{nums.volunteers.matched} Matched</div>
           </div>
           <div className={styles.number}>
             <dt>
               Students
-              <Label percent={data?.students.change || 12.5} />
+              <Label percent={nums.students.change} />
             </dt>
-            <dd>{data?.students.total || 218}</dd>
-            <div>{data?.students.matched || 218} Matched</div>
+            <dd>{nums.students.total}</dd>
+            <div>{nums.students.matched} Matched</div>
           </div>
           <div className={styles.number}>
             <dt>
               Matches
-              <Label percent={data?.matches.change || -2.3} />
+              <Label percent={nums.matches.change} />
             </dt>
-            <dd>{data?.matches.total || 443}</dd>
-            <div>{data?.matches.meeting || 413} Meeting</div>
+            <dd>{nums.matches.total}</dd>
+            <div>{nums.matches.meeting} Meeting</div>
           </div>
           <div className={styles.number}>
             <dt>
               Meetings
-              <Label percent={data?.meetings.change || 32.5} />
+              <Label percent={nums.meetings.change} />
             </dt>
-            <dd>{data?.meetings.total || 5425}</dd>
-            <div>{data?.meetings.recurring || 546} Recurring</div>
+            <dd>{nums.meetings.total}</dd>
+            <div>{nums.meetings.recurring} Recurring</div>
           </div>
         </dl>
         <ResponsiveContainer height={450} width='100%' className={styles.chart}>
-          <LineChart data={data?.timeline || fallbackTimeline}>
+          <LineChart data={nums.timeline}>
             <Tooltip
               cursor={false}
               allowEscapeViewBox={{ x: false, y: true }}
