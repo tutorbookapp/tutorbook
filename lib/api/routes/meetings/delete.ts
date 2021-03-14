@@ -129,6 +129,8 @@ export default async function deleteMeeting(
     // TODO: Ensure that this updates the org statistics as expected (e.g. we
     // don't want to decrease the total # of meetings if only a single meeting
     // instance is deleted and it's parent recurring meeting remains).
+    // TODO: We shouldn't remove the `meeting` tag from a user if they still
+    // have other meetings. Perhaps calculate this using a CRON job instead.
     await Promise.all([
       analytics(deleting, 'deleted'),
       updatePeopleTags(people, { remove: ['meeting'] }),

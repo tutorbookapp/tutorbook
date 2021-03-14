@@ -41,6 +41,8 @@ export default async function deleteMatch(
 
     const people = await getPeople(match.people);
 
+    // TODO: We shouldn't remove the `matched` tag from a user if they still
+    // have other matches. Perhaps calculate this using a CRON job instead.
     await Promise.all([
       analytics(match, 'deleted'),
       updatePeopleTags(people, { remove: ['matched'] }),
