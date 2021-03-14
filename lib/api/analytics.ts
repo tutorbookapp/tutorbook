@@ -51,7 +51,7 @@ async function updateAnalyticsDoc(
   nums: Analytics
 ): Promise<void> {
   nums.updated = new Date();
-  if (nums.created.valueOf() >= nums.updated.valueOf() - 864e5) {
+  if (nums.id && nums.created.valueOf() >= nums.updated.valueOf() - 864e5) {
     // If the doc create time is within 24 hours, update it.
     await db
       .collection('orgs')
@@ -61,13 +61,10 @@ async function updateAnalyticsDoc(
       .set(nums.toFirestore());
   } else {
     // Otherwise, create a new analytics doc.
+    const ref = db.collection('orgs').doc(orgId).collection('analytics').doc();
     nums.created = nums.updated;
-    await db
-      .collection('orgs')
-      .doc(orgId)
-      .collection('analytics')
-      .doc()
-      .set(nums.toFirestore());
+    nums.id = ref.id;
+    await ref.set(nums.toFirestore());
   }
 }
 
