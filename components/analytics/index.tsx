@@ -38,7 +38,7 @@ function Label({ percent }: LabelProps): JSX.Element {
         [styles.negative]: percent <= 0,
       })}
     >
-      {`${percent}%`}
+      {`${percent > 0 ? '+' : ''}${percent}%`}
     </span>
   );
 }
