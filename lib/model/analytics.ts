@@ -18,6 +18,7 @@ import definedVals from 'lib/model/defined-vals';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 type DocumentReference = admin.firestore.DocumentReference;
+type Timestamp = admin.firestore.Timestamp;
 
 /**
  * @typedef {Object} TagTotals
@@ -42,16 +43,20 @@ export interface AnalyticsInterface extends ResourceInterface {
   match: TagTotals<MatchTag>;
   meeting: TagTotals<MeetingTag>;
   ref?: DocumentReference;
+  date: Date;
   id: string;
 }
 
-export type AnalyticsJSON = Omit<AnalyticsInterface, keyof Resource> &
-  ResourceJSON;
+export type AnalyticsJSON = Omit<AnalyticsInterface, keyof Resource | 'date'> &
+  ResourceJSON & { date: string };
 export type AnalyticsSearchHit = ObjectWithObjectID &
-  Omit<AnalyticsInterface, keyof Resource | 'id'> &
-  ResourceSearchHit;
-export type AnalyticsFirestore = Omit<AnalyticsInterface, keyof Resource> &
-  ResourceFirestore;
+  Omit<AnalyticsInterface, keyof Resource | 'id' | 'date'> &
+  ResourceSearchHit & { date: number };
+export type AnalyticsFirestore = Omit<
+  AnalyticsInterface,
+  keyof Resource | 'date'
+> &
+  ResourceFirestore & { date: Timestamp };
 
 export class Analytics extends Resource implements AnalyticsInterface {
   public mentor: TagTotals<Exclude<UserTag, Role>> = {
@@ -85,6 +90,8 @@ export class Analytics extends Resource implements AnalyticsInterface {
   public match: TagTotals<MatchTag> = { total: 0, meeting: 0 };
 
   public meeting: TagTotals<MeetingTag> = { total: 0, recurring: 0 };
+
+  public date: Date = new Date();
 
   public id = '';
 
@@ -122,19 +129,42 @@ export class Analytics extends Resource implements AnalyticsInterface {
   }
 
   public toJSON(): AnalyticsJSON {
-    return definedVals({ ...this, ...super.toJSON(), ref: undefined });
+    const { date, ...rest } = this;
+    return definedVals({
+      ...rest,
+      ...super.toJSON(),
+      date: date.toJSON(),
+      ref: undefined,
+    });
   }
 
-  public static fromJSON(json: AnalyticsJSON): Analytics {
-    return new Analytics({ ...json, ...Resource.fromJSON(json) });
+  public static fromJSON({ date, ...rest }: AnalyticsJSON): Analytics {
+    return new Analytics({
+      ...rest,
+      ...Resource.fromJSON(rest),
+      date: new Date(date),
+    });
   }
 
   public toFirestore(): AnalyticsFirestore {
-    return definedVals({ ...this, ...super.toFirestore(), ref: undefined });
+    const { date, ...rest } = this;
+    return definedVals({
+      ...rest,
+      ...super.toFirestore(),
+      date: (date as unknown) as Timestamp,
+      ref: undefined,
+    });
   }
 
-  public static fromFirestore(data: AnalyticsFirestore): Analytics {
-    return new Analytics({ ...data, ...Resource.fromFirestore(data) });
+  public static fromFirestore({
+    date,
+    ...rest
+  }: AnalyticsFirestore): Analytics {
+    return new Analytics({
+      ...rest,
+      ...Resource.fromFirestore(rest),
+      date: date.toDate(),
+    });
   }
 
   public static fromFirestoreDoc(snapshot: DocumentSnapshot): Analytics {
@@ -152,10 +182,11 @@ export class Analytics extends Resource implements AnalyticsInterface {
   }
 
   public toSearchHit(): AnalyticsSearchHit {
-    const { id, ...rest } = this;
+    const { id, date, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
+      date: date.valueOf(),
       ref: undefined,
       id: undefined,
       objectID: id,
@@ -164,11 +195,13 @@ export class Analytics extends Resource implements AnalyticsInterface {
 
   public static fromSearchHit({
     objectID,
-    ...hit
+    date,
+    ...rest
   }: AnalyticsSearchHit): Analytics {
     return new Analytics({
-      ...hit,
-      ...Resource.fromSearchHit(hit),
+      ...rest,
+      ...Resource.fromSearchHit(rest),
+      date: new Date(date),
       id: objectID,
     });
   }

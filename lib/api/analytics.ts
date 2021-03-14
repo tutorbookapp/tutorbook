@@ -11,7 +11,7 @@ async function getMostRecentAnalytics(orgId: string): Promise<Analytics> {
     .collection('orgs')
     .doc(orgId)
     .collection('analytics')
-    .orderBy('created', 'desc')
+    .orderBy('date', 'desc')
     .limit(1)
     .get();
   return snapshot.docs[0]
@@ -50,8 +50,8 @@ async function updateAnalyticsDoc(
   orgId: string,
   nums: Analytics
 ): Promise<void> {
-  nums.updated = new Date();
-  if (nums.id && nums.created.valueOf() >= nums.updated.valueOf() - 864e5) {
+  const now = new Date();
+  if (nums.id && nums.date.valueOf() >= now.valueOf() - 864e5) {
     // If the doc create time is within 24 hours, update it.
     await db
       .collection('orgs')
@@ -62,7 +62,7 @@ async function updateAnalyticsDoc(
   } else {
     // Otherwise, create a new analytics doc.
     const ref = db.collection('orgs').doc(orgId).collection('analytics').doc();
-    nums.created = nums.updated;
+    nums.date = now;
     nums.id = ref.id;
     await ref.set(nums.toFirestore());
   }

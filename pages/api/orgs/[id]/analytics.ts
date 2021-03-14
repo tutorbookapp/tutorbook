@@ -80,21 +80,21 @@ export default async function analytics(
         .collection('orgs')
         .doc(orgId)
         .collection('analytics')
-        .orderBy('created', 'desc')
-        .where('created', '>=', new Date(new Date().valueOf() - 157788e5))
+        .orderBy('date', 'desc')
+        .where('date', '>=', new Date(new Date().valueOf() - 157788e5))
         .get();
 
       // Analytics snapshots going backwards in time (i.e. latest first).
       const timeline = docs
         .map(Analytics.fromFirestoreDoc)
-        .sort((a, b) => b.created.valueOf() - a.created.valueOf());
+        .sort((a, b) => b.date.valueOf() - a.date.valueOf());
 
       // Calculate the percent change from last week's data (i.e. the latest
       // data from at least a week ago).
       const current = timeline[0] || new Analytics();
       const lastWeekDate = new Date().valueOf() - 6048e5;
       const lastWeek =
-        timeline.find((d) => d.created.valueOf() <= lastWeekDate) || current;
+        timeline.find((d) => d.date.valueOf() <= lastWeekDate) || current;
 
       res.status(200).json({
         volunteers: {
@@ -127,7 +127,7 @@ export default async function analytics(
           recurring: current.meeting.recurring,
         },
         timeline: timeline.reverse().map((a) => ({
-          date: a.created.valueOf(),
+          date: a.date.valueOf(),
           volunteers: a.volunteer.total,
           students: a.student.total,
           matches: a.match.total,
