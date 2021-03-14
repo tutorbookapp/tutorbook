@@ -72,7 +72,7 @@ export default async function analytics(
     res.status(405).end(`Method ${req.method as string} Not Allowed`);
   } else {
     try {
-      // Get last six months of data from the analytics subcollection.
+      // Get last three months of data from the analytics subcollection.
       const orgId = verifyQueryId(req.query);
       const { uid } = await verifyAuth(req.headers, { orgIds: [orgId] });
       const { docs } = await db
@@ -80,7 +80,7 @@ export default async function analytics(
         .doc(orgId)
         .collection('analytics')
         .orderBy('date', 'desc')
-        .where('date', '>=', new Date(new Date().valueOf() - 157788e5))
+        .where('date', '>=', new Date(new Date().valueOf() - 78894e5))
         .get();
 
       // Analytics snapshots going backwards in time (i.e. latest first).
