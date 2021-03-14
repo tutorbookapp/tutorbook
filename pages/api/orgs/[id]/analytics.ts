@@ -41,12 +41,22 @@ export interface AnalyticsRes {
 
 /**
  * Calculates in percent, the change between 2 numbers.
- * e.g from 1000 to 500 = 50%
+ * e.g. from 1000 to 500 = 50%
+ *
+ * We subjectively report 100% values when the old number is 0.
+ * e.g. from 0 to 10 = 100%
+ * e.g. from 0 to -10 = -100%
+ * e.g. from 0 to 0 = 0%
  *
  * @param oldNumber - The initial value.
  * @param newNumber - The value that changed.
  */
 function getPercentChange(oldNumber: number, newNumber: number): number {
+  if (oldNumber === 0) {
+    if (newNumber > 0) return 100;
+    if (newNumber < 0) return -100;
+    if (newNumber === 0) return 0;
+  }
   const decreaseValue = oldNumber - newNumber;
   return (decreaseValue / oldNumber) * 100;
 }
@@ -64,8 +74,6 @@ export default async function analytics(
     res.setHeader('Allow', ['GET']);
     res.status(405).end(`Method ${req.method as string} Not Allowed`);
   } else {
-    res.status(200).json(defaultData);
-
     try {
       // Get last six months of data from the analytics subcollection.
       const orgId = verifyQueryId(req.query);
@@ -85,7 +93,7 @@ export default async function analytics(
 
       // Calculate the percent change from last week's data (i.e. the latest
       // data from at least a week ago).
-      const current = timeline[0];
+      const current = timeline[0] || new Analytics();
       const lastWeekDate = new Date().valueOf() - 6048e5;
       const lastWeek =
         timeline.find((d) => d.created.valueOf() <= lastWeekDate) || current;
