@@ -1,0 +1,126 @@
+@use 'styles/common';
+
+.wrapper {
+  @include common.wrapper;
+
+  .numbers {
+    display: flex;
+    margin: 56px 0;
+
+    .number {
+      flex-grow: 1;
+      flex-basis: 0;
+      padding: 0 36px;
+      border-right: 1px solid var(--accents-2);
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        border-right: none;
+        padding-right: 0;
+      }
+
+      dt {
+        margin: 0;
+        font-size: 14px;
+        line-height: 14px;
+        color: var(--accents-6);
+      }
+
+      dd {
+        margin: 12px 0;
+        font-size: 56px;
+        line-height: 56px;
+        letter-spacing: -4px;
+        text-indent: -4px;
+        font-weight: 500;
+      }
+
+      div {
+        margin: 0;
+        font-size: 14px;
+        line-height: 14px;
+        color: var(--accents-6);
+      }
+    }
+  }
+
+  .chart {
+    margin: 72px 0;
+
+    :global(.recharts-surface) {
+      overflow: visible;
+    }
+
+    :global(.recharts-cartesian-grid) line {
+      // Ensure that our 1px lines actually stay 1px (to match other borders).
+      // @see {@link https://stackoverflow.com/a/34229584/10023158}
+      shape-rendering: crispedges;
+    }
+
+    :global(.recharts-cartesian-grid-horizontal) line:first-child {
+      stroke-dasharray: none;
+    }
+
+    .tooltip {
+      padding: 24px;
+      background: var(--background);
+      box-shadow: var(--shadow-large);
+      border-radius: 4px;
+
+      .header {
+        font-size: 14px;
+        line-height: 14px;
+        color: var(--accents-5);
+        text-transform: uppercase;
+        font-weight: 500;
+        margin: 0 0 8px;
+      }
+
+      table {
+        font-size: 16px;
+        border-spacing: 0;
+        border-collapse: collapse;
+
+        td:first-child {
+          padding-right: 4px;
+        }
+
+        .volunteers td {
+          color: var(--analytics-volunteers);
+        }
+
+        .students td {
+          color: var(--analytics-students);
+        }
+
+        .matches td {
+          color: var(--analytics-matches);
+        }
+      }
+    }
+  }
+}
+
+.label {
+  font-size: 14px;
+  line-height: 14px;
+  margin-left: 8px;
+  border-radius: 12px;
+  padding: 2px 8px;
+  border: 1px solid;
+
+  &.positive {
+    border-color: var(--analytics-green-bd);
+    background: var(--analytics-green-bg);
+    color: var(--analytics-green-fg);
+  }
+
+  &.negative {
+    border-color: var(--analytics-red-bd);
+    background: var(--analytics-red-bg);
+    color: var(--analytics-red-fg);
+  }
+}

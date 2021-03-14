@@ -1,5 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
+import fallbackTimeline from 'components/analytics/data';
+
 import { APIError, handle } from 'lib/api/error';
 import { Analytics } from 'lib/model/analytics';
 import { db } from 'lib/api/firebase';
@@ -62,6 +64,14 @@ export default async function analytics(
     res.setHeader('Allow', ['GET']);
     res.status(405).end(`Method ${req.method as string} Not Allowed`);
   } else {
+    res.status(200).json({
+      volunteers: { change: 12.5, total: 258, matched: 189 },
+      students: { change: 12.5, total: 218, matched: 218 },
+      matches: { change: -2.3, total: 443, meeting: 413 },
+      meetings: { change: 32.5, total: 5425, recurring: 546 },
+      timeline: fallbackTimeline,
+    });
+
     try {
       // Get last six months of data from the analytics subcollection.
       const orgId = verifyQueryId(req.query);

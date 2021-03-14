@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Overview from 'components/overview';
+import Analytics from 'components/analytics';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
@@ -67,7 +67,7 @@ function OverviewPage(props: PageProps): JSX.Element {
             },
           ]}
         />
-        <Overview />
+        <Analytics />
       </Page>
     </OrgContext.Provider>
   );
