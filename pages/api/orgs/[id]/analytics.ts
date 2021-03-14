@@ -1,7 +1,5 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import defaultData from 'components/analytics/data';
-
 import { APIError, handle } from 'lib/api/error';
 import { Analytics } from 'lib/model/analytics';
 import { db } from 'lib/api/firebase';

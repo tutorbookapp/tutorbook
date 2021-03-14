@@ -3,7 +3,6 @@ import to from 'await-to-js';
 import { APIError } from 'lib/api/error';
 import { User } from 'lib/model';
 import { db } from 'lib/api/firebase';
-import clone from 'lib/utils/clone';
 
 /**
  * Creates the Firestore database document for the given user.
