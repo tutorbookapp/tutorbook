@@ -1,6 +1,7 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import algoliasearch from 'algoliasearch/lite';
+import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
