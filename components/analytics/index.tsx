@@ -22,7 +22,6 @@ import { caps } from 'lib/utils';
 import { sameDate } from 'lib/utils/time';
 import { useOrg } from 'lib/context/org';
 
-import defaultData from './data';
 import styles from './analytics.module.scss';
 
 interface LabelProps {
@@ -77,7 +76,23 @@ export default function Analytics(): JSX.Element {
     org?.id ? `/api/orgs/${org.id}/analytics` : null
   );
 
-  const nums = useMemo(() => data || defaultData, [data]);
+  const nums = useMemo(
+    () =>
+      data || {
+        volunteers: { change: 12.5, total: 258, matched: 189 },
+        students: { change: 12.5, total: 218, matched: 218 },
+        matches: { change: -2.3, total: 443, meeting: 413 },
+        meetings: { change: 32.5, total: 5425, recurring: 546 },
+        timeline: [],
+      },
+    [data]
+  );
+  const domain = useMemo(() => {
+    const x = nums.timeline;
+    const start = x[0] ? x[0].date : 0;
+    const end = x.length > 0 ? x[x.length - 1].date : 0;
+    return [start, end];
+  }, [nums.timeline]);
 
   // TODO: Ensure that the scale on the chart isn't dependent on the data points
   // being equally spaced out. Instead, it should be relative to the data point
@@ -164,6 +179,7 @@ export default function Analytics(): JSX.Element {
               tickMargin={8}
               tickLine={false}
               axisLine={false}
+              type='number'
               tick={({ x, y, payload }: TickProps) => (
                 <text
                   fontSize='14px'
@@ -187,6 +203,9 @@ export default function Analytics(): JSX.Element {
               tickMargin={12}
               tickLine={false}
               axisLine={false}
+              domain={domain}
+              type='number'
+              scale='time'
               tick={({ x, y, payload }: TickProps) => (
                 <text
                   fontSize='14px'
