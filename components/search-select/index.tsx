@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import algoliasearch from 'algoliasearch/lite';
 import useTranslation from 'next-translate/useTranslation';
 
-import Select, { SelectControls } from 'components/select';
+import Select, { SelectControllerProps } from 'components/select';
 
 import { Option } from 'lib/model/query/base';
 
@@ -30,7 +30,7 @@ function orderHits(hits: SearchHit[], langs: string[]): SearchHit[] {
   });
 }
 
-export type SearchSelectProps<T extends string> = SelectControls<T> & {
+export type SearchSelectProps<T extends string> = SelectControllerProps<T> & {
   index: string;
   noResultsMessage: string;
 };
