@@ -99,6 +99,24 @@ export class Analytics extends Resource implements AnalyticsInterface {
     );
   }
 
+  public get volunteer(): TagTotals<Exclude<UserTag, Role>> {
+    return {
+      total: this.mentor.total + this.tutor.total,
+      vetted: this.mentor.vetted + this.tutor.vetted,
+      matched: this.mentor.matched + this.tutor.matched,
+      meeting: this.mentor.meeting + this.tutor.meeting,
+    };
+  }
+
+  public get student(): TagTotals<Exclude<UserTag, Role>> {
+    return {
+      total: this.mentee.total + this.tutee.total,
+      vetted: this.mentee.vetted + this.tutee.vetted,
+      matched: this.mentee.matched + this.tutee.matched,
+      meeting: this.mentee.meeting + this.tutee.meeting,
+    };
+  }
+
   public get clone(): Analytics {
     return new Analytics(clone(this));
   }
