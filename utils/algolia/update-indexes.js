@@ -49,31 +49,6 @@ const subjects = async (id) => {
   }
 };
 
-const langs = async () => {
-  const index = client.initIndex('langs');
-  await index.clearObjects();
-  const langs = parse(fs.readFileSync(`./langs.csv`), {
-    columns: true,
-    skip_empty_lines: true,
-  })
-    .filter((lang) => !!lang.code)
-    .map((lang) => {
-      const res = { objectID: lang.code };
-      delete lang.code;
-      for (const [key, val] of Object.entries(lang)) {
-        const name = val.split(', ')[0];
-        const synonyms = val.split(', ').filter((n) => n !== name);
-        res[key] = { name, synonyms };
-      }
-      return res;
-    });
-  const [err, res] = await to(index.saveObjects(langs));
-  if (err) {
-    console.error('[ERROR] While saving langs:', err);
-    debugger;
-  }
-};
-
 const generic = async (id) => {
   const index = client.initIndex(id);
   console.log(`Clearing index (${id})...`);
@@ -85,13 +60,19 @@ const generic = async (id) => {
   const objs = parse(fs.readFileSync(`./${id}.csv`), {
     columns: true,
     skip_empty_lines: true,
-  }).filter((obj) => !!obj.name);
-  console.log(`Updating index (${id})...`);
-  const [updateErr] = await to(
-    index.saveObjects(objs, {
-      autoGenerateObjectIDIfNotExist: true,
-    })
-  );
+  })
+    .filter((obj) => !!obj.objectID)
+    .map((obj) => {
+      for (const [key, val] of Object.entries(obj)) {
+        if (key === 'objectID') continue;
+        const name = val.split(', ')[0];
+        const synonyms = val.split(', ').filter((n) => n !== name);
+        obj[key] = { name, synonyms };
+      }
+      return obj;
+    });
+  console.log(`Saving ${objs.length} objects...`);
+  const [updateErr] = await to(index.saveObjects(objs));
   if (updateErr) {
     console.error(`${updateErr.name} updating index (${id}):`, updateErr);
     debugger;
