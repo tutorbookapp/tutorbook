@@ -1,4 +1,6 @@
 {
+  "tags": "Tags",
+  "tags-placeholder": "Ex: Vetted or Matched",
   "langs": "Languages",
   "availability": "Availability",
   "subjects": "Subjects",

@@ -9,7 +9,6 @@ import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
 
 import styles from './search-bar.module.scss';
-import { toggleTag } from './utils';
 
 export interface SearchBarProps {
   query: UsersQuery;
@@ -37,17 +36,6 @@ function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
           icon='download'
         />
         <ChipSet className={styles.filterChips}>
-          <Chip
-            label={t('users:filters-not-vetted')}
-            checkmark
-            onInteraction={() => {
-              setQuery((prev) => {
-                const tags = toggleTag(prev.tags, 'not-vetted');
-                return new UsersQuery({ ...prev, tags, page: 0 });
-              });
-            }}
-            selected={query.tags.includes('not-vetted')}
-          />
           <Chip
             label={t('users:filters-visible')}
             checkmark
