@@ -38,7 +38,7 @@ export interface AnalyticsRes {
 }
 
 /**
- * Calculates in percent, the change between 2 numbers.
+ * Calculates in percent (1 decimal), the change between 2 numbers.
  * e.g. from 1000 to 500 = 50%
  *
  * We subjectively report 100% values when the old number is 0.
@@ -55,8 +55,7 @@ function getPercentChange(oldNumber: number, newNumber: number): number {
     if (newNumber < 0) return -100;
     if (newNumber === 0) return 0;
   }
-  const decreaseValue = oldNumber - newNumber;
-  return (decreaseValue / oldNumber) * 100;
+  return Math.round(((newNumber - oldNumber) / oldNumber) * 1000) / 10;
 }
 
 /**
