@@ -1,21 +1,26 @@
 import { User, UserTag } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
-export default function updateUserTags(user: User): User {
-  const tags: UserTag[] = [];
+export default function updateUserTags(
+  user: User,
+  actions?: { add?: UserTag[]; remove?: UserTag[] }
+): User {
+  const tags = new Set<UserTag>(user.tags);
 
-  // Role tags are never removed: once a user has been a tutor at least once,
-  // they will always be considered a tutor.
-  if (user.mentoring.subjects.length || user.tags.includes('mentor'))
-    tags.push('mentor');
-  if (user.mentoring.searches.length || user.tags.includes('mentee'))
-    tags.push('mentee');
-  if (user.tutoring.subjects.length || user.tags.includes('tutor'))
-    tags.push('tutor');
-  if (user.tutoring.searches.length || user.tags.includes('tutee'))
-    tags.push('tutee');
+  if (user.mentoring.subjects.length || user.roles.includes('mentor'))
+    tags.add('mentor');
+  if (user.mentoring.searches.length || user.roles.includes('mentee'))
+    tags.add('mentee');
+  if (user.tutoring.subjects.length || user.roles.includes('tutor'))
+    tags.add('tutor');
+  if (user.tutoring.searches.length || user.roles.includes('tutee'))
+    tags.add('tutee');
 
-  if (user.verifications.length) tags.push('vetted');
+  if (user.verifications.length) tags.add('vetted');
+  if (!user.verifications.length) tags.delete('vetted');
 
-  return new User(clone({ ...user, tags }));
+  actions?.add?.forEach((tag) => tags.add(tag));
+  actions?.remove?.forEach((tag) => tags.delete(tag));
+
+  return new User(clone({ ...user, tags: [...tags] }));
 }

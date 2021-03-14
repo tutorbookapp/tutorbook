@@ -8,7 +8,7 @@ import segment from 'lib/api/segment';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
-import updatePeopleRoles from 'lib/api/update/people-roles';
+import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyDocExists from 'lib/api/verify/doc-exists';
@@ -38,11 +38,7 @@ export default async function updateMatch(
 
     const match = updateMatchTags(body);
 
-    await Promise.all([
-      updateMatchDoc(match),
-      updateMatchSearchObj(match),
-      updatePeopleRoles(people),
-    ]);
+    await Promise.all([updateMatchDoc(match), updateMatchSearchObj(match)]);
 
     res.status(200).json(match.toJSON());
 
@@ -52,7 +48,10 @@ export default async function updateMatch(
       properties: match.toSegment(),
     });
 
-    await analytics(match, 'updated');
+    await Promise.all([
+      analytics(match, 'updated'),
+      updatePeopleTags(people, { add: ['matched'] }),
+    ]);
   } catch (e) {
     handle(e, res);
   }

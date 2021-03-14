@@ -25,7 +25,7 @@ import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
-import updatePeopleRoles from 'lib/api/update/people-roles';
+import updatePeopleTags from 'lib/api/update/people-tags';
 import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
@@ -119,7 +119,6 @@ export default async function updateMeeting(
           updateMeetingDoc(withTagsUpdate),
           updateMeetingSearchObj(withTagsUpdate),
           sendEmails(withTagsUpdate, people, updater, org),
-          updatePeopleRoles(people),
         ]);
 
         res.status(200).json(body.toJSON());
@@ -130,7 +129,10 @@ export default async function updateMeeting(
           properties: body.toSegment(),
         });
 
-        await analytics(body, 'updated');
+        await Promise.all([
+          analytics(body, 'updated'),
+          updatePeopleTags(people, { add: ['meeting'] }),
+        ]);
       } else if (options.action === 'this') {
         // Update this meeting only:
         // 1. Create a new non-recurring meeting using this meeting's data.
@@ -170,7 +172,6 @@ export default async function updateMeeting(
           updateMeetingDoc(originalWithTagsUpdate),
           updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newMeeting, people, updater, org),
-          updatePeopleRoles(people),
         ]);
 
         res.status(200).json(newMeeting.toJSON());
@@ -181,7 +182,10 @@ export default async function updateMeeting(
           properties: newMeeting.toSegment(),
         });
 
-        await analytics(newMeeting, 'updated');
+        await Promise.all([
+          analytics(newMeeting, 'updated'),
+          updatePeopleTags(people, { add: ['meeting'] }),
+        ]);
       } else {
         // Update this and all following meetings:
         // 1. Create a new recurring meeting using this meeting's data.
@@ -216,7 +220,6 @@ export default async function updateMeeting(
           updateMeetingDoc(originalWithTagsUpdate),
           updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newRecurringMeeting, people, updater, org),
-          updatePeopleRoles(people),
         ]);
 
         res.status(200).json(newRecurringMeeting.toJSON());
@@ -227,7 +230,10 @@ export default async function updateMeeting(
           properties: newRecurringMeeting.toSegment(),
         });
 
-        await analytics(newRecurringMeeting, 'updated');
+        await Promise.all([
+          analytics(newRecurringMeeting, 'updated'),
+          updatePeopleTags(people, { add: ['meeting'] }),
+        ]);
       }
     } else {
       body.venue = await updateZoom(body, people);
@@ -244,7 +250,6 @@ export default async function updateMeeting(
         updateMeetingDoc(meeting),
         updateMeetingSearchObj(meeting),
         sendEmails(meeting, people, updater, org),
-        updatePeopleRoles(people),
       ]);
 
       res.status(200).json(meeting.toJSON());
@@ -256,7 +261,10 @@ export default async function updateMeeting(
       });
 
       // TODO: Should we also track the match update?
-      await analytics(meeting, 'updated');
+      await Promise.all([
+        analytics(meeting, 'updated'),
+        updatePeopleTags(people, { add: ['meeting'] }),
+      ]);
     }
   } catch (e) {
     handle(e, res);

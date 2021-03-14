@@ -16,7 +16,7 @@ import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
-import updatePeopleRoles from 'lib/api/update/people-roles';
+import updatePeopleTags from 'lib/api/update/people-tags';
 import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyOptions from 'lib/api/verify/options';
@@ -84,7 +84,6 @@ export default async function deleteMeeting(
         updateMeetingDoc(meeting),
         updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
-        updatePeopleRoles(people),
       ]);
     } else if (isRecurring && options.action === 'future') {
       // Delete this and all following meetings:
@@ -108,7 +107,6 @@ export default async function deleteMeeting(
         updateMeetingDoc(meeting),
         updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
-        updatePeopleRoles(people),
       ]);
     } else {
       // Delete all meetings. Identical to deleting a non-recurring meeting.
@@ -131,7 +129,10 @@ export default async function deleteMeeting(
     // TODO: Ensure that this updates the org statistics as expected (e.g. we
     // don't want to decrease the total # of meetings if only a single meeting
     // instance is deleted and it's parent recurring meeting remains).
-    await analytics(deleting, 'deleted');
+    await Promise.all([
+      analytics(deleting, 'deleted'),
+      updatePeopleTags(people, { remove: ['meeting'] }),
+    ]);
   } catch (e) {
     handle(e, res);
   }

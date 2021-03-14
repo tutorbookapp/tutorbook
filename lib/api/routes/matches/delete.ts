@@ -4,8 +4,10 @@ import analytics from 'lib/api/analytics';
 import deleteMatchDoc from 'lib/api/delete/match-doc';
 import deleteMatchSearchObj from 'lib/api/delete/match-search-obj';
 import getMatch from 'lib/api/get/match';
+import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
+import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
@@ -37,7 +39,12 @@ export default async function deleteMatch(
       properties: match.toSegment(),
     });
 
-    await analytics(match, 'deleted');
+    const people = await getPeople(match.people);
+
+    await Promise.all([
+      analytics(match, 'deleted'),
+      updatePeopleTags(people, { remove: ['matched'] }),
+    ]);
   } catch (e) {
     handle(e, res);
   }

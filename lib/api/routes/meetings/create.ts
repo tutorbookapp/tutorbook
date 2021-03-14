@@ -20,7 +20,7 @@ import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
-import updatePeopleRoles from 'lib/api/update/people-roles';
+import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyIsOrgAdmin from 'lib/api/verify/is-org-admin';
@@ -70,10 +70,7 @@ export default async function createMeeting(
 
       // Create match (b/c it doesn't already exist).
       body.match = await createMatchDoc(updateMatchTags(body.match));
-      await Promise.all([
-        createMatchSearchObj(body.match),
-        updatePeopleRoles(people),
-      ]);
+      await createMatchSearchObj(body.match);
 
       segment.track({
         userId: creator.id,
@@ -81,7 +78,10 @@ export default async function createMeeting(
         properties: body.match.toSegment(),
       });
 
-      await analytics(body.match, 'created');
+      await Promise.all([
+        analytics(body.match, 'created'),
+        updatePeopleTags(people, { add: ['matched'] }),
+      ]);
     } else {
       // Match org cannot change (security issue if it can).
       // TODO: Nothing in the match should be able to change (because this API
@@ -115,7 +115,10 @@ export default async function createMeeting(
       properties: meeting.toSegment(),
     });
 
-    await analytics(meeting, 'created');
+    await Promise.all([
+      analytics(meeting, 'created'),
+      updatePeopleTags(people, { add: ['meeting'] }),
+    ]);
   } catch (e) {
     handle(e, res);
   }
