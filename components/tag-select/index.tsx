@@ -39,6 +39,7 @@ export default function TagSelect<
       {...props}
       noResultsMessage={t('common:no-tags')}
       options={selectOptions}
+      autoOpenMenu
       index='tags'
     />
   );
