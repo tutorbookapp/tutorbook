@@ -1,3 +1,5 @@
+const fs = require('fs');
+const url = require('url');
 const path = require('path');
 const dotenv = require('dotenv');
 
@@ -22,7 +24,7 @@ console.log(
   )
 );
 
-const fs = require('fs');
+const axios = require('axios');
 const clone = require('rfdc')();
 const progress = require('cli-progress');
 const admin = require('firebase-admin');
@@ -38,6 +40,21 @@ const app = admin.initializeApp({
   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 });
 const db = app.firestore();
+
+const firebase = require('firebase/app');
+require('firebase/auth');
+
+const clientCredentials = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
+if (!firebase.apps.length) firebase.initializeApp(clientCredentials);
 
 const client = require('algoliasearch')(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
@@ -86,7 +103,7 @@ async function uploadTimeline(orgId, timeline) {
 }
 
 async function updateResourceTags(orgId, dryRun = false) {
-  console.log(`Fetching (${orgId}) data...`);
+  console.log(`Fetching (${orgId}) cache...`);
   const usersData = require(`./${orgId}-users.json`);
   const matchesData = require(`./${orgId}-matches.json`);
   const meetingsData = require(`./${orgId}-meetings.json`);
@@ -201,7 +218,7 @@ function tag(usersData, matchesData, meetingsData) {
 }
 
 function generateTimeline(orgId) {
-  console.log(`Fetching (${orgId}) data...`);
+  console.log(`Fetching (${orgId}) cache...`);
   const usersData = require(`./${orgId}-users.json`);
   const matchesData = require(`./${orgId}-matches.json`);
   const meetingsData = require(`./${orgId}-meetings.json`);
@@ -321,3 +338,38 @@ async function main(orgId) {
     updateResourceTags(orgId),
   ]);
 }
+
+async function inspectData(orgId, tags) {
+  console.log(`Fetching (${orgId}) cache...`);
+  const usersData = require(`./${orgId}-users.json`);
+  const matchesData = require(`./${orgId}-matches.json`);
+  const meetingsData = require(`./${orgId}-meetings.json`);
+
+  console.log('Updating tags...');
+  const [users, matches, meetings] = tag(usersData, matchesData, meetingsData);
+
+  async function getToken(uid = '1j0tRKGtpjSX33gLsLnalxvd1Tl2') {
+    const token = await app.auth().createCustomToken(uid);
+    await firebase.auth().signInWithCustomToken(token);
+    const idToken = await firebase.auth().currentUser.getIdToken(true);
+    await firebase.auth().signOut();
+    return idToken;
+  }
+
+  console.log(`Downloading (${orgId}) data (${tags.join(', ')})...`);
+  const headers = { authorization: `Bearer ${await getToken()}` };
+  const endpoint = url.format({
+    pathname: 'https://develop.tutorbook.org/api/users',
+    query: {
+      hitsPerPage: 1000,
+      orgs: JSON.stringify([orgId]),
+      tags: JSON.stringify(tags),
+    },
+  });
+  console.log('Endpoint:', endpoint);
+  const { data } = await axios.get(endpoint, { headers });
+
+  debugger;
+}
+
+inspectData('quarantunes', ['mentor']);
