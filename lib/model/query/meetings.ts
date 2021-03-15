@@ -59,15 +59,25 @@ export class MeetingsQuery extends MatchesQuery
   }
 
   protected getURLQuery(): Record<string, string | number | boolean> {
+    function encode(p?: any[]): string {
+      return encodeURIComponent(JSON.stringify(p));
+    }
+
     const query = super.getURLQuery();
+    if (this.tags.length) query.tags = encode(this.tags);
     query.from = this.from.toJSON();
     query.to = this.to.toJSON();
     return query;
   }
 
   public static fromURLParams(params: MeetingsQueryURL): MeetingsQuery {
+    function decode<T>(p?: string): T[] {
+      return p ? (JSON.parse(decodeURIComponent(p)) as T[]) : [];
+    }
+
     return new MeetingsQuery({
       ...MatchesQuery.fromURLParams(params),
+      tags: decode<MeetingHitTag>(params.tags),
       from: new Date(params.from || new Date().toJSON()),
       to: new Date(params.to || new Date().toJSON()),
     });
