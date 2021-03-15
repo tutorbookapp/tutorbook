@@ -114,6 +114,10 @@
           width: 100%;
           margin-bottom: 8px;
 
+          span {
+            white-space: nowrap;
+          }
+
           &:last-of-type {
             margin-bottom: 16px;
           }
