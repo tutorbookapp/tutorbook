@@ -12,12 +12,12 @@ export default async function updatePeopleTags(
 ): Promise<void> {
   await Promise.all(
     people.map(async (person) => {
-      const updated = updateUserTags(person, actions);
-      if (dequal(updated.tags, person.tags)) return;
+      const user = updateUserTags(person, actions);
+      if (dequal(user.tags, person.tags)) return;
       await Promise.all([
-        updateUserDoc(person),
-        updateUserSearchObj(person),
-        analytics(person, 'updated'),
+        updateUserDoc(user),
+        updateUserSearchObj(user),
+        analytics(user, 'updated'),
       ]);
     })
   );
