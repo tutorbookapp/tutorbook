@@ -6,6 +6,8 @@ import { User, UserTag } from 'lib/model/user';
 import { APIError } from 'lib/api/error';
 import { db } from 'lib/api/firebase';
 
+export type Action = 'created' | 'updated' | 'deleted';
+
 async function getMostRecentAnalytics(orgId: string): Promise<Analytics> {
   const snapshot = await db
     .collection('orgs')
@@ -21,7 +23,7 @@ async function getMostRecentAnalytics(orgId: string): Promise<Analytics> {
 
 function updateTags<T extends UserTag | MatchTag | MeetingTag>(
   key: Role | 'match' | 'meeting',
-  action: 'created' | 'updated' | 'deleted',
+  action: Action,
   nums: Analytics,
   currentTags: T[],
   originalTags?: T[]
@@ -29,27 +31,39 @@ function updateTags<T extends UserTag | MatchTag | MeetingTag>(
   // TODO: Get rid of this weird type cast. We should be able to assign to
   // `nums[key][tag]` directly (`nums[key]` should be of type `TagTotals<T>`).
   const totals = (nums[key] as unknown) as TagTotals<string>;
+
+  // If resource was created (or added to org), increment totals.
   if (action === 'created') totals.total += 1;
+
+  // If resource was deleted (or removed from org), decrement totals.
   if (action === 'deleted') totals.total -= 1;
   currentTags.forEach((tag) => {
     if (isRole(tag)) return;
+
+    // If resource was created (or added to org), increment totals.
     if (action === 'created') totals[tag] += 1;
+
+    // If resource was updated and tag was added, increment totals.
     if (action === 'updated' && originalTags && !originalTags.includes(tag))
       totals[tag] += 1;
+
+    // If resource was deleted (or removed from org), decrement totals.
     if (action === 'deleted') totals[tag] -= 1;
   });
+
+  // If resource was updated and tag removed, decrement totals.
   if (action === 'updated' && originalTags)
     originalTags.forEach((tag) => {
       if (!currentTags.includes(tag)) totals[tag] -= 1;
     });
+
+  // If resource was updated, we must know its original tags to properly
+  // increment/decrement org analytics totals.
   if (action === 'updated' && !originalTags)
     throw new APIError('Analytics missing original resource data.', 500);
 }
 
-async function updateAnalyticsDoc(
-  orgId: string,
-  nums: Analytics
-): Promise<void> {
+async function saveAnalytics(orgId: string, nums: Analytics): Promise<void> {
   const now = new Date();
   if (nums.id && nums.date.valueOf() >= now.valueOf() - 864e5) {
     // If the doc create time is within 24 hours, update it.
@@ -77,47 +91,61 @@ async function updateAnalyticsDoc(
  * @see {@link https://github.com/tutorbookapp/tutorbook#analytics}
  */
 export default async function analytics<T extends User | Match | Meeting>(
-  resource: T,
-  action: 'created' | 'updated' | 'deleted',
-  original?: T
+  current: T,
+  action: Action,
+  original: T = current
 ): Promise<void> {
-  if (resource instanceof User) {
-    await Promise.all(
-      resource.orgs.map(async (org) => {
-        const nums = await getMostRecentAnalytics(org);
-        resource.tags.forEach((role) => {
-          if (isRole(role))
-            updateTags(
-              role,
-              action,
-              nums,
-              resource.tags,
-              original?.tags as UserTag[]
-            );
-        });
-        await updateAnalyticsDoc(org, nums);
-      })
+  if (current instanceof User && original instanceof User) {
+    // If an update removes orgs, we want to decrement those orgs' statistics
+    // based on the original's tags.
+    const removedFromOrgs = original.orgs.filter(
+      (o) => !current.orgs.includes(o)
     );
-  } else if (resource instanceof Match) {
-    const nums = await getMostRecentAnalytics(resource.org);
-    updateTags(
-      'match',
-      action,
-      nums,
-      resource.tags,
-      original?.tags as MatchTag[]
-    );
-    await updateAnalyticsDoc(resource.org, nums);
-  } else if (resource instanceof Meeting) {
-    const nums = await getMostRecentAnalytics(resource.match.org);
-    updateTags(
-      'meeting',
-      action,
-      nums,
-      resource.tags,
-      original?.tags as MeetingTag[]
-    );
-    await updateAnalyticsDoc(resource.match.org, nums);
+    const removedPromises = removedFromOrgs.map(async (orgId) => {
+      const nums = await getMostRecentAnalytics(orgId);
+      original.tags.filter(isRole).forEach((role) => {
+        updateTags(role, 'deleted', nums, original.tags);
+      });
+      await saveAnalytics(orgId, nums);
+    });
+
+    // If an update adds orgs, we want to increment those orgs' statistics
+    // based on the current tags.
+    const addedToOrgs = current.orgs.filter((o) => !original.orgs.includes(o));
+    const addedPromises = addedToOrgs.map(async (orgId) => {
+      const nums = await getMostRecentAnalytics(orgId);
+      current.tags.filter(isRole).forEach((role) => {
+        updateTags(role, 'created', nums, current.tags);
+      });
+      await saveAnalytics(orgId, nums);
+    });
+
+    // If an org was already there, we change those org's statistics based on
+    // the change between the original and current tags.
+    const existingOrgs = current.orgs.filter((o) => original.orgs.includes(o));
+    const existingPromises = existingOrgs.map(async (orgId) => {
+      const nums = await getMostRecentAnalytics(orgId);
+      current.tags.filter(isRole).forEach((role) => {
+        updateTags(role, action, nums, current.tags, original.tags);
+      });
+      await saveAnalytics(orgId, nums);
+    });
+
+    await Promise.all([
+      ...existingPromises,
+      ...removedPromises,
+      ...addedPromises,
+    ]);
+  } else if (current instanceof Match && original instanceof Match) {
+    // TODO: Add edge cases when the orgs on a resource changes.
+    const nums = await getMostRecentAnalytics(current.org);
+    updateTags('match', action, nums, current.tags, original.tags);
+    await saveAnalytics(current.org, nums);
+  } else if (current instanceof Meeting && original instanceof Meeting) {
+    // TODO: Add edge cases when the orgs on a resource changes.
+    const nums = await getMostRecentAnalytics(current.match.org);
+    updateTags('meeting', action, nums, current.tags, original.tags);
+    await saveAnalytics(current.match.org, nums);
   } else {
     throw new APIError('Analytics resource not a user/match/meeting.', 500);
   }
