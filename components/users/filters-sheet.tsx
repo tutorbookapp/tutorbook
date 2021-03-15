@@ -6,9 +6,9 @@ import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 
+import { USER_TAGS, UserHitTag } from 'lib/model/user';
 import { Callback } from 'lib/model/callback';
 import { Option } from 'lib/model/query/base';
-import { UserHitTag } from 'lib/model/user';
 import { UsersQuery } from 'lib/model/query/users';
 
 import { config, width } from './spring-animation';
@@ -76,6 +76,7 @@ function FiltersSheet({
           onChange={onTagsChange}
           value={query.tags}
           className={styles.field}
+          options={USER_TAGS}
           renderToPortal
           outlined
         />

@@ -46,7 +46,7 @@ export type MeetingTag = 'recurring'; // Meeting is recurring (has rrule).
 
 export type MeetingHitTag = MeetingTag | 'not-recurring';
 
-const NOT_TAGS: MeetingHitTag[] = ['not-recurring'];
+export const MEETING_TAGS: MeetingTag[] = ['recurring'];
 
 export function isMeetingTag(tag: unknown): tag is MeetingTag {
   return tag === 'recurring';
@@ -266,7 +266,7 @@ export class Meeting extends Resource implements MeetingInterface {
       time: time.toSearchHit(),
       venue: venue.toSearchHit(),
       match: match.toSearchHit(),
-      _tags: [...tags, ...notTags(tags, NOT_TAGS)],
+      _tags: [...tags, ...notTags(tags, MEETING_TAGS)],
       ref: undefined,
       id: undefined,
       objectID: id,

@@ -6,8 +6,8 @@ import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 import UserSelect from 'components/user-select';
 
+import { MEETING_TAGS, MeetingHitTag } from 'lib/model/meeting';
 import { Callback } from 'lib/model/callback';
-import { MeetingHitTag } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Option } from 'lib/model/query/base';
 
@@ -71,6 +71,7 @@ function FiltersSheet({
           onChange={onTagsChange}
           value={query.tags}
           className={styles.field}
+          options={MEETING_TAGS}
           renderToPortal
           outlined
         />

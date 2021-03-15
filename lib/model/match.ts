@@ -25,7 +25,7 @@ export type MatchTag = 'meeting'; // Match has at least one meeting.
 
 export type MatchHitTag = MatchTag | 'not-meeting';
 
-const NOT_TAGS: MatchHitTag[] = ['not-meeting'];
+export const MATCH_TAGS: MatchTag[] = ['meeting'];
 
 export function isMatchTag(tag: unknown): tag is MatchTag {
   return tag === 'meeting';
@@ -167,7 +167,7 @@ export class Match extends Resource implements MatchInterface {
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
-      _tags: [...tags, ...notTags(tags, NOT_TAGS)],
+      _tags: [...tags, ...notTags(tags, MATCH_TAGS)],
       ref: undefined,
       id: undefined,
       objectID: id,

@@ -1,27 +1,45 @@
+import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import SearchSelect, { SearchSelectProps } from 'components/search-select';
 
-import { MatchHitTag } from 'lib/model/match';
-import { MeetingHitTag } from 'lib/model/meeting';
-import { UserHitTag } from 'lib/model/user';
+import { MatchHitTag, MatchTag } from 'lib/model/match';
+import { MeetingHitTag, MeetingTag } from 'lib/model/meeting';
+import { UserHitTag, UserTag } from 'lib/model/user';
 
 export type TagSelectProps<
-  T extends UserHitTag | MatchHitTag | MeetingHitTag
-> = Omit<SearchSelectProps<T>, 'index' | 'noResultsMessage' | 'ref'>;
+  HitTag extends UserHitTag | MatchHitTag | MeetingHitTag,
+  Tag extends UserTag | MatchTag | MeetingTag
+> = Omit<
+  SearchSelectProps<HitTag>,
+  'index' | 'noResultsMessage' | 'options' | 'ref'
+> & { options: Tag[] };
 
 // TODO: We can't yet use TypeScript generics *and* `React.memo` so this
 // component is going to be left un-optimized for now.
 // @see {@link https://github.com/facebook/react/issues/21003}
 export default function TagSelect<
-  T extends UserHitTag | MatchHitTag | MeetingHitTag
->(props: TagSelectProps<T>): JSX.Element {
+  HitTag extends UserHitTag | MatchHitTag | MeetingHitTag,
+  Tag extends UserTag | MatchTag | MeetingTag
+>({ options, ...props }: TagSelectProps<HitTag, Tag>): JSX.Element {
   const { t } = useTranslation();
+
+  // TODO: TypeScript should know that if HitTag is UserHitTag then Tag has to
+  // be UserTag (and cannot be MatchTag or MeetingTag) and vice versa.
+  const selectOptions = useMemo(
+    () => [
+      ...((options as unknown) as HitTag[]),
+      ...options.map((o) => `not-${o}` as HitTag),
+    ],
+    [options]
+  );
+
   return (
     <SearchSelect
       {...props}
-      index='tags'
       noResultsMessage={t('common:no-tags')}
+      options={selectOptions}
+      index='tags'
     />
   );
 }

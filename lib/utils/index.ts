@@ -36,8 +36,8 @@ export function validPhoto(url: string): boolean {
  * e.g. given tags ['meeting', 'vetted'] we would return ['not-matched']
  *      ['meeting', 'not-matched', 'vetted']
  */
-export function notTags<T extends string>(tags: T[], nots: T[]): T[] {
-  return nots.filter((t) => !tags.includes(t.replace('not-', '') as T));
+export function notTags<T extends string>(tags: T[], TAGS: T[]): T[] {
+  return TAGS.filter((t) => !tags.includes(t)).map((t) => `not-${t}` as T);
 }
 
 /**

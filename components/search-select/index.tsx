@@ -34,6 +34,7 @@ function orderHits(hits: SearchHit[], langs: string[]): SearchHit[] {
 export type SearchSelectProps<T extends string> = SelectControllerProps<T> & {
   index: string;
   noResultsMessage: string;
+  options?: T[];
 };
 
 export default function SearchSelect<T extends string>({
@@ -42,6 +43,7 @@ export default function SearchSelect<T extends string>({
   onChange,
   selected,
   onSelectedChange,
+  options,
   ...props
 }: SearchSelectProps<T>): JSX.Element {
   // Store a cache of labels fetched (i.e. a map of values and labels).
@@ -75,10 +77,11 @@ export default function SearchSelect<T extends string>({
   // Searches the Algolia search index based on the user's `textarea` input.
   const getSuggestions = useCallback(
     async (query = '') => {
-      const res: SearchResponse<SearchHit> = await searchIdx.search(query);
+      const filters = options?.map((o) => `objectID:${o}`).join(' OR ');
+      const res = await searchIdx.search<SearchHit>(query, { filters });
       return res.hits.map(hitToOption);
     },
-    [searchIdx, hitToOption]
+    [searchIdx, hitToOption, options]
   );
 
   // Sync the controlled values (i.e. locale codes) with the internally stored
@@ -118,6 +121,17 @@ export default function SearchSelect<T extends string>({
       return selected;
     });
   }, [selected]);
+
+  // Don't allow selections not included in `options` prop.
+  useEffect(() => {
+    setSelectedOptions((prev: Option<T>[]) => {
+      const os = prev.filter((s) => !options || options.includes(s.value));
+      if (dequal(os, prev)) return prev;
+      if (onSelectedChange) onSelectedChange(os);
+      if (onChange) onChange(os.map(({ value: val }) => val));
+      return os;
+    });
+  }, [options, onSelectedChange, onChange]);
 
   return (
     <Select

@@ -52,9 +52,25 @@ export type UserTag =
   | 'meeting' // Has at least one meeting.
   | Role; // Has this role in at least one match.
 
-export type UserHitTag = UserTag | 'not-vetted' | 'not-matched' | 'not-meeting';
+export type UserHitTag =
+  | UserTag
+  | 'not-mentor'
+  | 'not-mentee'
+  | 'not-tutor'
+  | 'not-tutee'
+  | 'not-vetted'
+  | 'not-matched'
+  | 'not-meeting';
 
-const NOT_TAGS: UserHitTag[] = ['not-vetted', 'not-matched', 'not-meeting'];
+export const USER_TAGS: UserTag[] = [
+  'mentor',
+  'mentee',
+  'tutor',
+  'tutee',
+  'vetted',
+  'matched',
+  'meeting',
+];
 
 export function isUserTag(tag: unknown): tag is UserTag {
   if (typeof tag !== 'string') return false;
@@ -331,7 +347,7 @@ export class User extends Account implements UserInterface {
       availability: availability.toSearchHit(),
       verifications: verifications.map((v) => v.toSearchHit()),
       zooms: zooms.map((z) => z.toSearchHit()),
-      _tags: [...tags, ...notTags(tags, NOT_TAGS)],
+      _tags: [...tags, ...notTags(tags, USER_TAGS)],
       token: undefined,
       hash: undefined,
       ref: undefined,
