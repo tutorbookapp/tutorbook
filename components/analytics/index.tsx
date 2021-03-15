@@ -22,6 +22,7 @@ import { caps } from 'lib/utils';
 import { sameDate } from 'lib/utils/time';
 import { useOrg } from 'lib/context/org';
 
+import fallback from './fallback';
 import styles from './analytics.module.scss';
 
 interface LabelProps {
@@ -76,17 +77,7 @@ export default function Analytics(): JSX.Element {
     org?.id ? `/api/orgs/${org.id}/analytics` : null
   );
 
-  const nums = useMemo(
-    () =>
-      data || {
-        volunteers: { change: 12.5, total: 258, matched: 189 },
-        students: { change: 12.5, total: 218, matched: 218 },
-        matches: { change: -2.3, total: 443, perVolunteer: 2 },
-        meetings: { change: 32.5, total: 5425, recurring: 546 },
-        timeline: [],
-      },
-    [data]
-  );
+  const nums = useMemo(() => data || fallback, [data]);
   const domain = useMemo(() => {
     const x = nums.timeline;
     const start = x[0] ? x[0].date : 0;
