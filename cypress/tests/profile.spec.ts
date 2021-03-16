@@ -32,7 +32,7 @@ describe('Profile page', () => {
     cy.percySnapshot('Profile Page');
 
     cy.clock();
-    cy.contains('Your name').clear().type('John');
+    cy.contains('Your name').find('input').clear().type('John');
     cy.percySnapshot('Profile Page with Updated Name');
 
     cy.tick(5000);
