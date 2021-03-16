@@ -42,8 +42,11 @@ export default async function createUser(
       Promise.all(
         user.orgs.map(async (orgId) => {
           const org = await getOrg(orgId);
+          // Don't send a notification email to the admin who is being created.
+          // This fixes a bug when seeding data for tests (e.g. when the org
+          // admin is the one being created so his/her data doesn't exist yet).
           const orgAdmins = await Promise.all(
-            org.members.map((id) => getUser(id))
+            org.members.filter((id) => user.id !== id).map((id) => getUser(id))
           );
           await sendEmails(user, org, orgAdmins);
         })
