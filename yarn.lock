@@ -7378,9 +7378,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^6.5.0":
-  version: 6.6.0
-  resolution: "cypress@npm:6.6.0"
+"cypress@npm:^6.7.1":
+  version: 6.7.1
+  resolution: "cypress@npm:6.7.1"
   dependencies:
     "@cypress/listr-verbose-renderer": ^0.4.1
     "@cypress/request": ^2.88.5
@@ -7424,7 +7424,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: 669a9aea6b8b195fe2d41c599722f8fe65356f99b3f4a4d0acec87b49089dc9fd2beb39ad682c7b83b0ee403d511f0bcf5cb8f1b156a11e49ad2db376656b0b4
+  checksum: 67619256f62900d99115e590895d8214d6bd94aae329f1a67779d2cb1a1dccbf690f5644c2efd9540626cb4e651ffdc75bc4d4c0c86a0dc61896c800869cdf71
   languageName: node
   linkType: hard
 
@@ -18478,7 +18478,7 @@ resolve@^1.18.1:
     cross-env: ^7.0.2
     csv: ^5.3.2
     csv-stringify: ^5.6.2
-    cypress: ^6.5.0
+    cypress: ^6.7.1
     cypress-file-upload: ^5.0.2
     dequal: ^2.0.2
     dotenv: ^8.2.0
@@ -18658,11 +18658,11 @@ typescript@^4.1.3:
 
 "typescript@patch:typescript@^4.1.3#builtin<compat/typescript>":
   version: 4.1.3
-  resolution: "typescript@patch:typescript@npm%3A4.1.3#builtin<compat/typescript>::version=4.1.3&hash=cc6730"
+  resolution: "typescript@patch:typescript@npm%3A4.1.3#builtin<compat/typescript>::version=4.1.3&hash=a45b0e"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 017af992148346e671d5b83b041773825888e9c94db8d2b9472cdbb6d6f0ee85927817473121524d319f8be6ffe5a6904d27ff6ef21356d2274fcadd52e17938
+  checksum: 28f0f616bf6284543bb14d4bfe0e1a74963e5df0396ebccfc6a57bfd4ab70b4284e51b3a2045ed2466151a4a58c8a549edb886a2f7a2232cf08fcf73496592e6
   languageName: node
   linkType: hard
 
