@@ -64,7 +64,31 @@ describe('Search page', () => {
   it('partitions search results by org', () => {
     cy.setup({ student: null, match: null, meeting: null });
     cy.login(admin.id);
-    cy.visit(`/${school.id}/search`);
+    cy.visit(`/${org.id}/search`);
+    cy.get('header')
+      .contains('button', 'Tutors')
+      .should('have.attr', 'aria-selected', 'true');
+
+    // TODO: Perhaps make assertions about the 'api/users' query to remove this
+    // awkward result item selection timeout workaround.
+    cy.wait('@list-users');
+    cy.getBySel('result', { timeout: 60000 })
+      .should('have.length', 1)
+      .first()
+      .should('contain', volunteer.name)
+      .and('contain', volunteer.bio)
+      .find('img')
+      .should('have.img', volunteer.photo, 85);
+    cy.percySnapshot('Search Page');
+
+    cy.get('#open-nav').click();
+    cy.getBySel('picker')
+      .find(`[href="/${school.id}/search"]`)
+      .should('have.text', 'Search')
+      .click();
+
+    cy.url({ timeout: 60000 }).should('contain', `/${school.id}/search`);
+    cy.get('header').contains('button', 'Tutors').should('not.exist');
 
     cy.wait('@list-users');
     cy.getBySel('result').as('results').should('have.length', 2);
@@ -81,29 +105,6 @@ describe('Search page', () => {
       .find('img')
       .should('have.img', admin.photo, 85);
     cy.percySnapshot('Search Page for Schools');
-
-    cy.get('#open-nav').click();
-    cy.getBySel('picker')
-      .get(`[href="/${org.id}/search"]`)
-      .should('have.text', 'Search')
-      .click();
-
-    cy.url({ timeout: 60000 }).should('contain', `/${org.id}/search`);
-    cy.get('header')
-      .contains('button', 'Tutors')
-      .should('have.attr', 'aria-selected', 'true');
-
-    // TODO: Perhaps make assertions about the 'api/users' query to remove this
-    // awkward result item selection timeout workaround.
-    cy.wait('@list-users');
-    cy.getBySel('result', { timeout: 60000 })
-      .should('have.length', 1)
-      .first()
-      .should('contain', volunteer.name)
-      .and('contain', volunteer.bio)
-      .find('img')
-      .should('have.img', volunteer.photo, 85);
-    cy.percySnapshot('Search Page');
   });
 
   // TODO: Refactor this into reusable tests and assertions to test a variety of

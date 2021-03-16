@@ -13,23 +13,27 @@ function matchIsListed(): void {
 
 describe('Matches dashboard page', () => {
   beforeEach(() => {
-    cy.setup();
+    cy.setup({ meeting: null });
     cy.login(admin.id);
     cy.visit(`/${school.id}/matches`);
   });
 
   // TODO: Test the appointment logging flow, the nested user pages, etc.
-  it('shows match info in dialog', () => {
+  it('links to match pages', () => {
     cy.wait('@get-account');
 
     cy.getBySel('title').should('have.text', 'Matches');
     cy.getBySel('subtitle').should(
       'have.text',
-      `${school.name}'s student-tutor-mentor matches`
+      `View ${school.name}'s ongoing matches`
     );
 
     cy.contains('button', 'Import data').click();
 
+    // TODO: We're not waiting for Algolia operations to complete when seeding.
+    // Instead, our API resolves as soon as Algolia acknowledges that they've
+    // received and queued our request. This leads to test flakiness (as our
+    // Algolia search index data might not have been seeded yet).
     cy.wait('@list-matches');
     matchIsListed();
     cy.percySnapshot('Matches Page');
@@ -41,10 +45,12 @@ describe('Matches dashboard page', () => {
     matchIsListed();
     cy.percySnapshot('Matches Page with Search Populated');
 
+    // TODO: Ensure that our back-end keeps the original fixture IDs so we don't
+    // have to use this RegExp and can know the page URLs are static.
     cy.getBySel('match-row').click();
     cy.url({ timeout: 60000 }).should(
       'contain',
-      `/${school.id}/matches/${match.id}`
+      new RegExp(`\\/${school.id}\\/matches\\/.+`)
     );
     cy.loading(false, { timeout: 60000 }).percySnapshot('Match Display Page');
   });

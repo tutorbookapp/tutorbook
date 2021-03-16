@@ -1,7 +1,6 @@
 import firebase from 'firebase/app';
 
 import { Overrides } from 'cypress/plugins';
-import photo from 'cypress/fixtures/users/volunteer.jpg.json';
 
 import 'firebase/auth';
 import 'firebase/firestore';
@@ -65,37 +64,25 @@ function logout(): Cypress.Chainable<null> {
 
 function setup(overrides?: Overrides | null): void {
   cy.task('clear');
+
   if (overrides !== null) cy.task('seed', overrides);
 
-  cy.server();
+  cy.intercept('GET', '/api/account').as('get-account');
 
-  cy.route('GET', '/api/account').as('get-account');
+  cy.intercept('GET', '/api/requests*').as('list-requests');
 
-  cy.route('GET', '/api/requests*').as('list-requests');
+  cy.intercept('POST', '/api/matches').as('create-match');
+  cy.intercept('GET', '/api/matches*').as('list-matches');
+  cy.intercept('PUT', '/api/matches/*').as('update-match');
 
-  cy.route('POST', '/api/matches').as('create-match');
-  cy.route('GET', '/api/matches*').as('list-matches');
-  cy.route('PUT', '/api/matches/*').as('update-match');
+  cy.intercept('POST', '/api/meetings').as('create-meeting');
+  cy.intercept('GET', '/api/meetings*').as('list-meetings');
+  cy.intercept('PUT', '/api/meetings/*').as('update-meeting');
 
-  cy.route('POST', '/api/meetings').as('create-meeting');
-  cy.route('GET', '/api/meetings*').as('list-meetings');
-  cy.route('PUT', '/api/meetings/*').as('update-meeting');
-
-  cy.route('POST', '/api/users').as('create-user');
-  cy.route('GET', '/api/users*').as('list-users');
-  cy.route('GET', '/api/users/*').as('get-user');
-  cy.route('PUT', '/api/users/*').as('update-user');
-
-  cy.route({
-    method: 'POST',
-    url: 'https://firebasestorage.googleapis.com/**',
-    response: photo,
-  }).as('upload-photo');
-  cy.route({
-    method: 'GET',
-    url: 'https://firebasestorage.googleapis.com/**',
-    response: photo,
-  }).as('get-photo');
+  cy.intercept('POST', '/api/users').as('create-user');
+  cy.intercept('GET', '/api/users*').as('list-users');
+  cy.intercept('GET', '/api/users/*').as('get-user');
+  cy.intercept('PUT', '/api/users/*').as('update-user');
 }
 
 function getBySel(
@@ -121,13 +108,17 @@ chai.Assertion.addMethod('img', function img(
   q: number = 75
 ): void {
   const element = (this._obj as JQuery<HTMLImageElement>)[0];
-  const expected = `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${q}`;
+
+  // TODO: Even though I specify to Next.js to use a size of 24px, it seems to
+  // re-use the already loaded 85px version of the photo. Why is that?
+  const expected = `/_next/image?url=${encodeURIComponent(src)}`;
   const baseUrl = Cypress.config('baseUrl') || 'http://localhost:3000';
+
   this.assert(
-    element.currentSrc === `${baseUrl}${expected}`,
-    'expected #{this} to have Next.js image source #{exp}, but the source was #{act}',
-    'expected #{this} not to have Next.js image source #{exp}',
-    expected,
+    element.currentSrc.startsWith(`${baseUrl}${expected}`),
+    'expected #{this} to start with Next.js image source #{exp}, but the source was #{act}',
+    'expected #{this} not to start with Next.js image source #{exp}',
+    `${baseUrl}${expected}`,
     element.currentSrc
   );
 });

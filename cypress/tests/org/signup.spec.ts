@@ -3,13 +3,13 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Signup page', () => {
   beforeEach(() => {
-    cy.setup({ volunteer: null, match: null, meeting: null });
+    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
     cy.logout();
     cy.visit(`/${org.id}/signup`);
   });
 
   it('validates email addresses', () => {
-    cy.contains('Your email address').as('input').type('email');
+    cy.contains('Your email address').find('input').as('input').type('email');
     cy.contains('Create profile').click().should('not.be.disabled');
     cy.getBySel('loader').should('not.be.visible');
     cy.get('@input')
@@ -30,7 +30,52 @@ describe('Signup page', () => {
     cy.get('@text-field').should('have.class', 'mdc-text-field--invalid');
   });
 
+  it('shows photo upload errors', () => {
+    cy.intercept(
+      {
+        method: 'POST',
+        url: 'https://firebasestorage.googleapis.com/**',
+      },
+      { statusCode: 401, delay: 1000 }
+    ).as('upload-photo');
+
+    cy.contains('Your profile photo').as('photo-input');
+    cy.get('@photo-input').next().children('p').as('photo-input-label');
+
+    cy.get('@photo-input')
+      .children('input')
+      .should('have.attr', 'type', 'file')
+      .attachFile('users/volunteer.jpg');
+    cy.get('@photo-input-label')
+      .should('be.visible')
+      .and('have.text', 'Uploading volunteer.jpg...');
+    cy.percySnapshot('Signup Page with Photo Uploading');
+
+    cy.wait('@upload-photo');
+
+    cy.get('@photo-input').should('have.class', 'mdc-text-field--invalid');
+    cy.get('@photo-input-label')
+      .should('have.class', 'mdc-text-field-helper-text--validation-msg')
+      .and('contain', 'An error occurred while uploading volunteer.jpg.');
+    cy.percySnapshot('Signup Page with Photo Errored');
+  });
+
   it('signs new volunteers up', () => {
+    cy.intercept(
+      {
+        method: 'POST',
+        url: 'https://firebasestorage.googleapis.com/**',
+      },
+      { fixture: 'users/volunteer.jpg.json' }
+    ).as('upload-photo');
+    cy.intercept(
+      {
+        method: 'GET',
+        url: 'https://firebasestorage.googleapis.com/**',
+      },
+      { fixture: 'users/volunteer.jpg.json' }
+    ).as('get-photo');
+
     cy.percySnapshot('Signup Page');
 
     cy.contains('Your name')
@@ -96,6 +141,8 @@ describe('Signup page', () => {
       );
     cy.percySnapshot('Signup Page with Invalid Photo');
 
+    // TODO: Assert that clicking on this button triggers a click on the input.
+    cy.get('@photo-input').children('button').click();
     cy.get('@photo-input')
       .children('input')
       .should('have.attr', 'type', 'file')
@@ -105,9 +152,8 @@ describe('Signup page', () => {
       .and('have.text', 'Uploading volunteer.jpg...');
     cy.percySnapshot('Signup Page with Photo Uploading');
 
-    // TODO: Don't call our production data storage APIs (as this will
-    // eventually incur costs after storing an image for each test).
     cy.wait('@upload-photo');
+    cy.wait('@get-photo');
 
     cy.get('@photo-input-label').should('have.text', 'Uploaded volunteer.jpg.');
     cy.percySnapshot('Signup Page with Photo Uploaded');

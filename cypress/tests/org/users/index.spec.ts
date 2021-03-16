@@ -1,3 +1,5 @@
+import { Aspect } from 'lib/model/aspect';
+
 import admin from 'cypress/fixtures/users/admin.json';
 import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
@@ -10,7 +12,7 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
     .find('.mdc-snackbar__label')
     .should('have.text', label);
   cy.get('@snackbar').find('button').click();
-  cy.get('@snackbar').should('not.be.visible');
+  cy.get('@snackbar').should('not.exist');
 }
 
 // TODO: Add `cy.percySnapshot` calls to add visual snapshot testing.
@@ -18,7 +20,7 @@ describe('Users dashboard page', () => {
   beforeEach(() => {
     // TODO: Update our fixtures so we can accurately test that the aspect chips
     // only appear when the aspect is within the given org.
-    const aspects = ['tutoring', 'mentoring'];
+    const aspects: Aspect[] = ['tutoring', 'mentoring'];
     cy.setup({ school: { aspects }, match: null, meeting: null });
   });
 
@@ -62,7 +64,7 @@ describe('Users dashboard page', () => {
     cy.getBySel('title').should('have.text', 'Users');
     cy.getBySel('subtitle').should(
       'have.text',
-      'Create, edit, and match users'
+      `Create, edit, and match ${school.name}'s users`
     );
 
     cy.contains('button', 'Share signup link').click();
@@ -123,10 +125,10 @@ describe('Users dashboard page', () => {
     cy.get('@results').last().should('contain', admin.name);
 
     // Showing featured mentors first; users must be visible in search.
-    cy.contains('.mdc-chip', 'Tutors')
+    cy.contains('.mdc-chip', 'Tutoring')
       .as('tutors-chip')
       .should('have.class', 'mdc-chip--selected');
-    cy.contains('.mdc-chip', 'Mentors')
+    cy.contains('.mdc-chip', 'Mentoring')
       .as('mentors-chip')
       .click()
       .should('have.class', 'mdc-chip--selected');
@@ -141,13 +143,13 @@ describe('Users dashboard page', () => {
     // Showing featured mentors first; users must be visible in search AND speak
     // Spanish.
     cy.contains('button', 'filter_list').as('filters-button').click();
-    cy.contains('Languages').as('langs-input').type('sp');
+    cy.getBySel('filters-sheet').should('be.visible');
+    cy.contains('Languages').as('langs-input').type('spanish');
 
     // TODO: Why doesn't a regular `cy.click()` command work here? Why do I have
     // to call `cy.trigger()` instead? What is wrong with the event listener?
-    cy.get('@langs-input')
-      .parent()
-      .should('have.class', 'mdc-menu-surface--anchor')
+    cy.get('#portal')
+      .as('portal')
       .contains('li:visible', 'Spanish')
       .trigger('click')
       .find('input[type="checkbox"]')
@@ -165,19 +167,28 @@ describe('Users dashboard page', () => {
       .should('contain', volunteer.name);
     cy.get('@spanish-chip').contains('[role="button"]', 'close').click();
     cy.get('@langs-input').children('.mdc-chip').should('have.length', 0);
-    cy.get('@filters-button').click();
-    cy.get('@langs-input').should('not.be.visible');
 
     // Showing featured mentors first; users must be visible in search AND not
     // yet vetted.
-    cy.contains('.mdc-chip', 'Not yet vetted')
-      .click()
-      .should('have.class', 'mdc-chip--selected');
+    cy.contains('Tags').as('tags-input').type('vetted');
+    cy.get('@portal')
+      .contains('li:visible', 'Not vetted')
+      .trigger('click')
+      .find('input[type="checkbox"]')
+      .should('be.checked');
+    cy.get('@tags-input')
+      .children('.mdc-chip')
+      .should('have.length', 1)
+      .first()
+      .as('not-vetted-chip')
+      .should('contain', 'Not vetted');
     cy.wait('@list-users');
     cy.get('@results')
       .should('have.length', 1)
       .first()
       .should('contain', volunteer.name);
+    cy.get('@filters-button').click();
+    cy.getBySel('filters-sheet').should('not.be.visible');
 
     // Showing featured tutors first; users must not yet be vetted.
     cy.get('@tutors-chip').click().should('have.class', 'mdc-chip--selected');
@@ -195,10 +206,9 @@ describe('Users dashboard page', () => {
     // Showing featured tutors first; users must not yet be vetted AND must
     // tutor Computer Science.
     cy.get('@filters-button').click();
+    cy.getBySel('filters-sheet').should('be.visible');
     cy.contains('Subjects').as('subjects-input').type('computer');
-    cy.get('@subjects-input')
-      .parent()
-      .should('have.class', 'mdc-menu-surface--anchor')
+    cy.get('@portal')
       .contains('li:visible', 'Computer Science')
       .trigger('click')
       .find('input[type="checkbox"]')
@@ -217,7 +227,7 @@ describe('Users dashboard page', () => {
     cy.get('@cs-chip').contains('[role="button"]', 'close').click();
     cy.get('@subjects-input').children('.mdc-chip').should('have.length', 0);
     cy.get('@filters-button').click();
-    cy.get('@subjects-input').should('not.be.visible');
+    cy.getBySel('filters-sheet').should('not.be.visible');
 
     // Search by text (using 'Erik' name).
     cy.get('[placeholder="Search users"]').as('query-input').type('Erik');

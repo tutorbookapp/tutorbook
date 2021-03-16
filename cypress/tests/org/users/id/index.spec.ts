@@ -86,9 +86,17 @@ function selectTime(): void {
     .should('have.attr', 'aria-selected', 'true')
     .and('have.css', 'background-color', 'rgb(0, 112, 243)');
 
-  const monthBeginning = new Date(now.getFullYear(), now.getMonth());
   function dayIdx(day: number): number {
-    return getDateWithDay(day, monthBeginning).getDate() - 1;
+    return getDateWithDay(day, now).getDate() - 1;
+  }
+
+  // Days in the past should be disabled.
+  let past = new Date(now.getFullYear(), now.getMonth());
+  while (past < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
+    cy.get('@days')
+      .eq(past.getDate() - 1)
+      .should('be.disabled');
+    past = new Date(past.getFullYear(), past.getMonth(), past.getDate() + 1);
   }
 
   // Only the days when John Doe is available should be clickable.
@@ -102,7 +110,7 @@ function selectTime(): void {
   cy.percySnapshot('User Display Page with Time Select Open');
 
   // TODO: We won't let bookings in the past so this will sometimes fail.
-  const selected = getDateWithDay(0, monthBeginning);
+  const selected = getDateWithDay(0, now);
   selected.setHours(9, 0, 0, 0);
   cy.get('@days')
     .eq(selected.getDate() - 1)

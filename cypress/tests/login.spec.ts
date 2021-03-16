@@ -63,7 +63,7 @@ describe('Login page', () => {
 
     cy.url({ timeout: 60000 }).should(
       'contain',
-      `/awaiting-confirm?email=${student.email}`
+      `/awaiting-confirm?email=${encodeURIComponent(student.email)}`
     );
     cy.percySnapshot('Awaiting Confirm Page for Students');
   });

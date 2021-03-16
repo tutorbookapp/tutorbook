@@ -80,7 +80,7 @@ describe('Student landing page', () => {
       .within(() => {
         cy.getBySel('title').should(
           'have.text',
-          'Learn from and work with an expert.'
+          'Find your perfect volunteer tutor or mentor'
         );
         cy.getBySel('search-form')
           .children('button')
