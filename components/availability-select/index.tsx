@@ -254,7 +254,7 @@ function AvailabilitySelect({
         anchorCorner='bottomStart'
         className={styles.menuSurface}
         renderToPortal={renderToPortal ? '#portal' : false}
-        availability-cy='availability-select-surface'
+        data-cy='availability-select-surface'
       >
         <div className={styles.headerWrapper}>
           <div ref={headerRef} className={styles.headerContent}>

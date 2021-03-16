@@ -49,7 +49,11 @@ function FiltersSheet({
   );
 
   return (
-    <animated.div className={styles.wrapper} style={props}>
+    <animated.div
+      data-cy='filters-sheet'
+      className={styles.wrapper}
+      style={props}
+    >
       <form className={styles.form} style={{ width }}>
         <SubjectSelect
           label={t('query:subjects')}
