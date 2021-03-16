@@ -4,6 +4,7 @@
   "400-header": "400 - Bad Request",
   "405-header": "405 - Not Allowed",
   "500-header": "500 - Server Error",
+  "500-body": "An unexpected server-side error occurred. Try again later.",
   "header": "Unknown Error",
   "body": "An unexpected error occurred. Try again later.",
   "response": "An error ocurred while {{action}}. {{error}}",
