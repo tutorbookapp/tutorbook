@@ -1,20 +1,35 @@
-# [![Tutorbook Logo](https://raw.githubusercontent.com/tutorbookapp/old-tutorbook/develop/build/favicon/text-logo.png)](https://tutorbook.org/)
+[![Tutorbook](https://assets.tutorbook.org/pngs/banner.png)](https://tutorbook.org)
 
-[![Release Version](https://img.shields.io/github/v/release/tutorbookapp/tutorbook?color=brightgreen)](https://github.com/tutorbookapp/tutorbook/releases/)
-[![Website Status](https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Ftutorbook.org%2F)](https://tutorbook.org/)
-[![Maintainability](https://img.shields.io/codeclimate/maintainability/tutorbookapp/tutorbook)](https://codeclimate.com/github/tutorbookapp/tutorbook)
-[![Build Status](https://img.shields.io/github/workflow/status/tutorbookapp/tutorbook/Integration%20Tests)](https://github.com/tutorbookapp/tutorbook/actions)
-[![Integration Tests](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/i6oq5i/develop&style=flat)](https://dashboard.cypress.io/projects/i6oq5i/runs)
-[![Coverage Status](https://img.shields.io/codecov/c/gh/tutorbookapp/tutorbook)](https://codecov.io/gh/tutorbookapp/tutorbook)
-[![Dependencies](https://img.shields.io/david/tutorbookapp/tutorbook)](https://david-dm.org/tutorbookapp/tutorbook)
+<p align='center'>
+  <a aria-label='Release version' href='https://github.com/tutorbookapp/tutorbook/releases'>
+    <img src='https://img.shields.io/github/v/release/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
+  </a>
+  <a aria-label='Website status' href='https://tutorbook.org'>
+    <img src='https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Ftutorbook.org&style=flat-square&labelColor=000000'>
+  </a>
+  <a aria-label='Maintainability' href='https://codeclimate.com/github/tutorbookapp/tutorbook'>
+    <img src='https://img.shields.io/codeclimate/maintainability/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
+  </a>
+  <a aria-label='Build status' href='https://github.com/tutorbookapp/tutorbook/actions'>
+    <img src='https://img.shields.io/github/workflow/status/tutorbookapp/tutorbook/Integration%20Tests?style=flat-square&labelColor=000000'>
+  </a>
+  <a aria-label='Integration tests' href='https://dashboard.cypress.io/projects/i6oq5i/runs'>
+    <img src='https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/i6oq5i/develop&style=flat-square&labelColor=000000'>
+  </a>
+  <a aria-label='Coverage status' href='https://codecov.io/gh/tutorbookapp/tutorbook'>
+    <img src='https://img.shields.io/codecov/c/gh/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
+  </a>
+  <a aria-label='Dependencies' href='https://david-dm.org/tutorbookapp/tutorbook'>
+    <img src='https://img.shields.io/david/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
+  </a>
+</p>
 
-💥 Attention: This project needs your help! If you're interested in helping with
-Tutorbook and becoming a contributor or maintainer, please message me.
+**💥 Attention: This project needs your help! [Message
+me](mailto:nicholas@tutorbook.org) if you're interested in becoming a
+maintainer.**
 
-**[Tutorbook](https://tutorbook.org) is the best way to manage tutoring and
-mentoring programs (virtually).** See the
-[`ROADMAP`](https://github.com/tutorbookapp/tutorbook/blob/develop/ROADMAP.md)
-for a high-level overview of what's being worked on and what's coming.
+[Tutorbook](https://tutorbook.org) is the best way to manage online tutoring
+and mentoring programs.
 
 It's an online app used by organizations (i.e. nonprofits, K-12 schools) to:
 
