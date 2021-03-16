@@ -118,7 +118,8 @@ async function updateResourceTags(orgId, dryRun = false) {
   let count = 0;
   bar.start(users.length + matches.length + meetings.length, count);
 
-  async function updateDoc(collectionId, docId, tags) {
+  async function updateDoc(collectionId, docId, hitTags) {
+    const tags = hitTags.filter((t) => !t.startsWith('not-'));
     await db.collection(collectionId).doc(docId).update({ tags });
     bar.update((count += 1));
   }
@@ -371,5 +372,3 @@ async function inspectData(orgId, tags) {
 
   debugger;
 }
-
-inspectData('quarantunes', ['mentor']);
