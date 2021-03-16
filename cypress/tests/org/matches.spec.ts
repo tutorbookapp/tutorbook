@@ -45,13 +45,11 @@ describe('Matches dashboard page', () => {
     matchIsListed();
     cy.percySnapshot('Matches Page with Search Populated');
 
-    // TODO: Ensure that our back-end keeps the original fixture IDs so we don't
-    // have to use this RegExp and can know the page URLs are static.
     cy.getBySel('match-row').click();
-    cy.url({ timeout: 60000 }).should(
-      'contain',
-      new RegExp(`\\/${school.id}\\/matches\\/.+`)
-    );
+
+    // TODO: Ensure that our back-end keeps the original fixture IDs and then
+    // add that ID to the end of this URL assertion.
+    cy.url({ timeout: 60000 }).should('contain', `/${school.id}/matches/`);
     cy.loading(false, { timeout: 60000 }).percySnapshot('Match Display Page');
   });
 });
