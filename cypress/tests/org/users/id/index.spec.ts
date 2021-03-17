@@ -14,7 +14,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 function getTimeOptions(): string[] {
   const start = new Date(0);
   const times: string[] = [];
-  let hour = 9;
+  let hour = new Date(volunteer.availability[0].from).getHours();
   let min = 0;
 
   function addTimes(): void {
@@ -41,7 +41,7 @@ function getTimeOptions(): string[] {
   // window of the end time of 12pm b/c we didn't include that complex logic).
   times.pop();
 
-  hour = 13;
+  hour = new Date(volunteer.availability[1].from).getHours();
   while (hour < 16) addTimes(); // Sundays from 1-4pm.
   times.pop();
 
