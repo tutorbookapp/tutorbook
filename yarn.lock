@@ -5119,10 +5119,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"await-to-js@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "await-to-js@npm:2.1.1"
-  checksum: 84aed64fbad3e60ff78c027274a0cc9b01479b7cffb87994fd99be8a7d14abd311248e7f5430a1e19c04f9650e9490dd34007d6c298972819bbec3f88169a225
+"await-to-js@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "await-to-js@npm:3.0.0"
+  checksum: d8ea5236cb0274648ec49e60d3eeab3daed798ccfde1b1b88cd2906b2a483b354acffe0638080bec000ccd5bde80beac77766654a743a684783f95ff5dfb5177
   languageName: node
   linkType: hard
 
@@ -18467,7 +18467,7 @@ resolve@^1.18.1:
     accept-language-parser: ^1.5.0
     algoliasearch: ^4.8.6
     analytics-node: ^4.0.1
-    await-to-js: ^2.1.1
+    await-to-js: ^3.0.0
     axios: ^0.21.0
     babel-eslint: ^10.1.0
     babel-plugin-istanbul: ^6.0.0
