@@ -35,7 +35,7 @@ describe('Overview page', () => {
     // these assertions in the `onLoad` option of `cy.visit()`.
     cy.window().then((win: Window) => cy.spy(win, 'Intercom').as('intercom'));
     cy.getBySel('switcher-list')
-      .contains('button', 'Create an Organization')
+      .contains('button', 'Create an organization')
       .click();
     const msg = "I'd like to create a new organization.";
     cy.get('@intercom').should('be.calledWithExactly', 'showNewMessage', msg);
