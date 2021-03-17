@@ -70,8 +70,8 @@ describe('Login page', () => {
 
   it('errors when location cannot be detected', () => {
     cy.intercept('GET', 'https://ipinfo.io/json*', {
+      delay: 1000,
       statusCode: 500,
-      delayMs: 1000,
     }).as('get-location');
     cy.visit('/login');
 
@@ -88,8 +88,8 @@ describe('Login page', () => {
 
   it('errors when login API endpoint fails', () => {
     cy.intercept('POST', '/api/login', {
+      delay: 1000,
       statusCode: 500,
-      delayMs: 1000,
     }).as('create-login');
     cy.visit('/login');
 

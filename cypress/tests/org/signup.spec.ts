@@ -32,8 +32,8 @@ describe('Signup page', () => {
 
   it('shows photo upload errors', () => {
     cy.intercept('POST', 'https://firebasestorage.googleapis.com/**', {
-      statusCode: 401,
       delay: 1000,
+      statusCode: 401,
     }).as('upload-photo');
 
     cy.contains('Your profile photo').as('photo-input');
