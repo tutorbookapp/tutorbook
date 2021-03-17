@@ -44,6 +44,10 @@ jobs:
             .next
             public/sw.js
   test:
+    # Note: This is run in a separate job in order to support parallelization
+    # that is currently disabled due to Algolia conflicts. All tests use the
+    # same Algolia `test-*` indices which leads to shared db test state (e.g.
+    # one test might clear the search index while another one is using it).
     needs: build
     runs-on: ubuntu-latest
     steps:
