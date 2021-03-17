@@ -18,6 +18,7 @@ describe('Profile page', () => {
 
   it('retries failed update requests', () => {
     cy.intercept('PUT', '/api/users/*', {
+      delay: 1000,
       statusCode: 400,
       body: { message: 'You must provide a request body.' },
     }).as('update-user');
@@ -29,34 +30,55 @@ describe('Profile page', () => {
     cy.wait('@get-account');
     cy.percySnapshot('Profile Page');
 
-    cy.clock();
     cy.contains('Your name').find('input').clear().type('John');
     cy.percySnapshot('Profile Page with Updated Name');
 
-    cy.tick(5000);
-    cy.wait('@update-user');
-
-    cy.tick(1000);
     cy.get('.mdc-snackbar__surface')
       .should('be.visible')
       .children('.mdc-snackbar__label')
-      .as('snackbar-label');
+      .should('have.text', 'Updating profile...');
+
+    cy.wait(1000);
+    cy.wait('@update-user');
+
     cy.percySnapshot('Profile Page with Update Error');
-    cy.get('@snackbar-label')
+    cy.get('.mdc-snackbar__label')
+      .should('contain', 'Could not update profile.')
       .invoke('text')
       .then((text1: string) => {
-        expect(text1).to.contain('Could not update profile.');
         const waitRegex = /Retry in (\d+) seconds./;
         const wait1 = Number((waitRegex.exec(text1) as string[])[1]);
 
-        cy.tick(10000);
+        cy.wait(wait1 * 1000);
+        cy.get('.mdc-snackbar__label')
+          .should('be.visible')
+          .and('have.text', 'Updating profile...');
         cy.wait('@update-user');
 
-        cy.get('@snackbar-label')
+        cy.get('.mdc-snackbar__label')
+          .should('contain', 'Could not update profile.')
           .invoke('text')
-          .should((text2: string) => {
+          .then((text2: string) => {
             const wait2 = Number((waitRegex.exec(text2) as string[])[1]);
-            expect(wait2).to.be.greaterThan(wait1);
+            expect(wait2).to.be.at.least(wait1);
+
+            cy.get('.mdc-snackbar__surface')
+              .should('be.visible')
+              .contains('button', 'Retry')
+              .click();
+
+            cy.get('.mdc-snackbar__label')
+              .should('be.visible')
+              .and('have.text', 'Updating profile...');
+            cy.wait('@update-user');
+
+            cy.get('.mdc-snackbar__label')
+              .should('contain', 'Could not update profile.')
+              .invoke('text')
+              .then((text3: string) => {
+                const wait3 = Number((waitRegex.exec(text3) as string[])[1]);
+                expect(wait3).to.be.at.least(wait2);
+              });
           });
       });
   });
@@ -212,12 +234,27 @@ describe('Profile page', () => {
         });
     });
 
-    // Override the default clock so we can test the continuous updating system
-    // that automatically saves changes with 5secs of no change.
-    cy.clock();
-    cy.tick(5000);
+    // TODO: Test that typing {tab} while the AvailabilitySelect is focused
+    // moves the focus to the bio textarea.
+    // @see {@link https://github.com/cypress-io/cypress/issues/299}
+    // @see {@link https://github.com/dmtrKovalenko/cypress-real-events}
+    cy.contains('Qualifications? Interests?')
+      .children('textarea')
+      .should('have.value', volunteer.bio)
+      .focus();
+
+    cy.wait(1000);
     cy.wait('@update-user');
 
-    cy.get('.mdc-snackbar').should('not.exist');
+    cy.get('.mdc-snackbar__surface')
+      .should('be.visible')
+      .and('have.length', 1)
+      .children('.mdc-snackbar__label')
+      .should('have.text', 'Updated profile.');
+
+    // Wait for MDC snackbar's default 5 second closing timeout.
+    // @see {@link https://material.io/components/snackbars/web#javascript-api}
+    cy.wait(5000);
+    cy.get('.mdc-snackbar__surface').should('not.be.visible');
   });
 });
