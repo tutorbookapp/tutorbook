@@ -31,13 +31,10 @@ describe('Signup page', () => {
   });
 
   it('shows photo upload errors', () => {
-    cy.intercept(
-      {
-        method: 'POST',
-        url: 'https://firebasestorage.googleapis.com/**',
-      },
-      { statusCode: 401, delay: 1000 }
-    ).as('upload-photo');
+    cy.intercept('POST', 'https://firebasestorage.googleapis.com/**', {
+      statusCode: 401,
+      delay: 1000,
+    }).as('upload-photo');
 
     cy.contains('Your profile photo').as('photo-input');
     cy.get('@photo-input').next().children('p').as('photo-input-label');
@@ -61,20 +58,13 @@ describe('Signup page', () => {
   });
 
   it('signs new volunteers up', () => {
-    cy.intercept(
-      {
-        method: 'POST',
-        url: 'https://firebasestorage.googleapis.com/**',
-      },
-      { fixture: 'users/volunteer.jpg.json' }
-    ).as('upload-photo');
-    cy.intercept(
-      {
-        method: 'GET',
-        url: 'https://firebasestorage.googleapis.com/**',
-      },
-      { fixture: 'users/volunteer.jpg.json' }
-    ).as('get-photo');
+    cy.intercept('PUT', '/api/users/*').as('update-user');
+    cy.intercept('POST', 'https://firebasestorage.googleapis.com/**', {
+      fixture: 'users/volunteer.jpg.json',
+    }).as('upload-photo');
+    cy.intercept('GET', 'https://firebasestorage.googleapis.com/**', {
+      fixture: 'users/volunteer.jpg.json',
+    }).as('get-photo');
 
     cy.percySnapshot('Signup Page');
 

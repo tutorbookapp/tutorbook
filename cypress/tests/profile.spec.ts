@@ -17,13 +17,11 @@ describe('Profile page', () => {
   });
 
   it('retries failed update requests', () => {
-    cy.intercept(
-      {
-        method: 'PUT',
-        url: '/api/users/*',
-      },
-      { statusCode: 400, body: { message: 'You must provide a request body.' } }
-    ).as('update-user');
+    cy.intercept('PUT', '/api/users/*', {
+      statusCode: 400,
+      body: { message: 'You must provide a request body.' },
+    }).as('update-user');
+
     cy.login(volunteer.id);
     cy.visit('/profile');
     cy.percySnapshot('Profile Page in Loading State');
@@ -64,20 +62,13 @@ describe('Profile page', () => {
   });
 
   it('updates volunteer profiles', () => {
-    cy.intercept(
-      {
-        method: 'POST',
-        url: 'https://firebasestorage.googleapis.com/**',
-      },
-      { fixture: 'users/volunteer.jpg.json' }
-    ).as('upload-photo');
-    cy.intercept(
-      {
-        method: 'GET',
-        url: 'https://firebasestorage.googleapis.com/**',
-      },
-      { fixture: 'users/volunteer.jpg.json' }
-    ).as('get-photo');
+    cy.intercept('PUT', '/api/users/*').as('update-user');
+    cy.intercept('POST', 'https://firebasestorage.googleapis.com/**', {
+      fixture: 'users/volunteer.jpg.json',
+    }).as('upload-photo');
+    cy.intercept('GET', 'https://firebasestorage.googleapis.com/**', {
+      fixture: 'users/volunteer.jpg.json',
+    }).as('get-photo');
 
     cy.login(volunteer.id);
     cy.visit('/profile');

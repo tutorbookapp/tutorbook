@@ -82,7 +82,11 @@ function setup(overrides?: Overrides | null): void {
   cy.intercept('POST', '/api/users').as('create-user');
   cy.intercept('GET', '/api/users*').as('list-users');
   cy.intercept('GET', '/api/users/*').as('get-user');
-  cy.intercept('PUT', '/api/users/*').as('update-user');
+
+  // TODO: Restore this interception once we are able to override it with error
+  // responses for profile and signup error state tests.
+  // See: https://github.com/cypress-io/cypress/issues/9302
+  // cy.intercept('PUT', '/api/users/*').as('update-user');
 }
 
 function getBySel(
