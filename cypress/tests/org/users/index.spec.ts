@@ -5,6 +5,16 @@ import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
 import volunteer from 'cypress/fixtures/users/volunteer.json';
 
+function filterSheetIsOpen(open: boolean = true): void {
+  // TODO: Because this filter sheet wrapper has a 1px left border, the width
+  // will never actually be 0px which also prevents Cypress from determining
+  // if the child `<form>` element is visible or not (https://bit.ly/2NqKaRI).
+  cy.getBySel('filters-sheet', { timeout: 60000 })
+    .should('have.css', 'width', open ? '300px' : '1px')
+    .find('.mdc-text-field')
+    .should(open ? 'be.visible' : 'not.be.visible');
+}
+
 function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
   cy.get('.mdc-snackbar__surface')
     .as('snackbar')
@@ -143,7 +153,7 @@ describe('Users dashboard page', () => {
     // Showing featured mentors first; users must be visible in search AND speak
     // Spanish.
     cy.contains('button', 'filter_list').as('filters-button').click();
-    cy.getBySel('filters-sheet').should('be.visible');
+    filterSheetIsOpen();
     cy.contains('Languages').as('langs-input').type('spanish');
 
     // TODO: Why doesn't a regular `cy.click()` command work here? Why do I have
@@ -188,7 +198,7 @@ describe('Users dashboard page', () => {
       .first()
       .should('contain', volunteer.name);
     cy.get('@filters-button').click();
-    cy.getBySel('filters-sheet').should('not.be.visible');
+    filterSheetIsOpen(false);
 
     // Showing featured tutors first; users must not yet be vetted.
     cy.get('@tutors-chip').click().should('have.class', 'mdc-chip--selected');
@@ -206,7 +216,7 @@ describe('Users dashboard page', () => {
     // Showing featured tutors first; users must not yet be vetted AND must
     // tutor Computer Science.
     cy.get('@filters-button').click();
-    cy.getBySel('filters-sheet').should('be.visible');
+    filterSheetIsOpen();
     cy.contains('Subjects').as('subjects-input').type('computer');
     cy.get('@portal')
       .contains('li:visible', 'Computer Science')
@@ -227,7 +237,7 @@ describe('Users dashboard page', () => {
     cy.get('@cs-chip').contains('[role="button"]', 'close').click();
     cy.get('@subjects-input').children('.mdc-chip').should('have.length', 0);
     cy.get('@filters-button').click();
-    cy.getBySel('filters-sheet').should('not.be.visible');
+    filterSheetIsOpen(false);
 
     // Search by text (using 'Erik' name).
     cy.get('[placeholder="Search users"]').as('query-input').type('Erik');
