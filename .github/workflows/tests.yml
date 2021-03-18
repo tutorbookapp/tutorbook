@@ -71,7 +71,7 @@ jobs:
       - run: yarn install --immutable --immutable-cache
       # Each job uses its own Algolia index so as to not mess up the state of
       # other jobs. Ideally, we'd run Algolia locally, but this works for now.
-      - run: echo "ALGOLIA_PREFIX=$(uuidgen)" >> $GITHUB_ENV
+      - run: echo "ALGOLIA_PREFIX=test-$(uuidgen)" >> $GITHUB_ENV
       - run: yarn start:db & yarn wait-on http-get://localhost:8080
       - run: yarn start:next & yarn wait-on http-get://localhost:3000
       - run: yarn start:cy --record --parallel --headless --group ${{ matrix.browser }} -b ${{ matrix.browser }}
