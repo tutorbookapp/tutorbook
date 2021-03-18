@@ -110,6 +110,62 @@ export default function plugins(
   codecov(on, config);
   on('task', {
     percyHealthCheck,
+    async createIndices(): Promise<null> {
+      await Promise.all([
+        usersIdx.setSettings({
+          searchableAttributes: [
+            'name',
+            'unordered(email)',
+            'unordered(phone)',
+            'unordered(bio)',
+            'unordered(reference)',
+            'unordered(verifications.notes)',
+            'unordered(tutoring.subjects)',
+            'unordered(mentoring.subjects)',
+            'unordered(socials.url)',
+          ],
+          attributesForFaceting: [
+            'filterOnly(availability)',
+            'filterOnly(email)',
+            'filterOnly(featured)',
+            'filterOnly(langs)',
+            'filterOnly(mentoring.searches)',
+            'filterOnly(mentoring.subjects)',
+            'filterOnly(tutoring.searches)',
+            'filterOnly(tutoring.subjects)',
+            'filterOnly(orgs)',
+            'filterOnly(parents)',
+            'filterOnly(phone)',
+            'filterOnly(verifications.checks)',
+          ],
+        }),
+        matchesIdx.setSettings({
+          attributesForFaceting: [
+            'filterOnly(org)',
+            'filterOnly(people.id)',
+            'filterOnly(subjects)',
+          ],
+        }),
+        meetingsIdx.setSettings({
+          attributesForFaceting: [
+            'filterOnly(match.org)',
+            'filterOnly(match.people.id)',
+            'filterOnly(match.subjects)',
+            'filterOnly(time.from)',
+            'filterOnly(time.last)',
+          ],
+        }),
+      ]);
+      return null;
+    },
+    async deleteIndices(): Promise<null> {
+      await Promise.all([
+        usersIdx.delete(),
+        matchesIdx.delete(),
+        meetingsIdx.delete(),
+      ]);
+      return null;
+    },
     async clear(): Promise<null> {
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
