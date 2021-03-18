@@ -69,10 +69,10 @@ const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 const search = algoliasearch(algoliaId, algoliaKey);
 
-const partition = process.env.NODE_ENV || 'test';
-const usersIdx = search.initIndex(`${partition}-users`);
-const matchesIdx = search.initIndex(`${partition}-matches`);
-const meetingsIdx = search.initIndex(`${partition}-meetings`);
+const prefix = process.env.ALGOLIA_PREFIX || (process.env.APP_ENV as string);
+const usersIdx = search.initIndex(`${prefix}-users`);
+const matchesIdx = search.initIndex(`${prefix}-matches`);
+const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 export interface Overrides {
   match?: Partial<MatchJSON> | null;

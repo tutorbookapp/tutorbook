@@ -3,6 +3,7 @@ import algoliasearch from 'algoliasearch';
 import { Option, Query } from 'lib/model/query/base';
 import { APIError } from 'lib/api/error';
 
+const prefix = process.env.ALGOLIA_PREFIX || (process.env.APP_ENV as string);
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
 
@@ -86,7 +87,7 @@ export async function list<T, H = T>(
   try {
     let hits = 0;
     const results: T[] = [];
-    const idx = client.initIndex(`${process.env.APP_ENV as string}-${indexId}`);
+    const idx = client.initIndex(`${prefix}-${indexId}`);
 
     await Promise.all(
       filterStrings.map(async (filters) => {
