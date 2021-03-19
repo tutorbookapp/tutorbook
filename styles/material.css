@@ -127,6 +127,10 @@
   color: var(--on-background-4);
 }
 
+.mdc-chip__icon:hover {
+  color: var(--on-background-5);
+}
+
 .mdc-chip__checkmark-path {
   stroke: var(--on-background);
 }
