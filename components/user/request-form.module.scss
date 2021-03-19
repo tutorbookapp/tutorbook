@@ -3,19 +3,29 @@
 @include common.card-styles;
 
 .card {
+  position: relative;
   margin-top: 24px;
-  padding: 16px;
-}
 
-.field {
-  @include common.field;
-}
+  .inputs {
+    margin: 16px auto;
+    padding: 0 16px;
 
-.button {
-  width: 100%;
-  margin: 8px 0 0;
-}
+    .field {
+      @include common.field;
+    }
 
-.error {
-  @include common.error;
+    .btn {
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .error {
+      @include common.error;
+    }
+  }
+
+  .divider {
+    @include common.divider;
+    margin: 8px 0;
+  }
 }

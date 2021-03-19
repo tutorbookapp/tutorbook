@@ -60,8 +60,12 @@ export default function RequestForm({
   ]);
   const [subjects, setSubjects] = useState<SubjectOption[]>([]);
   const [message, setMessage] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
+
+  // TODO: Sync this somehow with the global user state. When we log out, these
+  // should become empty once again.
+  const [reference, setReference] = useState<string>(currentUser.reference);
+  const [phone, setPhone] = useState<string>(currentUser.phone);
 
   useEffect(() => {
     setStudents((prev) => {
@@ -164,10 +168,9 @@ export default function RequestForm({
   const onPhoneChange = useCallback((event: FormEvent<HTMLInputElement>) => {
     setPhone(event.currentTarget.value);
   }, []);
-
-  const phoneRequired = useMemo(() => {
-    return org ? org.profiles.includes('phone') : false;
-  }, [org]);
+  const onReferenceChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
+    setReference(evt.currentTarget.value);
+  }, []);
 
   const track = useTrack();
 
@@ -175,10 +178,14 @@ export default function RequestForm({
   // **before** sending the request (this will trigger an update app-wide).
   const onSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
+      const userMissingRequiredProfileProps =
+        (!currentUser.phone && org?.profiles.includes('phone')) ||
+        (!currentUser.reference && org?.profiles.includes('reference'));
+      const userWithProps = new User({ ...currentUser, phone, reference });
       event.preventDefault();
       setLoading(true);
       if (!currentUser.id) {
-        const [err] = await to(signupWithGoogle(currentUser));
+        const [err] = await to(signupWithGoogle(userWithProps));
         if (err) {
           setLoading(false);
           setError(
@@ -188,14 +195,14 @@ export default function RequestForm({
           );
           return;
         }
-      } else if (!currentUser.phone && phoneRequired) {
+      } else if (userMissingRequiredProfileProps) {
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
           AxiosError<APIErrorJSON>
-        >(axios.put('/api/account', { ...currentUser.toJSON(), phone }));
+        >(axios.put('/api/account', userWithProps.toJSON()));
         if (err) {
           setLoading(false);
-          setError(getErrorMessage(err, 'adding your phone number', t));
+          setError(getErrorMessage(err, 'updating your profile', t));
           return;
         }
         await updateUser(User.fromJSON((res as AxiosResponse<UserJSON>).data));
@@ -216,12 +223,14 @@ export default function RequestForm({
         setChecked(true);
       }
     },
-    [user, track, currentUser, phoneRequired, phone, updateUser, t]
+    [user, track, currentUser, org, phone, reference, updateUser, t]
   );
 
-  const forOthers = useMemo(() => {
-    return students.findIndex((s) => s.label === 'Me') < 0 ? 'for-others-' : '';
-  }, [students]);
+  const forOthers = useMemo(
+    () =>
+      students.findIndex((s) => s.label === 'Me') < 0 ? 'for-others-' : '',
+    [students]
+  );
   const person = useMemo(() => {
     // TODO: This logic only works for English; when we add i18n we'll probably
     // have to scrap all of this "custom placeholder" logic.
@@ -237,17 +246,6 @@ export default function RequestForm({
     <form className={styles.card} onSubmit={onSubmit}>
       <Loader active={loading} checked={checked} />
       <div className={styles.inputs}>
-        {!currentUser.phone && phoneRequired && (
-          <TextField
-            label={t('match3rd:phone')}
-            value={phone}
-            onChange={onPhoneChange}
-            className={styles.field}
-            type='tel'
-            outlined
-            required
-          />
-        )}
         {admin && (
           <UserSelect
             required
@@ -292,8 +290,39 @@ export default function RequestForm({
           onChange={onMessageChange}
           value={message}
         />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        {!currentUser.phone && org?.profiles.includes('phone') && (
+          <TextField
+            label={t('user3rd:phone')}
+            value={phone}
+            onChange={onPhoneChange}
+            className={styles.field}
+            type='tel'
+            outlined
+            required
+          />
+        )}
+        {!currentUser.reference && org?.profiles.includes('reference') && (
+          <TextField
+            className={styles.field}
+            label={t('user3rd:reference', {
+              org: org.name || 'Tutorbook',
+            })}
+            placeholder={t('common:reference-placeholder', {
+              org: org.name || 'Tutorbook',
+            })}
+            onChange={onReferenceChange}
+            value={reference}
+            rows={3}
+            textarea
+            outlined
+            required
+          />
+        )}
         <Button
-          className={styles.button}
+          className={styles.btn}
           label={
             !currentUser.id ? t('match3rd:signup-btn') : t('match3rd:send-btn')
           }
