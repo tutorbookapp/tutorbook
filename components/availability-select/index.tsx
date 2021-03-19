@@ -5,7 +5,6 @@ import {
   memo,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -104,7 +103,7 @@ function AvailabilitySelect({
   // @see {@link https:bit.ly/2x9eM27}
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (focused) inputRef.current?.focus();
   }, [focused]);
 

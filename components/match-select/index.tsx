@@ -1,14 +1,6 @@
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { TextField, TextFieldHTMLProps, TextFieldProps } from '@rmwc/textfield';
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 import cn from 'classnames';
 import { dequal } from 'dequal/lite';
@@ -62,7 +54,7 @@ function MatchSelect({
   ...textFieldProps
 }: MatchSelectProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (focused) inputRef.current?.focus();
   }, [focused]);
 
@@ -120,7 +112,7 @@ function MatchSelect({
   }, [isValidating, data]);
 
   const foundationRef = useRef<MDCMenuSurfaceFoundation>(null);
-  useLayoutEffect(() => {
+  useEffect(() => {
     (foundationRef.current as any)?.autoPosition_();
   });
 

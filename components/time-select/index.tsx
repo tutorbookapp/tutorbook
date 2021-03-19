@@ -3,7 +3,7 @@ import {
   SyntheticEvent,
   memo,
   useCallback,
-  useLayoutEffect,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -55,7 +55,7 @@ function TimeSelect({
   ...textFieldProps
 }: TimeSelectProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (focused) inputRef.current?.focus();
   }, [focused]);
 
