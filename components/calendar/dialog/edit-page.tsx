@@ -86,7 +86,7 @@ export default function EditPage({
       if (p.roles.includes('mentor'))
         p.mentoring.subjects.forEach((s) => subjects.add(s));
     });
-    return [...subjects];
+    return subjects.size ? [...subjects] : undefined;
   }, [people]);
 
   // TODO: Add support to the `TimeSelect` and the `/api/users/availability` API

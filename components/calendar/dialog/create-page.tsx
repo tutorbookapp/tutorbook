@@ -94,6 +94,17 @@ export default function CreatePage({
       });
   }, [setEditing, editing.match.message]);
 
+  const subjectOptions = useMemo(() => {
+    const subjects = new Set<string>();
+    people.forEach((p) => {
+      if (p.roles.includes('tutor'))
+        p.tutoring.subjects.forEach((s) => subjects.add(s));
+      if (p.roles.includes('mentor'))
+        p.mentoring.subjects.forEach((s) => subjects.add(s));
+    });
+    return subjects.size ? [...subjects] : undefined;
+  }, [people]);
+
   // TODO: Add support to the `TimeSelect` and the `/api/users/availability` API
   // to query for the merged availability of multiple users (e.g. when all the
   // people in a match are available v.s. just one person).
@@ -101,7 +112,7 @@ export default function CreatePage({
     const idx = people.findIndex(
       (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
     );
-    return idx < 0 ? '' : people[idx].id;
+    return idx < 0 ? (people[0] || { id: '' }).id : people[idx].id;
   }, [people]);
 
   return (
@@ -127,6 +138,7 @@ export default function CreatePage({
             onChange={onSubjectsChange}
             value={editing.match.subjects}
             className={styles.field}
+            options={subjectOptions}
             renderToPortal
             outlined
           />
