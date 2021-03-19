@@ -13,7 +13,6 @@ import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import match from 'locales/en/match.json';
 import query from 'locales/en/query.json';
 import user from 'locales/en/user.json';
 import users from 'locales/en/users.json';
@@ -83,6 +82,5 @@ export default withI18n(UsersPage, {
   search,
   query,
   user,
-  match,
   request,
 });

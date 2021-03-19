@@ -10,7 +10,6 @@ import { withI18n } from 'lib/intl';
 
 import calendar from 'locales/en/calendar.json';
 import common from 'locales/en/common.json';
-import match from 'locales/en/match.json';
 import meeting from 'locales/en/meeting.json';
 
 function CalendarPage(props: PageProps): JSX.Element {
@@ -49,4 +48,4 @@ function CalendarPage(props: PageProps): JSX.Element {
 
 export const getStaticProps = getPageProps;
 
-export default withI18n(CalendarPage, { calendar, common, match, meeting });
+export default withI18n(CalendarPage, { calendar, common, meeting });

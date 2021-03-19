@@ -25,7 +25,7 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import error from 'locales/en/error.json';
 import match3rd from 'locales/en/match3rd.json';
-import user from 'locales/en/user.json';
+import user3rd from 'locales/en/user3rd.json';
 
 // We send the `subjects` and `langs` of the user properly translated as props
 // so as to avoid a flash of invalid data (e.g. locale codes instead of labels).
@@ -161,4 +161,4 @@ export const getStaticPaths: GetStaticPaths<UserDisplayPageQuery> = async () => 
   return { paths: [], fallback: true };
 };
 
-export default withI18n(UserDisplayPage, { common, error, match3rd, user });
+export default withI18n(UserDisplayPage, { common, error, match3rd, user3rd });

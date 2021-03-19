@@ -14,7 +14,6 @@ import { withI18n } from 'lib/intl';
 
 import calendar from 'locales/en/calendar.json';
 import common from 'locales/en/common.json';
-import match from 'locales/en/match.json';
 import meeting from 'locales/en/meeting.json';
 
 function OrgCalendarPage(props: PageProps): JSX.Element {
@@ -77,4 +76,4 @@ function OrgCalendarPage(props: PageProps): JSX.Element {
 export const getStaticProps = getPageProps;
 export const getStaticPaths = getPagePaths;
 
-export default withI18n(OrgCalendarPage, { calendar, common, match, meeting });
+export default withI18n(OrgCalendarPage, { calendar, common, meeting });

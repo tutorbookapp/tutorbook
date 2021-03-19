@@ -18,7 +18,6 @@ import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import match from 'locales/en/match.json';
 import matches from 'locales/en/matches.json';
 
 function MatchDisplayPage(props: PageProps): JSX.Element {
@@ -76,4 +75,4 @@ function MatchDisplayPage(props: PageProps): JSX.Element {
 export const getStaticProps = getPageProps;
 export const getStaticPaths = getPagePaths;
 
-export default withI18n(MatchDisplayPage, { common, match, matches });
+export default withI18n(MatchDisplayPage, { common, matches });
