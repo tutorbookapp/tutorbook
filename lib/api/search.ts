@@ -102,7 +102,8 @@ export async function list<T, H = T>(
   } catch (e) {
     let m = `Error filtering ${indexId}`;
     if (e instanceof Error) m = `${e.name} filtering ${indexId}: ${e.message}`;
-    if (typeof e === 'string') m = `Error filtering ${indexId}: ${e}`;
+    if (typeof e?.message === 'string') m += `: ${e.message}`;
+    if (typeof e === 'string') m += `: ${e}`;
     throw new APIError(m, 500);
   }
 }
