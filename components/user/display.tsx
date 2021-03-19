@@ -142,6 +142,7 @@ export default function UserDisplay({
               </p>
               <Button
                 onClick={openPicktime}
+                className={styles.picktimeBtn}
                 label={t('common:picktime-btn')}
                 raised
                 arrow
