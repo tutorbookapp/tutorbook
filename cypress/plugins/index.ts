@@ -31,10 +31,10 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 // Follow the Next.js convention for loading `.env` files.
 // @see {@link https://nextjs.org/docs/basic-features/environment-variables}
 [
-  path.resolve(__dirname, '../../.env'),
-  path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}`),
-  path.resolve(__dirname, '../../.env.local'),
   path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}.local`),
+  path.resolve(__dirname, '../../.env.local'),
+  path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}`),
+  path.resolve(__dirname, '../../.env'),
 ].forEach((dotfile: string) => dotenv.config({ path: dotfile }));
 
 const clientCredentials = {
