@@ -15,6 +15,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';
 import { useClickContext } from 'lib/hooks/click-outside';
+import { useUser } from 'lib/context/user';
 
 import SelectSurface from './select-surface';
 import styles from './time-select.module.scss';
@@ -65,6 +66,7 @@ function TimeSelect({
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const timeoutId = useRef<ReturnType<typeof setTimeout>>();
 
+  const { user } = useUser();
   const { lang: locale } = useTranslation();
   const { updateEl, removeEl } = useClickContext();
 
@@ -100,7 +102,7 @@ function TimeSelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={value?.toString(locale) || ''}
+        value={value?.toString(locale, user.timezone) || ''}
         className={styles.field}
         onFocus={() => {
           if (onFocused) onFocused();
