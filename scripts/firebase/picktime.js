@@ -9,7 +9,6 @@ const prompt = require('prompt-sync')();
 const algoliasearch = require('algoliasearch');
 const parseSync = require('csv-parse/lib/sync');
 const { default: to } = require('await-to-js');
-const { v4: uuid } = require('uuid');
 const { nanoid } = require('nanoid');
 
 const logger = winston.createLogger({
@@ -295,14 +294,12 @@ async function convertPicktimeRow(row, headers) {
           id: student.id || '',
           name: student.name || '',
           photo: student.photo || '',
-          handle: uuid(),
           roles: ['mentee'],
         },
         {
           id: mentor.id || '',
           name: mentor.name || '',
           photo: mentor.photo || '',
-          handle: uuid(),
           roles: ['mentor'],
         },
       ],
@@ -310,7 +307,6 @@ async function convertPicktimeRow(row, headers) {
         id: student.id || '',
         name: student.name || '',
         photo: student.photo || '',
-        handle: uuid(),
         roles: ['mentee'],
       },
       message: generateMatchMessage(row),
@@ -354,7 +350,6 @@ async function convertPicktimeRow(row, headers) {
       id: student.id || '',
       name: student.name || '',
       photo: student.photo || '',
-      handle: uuid(),
       roles: ['mentee'],
     },
     venue: {

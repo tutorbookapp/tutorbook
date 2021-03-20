@@ -1,6 +1,5 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
-import { v4 as uuid } from 'uuid';
 
 import { Person, isPerson } from 'lib/model/person';
 import {
@@ -90,7 +89,6 @@ export class Match extends Resource implements MatchInterface {
     id: '',
     name: '',
     photo: '',
-    handle: uuid(),
     roles: [],
   };
 

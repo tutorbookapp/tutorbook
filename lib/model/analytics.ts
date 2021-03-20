@@ -36,10 +36,11 @@ export type TagTotals<Tag extends string> = { total: number } & {
  * is updated until 24 hours have passed (and a new analytics doc is created).
  */
 export interface AnalyticsInterface extends ResourceInterface {
-  mentor: TagTotals<Exclude<UserTag, Role>>;
-  mentee: TagTotals<Exclude<UserTag, Role>>;
   tutor: TagTotals<Exclude<UserTag, Role>>;
   tutee: TagTotals<Exclude<UserTag, Role>>;
+  mentor: TagTotals<Exclude<UserTag, Role>>;
+  mentee: TagTotals<Exclude<UserTag, Role>>;
+  parent: TagTotals<Exclude<UserTag, Role>>;
   match: TagTotals<MatchTag>;
   meeting: TagTotals<MeetingTag>;
   ref?: DocumentReference;
@@ -59,6 +60,20 @@ export type AnalyticsFirestore = Omit<
   ResourceFirestore & { date: Timestamp };
 
 export class Analytics extends Resource implements AnalyticsInterface {
+  public tutor: TagTotals<Exclude<UserTag, Role>> = {
+    total: 0,
+    vetted: 0,
+    matched: 0,
+    meeting: 0,
+  };
+
+  public tutee: TagTotals<Exclude<UserTag, Role>> = {
+    total: 0,
+    vetted: 0,
+    matched: 0,
+    meeting: 0,
+  };
+
   public mentor: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
@@ -73,14 +88,7 @@ export class Analytics extends Resource implements AnalyticsInterface {
     meeting: 0,
   };
 
-  public tutor: TagTotals<Exclude<UserTag, Role>> = {
-    total: 0,
-    vetted: 0,
-    matched: 0,
-    meeting: 0,
-  };
-
-  public tutee: TagTotals<Exclude<UserTag, Role>> = {
+  public parent: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
     matched: 0,

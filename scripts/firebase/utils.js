@@ -23,7 +23,6 @@ console.log(
   )
 );
 
-const { v4: uuid } = require('uuid');
 const { nanoid } = require('nanoid');
 const axios = require('axios');
 const updateSubjects = require('./update-subjects');
@@ -562,7 +561,6 @@ const changeDateJSONToDates = async () => {
       id: '',
       name: '',
       photo: '',
-      handle: uuid(),
       roles: [],
     },
     message: '',

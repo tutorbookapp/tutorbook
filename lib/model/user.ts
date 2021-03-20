@@ -1,5 +1,4 @@
 import * as admin from 'firebase-admin';
-import { v4 as uuid } from 'uuid';
 
 import {
   Account,
@@ -54,19 +53,21 @@ export type UserTag =
 
 export type UserHitTag =
   | UserTag
-  | 'not-mentor'
-  | 'not-mentee'
   | 'not-tutor'
   | 'not-tutee'
+  | 'not-mentor'
+  | 'not-mentee'
+  | 'not-parent'
   | 'not-vetted'
   | 'not-matched'
   | 'not-meeting';
 
 export const USER_TAGS: UserTag[] = [
-  'mentor',
-  'mentee',
   'tutor',
   'tutee',
+  'mentor',
+  'mentee',
+  'parent',
   'vetted',
   'matched',
   'meeting',
@@ -98,6 +99,7 @@ export function isSubjects(json: unknown): json is Subjects {
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
  * @extends AccountInterface
+ * @property [age] - The user's age (mostly used for students).
  * @property orgs - An array of the IDs of the orgs this user belongs to.
  * @property zooms - An array of Zoom user accounts. These are used when
  * creating Zoom meetings for a match. Each TB user can have multiple Zoom user
@@ -122,6 +124,7 @@ export function isSubjects(json: unknown): json is Subjects {
  * meetings).
  */
 export interface UserInterface extends AccountInterface {
+  age?: number;
   orgs: string[];
   zooms: ZoomUser[];
   availability: Availability;
@@ -174,6 +177,7 @@ export type UserSearchHit = Omit<
 export function isUserJSON(json: unknown): json is UserJSON {
   if (!isAccountJSON(json)) return false;
   if (!isJSON(json)) return false;
+  if (json.age && typeof json.age !== 'number') return false;
   if (!isStringArray(json.orgs)) return false;
   if (!isArray(json.zooms, isZoomUserJSON)) return false;
   if (!isAvailabilityJSON(json.availability)) return false;
@@ -198,6 +202,8 @@ export function isUserJSON(json: unknown): json is UserJSON {
  * @see {@link https://stackoverflow.com/a/54857125/10023158}
  */
 export class User extends Account implements UserInterface {
+  public age?: number;
+
   public orgs: string[] = [];
 
   public zooms: ZoomUser[] = [];
@@ -259,13 +265,17 @@ export class User extends Account implements UserInterface {
     return parts[parts.length - 1];
   }
 
+  public get subjects(): string[] {
+    const subjects = this.tutoring.subjects.concat(this.mentoring.subjects);
+    return [...new Set<string>(subjects)];
+  }
+
   public toPerson(): Person {
     return {
       id: this.id,
       name: this.name,
       photo: this.photo,
       roles: this.roles,
-      handle: uuid(),
     };
   }
 

@@ -1,6 +1,5 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
-import { v4 as uuid } from 'uuid';
 
 import {
   Match,
@@ -155,7 +154,6 @@ export class Meeting extends Resource implements MeetingInterface {
     id: '',
     name: '',
     photo: '',
-    handle: uuid(),
     roles: [],
   };
 
