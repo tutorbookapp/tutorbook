@@ -11,7 +11,6 @@ import { TextField } from '@rmwc/textfield';
 import to from 'await-to-js';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
-import { v4 as uuid } from 'uuid';
 
 import SubjectSelect, { SubjectOption } from 'components/subject-select';
 import UserSelect, { UserOption } from 'components/user-select';
@@ -97,7 +96,6 @@ export default function RequestForm({
       name: user.name,
       photo: user.photo,
       roles: [],
-      handle: uuid(),
     };
     if (aspects.includes('tutoring')) target.roles.push('tutor');
     if (aspects.includes('mentoring')) target.roles.push('mentor');
@@ -109,7 +107,6 @@ export default function RequestForm({
           name: s.label,
           photo: s.photo || '',
           roles: [],
-          handle: uuid(),
         };
         if (aspects.includes('tutoring')) student.roles.push('tutee');
         if (aspects.includes('mentoring')) student.roles.push('mentee');
@@ -124,7 +121,6 @@ export default function RequestForm({
             id: currentUser.id,
             name: currentUser.name,
             photo: currentUser.photo,
-            handle: uuid(),
             roles: [],
           };
     meeting.current = new Meeting({
