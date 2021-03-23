@@ -57,9 +57,7 @@ export default function UserDisplay({
               </a>
             </>
           ))}
-          {user && !user.socials.length && (
-            <span>No social profiles... yet</span>
-          )}
+          {user && !user.socials.length && <span>No social profiles</span>}
         </div>
       </div>
       <div className={styles.header}>
