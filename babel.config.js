@@ -6,9 +6,9 @@
  * Only includes the recharts modules we actually need.
  * @see {@link https://github.com/recharts/babel-plugin-recharts/pull/22}
  * @see {@link https://github.com/recharts/babel-plugin-recharts}
+ * @todo Debug why this makes our build fail b/c of undefined components.
  */
 module.exports = {
   presets: ['next/babel'],
-  plugins:
-    process.env.NODE_ENV === 'test' ? ['recharts', 'istanbul'] : ['recharts'],
+  plugins: process.env.NODE_ENV === 'test' ? ['istanbul'] : [],
 };
