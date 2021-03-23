@@ -8,6 +8,7 @@ import styles from './avatar.module.scss';
 
 interface AvatarProps {
   size: number | 'dynamic';
+  className?: string;
   priority?: boolean;
   loading?: boolean;
   src?: string;
@@ -23,6 +24,7 @@ interface AvatarProps {
  */
 export default function Avatar({
   size,
+  className,
   priority,
   loading,
   src = '',
@@ -30,7 +32,9 @@ export default function Avatar({
   const { t } = useTranslation();
 
   return (
-    <div className={cn(styles.wrapper, { [styles.loading]: loading })}>
+    <div
+      className={cn(styles.wrapper, className, { [styles.loading]: loading })}
+    >
       {!loading && !!src && !validPhoto(src) && (
         <div className={styles.photoWrapper}>
           {priority && <link rel='preload' as='image' href={src} />}

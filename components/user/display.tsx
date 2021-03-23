@@ -68,7 +68,13 @@ export default function UserDisplay({
           rel='noreferrer'
           tabIndex={-1}
         >
-          <Avatar size={350} loading={!user} src={user?.photo} priority />
+          <Avatar
+            className={styles.img}
+            size={350}
+            loading={!user}
+            src={user?.photo}
+            priority
+          />
           {currentUser.id !== user?.id && admin && (
             <div className={styles.actions}>
               <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
