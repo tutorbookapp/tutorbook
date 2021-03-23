@@ -8,7 +8,7 @@
   @include common.wrapper;
 
   .title {
-    margin: 48px 0 24px;
+    margin: 48px 0 32px;
 
     .name {
       font-size: 36px;
@@ -137,7 +137,7 @@
 
   .flex {
     display: flex;
-    margin: 48px 0 0;
+    margin: 32px 0 0;
 
     .content {
       flex: 1 1 auto;
@@ -171,7 +171,7 @@
     .form {
       flex: none;
       width: 40%;
-      margin: 0 0 48px;
+      margin: 16px 0 48px;
 
       form {
         position: sticky;
@@ -217,8 +217,20 @@
   .flex {
     align-items: stretch;
 
-    .content dd {
-      height: 24px * 8;
+    .content {
+      margin-right: 32px;
+
+      @media (max-width: 750px) {
+        margin-right: 0;
+      }
+
+      dd {
+        height: 24px * 8;
+      }
+    }
+
+    .form {
+      margin-top: 0;
     }
   }
 }
