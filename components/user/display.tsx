@@ -1,8 +1,8 @@
+import { Fragment, useMemo } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import Image from 'next/image';
 import Link from 'next/link';
 import cn from 'classnames';
-import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
@@ -46,7 +46,7 @@ export default function UserDisplay({
         </h1>
         <div className={styles.socials}>
           {(user?.socials || []).map((social, idx) => (
-            <>
+            <Fragment key={social.type}>
               {idx !== 0 && <span className={styles.dot}>·</span>}
               <a
                 data-cy={`${social.type}-social-link`}
@@ -57,7 +57,7 @@ export default function UserDisplay({
               >
                 {social.type}
               </a>
-            </>
+            </Fragment>
           ))}
           {user && !user.socials.length && <span>No social profiles</span>}
         </div>
@@ -104,10 +104,8 @@ export default function UserDisplay({
                 objectFit='cover'
                 data-cy='backdrop'
                 objectPosition='center 50%'
-                src={
-                  user?.background ||
-                  'https://assets.tutorbook.org/jpgs/rocky-beach.jpg'
-                }
+                src={user.background || user.photo}
+                className={cn({ [styles.blurred]: !user.background })}
                 alt=''
               />
             </div>
