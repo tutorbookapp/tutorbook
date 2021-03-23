@@ -99,10 +99,9 @@ function UserDisplayPage({
       <Page
         title={`${data?.name || 'Loading'} - Tutorbook`}
         description={data?.bio}
-        formWidth
         {...props}
       >
-        <EmptyHeader formWidth />
+        <EmptyHeader />
         <UserDisplay
           user={data ? User.fromJSON(data) : undefined}
           subjects={subjectsDisplayed}
