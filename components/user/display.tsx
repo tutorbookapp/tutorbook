@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import cn from 'classnames';
 import { useMemo } from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 import RequestForm from 'components/user/request-form';
@@ -26,6 +27,7 @@ export default function UserDisplay({
   subjects,
 }: UserDisplayProps): JSX.Element {
   const { org } = useOrg();
+  const { lang: locale } = useTranslation();
   const { orgs, user: currentUser } = useUser();
 
   const admin = useMemo(() => orgs.some((o) => user?.orgs.includes(o.id)), [
@@ -117,6 +119,18 @@ export default function UserDisplay({
           <dl className={styles.content}>
             <dt>About</dt>
             <dd data-cy='bio'>{user && user.bio}</dd>
+            <dt>Time Zone</dt>
+            <dd data-cy='timezone'>
+              {user &&
+                new Date()
+                  .toLocaleString(locale, {
+                    year: 'numeric',
+                    timeZone: user.timezone,
+                    timeZoneName: 'long',
+                  })
+                  .split(', ')
+                  .pop()}
+            </dd>
             <dt>Teaches</dt>
             <dd data-cy='subjects'>{join(subjects || [])}</dd>
             <dt>Speaks</dt>
