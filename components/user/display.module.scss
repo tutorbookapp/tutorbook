@@ -198,12 +198,15 @@
 .loading {
   .name,
   .socials,
-  .header .background,
   .content dd,
   .content dt,
   .form {
     @include loader.loading;
     border-radius: 4px;
+  }
+
+  .header .background {
+    @include loader.loading;
   }
 
   .name {
