@@ -230,7 +230,7 @@ export class User extends Account implements UserInterface {
 
   public reference = '';
 
-  public timezone = '';
+  public timezone = 'America/Los_Angeles';
 
   public token?: string;
 
