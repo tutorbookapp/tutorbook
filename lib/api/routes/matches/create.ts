@@ -40,12 +40,16 @@ export default async function createMatch(
     const creator = await getPerson(body.creator, people);
     await verifyAuth(req.headers, { userId: creator.id });
 
-    // Verify the creator is:
-    // a) The student him/herself, OR;
-    // b) Admin of the match's org (e.g. Gunn High School).
-    const studentIds = getStudents(people).map((p) => p.id);
-    const org = await getOrg(body.org);
-    if (!studentIds.includes(creator.id)) verifyIsOrgAdmin(org, creator.id);
+    // Verify the match creator is:
+    // a) The match student him/herself, OR;
+    // b) Parent of the match student, OR;
+    // c) Admin of the match's org (e.g. Gunn High School).
+    if (
+      !getStudents(people).some(
+        (p) => p.id === creator.id || p.parents.includes(creator.id)
+      )
+    )
+      verifyIsOrgAdmin(await getOrg(body.org), creator.id);
 
     const match = await createMatchDoc(updateMatchTags(body));
     await createMatchSearchObj(match);

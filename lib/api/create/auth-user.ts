@@ -21,7 +21,7 @@ export default async function createAuthUser(user: User): Promise<User> {
   const [err, userRecord] = await to<UserRecord, FirebaseError>(
     auth.createUser({
       disabled: false,
-      email: user.email,
+      email: user.email || undefined,
       emailVerified: false,
       displayName: user.name,
       photoURL: user.photo || undefined,

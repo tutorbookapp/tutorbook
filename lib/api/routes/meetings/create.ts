@@ -64,9 +64,14 @@ export default async function createMeeting(
 
       // Verify the match creator is:
       // a) The match student him/herself, OR;
-      // b) Admin of the match's org (e.g. Gunn High School).
-      const studentIds = getStudents(people).map((p) => p.id);
-      if (!studentIds.includes(creator.id)) verifyIsOrgAdmin(org, creator.id);
+      // b) Parent of the match student, OR;
+      // c) Admin of the match's org (e.g. Gunn High School).
+      if (
+        !getStudents(people).some(
+          (p) => p.id === creator.id || p.parents.includes(creator.id)
+        )
+      )
+        verifyIsOrgAdmin(org, creator.id);
 
       // Create match (b/c it doesn't already exist).
       body.match = await createMatchDoc(updateMatchTags(body.match));
