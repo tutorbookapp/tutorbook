@@ -90,17 +90,20 @@ export default function UserDisplay({
           tabIndex={-1}
         >
           {user && (
-            <Image
-              priority
-              layout='fill'
-              objectFit='cover'
-              data-cy='backdrop'
-              objectPosition='center 50%'
-              src={
-                user?.background ||
-                'https://assets.tutorbook.org/jpgs/rocky-beach.jpg'
-              }
-            />
+            <div className={styles.backdrop}>
+              <Image
+                priority
+                width={642}
+                height={350}
+                objectFit='cover'
+                data-cy='backdrop'
+                objectPosition='center 50%'
+                src={
+                  user?.background ||
+                  'https://assets.tutorbook.org/jpgs/rocky-beach.jpg'
+                }
+              />
+            </div>
           )}
         </a>
       </div>
