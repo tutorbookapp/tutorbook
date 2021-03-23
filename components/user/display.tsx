@@ -100,6 +100,7 @@ export default function UserDisplay({
                   user?.background ||
                   'https://assets.tutorbook.org/jpgs/rocky-beach.jpg'
                 }
+                alt=''
               />
             </div>
           )}
