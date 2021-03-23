@@ -27,18 +27,17 @@ import { getPhotoFilename } from 'lib/utils';
  * @param [width] - The desired width in pixels; defaults to 500.
  * @param [height] - The desired height in pixels; defaults to 500.
  */
-function crop(src: Buffer, width = 500, height = 500): Promise<Stream> {
-  return smartcrop.crop(src, { width, height }).then(({ topCrop }) => {
-    return sharp(src)
-      .extract({
-        width: topCrop.width,
-        height: topCrop.height,
-        left: topCrop.x,
-        top: topCrop.y,
-      })
-      .resize(width, height)
-      .jpeg();
-  });
+async function crop(src: Buffer, width = 500, height = 500): Promise<Stream> {
+  const { topCrop } = await smartcrop.crop(src, { width, height });
+  return sharp(src)
+    .extract({
+      width: topCrop.width,
+      height: topCrop.height,
+      left: topCrop.x,
+      top: topCrop.y,
+    })
+    .resize(width, height)
+    .jpeg();
 }
 
 async function downloadPhoto(src: string): Promise<Buffer> {
@@ -76,7 +75,7 @@ export default async function updatePhoto<T extends Account>(
   // will continue to use the cached (uncropped) version of the profile photo.
   const existing = getPhotoFilename(account.photo);
   // TODO: Remove the old photo and debug any front-end issues where it isn't
-  // updated properly and we get a 404 when fetching it for a second time.
+  // account properly and we get a 404 when fetching it for a second time.
   if (false && existing) await bucket.file(existing).delete().catch();
 
   const file = bucket.file(`temp/${uuid()}.jpg`);
