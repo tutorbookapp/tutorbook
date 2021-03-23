@@ -1,10 +1,13 @@
 @use 'styles/common';
 
-@include common.card-styles;
+:global(html:not(.dark)) .card {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
 
 .card {
   position: relative;
-  margin-top: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--accents-2);
 
   .inputs {
     margin: 16px auto;

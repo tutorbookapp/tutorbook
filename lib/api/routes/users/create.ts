@@ -59,6 +59,8 @@ export default async function createUser(
     // get rid of the semi-deprecated (and very unsecure) org signup page.
     res.status(201).json({ ...user.toJSON(), token, hash });
 
+    // TODO: Sometimes parents or admins are creating users that aren't
+    // themselves. We should account for that in these analytics calls.
     segment.identify({ userId: user.id, traits: user.toSegment() });
     segment.track({
       userId: user.id,
