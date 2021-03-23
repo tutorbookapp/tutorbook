@@ -52,6 +52,17 @@
       border-bottom-left-radius: 4px;
       overflow: hidden;
       background: var(--accents-2);
+      font-size: 0;
+
+      .backdrop {
+        height: 350px;
+        width: 642px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: -0.5 * 350px;
+        margin-left: -0.5 * 642px;
+      }
 
       .blurred {
         filter: blur(50px);
@@ -69,6 +80,7 @@
       border-top-right-radius: 4px;
       border-bottom-right-radius: 4px;
       overflow: hidden;
+      text-align: center;
 
       .actions {
         position: absolute;
@@ -110,11 +122,22 @@
         }
       }
     }
+
+    @media (max-width: 600px) {
+      .background {
+        display: none;
+      }
+
+      .avatar {
+        border-radius: 8px;
+        width: 100%;
+      }
+    }
   }
 
   .flex {
     display: flex;
-    margin: 32px 0 0;
+    margin: 48px 0 0;
 
     .content {
       flex: 1 1 auto;
@@ -148,11 +171,25 @@
     .form {
       flex: none;
       width: 40%;
-      margin: 16px 0 48px;
+      margin: 0 0 48px;
 
       form {
         position: sticky;
         top: sizes.$header-height + 24px;
+      }
+    }
+
+    @media (max-width: 750px) {
+      flex-direction: column;
+      margin-top: 32px;
+
+      .content {
+        margin: 0;
+      }
+
+      .form {
+        margin-top: 32px;
+        width: 100%;
       }
     }
   }
@@ -177,19 +214,11 @@
     width: 250px;
   }
 
-  .flex .content {
-    margin-right: 32px;
-
-    dd {
-      height: 24px * 8;
-    }
-  }
-
   .flex {
     align-items: stretch;
 
-    .form {
-      margin-top: 0;
+    .content dd {
+      height: 24px * 8;
     }
   }
 }
