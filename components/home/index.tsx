@@ -77,7 +77,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
                       target='_blank'
                       rel='noreferrer'
                       href={social.url}
-                      className={`${styles.socialLink} ${styles[social.type]}`}
+                      className={cn(styles.socialLink, styles[social.type])}
                     >
                       {social.type}
                     </a>
