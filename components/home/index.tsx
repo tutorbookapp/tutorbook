@@ -25,9 +25,12 @@ export default function Home({ org }: HomeProps): JSX.Element {
       person += 'tutor';
       people += 'tutors';
     }
-    if (as.includes('mentoring')) {
+    if (as.includes('mentoring') && as.length > 1) {
       person += ' or mentor';
       people += ' and mentors';
+    } else if (as.includes('mentoring')) {
+      person += 'mentor';
+      people += 'mentors';
     }
     const name = org ? org.name : 'This organization';
     return t('home:about', { name, person, people, aspects: join(as) });
