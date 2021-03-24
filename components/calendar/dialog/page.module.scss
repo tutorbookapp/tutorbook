@@ -76,48 +76,40 @@
   padding: 0 24px;
   overflow: auto;
   height: 100%;
-  width: 384px;
-  min-height: 396px;
+  width: 350px;
+  min-height: 350px;
 }
 
-.people {
+.person {
   display: flex;
-  margin-top: 24px;
+  align-items: center;
+  text-decoration: none;
+  margin: 12px 0;
 
-  .person {
-    @include typography.typography('body1');
-    text-decoration: none;
-    display: block;
-    margin: 0 8px;
-    outline: none;
-    border: none;
+  &:first-child {
+    margin-top: 24px;
+  }
 
-    $image-size: 160px;
+  .avatar {
+    flex: none;
+    width: 85px;
+    height: 85px;
+    margin-right: 16px;
+  }
 
-    &:first-child {
-      margin-left: 0;
-    }
-
-    &:last-child {
-      margin-right: 0;
-    }
-
-    .avatar {
-      width: $image-size;
-      height: $image-size;
-      text-decoration: none;
-      display: block;
-      outline: none;
-    }
+  .label {
+    flex: 1 1 auto;
+    width: 0px;
 
     .name {
-      @include typography.typography('headline5');
-      color: var(--on-background);
-      margin: 8px 0 0;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      height: 24px;
       overflow: hidden;
-      width: $image-size;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--on-background);
     }
 
     .roles {
@@ -125,14 +117,11 @@
       font-weight: 500;
       line-height: 14px;
       height: 14px;
-      text-transform: uppercase;
-      white-space: nowrap;
-      color: var(--accents-5);
-      margin-top: 2px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
       overflow: hidden;
-      width: $image-size;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--accents-5);
+      text-transform: uppercase;
     }
   }
 }
