@@ -182,7 +182,7 @@ export function getMonthsTimeslots(
   if (year === now.getFullYear() && month < now.getMonth()) return timeslots;
 
   const interval = 15;
-  const duration = 30;
+  const duration = 60;
   const daysInMonth = getDaysInMonth(month, year);
   const weekdayOffset = getWeekdayOfFirst(month, year);
 
