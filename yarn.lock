@@ -2934,15 +2934,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@percy/cypress@npm:^2.3.3":
-  version: 2.3.3
-  resolution: "@percy/cypress@npm:2.3.3"
+"@percy/cypress@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "@percy/cypress@npm:2.3.4"
   dependencies:
     "@percy/agent": ~0
     axios: ^0.21.0
   peerDependencies:
-    cypress: ^3 || ^4 || ^5
-  checksum: aef935cfde0158cc05ce2b2e54de9cb0e399c647f0b76b357809f8af1b9e7f9e26c95bc7c01dfe57f9685733daa2860c50626ffbd7c49b721a2cd54c4360df05
+    cypress: ^3 || ^4 || ^5 || ^6
+  checksum: 1ddc81c71334242955986625146ddcfd619ab9462b16e76523196fca5af25d853651f7df36a05650d013d3b9b2b1df0f120c3c3febd262b6ec6e891096217b16
   languageName: node
   linkType: hard
 
@@ -18378,7 +18378,7 @@ resolve@^1.18.1:
     "@juggle/resize-observer": ^3.2.0
     "@material/menu-surface": ^5.1.0
     "@percy/agent": ^0.28.5
-    "@percy/cypress": ^2.3.3
+    "@percy/cypress": ^2.3.4
     "@rmwc/button": ^6.1.4
     "@rmwc/checkbox": ^6.1.4
     "@rmwc/chip": ^6.1.4
