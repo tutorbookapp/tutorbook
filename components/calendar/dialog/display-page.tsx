@@ -39,22 +39,22 @@ export default function DisplayPage({
         </Link>
       </div>
       <div className={styles.content}>
-        <div className={styles.people}>
-          {people.map((person) => (
-            <Link
-              href={`/${editing.match.org}/users/${person.id}`}
-              key={person.id}
-            >
-              <a className={styles.person}>
-                <div className={styles.avatar}>
-                  <Avatar src={person.photo} size={160} />
-                </div>
-                <div className={styles.name}>{person.name}</div>
+        {people.map((person) => (
+          <Link
+            href={`/${editing.match.org}/users/${person.id}`}
+            key={person.id}
+          >
+            <a className={styles.person}>
+              <div className={styles.avatar}>
+                <Avatar src={person.photo} size={85} />
+              </div>
+              <div className={styles.label}>
                 <div className={styles.roles}>{join(person.roles)}</div>
-              </a>
-            </Link>
-          ))}
-        </div>
+                <div className={styles.name}>{person.name}</div>
+              </div>
+            </a>
+          </Link>
+        ))}
         <div className={styles.info}>
           <dl>
             <dt>Subjects</dt>
