@@ -68,8 +68,7 @@ function setup(overrides?: Overrides | null): void {
   if (overrides !== null) cy.task('seed', overrides);
 
   cy.intercept('GET', '/api/account').as('get-account');
-
-  cy.intercept('GET', '/api/requests*').as('list-requests');
+  cy.intercept('PUT', '/api/account').as('update-account');
 
   cy.intercept('POST', '/api/matches').as('create-match');
   cy.intercept('GET', '/api/matches*').as('list-matches');

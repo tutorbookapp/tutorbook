@@ -1,8 +1,9 @@
 import { nanoid } from 'nanoid';
 
-import { getDaysInMonth, getDateWithDay } from 'lib/utils/time';
+import { getDateWithDay, getDaysInMonth } from 'lib/utils/time';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
+import child from 'cypress/fixtures/users/child.json';
 import match from 'cypress/fixtures/match.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
@@ -40,9 +41,13 @@ function getTimeOptions(): string[] {
   // Remove the last time which is invalid (e.g. 11:45am isn't within the 30min
   // window of the end time of 12pm b/c we didn't include that complex logic).
   times.pop();
+  times.pop();
+  times.pop();
 
   hour = new Date(volunteer.availability[1].from).getHours();
   while (hour < 16) addTimes(); // Sundays from 1-4pm.
+  times.pop();
+  times.pop();
   times.pop();
 
   return times;
@@ -51,8 +56,8 @@ function getTimeOptions(): string[] {
 // TODO: The time selected and pre-selected date changes based on the current
 // date. B/c of this, our visual snapshot tests are useless. Instead, we should
 // use `cy.clock()` to manually set the time and control when it changes.
-function selectTime(): void {
-  cy.contains('When would you like to meet?')
+function selectTime(they: boolean = false): void {
+  cy.contains(`When would ${they ? 'they' : 'you'} like to meet?`)
     .children('input')
     .as('time-input')
     .focus();
@@ -107,7 +112,9 @@ function selectTime(): void {
   cy.get('@days').eq(dayIdx(4)).should('be.disabled');
   cy.get('@days').eq(dayIdx(5)).should('not.be.disabled');
   cy.get('@days').eq(dayIdx(6)).should('be.disabled');
-  cy.percySnapshot('User Display Page with Time Select Open');
+
+  // TODO: Why can't we use `percySnapshot()` within these helper functions?
+  // cy.percySnapshot('User Display Page with Time Select Open');
 
   // TODO: We won't let bookings in the past so this will sometimes fail.
   const selected = getDateWithDay(0, now);
@@ -133,9 +140,11 @@ function selectTime(): void {
   getTimeOptions().forEach((time: string, idx: number) => {
     cy.getBySel('time-button').eq(idx).should('have.text', time);
   });
-  cy.percySnapshot('User Display Page with Date Selected');
 
-  const selectedEnd = new Date(selected.valueOf() + 30 * 60 * 1000);
+  // TODO: Why can't we use `percySnapshot()` within these helper functions?
+  // cy.percySnapshot('User Display Page with Date Selected');
+
+  const selectedEnd = new Date(selected.valueOf() + 60 * 60 * 1000);
   cy.getBySel('time-button').first().trigger('click');
   cy.get('@time-input')
     .should('not.be.focused')
@@ -153,7 +162,9 @@ function selectTime(): void {
         timeZoneName: 'short',
       })}`
     );
-  cy.percySnapshot('User Display Page with Time Selected');
+
+  // TODO: Why can't we use `percySnapshot()` within these helper functions?
+  // cy.percySnapshot('User Display Page with Time Selected');
 }
 
 // TODO: Test flashes of truncated data, edit and vet action links, request form
@@ -177,48 +188,55 @@ describe('User display page', () => {
     cy.percySnapshot('Not Found Page');
   });
 
-  it('collects phone before sending requests', () => {
-    cy.setup({ student: { phone: '' }, match: null, meeting: null });
+  it('collects profiles before booking meetings', () => {
+    cy.setup({
+      student: { phone: '', reference: '' },
+      school: { profiles: ['phone', 'reference'] },
+      meeting: null,
+      match: null,
+    });
     cy.login(student.id);
     cy.visit(`/${school.id}/users/${volunteer.id}`);
     cy.wait('@get-user', { timeout: 60000 });
 
     cy.getBySel('user-display').within(() => {
-      cy.getBySel('backdrop').should('have.img', volunteer.background);
-      cy.getBySel('bio').should('have.text', volunteer.bio);
       cy.getBySel('name').should(
         'have.text',
         onlyFirstNameAndLastInitial(volunteer.name)
       );
-      cy.getBySel('avatar')
-        .should('have.img', volunteer.photo)
-        .closest('a')
-        .should('have.attr', 'href', volunteer.photo);
       cy.getBySel('socials')
         .find('a')
         .should('have.length', volunteer.socials.length);
-
       volunteer.socials.forEach((social: Record<string, string>) => {
         cy.getBySel(`${social.type}-social-link`)
           .should('have.attr', 'href', social.url)
           .and('have.attr', 'target', '_blank')
           .and('have.attr', 'rel', 'noreferrer');
       });
+
+      cy.getBySel('avatar')
+        .should('have.img', volunteer.photo)
+        .closest('a')
+        .should('have.attr', 'href', volunteer.photo);
+      cy.getBySel('backdrop')
+        .should('have.img', volunteer.background)
+        .closest('a')
+        .should('have.attr', 'href', volunteer.background);
+
+      cy.getBySel('bio').should('have.text', volunteer.bio);
+      cy.getBySel('subjects')
+        .should('not.contain', 'Artificial Intelligence')
+        .and('contain', 'Computer Science')
+        .and('contain', 'Math');
+      cy.getBySel('langs')
+        .should('contain', 'English')
+        .and('contain', 'Spanish');
+      cy.percySnapshot('User Display Page');
     });
 
-    cy.getBySel('subjects')
-      .should('contain', 'Computer Science')
-      .and('contain', 'Math');
-    cy.getBySel('langs').should('contain', 'English').and('contain', 'Spanish');
-    cy.percySnapshot('User Display Page');
-
-    cy.contains('Your phone number')
-      .find('input')
-      .should('have.value', '')
-      .and('have.attr', 'type', 'tel')
-      .and('have.attr', 'required', 'required')
-      .type(student.phone);
-    cy.percySnapshot('User Display Page with Phone Populated');
+    cy.contains('.mdc-select', 'Who needs help?')
+      .find('.mdc-select__selected-text')
+      .should('have.text', 'Me');
 
     cy.contains('What would you like to learn?')
       .as('subject-input')
@@ -241,7 +259,24 @@ describe('User display page', () => {
       .type(match.message);
     cy.percySnapshot('User Display Page with Message Populated');
 
-    cy.contains('button', 'Send request').click().should('be.disabled');
+    cy.contains('Your phone number')
+      .as('phone-input')
+      .find('input')
+      .should('have.value', '')
+      .and('have.attr', 'type', 'tel')
+      .and('have.attr', 'required', 'required')
+      .type(student.phone);
+    cy.percySnapshot('User Display Page with Phone Populated');
+
+    cy.contains(`How did you hear about ${school.name}?`)
+      .as('reference-input')
+      .find('textarea')
+      .should('have.value', '')
+      .and('have.attr', 'required', 'required')
+      .type(student.reference);
+    cy.percySnapshot('User Display Page with Reference Populated');
+
+    cy.contains('button', 'Book meeting').click().should('be.disabled');
     cy.getBySel('loader')
       .should('be.visible')
       .find('svg')
@@ -250,6 +285,10 @@ describe('User display page', () => {
 
     // TODO: Make assertions about the content within our Firestore database
     // simulator and SendGrid API to ensure that it matches what we submitted.
+    cy.wait('@update-account');
+    cy.get('@phone-input').should('not.exist');
+    cy.get('@reference-input').should('not.exist');
+
     cy.wait('@create-meeting');
 
     cy.getBySel('loader')
@@ -259,7 +298,84 @@ describe('User display page', () => {
     cy.percySnapshot('User Display Page with Checkmark');
   });
 
-  it('signs users up before sending requests', () => {
+  it('lets parents book meetings for their kids', () => {
+    cy.setup({ meeting: null, match: null });
+    cy.login(student.id);
+    cy.visit(`/${school.id}/users/${volunteer.id}`);
+    cy.wait('@get-user', { timeout: 60000 });
+
+    cy.contains('.mdc-select', 'Who needs help?')
+      .find('.mdc-select__selected-text')
+      .should('have.text', 'Me')
+      .as('child-select')
+      .click();
+    cy.percySnapshot('User Display Page with Child Select Open');
+
+    cy.contains('.mdc-menu ul li', 'My child').click();
+    cy.get('@child-select').should('have.text', 'My child');
+    cy.percySnapshot('User Display Page with Child Selected');
+
+    cy.contains('Child name').type(child.name);
+    cy.contains('Child age').type(child.age.toFixed(0));
+    cy.percySnapshot('User Display Page with Child Populated');
+
+    cy.contains('What would they like to learn?').type('Computer');
+    cy.contains('li', 'Computer Science')
+      .trigger('click')
+      .find('input[type="checkbox"]')
+      .should('be.checked');
+    cy.percySnapshot('User Display Page with Child with Subject Selected');
+
+    selectTime(true);
+
+    cy.contains('What specifically do they need help with?').type(
+      match.message
+    );
+    cy.percySnapshot('User Display Page with Child with Message Populated');
+
+    cy.contains('button', 'Book meeting').click().should('be.disabled');
+    cy.getBySel('loader')
+      .should('be.visible')
+      .find('svg')
+      .should('have.attr', 'data-cy-checked', 'false');
+    cy.percySnapshot('User Display Page with Child in Loading State');
+
+    cy.wait('@create-user');
+    cy.wait('@create-meeting');
+
+    cy.getBySel('loader')
+      .find('svg')
+      .should('have.attr', 'data-cy-checked', 'true');
+    cy.getBySel('error').should('not.exist');
+    cy.percySnapshot('User Display Page with Child with Checkmark');
+  });
+
+  it('restricts subjects based on query aspect', () => {
+    cy.setup({ student: null, match: null, meeting: null });
+    cy.logout();
+    cy.visit(`/${org.id}/users/${volunteer.id}?aspect=tutoring`);
+
+    cy.getBySel('subjects')
+      .should('not.contain', 'Artificial Intelligence')
+      .and('contain', 'Computer Science')
+      .and('contain', 'Math');
+    cy.percySnapshot('User Display Page for Tutoring');
+
+    cy.contains('What would you like to learn?')
+      .as('subject-input')
+      .type('Artificial');
+    cy.contains('No subjects').should('be.visible');
+    cy.percySnapshot('User Display Page for Tutoring with No Subjects');
+
+    cy.get('@subject-input').find('textarea').clear().type('Computer');
+    cy.contains('li', 'Computer Science')
+      .trigger('click')
+      .find('input[type="checkbox"]')
+      .should('be.checked');
+    cy.percySnapshot('User Display Page for Tutoring with Subject Selected');
+  });
+
+  it('signs users up before booking meetings', () => {
     cy.setup({ student: null, match: null, meeting: null });
     cy.logout();
     cy.visit(`/${org.id}/users/${volunteer.id}`, {
@@ -270,20 +386,25 @@ describe('User display page', () => {
     cy.wait('@get-user', { timeout: 60000 });
     cy.percySnapshot('User Display Page with Signup Button');
 
-    // TODO: Instead, shift-click all of the available subjects.
+    cy.contains('.mdc-select', 'Who needs help?')
+      .find('.mdc-select__selected-text')
+      .should('have.text', 'Me');
+
     cy.contains('What would you like to learn?').type('Artificial');
     cy.contains('li', 'Artificial Intelligence')
       .trigger('click')
       .find('input[type="checkbox"]')
       .should('be.checked');
+    cy.percySnapshot('User Display Page with Signup with Subject Selected');
 
     selectTime();
 
     cy.contains('What specifically do you need help with?').type(match.message);
+    cy.percySnapshot('User Display Page with Signup with Message Populated');
 
-    cy.contains('button', 'Signup and send').click().should('be.disabled');
+    cy.contains('button', 'Signup and book').click().should('be.disabled');
     cy.getBySel('loader').should('be.visible');
-    cy.percySnapshot('User Display Page with Signup Button in Loading State');
+    cy.percySnapshot('User Display Page with Signup in Loading State');
 
     // TODO: Stub out the Google OAuth response using the Google OAuth
     // server-side REST API. That way, we can test this programmatically.

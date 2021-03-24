@@ -1,0 +1,58 @@
+{
+  "id": "child",
+  "tags": [],
+  "created": "2020-10-15T19:04:10",
+  "updated": "2020-10-15T19:04:10",
+  "name": "Jane Lucatero",
+  "email": "jane@example.com",
+  "phone": "+12025550151",
+  "photo": "https://assets.tutorbook.org/jpgs/child.jpg",
+  "background": "https://assets.tutorbook.org/jpgs/child-banner.jpg",
+  "bio": "",
+  "socials": [
+    {
+      "type": "website",
+      "url": "https://example.com"
+    },
+    {
+      "type": "instagram",
+      "url": "https://instagram.com/jane"
+    },
+    {
+      "type": "facebook",
+      "url": "https://facebook.com/jane"
+    },
+    {
+      "type": "linkedin",
+      "url": "https://linkedin.com/in/jane"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/jane"
+    },
+    {
+      "type": "indiehackers",
+      "url": "https://indiehackers.com/jane"
+    }
+  ],
+  "reference": "",
+  "timezone": "America/Los_Angeles",
+  "roles": [],
+  "featured": [],
+  "orgs": ["gunn"],
+  "zooms": [],
+  "availability": [],
+  "mentoring": {
+    "subjects": [],
+    "searches": ["Computer Science"]
+  },
+  "tutoring": {
+    "subjects": [],
+    "searches": ["Computer Science", "Math"]
+  },
+  "langs": ["en", "es"],
+  "parents": [],
+  "verifications": [],
+  "visible": false,
+  "age": 15
+}
