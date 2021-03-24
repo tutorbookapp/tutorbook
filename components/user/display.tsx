@@ -27,7 +27,7 @@ export default function UserDisplay({
   subjects,
 }: UserDisplayProps): JSX.Element {
   const { org } = useOrg();
-  const { lang: locale } = useTranslation();
+  const { t, lang: locale } = useTranslation();
   const { orgs, user: currentUser } = useUser();
 
   const admin = useMemo(() => orgs.some((o) => user?.orgs.includes(o.id)), [
@@ -44,7 +44,7 @@ export default function UserDisplay({
         <h1 data-cy='name' className={styles.name}>
           {user && user.name}
         </h1>
-        <div className={styles.socials}>
+        <div data-cy='socials' className={styles.socials}>
           {(user?.socials || []).map((social, idx) => (
             <Fragment key={social.type}>
               {idx !== 0 && <span className={styles.dot}>·</span>}
@@ -55,7 +55,7 @@ export default function UserDisplay({
                 rel='noreferrer'
                 href={social.url}
               >
-                {social.type}
+                {t(`common:${social.type}`)}
               </a>
             </Fragment>
           ))}
