@@ -175,7 +175,7 @@ describe('User display page', () => {
     cy.logout();
     cy.visit(`/${org.id}/users/${nanoid()}`, { failOnStatusCode: false });
 
-    cy.loading().percySnapshot('User Display Page in Loading State');
+    cy.loading().percySnapshot('User Display Page in Fallback State');
     cy.loading(false, { timeout: 60000 });
 
     cy.getBySel('page').within(() => {
