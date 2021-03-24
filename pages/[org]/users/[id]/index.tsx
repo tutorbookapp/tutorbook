@@ -53,11 +53,13 @@ function UserDisplayPage({
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
     { initialData, revalidateOnMount: true }
   );
-  const [langs, setLangs] = useState<string[]>([]);
-  const [subjects, setSubjects] = useState<{ [key in Aspect]: string[] }>({
-    tutoring: [],
-    mentoring: [],
-  });
+  const [langs, setLangs] = useState<string[]>(initialLangs || []);
+  const [subjects, setSubjects] = useState<{ [key in Aspect]: string[] }>(
+    initialSubjects || {
+      tutoring: [],
+      mentoring: [],
+    }
+  );
 
   useEffect(() => setLangs((p) => initialLangs || p), [initialLangs]);
   useEffect(() => setSubjects((p) => initialSubjects || p), [initialSubjects]);
