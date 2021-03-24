@@ -48,6 +48,7 @@
       flex: 1 1 auto;
       position: relative;
       border-radius: 0 8px 8px 0;
+      border: 1px solid var(--accents-2);
       overflow: hidden;
       background: var(--accents-2);
       font-size: 0;
@@ -75,6 +76,7 @@
       margin-right: 8px;
       position: relative;
       border-radius: 8px 0 0 8px;
+      border: 1px solid var(--accents-2);
       overflow: hidden;
       text-align: center;
 
