@@ -116,9 +116,16 @@ function selectTime(they: boolean = false): void {
   // TODO: Why can't we use `percySnapshot()` within these helper functions?
   // cy.percySnapshot('User Display Page with Time Select Open');
 
-  // TODO: We won't let bookings in the past so this will sometimes fail.
-  const selected = getDateWithDay(0, now);
-  selected.setHours(9, 0, 0, 0);
+  const selected = getDateWithDay(
+    0,
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      new Date(volunteer.availability[0].from).getHours()
+    )
+  );
+
   cy.get('@days')
     .eq(selected.getDate() - 1)
     .trigger('click')
@@ -145,7 +152,17 @@ function selectTime(they: boolean = false): void {
   // cy.percySnapshot('User Display Page with Date Selected');
 
   const selectedEnd = new Date(selected.valueOf() + 60 * 60 * 1000);
-  cy.getBySel('time-button').first().trigger('click');
+  cy.getBySel('time-button')
+    .first()
+    .should(
+      'have.text',
+      selected.toLocaleString('en', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      })
+    )
+    .trigger('click');
   cy.get('@time-input')
     .should('not.be.focused')
     .and(
