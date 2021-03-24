@@ -28,7 +28,7 @@
   "about": "About",
   "request": "Request",
   "bio-placeholder": "Hint: Simply copy-and-paste your existing LinkedIn or Facebook bio.",
-  "reference-placeholder": "Ex: I heard about {{org}} from my friend Bobby Tarantino's Instagram story (@bobby) when he mentioned an intriguing {{org}} post.",
+  "reference-placeholder": "Ex: I heard about {{org}} from my friend's Instagram story (@my_friend).",
   "subjects-placeholder": "Ex: Computer Science or Biology",
   "tutoring-subjects-placeholder": "Ex: Math or Science",
   "mentoring-subjects-placeholder": "Ex: Computer Science or Music",
