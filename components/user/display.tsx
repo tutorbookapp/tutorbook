@@ -117,6 +117,10 @@ export default function UserDisplay({
           <dl className={styles.content}>
             <dt>About</dt>
             <dd data-cy='bio'>{user && user.bio}</dd>
+            <dt>Teaches</dt>
+            <dd data-cy='subjects'>{join(subjects || [])}</dd>
+            <dt>Speaks</dt>
+            <dd data-cy='langs'>{join(langs || [])}</dd>
             <dt>Time Zone</dt>
             <dd data-cy='timezone'>
               {user &&
@@ -129,16 +133,16 @@ export default function UserDisplay({
                   .split(', ')
                   .pop()}
             </dd>
-            <dt>Teaches</dt>
-            <dd data-cy='subjects'>{join(subjects || [])}</dd>
-            <dt>Speaks</dt>
-            <dd data-cy='langs'>{join(langs || [])}</dd>
           </dl>
         )}
         {!user && (
           <dl className={styles.content}>
-            <dt />
-            <dd />
+            <dt className={styles.bio} />
+            <dd className={styles.bio} />
+            <dt className={styles.subjects} />
+            <dd className={styles.subjects} />
+            <dt className={styles.langs} />
+            <dd className={styles.langs} />
           </dl>
         )}
         <div className={styles.form}>{user && <RequestForm user={user} />}</div>
