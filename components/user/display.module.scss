@@ -173,7 +173,7 @@
     .form {
       flex: none;
       width: 40%;
-      margin: 16px 0 48px;
+      margin: 20px 0 48px;
 
       form {
         position: sticky;
@@ -200,8 +200,8 @@
 .loading {
   .name,
   .socials,
-  .content dd,
   .content dt,
+  .content dd,
   .form {
     @include loader.loading;
     border-radius: 4px;
@@ -209,33 +209,41 @@
 
   .header .background {
     @include loader.loading;
+    border: none;
+  }
+
+  .header .avatar {
+    border: none;
   }
 
   .name {
-    width: 300px;
+    max-width: 300px;
   }
 
   .socials {
-    width: 250px;
+    max-width: 250px;
   }
 
-  .flex {
-    align-items: stretch;
+  .content dt {
+    max-width: 100px;
+  }
 
-    .content {
-      margin-right: 32px;
+  .content dd.bio {
+    height: 24px * 5;
+  }
 
-      @media (max-width: 750px) {
-        margin-right: 0;
-      }
+  .content dd.subjects {
+    max-width: 350px;
+    height: 24px;
+  }
 
-      dd {
-        height: 24px * 8;
-      }
-    }
+  .content dd.langs {
+    max-width: 200px;
+    height: 24px;
+  }
 
-    .form {
-      margin-top: 0;
-    }
+  .form {
+    border-radius: 8px;
+    height: 500px;
   }
 }
