@@ -17,8 +17,8 @@ import styles from './display.module.scss';
 
 export interface UserDisplayProps {
   user?: User;
-  langs?: string[];
-  subjects?: string[];
+  langs: string[];
+  subjects: string[];
 }
 
 export default function UserDisplay({
@@ -59,7 +59,7 @@ export default function UserDisplay({
               </a>
             </Fragment>
           ))}
-          {user && !user.socials.length && <span>No social profiles</span>}
+          {!!user && !user.socials.length && <span>No social profiles</span>}
         </div>
       </div>
       <div className={styles.header}>
@@ -77,16 +77,6 @@ export default function UserDisplay({
             src={user?.photo}
             priority
           />
-          {currentUser.id !== user?.id && admin && (
-            <div className={styles.actions}>
-              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
-                <IconButton icon='edit' label='Edit user' />
-              </Link>
-              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/vet`}>
-                <IconButton icon='fact_check' label='Vet user' />
-              </Link>
-            </div>
-          )}
         </a>
         <a
           className={styles.background}
@@ -110,21 +100,31 @@ export default function UserDisplay({
               />
             </div>
           )}
+          {currentUser.id !== user?.id && admin && (
+            <div className={styles.actions}>
+              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
+                <IconButton icon='edit' label='Edit user' />
+              </Link>
+              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/vet`}>
+                <IconButton icon='fact_check' label='Vet user' />
+              </Link>
+            </div>
+          )}
         </a>
       </div>
       <div className={styles.flex}>
         {user && (
           <dl className={styles.content}>
-            <dt>About</dt>
-            <dd data-cy='bio'>{user && user.bio}</dd>
-            <dt>Teaches</dt>
-            <dd data-cy='subjects'>{join(subjects || [])}</dd>
-            <dt>Speaks</dt>
-            <dd data-cy='langs'>{join(langs || [])}</dd>
-            <dt>Time Zone</dt>
-            <dd data-cy='timezone'>
-              {user &&
-                new Date()
+            {user.bio && <dt>About</dt>}
+            {user.bio && <dd data-cy='bio'>{user.bio}</dd>}
+            {!!subjects.length && <dt>Teaches</dt>}
+            {!!subjects.length && <dd data-cy='subjects'>{join(subjects)}</dd>}
+            {!!langs.length && <dt>Speaks</dt>}
+            {!!langs.length && <dd data-cy='langs'>{join(langs)}</dd>}
+            {user.timezone && <dt>Time Zone</dt>}
+            {user.timezone && (
+              <dd data-cy='timezone'>
+                {new Date()
                   .toLocaleString(locale, {
                     year: 'numeric',
                     timeZone: user.timezone,
@@ -132,7 +132,8 @@ export default function UserDisplay({
                   })
                   .split(', ')
                   .pop()}
-            </dd>
+              </dd>
+            )}
           </dl>
         )}
         {!user && (

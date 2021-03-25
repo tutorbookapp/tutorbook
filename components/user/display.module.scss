@@ -67,27 +67,11 @@
         filter: blur(50px);
         transform: scale(110%);
       }
-    }
-
-    .avatar {
-      flex: none;
-      width: 350px;
-      height: 350px;
-      margin-right: 8px;
-      position: relative;
-      border-radius: 8px 0 0 8px;
-      border: 1px solid var(--accents-2);
-      overflow: hidden;
-      text-align: center;
-
-      .img {
-        border-radius: 0;
-      }
 
       .actions {
         position: absolute;
-        bottom: 8px;
-        right: 8px;
+        bottom: 12px;
+        right: 12px;
 
         button {
           @include icon-button.size(32px);
@@ -122,6 +106,21 @@
             @include elevation.elevation(0);
           }
         }
+      }
+    }
+
+    .avatar {
+      flex: none;
+      width: 350px;
+      height: 350px;
+      margin-right: 8px;
+      border-radius: 8px 0 0 8px;
+      border: 1px solid var(--accents-2);
+      overflow: hidden;
+      text-align: center;
+
+      .img {
+        border-radius: 0;
       }
     }
 
