@@ -142,19 +142,35 @@ export class Timeslot implements TimeslotInterface {
     timeZone = 'America/Los_Angeles',
     showTimeZone = true
   ): string {
+    const hideAMPM =
+      (this.from.getHours() >= 12 && this.to.getHours() >= 12) ||
+      (this.from.getHours() < 12 && this.to.getHours() < 12);
+    const showYear = this.from.getFullYear() !== new Date().getFullYear();
     const showSecondDate =
       this.from.getDate() !== this.to.getDate() ||
       this.from.getMonth() !== this.to.getMonth() ||
       this.from.getFullYear() !== this.to.getFullYear();
-    return `${this.from.toLocaleString(locale, {
+
+    // We follow Google's Material Design guidelines while formatting these
+    // durations. We use an en dash without spaces between the time range.
+    // @see {@link https://material.io/design/communication/data-formats.html}
+    return `${this.from
+      .toLocaleString(locale, {
+        timeZone: timeZone || 'America/Los_Angeles',
+        year: showYear ? 'numeric' : undefined,
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      })
+      .replace(hideAMPM && !showSecondDate ? ' AM' : '', '')
+      .replace(
+        hideAMPM && !showSecondDate ? ' PM' : '',
+        ''
+      )}–${this.to.toLocaleString(locale, {
       timeZone: timeZone || 'America/Los_Angeles',
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    })} - ${this.to.toLocaleString(locale, {
-      timeZone: timeZone || 'America/Los_Angeles',
+      year: showSecondDate && showYear ? 'numeric' : undefined,
       weekday: showSecondDate ? 'long' : undefined,
       month: showSecondDate ? 'long' : undefined,
       day: showSecondDate ? 'numeric' : undefined,
