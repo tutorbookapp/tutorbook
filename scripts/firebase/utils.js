@@ -849,3 +849,15 @@ const purgeGunnData = async () => {
   console.log(`Errored ${errored} profiles.`);
   console.log(`Saved ${saved} profiles.`);
 };
+
+async function addOrgBookingConfigs() {
+  const booking = {
+    en: {
+      message:
+        'Ex: {{person}} could really use your help with a {{subject}} project.',
+    },
+  };
+  const { docs } = await db.collection('orgs').get();
+  console.log(`Adding booking configs to ${docs.length} orgs...`);
+  await Promise.all(docs.map((d) => d.ref.update({ booking })));
+}
