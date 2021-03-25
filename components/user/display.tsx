@@ -77,6 +77,16 @@ export default function UserDisplay({
             src={user?.photo}
             priority
           />
+          {currentUser.id !== user?.id && admin && (
+            <div className={styles.actions}>
+              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
+                <IconButton icon='edit' label='Edit user' />
+              </Link>
+              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/vet`}>
+                <IconButton icon='fact_check' label='Vet user' />
+              </Link>
+            </div>
+          )}
         </a>
         <a
           className={styles.background}
@@ -98,16 +108,6 @@ export default function UserDisplay({
                 className={cn({ [styles.blurred]: !user.background })}
                 alt=''
               />
-            </div>
-          )}
-          {currentUser.id !== user?.id && admin && (
-            <div className={styles.actions}>
-              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
-                <IconButton icon='edit' label='Edit user' />
-              </Link>
-              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/vet`}>
-                <IconButton icon='fact_check' label='Vet user' />
-              </Link>
             </div>
           )}
         </a>
