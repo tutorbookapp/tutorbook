@@ -43,6 +43,9 @@ export default function UserEdit({
     return User.fromJSON(data);
   }, []);
 
+  // TODO: Prevent revalidations of `initialData` when local data has been
+  // updated (i.e. when switching between tabs to copy-and-paste data).
+
   const {
     data: user,
     setData: setUser,
