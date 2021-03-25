@@ -5,9 +5,9 @@ import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
 import analytics from 'lib/api/analytics';
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
-import deleteZoom from 'lib/api/delete/zoom';
 import getLastTime from 'lib/api/get/last-time';
 import getMeeting from 'lib/api/get/meeting';
+import getMeetingVenue from 'lib/api/get/meeting-venue';
 import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
@@ -17,7 +17,6 @@ import sendEmails from 'lib/mail/meetings/delete';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updatePeopleTags from 'lib/api/update/people-tags';
-import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyOptions from 'lib/api/verify/options';
 import verifyQueryId from 'lib/api/verify/query-id';
@@ -77,7 +76,7 @@ export default async function deleteMeeting(
         deleting.time.from,
       ];
       meeting.time.last = getLastTime(meeting.time);
-      meeting.venue = await updateZoom(meeting, people);
+      meeting.venue = getMeetingVenue(meeting, org, people);
 
       // TODO: Specify in email that this is only canceling this meeting.
       await Promise.all([
@@ -100,7 +99,7 @@ export default async function deleteMeeting(
         ),
       });
       meeting.time.last = getLastTime(meeting.time);
-      meeting.venue = await updateZoom(meeting, people);
+      meeting.venue = getMeetingVenue(meeting, org, people);
 
       // TODO: Specify in email that this is canceling all following meetings.
       await Promise.all([
@@ -111,7 +110,6 @@ export default async function deleteMeeting(
     } else {
       // Delete all meetings. Identical to deleting a non-recurring meeting.
       await Promise.all([
-        deleteZoom(meeting.id),
         deleteMeetingDoc(meeting.id),
         deleteMeetingSearchObj(meeting.id),
         sendEmails(meeting, people, deleter, org),

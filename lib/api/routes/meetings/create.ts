@@ -8,9 +8,9 @@ import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
-import createZoom from 'lib/api/create/zoom';
 import getLastTime from 'lib/api/get/last-time';
 import getMatch from 'lib/api/get/match';
+import getMeetingVenue from 'lib/api/get/meeting-venue';
 import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
@@ -103,7 +103,7 @@ export default async function createMeeting(
       if (!peopleIds.includes(creator.id)) verifyIsOrgAdmin(org, creator.id);
     }
 
-    body.venue = await createZoom(body, people);
+    body.venue = getMeetingVenue(body, org, people);
     body.time.last = getLastTime(body.time);
 
     const meeting = await createMeetingDoc(updateMeetingTags(body));

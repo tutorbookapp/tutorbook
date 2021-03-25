@@ -11,8 +11,8 @@ import { Timeslot } from 'lib/model/timeslot';
 import analytics from 'lib/api/analytics';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
-import createZoom from 'lib/api/create/zoom';
 import getLastTime from 'lib/api/get/last-time';
+import getMeetingVenue from 'lib/api/get/meeting-venue';
 import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
@@ -26,7 +26,6 @@ import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
-import updateZoom from 'lib/api/update/zoom';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyDocExists from 'lib/api/verify/doc-exists';
@@ -109,7 +108,7 @@ export default async function updateMeeting(
 
         updatedOriginal.id = original.id;
         updatedOriginal.parentId = undefined;
-        updatedOriginal.venue = await updateZoom(updatedOriginal, people);
+        updatedOriginal.venue = getMeetingVenue(updatedOriginal, org, people);
 
         const withTagsUpdate = updateMeetingTags(updatedOriginal);
 
@@ -143,7 +142,7 @@ export default async function updateMeeting(
         body.time.recur = undefined;
         body.time.exdates = undefined;
         body.time.last = getLastTime(body.time);
-        body.venue = await createZoom(body, people);
+        body.venue = getMeetingVenue(body, org, people);
 
         const withTagsUpdate = updateMeetingTags(body);
         const newMeeting = await createMeetingDoc(withTagsUpdate);
@@ -164,7 +163,7 @@ export default async function updateMeeting(
           beforeUpdateStart,
         ];
         original.time.last = getLastTime(original.time);
-        original.venue = await updateZoom(original, people);
+        original.venue = getMeetingVenue(original, org, people);
 
         const originalWithTagsUpdate = updateMeetingTags(original);
 
@@ -195,7 +194,7 @@ export default async function updateMeeting(
         body.parentId = undefined;
         body.time.recur = verifyRecurIncludesTime(body.time);
         body.time.last = getLastTime(body.time);
-        body.venue = await createZoom(body, people);
+        body.venue = getMeetingVenue(body, org, people);
 
         const withTagsUpdate = updateMeetingTags(body);
         const newRecurringMeeting = await createMeetingDoc(withTagsUpdate);
@@ -212,7 +211,7 @@ export default async function updateMeeting(
           ),
         });
         original.time.last = getLastTime(original.time);
-        original.venue = await updateZoom(original, people);
+        original.venue = getMeetingVenue(original, org, people);
 
         const originalWithTagsUpdate = updateMeetingTags(original);
 
@@ -236,7 +235,7 @@ export default async function updateMeeting(
         ]);
       }
     } else {
-      body.venue = await updateZoom(body, people);
+      body.venue = getMeetingVenue(body, org, people);
       body.time.last = getLastTime(body.time);
       body.match = updateMatchTags(body.match);
 
