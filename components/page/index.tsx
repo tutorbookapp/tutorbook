@@ -141,6 +141,8 @@ export default function PageComponent({
           content='/favicon/ms-icon-144x144.png'
         />
         <meta name='msapplication-navbutton-color' content='#0070f3' />
+        <link rel='preconnect' href='https://segment.tutorbook.org' />
+        <link rel='preconnect' href='https://track.tutorbook.org' />
         <script src='/segment.js' async />
       </Head>
       <div
