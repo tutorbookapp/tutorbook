@@ -20,6 +20,7 @@
   "email": "Organization email address",
   "phone": "Organization phone number",
   "photo": "Organization avatar",
+  "venue": "Organization meeting link",
   "bio": "Organization description",
   "bio-placeholder": "Ex: {{name}} is a nonprofit connecting 9-12 students with expert mentors and K-12 students with volunteer tutors.",
   "website": "Website link",

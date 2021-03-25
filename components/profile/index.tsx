@@ -9,6 +9,7 @@ import Header from 'components/header';
 import LangSelect from 'components/lang-select';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
+import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
@@ -50,6 +51,9 @@ export default function Profile(): JSX.Element {
     () => error && { ...user.toSegment(), error }
   );
 
+  // TODO: Add URL verifications to ensure that the social links and esp. the
+  // venue URL are all valid URLs (e.g. prepend 'https://' by default).
+
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const name = evt.currentTarget.value;
@@ -73,6 +77,12 @@ export default function Profile(): JSX.Element {
   const onBackgroundChange = useCallback(
     (background: string) => {
       setUser((prev) => new User({ ...prev, background }));
+    },
+    [setUser]
+  );
+  const onVenueChange = useCallback(
+    (venue: string) => {
+      setUser((prev) => new User({ ...prev, venue }));
     },
     [setUser]
   );
@@ -190,6 +200,16 @@ export default function Profile(): JSX.Element {
               label={t('user3rd:background')}
               value={user.background}
               onChange={onBackgroundChange}
+              className={styles.field}
+              outlined
+            />
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.inputs}>
+            <VenueInput
+              label={t('user3rd:venue')}
+              value={user.venue}
+              onChange={onVenueChange}
               className={styles.field}
               outlined
             />

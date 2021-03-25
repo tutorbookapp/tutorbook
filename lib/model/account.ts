@@ -74,6 +74,7 @@ export function isSocial(json: unknown): json is SocialInterface {
  * @property bio - A description of the org or user.
  * @property background - An optional background or banner image shown on the
  * org landing page and user display page.
+ * @property venue - The account's default meeting venue (e.g. a Zoom link).
  * @property socials - An array of the account's social media links.
  */
 export interface AccountInterface extends ResourceInterface {
@@ -84,6 +85,7 @@ export interface AccountInterface extends ResourceInterface {
   phone: string;
   bio: string;
   background: string;
+  venue: string;
   socials: SocialInterface[];
   ref?: DocumentReference;
 }
@@ -104,6 +106,7 @@ export function isAccountJSON(json: unknown): json is AccountJSON {
     'phone',
     'bio',
     'background',
+    'venue',
   ];
 
   if (!isResourceJSON(json)) return false;
@@ -127,6 +130,8 @@ export class Account extends Resource implements AccountInterface {
   public bio = '';
 
   public background = '';
+
+  public venue = '';
 
   public socials: SocialInterface[] = [];
 

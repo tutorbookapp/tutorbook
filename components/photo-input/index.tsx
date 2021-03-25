@@ -13,7 +13,6 @@ import styles from './photo-input.module.scss';
 type TextFieldPropOverrides = 'helpText' | 'inputRef' | 'invalid';
 
 interface UniquePhotoInputProps {
-  label: string;
   value: string;
   onChange: TCallback<string>;
 }
@@ -117,11 +116,7 @@ export default function PhotoInput({
         validationMsg: errored,
         children: helperValue,
       }}
-      className={cn(
-        styles.input,
-        textFieldProps.className,
-        required && styles.required
-      )}
+      className={cn(textFieldProps.className, required && styles.required)}
       onChange={handleChange}
       inputRef={inputRef}
       invalid={errored}

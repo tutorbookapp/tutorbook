@@ -3,6 +3,7 @@ import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import PhotoInput from 'components/photo-input';
+import VenueInput from 'components/venue-input';
 
 import { Org } from 'lib/model/org';
 import useSocialProps from 'lib/hooks/social-props';
@@ -38,6 +39,12 @@ export default function General(): JSX.Element {
   const onPhotoChange = useCallback(
     (photo: string) => {
       setOrg((prev: Org) => new Org({ ...prev, photo }));
+    },
+    [setOrg]
+  );
+  const onVenueChange = useCallback(
+    (venue: string) => {
+      setOrg((prev) => new Org({ ...prev, venue }));
     },
     [setOrg]
   );
@@ -85,6 +92,18 @@ export default function General(): JSX.Element {
           onChange={onPhotoChange}
           className={styles.field}
           outlined
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.inputs}>
+        <VenueInput
+          name={org.name}
+          label={t('org:venue')}
+          value={org.venue}
+          onChange={onVenueChange}
+          className={styles.field}
+          outlined
+          required={org ? org.profiles.includes('venue') : false}
         />
       </div>
       <div className={styles.divider} />

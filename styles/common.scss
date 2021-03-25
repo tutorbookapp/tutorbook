@@ -34,6 +34,15 @@
     min-height: 47px;
   }
 
+  + :global(.mdc-text-field-helper-line) {
+    margin: -6px 0 8px;
+
+    p {
+      font-weight: 450;
+      margin: 0;
+    }
+  }
+
   textarea {
     resize: vertical;
   }

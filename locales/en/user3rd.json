@@ -8,6 +8,7 @@
   "phone": "Your phone number",
   "photo": "Your profile photo",
   "background": "Your banner image",
+  "venue": "Your meeting link",
   "reference": "How did you hear about {{org}}?",
   "langs": "What languages do you speak?",
   "availability": "What is your weekly availability?",

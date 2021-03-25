@@ -12,6 +12,7 @@ import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
+import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Aspect } from 'lib/model/aspect';
@@ -137,6 +138,12 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     },
     [track, setUser]
   );
+  const onVenueChange = useCallback(
+    (venue: string) => {
+      setUser((prev) => new User({ ...prev, venue }));
+    },
+    [setUser]
+  );
   const onBioChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
       const bio = evt.currentTarget.value;
@@ -258,20 +265,13 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             </div>
             <div className={styles.divider} />
             <div className={styles.inputs}>
-              <TextField
-                label={t('user3rd:reference', {
-                  org: org?.name || 'Tutorbook',
-                })}
-                placeholder={t('common:reference-placeholder', {
-                  org: org?.name || 'Tutorbook',
-                })}
-                value={user.reference}
-                onChange={onReferenceChange}
+              <VenueInput
+                label={t('user3rd:venue')}
+                value={user.venue}
+                onChange={onVenueChange}
                 className={styles.field}
-                required={org ? org.profiles.includes('reference') : true}
                 outlined
-                rows={3}
-                textarea
+                required={org ? org.profiles.includes('venue') : false}
               />
             </div>
             <div className={styles.divider} />
@@ -315,6 +315,21 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
                 required={org ? org.profiles.includes('bio') : true}
                 outlined
                 rows={8}
+                textarea
+              />
+              <TextField
+                label={t('user3rd:reference', {
+                  org: org?.name || 'Tutorbook',
+                })}
+                placeholder={t('common:reference-placeholder', {
+                  org: org?.name || 'Tutorbook',
+                })}
+                value={user.reference}
+                onChange={onReferenceChange}
+                className={styles.field}
+                required={org ? org.profiles.includes('reference') : true}
+                outlined
+                rows={3}
                 textarea
               />
             </div>

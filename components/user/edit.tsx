@@ -12,6 +12,7 @@ import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
 import Result from 'components/search/result';
 import SubjectSelect from 'components/subject-select';
+import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
@@ -92,6 +93,12 @@ export default function UserEdit({
   const onBackgroundChange = useCallback(
     (background: string) => {
       setUser((prev) => new User({ ...prev, background }));
+    },
+    [setUser]
+  );
+  const onVenueChange = useCallback(
+    (venue: string) => {
+      setUser((prev) => new User({ ...prev, venue }));
     },
     [setUser]
   );
@@ -214,6 +221,17 @@ export default function UserEdit({
               label={t('user:background')}
               value={user.background}
               onChange={onBackgroundChange}
+              className={styles.field}
+              outlined
+            />
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.inputs}>
+            <VenueInput
+              name={user.firstName}
+              label={t('user:venue')}
+              value={user.venue}
+              onChange={onVenueChange}
               className={styles.field}
               outlined
             />
