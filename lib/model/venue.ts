@@ -12,21 +12,16 @@ import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import { isJSON } from 'lib/model/json';
 
-export type VenueType = 'zoom' | 'jitsi';
-
 /**
  * A venue for a tutoring or mentoring match to occur (e.g. Zoom or Jitsi).
  * @typedef {Object} Venue
  * @extends Resource
- * @property type - The type of venue (currently only Zoom or Jitsi).
  * @property url - The URL of the venue (right now, all venues are online and
  * thus have a definitive URL).
  */
 export interface VenueInterface extends ResourceInterface {
   id: string;
   url: string;
-  invite: string;
-  type: VenueType;
 }
 
 export type VenueJSON = Omit<VenueInterface, keyof Resource> & ResourceJSON;
@@ -38,13 +33,8 @@ export type VenueSearchHit = Omit<VenueInterface, keyof Resource> &
 export function isVenueJSON(json: unknown): json is VenueJSON {
   if (!isResourceJSON(json)) return false;
   if (!isJSON(json)) return false;
+  if (typeof json.id !== 'string') return false;
   if (typeof json.url !== 'string') return false;
-  if (json.type === 'zoom') {
-    if (typeof json.id !== 'string') return false;
-    if (typeof json.invite !== 'string') return false;
-  } else if (json.type !== 'jitsi') {
-    return false;
-  }
   return true;
 }
 
@@ -52,10 +42,6 @@ export class Venue extends Resource implements VenueInterface {
   public id = nanoid(10);
 
   public url = `https://meet.jit.si/TB-${this.id}`;
-
-  public invite = `Open ${this.url} to join your meeting.`;
-
-  public type: VenueType = 'jitsi';
 
   public constructor(venue: Partial<VenueInterface> = {}) {
     super(venue);
