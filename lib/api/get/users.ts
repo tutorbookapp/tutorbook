@@ -27,6 +27,15 @@ function getFilterStrings(query: UsersQuery): string[] {
   str = addOptionsFilter(str, query.subjects, `${query.aspect}.subjects`);
   str = addOptionsFilter(str, query.langs, 'langs');
   if (!query.availability.length) return [str];
+
+  // TODO: This is currently filtering by users whose availability contains the
+  // given timeslot. Instead, we should filter by users who have at least an hr
+  // long timeslot overlap with the given availability:
+  // 1. Get all possible 1hr long timeslots in 5min? intervals that the
+  //    requested availability generates.
+  // 2. Filter by users whose availability contains at least one of those
+  //    timeslots (i.e. users with whom the student/parent could book a 1hr long
+  //    meeting with).
   return query.availability.map((timeslot) =>
     addStringFilter(
       str,
