@@ -156,6 +156,9 @@
   a {
     color: var(--on-background);
     text-decoration: none;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    hyphens: none;
     font-weight: 500;
     display: block;
 

@@ -13,6 +13,7 @@ import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
+import { Venue } from 'lib/model/venue';
 import { join } from 'lib/utils';
 import usePrevious from 'lib/hooks/previous';
 
@@ -58,6 +59,16 @@ export default function EditPage({
   const onTimeChange = useCallback(
     (time: Timeslot) => {
       setEditing((prev) => new Meeting({ ...prev, time }));
+    },
+    [setEditing]
+  );
+  const onLinkChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const url = evt.currentTarget.value;
+      setEditing((prev) => {
+        const venue = new Venue({ ...prev.venue, url, updated: new Date() });
+        return new Meeting({ ...prev, venue });
+      });
     },
     [setEditing]
   );
@@ -111,6 +122,14 @@ export default function EditPage({
       </div>
       <form className={styles.form} onSubmit={onEditStop}>
         <div className={styles.inputs}>
+          <TextField
+            label='Meeting link'
+            onChange={onLinkChange}
+            value={editing.venue.url}
+            className={styles.field}
+            outlined
+            required
+          />
           <SubjectSelect
             required
             autoOpenMenu
