@@ -54,5 +54,10 @@
       "header": "How it works",
       "bio": ""
     }
+  },
+  "booking": {
+    "en": {
+      "message": "Ex: {{person}} could really use your help with some {{subject}} assignments."
+    }
   }
 }

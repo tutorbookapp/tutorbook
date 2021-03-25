@@ -15,11 +15,11 @@ import { Aspect, isAspect } from 'lib/model/aspect';
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Person, Role } from 'lib/model/person';
 import { User, UserJSON } from 'lib/model/user';
+import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
 import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import { getErrorMessage } from 'lib/fetch';
-import { join } from 'lib/utils';
 import { signupWithGoogle } from 'lib/firebase/signup';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
@@ -37,11 +37,10 @@ export default function RequestForm({
   const [checked, setChecked] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
 
-  const { t } = useTranslation();
-
   const { org } = useOrg();
   const { query } = useRouter();
   const { user, updateUser } = useUser();
+  const { t, lang: locale } = useTranslation();
 
   const [childName, setChildName] = useState<string>('');
   const [childAge, setChildAge] = useState<number>();
@@ -215,6 +214,15 @@ export default function RequestForm({
   const i18nPrefix = useMemo(() => (student !== 'Me' ? 'for-others-' : ''), [
     student,
   ]);
+  const messagePlaceholder = useMemo(() => {
+    const data = {
+      person: student === 'Me' ? 'I' : childName.split(' ')[0] || 'They',
+      subject: join(subjects.map((s) => s.label)) || 'Computer Science',
+    };
+    if (org?.booking[locale]?.message)
+      return translate(org.booking[locale].message, data);
+    return t('match3rd:message-placeholder', data);
+  }, [t, locale, org, student, subjects, childName]);
 
   return (
     <form className={styles.card} onSubmit={onSubmit}>
@@ -279,10 +287,7 @@ export default function RequestForm({
           textarea
           rows={4}
           required
-          placeholder={t('match3rd:message-placeholder', {
-            person: student === 'Me' ? 'I' : childName.split(' ')[0] || 'They',
-            subject: join(subjects.map((s) => s.label)) || 'Computer Science',
-          })}
+          placeholder={messagePlaceholder}
           label={t(`match3rd:${i18nPrefix}message`)}
           className={styles.field}
           onChange={(evt) => setMessage(evt.currentTarget.value)}

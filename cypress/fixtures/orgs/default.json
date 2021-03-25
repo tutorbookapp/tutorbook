@@ -65,5 +65,10 @@
       "body": "First, new volunteers register using the sign-up form linked to the right. Organization admins then vet those volunteers (to ensure they are who they say they are) before adding them to the search view for students to find. Finally, students and parents use the search view (linked to the right) to find and request those volunteers. Recurring meetings (e.g. on Zoom or Google Meet) are then set up via email.",
       "header": "How it works"
     }
+  },
+  "booking": {
+    "en": {
+      "message": "Ex: {{person}} could really use your help with a {{subject}} project."
+    }
   }
 }
