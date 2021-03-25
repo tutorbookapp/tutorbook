@@ -3,6 +3,19 @@ import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
 /**
+ * Replaces the {{var}} dynamic string variables with their values (if
+ * available). This allows orgs to customize e.g. booking message placeholders
+ * and still take advantage of dynamic variables like {{person}} or {{subject}}.
+ */
+export function translate(tmpl: string, vals: Record<string, string>): string {
+  let str = tmpl;
+  Object.entries(vals).forEach(([key, val]) => {
+    str = str.replace(`{{${key}}}`, val);
+  });
+  return str;
+}
+
+/**
  * Checks if a given URL is a valid GCP Storage item and, if so, returns the
  * filename within the default GCP Storage bucket.
  * @param url - The URL to check (typically a profile photo URL).

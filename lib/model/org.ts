@@ -21,10 +21,8 @@ type Config<T> = { [locale: string]: T };
 type AspectConfig<T> = Config<{ [key in Aspect]?: T }>;
 
 type SignupConfig = AspectConfig<{ header: string; body: string; bio: string }>;
-type HomeConfig = Config<{
-  header: string;
-  body: string;
-}>;
+type HomeConfig = Config<{ header: string; body: string }>;
+type BookingConfig = Config<{ message: string }>;
 
 export function isSignupConfig(config: unknown): config is SignupConfig {
   if (!isJSON(config)) return false;
@@ -47,6 +45,15 @@ export function isHomeConfig(config: unknown): config is SignupConfig {
     if (!isJSON(localeConfig)) return false;
     if (typeof localeConfig.header !== 'string') return false;
     if (typeof localeConfig.body !== 'string') return false;
+    return true;
+  });
+}
+
+export function isBookingConfig(config: unknown): config is BookingConfig {
+  if (!isJSON(config)) return false;
+  return Object.values(config).every((localeConfig) => {
+    if (!isJSON(localeConfig)) return false;
+    if (typeof localeConfig.message !== 'string') return false;
     return true;
   });
 }
@@ -101,6 +108,7 @@ export function isZoomAccount(json: unknown): json is ZoomAccount {
  * (optionally) users.
  * @property signup - Configuration for the org's unique custom sign-up page.
  * @property home - Configuration for the org's unique custom landing homepage.
+ * @property booking - Configuration for the org's user booking pages.
  * @property [matchLink] - Temporary fix for QuaranTunes' need to link to a
  * Picktime page for scheduling instead of creating matches within TB.
  * @see {@link https://github.com/tutorbookapp/tutorbook/issues/138}
@@ -114,6 +122,7 @@ export interface OrgInterface extends AccountInterface {
   zoom?: ZoomAccount;
   signup: SignupConfig;
   home: HomeConfig;
+  booking: BookingConfig;
   matchURL?: string;
 }
 
@@ -133,6 +142,7 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (json.zoom && !isZoomAccount(json.zoom)) return false;
   if (!isSignupConfig(json.signup)) return false;
   if (!isHomeConfig(json.home)) return false;
+  if (!isBookingConfig(json.booking)) return false;
   if (json.matchURL && typeof json.matchURL !== 'string') return false;
   return true;
 }
@@ -207,6 +217,13 @@ export class Org extends Account implements OrgInterface {
         'search view (linked to the right) to find and request those ' +
         'volunteers. Recurring meetings (e.g. on Zoom or Google Meet) are ' +
         'then set up via email.',
+    },
+  };
+
+  public booking: BookingConfig = {
+    en: {
+      message:
+        'Ex: {{person}} could really use your help with a {{subject}} project.',
     },
   };
 
