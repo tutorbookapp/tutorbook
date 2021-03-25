@@ -189,7 +189,7 @@ export function QueryHeader({
           )}
         </div>
         <div className={styles.center}>
-          <FilterForm query={query} onChange={onChange} thirdPerson />
+          <FilterForm query={query} onChange={onChange} />
         </div>
         <div className={styles.right}>
           <DesktopNav />

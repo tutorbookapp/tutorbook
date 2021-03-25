@@ -21,6 +21,7 @@ import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { Availability } from 'lib/model/availability';
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';
+import { useUser } from 'lib/context/user';
 
 import TimeslotRnd from './timeslot-rnd';
 import { getTimeslot } from './utils';
@@ -66,6 +67,7 @@ function AvailabilitySelect({
   ...textFieldProps
 }: AvailabilitySelectProps): JSX.Element {
   const { lang: locale } = useTranslation();
+  const { user } = useUser();
 
   const headerRef = useRef<HTMLDivElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);
@@ -83,7 +85,7 @@ function AvailabilitySelect({
   // the "Submit" or "Signup" buttons w/in 500ms of editing an RND.
   useEffect(() => {
     if (dequal(value, availability)) return () => {};
-    const timeoutId = setTimeout(() => onChange(availability), 500);
+    const timeoutId = setTimeout(() => onChange(availability), 1000);
     return () => clearTimeout(timeoutId);
   }, [value, onChange, availability]);
 
@@ -295,23 +297,7 @@ function AvailabilitySelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={availability
-          .map((t) => {
-            const showSecondDate =
-              t.from.getDate() !== t.to.getDate() ||
-              t.from.getMonth() !== t.to.getMonth() ||
-              t.from.getFullYear() !== t.to.getFullYear();
-            return `${t.from.toLocaleString(locale, {
-              weekday: 'long',
-              hour: 'numeric',
-              minute: 'numeric',
-            })} - ${t.to.toLocaleString(locale, {
-              weekday: showSecondDate ? 'long' : undefined,
-              hour: 'numeric',
-              minute: 'numeric',
-            })}`;
-          })
-          .join(', ')}
+        value={availability.toString(locale, user.timezone)}
         className={styles.textField}
         onFocus={() => {
           if (onFocused) onFocused();

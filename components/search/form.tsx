@@ -36,7 +36,7 @@ export default function Form({
       className={cn(styles.form, { [styles.elevated]: elevated })}
       ref={formRef}
     >
-      <FilterForm query={query} onChange={onChange} thirdPerson />
+      <FilterForm query={query} onChange={onChange} />
     </div>
   );
 }

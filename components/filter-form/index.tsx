@@ -3,9 +3,11 @@ import { Ripple } from '@rmwc/ripple';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
+import AvailabilitySelect from 'components/availability-select';
 import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
 
+import { Availability } from 'lib/model/availability';
 import { Callback } from 'lib/model/callback';
 import { Option } from 'lib/model/query/base';
 import { UsersQuery } from 'lib/model/query/users';
@@ -34,7 +36,6 @@ function join(options: Option<string>[]): string {
 interface FilterFormProps {
   query: UsersQuery;
   onChange: Callback<UsersQuery>;
-  thirdPerson?: boolean;
 }
 
 type FocusTarget = 'subjects' | 'availability' | 'langs';
@@ -42,7 +43,6 @@ type FocusTarget = 'subjects' | 'availability' | 'langs';
 export default function FilterForm({
   query,
   onChange,
-  thirdPerson,
 }: FilterFormProps): JSX.Element {
   const [active, setActive] = useState<boolean>(false);
   const [focused, setFocused] = useState<FocusTarget>();
@@ -77,6 +77,12 @@ export default function FilterForm({
     },
     [onChange]
   );
+  const onAvailabilityChange = useCallback(
+    (availability: Availability) => {
+      onChange((prev) => new UsersQuery({ ...prev, availability, page: 0 }));
+    },
+    [onChange]
+  );
   const onLangsChange = useCallback(
     (langs: Option<string>[]) => {
       onChange((prev) => new UsersQuery({ ...prev, langs, page: 0 }));
@@ -87,6 +93,10 @@ export default function FilterForm({
   const focusSubjects = useCallback(() => {
     setActive(true);
     setFocused('subjects');
+  }, []);
+  const focusAvailability = useCallback(() => {
+    setActive(true);
+    setFocused('availability');
   }, []);
   const focusLangs = useCallback(() => {
     setActive(true);
@@ -107,7 +117,7 @@ export default function FilterForm({
           <SubjectSelect
             className={styles.field}
             focused={focused === 'subjects'}
-            label={t(`query${thirdPerson ? '3rd' : ''}:subjects`)}
+            label={t('query3rd:subjects')}
             onFocused={focusSubjects}
             onBlurred={focusNothing}
             onSelectedChange={onSubjectsChange}
@@ -116,10 +126,20 @@ export default function FilterForm({
             aspect={query.aspect}
             outlined
           />
+          <AvailabilitySelect
+            className={styles.field}
+            focused={focused === 'availability'}
+            label={t('query3rd:availability')}
+            onFocused={focusAvailability}
+            onBlurred={focusNothing}
+            onChange={onAvailabilityChange}
+            value={query.availability}
+            outlined
+          />
           <LangSelect
             className={styles.field}
             focused={focused === 'langs'}
-            label={t(`query${thirdPerson ? '3rd' : ''}:langs`)}
+            label={t('query3rd:langs')}
             placeholder={t('common:langs-placeholder')}
             onFocused={focusLangs}
             onBlurred={focusNothing}
@@ -132,6 +152,10 @@ export default function FilterForm({
       <div className={styles.search} role='search'>
         <SearchButton onClick={focusSubjects}>
           {join(query.subjects) || t('search:any-subjects')}
+        </SearchButton>
+        <span className={styles.searchDivider} />
+        <SearchButton onClick={focusAvailability}>
+          {query.availability.toString() || t('search:any-availability')}
         </SearchButton>
         <span className={styles.searchDivider} />
         <SearchButton onClick={focusLangs}>
