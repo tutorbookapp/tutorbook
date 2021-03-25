@@ -2,11 +2,13 @@ import { animated, useSpring } from 'react-spring';
 import { memo, useCallback } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
+import AvailabilitySelect from 'components/availability-select';
 import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 
 import { USER_TAGS, UserHitTag } from 'lib/model/user';
+import { Availability } from 'lib/model/availability';
 import { Callback } from 'lib/model/callback';
 import { Option } from 'lib/model/query/base';
 import { UsersQuery } from 'lib/model/query/users';
@@ -32,6 +34,12 @@ function FiltersSheet({
   const onSubjectsChange = useCallback(
     (subjects: Option<string>[]) => {
       setQuery((prev) => new UsersQuery({ ...prev, subjects, page: 0 }));
+    },
+    [setQuery]
+  );
+  const onAvailabilityChange = useCallback(
+    (availability: Availability) => {
+      setQuery((prev) => new UsersQuery({ ...prev, availability, page: 0 }));
     },
     [setQuery]
   );
@@ -61,6 +69,14 @@ function FiltersSheet({
           selected={query.subjects}
           placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
           aspect={query.aspect}
+          className={styles.field}
+          renderToPortal
+          outlined
+        />
+        <AvailabilitySelect
+          label={t('query:availability')}
+          onChange={onAvailabilityChange}
+          value={query.availability}
           className={styles.field}
           renderToPortal
           outlined
