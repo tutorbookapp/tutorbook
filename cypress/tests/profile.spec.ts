@@ -183,19 +183,36 @@ describe('Profile page', () => {
       cy.get('@langs').eq(idx).should('contain', langs[lang]);
     });
 
+    // TODO: For some reason, the `Availability` object is always replaced with
+    // a regular array when it is compiled by Cypress's test runner.
+
     const availabilityString = volunteer.availability
       .map((timeslot: TimeslotJSON) => {
         const from = new Date(timeslot.from);
         const to = new Date(timeslot.to);
+
+        const hideAMPM =
+          (from.getHours() >= 12 && to.getHours() >= 12) ||
+          (from.getHours() < 12 && to.getHours() < 12);
         const showSecondDate =
           from.getDate() !== to.getDate() ||
           from.getMonth() !== to.getMonth() ||
           from.getFullYear() !== to.getFullYear();
-        return `${from.toLocaleString('en', {
-          weekday: 'long',
-          hour: 'numeric',
-          minute: 'numeric',
-        })} - ${to.toLocaleString('en', {
+
+        // We follow Google's Material Design guidelines while formatting these
+        // durations. We use an en dash without spaces between the time range.
+        // @see {@link https://material.io/design/communication/data-formats.html}
+        return `${from
+          .toLocaleString('en', {
+            weekday: 'long',
+            hour: 'numeric',
+            minute: 'numeric',
+          })
+          .replace(hideAMPM && !showSecondDate ? ' AM' : '', '')
+          .replace(
+            hideAMPM && !showSecondDate ? ' PM' : '',
+            ''
+          )}–${to.toLocaleString('en', {
           weekday: showSecondDate ? 'long' : undefined,
           hour: 'numeric',
           minute: 'numeric',
@@ -218,12 +235,10 @@ describe('Profile page', () => {
     // @see {@link https://bit.ly/2TIuE3i}
     volunteer.availability.forEach((timeslot: TimeslotJSON, idx: number) => {
       const config = { hour: 'numeric', minute: 'numeric' };
-      const from = new Date(timeslot.from);
-      const to = new Date(timeslot.to);
       cy.get('@timeslots')
         .eq(idx)
-        .should('contain', from.toLocaleString('en', config))
-        .and('contain', to.toLocaleString('en', config))
+        .should('contain', new Date(timeslot.from).toLocaleString('en', config))
+        .and('contain', new Date(timeslot.to).toLocaleString('en', config))
         .then((timeslotEl: JQuery<HTMLElement>) => {
           // TODO: Make sure these drag-and-drop tests actually work.
           const { x, y } = timeslotEl[0].getBoundingClientRect();
