@@ -21,16 +21,19 @@ export default function usePage({
   const { loggedIn, orgs } = useUser();
 
   // Redirect to the login page if authentication is required but missing.
-  const loginURL = useMemo(() => {
-    return url ? `/login?href=${encodeURIComponent(url)}` : '/login';
-  }, [url]);
+  const loginURL = useMemo(
+    () => (url ? `/login?href=${encodeURIComponent(url)}` : '/login'),
+    [url]
+  );
   useEffect(() => {
     if (login) {
       void Router.prefetch(loginURL);
     }
   }, [login, loginURL]);
+
+  // Wait for the login URL redirect location to be populated.
   useEffect(() => {
-    if (login && loggedIn === false) {
+    if (login && loggedIn === false && !loginURL.includes('undefined')) {
       void Router.replace(loginURL);
     }
   }, [login, loggedIn, loginURL]);
