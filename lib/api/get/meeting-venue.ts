@@ -24,12 +24,8 @@ export default function getMeetingVenue(
   const priority: Role[] = ['tutor', 'mentor', 'parent', 'tutee', 'mentee'];
   // eslint-disable-next-line no-restricted-syntax
   for (const role of priority) {
-    console.log(`Checking for ${role}s with venues...`);
     const person = people.find((p) => p.roles.includes(role) && p.venue);
-    if (person?.venue) {
-      console.log(`Found ${role} with venue:`, person.venue);
-      return new Venue({ url: person.venue });
-    }
+    if (person?.venue) return new Venue({ url: person.venue });
   }
 
   return meeting.venue;
