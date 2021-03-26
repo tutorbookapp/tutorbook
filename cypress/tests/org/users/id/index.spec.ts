@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid';
 
 import { getDateWithDay, getDaysInMonth } from 'lib/utils/time';
-import { Timeslot } from 'lib/model/timeslot';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
 import child from 'cypress/fixtures/users/child.json';
@@ -152,6 +151,22 @@ function selectTime(they: boolean = false): void {
   // TODO: Why can't we use `percySnapshot()` within these helper functions?
   // cy.percySnapshot('User Display Page with Date Selected');
 
+  const timeString = `${selected
+    .toLocaleString('en', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    })
+    .replace(' AM', '')
+    .replace(' PM', '')}–${new Date(
+    selected.valueOf() + 60 * 60 * 1000
+  ).toLocaleString('en', {
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZoneName: 'short',
+  })}`;
   cy.getBySel('time-button')
     .first()
     .should(
@@ -163,15 +178,7 @@ function selectTime(they: boolean = false): void {
       })
     )
     .trigger('click');
-  cy.get('@time-input')
-    .should('not.be.focused')
-    .and(
-      'have.value',
-      new Timeslot({
-        from: selected,
-        to: new Date(selected.valueOf() + 60 * 60 * 1000),
-      }).toString('en')
-    );
+  cy.get('@time-input').should('not.be.focused').and('have.value', timeString);
 
   // TODO: Why can't we use `percySnapshot()` within these helper functions?
   // cy.percySnapshot('User Display Page with Time Selected');
