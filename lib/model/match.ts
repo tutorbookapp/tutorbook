@@ -166,6 +166,7 @@ export class Match extends Resource implements MatchInterface {
       ...rest,
       ...super.toSearchHit(),
       _tags: [...tags, ...notTags(tags, MATCH_TAGS)],
+      tags: undefined,
       ref: undefined,
       id: undefined,
       objectID: id,

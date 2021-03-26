@@ -265,6 +265,7 @@ export class Meeting extends Resource implements MeetingInterface {
       venue: venue.toSearchHit(),
       match: match.toSearchHit(),
       _tags: [...tags, ...notTags(tags, MEETING_TAGS)],
+      tags: undefined,
       ref: undefined,
       id: undefined,
       objectID: id,

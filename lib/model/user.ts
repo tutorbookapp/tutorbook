@@ -358,6 +358,7 @@ export class User extends Account implements UserInterface {
       verifications: verifications.map((v) => v.toSearchHit()),
       zooms: zooms.map((z) => z.toSearchHit()),
       _tags: [...tags, ...notTags(tags, USER_TAGS)],
+      tags: undefined,
       token: undefined,
       hash: undefined,
       ref: undefined,
