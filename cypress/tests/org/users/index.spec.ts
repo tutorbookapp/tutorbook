@@ -64,6 +64,7 @@ describe('Users dashboard page', () => {
 
   it('copies org links and filters users', () => {
     cy.login(admin.id);
+    cy.viewport(1080, 1920);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {
         cy.spy(win.navigator.clipboard, 'writeText').as('copy');
