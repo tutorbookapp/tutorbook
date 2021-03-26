@@ -26,7 +26,14 @@ export function deleteObj(
   objId: string
 ): WaitablePromise<DeleteResponse> {
   const idx = client.initIndex(`${prefix}-${indexId}`);
-  return idx.deleteObject(objId);
+  const promise = idx.deleteObject(objId);
+
+  // TODO: Test how much slower it is to actually wait for these operations. If
+  // it isn't too much slower, we should do it by default (so we're testing the
+  // default behavior of our app during integration tests).
+  if (['development', 'test'].includes(process.env.APP_ENV as string))
+    return promise.wait();
+  return promise;
 }
 
 export default function index<T extends { toSearchHit: () => object }>(
@@ -34,5 +41,12 @@ export default function index<T extends { toSearchHit: () => object }>(
   obj: T
 ): WaitablePromise<SaveObjectResponse> {
   const idx = client.initIndex(`${prefix}-${indexId}`);
-  return idx.saveObject(obj.toSearchHit());
+  const promise = idx.saveObject(obj.toSearchHit());
+
+  // TODO: Test how much slower it is to actually wait for these operations. If
+  // it isn't too much slower, we should do it by default (so we're testing the
+  // default behavior of our app during integration tests).
+  if (['development', 'test'].includes(process.env.APP_ENV as string))
+    return promise.wait();
+  return promise;
 }
