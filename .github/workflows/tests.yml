@@ -6,7 +6,7 @@ on:
 
 env:
   NODE_ENV: test
-  PERCY_PARALLEL_NONCE: github.token
+  PERCY_PARALLEL_NONCE: ${{ github.run_id }}
   PERCY_PARALLEL_TOTAL: 10
   ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
