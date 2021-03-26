@@ -38,10 +38,8 @@ export default async function createAuthUser(user: User): Promise<User> {
         'auth/email-already-exists',
         'auth/phone-number-already-exists',
       ].includes(err.code)
-    ) {
-      console.warn(`[WARNING] Skipping error (${err.code}) during tests...`);
+    )
       return new User(clone({ ...user, id: user.id || uuid() }));
-    }
     const msg = `${err.name} (${err.code}) creating auth account`;
     throw new APIError(`${msg} for ${user.toString()}: ${err.message}`, 500);
   }

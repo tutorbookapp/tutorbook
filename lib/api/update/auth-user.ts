@@ -41,10 +41,8 @@ export default async function updateAuthUser(user: User): Promise<User> {
         'auth/email-already-exists',
         'auth/phone-number-already-exists',
       ].includes(err.code)
-    ) {
-      console.warn(`[WARNING] Skipping error (${err.code}) during tests...`);
+    )
       return new User(clone(user));
-    }
     const msg = `${err.name} (${err.code}) updating auth account`;
     throw new APIError(`${msg} for ${user.toString()}: ${err.message}`, 500);
   }

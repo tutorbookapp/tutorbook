@@ -30,9 +30,5 @@ declare global {
  * @see {@link https://developers.intercom.com/installing-intercom/docs/intercom-javascript}
  */
 export default function Intercom(...args: Parameters<IntercomGlobal>): void {
-  if (canUseDOM && window.Intercom) {
-    (window.Intercom as Function)(...args);
-  } else if (canUseDOM) {
-    console.warn('Intercom has not been initialized yet.');
-  }
+  if (canUseDOM && window.Intercom) (window.Intercom as Function)(...args);
 }
