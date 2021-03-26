@@ -93,7 +93,6 @@ describe('Student landing page', () => {
         selectSubject();
 
         cy.get('@buttons').last().click();
-        cy.get('@buttons').should('be.disabled');
       });
 
     // TODO: Find way to make Cypress wait for Next.js to emit the "client-side
