@@ -1,4 +1,4 @@
-import { FormEvent, useCallback } from 'react';
+import { FormEvent, Fragment, useCallback } from 'react';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -73,7 +73,7 @@ export default function Signup(): JSX.Element {
   return (
     <div className={styles.card}>
       {org.aspects.map((aspect: Aspect, idx: number) => (
-        <>
+        <Fragment key={aspect}>
           {idx > 0 && <div className={styles.divider} />}
           <div className={styles.inputs}>
             <TextField
@@ -108,7 +108,7 @@ export default function Signup(): JSX.Element {
               textarea
             />
           </div>
-        </>
+        </Fragment>
       ))}
     </div>
   );
