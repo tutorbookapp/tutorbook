@@ -7,7 +7,7 @@ on:
 env:
   NODE_ENV: test
   PERCY_PARALLEL_NONCE: github.token
-  PERCY_PARALLEL_TOTAL: 15
+  PERCY_PARALLEL_TOTAL: 10
   ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
   FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [electron, firefox, chrome]
+        browser: [electron, chrome]
         parallel: [1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v2
