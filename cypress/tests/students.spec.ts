@@ -28,12 +28,8 @@ describe('Student landing page', () => {
   });
 
   it('selects subjects and searches mentors', () => {
-    cy.getBySel('hero')
-      .first()
-      .within(() => {
-        selectSubject();
-        cy.contains('button', 'Search mentors').click();
-      });
+    selectSubject();
+    cy.contains('button', 'Search mentors').click();
 
     cy.url({ timeout: 60000 }).should('contain', '/default/search');
 
@@ -45,11 +41,7 @@ describe('Student landing page', () => {
 
   it('has results carousel and searches tutors', () => {
     cy.wait('@list-users');
-    cy.getBySel('carousel')
-      .first()
-      .find('a')
-      .should('have.length', 2)
-      .as('cards');
+    cy.getBySel('user-card').should('have.length', 2).as('cards');
 
     function isValidCard(idx: number, user: UserJSON): void {
       cy.get('@cards')
@@ -75,25 +67,21 @@ describe('Student landing page', () => {
     // cy.get('@carousel').find('button:visible').click();
     // cy.get('@carousel').find('button').should('not.be.visible');
 
-    cy.getBySel('hero')
-      .first()
-      .within(() => {
-        cy.getBySel('title').should(
-          'have.text',
-          'Find your perfect volunteer tutor or mentor'
-        );
-        cy.getBySel('search-form')
-          .children('button')
-          .should('have.length', 2)
-          .as('buttons');
-        cy.get('@buttons').first().should('have.text', 'Search mentors');
-        cy.get('@buttons').last().should('have.text', 'Search tutors');
-        cy.percySnapshot('Students Landing Page');
+    cy.getBySel('title').should(
+      'have.text',
+      'Find your perfect volunteer tutor or mentor'
+    );
+    cy.getBySel('search-form')
+      .children('button')
+      .should('have.length', 2)
+      .as('buttons');
+    cy.get('@buttons').first().should('have.text', 'Search mentors');
+    cy.get('@buttons').last().should('have.text', 'Search tutors');
+    cy.percySnapshot('Students Landing Page');
 
-        selectSubject();
+    selectSubject();
 
-        cy.get('@buttons').last().click();
-      });
+    cy.get('@buttons').last().click();
 
     // TODO: Find way to make Cypress wait for Next.js to emit the "client-side
     // page transition complete" signal (e.g. when the nprogress bar is hidden).
