@@ -62,7 +62,7 @@ describe('Users dashboard page', () => {
     cy.get('@copy').should('be.calledOnce');
   });
 
-  it('copies org links and filters users', () => {
+  it.only('copies org links and filters users', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {
@@ -192,7 +192,16 @@ describe('Users dashboard page', () => {
       .first()
       .as('not-vetted-chip')
       .should('contain', 'Not vetted');
-    cy.wait('@list-users');
+
+    cy.log('Waiting for list users interception...');
+
+    cy.wait('@list-users').then((interception) => {
+      cy.log('Intercepted:', JSON.stringify(interception, null, 2));
+      cy.log('Request:', JSON.stringify(interception.request, null, 2));
+      cy.log('Response:', JSON.stringify(interception.response, null, 2));
+      cy.log('Data:', JSON.stringify(interception.response?.body, null, 2));
+    });
+
     cy.get('@results')
       .should('have.length', 1)
       .first()

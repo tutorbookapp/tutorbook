@@ -4,7 +4,10 @@ import '@cypress/code-coverage/support';
 
 import './commands';
 
-installLogsCollector();
+installLogsCollector({
+  enableExtendedCollector: false,
+  xhr: { printHeaderData: true, printRequestData: true },
+});
 
 before(() => {
   cy.task('createIndices');

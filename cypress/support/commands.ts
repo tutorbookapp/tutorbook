@@ -79,7 +79,9 @@ function setup(overrides?: Overrides | null): void {
   cy.intercept('PUT', '/api/meetings/*').as('update-meeting');
 
   cy.intercept('POST', '/api/users').as('create-user');
-  cy.intercept('GET', '/api/users*').as('list-users');
+  cy.intercept('GET', '/api/users*', (req) => {
+    delete req.headers['if-none-match'];
+  }).as('list-users');
   cy.intercept('GET', '/api/users/*').as('get-user');
 
   // TODO: Restore this interception once we are able to override it with error

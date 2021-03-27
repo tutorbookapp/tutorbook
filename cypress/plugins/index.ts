@@ -217,6 +217,8 @@ export default function plugins(
 
       await create('orgs', orgs);
 
+      console.log('Creating users:', users);
+
       // We have to create the admin first because TB's back-end will try to
       // fetch his data when sending user creation notification emails.
       await create(
