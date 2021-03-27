@@ -91,10 +91,6 @@ function selectTime(they: boolean = false): void {
     .should('have.attr', 'aria-selected', 'true')
     .and('have.css', 'background-color', 'rgb(0, 112, 243)');
 
-  function dayIdx(day: number): number {
-    return getDateWithDay(day, now).getDate() - 1;
-  }
-
   // Days in the past should be disabled.
   let past = new Date(now.getFullYear(), now.getMonth());
   while (past < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
@@ -105,13 +101,27 @@ function selectTime(they: boolean = false): void {
   }
 
   // Only the days when John Doe is available should be clickable.
-  cy.get('@days').eq(dayIdx(0)).should('not.be.disabled');
-  cy.get('@days').eq(dayIdx(1)).should('be.disabled');
-  cy.get('@days').eq(dayIdx(2)).should('not.be.disabled');
-  cy.get('@days').eq(dayIdx(3)).should('be.disabled');
-  cy.get('@days').eq(dayIdx(4)).should('be.disabled');
-  cy.get('@days').eq(dayIdx(5)).should('not.be.disabled');
-  cy.get('@days').eq(dayIdx(6)).should('be.disabled');
+  function dayIsAvailable(day: number, available: boolean): void {
+    // Don't error when all the timeslots for the current (usually available)
+    // date are already in the past (i.e. changes based on when our CI is run).
+    const tmrw = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    if (tmrw.getMonth() !== now.getMonth()) return;
+    const date = getDateWithDay(day, tmrw);
+    if (date.getMonth() !== now.getMonth()) return;
+    cy.get('@days')
+      .eq(date.getDate() - 1)
+      .should(available ? 'not.be.disabled' : 'be.disabled');
+  }
+
+  // TODO: Perhaps test these for a month in the future so we don't have to
+  // worry about days in the past being disabled or not. Or test both cases.
+  dayIsAvailable(0, true);
+  dayIsAvailable(1, false);
+  dayIsAvailable(2, true);
+  dayIsAvailable(3, false);
+  dayIsAvailable(4, false);
+  dayIsAvailable(5, true);
+  dayIsAvailable(6, false);
 
   // TODO: Why can't we use `percySnapshot()` within these helper functions?
   // cy.percySnapshot('User Display Page with Time Select Open');
