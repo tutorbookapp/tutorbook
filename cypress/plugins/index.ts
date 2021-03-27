@@ -7,6 +7,7 @@ import client from 'firebase/app';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
 import firebase from 'firebase-admin';
+import installLogsPrinter from 'cypress-terminal-report/src/installLogsPrinter';
 import { percyHealthCheck } from '@percy/cypress/task';
 
 import { MatchJSON } from 'lib/model/match';
@@ -107,6 +108,7 @@ export default function plugins(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions
 ): Cypress.ConfigOptions {
+  installLogsPrinter(on);
   codecov(on, config);
   on('task', {
     percyHealthCheck,
