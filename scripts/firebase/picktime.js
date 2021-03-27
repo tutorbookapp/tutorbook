@@ -187,8 +187,8 @@ const subjectsCachePath = './services-to-subjects.json';
 const subjectsCache = require(subjectsCachePath);
 function getSubject(service) {
   if (isValidSubject(service)) return service;
-  if (isValidSubject(service.replace(' Lesson', '')))
-    return service.replace(' Lesson', '');
+  if (isValidSubject(service.replaceAll(' Lesson', '')))
+    return service.replaceAll(' Lesson', '');
   while (!subjectsCache[service]) {
     let validSubject = false;
     let subject = '';
@@ -226,7 +226,7 @@ function generateMeetingDescription(row) {
  * @return {Timeslot} - The timeslot in JSON-friendly format.
  */
 function getMeetingTime(dateStr, duration = 60) {
-  const [date, mo, yr, time, ampm] = dateStr.replace(',', '').split(' ');
+  const [date, mo, yr, time, ampm] = dateStr.replaceAll(',', '').split(' ');
   const monthIdx = [
     'Jan',
     'Feb',
