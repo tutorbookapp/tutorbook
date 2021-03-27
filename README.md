@@ -123,7 +123,7 @@ with a specific time and venue (e.g. a specific Zoom link). In order to support
   exception to a recurring meeting.
 - **Last:** The last possible meeting end time. If a meeting is recurring,
   this will be the end time of the last meeting instance in that recurring
-  range. Or, if the recurring range is infinite, we use Firestore's max date
+  range. Or, if the recurring range is infinite, I use Firestore's max date
   (Dec 31 9999) which is more than sufficient. This is calculated and assigned
   server-side using [`rrule`](https://www.npmjs.com/package/rrule). It is
   completely ignored client-side (in favor of the `to` property).
@@ -172,15 +172,15 @@ Editing and updating recurring meetings is intuitive:
 ### Analytics
 
 TB uses [Segment](https://segment.com) to collect analytics from both the client
-and the server. When defining events, we use Segment's recommended
+and the server. When defining events, I use Segment's recommended
 [object-action framework](https://segment.com/academy/collecting-data/naming-conventions-for-clean-data/).
 Each event name includes an object (e.g. Product, Application) and an action on
 that object (e.g. Viewed, Installed, Created).
 
-TB also has in-app analytics features for orgs to use. We collect a few totals
-every day (based on Algolia tags) and store them in a Firestore subcollection
+TB also has in-app analytics features for orgs to use. It collects a few totals
+every day (based on Algolia tags) and stores them in a Firestore subcollection
 (`/orgs/<orgId>/analytics`). Those totals are constantly being updated as API
-requests come in (e.g. when a new user is created, we increment the "Total
+requests come in (e.g. when a new user is created, TB increments the "Total
 Users" statistic by one) and thus are always up-to-date. All of those totals
 are based on filterable tags (e.g. "Total Users Matched") which allows admins to
 view all the users/matches/meetings that have certain tags, answering questions
@@ -343,6 +343,62 @@ trying to contribute; it'll save your reputation and a lot of time):
   Functions](https://firebase.google.com/docs/functions/firestore-events). TB
   uses Algolia for subject and language selection and to power the primary
   search view capabilities.
+
+## Commit Message Format
+
+I have very precise rules over how Git commit messages in Tutorbook's repository
+must be formatted. This format leads to **easier to read commit history**.
+
+Please refer to the following documentation for more info:
+
+- [Conventional Commit Messages](https://www.conventionalcommits.org/en/v1.0.0/)
+- [Angular's Commit Message Format](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-format)
+- [Udacity's Commit Message Style Guide](http://udacity.github.io/git-styleguide/)
+
+### Commit Message Header
+
+Commit messages that do not adhere to the following commit style will not be
+merged into `develop`:
+
+```
+<type>(<scope>): <short summary>
+  │       │             │
+  │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+  │       │
+  │       └─⫸ Commit Scope: The page, API route, or component modified.
+  │
+  └─⫸ Commit Type: ci|docs|feat|fix|perf|refactor|test|deps|chore
+```
+
+The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is
+optional.
+
+#### Type
+
+Must be one of the following:
+
+- **ci**: Changes to our CI configuration files and scripts.
+- **docs**: Documentation only changes.
+- **feat**: A new feature.
+- **fix**: A bug fix.
+- **perf**: A code change that improves performance.
+- **refactor**: A code change that neither fixes a bug nor adds a feature.
+- **test**: Adding missing tests or correcting existing tests.
+- **deps**: A change in dependencies.
+- **chore**: A code change in utility scripts, build configurations, etc.
+
+#### Scope
+
+The scope should refer to the page, API route, or component modified. This can
+be flexible however (e.g. the scope for a `docs:` commit may be the `README`).
+
+#### Summary
+
+Use the summary field to provide a succinct description of the change:
+
+- Use the imperative, present tense: "change" not "changed" nor "changes".
+- Don't capitalize the first letter.
+- No dot (.) at the end.
 
 ## Development Environment
 
