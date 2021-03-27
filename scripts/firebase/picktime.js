@@ -27,7 +27,7 @@ logger.info(`Loading ${env} environment variables...`);
   path.resolve(__dirname, '../../.env.local'),
   path.resolve(__dirname, `../../.env.${env}`),
   path.resolve(__dirname, `../../.env.${env}.local`),
-].map((path) => {
+].forEach((path) => {
   logger.debug(`Loading .env file (${path})...`);
   dotenv.config({ path });
 });
