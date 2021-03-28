@@ -7364,21 +7364,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-terminal-report@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "cypress-terminal-report@npm:3.0.1"
-  dependencies:
-    chalk: ^3.0.0
-    fs-extra: ^9.0.1
-    methods: ^1.1.2
-    tv4: ^1.3.0
-  peerDependencies:
-    cypress: ">=4.10.0"
-    mocha: ">=3.5.0"
-  checksum: 0f2db96d8388ee1d61be1b5b55c7ab980b8ffb4cbb2d61981541b22cfd9df4975c5cd57bad7a5c1b7a393dc75f34b72b62072de3b0050ebef3af313079859293
-  languageName: node
-  linkType: hard
-
 "cypress@npm:^6.8.0":
   version: 6.8.0
   resolution: "cypress@npm:6.8.0"
@@ -13127,7 +13112,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"methods@npm:^1.1.2, methods@npm:~1.1.2":
+"methods@npm:~1.1.2":
   version: 1.1.2
   resolution: "methods@npm:1.1.2"
   checksum: 450e4ea0fd4a0f3de8c0593d753c7d6c8f2ee49766f5ef35c68cc2ac41699d5e295b7d6330fc2b7271b8569a07857e3eb0b5df0599a353c5808265b4b5066168
@@ -18446,7 +18431,6 @@ resolve@^1.18.1:
     csv-stringify: ^5.6.2
     cypress: ^6.8.0
     cypress-file-upload: ^5.0.2
-    cypress-terminal-report: ^3.0.1
     dequal: ^2.0.2
     dotenv: ^8.2.0
     dotenv-webpack: ^6.0.0
@@ -18508,13 +18492,6 @@ resolve@^1.18.1:
     winston: ^3.3.3
   languageName: unknown
   linkType: soft
-
-"tv4@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "tv4@npm:1.3.0"
-  checksum: b42500b93482dea7bffb8ecbf47653a35d35edbd916d163e29d849c93a0510b7d92c7e210c035640d9449ff5859f0371841aadce2508e48a0ec14e4f80bfe375
-  languageName: node
-  linkType: hard
 
 "tweetnacl@npm:^0.14.3, tweetnacl@npm:~0.14.0":
   version: 0.14.5
