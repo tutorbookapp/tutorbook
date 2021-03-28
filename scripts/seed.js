@@ -66,9 +66,66 @@ const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY;
 const search = algoliasearch(algoliaId, algoliaKey);
 
-const usersIdx = search.initIndex(`${env}-users`);
-const matchesIdx = search.initIndex(`${env}-matches`);
-const meetingsIdx = search.initIndex(`${env}-meetings`);
+const prefix = process.env.ALGOLIA_PREFIX || env;
+const usersIdx = search.initIndex(`${prefix}-users`);
+const matchesIdx = search.initIndex(`${prefix}-matches`);
+const meetingsIdx = search.initIndex(`${prefix}-meetings`);
+
+function createIndices() {
+  return Promise.all([
+    usersIdx.setSettings({
+      searchableAttributes: [
+        'name',
+        'unordered(email)',
+        'unordered(phone)',
+        'unordered(bio)',
+        'unordered(reference)',
+        'unordered(verifications.notes)',
+        'unordered(tutoring.subjects)',
+        'unordered(mentoring.subjects)',
+        'unordered(socials.url)',
+      ],
+      attributesForFaceting: [
+        'filterOnly(availability)',
+        'filterOnly(email)',
+        'filterOnly(featured)',
+        'filterOnly(langs)',
+        'filterOnly(mentoring.searches)',
+        'filterOnly(mentoring.subjects)',
+        'filterOnly(tutoring.searches)',
+        'filterOnly(tutoring.subjects)',
+        'filterOnly(orgs)',
+        'filterOnly(parents)',
+        'filterOnly(phone)',
+        'filterOnly(verifications.checks)',
+      ],
+    }),
+    matchesIdx.setSettings({
+      attributesForFaceting: [
+        'filterOnly(org)',
+        'filterOnly(people.id)',
+        'filterOnly(subjects)',
+      ],
+    }),
+    meetingsIdx.setSettings({
+      attributesForFaceting: [
+        'filterOnly(match.org)',
+        'filterOnly(match.people.id)',
+        'filterOnly(match.subjects)',
+        'filterOnly(time.from)',
+        'filterOnly(time.last)',
+      ],
+    }),
+  ]);
+}
+
+function deleteIndices() {
+  return Promise.all([
+    usersIdx.delete(),
+    matchesIdx.delete(),
+    meetingsIdx.delete(),
+  ]);
+}
 
 async function clear() {
   console.log('Clearing data...');
@@ -139,6 +196,7 @@ async function seed(overrides = {}) {
 
 async function main(overrides) {
   await clear();
+  await createIndices();
   await seed(overrides);
 }
 
