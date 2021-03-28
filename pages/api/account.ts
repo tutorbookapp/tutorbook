@@ -15,6 +15,7 @@ import updatePhoto from 'lib/api/update/photo';
 import updateUserDoc from 'lib/api/update/user-doc';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserSearchObj from 'lib/api/update/user-search-obj';
+import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 
@@ -121,7 +122,8 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   await verifyAuth(req.headers, { userId: merged.id, orgIds: merged.orgs });
 
   const withOrgsUpdate = updateUserOrgs(merged);
-  const withPhotoUpdate = await updatePhoto(withOrgsUpdate, User);
+  const withTagsUpdate = updateUserTags(withOrgsUpdate);
+  const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
   const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
   await Promise.all([
