@@ -1,7 +1,7 @@
 import { CSSProperties, createContext, useContext } from 'react';
 import { RRule } from 'rrule';
 
-import { caps, join } from 'lib/utils';
+import { caps, getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { Meeting } from 'lib/model/meeting';
 import { Org } from 'lib/model/org';
 import { Role } from 'lib/model/person';
@@ -271,13 +271,13 @@ export function ContactsTable({ contacts }: ContactsTableProps): JSX.Element {
           </tr>
         </thead>
         <tbody>
-          {contacts.map(({ email, name }) => (
+          {contacts.map(({ name, email }) => (
             <tr key={email} style={{ borderTop: `1px solid ${borderColor}` }}>
               <td style={{ ...textStyle, padding: '24px 0 24px 24px' }}>
                 {name}
               </td>
               <td style={{ ...textStyle, padding: '24px' }}>
-                <Link href={`mailto:${email}`}>{email}</Link>
+                <Link href={getEmailLink({ name, email })}>{email}</Link>
               </td>
             </tr>
           ))}
@@ -438,7 +438,7 @@ export function Person({
                   whiteSpace: 'nowrap',
                 }}
               >
-                <Link href={`mailto:${email}`}>{email}</Link>
+                <Link href={getEmailLink({ name, email })}>{email}</Link>
               </P>
               <P
                 style={{
@@ -450,7 +450,7 @@ export function Person({
                   whiteSpace: 'nowrap',
                 }}
               >
-                <Link href={`tel:${phone}`}>{phone}</Link>
+                <Link href={getPhoneLink({ name, phone })}>{phone}</Link>
               </P>
             </ColorContext.Provider>
           </td>

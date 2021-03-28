@@ -9,6 +9,7 @@ import {
   P,
 } from 'lib/mail/components';
 import { Meeting, User } from 'lib/model';
+import { getEmailLink, getPhoneLink } from 'lib/utils';
 
 export interface DirectMeetingEmailProps {
   meeting: Meeting;
@@ -59,9 +60,9 @@ export default function DirectMeetingEmail({
           to this email or by using the following contact info:
         </P>
         <P>
-          <Link href={`mailto:${creator.email}`}>{creator.email}</Link>
+          <Link href={getEmailLink(creator)}>{creator.email}</Link>
           <br />
-          <Link href={`tel:${creator.phone}`}>{creator.phone}</Link>
+          <Link href={getPhoneLink(creator)}>{creator.phone}</Link>
         </P>
         <br />
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>

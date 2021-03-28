@@ -9,7 +9,7 @@ import {
   P,
 } from 'lib/mail/components';
 import { Meeting, Org, User } from 'lib/model';
-import { join } from 'lib/utils';
+import { getEmailLink, getPhoneLink, join } from 'lib/utils';
 
 export interface MeetingEmailProps {
   org: Org;
@@ -66,9 +66,9 @@ export default function MeetingEmail({
           this email or by using the following contact info:
         </P>
         <P>
-          <Link href={`mailto:${updater.email}`}>{updater.email}</Link>
+          <Link href={getEmailLink(updater)}>{updater.email}</Link>
           <br />
-          <Link href={`tel:${updater.phone}`}>{updater.phone}</Link>
+          <Link href={getPhoneLink(updater)}>{updater.phone}</Link>
         </P>
         <br />
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
