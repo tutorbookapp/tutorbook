@@ -33,7 +33,7 @@ async function installServiceWorker(): Promise<void> {
         });
       });
   } else {
-    console.error('[ERROR] Service workers are disabled.');
+    console.error('Service workers are disabled. Authentication will fail.');
   }
 }
 
