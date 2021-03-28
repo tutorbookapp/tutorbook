@@ -13,31 +13,38 @@
     margin: 48px 0 32px;
     display: flex;
 
-    .name {
-      font-size: 36px;
-      font-weight: 500;
-      line-height: 32px;
-      height: 32px;
-      margin: 0;
-    }
+    .info {
+      flex: 1 1 auto;
 
-    .socials {
-      margin-top: 8px;
-      height: 20px;
-
-      a {
-        @include common.link;
-        display: inline-block;
-        font-size: 14px;
+      .name {
+        font-size: 36px;
+        font-weight: 500;
+        line-height: 32px;
+        height: 32px;
+        margin: 0;
       }
 
-      span {
-        color: var(--accents-5);
-        font-size: 14px;
+      .socials {
+        min-height: 20px;
+        margin-top: 8px;
 
-        &.dot {
-          font-size: 16px;
-          margin: 0 4px;
+        a {
+          @include common.link;
+          display: inline-block;
+          font-size: 14px;
+          height: 19px;
+        }
+
+        span {
+          color: var(--accents-5);
+          display: inline-block;
+          font-size: 14px;
+          height: 19px;
+
+          &.dot {
+            font-size: 16px;
+            margin: 0 4px;
+          }
         }
       }
     }
@@ -45,8 +52,13 @@
     .contact {
       text-align: right;
 
+      @media (max-width: 750px) {
+        display: none;
+      }
+
       a {
         @include common.link;
+        letter-spacing: -0.1px;
         font-size: 16px;
         margin-top: 4px;
         display: block;

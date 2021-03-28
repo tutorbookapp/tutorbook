@@ -41,7 +41,7 @@ export default function UserDisplay({
       className={cn(styles.main, { [styles.loading]: !user })}
     >
       <div className={styles.title}>
-        <div>
+        <div className={styles.info}>
           <h1 data-cy='name' className={styles.name}>
             {user && user.name}
           </h1>
