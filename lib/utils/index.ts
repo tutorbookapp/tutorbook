@@ -3,6 +3,33 @@ import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
 /**
+ * Returns a link that, when clicked, opens a new SMS message (to the given
+ * phone number) that includes the recipient's name.
+ * @see {@link https://stackoverflow.com/a/38708066/10023158}
+ */
+export function getPhoneLink({
+  name,
+  phone,
+}: {
+  name?: string;
+  phone: string;
+}): string {
+  if (!name) return `sms:${phone}`;
+  return `sms:${phone};?&body=${encodeURIComponent(`Hi ${name}!`)}`;
+}
+
+export function getEmailLink({
+  name,
+  email,
+}: {
+  name?: string;
+  email: string;
+}): string {
+  if (!name) return `mailto:${email}`;
+  return `mailto:${encodeURIComponent(`"${name}"<${email}>`)}`;
+}
+
+/**
  * Replaces the {{var}} dynamic string variables with their values (if
  * available). This allows orgs to customize e.g. booking message placeholders
  * and still take advantage of dynamic variables like {{person}} or {{subject}}.

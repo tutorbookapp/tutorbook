@@ -8,8 +8,8 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 import RequestForm from 'components/user/request-form';
 
+import { getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { User } from 'lib/model/user';
-import { join } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -41,26 +41,34 @@ export default function UserDisplay({
       className={cn(styles.main, { [styles.loading]: !user })}
     >
       <div className={styles.title}>
-        <h1 data-cy='name' className={styles.name}>
-          {user && user.name}
-        </h1>
-        <div data-cy='socials' className={styles.socials}>
-          {(user?.socials || []).map((social, idx) => (
-            <Fragment key={social.type}>
-              {idx !== 0 && <span className={styles.dot}>·</span>}
-              <a
-                data-cy={`${social.type}-social-link`}
-                key={social.type}
-                target='_blank'
-                rel='noreferrer'
-                href={social.url}
-              >
-                {t(`common:${social.type}`)}
-              </a>
-            </Fragment>
-          ))}
-          {!!user && !user.socials.length && <span>No social profiles</span>}
+        <div>
+          <h1 data-cy='name' className={styles.name}>
+            {user && user.name}
+          </h1>
+          <div data-cy='socials' className={styles.socials}>
+            {(user?.socials || []).map((social, idx) => (
+              <Fragment key={social.type}>
+                {idx !== 0 && <span className={styles.dot}>·</span>}
+                <a
+                  data-cy={`${social.type}-social-link`}
+                  key={social.type}
+                  target='_blank'
+                  rel='noreferrer'
+                  href={social.url}
+                >
+                  {t(`common:${social.type}`)}
+                </a>
+              </Fragment>
+            ))}
+            {!!user && !user.socials.length && <span>No social profiles</span>}
+          </div>
         </div>
+        {user && admin && currentUser.id !== user.id && (
+          <div className={styles.contact}>
+            {user.email && <a href={getEmailLink(user)}>{user.email}</a>}
+            {user.phone && <a href={getPhoneLink(user)}>{user.phone}</a>}
+          </div>
+        )}
       </div>
       <div className={styles.header}>
         <a
@@ -77,7 +85,7 @@ export default function UserDisplay({
             src={user?.photo}
             priority
           />
-          {currentUser.id !== user?.id && admin && (
+          {user && admin && currentUser.id !== user.id && (
             <div className={styles.actions}>
               <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
                 <IconButton icon='edit' label='Edit user' />

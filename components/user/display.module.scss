@@ -8,7 +8,10 @@
   @include common.wrapper;
 
   .title {
+    justify-content: space-between;
+    align-items: flex-end;
     margin: 48px 0 32px;
+    display: flex;
 
     .name {
       font-size: 36px;
@@ -24,7 +27,6 @@
 
       a {
         @include common.link;
-        text-transform: capitalize;
         display: inline-block;
         font-size: 14px;
       }
@@ -37,6 +39,17 @@
           font-size: 16px;
           margin: 0 4px;
         }
+      }
+    }
+
+    .contact {
+      text-align: right;
+
+      a {
+        @include common.link;
+        font-size: 16px;
+        margin-top: 4px;
+        display: block;
       }
     }
   }
