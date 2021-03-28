@@ -8,7 +8,7 @@ import { useUser } from 'lib/context/user';
 
 declare global {
   interface Window {
-    analytics: SegmentAnalytics.AnalyticsJS & { load?: (key: string) => void };
+    analytics: SegmentAnalytics.AnalyticsJS;
   }
 }
 
@@ -19,11 +19,6 @@ export interface SegmentProps {
 export default function Segment({ intercom }: SegmentProps): null {
   const { org } = useOrg();
   const { user } = useUser();
-
-  useEffect(() => {
-    if (!window.analytics?.load) return;
-    window.analytics.load(process.env.NEXT_PUBLIC_SEGMENT_KEY as string);
-  }, []);
 
   const prevIdentity = useRef<Record<string, unknown>>();
   useEffect(() => {
