@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 
 import { MatchJSON } from 'lib/model/match';
 import { join } from 'lib/utils';
-import { useOrg } from 'lib/context/org';
 
 import styles from './matches.module.scss';
 
@@ -23,10 +22,8 @@ export function MatchRow({ match }: MatchRowProps) {
     return names;
   }, [match.people]);
 
-  const { org } = useOrg();
-
   return (
-    <Link href={`/${org?.id || 'default'}/matches/${match.id}`}>
+    <Link href={`/${match.org}/matches/${match.id}`}>
       <DataTableRow data-cy='match-row'>
         <DataTableCell className={styles.people}>
           {join(peopleNames)}
