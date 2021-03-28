@@ -13603,6 +13603,17 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"next-google-fonts@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "next-google-fonts@npm:2.1.0"
+  peerDependencies:
+    next: ">= 10.0.7"
+    react: ">= 17.0.1"
+    react-dom: ">= 17.0.1"
+  checksum: 8beeb146ca2ed63cf3a889a07ec98989d5fd1669db97a3213092a5670980f50401b37cc7a6ba45ca4a60469e2b382ef421ae53c0f7bfdc1aa5654509af561399
+  languageName: node
+  linkType: hard
+
 "next-images@npm:^1.6.2":
   version: 1.6.2
   resolution: "next-images@npm:1.6.2"
@@ -18452,6 +18463,7 @@ resolve@^1.18.1:
     istanbul-lib-coverage: ^3.0.0
     nanoid: ^3.1.12
     next: ^10.0.9
+    next-google-fonts: ^2.1.0
     next-images: ^1.6.2
     next-translate: ^0.17.1
     nprogress: ^0.2.0

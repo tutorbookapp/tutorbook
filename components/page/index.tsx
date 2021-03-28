@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from 'react';
+import { GoogleFonts } from 'next-google-fonts';
 import Head from 'next/head';
 import cn from 'classnames';
 
@@ -7,6 +8,7 @@ import Segment from 'components/segment';
 
 import { PageProps } from 'lib/page';
 
+import segmentSnippet from './segment-snippet';
 import styles from './page.module.scss';
 
 export interface PageComponentProps extends PageProps {
@@ -141,20 +143,11 @@ export default function PageComponent({
           content='/favicon/ms-icon-144x144.png'
         />
         <meta name='msapplication-navbutton-color' content='#0070f3' />
-        <link
-          rel='preconnect'
-          crossOrigin='anonymous'
-          href='https://segment.tutorbook.org'
-        />
-        <link
-          rel='preconnect'
-          crossOrigin='anonymous'
-          href='https://track.tutorbook.org'
-        />
-        <script>{`!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error('Segment snippet included twice.');else{analytics.invoked=!0;analytics.methods=['trackSubmit','trackClick','trackLink','trackForm','pageview','identify','reset','group','track','ready','alias','debug','page','once','off','on','addSourceMiddleware','addIntegrationMiddleware','setAnonymousId','addDestinationMiddleware'];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t,e){var n=document.createElement('script');n.type='text/javascript';n.defer=!0;n.src='https://segment.tutorbook.org/analytics.js/v1/'+t+'/analytics.min.js';var a=document.getElementsByTagName('script')[0];a.parentNode.insertBefore(n,a);analytics._loadOptions=e};analytics.SNIPPET_VERSION='4.1.0';analytics.load('${
-          process.env.NEXT_PUBLIC_SEGMENT_KEY as string
-        }');}}();`}</script>
+        <link rel='preconnect' href='https://segment.tutorbook.org' />
+        <link rel='preconnect' href='https://track.tutorbook.org' />
+        <script>{segmentSnippet}</script>
       </Head>
+      <GoogleFonts href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' />
       <div
         data-cy='page'
         className={cn(styles.wrapper, { [styles.borderless]: borderless })}
