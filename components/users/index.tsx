@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import Router from 'next/router';
 import { dequal } from 'dequal/lite';
 
 import Pagination from 'components/pagination';
@@ -7,6 +6,7 @@ import Pagination from 'components/pagination';
 import { CallbackParam } from 'lib/model/callback';
 import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
+import useURLParamSync from 'lib/hooks/url-param-sync';
 
 import FiltersSheet from './filters-sheet';
 import Header from './header';
@@ -40,6 +40,8 @@ export default function Users(): JSX.Element {
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
+  useURLParamSync(query, setQuery, UsersQuery);
+
   const onQueryChange = useCallback((param: CallbackParam<UsersQuery>) => {
     setQuery((prev) => {
       let updated = prev;
@@ -50,25 +52,6 @@ export default function Users(): JSX.Element {
       return updated;
     });
   }, []);
-
-  useEffect(() => {
-    // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
-    // URL query parameters, but right now, it doesn't seem to be working. Once
-    // we do replace this with the `useRouter` hook, we'll be able to replace
-    // state management with just shallowly updating the URL.
-    // @see {@link https://github.com/vercel/next.js/issues/17112}
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    setQuery(UsersQuery.fromURLParams(Object.fromEntries(params.entries())));
-  }, []);
-
-  // TODO: Use the built-in Next.js router hook to manage this query state and
-  // show the `NProgress` loader when the results are coming in.
-  useEffect(() => {
-    if (!org || !org.id) return;
-    const url = query.getURL(`/${org.id}/users`);
-    void Router.replace(url, undefined, { shallow: true });
-  }, [org, query]);
 
   useEffect(() => {
     onQueryChange((prev) => {

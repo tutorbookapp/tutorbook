@@ -8,7 +8,6 @@ import {
 } from 'react';
 import axios, { AxiosError } from 'axios';
 import useSWR, { mutate } from 'swr';
-import Router from 'next/router';
 import { Snackbar } from '@rmwc/snackbar';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
@@ -24,6 +23,7 @@ import { Position } from 'lib/model/position';
 import { useOrg } from 'lib/context/org';
 import usePeople from 'lib/hooks/people';
 import useSingle from 'lib/hooks/single';
+import useURLParamSync from 'lib/hooks/url-param-sync';
 import { useUser } from 'lib/context/user';
 
 import { CalendarStateContext, DialogPage } from './state';
@@ -51,9 +51,9 @@ export default function Calendar({
 }: CalendarProps): JSX.Element {
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
-  const [query, setQuery] = useState<MeetingsQuery>(
-    new MeetingsQuery({ hitsPerPage: 1000 })
-  );
+  const [query, setQuery] = useState<MeetingsQuery>(new MeetingsQuery());
+
+  useURLParamSync(query, setQuery, MeetingsQuery);
 
   const { org } = useOrg();
   const { user } = useUser();
@@ -275,25 +275,6 @@ export default function Calendar({
     },
     [editing.parentId, onDeleteSubmit]
   );
-
-  useEffect(() => {
-    // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
-    // URL query parameters, but right now, it doesn't seem to be working. Once
-    // we do replace this with the `useRouter` hook, we'll be able to replace
-    // state management with just shallowly updating the URL.
-    // @see {@link https://github.com/vercel/next.js/issues/17112}
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    setQuery(MeetingsQuery.fromURLParams(Object.fromEntries(params.entries())));
-  }, []);
-
-  // TODO: Use the built-in Next.js router hook to manage this query state and
-  // show the `NProgress` loader when the results are coming in.
-  useEffect(() => {
-    if (!org || !org.id) return;
-    const url = query.getURL(`/${org.id}/calendar`);
-    void Router.replace(url, undefined, { shallow: true });
-  }, [org, query]);
 
   return (
     <CalendarStateContext.Provider value={calendarState}>

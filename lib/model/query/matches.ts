@@ -29,12 +29,12 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
     construct<MatchesQueryInterface>(this, query);
   }
 
-  protected getURLQuery(): Record<string, string | number | boolean> {
+  public getURLParams(): Record<string, string | number | boolean> {
     function encode(p?: Option<any>[]): string {
       return encodeURIComponent(JSON.stringify(p));
     }
 
-    const query = super.getURLQuery();
+    const query = super.getURLParams();
     if (this.org) query.org = encodeURIComponent(this.org);
     if (this.people.length) query.people = encode(this.people);
     if (this.subjects.length) query.subjects = encode(this.subjects);

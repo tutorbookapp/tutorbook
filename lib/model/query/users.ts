@@ -71,12 +71,12 @@ export class UsersQuery extends Query implements UsersQueryInterface {
   // and deserializing the complex `Option` JSON objects.
   // @see {@link https://www.npmjs.com/package/serialize-query-params}
   // @see {@link https://github.com/pbeshai/use-query-params}
-  protected getURLQuery(): Record<string, string | number | boolean> {
+  public getURLParams(): Record<string, string | number | boolean> {
     function encode(p?: any[]): string {
       return encodeURIComponent(JSON.stringify(p));
     }
 
-    const query = super.getURLQuery();
+    const query = super.getURLParams();
     if (this.parents.length) query.parents = encode(this.parents);
     if (this.orgs.length) query.orgs = encode(this.orgs);
     if (this.tags.length) query.tags = encode(this.tags);

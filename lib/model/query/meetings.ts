@@ -58,12 +58,17 @@ export class MeetingsQuery extends MatchesQuery
     );
   }
 
-  protected getURLQuery(): Record<string, string | number | boolean> {
+  public getURLParams(): Record<string, string | number | boolean> {
     function encode(p?: any[]): string {
       return encodeURIComponent(JSON.stringify(p));
     }
 
-    const query = super.getURLQuery();
+    const query = super.getURLParams();
+    if (this.hitsPerPage !== 1000) {
+      query.hitsPerPage = this.hitsPerPage;
+    } else {
+      delete query.hitsPerPage;
+    }
     if (this.tags.length) query.tags = encode(this.tags);
     query.from = this.from.toJSON();
     query.to = this.to.toJSON();

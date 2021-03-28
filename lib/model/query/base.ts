@@ -45,7 +45,7 @@ export abstract class Query implements QueryInterface {
 
   public abstract get endpoint(): string;
 
-  protected getURLQuery(): Record<string, string | number | boolean> {
+  public getURLParams(): Record<string, string | number | boolean> {
     const query: Record<string, string | number | boolean> = {};
     if (this.search) query.search = encodeURIComponent(this.search);
     if (this.hitsPerPage !== 20) query.hitsPerPage = this.hitsPerPage;
@@ -54,7 +54,7 @@ export abstract class Query implements QueryInterface {
   }
 
   public getURL(pathname: string): string {
-    return url.format({ pathname, query: this.getURLQuery() });
+    return url.format({ pathname, query: this.getURLParams() });
   }
 
   public static fromURLParams(params: QueryURL): QueryInterface {

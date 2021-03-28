@@ -4,7 +4,6 @@ import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import NProgress from 'nprogress';
-import Router from 'next/router';
 import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -26,6 +25,7 @@ import { prefetch } from 'lib/fetch';
 import useAnalytics from 'lib/hooks/analytics';
 import usePage from 'lib/hooks/page';
 import useTrack from 'lib/hooks/track';
+import useURLParamSync from 'lib/hooks/url-param-sync';
 import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
@@ -49,6 +49,8 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   const [auth, setAuth] = useState<boolean>(false);
   const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(true);
+
+  useURLParamSync(query, setQuery, UsersQuery);
 
   const { data, isValidating } = useSWR<ListUsersRes>(
     canSearch ? query.endpoint : null
@@ -90,25 +92,6 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
     );
     void prefetch(nextPageQuery.endpoint);
   }, [query]);
-
-  useEffect(() => {
-    // TODO: Ideally, we'd be able to use Next.js's `useRouter` hook to get the
-    // URL query parameters, but right now, it doesn't seem to be working. Once
-    // we do replace this with the `useRouter` hook, we'll be able to replace
-    // state management with just shallowly updating the URL.
-    // @see {@link https://github.com/vercel/next.js/issues/17112}
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    setQuery(UsersQuery.fromURLParams(Object.fromEntries(params.entries())));
-  }, []);
-
-  // TODO: Use the built-in Next.js router hook to manage this query state and
-  // show the `NProgress` loader when the results are coming in.
-  useEffect(() => {
-    if (!org || !org.id) return;
-    const url = query.getURL(`/${org.id}/search`);
-    void Router.replace(url, undefined, { shallow: true });
-  }, [org, query]);
 
   // TODO: Perhaps we should only allow filtering by a single org, as we don't
   // ever filter by more than one at once.
