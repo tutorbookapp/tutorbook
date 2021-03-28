@@ -9,15 +9,9 @@ export default function Play(): JSX.Element {
       strokeLinecap='round'
       strokeLinejoin='round'
       shapeRendering='geometricPrecision'
+      style={{ color: 'var(--on-background)' }}
     >
-      <polygon points='5 3 19 12 5 21 5 3' fill='var(--fill)' />
-      <style jsx>{`
-        svg {
-          color: var(--on-background);
-          --fill: currentColor;
-          --stroke: var(--background);
-        }
-      `}</style>
+      <polygon points='5 3 19 12 5 21 5 3' fill='currentColor' />
     </svg>
   );
 }

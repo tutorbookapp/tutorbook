@@ -32,7 +32,7 @@ export default function Banner(): JSX.Element {
           strokeLinejoin='round'
           fill='none'
           shapeRendering='geometricPrecision'
-          style={{ color: 'currentcolor' }}
+          style={{ color: 'currentColor' }}
         >
           <path d='M18 6L6 18' />
           <path d='M6 6l12 12' />

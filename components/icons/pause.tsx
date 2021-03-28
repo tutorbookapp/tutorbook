@@ -9,16 +9,10 @@ export default function Pause(): JSX.Element {
       strokeLinecap='round'
       strokeLinejoin='round'
       shapeRendering='geometricPrecision'
+      style={{ color: 'var(--on-background)' }}
     >
-      <rect x='6' y='4' width='4' height='16' fill='var(--fill)' />
-      <rect x='14' y='4' width='4' height='16' fill='var(--fill)' />
-      <style jsx>{`
-        svg {
-          color: var(--on-background);
-          --fill: currentColor;
-          --stroke: var(--background);
-        }
-      `}</style>
+      <rect x='6' y='4' width='4' height='16' fill='currentColor' />
+      <rect x='14' y='4' width='4' height='16' fill='currentColor' />
     </svg>
   );
 }

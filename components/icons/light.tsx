@@ -10,7 +10,7 @@ export default function Light(): JSX.Element {
       strokeLinejoin='round'
       fill='none'
       shapeRendering='geometricPrecision'
-      style={{ color: 'currentcolor' }}
+      style={{ color: 'currentColor' }}
     >
       <circle cx='12' cy='12' r='5' />
       <path d='M12 1v2' />
