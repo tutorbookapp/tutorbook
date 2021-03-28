@@ -7,9 +7,6 @@
   <a aria-label='Website status' href='https://tutorbook.org'>
     <img src='https://img.shields.io/website?down_color=lightgrey&down_message=down&up_color=brightgreen&up_message=up&url=https%3A%2F%2Ftutorbook.org&style=flat-square&labelColor=000000'>
   </a>
-  <a aria-label='Maintainability' href='https://codeclimate.com/github/tutorbookapp/tutorbook'>
-    <img src='https://img.shields.io/codeclimate/maintainability/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
-  </a>
   <a aria-label='Build status' href='https://github.com/tutorbookapp/tutorbook/actions'>
     <img src='https://img.shields.io/github/workflow/status/tutorbookapp/tutorbook/Build?style=flat-square&labelColor=000000'>
   </a>
@@ -21,6 +18,9 @@
   </a>
   <a aria-label='Dependencies' href='https://david-dm.org/tutorbookapp/tutorbook'>
     <img src='https://img.shields.io/david/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
+  </a>
+  <a aria-label='Maintainability' href='https://codeclimate.com/github/tutorbookapp/tutorbook'>
+    <img src='https://img.shields.io/codeclimate/maintainability/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
   </a>
 </p>
 
