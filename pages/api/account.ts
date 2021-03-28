@@ -2,7 +2,13 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 
-import { Subjects, User, UserJSON, isUserJSON } from 'lib/model/user';
+import {
+  Subjects,
+  User,
+  UserInterface,
+  UserJSON,
+  isUserJSON,
+} from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { SocialInterface } from 'lib/model/account';
 import { Timeslot } from 'lib/model/timeslot';
@@ -70,7 +76,7 @@ function mergeSubjects(overrides: Subjects, baseline: Subjects): Subjects {
  * from `overrides` and fallbacks to taking from `baseline`.
  */
 function mergeUsers(overrides: User, baseline: User): User {
-  return new User({
+  const merged: UserInterface = {
     id: overrides.id || baseline.id,
     name: overrides.name || baseline.name,
 
@@ -83,6 +89,7 @@ function mergeUsers(overrides: User, baseline: User): User {
     email: overrides.email || baseline.email,
     phone: overrides.phone || baseline.phone,
     bio: overrides.bio || baseline.bio,
+    venue: overrides.venue || baseline.venue,
     socials: mergeSocials(overrides.socials, baseline.socials),
     orgs: mergeArrays(overrides.orgs, baseline.orgs),
     zooms: mergeArrays(overrides.zooms, baseline.zooms),
@@ -102,9 +109,16 @@ function mergeUsers(overrides: User, baseline: User): User {
     visible: overrides.visible || baseline.visible,
     featured: mergeArrays(overrides.featured, baseline.featured),
     roles: mergeArrays(overrides.roles, baseline.roles),
+    tags: mergeArrays(overrides.tags, baseline.tags),
     reference: overrides.reference || baseline.reference,
     timezone: overrides.timezone || baseline.timezone,
-  });
+
+    // Don't override the existing creation timestamp. These will be updated by
+    // Firestore data conversion methods anyways, so it doesn't really matter.
+    created: baseline.created || overrides.created,
+    updated: overrides.updated || baseline.updated,
+  };
+  return new User(merged);
 }
 
 async function updateAccount(req: Req, res: Res): Promise<void> {
