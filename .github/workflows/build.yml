@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+env:
+  NODE_ENV: test
+  ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
+  FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}
+  FIREBASE_ADMIN_KEY: ${{ secrets.FIREBASE_ADMIN_KEY }}
+  INTERCOM_KEY: ${{ secrets.INTERCOM_KEY }}
+  REMIND_TOKEN: ${{ secrets.REMIND_TOKEN }}
+  SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/firebase/emulators
+            ~/.cache/Cypress
+            ~/.cache/yarn
+            .next/cache
+            node_modules
+          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      - run: yarn install --immutable --immutable-cache
+      - run: yarn start:db & yarn wait-on http-get://localhost:8080
+      - run: yarn build
