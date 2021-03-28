@@ -6,9 +6,9 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 import Button from 'components/button';
 
+import { getEmailLink, join } from 'lib/utils';
 import Link from 'lib/intl/link';
 import { Org } from 'lib/model/org';
-import { join } from 'lib/utils';
 
 import styles from './home.module.scss';
 
@@ -87,9 +87,7 @@ export default function Home({ org }: HomeProps): JSX.Element {
                       data-cy='email-social-link'
                       target='_blank'
                       rel='noreferrer'
-                      href={`mailto:${encodeURIComponent(
-                        `"${org.name}"<${org.email}>`
-                      )}`}
+                      href={getEmailLink(org)}
                       className={`${styles.socialLink} ${styles.email}`}
                     >
                       {org.email}
