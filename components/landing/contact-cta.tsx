@@ -26,7 +26,7 @@ export default function ContactCTA({
         </div>
         <Button
           onClick={() => Intercom('showNewMessage', t('common:new-org-msg'))}
-          label='Contact Us'
+          label='Contact us'
           raised
           arrow
         />
