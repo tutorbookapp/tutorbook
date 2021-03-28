@@ -1,6 +1,6 @@
 import org from 'cypress/fixtures/orgs/default.json';
 
-describe('Org landing page', () => {
+describe('Org home page', () => {
   beforeEach(() => {
     cy.setup({ student: null, volunteer: null, match: null, meeting: null });
     cy.visit(`/${org.id}`);

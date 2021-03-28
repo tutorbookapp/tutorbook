@@ -26,7 +26,7 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
 }
 
 // TODO: Add `cy.percySnapshot` calls to add visual snapshot testing.
-describe('Users dashboard page', () => {
+describe('Users page', () => {
   beforeEach(() => {
     // TODO: Update our fixtures so we can accurately test that the aspect chips
     // only appear when the aspect is within the given org.
@@ -255,5 +255,6 @@ describe('Users dashboard page', () => {
     cy.wait('@list-users');
     cy.getBySel('result').should('not.exist');
     cy.contains('NO USERS TO SHOW').should('be.visible');
+    cy.percySnapshot('Users Page with No Results');
   });
 });

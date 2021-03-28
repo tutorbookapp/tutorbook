@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import firebase from 'firebase-admin';
 import { percyHealthCheck } from '@percy/cypress/task';
 
+import { IntercomGlobal } from 'lib/intercom';
 import { MatchJSON } from 'lib/model/match';
 import { MeetingJSON } from 'lib/model/meeting';
 import { OrgJSON } from 'lib/model/org';
@@ -85,7 +86,9 @@ export interface Overrides {
 }
 
 declare global {
-  /* eslint-disable-next-line @typescript-eslint/no-namespace */
+  interface Window {
+    Intercom: IntercomGlobal;
+  }
   namespace Cypress {
     interface Chainable {
       task(event: 'clear'): Chainable<null>;

@@ -17,7 +17,7 @@ describe('Org settings page', () => {
     cy.url({ timeout: 60000 }).should('contain', url);
   });
 
-  it('shows error when not member of org', () => {
+  it('shows error when not org admin', () => {
     cy.login(student.id);
     cy.visit(`/${org.id}/settings`);
     cy.wait('@get-account');

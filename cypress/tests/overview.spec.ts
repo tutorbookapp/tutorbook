@@ -31,9 +31,7 @@ describe('Overview page', () => {
       .should('have.text', student.name)
       .and('have.attr', 'href', '/overview');
 
-    // Segment seems to replace the global `Intercom` object, so we can't place
-    // these assertions in the `onLoad` option of `cy.visit()`.
-    cy.window().then((win: Window) => cy.spy(win, 'Intercom').as('intercom'));
+    cy.window().then((win) => cy.stub(win, 'Intercom').as('intercom'));
     cy.getBySel('switcher-list')
       .contains('button', 'Create an organization')
       .click();

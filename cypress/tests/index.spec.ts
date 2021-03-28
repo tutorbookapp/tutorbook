@@ -69,7 +69,7 @@ describe('Org landing page', () => {
       });
 
     // Test that the "contact us" button opens Intercom.
-    cy.window().then((win: Window) => cy.spy(win, 'Intercom').as('intercom'));
+    cy.window().then((win) => cy.stub(win, 'Intercom').as('intercom'));
     cy.contains('button', 'Contact us').click();
     const msg = "I'd like to create a new organization.";
     cy.get('@intercom').should('be.calledWithExactly', 'showNewMessage', msg);

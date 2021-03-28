@@ -16,7 +16,13 @@ type NewMessage = (action: 'showNewMessage', message: string) => void;
 type StartTour = (action: 'startTour', tourId: number) => void;
 type Visitor = (action: 'getVisitorId') => string;
 
-type IntercomGlobal = Boot | Basics | Update | NewMessage | StartTour | Visitor;
+export type IntercomGlobal =
+  | Boot
+  | Basics
+  | Update
+  | NewMessage
+  | StartTour
+  | Visitor;
 
 declare global {
   interface Window {
