@@ -62,7 +62,7 @@ describe('Users dashboard page', () => {
     cy.get('@copy').should('be.calledOnce');
   });
 
-  it.only('copies org links and filters users', () => {
+  it('copies org links and filters users', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {
@@ -194,14 +194,7 @@ describe('Users dashboard page', () => {
       .as('not-vetted-chip')
       .should('contain', 'Not vetted');
 
-    cy.log('Waiting for list users interception...');
-
-    cy.wait('@list-users').then((interception) => {
-      cy.log('Intercepted:', JSON.stringify(interception, null, 2));
-      cy.log('Request:', JSON.stringify(interception.request, null, 2));
-      cy.log('Response:', JSON.stringify(interception.response, null, 2));
-      cy.log('Data:', JSON.stringify(interception.response?.body, null, 2));
-    });
+    cy.wait('@list-users');
 
     cy.get('@results')
       .should('have.length', 1)
@@ -260,7 +253,7 @@ describe('Users dashboard page', () => {
     // Search by text (using 'Nicholas' name).
     cy.get('@query-input').clear().type('Nicholas');
     cy.wait('@list-users');
-    cy.get('@results').should('not.exist');
+    cy.getBySel('result').should('not.exist');
     cy.contains('NO USERS TO SHOW').should('be.visible');
   });
 });
