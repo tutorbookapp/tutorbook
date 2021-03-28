@@ -11,7 +11,7 @@
     <img src='https://img.shields.io/codeclimate/maintainability/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
   </a>
   <a aria-label='Build status' href='https://github.com/tutorbookapp/tutorbook/actions'>
-    <img src='https://img.shields.io/github/workflow/status/tutorbookapp/tutorbook/Integration%20Tests?style=flat-square&labelColor=000000'>
+    <img src='https://img.shields.io/github/workflow/status/tutorbookapp/tutorbook/Build?style=flat-square&labelColor=000000'>
   </a>
   <a aria-label='Integration tests' href='https://dashboard.cypress.io/projects/i6oq5i/runs'>
     <img src='https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/i6oq5i/develop&style=flat-square&labelColor=000000'>
