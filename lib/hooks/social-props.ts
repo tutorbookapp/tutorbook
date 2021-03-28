@@ -4,6 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { Account, SocialInterface, SocialTypeAlias } from 'lib/model/account';
 import { Callback } from 'lib/model/callback';
+import { Constructor } from 'lib/model/resource';
 
 function getPlaceholder(type: SocialTypeAlias, username: string): string {
   switch (type) {
@@ -14,10 +15,6 @@ function getPlaceholder(type: SocialTypeAlias, username: string): string {
     default:
       return `https://${type}.com/${username}`;
   }
-}
-
-interface Constructor<T> {
-  new (param: Partial<T>): T;
 }
 
 export default function useSocialProps<T extends Account>(
