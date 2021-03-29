@@ -145,7 +145,7 @@ export default function PageComponent({
         <meta name='msapplication-navbutton-color' content='#0070f3' />
         <link rel='preconnect' href='https://segment.tutorbook.org' />
         <link rel='preconnect' href='https://track.tutorbook.org' />
-        <script>{segmentSnippet}</script>
+        <script dangerouslySetInnerHTML={{ __html: segmentSnippet }} />
       </Head>
       <GoogleFonts href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' />
       <div
