@@ -3,6 +3,9 @@ import { IconButton } from '@rmwc/icon-button';
 import { Select } from '@rmwc/select';
 import useTranslation from 'next-translate/useTranslation';
 
+import ChevronLeftIcon from 'components/icons/chevron-left';
+import ChevronRightIcon from 'components/icons/chevron-right';
+
 import { Callback } from 'lib/model/callback';
 import { Query } from 'lib/model/query';
 
@@ -58,12 +61,12 @@ export default function Pagination<T extends Query>({
         </div>
         <IconButton
           disabled={query.page <= 0}
-          icon='chevron_left'
+          icon={<ChevronLeftIcon />}
           onClick={pageLeft}
         />
         <IconButton
           disabled={query.page + 1 >= hits / query.hitsPerPage}
-          icon='chevron_right'
+          icon={<ChevronRightIcon />}
           onClick={pageRight}
         />
       </div>

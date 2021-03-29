@@ -2,6 +2,9 @@ import { IconButton } from '@rmwc/icon-button';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 
+import ChevronLeftIcon from 'components/icons/chevron-left';
+import ChevronRightIcon from 'components/icons/chevron-right';
+
 import styles from './carousel.module.scss';
 
 interface CarouselProps {
@@ -83,13 +86,13 @@ export default class Carousel extends React.Component<
             style={this.atStart ? hidden : {}}
             onClick={this.scrollLeft}
             className={styles.left}
-            icon='chevron_left'
+            icon={<ChevronLeftIcon />}
           />
           <IconButton
             style={this.atEnd ? hidden : {}}
             onClick={this.scrollRight}
             className={styles.right}
-            icon='chevron_right'
+            icon={<ChevronRightIcon />}
           />
           <div
             className={styles.scroller}

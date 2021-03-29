@@ -122,6 +122,11 @@
           font-size: 18px;
           margin: 0 4px;
 
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+
           &:first-child {
             margin-left: 0;
           }
