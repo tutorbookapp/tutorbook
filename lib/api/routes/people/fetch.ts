@@ -26,7 +26,8 @@ export default async function fetchPeople(
     const users = await Promise.all(
       match.people.map(async (p) => {
         const user = await getUser(p.id);
-        if (uid === user.id) return user;
+        if (user.id === uid) return user;
+        if (user.parents.includes(uid)) return user;
         if (user.orgs.some((o) => adminOf?.includes(o))) return user;
         return getTruncatedUser(user);
       })
