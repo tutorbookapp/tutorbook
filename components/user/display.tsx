@@ -51,9 +51,9 @@ export default function UserDisplay({
                 {idx !== 0 && <span className={styles.dot}>·</span>}
                 <a
                   data-cy={`${social.type}-social-link`}
+                  rel='noopener noreferrer'
                   key={social.type}
                   target='_blank'
-                  rel='noreferrer'
                   href={social.url}
                 >
                   {t(`common:${social.type}`)}
@@ -65,17 +65,33 @@ export default function UserDisplay({
         </div>
         {user && admin && currentUser.id !== user.id && (
           <div className={styles.contact}>
-            {user.email && <a href={getEmailLink(user)}>{user.email}</a>}
-            {user.phone && <a href={getPhoneLink(user)}>{user.phone}</a>}
+            {user.email && (
+              <a
+                href={getEmailLink(user)}
+                rel='noopener noreferrer'
+                target='_blank'
+              >
+                {user.email}
+              </a>
+            )}
+            {user.phone && (
+              <a
+                href={getPhoneLink(user)}
+                rel='noopener noreferrer'
+                target='_blank'
+              >
+                {user.phone}
+              </a>
+            )}
           </div>
         )}
       </div>
       <div className={styles.header}>
         <a
+          rel='noopener noreferrer'
           className={styles.avatar}
           href={user?.photo || ''}
           target='_blank'
-          rel='noreferrer'
           tabIndex={-1}
         >
           <Avatar
@@ -97,10 +113,10 @@ export default function UserDisplay({
           )}
         </a>
         <a
+          rel='noopener noreferrer'
           className={styles.background}
           href={user?.background || ''}
           target='_blank'
-          rel='noreferrer'
           tabIndex={-1}
         >
           {user && (
