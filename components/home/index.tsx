@@ -56,10 +56,10 @@ export default function Home({ org }: HomeProps): JSX.Element {
         <div className={styles.left}>
           <div className={styles.wrapper}>
             <a
+              rel='noopener noreferrer'
               className={styles.img}
               href={org?.photo || ''}
               target='_blank'
-              rel='noreferrer'
               tabIndex={-1}
             >
               <Avatar size={120} loading={!org} src={org?.photo} priority />
@@ -73,9 +73,9 @@ export default function Home({ org }: HomeProps): JSX.Element {
                   {(org ? org.socials : []).map((social) => (
                     <a
                       data-cy={`${social.type}-social-link`}
+                      rel='noopener noreferrer'
                       key={social.type}
                       target='_blank'
-                      rel='noreferrer'
                       href={social.url}
                       className={cn(styles.socialLink, styles[social.type])}
                     >
@@ -85,8 +85,8 @@ export default function Home({ org }: HomeProps): JSX.Element {
                   {!!org?.email && (
                     <a
                       data-cy='email-social-link'
+                      rel='noopener noreferrer'
                       target='_blank'
-                      rel='noreferrer'
                       href={getEmailLink(org)}
                       className={`${styles.socialLink} ${styles.email}`}
                     >

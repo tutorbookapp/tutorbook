@@ -44,13 +44,13 @@ describe('Org home page', () => {
         cy.getBySel('email-social-link')
           .should('have.attr', 'href', `mailto:${mailto}`)
           .and('have.attr', 'target', '_blank')
-          .and('have.attr', 'rel', 'noreferrer');
+          .and('have.attr', 'rel', 'noopener noreferrer');
 
         org.socials.forEach((social: Record<string, string>) => {
           cy.getBySel(`${social.type}-social-link`)
             .should('have.attr', 'href', social.url)
             .and('have.attr', 'target', '_blank')
-            .and('have.attr', 'rel', 'noreferrer');
+            .and('have.attr', 'rel', 'noopener noreferrer');
         });
 
         cy.getBySel('bio').should('have.text', org.bio);

@@ -238,7 +238,7 @@ describe('User display page', () => {
         cy.getBySel(`${social.type}-social-link`)
           .should('have.attr', 'href', social.url)
           .and('have.attr', 'target', '_blank')
-          .and('have.attr', 'rel', 'noreferrer');
+          .and('have.attr', 'rel', 'noopener noreferrer');
       });
 
       cy.getBySel('avatar')
