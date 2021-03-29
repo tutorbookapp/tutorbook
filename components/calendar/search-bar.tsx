@@ -3,6 +3,9 @@ import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import { dequal } from 'dequal/lite';
 
+import DownloadIcon from 'components/icons/download';
+import FilterListIcon from 'components/icons/filter-list';
+
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 
@@ -32,10 +35,12 @@ function SearchBar({
           <IconButton
             className={styles.filtersButton}
             onClick={() => setFiltersOpen((prev) => !prev)}
-            icon='filter_list'
+            icon={<FilterListIcon />}
           />
         )}
-        {byOrg && <IconButton icon='download' onClick={downloadResults} />}
+        {byOrg && (
+          <IconButton icon={<DownloadIcon />} onClick={downloadResults} />
+        )}
       </div>
       <div className={styles.right}>
         <TextField
