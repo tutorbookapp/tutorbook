@@ -80,11 +80,29 @@
   min-height: 350px;
 }
 
+@mixin header() {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  height: 14px;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--accents-5);
+}
+
+@mixin content() {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--on-background);
+}
+
 .person {
   display: flex;
   align-items: center;
   text-decoration: none;
-  margin: 12px 0;
+  margin: 8px 0;
 
   &:first-child {
     margin-top: 24px;
@@ -92,9 +110,9 @@
 
   .avatar {
     flex: none;
-    width: 85px;
-    height: 85px;
-    margin-right: 16px;
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
   }
 
   .label {
@@ -102,26 +120,15 @@
     width: 0px;
 
     .name {
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 24px;
-      height: 24px;
-      overflow: hidden;
-      white-space: nowrap;
+      @include content;
       text-overflow: ellipsis;
-      color: var(--on-background);
+      white-space: nowrap;
+      overflow: hidden;
+      height: 24px;
     }
 
     .roles {
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 14px;
-      height: 14px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: var(--accents-5);
-      text-transform: uppercase;
+      @include header;
     }
   }
 }
@@ -135,21 +142,12 @@
   }
 
   dt {
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 14px;
-    height: 14px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: var(--accents-5);
+    @include header;
     margin-bottom: 4px;
   }
 
   dd {
-    font-size: 14px;
-    color: var(--on-background);
-    font-weight: 500;
-    line-height: 24px;
+    @include content;
     margin: 0;
   }
 
