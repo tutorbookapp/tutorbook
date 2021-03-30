@@ -88,6 +88,7 @@
   text-transform: uppercase;
   text-overflow: ellipsis;
   white-space: nowrap;
+  overflow: hidden;
   color: var(--accents-5);
 }
 
@@ -102,7 +103,7 @@
   display: flex;
   align-items: center;
   text-decoration: none;
-  margin: 8px 0;
+  margin: 12px 0;
 
   &:first-child {
     margin-top: 24px;
@@ -133,17 +134,13 @@
   }
 }
 
-.info {
+dl.info {
   flex: 1 1 auto;
-  margin-top: 24px;
-
-  dl {
-    margin: 0 0 24px;
-  }
+  margin: 24px 0;
 
   dt {
     @include header;
-    margin-bottom: 4px;
+    margin: 16px 0 0;
   }
 
   dd {

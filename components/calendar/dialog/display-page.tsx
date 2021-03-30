@@ -6,8 +6,8 @@ import Avatar from 'components/avatar';
 import Loader from 'components/loader';
 import { useNav } from 'components/dialog/context';
 
+import { getRecurString, join } from 'lib/utils';
 import { User } from 'lib/model/user';
-import { join } from 'lib/utils';
 
 import { DialogPage, useCalendarState } from '../state';
 
@@ -55,18 +55,16 @@ export default function DisplayPage({
             </a>
           </Link>
         ))}
-        <div className={styles.info}>
-          <dl>
-            <dt>Subjects</dt>
-            <dd>{join(editing.match.subjects)}</dd>
-          </dl>
-          <dl>
-            <dt>Meeting venue</dt>
-            <dd>
-              <a href={editing.venue.url}>{editing.venue.url}</a>
-            </dd>
-          </dl>
-        </div>
+        <dl className={styles.info}>
+          <dt>Subjects</dt>
+          <dd>{join(editing.match.subjects)}</dd>
+          <dt>Meeting link</dt>
+          <dd>
+            <a href={editing.venue.url}>{editing.venue.url}</a>
+          </dd>
+          <dt>Recurring</dt>
+          <dd>{getRecurString(editing.time.recur) || 'Not recurring'}</dd>
+        </dl>
       </div>
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
