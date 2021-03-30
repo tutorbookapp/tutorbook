@@ -15,7 +15,6 @@ import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DocumentReference = admin.firestore.DocumentReference;
 
 /**
  * Represents a user verification to provide social proof. Supported types are:
@@ -87,7 +86,6 @@ export interface AccountInterface extends ResourceInterface {
   background: string;
   venue: string;
   socials: SocialInterface[];
-  ref?: DocumentReference;
 }
 
 export type AccountJSON = Omit<AccountInterface, keyof Resource> & ResourceJSON;
@@ -134,8 +132,6 @@ export class Account extends Resource implements AccountInterface {
   public venue = '';
 
   public socials: SocialInterface[] = [];
-
-  public ref?: DocumentReference;
 
   public constructor(account: Partial<AccountInterface> = {}) {
     super(account);
@@ -186,7 +182,7 @@ export class Account extends Resource implements AccountInterface {
   }
 
   public toJSON(): AccountJSON {
-    return definedVals({ ...this, ...super.toJSON(), ref: undefined });
+    return definedVals({ ...this, ...super.toJSON() });
   }
 
   public static fromJSON(json: AccountJSON): Account {
@@ -194,7 +190,7 @@ export class Account extends Resource implements AccountInterface {
   }
 
   public toFirestore(): AccountFirestore {
-    return definedVals({ ...this, ...super.toFirestore(), ref: undefined });
+    return definedVals({ ...this, ...super.toFirestore() });
   }
 
   public static fromFirestore(data: AccountFirestore): Account {
@@ -206,7 +202,6 @@ export class Account extends Resource implements AccountInterface {
     const overrides = definedVals({
       created: snapshot.createTime?.toDate(),
       updated: snapshot.updateTime?.toDate(),
-      ref: snapshot.ref,
       id: snapshot.id,
     });
     const account = Account.fromFirestore(snapshot.data() as AccountFirestore);
@@ -218,7 +213,6 @@ export class Account extends Resource implements AccountInterface {
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
-      ref: undefined,
       id: undefined,
       objectID: id,
     });

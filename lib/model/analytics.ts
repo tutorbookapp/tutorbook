@@ -17,7 +17,6 @@ import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DocumentReference = admin.firestore.DocumentReference;
 type Timestamp = admin.firestore.Timestamp;
 
 /**
@@ -43,7 +42,6 @@ export interface AnalyticsInterface extends ResourceInterface {
   parent: TagTotals<Exclude<UserTag, Role>>;
   match: TagTotals<MatchTag>;
   meeting: TagTotals<MeetingTag>;
-  ref?: DocumentReference;
   date: Date;
   id: string;
 }
@@ -103,8 +101,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
 
   public id = '';
 
-  public ref?: DocumentReference;
-
   public constructor(match: Partial<AnalyticsInterface> = {}) {
     super(match);
     construct<AnalyticsInterface, ResourceInterface>(
@@ -142,7 +138,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
       ...rest,
       ...super.toJSON(),
       date: date.toJSON(),
-      ref: undefined,
     });
   }
 
@@ -160,7 +155,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
       ...rest,
       ...super.toFirestore(),
       date: (date as unknown) as Timestamp,
-      ref: undefined,
     });
   }
 
@@ -180,7 +174,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
     const overrides = definedVals({
       created: snapshot.createTime?.toDate(),
       updated: snapshot.updateTime?.toDate(),
-      ref: snapshot.ref,
       id: snapshot.id,
     });
     const match = Analytics.fromFirestore(
@@ -195,7 +188,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
       ...rest,
       ...super.toSearchHit(),
       date: date.valueOf(),
-      ref: undefined,
       id: undefined,
       objectID: id,
     });

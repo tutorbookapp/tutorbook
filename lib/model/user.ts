@@ -289,7 +289,6 @@ export class User extends Account implements UserInterface {
       zooms: zooms.map((z) => z.toJSON()),
       token: undefined,
       hash: undefined,
-      ref: undefined,
     });
   }
 
@@ -318,7 +317,6 @@ export class User extends Account implements UserInterface {
       zooms: zooms.map((z) => z.toFirestore()),
       token: undefined,
       hash: undefined,
-      ref: undefined,
     });
   }
 
@@ -342,7 +340,6 @@ export class User extends Account implements UserInterface {
     const overrides = definedVals({
       created: snapshot.createTime?.toDate(),
       updated: snapshot.updateTime?.toDate(),
-      ref: snapshot.ref,
       id: snapshot.id,
     });
     const user = User.fromFirestore(snapshot.data() as UserFirestore);
@@ -361,7 +358,6 @@ export class User extends Account implements UserInterface {
       tags: undefined,
       token: undefined,
       hash: undefined,
-      ref: undefined,
       id: undefined,
     });
   }

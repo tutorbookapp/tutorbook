@@ -39,7 +39,6 @@ import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DocumentReference = admin.firestore.DocumentReference;
 
 export type MeetingTag = 'recurring'; // Meeting is recurring (has rrule).
 
@@ -92,7 +91,6 @@ export interface MeetingInterface extends ResourceInterface {
   description: string;
   tags: MeetingTag[];
   parentId?: string;
-  ref?: DocumentReference;
   id: string;
 }
 
@@ -171,8 +169,6 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public id = '';
 
-  public ref?: DocumentReference;
-
   public constructor(meeting: Partial<MeetingInterface> = {}) {
     super(meeting);
     construct<MeetingInterface, ResourceInterface>(
@@ -198,7 +194,6 @@ export class Meeting extends Resource implements MeetingInterface {
       time: time.toJSON(),
       venue: venue.toJSON(),
       match: match.toJSON(),
-      ref: undefined,
     });
   }
 
@@ -225,7 +220,6 @@ export class Meeting extends Resource implements MeetingInterface {
       time: time.toFirestore(),
       venue: venue.toFirestore(),
       match: match.toFirestore(),
-      ref: undefined,
     });
   }
 
@@ -249,7 +243,6 @@ export class Meeting extends Resource implements MeetingInterface {
     const overrides = definedVals({
       created: snapshot.createTime?.toDate(),
       updated: snapshot.updateTime?.toDate(),
-      ref: snapshot.ref,
       id: snapshot.id,
     });
     const meeting = Meeting.fromFirestore(snapshot.data() as MeetingFirestore);
@@ -266,7 +259,6 @@ export class Meeting extends Resource implements MeetingInterface {
       match: match.toSearchHit(),
       _tags: [...tags, ...notTags(tags, MEETING_TAGS)],
       tags: undefined,
-      ref: undefined,
       id: undefined,
       objectID: id,
     });

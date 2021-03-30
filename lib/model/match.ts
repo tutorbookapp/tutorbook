@@ -18,7 +18,6 @@ import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
 type DocumentSnapshot = admin.firestore.DocumentSnapshot;
-type DocumentReference = admin.firestore.DocumentReference;
 
 export type MatchTag = 'meeting'; // Match has at least one meeting.
 
@@ -46,7 +45,6 @@ export interface MatchInterface extends ResourceInterface {
   creator: Person;
   message: string;
   tags: MatchTag[];
-  ref?: DocumentReference;
   id: string;
 }
 
@@ -96,8 +94,6 @@ export class Match extends Resource implements MatchInterface {
 
   public tags: MatchTag[] = [];
 
-  public ref?: DocumentReference;
-
   public id = '';
 
   public constructor(match: Partial<MatchInterface> = {}) {
@@ -133,7 +129,7 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toJSON(): MatchJSON {
-    return definedVals({ ...this, ...super.toJSON(), ref: undefined });
+    return definedVals({ ...this, ...super.toJSON() });
   }
 
   public static fromJSON(json: MatchJSON): Match {
@@ -141,7 +137,7 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toFirestore(): MatchFirestore {
-    return definedVals({ ...this, ...super.toFirestore(), ref: undefined });
+    return definedVals({ ...this, ...super.toFirestore() });
   }
 
   public static fromFirestore(data: MatchFirestore): Match {
@@ -153,7 +149,6 @@ export class Match extends Resource implements MatchInterface {
     const overrides = definedVals({
       created: snapshot.createTime?.toDate(),
       updated: snapshot.updateTime?.toDate(),
-      ref: snapshot.ref,
       id: snapshot.id,
     });
     const match = Match.fromFirestore(snapshot.data() as MatchFirestore);
@@ -167,7 +162,6 @@ export class Match extends Resource implements MatchInterface {
       ...super.toSearchHit(),
       _tags: [...tags, ...notTags(tags, MATCH_TAGS)],
       tags: undefined,
-      ref: undefined,
       id: undefined,
       objectID: id,
     });

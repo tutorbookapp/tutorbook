@@ -239,7 +239,7 @@ export class Org extends Account implements OrgInterface {
   }
 
   public toJSON(): OrgJSON {
-    return definedVals({ ...this, ...super.toJSON(), ref: undefined });
+    return definedVals({ ...this, ...super.toJSON() });
   }
 
   public static fromJSON(json: OrgJSON): Org {
@@ -247,7 +247,7 @@ export class Org extends Account implements OrgInterface {
   }
 
   public toFirestore(): OrgFirestore {
-    return definedVals({ ...this, ...super.toFirestore(), ref: undefined });
+    return definedVals({ ...this, ...super.toFirestore() });
   }
 
   public static fromFirestore(data: OrgFirestore): Org {
@@ -259,7 +259,6 @@ export class Org extends Account implements OrgInterface {
     const overrides = definedVals({
       created: snapshot.createTime?.toDate(),
       updated: snapshot.updateTime?.toDate(),
-      ref: snapshot.ref,
       id: snapshot.id,
     });
     const org = Org.fromFirestore(snapshot.data() as OrgFirestore);
@@ -270,7 +269,6 @@ export class Org extends Account implements OrgInterface {
     return definedVals({
       ...this,
       ...super.toSearchHit(),
-      ref: undefined,
       id: undefined,
     });
   }
