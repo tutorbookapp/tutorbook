@@ -115,16 +115,18 @@
         left: 8px;
 
         button {
-          @include icon-button.size(32px);
           background: var(--primary);
           color: var(--on-primary);
           border-radius: 50%;
-          font-size: 18px;
           margin: 0 4px;
+          height: 32px;
+          width: 32px;
+          padding: (32px - 18px) / 2;
 
           svg {
             width: 18px;
             height: 18px;
+            display: block;
           }
 
           &:first-child {

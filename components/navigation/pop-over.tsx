@@ -1,13 +1,14 @@
-import { Fragment, useState } from 'react';
+import { Fragment, ReactNode, useState } from 'react';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { FormField } from '@rmwc/formfield';
-import { Icon } from '@rmwc/icon';
 import { Ripple } from '@rmwc/ripple';
 import { Switch } from '@rmwc/switch';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
+import AddIcon from 'components/icons/add';
 import Avatar from 'components/avatar';
+import ContactSupportIcon from 'components/icons/contact-support';
 import Intercom from 'lib/intercom';
 
 import { AccountInterface } from 'lib/model/account';
@@ -22,7 +23,7 @@ import styles from './pop-over.module.scss';
 interface PopOverLinkProps {
   href: string;
   children: string;
-  icon?: string;
+  icon?: ReactNode;
 }
 
 export function PopOverLink({
@@ -34,11 +35,7 @@ export function PopOverLink({
     /* eslint-disable jsx-a11y/anchor-is-valid */
     <Ripple>
       <div className={styles.item}>
-        {icon && (
-          <div className={styles.icon}>
-            <Icon icon={icon} />
-          </div>
-        )}
+        {icon && <div className={styles.icon}>{icon}</div>}
         <Link href={href}>
           <a className={styles.itemLink}>{children}</a>
         </Link>
@@ -51,7 +48,7 @@ export function PopOverLink({
 interface PopOverButtonProps {
   onClick: () => void;
   children: string;
-  icon?: string;
+  icon?: ReactNode;
   id?: string;
 }
 
@@ -64,11 +61,7 @@ export function PopOverButton({
   return (
     <Ripple>
       <button id={id} type='button' onClick={onClick} className={styles.item}>
-        {icon && (
-          <div className={styles.icon}>
-            <Icon icon={icon} />
-          </div>
-        )}
+        {icon && <div className={styles.icon}>{icon}</div>}
         <span className={styles.label}>{children}</span>
       </button>
     </Ripple>
@@ -202,14 +195,14 @@ export default function PopOverMenu({
           <div className={styles.line} />
           <PopOverButton
             id='create-org'
-            icon='add'
+            icon={<AddIcon />}
             onClick={() => Intercom('showNewMessage', t('common:new-org-msg'))}
           >
             {t('common:new-org-btn')}
           </PopOverButton>
           <PopOverButton
             id='get-help'
-            icon='contact_support'
+            icon={<ContactSupportIcon />}
             onClick={() => Intercom('show')}
           >
             {t('common:launch-intercom')}

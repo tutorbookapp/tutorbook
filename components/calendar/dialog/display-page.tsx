@@ -3,7 +3,11 @@ import { IconButton } from '@rmwc/icon-button';
 import Link from 'next/link';
 
 import Avatar from 'components/avatar';
+import CloseIcon from 'components/icons/close';
+import DeleteIcon from 'components/icons/delete';
+import EditIcon from 'components/icons/edit';
 import Loader from 'components/loader';
+import OpenInNewIcon from 'components/icons/open-in-new';
 import { useNav } from 'components/dialog/context';
 
 import { getRecurString, join } from 'lib/utils';
@@ -33,9 +37,9 @@ export default function DisplayPage({
     <div className={styles.wrapper}>
       <Loader active={!!loading} checked={!!checked} />
       <div className={styles.nav}>
-        <IconButton icon='close' className={styles.btn} onClick={nav} />
+        <IconButton icon={<CloseIcon />} className={styles.btn} onClick={nav} />
         <Link href={`/${editing.match.org}/matches/${editing.match.id}`}>
-          <IconButton icon='open_in_new' className={styles.btn} />
+          <IconButton icon={<OpenInNewIcon />} className={styles.btn} />
         </Link>
       </div>
       <div className={styles.content}>
@@ -69,11 +73,15 @@ export default function DisplayPage({
       <div className={styles.actions}>
         <ChipSet className={styles.chips}>
           <Chip
-            icon='edit'
+            icon={<EditIcon />}
             label='Edit meeting'
             onClick={() => setDialogPage(DialogPage.Edit)}
           />
-          <Chip icon='delete' label='Delete meeting' onClick={onDeleteStop} />
+          <Chip
+            icon={<DeleteIcon />}
+            label='Delete meeting'
+            onClick={onDeleteStop}
+          />
         </ChipSet>
       </div>
     </div>

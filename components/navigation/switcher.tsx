@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
+import AddIcon from 'components/icons/add';
 import Intercom from 'lib/intercom';
 
 import { Org } from 'lib/model/org';
@@ -66,7 +67,7 @@ export default function Switcher(): JSX.Element {
           )}
           <div className={styles.line} />
           <PopOverButton
-            icon='add'
+            icon={<AddIcon />}
             onClick={() => Intercom('showNewMessage', t('common:new-org-msg'))}
           >
             {t('common:new-org-btn')}

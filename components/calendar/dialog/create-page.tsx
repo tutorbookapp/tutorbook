@@ -4,6 +4,7 @@ import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
+import CloseIcon from 'components/icons/close';
 import Loader from 'components/loader';
 import MatchSelect from 'components/match-select';
 import RecurSelect from 'components/recur-select';
@@ -119,7 +120,7 @@ export default function CreatePage({
     <div className={styles.wrapper}>
       <Loader active={!!loading} checked={!!checked} />
       <div className={styles.nav}>
-        <IconButton icon='close' className={styles.btn} onClick={nav} />
+        <IconButton icon={<CloseIcon />} className={styles.btn} onClick={nav} />
       </div>
       <form className={styles.form} onSubmit={onEditStop}>
         <div className={styles.inputs}>

@@ -4,6 +4,9 @@ import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
+import FilterListIcon from 'components/icons/filter-list';
+import DownloadIcon from 'components/icons/download';
+
 import { Callback } from 'lib/model/callback';
 import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
@@ -29,11 +32,11 @@ function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
         <IconButton
           className={styles.filtersButton}
           onClick={() => setOpen((prev) => !prev)}
-          icon='filter_list'
+          icon={<FilterListIcon />}
         />
         <IconButton
           onClick={() => window.open(query.getURL('/api/users/csv'))}
-          icon='download'
+          icon={<DownloadIcon />}
         />
         <ChipSet className={styles.filterChips}>
           <Chip

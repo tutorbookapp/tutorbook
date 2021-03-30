@@ -14,10 +14,15 @@
     padding: 12px 14px;
 
     .btn {
-      font-size: 18px;
       padding: 9px;
       width: 36px;
       height: 36px;
+
+      svg {
+        display: block;
+        height: 18px;
+        width: 18px;
+      }
     }
   }
 }

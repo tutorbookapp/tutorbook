@@ -15,6 +15,8 @@ import { MDCMenuSurfaceFoundation } from '@material/menu-surface';
 import { nanoid } from 'nanoid';
 import to from 'await-to-js';
 
+import CloseIcon from 'components/icons/close';
+
 import { Option } from 'lib/model/query/base';
 import { TCallback } from 'lib/model/callback';
 import { useClickContext } from 'lib/hooks/click-outside';
@@ -346,7 +348,7 @@ export default function Select<T, O extends Option<T>>({
                   : opt.label
               }
               label={opt.label}
-              trailingIcon='close'
+              trailingIcon={<CloseIcon />}
               onTrailingIconInteraction={() => updateSelected(opt)}
               className={styles.chip}
             />
