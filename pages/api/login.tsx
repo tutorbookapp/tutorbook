@@ -26,7 +26,7 @@ async function sendLoginLink(req: Req, res: Res<void>): Promise<void> {
   );
   if (err) throw new APIError(`${err.name} creating link: ${err.message}`, 500);
   await send({
-    to: req.body.email,
+    to: [{ email: req.body.email }],
     subject: `Tutorbook Login Confirmation (${req.body.location}).`,
     html: renderToStaticMarkup(
       <LoginEmail link={link as string} location={req.body.location} />
