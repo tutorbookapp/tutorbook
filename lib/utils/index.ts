@@ -3,28 +3,41 @@ import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
 /**
+ * Converts an RRule into one of Tutorbook's officially supported recur options
+ * (daily, weekly, biweekly, or monthly). We don't use the `rrule` package
+ * client-side because of it's size.
+ */
+export function getRecurString(rrule?: string): string {
+  if (!rrule) return '';
+  if (rrule.includes('FREQ=DAILY')) return 'Daily';
+  if (rrule.includes('FREQ=WEEKLY') && rrule.includes('INTERVAL=2'))
+    return 'Biweekly';
+  if (rrule.includes('FREQ=WEEKLY')) return 'Weekly';
+  if (rrule.includes('FREQ=MONTHLY')) return 'Monthly';
+  return '';
+}
+
+interface PhoneProps {
+  name?: string;
+  phone: string;
+}
+
+/**
  * Returns a link that, when clicked, opens a new SMS message (to the given
  * phone number) that includes the recipient's name.
  * @see {@link https://stackoverflow.com/a/38708066/10023158}
  */
-export function getPhoneLink({
-  name,
-  phone,
-}: {
-  name?: string;
-  phone: string;
-}): string {
+export function getPhoneLink({ name, phone }: PhoneProps): string {
   if (!name) return `sms:${phone}`;
   return `sms:${phone};?&body=${encodeURIComponent(`Hi ${name}!`)}`;
 }
 
-export function getEmailLink({
-  name,
-  email,
-}: {
+interface EmailProps {
   name?: string;
   email: string;
-}): string {
+}
+
+export function getEmailLink({ name, email }: EmailProps): string {
   if (!name) return `mailto:${email}`;
   return `mailto:${encodeURIComponent(`"${name}"<${email}>`)}`;
 }
