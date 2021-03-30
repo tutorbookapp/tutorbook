@@ -218,10 +218,7 @@ describe('Search page', () => {
     cy.focused()
       .parent()
       .within(() => {
-        cy.get('.mdc-chip')
-          .first()
-          .contains('[role="button"]', 'close')
-          .click();
+        cy.get('.mdc-chip').first().find('[role="button"]').last().click();
         cy.get('.mdc-chip').should('have.length', 0);
         cy.percySnapshot('Search Page with Subject Selected');
       });

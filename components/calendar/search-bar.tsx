@@ -33,13 +33,18 @@ function SearchBar({
       <div className={styles.left}>
         {byOrg && (
           <IconButton
+            data-cy='filters-button'
             className={styles.filtersButton}
             onClick={() => setFiltersOpen((prev) => !prev)}
             icon={<FilterListIcon />}
           />
         )}
         {byOrg && (
-          <IconButton icon={<DownloadIcon />} onClick={downloadResults} />
+          <IconButton
+            data-cy='download-button'
+            onClick={downloadResults}
+            icon={<DownloadIcon />}
+          />
         )}
       </div>
       <div className={styles.right}>
