@@ -52,7 +52,7 @@ export default async function sendEmails(
     const recipient = people[people.findIndex((p) => p.id !== creator.id)];
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
-      to: { name: recipient.name, email: recipient.email },
+      to: [{ name: recipient.name, email: recipient.email }],
       subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <DirectMeetingTemplate

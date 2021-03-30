@@ -37,7 +37,7 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
         from: { name: 'Julia Segal', email: 'team@tutorbook.org' },
         bcc: { name: 'Tutorbook', email: 'team@tutorbook.org' },
         replyTo: { name: 'Julia Segal', email: 'quarantunes.info@gmail.com' },
-        to: { name: user.name, email: user.email },
+        to: [{ name: user.name, email: user.email }],
         subject: `Hi ${firstName}! Could you modify your QuaranTunes profile?`,
         html: renderToStaticMarkup(
           <QuaranTunesTemplate
