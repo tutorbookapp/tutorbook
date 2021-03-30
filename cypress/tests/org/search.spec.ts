@@ -72,7 +72,7 @@ describe('Search page', () => {
     // TODO: Perhaps make assertions about the 'api/users' query to remove this
     // awkward result item selection timeout workaround.
     cy.wait('@list-users');
-    cy.getBySel('result')
+    cy.getBySel('result', { timeout: 60000 })
       .should('not.have.css', 'cursor', 'wait')
       .as('results')
       .should('have.length', 1)
@@ -121,7 +121,7 @@ describe('Search page', () => {
     cy.percySnapshot('Search Page in Loading State');
 
     cy.wait('@list-users');
-    cy.getBySel('result')
+    cy.getBySel('result', { timeout: 60000 })
       .should('not.have.css', 'cursor', 'wait')
       .as('results')
       .should('have.length', 2);
