@@ -136,6 +136,9 @@ function selectTime(they: boolean = false): void {
     )
   );
 
+  if (selected.getMonth() === now.getMonth() + 1)
+    cy.getBySel('next-month-button').trigger('click');
+
   cy.get('@days')
     .eq(selected.getDate() - 1)
     .trigger('click')
