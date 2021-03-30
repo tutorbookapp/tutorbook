@@ -21,8 +21,11 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
     .should('be.visible')
     .find('.mdc-snackbar__label')
     .should('have.text', label);
-  cy.get('@snackbar').find('button').click();
-  cy.get('@snackbar').should('not.exist');
+
+  // TODO: Restore this once we can use SVGs for the snackbar dismiss button.
+  // @see {@link https://github.com/jamesmfriedman/rmwc/pull/727}
+  // cy.get('@snackbar').find('button').click();
+  // cy.get('@snackbar').should('not.exist');
 }
 
 // TODO: Add `cy.percySnapshot` calls to add visual snapshot testing.
