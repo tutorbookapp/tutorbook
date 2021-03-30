@@ -3,6 +3,7 @@ const withImages = require('next-images');
 const { locales } = require('./lib/intl/config.json');
 
 module.exports = withImages({
+  future: { webpack5: true },
   reactStrictMode: true,
   sassOptions: {
     includePaths: [
