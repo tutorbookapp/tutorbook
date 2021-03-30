@@ -23,7 +23,7 @@ export default async function getPerson(
   }
 
   // TODO: Why do I need to call `addRoles` at all here? Aren't they there?
-  const prefetched = people[people.findIndex((p) => p.id === id)];
+  const prefetched = people.find((p) => p.id === id);
   if (prefetched) return addRoles(prefetched, prefetched.roles);
 
   const user = await getUser(id);
