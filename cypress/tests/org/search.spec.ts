@@ -72,7 +72,9 @@ describe('Search page', () => {
     // TODO: Perhaps make assertions about the 'api/users' query to remove this
     // awkward result item selection timeout workaround.
     cy.wait('@list-users');
-    cy.getBySel('result', { timeout: 60000 })
+    cy.getBySel('result')
+      .should('not.have.css', 'cursor', 'wait')
+      .as('results')
       .should('have.length', 1)
       .first()
       .should('contain', volunteer.name)
@@ -91,7 +93,7 @@ describe('Search page', () => {
     cy.get('header').contains('button', 'Tutors').should('not.exist');
 
     cy.wait('@list-users');
-    cy.getBySel('result').as('results').should('have.length', 2);
+    cy.get('@results').should('have.length', 2);
     cy.get('@results')
       .eq(0)
       .should('contain', volunteer.name)
@@ -119,7 +121,10 @@ describe('Search page', () => {
     cy.percySnapshot('Search Page in Loading State');
 
     cy.wait('@list-users');
-    cy.getBySel('result').as('results').should('have.length', 2);
+    cy.getBySel('result')
+      .should('not.have.css', 'cursor', 'wait')
+      .as('results')
+      .should('have.length', 2);
     cy.get('@results')
       .eq(0)
       .should('not.contain', volunteer.name)
@@ -142,7 +147,7 @@ describe('Search page', () => {
     cy.wait('@list-users');
     cy.get('@results')
       .should('have.length', 1)
-      .should('not.have.attr', 'disabled', '')
+      .and('not.have.attr', 'disabled', '')
       .children('a')
       .should('contain', onlyFirstNameAndLastInitial(admin.name))
       .and(
