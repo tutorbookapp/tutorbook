@@ -15373,7 +15373,16 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"re-resizable@npm:6.9.0, re-resizable@npm:^6.5.4":
+"re-resizable@npm:6.3.2":
+  version: 6.3.2
+  resolution: "re-resizable@npm:6.3.2"
+  dependencies:
+    fast-memoize: ^2.5.1
+  checksum: 1c81dad9b329f2e6f6792899cd9a6a1d09e65bbf6d222a411912778db1568eb736241b96e962660d2ac579f17fc414130636f442d14e67a5d6726c6571ec5122
+  languageName: node
+  linkType: hard
+
+"re-resizable@npm:^6.5.4":
   version: 6.9.0
   resolution: "re-resizable@npm:6.9.0"
   dependencies:
@@ -15469,14 +15478,14 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"react-rnd@npm:^10.2.1":
-  version: 10.2.4
-  resolution: "react-rnd@npm:10.2.4"
+"react-rnd@npm:10.2.1":
+  version: 10.2.1
+  resolution: "react-rnd@npm:10.2.1"
   dependencies:
-    re-resizable: 6.9.0
+    re-resizable: 6.3.2
     react-draggable: 4.4.3
-    tslib: 2.0.3
-  checksum: da6ade10a0f6e9fa71138e83b50f8d52dbea41edc1346fb6e1ee1f02d2430246aa1943d84158c3dd60641938e789da08c6b1d0d4440a7842868142490759441a
+    tslib: 2.0.0
+  checksum: 601ad37fb28211dffab06bd20c6d52851634167329486f4eb0c3786c3a2324429495dc30a0baf6479b648db46490dca587d8498fd6a6f23ea74eb96774658d78
   languageName: node
   linkType: hard
 
@@ -18066,10 +18075,10 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.0.3":
-  version: 2.0.3
-  resolution: "tslib@npm:2.0.3"
-  checksum: 447bfca5deaa157806c3f77eaba74d05dd0b38b014e47ce79d98b5c77ce7d91b00a687ba13ca1b5a74d35ca1098ac7a072c0a97fad06f0266612f2a03a6c8e8f
+"tslib@npm:2.0.0":
+  version: 2.0.0
+  resolution: "tslib@npm:2.0.0"
+  checksum: a7369a224f12e223fb42f2a720389601a24a1e1c96c55bf0d8d4b60c131e574c175ae23578b8d1bd3f4ec790c7e0a82b43733f022f866d48a23aeadd3910755d
   languageName: node
   linkType: hard
 
@@ -18221,7 +18230,7 @@ resolve@^2.0.0-next.3:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-merge-refs: ^1.1.0
-    react-rnd: ^10.2.1
+    react-rnd: 10.2.1
     react-spring: ^8.0.27
     react-use-measure: ^2.0.3
     recharts: ^2.0.8
