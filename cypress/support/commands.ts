@@ -107,26 +107,25 @@ function loading(isLoading = true, ...args: any): void {
   }
 }
 
-chai.Assertion.addMethod('img', function img(
-  src: string,
-  w: number = 1080,
-  q: number = 75
-): void {
-  const element = (this._obj as JQuery<HTMLImageElement>)[0];
+chai.Assertion.addMethod(
+  'img',
+  function img(src: string, w: number = 1080, q: number = 75): void {
+    const element = (this._obj as JQuery<HTMLImageElement>)[0];
 
-  // TODO: Even though I specify to Next.js to use a size of 24px, it seems to
-  // re-use the already loaded 85px version of the photo. Why is that?
-  const expected = `/_next/image?url=${encodeURIComponent(src)}`;
-  const baseUrl = Cypress.config('baseUrl') || 'http://localhost:3000';
+    // TODO: Even though I specify to Next.js to use a size of 24px, it seems to
+    // re-use the already loaded 85px version of the photo. Why is that?
+    const expected = `/_next/image?url=${encodeURIComponent(src)}`;
+    const baseUrl = Cypress.config('baseUrl') || 'http://localhost:3000';
 
-  this.assert(
-    element.currentSrc.startsWith(`${baseUrl}${expected}`),
-    'expected #{this} to start with Next.js image source #{exp}, but the source was #{act}',
-    'expected #{this} not to start with Next.js image source #{exp}',
-    `${baseUrl}${expected}`,
-    element.currentSrc
-  );
-});
+    this.assert(
+      element.currentSrc.startsWith(`${baseUrl}${expected}`),
+      'expected #{this} to start with Next.js image source #{exp}, but the source was #{act}',
+      'expected #{this} not to start with Next.js image source #{exp}',
+      `${baseUrl}${expected}`,
+      element.currentSrc
+    );
+  }
+);
 
 Cypress.Commands.add('login', login);
 Cypress.Commands.add('logout', logout);

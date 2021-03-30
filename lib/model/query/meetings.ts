@@ -28,7 +28,8 @@ export function isMeetingsQueryURL(query: unknown): query is MeetingsQueryURL {
   return isMatchesQueryURL(query);
 }
 
-export class MeetingsQuery extends MatchesQuery
+export class MeetingsQuery
+  extends MatchesQuery
   implements MeetingsQueryInterface {
   public tags: MeetingHitTag[] = [];
 
