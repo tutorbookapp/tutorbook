@@ -46,8 +46,8 @@ $highlight: #79ffe1;
   --snackbar-background: #{color.mix($on-background, $background, 80%)};
   --chip-background: #{color.mix($on-background, $background, 12%)};
 
-  --title-left: #{color.adjust($primary, $hue: 10%, $lightness: -10%)};
-  --title-right: #{color.adjust($primary, $hue: -15%)};
+  --title-left: #{color.adjust($primary, $hue: 10, $lightness: -10%)};
+  --title-right: #{color.adjust($primary, $hue: -15)};
 
   --header-background: #{rgba($background, 0.8)};
   --shadow-large: 0 30px 60px rgba(0, 0, 0, 0.12);
@@ -116,7 +116,7 @@ $highlight: #79ffe1;
   --chip-background: #{color.mix($on-background, $background, 12%)};
 
   --title-left: #{$primary};
-  --title-right: #{color.adjust($primary, $hue: -25%, $lightness: 10%)};
+  --title-right: #{color.adjust($primary, $hue: -25, $lightness: 10%)};
 
   --header-background: #{rgba($background, 0.8)};
   --shadow-large: 0 0 0 1px var(--accents-2);
