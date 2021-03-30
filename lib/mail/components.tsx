@@ -407,7 +407,7 @@ export function Person({
                   backgroundColor: colors.accents2,
                   borderRadius: '4px',
                 }}
-                src={photo}
+                src={photo || 'https://assets.tutorbook.org/pngs/profile.png'}
                 width='100px'
                 height='100px'
                 alt=''
