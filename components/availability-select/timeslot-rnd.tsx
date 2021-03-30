@@ -12,7 +12,7 @@ import { ResizeDirection } from 're-resizable';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
-import CloseIcon from 'components/icons/close-icon';
+import CloseIcon from 'components/icons/close';
 
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';

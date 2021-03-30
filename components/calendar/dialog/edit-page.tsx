@@ -3,7 +3,7 @@ import { IconButton } from '@rmwc/icon-button';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
-import CloseIcon from 'components/icons/close-icon';
+import CloseIcon from 'components/icons/close';
 
 import Button from 'components/button';
 import Loader from 'components/loader';

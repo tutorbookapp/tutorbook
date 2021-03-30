@@ -11,7 +11,7 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import CloseIcon from 'components/icons/close-icon';
+import CloseIcon from 'components/icons/close';
 
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';

@@ -10,8 +10,8 @@ import { useOrg } from 'lib/context/org';
 
 import styles from './search-bar.module.scss';
 
-import FilterList from 'components/icons/filter-list';
-import Download from 'components/icons/download';
+import FilterListIcon from 'components/icons/filter-list';
+import DownloadIcon from 'components/icons/download';
 
 export interface SearchBarProps {
   query: UsersQuery;
@@ -32,11 +32,11 @@ function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
         <IconButton
           className={styles.filtersButton}
           onClick={() => setOpen((prev) => !prev)}
-          icon={<FilterList />}
+          icon={<FilterListIcon />}
         />
         <IconButton
           onClick={() => window.open(query.getURL('/api/users/csv'))}
-          icon={<Download />}
+          icon={<DownloadIcon />}
         />
         <ChipSet className={styles.filterChips}>
           <Chip

@@ -6,7 +6,7 @@ import Avatar from 'components/avatar';
 import Loader from 'components/loader';
 import { useNav } from 'components/dialog/context';
 
-import CloseIcon from 'components/icons/close-icon';
+import CloseIcon from 'components/icons/close';
 import OpenInNewIcon from 'components/icons/open-in-new';
 
 import { User } from 'lib/model/user';
