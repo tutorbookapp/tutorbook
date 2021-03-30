@@ -1,12 +1,15 @@
+import { ReactNode, useMemo } from 'react';
 import Link from 'next/link';
 import TimeAgo from 'timeago-react';
 import Trans from 'next-translate/Trans';
 import cn from 'classnames';
 import { nanoid } from 'nanoid';
-import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
+import AddBoxIcon from 'components/icons/add-box';
 import Avatar from 'components/avatar';
+import EmailIcon from 'components/icons/email';
+import EventNoteIcon from 'components/icons/event-note';
 import LoadingDots from 'components/loading-dots';
 
 import { Match } from 'lib/model/match';
@@ -18,7 +21,7 @@ import { useOrg } from 'lib/context/org';
 import styles from './display.module.scss';
 
 interface EventProps {
-  badge: string;
+  badge: ReactNode;
   time?: Date;
   person?: User;
   children: React.ReactNode;
@@ -30,9 +33,7 @@ function Event({ badge, time, person, children }: EventProps): JSX.Element {
 
   return (
     <div className={styles.event}>
-      <div className={styles.badge}>
-        <span className='material-icons'>{badge}</span>
-      </div>
+      <div className={styles.badge}>{badge}</div>
       <div className={styles.content}>
         {time && (
           <TimeAgo datetime={time} className={styles.time} locale={locale} />
@@ -133,14 +134,14 @@ export default function MatchDisplay({
       <div className={cn(styles.timeline, { [styles.loading]: loading })}>
         <div className={styles.wrapper}>
           <Event
-            badge='add_box'
+            badge={<AddBoxIcon />}
             time={!loading ? new Date(match?.created || '') : undefined}
             person={creator}
           >
             {t('matches:event-created')}
           </Event>
           <Event
-            badge='email'
+            badge={<EmailIcon />}
             time={!loading ? new Date(match?.created || '') : undefined}
             person={creator}
           >
@@ -154,7 +155,7 @@ export default function MatchDisplay({
             (meetings || []).map((meeting) => (
               <Event
                 key={meeting.id}
-                badge='event_note'
+                badge={<EventNoteIcon />}
                 time={new Date(meeting.created)}
                 person={(() => {
                   if (!people) return;

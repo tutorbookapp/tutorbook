@@ -219,8 +219,10 @@
         justify-content: center;
         flex-shrink: 0;
 
-        span {
-          font-size: 18px;
+        svg {
+          width: 18px;
+          height: 18px;
+          fill: currentColor;
         }
       }
 
