@@ -142,6 +142,7 @@ export default function RequestForm({
       if (student === 'My child') {
         const child = new User({
           parents: [updatedUser.id],
+          roles: studentRoles, // Specifying student roles skips signup emails.
           name: childName,
           age: childAge,
         });
