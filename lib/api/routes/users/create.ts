@@ -41,10 +41,14 @@ export default async function createUser(
       createUserSearchObj(user),
       Promise.all(
         user.orgs.map(async (orgId) => {
-          const org = await getOrg(orgId);
+          // Skip the org signup notification emails if the user is a child
+          // being created by a parent while they're booking a new meeting.
+          if (user.roles.some((r) => r === 'tutee' || r === 'mentee')) return;
+
           // Don't send a notification email to the admin who is being created.
           // This fixes a bug when seeding data for tests (e.g. when the org
           // admin is the one being created so his/her data doesn't exist yet).
+          const org = await getOrg(orgId);
           const orgAdmins = await Promise.all(
             org.members.filter((id) => user.id !== id).map((id) => getUser(id))
           );
