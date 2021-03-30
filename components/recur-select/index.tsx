@@ -1,7 +1,8 @@
-import { FormEvent, useCallback, useMemo } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { Select, SelectHTMLProps, SelectProps } from '@rmwc/select';
 
 import { TCallback } from 'lib/model/callback';
+import { getRecurString } from 'lib/utils';
 
 // TODO: If the given value has an `until` property, render it as another
 // pre-selected option. This allows users to reset the `until` property if
@@ -12,14 +13,6 @@ const rrules: Record<string, string> = {
   Biweekly: 'RRULE:FREQ=WEEKLY;INTERVAL=2',
   Monthly: 'RRULE:FREQ=MONTHLY',
 };
-
-function inverse(record: Record<string, string>): Record<string, string> {
-  const inverted: Record<string, string> = {};
-  Object.entries(record).forEach(([key, val]) => {
-    inverted[val] = key;
-  });
-  return inverted;
-}
 
 export type RecurSelectProps = {
   value?: string;
@@ -40,16 +33,12 @@ export default function RecurSelect({
     },
     [onChange]
   );
-  const selectValue = useMemo(
-    () => (value ? inverse(rrules)[value] || '' : ''),
-    [value]
-  );
 
   return (
     <Select
-      options={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
+      options={['', 'Daily', 'Weekly', 'Biweekly', 'Monthly']}
       onChange={onSelectChange}
-      value={selectValue}
+      value={getRecurString(value)}
       enhanced
       {...props}
     />
