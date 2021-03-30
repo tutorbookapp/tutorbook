@@ -153,7 +153,7 @@ describe('Users page', () => {
 
     // Showing featured mentors first; users must be visible in search AND speak
     // Spanish.
-    cy.contains('button', 'filter_list').as('filters-button').click();
+    cy.getBySel('filters-button').click();
     filterSheetIsOpen();
     cy.contains('Languages').as('langs-input').type('spanish');
 
@@ -176,7 +176,7 @@ describe('Users page', () => {
       .should('have.length', 1)
       .first()
       .should('contain', volunteer.name);
-    cy.get('@spanish-chip').contains('[role="button"]', 'close').click();
+    cy.get('@spanish-chip').find('[role="button"]').last().click();
     cy.get('@langs-input').children('.mdc-chip').should('have.length', 0);
 
     // Showing featured mentors first; users must be visible in search AND not
@@ -200,7 +200,7 @@ describe('Users page', () => {
       .should('have.length', 1)
       .first()
       .should('contain', volunteer.name);
-    cy.get('@filters-button').click();
+    cy.getBySel('filters-button').click();
     filterSheetIsOpen(false);
 
     // Showing featured tutors first; users must not yet be vetted.
@@ -218,7 +218,7 @@ describe('Users page', () => {
 
     // Showing featured tutors first; users must not yet be vetted AND must
     // tutor Computer Science.
-    cy.get('@filters-button').click();
+    cy.getBySel('filters-button').click();
     filterSheetIsOpen();
     cy.contains('Subjects').as('subjects-input').type('computer');
     cy.get('@portal')
@@ -237,9 +237,9 @@ describe('Users page', () => {
       .should('have.length', 1)
       .first()
       .should('contain', volunteer.name);
-    cy.get('@cs-chip').contains('[role="button"]', 'close').click();
+    cy.get('@cs-chip').find('[role="button"]').last().click();
     cy.get('@subjects-input').children('.mdc-chip').should('have.length', 0);
-    cy.get('@filters-button').click();
+    cy.getBySel('filters-button').click();
     filterSheetIsOpen(false);
 
     // Search by text (using 'Erik' name).

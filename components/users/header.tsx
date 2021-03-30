@@ -63,13 +63,15 @@ export default memo(function Header({
     return Intercom('showNewMessage', t('users:import-data-msg'));
   }, [t]);
 
+  // TODO: Once the types are updated, restore the snackbar's SVG dismiss icon.
+  // @see {@link https://github.com/jamesmfriedman/rmwc/pull/727}
+
   return (
     <>
       {snackbar && (
         <Snackbar
           onClose={hideSnackbar}
           message={t('users:link-copied')}
-          dismissIcon
           leading
           open
         />

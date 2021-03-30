@@ -30,11 +30,13 @@ function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
     <div className={styles.filters}>
       <div className={styles.left}>
         <IconButton
+          data-cy='filters-button'
           className={styles.filtersButton}
           onClick={() => setOpen((prev) => !prev)}
           icon={<FilterListIcon />}
         />
         <IconButton
+          data-cy='download-button'
           onClick={() => window.open(query.getURL('/api/users/csv'))}
           icon={<DownloadIcon />}
         />
