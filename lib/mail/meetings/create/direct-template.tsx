@@ -15,12 +15,14 @@ export interface DirectMeetingEmailProps {
   meeting: Meeting;
   recipient: User;
   creator: User;
+  people: User[];
 }
 
 export default function DirectMeetingEmail({
   meeting,
   recipient,
   creator,
+  people,
 }: DirectMeetingEmailProps): JSX.Element {
   const calendarURL = 'https://tutorbook.org/calendar';
   const isTutoring = recipient.roles.includes('tutor');
@@ -38,7 +40,7 @@ export default function DirectMeetingEmail({
           show='message'
           timeZone={recipient.timezone}
           meeting={meeting}
-          people={[creator]}
+          people={people.filter((p) => p.id !== recipient.id)}
           sender={creator}
         />
         <br />

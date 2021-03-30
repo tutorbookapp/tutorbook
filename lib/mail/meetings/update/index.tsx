@@ -33,18 +33,16 @@ export default async function sendEmails(
       ),
     });
   } else {
-    // Student or volunteer updated meeting, send email to the other person.
-    // TODO: Remove assumption that there's only two people in match.
-    const recipient = people[people.findIndex((p) => p.id !== updater.id)];
+    // Student or volunteer updated meeting, send email to the other people.
     emails.push({
       replyTo: { name: updater.name, email: updater.email },
-      to: { name: recipient.name, email: recipient.email },
+      to: people.filter((p) => p.id !== updater.id),
       subject: `Updated ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <DirectMeetingTemplate
           meeting={meeting}
-          recipient={recipient}
           updater={updater}
+          people={people}
         />
       ),
     });

@@ -34,17 +34,15 @@ export default async function sendEmails(
     });
   } else {
     // Student or volunteer deleted meeting, send email to the other person.
-    // TODO: Remove assumption that there's only two people in match.
-    const recipient = people[people.findIndex((p) => p.id !== deleter.id)];
     emails.push({
       replyTo: { name: deleter.name, email: deleter.email },
-      to: { name: recipient.name, email: recipient.email },
+      to: people.filter((p) => p.id !== deleter.id),
       subject: `Canceled ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <DirectMeetingTemplate
           meeting={meeting}
-          recipient={recipient}
           deleter={deleter}
+          people={people}
         />
       ),
     });

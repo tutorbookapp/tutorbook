@@ -48,8 +48,7 @@ export default async function sendEmails(
       ),
     });
   } else {
-    // Student created meeting, send request email to volunteer and confirmation
-    // email to student.
+    // Student or parent created meeting, send request email to volunteer.
     const recipient = people[people.findIndex((p) => p.id !== creator.id)];
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
@@ -60,6 +59,7 @@ export default async function sendEmails(
           meeting={meeting}
           recipient={recipient}
           creator={creator}
+          people={people}
         />
       ),
     });
@@ -71,6 +71,7 @@ export default async function sendEmails(
           meeting={meeting}
           recipient={recipient}
           creator={creator}
+          people={people}
           org={org}
         />
       ),

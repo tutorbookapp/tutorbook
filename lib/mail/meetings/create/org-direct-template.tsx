@@ -15,6 +15,7 @@ export interface OrgDirectMeetingEmailProps {
   meeting: Meeting;
   recipient: User;
   creator: User;
+  people: User[];
 }
 
 export default function OrgDirectMeetingEmail({
@@ -22,6 +23,7 @@ export default function OrgDirectMeetingEmail({
   meeting,
   recipient,
   creator,
+  people,
 }: OrgDirectMeetingEmailProps): JSX.Element {
   const calendarURL = `https://tutorbook.org/${org.id}/calendar`;
   const isTutoring = recipient.roles.includes('tutor');
@@ -39,7 +41,7 @@ export default function OrgDirectMeetingEmail({
           show='message'
           timeZone={creator.timezone}
           meeting={meeting}
-          people={[recipient, creator]}
+          people={people}
           sender={creator}
         />
         <br />

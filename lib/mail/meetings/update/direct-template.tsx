@@ -9,36 +9,39 @@ import {
   P,
 } from 'lib/mail/components';
 import { Meeting, User } from 'lib/model';
-import { getEmailLink, getPhoneLink } from 'lib/utils';
+import { getEmailLink, getPhoneLink, join } from 'lib/utils';
 
 export interface DirectMeetingEmailProps {
   meeting: Meeting;
-  recipient: User;
   updater: User;
+  people: User[];
 }
 
 export default function DirectMeetingEmail({
   meeting,
-  recipient,
   updater,
+  people,
 }: DirectMeetingEmailProps): JSX.Element {
   const calendarURL = 'https://tutorbook.org/calendar';
-  const isTutoring = recipient.roles.includes('tutor');
+  const isTutoring = people.some((p) => p.roles.includes('tutor'));
+  const recipients = people.filter((p) => p.id !== updater.id);
 
   return (
     <Email>
       <Header />
       <Item left='48px' right='48px'>
-        <P style={{ marginTop: '0px !important' }}>Hi {recipient.firstName},</P>
+        <P style={{ marginTop: '0px !important' }}>
+          Hi {join(recipients.map((p) => p.firstName))},
+        </P>
         <P>
           {updater.name} updated a {isTutoring ? 'tutoring lesson' : 'meeting'}{' '}
           with you:
         </P>
         <MeetingDisplay
           show='description'
-          timeZone={recipient.timezone}
+          timeZone={people[0].timezone}
           meeting={meeting}
-          people={[updater]}
+          people={people}
           sender={updater}
         />
         <br />
