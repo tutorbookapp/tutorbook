@@ -24,7 +24,7 @@ export default function DirectMeetingEmail({
 }: DirectMeetingEmailProps): JSX.Element {
   const calendarURL = 'https://tutorbook.org/calendar';
   const isTutoring = people.some((p) => p.roles.includes('tutor'));
-  const recipients = people.filter((p) => p.id !== deleter.id);
+  const recipients = people.filter((p) => p.email && p.id !== deleter.id);
 
   return (
     <Email>
