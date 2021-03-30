@@ -11,6 +11,8 @@ import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
+import CloseIcon from 'components/icons/close-icon';
+
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
@@ -119,7 +121,7 @@ export default function CreatePage({
     <div className={styles.wrapper}>
       <Loader active={!!loading} checked={!!checked} />
       <div className={styles.nav}>
-        <IconButton icon='close' className={styles.btn} onClick={nav} />
+        <IconButton icon={<CloseIcon />} className={styles.btn} onClick={nav} />
       </div>
       <form className={styles.form} onSubmit={onEditStop}>
         <div className={styles.inputs}>

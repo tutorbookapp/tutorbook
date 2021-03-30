@@ -12,6 +12,8 @@ import { ResizeDirection } from 're-resizable';
 import dynamic from 'next/dynamic';
 import useTranslation from 'next-translate/useTranslation';
 
+import CloseIcon from 'components/icons/close-icon';
+
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';
 
@@ -120,7 +122,11 @@ export default function TimeslotRnd({
       }}
     >
       <div className={styles.wrapper}>
-        <IconButton className={styles.btn} icon='close' onClick={remove} />
+        <IconButton
+          className={styles.btn}
+          icon={<CloseIcon />}
+          onClick={remove}
+        />
         <div className={styles.content}>
           <div>
             {value.from.toLocaleString(locale, {

@@ -17,6 +17,9 @@ import useMeasure from 'react-use-measure';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
+import ChevronLeft from 'components/icons/chevron-left';
+import ChevronRight from 'components/icons/chevron-right';
+
 import { Availability, AvailabilityJSON } from 'lib/model/availability';
 import {
   getDate,
@@ -119,13 +122,13 @@ function SelectSurface({
           </h6>
           <div className={styles.navigation}>
             <IconButton
-              icon='chevron_left'
+              icon={<ChevronLeft />}
               onClick={viewPrevMonth}
               disabled={getMonthsApart(selected) <= 0}
               data-cy='prev-month-button'
             />
             <IconButton
-              icon='chevron_right'
+              icon={<ChevronRight />}
               onClick={viewNextMonth}
               disabled={getMonthsApart(selected) >= 3}
               data-cy='next-month-button'

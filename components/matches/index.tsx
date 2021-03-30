@@ -14,6 +14,8 @@ import { nanoid } from 'nanoid';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
+import DownloadIcon from 'components/icons/download';
+
 import Header from 'components/header';
 import Pagination from 'components/pagination';
 import Placeholder from 'components/placeholder';
@@ -130,7 +132,7 @@ export default function Matches({
               <IconButton
                 className={styles.downloadButton}
                 onClick={downloadResults}
-                icon='download'
+                icon={<DownloadIcon />}
               />
             )}
           </div>

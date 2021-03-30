@@ -6,6 +6,9 @@ import Avatar from 'components/avatar';
 import Loader from 'components/loader';
 import { useNav } from 'components/dialog/context';
 
+import CloseIcon from 'components/icons/close-icon';
+import OpenInNewIcon from 'components/icons/open-in-new';
+
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
@@ -33,9 +36,9 @@ export default function DisplayPage({
     <div className={styles.wrapper}>
       <Loader active={!!loading} checked={!!checked} />
       <div className={styles.nav}>
-        <IconButton icon='close' className={styles.btn} onClick={nav} />
+        <IconButton icon={<CloseIcon />} className={styles.btn} onClick={nav} />
         <Link href={`/${editing.match.org}/matches/${editing.match.id}`}>
-          <IconButton icon='open_in_new' className={styles.btn} />
+          <IconButton icon={<OpenInNewIcon />} className={styles.btn} />
         </Link>
       </div>
       <div className={styles.content}>
