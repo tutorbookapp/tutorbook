@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import cn from 'classnames';
-import useTranslation from 'next-translate/useTranslation';
 
 import { validPhoto } from 'lib/utils';
 
@@ -27,32 +26,32 @@ export default function Avatar({
   className,
   priority,
   loading,
-  src = '',
+  src,
 }: AvatarProps): JSX.Element {
-  const { t } = useTranslation();
+  const img = src || 'https://assets.tutorbook.org/pngs/profile.png';
 
   return (
     <div
       className={cn(styles.wrapper, className, { [styles.loading]: loading })}
     >
-      {!loading && !!src && !validPhoto(src) && (
+      {!loading && !!img && !validPhoto(img) && (
         <div className={styles.photoWrapper}>
-          {priority && <link rel='preload' as='image' href={src} />}
-          <img data-cy='avatar' className={styles.photo} src={src} alt='' />
+          {priority && <link rel='preload' as='image' href={img} />}
+          <img data-cy='avatar' className={styles.photo} src={img} alt='' />
         </div>
       )}
-      {!loading && !!src && validPhoto(src) && size !== 'dynamic' && (
+      {!loading && !!img && validPhoto(img) && size !== 'dynamic' && (
         <Image
           data-cy='avatar'
           priority={priority}
           layout='fixed'
           height={size}
           width={size}
-          src={src}
+          src={img}
           alt=''
         />
       )}
-      {!loading && !!src && validPhoto(src) && size === 'dynamic' && (
+      {!loading && !!img && validPhoto(img) && size === 'dynamic' && (
         <div className={styles.photoWrapper}>
           <Image
             data-cy='avatar'
@@ -60,14 +59,9 @@ export default function Avatar({
             objectFit='cover'
             objectPosition='center 50%'
             priority={priority}
-            src={src}
+            src={img}
             alt=''
           />
-        </div>
-      )}
-      {!src && !loading && (
-        <div className={styles.noPhotoWrapper}>
-          <div className={styles.noPhoto}>{t('common:no-photo')}</div>
         </div>
       )}
     </div>
