@@ -6,9 +6,11 @@ const dotenv = require('dotenv');
 const parse = require('csv-parse');
 const winston = require('winston');
 const prompt = require('prompt-sync')();
+const progress = require('cli-progress');
 const algoliasearch = require('algoliasearch');
 const parseSync = require('csv-parse/lib/sync');
 const { default: to } = require('await-to-js');
+const { exec } = require('child_process');
 const { nanoid } = require('nanoid');
 
 const logger = winston.createLogger({
@@ -113,7 +115,7 @@ const usersCachePath = './team-member-to-user.json';
 const usersCache = require(usersCachePath);
 async function getUser({ name, email, phone }) {
   if (usersCache[name]) {
-    logger.debug(`Found ${name} in users cache.`);
+    logger.silly(`Found ${name} in users cache.`);
     return usersCache[name];
   }
   const searchString = (name || '').split(' (')[0];
@@ -165,7 +167,7 @@ async function getOrCreateUser({ name, email, phone, ...rest }) {
       debugger;
       return user;
     } else {
-      logger.info(`Created ${res.data.name} (${res.data.id}).`);
+      logger.verbose(`Created ${res.data.name} (${res.data.id}).`);
       usersCache[name] = res.data;
       fs.writeFileSync(usersCachePath, JSON.stringify(usersCache, null, 2));
       return res.data;
@@ -186,8 +188,8 @@ const subjectsCachePath = './services-to-subjects.json';
 const subjectsCache = require(subjectsCachePath);
 function getSubject(service) {
   if (isValidSubject(service)) return service;
-  if (isValidSubject(service.replaceAll(' Lesson', '')))
-    return service.replaceAll(' Lesson', '');
+  if (isValidSubject(service.replace(' Lesson', '')))
+    return service.replace(' Lesson', '');
   while (!subjectsCache[service]) {
     let validSubject = false;
     let subject = '';
@@ -223,9 +225,10 @@ function generateMeetingDescription(row) {
  * @param {string} dateStr - The Picktime formatted date string (e.g. '24 Jan 2021, 9:00 AM').
  * @param {number} duration - The meeting duration in mins (default to 60mins).
  * @return {Timeslot} - The timeslot in JSON-friendly format.
+ * @todo Ensure that the date string time zone matches the system time zone.
  */
 function getMeetingTime(dateStr, duration = 60) {
-  const [date, mo, yr, time, ampm] = dateStr.replaceAll(',', '').split(' ');
+  const [date, mo, yr, time, ampm] = dateStr.replace(',', '').split(' ');
   const monthIdx = [
     'Jan',
     'Feb',
@@ -245,7 +248,12 @@ function getMeetingTime(dateStr, duration = 60) {
   const mins = Number(minsStr);
   const start = new Date(yr, monthIdx, date, hrs, mins);
   const end = new Date(start.valueOf() + duration * 60 * 1000);
-  return { id: nanoid(), from: start.toJSON(), to: end.toJSON() };
+  return {
+    id: nanoid(),
+    from: start.toJSON(),
+    to: end.toJSON(),
+    last: end.toJSON(),
+  };
 }
 
 async function getToken(uid = '1j0tRKGtpjSX33gLsLnalxvd1Tl2') {
@@ -256,127 +264,43 @@ async function getToken(uid = '1j0tRKGtpjSX33gLsLnalxvd1Tl2') {
   return idToken;
 }
 
-const matchesCreatedPath = './matches-created.json';
-const matchesCreated = require(matchesCreatedPath);
-async function convertPicktimeRow(row, headers) {
-  const subject = getSubject(row[fields.service]);
-  logger.debug(`Fetched subjects (${row[fields.service]}): ${subject}`);
-  const student = await getOrCreateUser({
-    name: row[fields.customerName] || row[fields.studentName] || '',
-    email: row[fields.email] || '',
-    phone: phone(row[fields.phone] || row[fields.phoneNumber])[0] || '',
-    bio: generateStudentBio(row, subject),
-    orgs: ['quarantunes'],
-    mentoring: { subjects: [], searches: [subject] },
-    reference: row[fields.reference] || '',
-  });
-  logger.debug(`Fetched student: ${student.name} (${student.id}).`);
-  const mentor = await getUser({ name: row[fields.teamMember] });
-  logger.debug(`Fetched mentor: ${mentor.name} (${mentor.id}).`);
-  const matchId = encodeURIComponent(
-    JSON.stringify([
-      subject,
-      generateMatchMessage(row),
-      student.id,
-      student.name,
-      student.photo,
-      mentor.id,
-      mentor.name,
-      mentor.photo,
-    ])
-  );
-  if (!matchesCreated[matchId]) {
-    const match = {
-      org: 'quarantunes',
-      subjects: [subject],
-      people: [
-        {
-          id: student.id || '',
-          name: student.name || '',
-          photo: student.photo || '',
-          roles: ['mentee'],
-        },
-        {
-          id: mentor.id || '',
-          name: mentor.name || '',
-          photo: mentor.photo || '',
-          roles: ['mentor'],
-        },
-      ],
-      creator: {
-        id: student.id || '',
-        name: student.name || '',
-        photo: student.photo || '',
-        roles: ['mentee'],
-      },
-      message: generateMatchMessage(row),
-      updated: new Date().toJSON(),
-      created: new Date().toJSON(),
-      id: '',
-    };
-    logger.debug(`Creating match: ${JSON.stringify(match, null, 2)}`);
-    const [err, res] = await to(
-      axios.post(`${apiDomain}/api/matches`, match, { headers })
-    );
-    if (err) {
-      logger.error(
-        `${err.name} creating match for ${match.subjects.join(
-          ', '
-        )} with ${match.people.map((p) => p.name).join(' and ')}: ${
-          err.response ? err.response.data.message : err.message
-        }`
-      );
-      debugger;
-    } else {
-      logger.info(
-        `Created match for ${res.data.subjects.join(
-          ', '
-        )} with ${res.data.people.map((p) => p.name).join(' and ')} (${
-          res.data.id
-        }).`
-      );
-      matchesCreated[matchId] = res.data;
-      fs.writeFileSync(
-        matchesCreatedPath,
-        JSON.stringify(matchesCreated, null, 2)
-      );
-    }
-  }
-  const venueId = nanoid(10);
-  const meeting = {
-    match: matchesCreated[matchId],
-    status: 'created',
-    creator: {
-      id: student.id || '',
-      name: student.name || '',
-      photo: student.photo || '',
-      roles: ['mentee'],
-    },
-    venue: {
-      id: venueId,
-      url: `https://meet.jit.si/TB-${venueId}`,
-      invite: `Open https://meet.jit.si/TB-${venueId} to join your meeting.`,
-      type: 'jitsi',
-      updated: new Date().toJSON(),
-      created: new Date().toJSON(),
-    },
-    time: getMeetingTime(row[fields.date]),
-    description: generateMeetingDescription(row),
-    updated: new Date().toJSON(),
-    created: new Date().toJSON(),
-    id: '',
-  };
-  logger.silly(`Generated meeting: ${JSON.stringify(meeting, null, 2)}`);
-  return meeting;
+function matchToString(match) {
+  const people = match.people.map((p) => p.name).join(' and ');
+  return `match for ${match.subjects.join(', ')} with ${people}`;
 }
 
-const meetingsCreatedPath = './meetings-created.txt';
-const meetingsCreated = fs
-  .readFileSync(meetingsCreatedPath)
-  .toString()
-  .split('\n');
-async function importPicktime(path) {
-  const meetings = [];
+function meetingToString(meeting) {
+  const time = new Date(meeting.time.from).toString();
+  const subjects = meeting.match.subjects.join(', ');
+  const people = meeting.match.people.map((p) => p.name).join(' and ');
+  return `meeting at ${time} for ${subjects} with ${people}`;
+}
+
+const matchesPath = './matches-created.json';
+const matches = require(matchesPath);
+const meetingsPath = './meetings-created.json';
+const meetings = require(meetingsPath);
+const rowsPath = './rows-created.txt';
+const rows = fs.readFileSync(rowsPath).toString().split('\n');
+
+async function importPicktime(path, dryRun = false) {
+  const errorTotal = [];
+  const matchesTotal = [];
+  const meetingsTotal = [];
+  const recurringTotal = [];
+
+  let count = (postCount = putCount = 0);
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  const total = await new Promise((resolve, reject) =>
+    exec(`wc -l < ${path}`, (err, res) => {
+      if (err) return reject(err);
+      resolve(Number(res) - 1); // Ignore the header line.
+    })
+  );
+
+  logger.info(`Processing ${total} rows...`);
+  bar.start(total, count);
+
   const headers = { authorization: `Bearer ${await getToken()}` };
   const parser = fs.createReadStream(path).pipe(
     parse({
@@ -384,43 +308,225 @@ async function importPicktime(path) {
       columns: true,
     })
   );
-  for await (const record of parser) {
-    delete record['S.No'];
-    const meetingId = encodeURIComponent(JSON.stringify(Object.values(record)));
-    if (meetingsCreated.includes(meetingId)) continue;
-    const meeting = await convertPicktimeRow(record, headers);
-    logger.debug(`Creating meeting: ${JSON.stringify(meeting, null, 2)}`);
-    const [err, res] = await to(
-      axios.post(`${apiDomain}/api/meetings`, meeting, { headers })
-    );
-    if (err) {
-      logger.error(
-        `${err.name} creating meeting at ${new Date(
-          meeting.time.from
-        ).toString()} for ${
-          meeting.match ? meeting.match.subjects.join(', ') : undefined
-        } with ${
-          meeting.match
-            ? meeting.match.people.map((p) => p.name).join(' and ')
-            : undefined
-        }: ${err.response ? err.response.data.message : err.message}`
-      );
-      debugger;
-    } else {
-      logger.info(
-        `Created meeting at ${new Date(
-          res.data.time.from
-        ).toString()} for ${res.data.match.subjects.join(
-          ', '
-        )} with ${res.data.match.people.map((p) => p.name).join(' and ')} (${
-          res.data.id
-        }).`
-      );
-      meetingsCreated.push(meetingId);
-      fs.appendFileSync(meetingsCreatedPath, `\n${meetingId}`);
+
+  function req(method, endpoint, data) {
+    if (method === 'post') postCount += 1;
+    if (method === 'put') putCount += 1;
+    if (dryRun) {
+      logger.silly(`Skipping ${method.toUpperCase()} ${endpoint}...`);
+      return [null, { data }];
     }
-    meetings.push(meeting);
+    return to(axios[method](`${apiDomain}${endpoint}`, data, { headers }));
   }
+
+  function error(err, action) {
+    const { message } = err.response ? err.response.data : err;
+    logger.error(`${err.name} ${action}: ${message}`);
+    errorTotal.push(err);
+    debugger;
+  }
+
+  for await (const row of parser) {
+    logger.silly(`Processing row ${row['S.No']}...`);
+
+    delete row['S.No'];
+    const rowId = encodeURIComponent(JSON.stringify(Object.values(row)));
+    if (rows.includes(rowId)) {
+      bar.update((count += 1));
+      continue;
+    }
+
+    const subject = getSubject(row[fields.service]);
+    logger.silly(`Fetched subjects (${row[fields.service]}): ${subject}`);
+
+    const student = await getOrCreateUser({
+      name: row[fields.customerName] || row[fields.studentName] || '',
+      email: row[fields.email] || '',
+      phone: phone(row[fields.phone] || row[fields.phoneNumber])[0] || '',
+      bio: generateStudentBio(row, subject),
+      orgs: ['quarantunes'],
+      mentoring: { subjects: [], searches: [subject] },
+      reference: row[fields.reference] || '',
+    });
+    logger.silly(`Fetched student: ${student.name} (${student.id}).`);
+
+    const mentor = await getUser({ name: row[fields.teamMember] });
+    logger.silly(`Fetched mentor: ${mentor.name} (${mentor.id}).`);
+
+    // If there is already a match w/ this data, we reuse it. Otherwise, we
+    // create and cache a new match.
+    const matchId = encodeURIComponent(
+      JSON.stringify([
+        subject,
+        generateMatchMessage(row),
+        student.id,
+        student.name,
+        student.photo,
+        mentor.id,
+        mentor.name,
+        mentor.photo,
+      ])
+    );
+    if (!matches[matchId]) {
+      const match = {
+        org: 'quarantunes',
+        subjects: [subject],
+        people: [
+          {
+            id: student.id || '',
+            name: student.name || '',
+            photo: student.photo || '',
+            roles: ['mentee'],
+          },
+          {
+            id: mentor.id || '',
+            name: mentor.name || '',
+            photo: mentor.photo || '',
+            roles: ['mentor'],
+          },
+        ],
+        creator: {
+          id: student.id || '',
+          name: student.name || '',
+          photo: student.photo || '',
+          roles: ['mentee'],
+        },
+        message: generateMatchMessage(row),
+        updated: new Date().toJSON(),
+        created: new Date().toJSON(),
+        id: '',
+      };
+      logger.debug(`Creating ${matchToString(match)}...`);
+      logger.silly(`Creating match: ${JSON.stringify(match, null, 2)}`);
+      const [err, res] = await req('post', '/api/matches', match);
+      if (err) {
+        error(err, `creating ${matchToString(match)}`);
+      } else {
+        logger.verbose(`Created ${matchToString(res.data)} (${res.data.id}).`);
+        matches[matchId] = res.data;
+        fs.writeFileSync(matchesPath, JSON.stringify(matches, null, 2));
+        matchesTotal.push(res.data);
+      }
+    }
+
+    const venueId = nanoid(10);
+    const meeting = {
+      match: matches[matchId],
+      status: 'created',
+      creator: {
+        id: student.id || '',
+        name: student.name || '',
+        photo: student.photo || '',
+        roles: ['mentee'],
+      },
+      venue: {
+        id: venueId,
+        url: `https://meet.jit.si/TB-${venueId}`,
+        updated: new Date().toJSON(),
+        created: new Date().toJSON(),
+      },
+      time: getMeetingTime(row[fields.date]),
+      description: generateMeetingDescription(row),
+      updated: new Date().toJSON(),
+      created: new Date().toJSON(),
+      id: '',
+    };
+
+    // If there are any existing meetings for this match that are exactly one
+    // week away from this meeting (i.e. same weekday, same time), we assume
+    // that they are the same weekly recurring meeting. Same for every time
+    // interval supported by Tutorbook (daily, weekly, biweekly, and monthly).
+    const existingMeetings = meetings[matchId] || [];
+    const end = new Date(meeting.time.to);
+
+    // Picktime's UI forces users to pick a # of occurrences with the maximum #
+    // being 100 (which is what most users will pick). That's why `COUNT=100`.
+    const rrules = {
+      daily: 'RRULE:FREQ=DAILY;COUNT=100',
+      weekly: 'RRULE:FREQ=WEEKLY;COUNT=100',
+      biweekly: 'RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=100',
+      monthly: 'RRULE:FREQ=MONTHLY;COUNT=100',
+    };
+
+    function logCheck(dist, mtg) {
+      const endStr = end.toLocaleString();
+      const lastStr = new Date(mtg.time.last).toLocaleString();
+      logger.silly(`Checking if ${endStr} is ${dist} from ${lastStr}...`);
+    }
+
+    const recurChecks = {
+      daily(mtg) {
+        logCheck('a day', mtg);
+        return end - new Date(mtg.time.last) === 24 * 60 * 60 * 1000;
+      },
+      weekly(mtg) {
+        logCheck('a week', mtg);
+        return end - new Date(mtg.time.last) === 7 * 24 * 60 * 60 * 1000;
+      },
+      biweekly(mtg) {
+        logCheck('two weeks', mtg);
+        return end - new Date(mtg.time.last) === 14 * 24 * 60 * 60 * 1000;
+      },
+      monthly(mtg) {
+        logCheck('a month', mtg);
+        const last = new Date(mtg.time.last);
+        const monthDiff =
+          end.getMonth() -
+          last.getMonth() +
+          12 * (end.getFullYear() - last.getFullYear());
+        return end.getDate() === last.getDate() && monthDiff === 1;
+      },
+    };
+    for await ([recur, isRecurring] of Object.entries(recurChecks)) {
+      const recurring = existingMeetings.find(isRecurring);
+      if (!recurring || recurring.time.recur) continue;
+      recurring.time.recur = meeting.time.recur = rrules[recur];
+      recurring.time.last = meeting.time.to;
+      logger.debug(`Updating ${meetingToString(recurring)}...`);
+      logger.silly(`Updating meeting: ${JSON.stringify(recurring, null, 2)}`);
+      const [err, res] = await req('put', '/api/meetings', recurring);
+      if (err) {
+        error(err, `updating ${meetingToString(recurring)}`);
+      } else {
+        logger.verbose(
+          `Updated ${meetingToString(res.data)} (${res.data.id}).`
+        );
+        fs.writeFileSync(meetingsPath, JSON.stringify(meetings, null, 2));
+        fs.appendFileSync(rowsPath, `\n${rowId}`);
+        recurringTotal.push(res.data);
+      }
+      break;
+    }
+    if (meeting.time.recur) {
+      bar.update((count += 1));
+      continue;
+    }
+
+    // Otherwise, create a new normal, non-recurring meeting instance.
+    logger.debug(`Creating ${meetingToString(meeting)}...`);
+    logger.silly(`Creating meeting: ${JSON.stringify(meeting, null, 2)}`);
+    const [err, res] = await req('post', '/api/meetings', meeting);
+    if (err) {
+      error(err, `creating ${meetingToString(meeting)}`);
+    } else {
+      logger.verbose(`Created ${meetingToString(res.data)} (${res.data.id}).`);
+      meetings[matchId] = [...existingMeetings, res.data];
+      fs.writeFileSync(meetingsPath, JSON.stringify(meetings, null, 2));
+      fs.appendFileSync(rowsPath, `\n${rowId}`);
+      meetingsTotal.push(res.data);
+    }
+    bar.update((count += 1));
+  }
+
+  bar.stop();
+  logger.info(
+    `Created ${matchesTotal.length} matches and ${meetingsTotal.length} meetings (${recurringTotal.length} recurring).`
+  );
+  logger.info(
+    `Made ${postCount} POST requests, ${putCount} PUT requests, and encountered ${errorTotal.length} total errors.`
+  );
+
+  debugger;
 }
 
-importPicktime('./quarantunes-picktime-meetings-feb-1-to-jun-1.csv');
+importPicktime('./quarantunes-picktime-meetings-feb-1-to-jun-1.csv', true);
