@@ -48,26 +48,4 @@
       object-position: center 50%;
     }
   }
-
-  .noPhotoWrapper {
-    position: relative;
-    padding-bottom: 100%;
-
-    .noPhoto {
-      @include typography.typography('body2');
-      color: var(--accents-5);
-      position: absolute;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 1;
-      width: 100%;
-      height: 100%;
-      left: 0;
-      top: 0;
-    }
-  }
 }
