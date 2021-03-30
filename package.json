@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "tutorbook",
   "description": "Web app connecting students with expert mentors and tutors.",
   "version": "0.30.2",
@@ -21,8 +22,7 @@
     "build:functions": "cd firebase/functions && tsc",
     "build": "concurrently yarn:build:sw yarn:build:next",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "style": "pretty-quick --staged",
-    "postinstall": "husky install"
+    "style": "pretty-quick --staged"
   },
   "workspaces": [
     "firebase/functions"
@@ -175,10 +175,5 @@
   },
   "browser": {
     "firebase-admin": false
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn pretty-quick --staged"
-    }
   }
 }
