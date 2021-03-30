@@ -98,8 +98,10 @@
       -moz-box-align: center;
       align-items: center;
 
-      > i {
-        font-size: 20px !important;
+      svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
       }
     }
   }

@@ -4,6 +4,7 @@ import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
+import CloseIcon from 'components/icons/close';
 import Loader from 'components/loader';
 import RecurSelect from 'components/recur-select';
 import SubjectSelect from 'components/subject-select';
@@ -115,7 +116,7 @@ export default function EditPage({
       <Loader active={!!loading} checked={!!checked} />
       <div className={styles.nav}>
         <IconButton
-          icon='close'
+          icon={<CloseIcon />}
           className={styles.btn}
           onClick={() => setDialogPage(DialogPage.Display)}
         />

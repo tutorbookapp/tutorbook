@@ -20,13 +20,9 @@ export default class Carousel extends React.Component<
   CarouselProps,
   CarouselState
 > {
-  private readonly scrollerRef: React.RefObject<
-    HTMLDivElement
-  > = React.createRef();
+  private readonly scrollerRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-  private readonly childRef: React.RefObject<
-    HTMLDivElement
-  > = React.createRef();
+  private readonly childRef: React.RefObject<HTMLDivElement> = React.createRef();
 
   public constructor(props: CarouselProps) {
     super(props);
