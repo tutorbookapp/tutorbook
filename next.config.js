@@ -62,10 +62,6 @@ module.exports = withImages({
         })
       );
     }
-    config.module.rules.push({
-      test: /\.hbs$/,
-      use: 'raw-loader',
-    });
     return config;
   },
 });

@@ -15124,18 +15124,6 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"raw-loader@npm:^4.0.1":
-  version: 4.0.2
-  resolution: "raw-loader@npm:4.0.2"
-  dependencies:
-    loader-utils: ^2.0.0
-    schema-utils: ^3.0.0
-  peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: 1a08968df5bf185923102de589dc28da6c9953f87059c80de3cbfdfb47bc15907f23f5e21048f03af2842df01d0dde2630826697c783c4c9683ea71f04f4538d
-  languageName: node
-  linkType: hard
-
 "rc-align@npm:^2.4.0":
   version: 2.4.5
   resolution: "rc-align@npm:2.4.5"
@@ -18034,7 +18022,6 @@ resolve@^2.0.0-next.3:
     pretty-quick: ^3.1.0
     prompt-sync: ^4.2.0
     prop-types: ^15.7.2
-    raw-loader: ^4.0.1
     re-resizable: ^6.5.4
     react: ^17.0.2
     react-dom: ^17.0.2
