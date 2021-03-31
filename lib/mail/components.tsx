@@ -179,6 +179,9 @@ export function MeetingDisplay({
     ...RRule.parseString(meeting.time.recur || ''),
     dtstart: meeting.time.from,
   });
+  const noMessageOrDescription =
+    (show === 'description' && !meeting.description) ||
+    (show === 'message' && !meeting.match.message);
 
   return (
     <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
@@ -206,19 +209,19 @@ export function MeetingDisplay({
           <br />
           <Link href={meeting.venue.url}>{meeting.venue.url}</Link>
         </P>
-        <P>
+        <P style={{ marginBottom: noMessageOrDescription ? '0px' : undefined }}>
           <b>SUBJECTS</b>
           <br />
           {join(meeting.match.subjects)}
         </P>
-        {show === 'description' && (
+        {show === 'description' && meeting.description && (
           <P style={{ marginBottom: '0px' }}>
             <b>DESCRIPTION</b>
             <br />
             {meeting.description}
           </P>
         )}
-        {show === 'message' && (
+        {show === 'message' && meeting.match.message && (
           <>
             <P style={{ marginBottom: '8px' }}>
               <b>MESSAGE</b>
