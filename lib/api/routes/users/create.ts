@@ -52,7 +52,7 @@ export default async function createUser(
           const orgAdmins = await Promise.all(
             org.members.filter((id) => user.id !== id).map((id) => getUser(id))
           );
-          await sendEmails(user, org, orgAdmins);
+          if (orgAdmins.length) await sendEmails(user, org, orgAdmins);
         })
       ),
     ]);
