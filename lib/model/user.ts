@@ -31,8 +31,8 @@ import {
   ZoomUserSearchHit,
   isZoomUserJSON,
 } from 'lib/model/zoom-user';
+import { caps, join, notTags } from 'lib/utils';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
-import { join, notTags } from 'lib/utils';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -256,13 +256,15 @@ export class User extends Account implements UserInterface {
     return new User(clone(this));
   }
 
+  // TODO: Perform these name styling changes from our back-end when validating
+  // the user's request data (i.e. capitalize it and then send it back).
   public get firstName(): string {
-    return this.name.split(' ')[0];
+    return caps(this.name.split(' ')[0] || '');
   }
 
   public get lastName(): string {
     const parts: string[] = this.name.split(' ');
-    return parts[parts.length - 1];
+    return caps(parts[parts.length - 1] || '');
   }
 
   public get subjects(): string[] {
