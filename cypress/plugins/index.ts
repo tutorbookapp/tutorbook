@@ -128,7 +128,7 @@ export default function plugins(
             'unordered(socials.url)',
           ],
           attributesForFaceting: [
-            'filterOnly(availability)',
+            'filterOnly(_availability)',
             'filterOnly(email)',
             'filterOnly(featured)',
             'filterOnly(langs)',

@@ -7,7 +7,7 @@ import {
   TimeslotSegment,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import { getDate, getMonthsTimeslots, sameDate } from 'lib/utils/time';
+import { sameDate } from 'lib/utils/time';
 import clone from 'lib/utils/clone';
 
 /**
@@ -58,18 +58,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return super.sort((a, b) => a.from.valueOf() - b.from.valueOf());
   }
 
-  public static full(month: number, year: number): Availability {
-    const full = new Availability();
-    Array(7)
-      .fill(null)
-      .forEach((_, idx) =>
-        full.push(
-          new Timeslot({ from: getDate(idx, 0), to: getDate(idx, 23, 30) })
-        )
-      );
-    return getMonthsTimeslots(full, month, year);
-  }
-
   /**
    * Returns whether or not there is any availability on a given date.
    * @param date - The JavaScript `Date` object from which we determine the
@@ -92,10 +80,16 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   }
 
   /**
+   * @param timeslot - The timeslot to check for overlap.
+   * @param [allowBackToBack] - If true, this will allow the timeslots to touch
+   * (but not overlap). Defaults to false.
    * @return Whether this availability overlaps at all with the given timeslot.
    */
-  public overlaps(timeslot: Timeslot): boolean {
-    return this.some((t) => t.overlaps(timeslot));
+  public overlaps(
+    timeslot: Timeslot,
+    allowBackToBack: boolean = false
+  ): boolean {
+    return this.some((t) => t.overlaps(timeslot, allowBackToBack));
   }
 
   /**

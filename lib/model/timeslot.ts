@@ -88,18 +88,17 @@ export class Timeslot implements TimeslotInterface {
   }
 
   /**
-   * @return Whether or not this timeslot overlaps with the given timeslot:
-   * 1. (Contained) Timeslot contains the given timeslot, OR;
-   * 2. (Overlap Start) Timeslot contains the given timeslot's start time, OR;
-   * 3. (Overlap End) Timeslot contains the given timeslot's end time.
-   * @todo Why can't we use this in the calendar positioning logic?
+   * @param other - The timeslot to check if it's overlapping with this one.
+   * @param [allowBackToBack] - If true, this will allow the timeslots to touch
+   * (but not overlap). Defaults to false.
+   * @return Whether or not this timeslot overlaps with the given timeslot.
    */
-  public overlaps(other: { from: Date; to: Date }): boolean {
-    return (
-      this.contains(other) ||
-      this.contains({ from: other.from, to: other.from }) ||
-      this.contains({ from: other.to, to: other.to })
-    );
+  public overlaps(
+    other: { from: Date; to: Date },
+    allowBackToBack: boolean = false
+  ): boolean {
+    if (allowBackToBack) return this.to > other.from && this.from < other.to;
+    return this.to >= other.from && this.from <= other.to;
   }
 
   /**

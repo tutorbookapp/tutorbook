@@ -1,11 +1,14 @@
-import { User, UsersQuery } from 'lib/model';
 import {
   addArrayFilter,
   addOptionsFilter,
   addStringFilter,
   list,
 } from 'lib/api/search';
-import { sliceAvailability } from 'lib/utils/time';
+import { getDate, sliceAvailability } from 'lib/utils/time';
+import { Availability } from 'lib/model/availability';
+import { Timeslot } from 'lib/model/timeslot';
+import { User } from 'lib/model/user';
+import { UsersQuery } from 'lib/model/query/users';
 
 /**
  * Creates and returns the filter string to search our Algolia index based on
@@ -18,7 +21,7 @@ import { sliceAvailability } from 'lib/utils/time';
  * @see {@link http://bit.ly/38IXW9d}
  * @todo Why do we use `OR` to concat the `orgs` prop filter?
  */
-function getFilterStrings(query: UsersQuery): string[] {
+function getFilterString(query: UsersQuery): string {
   let str = '';
   if (typeof query.visible === 'boolean')
     str = addStringFilter(str, `visible=${query.visible ? 1 : 0}`);
@@ -27,21 +30,32 @@ function getFilterStrings(query: UsersQuery): string[] {
   str = addArrayFilter(str, query.tags, '_tags');
   str = addOptionsFilter(str, query.subjects, `${query.aspect}.subjects`);
   str = addOptionsFilter(str, query.langs, 'langs');
-  if (!query.availability.length) return [str];
 
-  // Filter by users who have at least an hour long timeslot overlap with the
-  // student's requested availability:
-  // 1. Get all possible 1hr long timeslots in 5min? intervals that the
-  //    requested availability generates.
-  // 2. Filter by users whose availability contains at least one of those
-  //    timeslots (i.e. users with whom the student could book an hour long
-  //    meeting with).
-  return sliceAvailability(query.availability).map((timeslot) => {
-    const availabilityContainsTimeslot =
-      `availability.from <= ${timeslot.from.valueOf()} AND ` +
-      `availability.to >= ${timeslot.to.valueOf()}`;
-    return addStringFilter(str, `(${availabilityContainsTimeslot})`);
+  // Filtering by availability shows volunteers that the student can book. In
+  // other (more technical) terms, we show volunteers who have at least one
+  // hour-long timeslot within the student's availability in the next 3 months
+  // (because we allow booking 3 months ahead with our `TimeSelect`).
+  //
+  // TODO: Perhaps use a more useful 2-3 week window instead of 3 months.
+  //
+  // Most of the heavy lifting for this feature is done at index time:
+  // 1. Generate an array of hour-long timeslot start times for a week (these
+  //    are stored as strings with weekday and time data only).
+  //    - Slice the volunteer's availability to get start times.
+  //    - Exclude a time when the volunteer has meetings for every instance of
+  //      that time in the next 3 months (e.g. if a volunteer has a meeting on
+  //      every Monday at 11 AM for the next 3 months, then we exclude Mondays
+  //      at 11 AM from the volunteer's availability).
+  // 2. At search time, filter by results that contain any of the hour-long
+  //    timeslot start times within the student's requested availability.
+  const full = new Availability();
+  const days = Array(7).fill(null);
+  days.forEach((_, day) => {
+    full.push(new Timeslot({ from: getDate(day, 0), to: getDate(day, 24) }));
   });
+  const baseline = query.availability.length ? query.availability : full;
+  const filtering = sliceAvailability(baseline).map((t) => t.from.valueOf());
+  return addArrayFilter(str, filtering, '_availability', 'OR');
 }
 
 /**
@@ -56,8 +70,7 @@ function getFilterStrings(query: UsersQuery): string[] {
 export default async function getUsers(
   query: UsersQuery
 ): Promise<{ hits: number; results: User[] }> {
-  const filters = getFilterStrings(query);
+  const filters = getFilterString(query);
   const optionalFilters = `featured:${query.aspect}`;
-  console.log('Filtering users by:', filters);
-  return list('users', query, User.fromSearchHit, filters, optionalFilters);
+  return list('users', query, User.fromSearchHit, [filters], optionalFilters);
 }

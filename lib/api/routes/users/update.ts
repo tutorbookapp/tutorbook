@@ -5,6 +5,7 @@ import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
+import updateAvailability from 'lib/api/update/availability';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserDoc from 'lib/api/update/user-doc';
 import updateUserOrgs from 'lib/api/update/user-orgs';
@@ -51,6 +52,7 @@ export default async function updateUser(
     });
 
     await analytics(user, 'updated', User.fromFirestoreDoc(originalDoc));
+    await updateAvailability(user);
   } catch (e) {
     handle(e, res);
   }

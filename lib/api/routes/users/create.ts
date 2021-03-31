@@ -12,6 +12,7 @@ import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/users/create';
+import updateAvailability from 'lib/api/update/availability';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserTags from 'lib/api/update/user-tags';
@@ -73,6 +74,7 @@ export default async function createUser(
     });
 
     await analytics(user, 'created');
+    await updateAvailability(user);
   } catch (e) {
     handle(e, res);
   }

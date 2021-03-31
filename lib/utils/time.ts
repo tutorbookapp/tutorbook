@@ -115,6 +115,23 @@ export function getDate(
 }
 
 /**
+ * Gets the next date (in the future) with the given date's:
+ * - Weekday (Mo/Tu/We/Thu/Fri/Sat/Sun)
+ * - Time (HR:MIN:SS)
+ * @param date - The date to match weekday and time.
+ */
+export function nextDateWithDayAndTime(date: Date): Date {
+  return getDate(
+    date.getDay(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+    new Date()
+  );
+}
+
+/**
  * Returns the closest 15 min increment to a given start time but never goes
  * back in time (e.g. 9:41am becomes 9:45am, 9:56am becomes 10:00am).
  * @param start - The unrounded start time (e.g. 9:41am, 9:56am).
@@ -165,7 +182,7 @@ export function getTimeslots(
  * @param baseline - The baseline, weekly availability.
  * @param month - The month to get timeslots for.
  * @param year - The year to get timeslots for.
- * @param [booked] - Booked availability slots.
+ * @param [booked] - Booked availability slots (i.e. meeting times).
  * @return Availability full of 30 min timeslots in 15 min intervals for the
  * requested month's date range. Excludes timeslots from the past.
  */
@@ -200,7 +217,7 @@ export function getMonthsTimeslots(
           from: new Date(year, month, date, fromHrs, fromMins),
           to: new Date(year, month, date, toHrs, toMins),
         });
-        if (t.from > now && !booked?.overlaps(t)) timeslots.push(t);
+        if (t.from > now && !booked?.overlaps(t, true)) timeslots.push(t);
       }
       date += 1;
     }
@@ -215,6 +232,8 @@ export function getMonthsTimeslots(
  * @param availability - The availability to slice into smaller timeslots.
  * @param [interval] - Minutes between slice start times. Defaults to 15 mins.
  * @param [duration] - The slice duration in minutes. Defaults to 60 mins.
+ * @return The availability sliced into timeslots of the given duration whose
+ * start times are each the given interval apart.
  */
 export function sliceAvailability(
   availability: Availability,
@@ -222,13 +241,52 @@ export function sliceAvailability(
   duration: number = 60
 ): Availability {
   const sliced = new Availability();
+  const minsToMillis = 60 * 1000;
   availability.sort().forEach((timeslot) => {
     let from = roundStartTime(timeslot.from, interval);
-    while (from.valueOf() <= timeslot.to.valueOf() - duration * 6e4) {
-      const to = new Date(from.valueOf() + duration * 6e4);
+    while (from.valueOf() <= timeslot.to.valueOf() - duration * minsToMillis) {
+      const to = new Date(from.valueOf() + duration * minsToMillis);
       sliced.push(new Timeslot({ from, to }));
-      from = new Date(from.valueOf() + interval * 6e4);
+      from = new Date(from.valueOf() + interval * minsToMillis);
     }
   });
   return sliced;
+}
+
+/**
+ * Generate the user's `_availability` for the next time window (e.g. 3 months).
+ * Excludes a time when the user has meetings for every instance of that time in
+ * the next time window (e.g. if a volunteer has a meeting on every Monday at 11
+ * AM for the next 3 months, then we exclude Mondays at 11 AM).
+ * @param availability - The user's availability (to slice and filter).
+ * @param booked - Booked availability slots (i.e. meeting times).
+ * @param [until] - The end date of the time window. Defaults to a date exactly
+ * 3 months from now.
+ * @param [interval] - Minutes between slice start times. Defaults to 15 mins.
+ * @param [duration] - The slice duration in minutes. Defaults to 60 mins.
+ * @return An array of valid timeslot start times to be stored in Algolia.
+ */
+export function getAlgoliaAvailability(
+  availability: Availability,
+  booked: Availability,
+  until: Date,
+  interval: number = 15,
+  duration: number = 60
+): number[] {
+  const sliced = sliceAvailability(availability, interval, duration);
+  const filtered = sliced.filter((timeslot) => {
+    let from = nextDateWithDayAndTime(timeslot.from);
+    while (from.valueOf() <= until.valueOf() + timeslot.duration) {
+      const to = new Date(from.valueOf() + timeslot.duration);
+      // If any one of the time's instances in the next 3 months can be booked
+      // (i.e. it's not already booked), we include the time in Algolia.
+      if (!booked.overlaps(new Timeslot({ from, to }), true)) return true;
+      from = new Date(from.valueOf() + 7 * 24 * 60 * 60 * 1000);
+    }
+    // Otherwise, we know that every single one of the time's instances in the
+    // next 3 months has been booked and thus exclude the time in Algolia.
+    return false;
+  });
+  debugger;
+  return Array.from(filtered.map((timeslot) => timeslot.from.valueOf()));
 }

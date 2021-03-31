@@ -72,6 +72,7 @@ const matchesIdx = search.initIndex(`${prefix}-matches`);
 const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 function createIndices() {
+  console.log('Creating indices...');
   return Promise.all([
     usersIdx.setSettings({
       searchableAttributes: [
@@ -86,7 +87,7 @@ function createIndices() {
         'unordered(socials.url)',
       ],
       attributesForFaceting: [
-        'filterOnly(availability)',
+        'filterOnly(_availability)',
         'filterOnly(email)',
         'filterOnly(featured)',
         'filterOnly(langs)',
@@ -116,14 +117,6 @@ function createIndices() {
         'filterOnly(time.last)',
       ],
     }),
-  ]);
-}
-
-function deleteIndices() {
-  return Promise.all([
-    usersIdx.delete(),
-    matchesIdx.delete(),
-    meetingsIdx.delete(),
   ]);
 }
 

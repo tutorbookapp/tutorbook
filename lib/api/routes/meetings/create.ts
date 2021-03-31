@@ -18,6 +18,7 @@ import getStudents from 'lib/api/get/students';
 import getUser from 'lib/api/get/user';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
+import updateAvailability from 'lib/api/update/availability';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
@@ -123,6 +124,7 @@ export default async function createMeeting(
     await Promise.all([
       analytics(meeting, 'created'),
       updatePeopleTags(people, { add: ['meeting'] }),
+      ...people.map((p) => updateAvailability(p)),
     ]);
   } catch (e) {
     handle(e, res);

@@ -30,13 +30,13 @@ export function addStringFilter(base: string, filter: string): string {
  */
 export function addArrayFilter(
   base: string,
-  filters: string[],
+  filters: string[] | number[],
   attr: string,
   concat: 'OR' | 'AND' = 'AND'
 ): string {
   const addAND = base.length && !base.endsWith(' AND ') && filters.length;
   let filterString = addAND ? `${base} AND ` : base;
-  filters.forEach((filter, idx) => {
+  filters.forEach((filter: string | number, idx: number) => {
     filterString += idx === 0 ? '(' : ` ${concat} `;
     filterString += `${attr}:"${filter}"`;
     if (idx === filters.length - 1) filterString += ')';
