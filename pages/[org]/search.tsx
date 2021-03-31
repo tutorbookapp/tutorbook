@@ -49,7 +49,11 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(true);
 
-  useURLParamSync(query, setQuery, UsersQuery);
+  useURLParamSync(query, setQuery, UsersQuery, [
+    'orgs',
+    'available',
+    'visible',
+  ]);
 
   const { data, isValidating } = useSWR<ListUsersRes>(
     canSearch ? query.endpoint : null
@@ -96,7 +100,11 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   // ever filter by more than one at once.
   useEffect(() => {
     setQuery((prev: UsersQuery) => {
-      const updated = new UsersQuery({ ...prev, visible: true });
+      const updated = new UsersQuery({
+        ...prev,
+        available: true,
+        visible: true,
+      });
       if (!org) return dequal(prev, updated) ? prev : updated;
       if (!org.aspects.includes(prev.aspect)) [updated.aspect] = org.aspects;
       updated.orgs = [org.id];

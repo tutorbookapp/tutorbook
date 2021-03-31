@@ -14,6 +14,9 @@ import construct from 'lib/model/construct';
  * @property langs - The languages that the user can speak.
  * @property subjects - Subjects that the user can tutor or mentor.
  * @property availability - When the user is available.
+ * @property [available] - When true, we only show results that are available.
+ * We have to use this in order to only show results that are available in the
+ * search view (for students) but to show all results in the users dashboard.
  * @property [visible] - Regular users can only ever see users where this is
  * `true`. Organization admins, however, can see all their users (regardless of
  * their visibility) which is why this property exists.
@@ -26,6 +29,7 @@ export interface UsersQueryInterface extends QueryInterface {
   langs: Option<string>[];
   subjects: Option<string>[];
   availability: Availability;
+  available?: boolean;
   visible?: boolean;
 }
 
@@ -54,6 +58,8 @@ export class UsersQuery extends Query implements UsersQueryInterface {
   public subjects: Option<string>[] = [];
 
   public availability: Availability = new Availability();
+
+  public available?: boolean;
 
   public visible?: boolean;
 
@@ -85,6 +91,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
     if (this.subjects.length) query.subjects = encode(this.subjects);
     if (this.availability.length)
       query.availability = this.availability.toURLParam();
+    if (this.available === true) query.available = this.available;
     if (typeof this.visible === 'boolean') query.visible = this.visible;
     return query;
   }
@@ -102,6 +109,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
       langs: decode<Option<string>>(params.langs),
       subjects: decode<Option<string>>(params.subjects),
       visible: params.visible ? params.visible === 'true' : undefined,
+      available: params.available ? params.available === 'true' : undefined,
       availability: params.availability
         ? Availability.fromURLParam(params.availability)
         : new Availability(),

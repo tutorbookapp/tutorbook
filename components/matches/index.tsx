@@ -55,7 +55,7 @@ export default function Matches({
   const [query, setQuery] = useState<MatchesQuery>(new MatchesQuery());
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
-  useURLParamSync(query, setQuery, MatchesQuery);
+  useURLParamSync(query, setQuery, MatchesQuery, byOrg ? ['org'] : ['people']);
 
   const onQueryChange = useCallback((param: CallbackParam<MatchesQuery>) => {
     setQuery((prev) => {

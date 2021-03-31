@@ -1,3 +1,5 @@
+import url from 'url';
+
 import Router from 'next/router';
 import { dequal } from 'dequal';
 import { useEffect } from 'react';
@@ -16,7 +18,8 @@ interface Constructor<T extends Query> {
 export default function useURLParamSync<T extends Query>(
   query: T,
   setQuery: Callback<T>,
-  Model: Constructor<T>
+  Model: Constructor<T>,
+  overrides: string[] = []
 ): void {
   useEffect(() => {
     setQuery((prev) => {
@@ -35,7 +38,16 @@ export default function useURLParamSync<T extends Query>(
   // users dashboard specifies org in the `[org]` dynamic page param).
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const url = query.getURL(window.location.pathname);
-    void Router.replace(url, undefined, { shallow: true });
-  }, [query]);
+    const params = query.getURLParams();
+    overrides.forEach((field) => {
+      delete params[field];
+    });
+    const updatedURL = url.format({
+      pathname: window.location.pathname,
+      query: params,
+    });
+    const prevURL = `${window.location.pathname}${window.location.search}`;
+    if (updatedURL === prevURL) return;
+    void Router.replace(updatedURL, undefined, { shallow: true });
+  }, [query, overrides]);
 }

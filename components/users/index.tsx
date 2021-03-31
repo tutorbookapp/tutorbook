@@ -40,7 +40,7 @@ export default function Users(): JSX.Element {
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
-  useURLParamSync(query, setQuery, UsersQuery);
+  useURLParamSync(query, setQuery, UsersQuery, ['orgs']);
 
   const onQueryChange = useCallback((param: CallbackParam<UsersQuery>) => {
     setQuery((prev) => {
