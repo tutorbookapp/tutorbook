@@ -181,37 +181,54 @@ export function getMonthsTimeslots(
   if (year < now.getFullYear()) return timeslots;
   if (year === now.getFullYear() && month < now.getMonth()) return timeslots;
 
-  const interval = 15;
-  const duration = 60;
   const daysInMonth = getDaysInMonth(month, year);
   const weekdayOffset = getWeekdayOfFirst(month, year);
 
   // Split each of the availability timeslots into 30 min timeslots in 15 min
   // intervals. This assumes there is no overlap between the baseline timeslots.
-  baseline.sort().forEach((timeslot) => {
-    let from = roundStartTime(timeslot.from, interval);
-    while (from.valueOf() <= timeslot.to.valueOf() - duration * 6e4) {
-      const weekday = from.getDay();
-      const fromHrs = from.getHours();
-      const fromMins = from.getMinutes();
-      const to = new Date(from.valueOf() + duration * 6e4);
-      const toHrs = to.getHours();
-      const toMins = to.getMinutes();
-      // Clone those weekly recurring timeslots into the month's date range.
-      let date = 1;
-      while (date <= daysInMonth) {
-        if ((date - 1 + weekdayOffset) % 7 === weekday) {
-          const t = new Timeslot({
-            from: new Date(year, month, date, fromHrs, fromMins),
-            to: new Date(year, month, date, toHrs, toMins),
-          });
-          if (t.from > now && !booked?.overlaps(t)) timeslots.push(t);
-        }
-        date += 1;
+  sliceAvailability(baseline).forEach((timeslot) => {
+    const weekday = timeslot.from.getDay();
+    const fromHrs = timeslot.from.getHours();
+    const fromMins = timeslot.from.getMinutes();
+    const toHrs = timeslot.to.getHours();
+    const toMins = timeslot.to.getMinutes();
+    // Clone those weekly recurring timeslots into the month's date range.
+    let date = 1;
+    while (date <= daysInMonth) {
+      if ((date - 1 + weekdayOffset) % 7 === weekday) {
+        const t = new Timeslot({
+          from: new Date(year, month, date, fromHrs, fromMins),
+          to: new Date(year, month, date, toHrs, toMins),
+        });
+        if (t.from > now && !booked?.overlaps(t)) timeslots.push(t);
       }
-      from = new Date(from.valueOf() + interval * 6e4);
+      date += 1;
     }
   });
 
   return timeslots;
+}
+
+/**
+ * Slices the given availability into timeslots of the given duration at given
+ * intervals. Rounds the availability start to ensure round timeslot starts.
+ * @param availability - The availability to slice into smaller timeslots.
+ * @param [interval] - Minutes between slice start times. Defaults to 15 mins.
+ * @param [duration] - The slice duration in minutes. Defaults to 60 mins.
+ */
+export function sliceAvailability(
+  availability: Availability,
+  interval: number = 15,
+  duration: number = 60
+): Availability {
+  const sliced = new Availability();
+  availability.sort().forEach((timeslot) => {
+    let from = roundStartTime(timeslot.from, interval);
+    while (from.valueOf() <= timeslot.to.valueOf() - duration * 6e4) {
+      const to = new Date(from.valueOf() + duration * 6e4);
+      sliced.push(new Timeslot({ from, to }));
+      from = new Date(from.valueOf() + interval * 6e4);
+    }
+  });
+  return sliced;
 }

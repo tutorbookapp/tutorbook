@@ -5,6 +5,7 @@ import {
   addStringFilter,
   list,
 } from 'lib/api/search';
+import { sliceAvailability } from 'lib/utils/time';
 
 /**
  * Creates and returns the filter string to search our Algolia index based on
@@ -28,21 +29,19 @@ function getFilterStrings(query: UsersQuery): string[] {
   str = addOptionsFilter(str, query.langs, 'langs');
   if (!query.availability.length) return [str];
 
-  // TODO: This is currently filtering by users whose availability contains the
-  // given timeslot. Instead, we should filter by users who have at least an hr
-  // long timeslot overlap with the given availability:
+  // Filter by users who have at least an hour long timeslot overlap with the
+  // student's requested availability:
   // 1. Get all possible 1hr long timeslots in 5min? intervals that the
   //    requested availability generates.
   // 2. Filter by users whose availability contains at least one of those
-  //    timeslots (i.e. users with whom the student/parent could book a 1hr long
+  //    timeslots (i.e. users with whom the student could book an hour long
   //    meeting with).
-  return query.availability.map((timeslot) =>
-    addStringFilter(
-      str,
-      `(availability.from <= ${timeslot.from.valueOf()} AND` +
-        ` availability.to >= ${timeslot.to.valueOf()})`
-    )
-  );
+  return sliceAvailability(query.availability).map((timeslot) => {
+    const availabilityContainsTimeslot =
+      `availability.from <= ${timeslot.from.valueOf()} AND ` +
+      `availability.to >= ${timeslot.to.valueOf()}`;
+    return addStringFilter(str, `(${availabilityContainsTimeslot})`);
+  });
 }
 
 /**
@@ -59,5 +58,6 @@ export default async function getUsers(
 ): Promise<{ hits: number; results: User[] }> {
   const filters = getFilterStrings(query);
   const optionalFilters = `featured:${query.aspect}`;
+  console.log('Filtering users by:', filters);
   return list('users', query, User.fromSearchHit, filters, optionalFilters);
 }
