@@ -1,7 +1,6 @@
 @use 'sass:map';
 @use 'styles/typography';
 @use '@material/elevation';
-@use '@material/icon-button/_index.scss' as icon-button;
 
 .timeslot {
   @include elevation.elevation(4);
@@ -20,11 +19,18 @@
     padding: 10px 0;
 
     .btn {
-      @include icon-button.icon-size(12px);
-      @include icon-button.size(24px);
       color: var(--on-primary);
       flex: none;
       margin-left: -6px;
+      width: 24px;
+      height: 24px;
+      padding: (24px - 12px) / 2;
+
+      svg {
+        width: 12px;
+        height: 12px;
+        display: block;
+      }
     }
 
     .content {
