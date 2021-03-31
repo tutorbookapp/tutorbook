@@ -24,6 +24,8 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
 
   public subjects: Option<string>[] = [];
 
+  public hitsPerPage = 10;
+
   public constructor(query: Partial<MatchesQueryInterface> = {}) {
     super(query);
     construct<MatchesQueryInterface>(this, query);
@@ -35,6 +37,11 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
     }
 
     const query = super.getURLParams();
+    if (this.hitsPerPage !== 10) {
+      query.hitsPerPage = this.hitsPerPage;
+    } else {
+      delete query.hitsPerPage;
+    }
     if (this.org) query.org = encodeURIComponent(this.org);
     if (this.people.length) query.people = encode(this.people);
     if (this.subjects.length) query.subjects = encode(this.subjects);
@@ -51,6 +58,7 @@ export class MatchesQuery extends Query implements MatchesQueryInterface {
       people: decode(params.people),
       subjects: decode(params.subjects),
       org: params.org ? decodeURIComponent(params.org) : undefined,
+      hitsPerPage: Number(decodeURIComponent(params.hitsPerPage || '10')),
     });
   }
 

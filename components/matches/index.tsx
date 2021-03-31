@@ -24,6 +24,7 @@ import { MatchesQuery } from 'lib/model/query/matches';
 import Intercom from 'lib/intercom';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
 import { useOrg } from 'lib/context/org';
+import useURLParamSync from 'lib/hooks/url-param-sync';
 import { useUser } from 'lib/context/user';
 
 import { LoadingRow, MatchRow } from './row';
@@ -51,12 +52,14 @@ export default function Matches({
   const { user } = useUser();
 
   const [searching, setSearching] = useState<boolean>(true);
-  const [query, setQuery] = useState<MatchesQuery>();
-  const [hits, setHits] = useState<number>(query?.hitsPerPage || 10);
+  const [query, setQuery] = useState<MatchesQuery>(new MatchesQuery());
+  const [hits, setHits] = useState<number>(query.hitsPerPage);
+
+  useURLParamSync(query, setQuery, MatchesQuery);
 
   const onQueryChange = useCallback((param: CallbackParam<MatchesQuery>) => {
     setQuery((prev) => {
-      let updated = prev || new MatchesQuery({ hitsPerPage: 10 });
+      let updated = prev;
       if (typeof param === 'object') updated = param;
       if (typeof param === 'function') updated = param(updated);
       if (dequal(updated, prev)) return prev;
@@ -85,7 +88,9 @@ export default function Matches({
 
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListMatchesRes>(
-    query ? query.endpoint : null
+    (byOrg && query.org) || (byUser && query.people.length)
+      ? query.endpoint
+      : null
   );
 
   useEffect(() => setHits((prev) => data?.hits || prev), [data?.hits]);
@@ -105,9 +110,9 @@ export default function Matches({
   }, [search]);
 
   const loadingRows: JSX.Element[] = useMemo(() => {
-    const arr = Array(query?.hitsPerPage || 10).fill(null);
+    const arr = Array(query.hitsPerPage).fill(null);
     return arr.map(() => <LoadingRow key={nanoid()} />);
-  }, [query?.hitsPerPage]);
+  }, [query.hitsPerPage]);
 
   return (
     <>
@@ -181,7 +186,7 @@ export default function Matches({
         <Pagination
           model={MatchesQuery}
           setQuery={onQueryChange}
-          query={query || new MatchesQuery({ hitsPerPage: 10 })}
+          query={query}
           hits={hits}
         />
       </div>

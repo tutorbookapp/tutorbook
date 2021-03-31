@@ -86,6 +86,7 @@ export class MeetingsQuery
       tags: decode<MeetingHitTag>(params.tags),
       from: new Date(params.from || new Date().toJSON()),
       to: new Date(params.to || new Date().toJSON()),
+      hitsPerPage: Number(decodeURIComponent(params.hitsPerPage || '1000')),
     });
   }
 
