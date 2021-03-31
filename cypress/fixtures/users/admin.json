@@ -42,7 +42,28 @@
   "featured": ["mentoring"],
   "orgs": ["gunn"],
   "zooms": [],
-  "availability": [],
+  "availability": [
+    {
+      "from": "1970-01-04T17:00:00.000Z",
+      "to": "1970-01-04T20:00:00.000Z",
+      "id": "oBFm3LVnU4a3_WwYdJ8PO"
+    },
+    {
+      "from": "1970-01-04T21:00:00.000Z",
+      "to": "1970-01-05T00:00:00.000Z",
+      "id": "KqNrXStW9T-4bbd9qLf2y"
+    },
+    {
+      "from": "1970-01-06T21:00:00.000Z",
+      "to": "1970-01-07T00:00:00.000Z",
+      "id": "sKT6JrtRpg5QvB6UZ_d6l"
+    },
+    {
+      "from": "1970-01-02T15:00:00.000Z",
+      "to": "1970-01-02T19:00:00.000Z",
+      "id": "XNsG0de1YnEqmAWnA4A_M"
+    }
+  ],
   "mentoring": {
     "subjects": ["Computer Science"],
     "searches": []
