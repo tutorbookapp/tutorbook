@@ -5,7 +5,7 @@ let timeout: ReturnType<typeof setTimeout>;
 
 Router.events.on('routeChangeStart', (url, { shallow }) => {
   if (shallow) return;
-  timeout = setTimeout(() => NProgress.start(), 500);
+  timeout = setTimeout(() => NProgress.start(), 150);
 });
 Router.events.on('routeChangeComplete', (url, { shallow }) => {
   if (shallow) return;
