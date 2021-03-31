@@ -1,7 +1,6 @@
 import {
   DeleteResponse,
-  SaveObjectResponse,
-  SetSettingsResponse,
+  PartialUpdateObjectResponse,
 } from '@algolia/client-search';
 import { WaitablePromise } from '@algolia/client-common';
 import algoliasearch from 'algoliasearch';
@@ -31,7 +30,7 @@ export function deleteObj(
 export default function index<T extends { toSearchHit: () => object }>(
   indexId: string,
   obj: T
-): WaitablePromise<SaveObjectResponse> {
+): WaitablePromise<PartialUpdateObjectResponse> {
   // We use a partial update to prevent overriding attributes that are indexed
   // asynchronously (e.g. updating availability and tags in parallel).
   const idx = client.initIndex(`${prefix}-${indexId}`);
