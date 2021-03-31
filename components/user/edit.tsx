@@ -22,6 +22,8 @@ import useSocialProps from 'lib/hooks/social-props';
 
 import styles from './edit.module.scss';
 
+const empty = new User();
+
 export interface UserEditProps {
   user?: User;
 }
@@ -53,7 +55,7 @@ export default function UserEdit({
     checked,
     loading,
     error,
-  } = useSingle(initialData || new User(), updateRemote, updateLocal);
+  } = useSingle(initialData || empty, updateRemote, updateLocal);
 
   const getSocialProps = useSocialProps(
     user,
@@ -177,7 +179,7 @@ export default function UserEdit({
     <div className={styles.wrapper}>
       <Result
         user={user}
-        loading={!user}
+        loading={!initialData}
         className={styles.display}
         onClick={() => router.back()}
       />

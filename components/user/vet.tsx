@@ -7,6 +7,8 @@ import { User } from 'lib/model/user';
 
 import styles from './vet.module.scss';
 
+const empty = new User();
+
 export interface UserVetProps {
   user?: User;
 }
@@ -22,7 +24,7 @@ export default function UserVet({ user }: UserVetProps): JSX.Element {
         className={styles.display}
         onClick={() => router.back()}
       />
-      <VerificationsTable user={user || new User()} />
+      <VerificationsTable user={user || empty} />
     </div>
   );
 }
