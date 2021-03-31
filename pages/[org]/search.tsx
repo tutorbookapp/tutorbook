@@ -3,7 +3,6 @@ import { ParsedUrlQuery } from 'querystring';
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import NProgress from 'nprogress';
 import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -117,12 +116,6 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   useEffect(() => {
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
-
-  // TODO: Debug how Next.js calls NProgress for shallow page transitions.
-  useEffect(() => {
-    if (searching) NProgress.start();
-    if (!searching) NProgress.done();
-  }, [searching]);
 
   const results = useMemo(() => (data ? data.users : []), [data]);
 
