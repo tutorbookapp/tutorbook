@@ -3,18 +3,20 @@ import Router from 'next/router';
 
 let timeout: ReturnType<typeof setTimeout>;
 
-const start = () => {
-  timeout = setTimeout(() => NProgress.start(), 150);
-};
-
-const done = () => {
+Router.events.on('routeChangeStart', (url, { shallow }) => {
+  if (shallow) return;
+  timeout = setTimeout(() => NProgress.start(), 500);
+});
+Router.events.on('routeChangeComplete', (url, { shallow }) => {
+  if (shallow) return;
   clearTimeout(timeout);
   NProgress.done();
-};
-
-Router.events.on('routeChangeStart', start);
-Router.events.on('routeChangeComplete', done);
-Router.events.on('routeChangeError', done);
+});
+Router.events.on('routeChangeError', (err, url, { shallow }) => {
+  if (shallow) return;
+  clearTimeout(timeout);
+  NProgress.done();
+});
 
 export default function Progress(): null {
   return null;
