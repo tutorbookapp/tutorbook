@@ -32,7 +32,7 @@ export default function MeetingEmail({
       <Header />
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>
-          Hi {join(people.map((p) => p.firstName))},
+          Hi {join(people.filter((p) => p.email).map((p) => p.firstName))},
         </P>
         <P>
           {updater.name} from {org.name} updated a{' '}

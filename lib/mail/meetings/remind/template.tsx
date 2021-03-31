@@ -28,7 +28,7 @@ export default function ReminderEmail({
       <Header />
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>
-          Hi {join(people.map((p) => p.firstName))},
+          Hi {join(people.filter((p) => p.email).map((p) => p.firstName))},
         </P>
         <P>
           This is just a friendly 24 hour reminder of your{' '}
