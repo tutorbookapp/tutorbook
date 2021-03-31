@@ -1,5 +1,4 @@
 @use 'styles/typography';
-@use '@material/icon-button';
 
 .field {
   width: 100%;
@@ -40,8 +39,15 @@
         height: 24px;
 
         button {
-          @include icon-button.icon-size(18px);
-          @include icon-button.size(24px);
+          width: 24px;
+          height: 24px;
+          padding: (24px - 18px) / 2;
+
+          svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+          }
         }
       }
     }
@@ -74,7 +80,8 @@
       padding: 8px 16px 16px;
 
       .date {
-        @include icon-button.size(28px);
+        width: 28px;
+        height: 28px;
 
         &.active {
           color: var(--on-primary);
