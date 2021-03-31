@@ -5247,7 +5247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bindings@npm:^1.3.0, bindings@npm:^1.5.0":
+"bindings@npm:^1.5.0":
   version: 1.5.0
   resolution: "bindings@npm:1.5.0"
   dependencies:
@@ -8999,18 +8999,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-crc32c@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "fast-crc32c@npm:2.0.0"
-  dependencies:
-    sse4_crc32: ^6.0.1
-  dependenciesMeta:
-    sse4_crc32:
-      optional: true
-  checksum: e29b214518eb349ef129b42bbd51a4ab42c8d34cbbf614b72e8aa789b2c38ed44dedded4ae79d88080d18c3197023759468ef355b307b0c5f8a72e184a487d6f
-  languageName: node
-  linkType: hard
-
 "fast-deep-equal@npm:^3.1.1":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
@@ -9319,9 +9307,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-tools@npm:^9.3.0":
-  version: 9.8.0
-  resolution: "firebase-tools@npm:9.8.0"
+"firebase-tools@npm:9.7.0":
+  version: 9.7.0
+  resolution: "firebase-tools@npm:9.7.0"
   dependencies:
     "@google-cloud/pubsub": ^2.7.0
     "@types/archiver": ^5.1.0
@@ -9344,7 +9332,6 @@ __metadata:
     exegesis-express: ^2.0.0
     exit-code: ^1.0.2
     express: ^4.16.4
-    fast-crc32c: ^2.0.0
     filesize: ^6.1.0
     fs-extra: ^0.23.1
     glob: ^7.1.2
@@ -9352,7 +9339,7 @@ __metadata:
     inquirer: ~6.3.1
     js-yaml: ^3.13.1
     jsonschema: ^1.0.2
-    jsonwebtoken: ^8.5.1
+    jsonwebtoken: ^8.2.1
     leven: ^3.1.0
     lodash: ^4.17.19
     marked: ^0.7.0
@@ -9384,7 +9371,7 @@ __metadata:
     ws: ^7.2.3
   bin:
     firebase: ./lib/bin/firebase.js
-  checksum: b96f523008b8878855b5dc35ef9273eb41e9def296f19aee236ac5b8686a34b6da294c407d46037e9f6cd8aacdc4b242fa8a4d503d69ef884a482c9858514513
+  checksum: 0b68384cbf8c24e7b7f6665d83a8bee64cef13292616d9ebd04c5c9b66db241beacefd5e688a40157fd0164acc362e47ba56130470dadbc62d05a01ceca4efbb
   languageName: node
   linkType: hard
 
@@ -11937,7 +11924,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:^8.5.1":
+"jsonwebtoken@npm:^8.2.1, jsonwebtoken@npm:^8.5.1":
   version: 8.5.1
   resolution: "jsonwebtoken@npm:8.5.1"
   dependencies:
@@ -13427,7 +13414,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^1.3.0, node-addon-api@npm:^1.7.1":
+"node-addon-api@npm:^1.7.1":
   version: 1.7.2
   resolution: "node-addon-api@npm:1.7.2"
   dependencies:
@@ -16829,17 +16816,6 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"sse4_crc32@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "sse4_crc32@npm:6.0.1"
-  dependencies:
-    bindings: ^1.3.0
-    node-addon-api: ^1.3.0
-    node-gyp: latest
-  checksum: 7bd9808b9406460e3a4f380ccd65edb799554790a4aac3c54ad919be9d33cd0fcfacfade7ae6e7d2b7ec3e1193a64fb3126c8b8cc350d9ba92e52ffb0d4e24cb
-  languageName: node
-  linkType: hard
-
 "sshpk@npm:^1.7.0":
   version: 1.16.1
   resolution: "sshpk@npm:1.16.1"
@@ -18006,7 +17982,7 @@ resolve@^2.0.0-next.3:
     firebase: ^8.3.1
     firebase-admin: ^9.6.0
     firebase-functions: ^3.13.0
-    firebase-tools: ^9.3.0
+    firebase-tools: 9.7.0
     husky: ^6.0.0
     istanbul-lib-coverage: ^3.0.0
     nanoid: ^3.1.12
