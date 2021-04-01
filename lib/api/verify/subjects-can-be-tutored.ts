@@ -1,5 +1,5 @@
 import { APIError } from 'lib/api/error';
-import { User } from 'lib/model';
+import { User } from 'lib/model/user';
 
 /**
  * Verifies that the given subjects can be tutored/mentored by all the mentors

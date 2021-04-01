@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 
 import { APIError } from 'lib/api/error';
-import { Meeting } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
 import { db } from 'lib/api/firebase';
 
 export default async function updateMeetingDoc(

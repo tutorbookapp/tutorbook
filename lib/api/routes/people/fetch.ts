@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { UserJSON } from 'lib/model';
+import { UserJSON } from 'lib/model/user';
 import getMatch from 'lib/api/get/match';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
