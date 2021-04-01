@@ -8,7 +8,9 @@ import {
   P,
   UserDisplay,
 } from 'lib/mail/components';
-import { Org, User } from 'lib/model';
+
+import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 
 export interface OrgUserTemplateProps {
   user: User;
