@@ -1,6 +1,6 @@
 import { GetStaticPathsResult } from 'next';
 
-import { Org, OrgJSON } from 'lib/model';
+import { Org, OrgJSON } from 'lib/model/org';
 import { db } from 'lib/api/firebase';
 
 // Orgs must be optional because they are undefined when Next.js renders the

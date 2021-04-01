@@ -1,6 +1,6 @@
 import { RRule } from 'rrule';
 
-import { Timeslot } from 'lib/model';
+import { Timeslot } from 'lib/model/timeslot';
 
 // Ensure that the `until` value of an RRule isn't before the `time.from` value
 // (which would prevent *any* meeting instances from being calculated).

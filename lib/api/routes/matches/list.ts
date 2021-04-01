@@ -1,11 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import {
-  MatchJSON,
-  MatchesQuery,
-  MatchesQueryURL,
-  isMatchesQueryURL,
-} from 'lib/model';
+import { MatchJSON } from 'lib/model/match';
+import { MatchesQuery, MatchesQueryURL, isMatchesQueryURL } from 'lib/model/query/matches';
 import getMatches from 'lib/api/get/matches';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';

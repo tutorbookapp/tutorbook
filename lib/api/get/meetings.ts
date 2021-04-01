@@ -1,7 +1,9 @@
 import { RRule, RRuleSet } from 'rrule';
 import { nanoid } from 'nanoid';
 
-import { Meeting, MeetingsQuery, Timeslot } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { MeetingsQuery } from 'lib/model/query/meetings';
+import { Timeslot } from 'lib/model/timeslot';
 import {
   addArrayFilter,
   addOptionsFilter,
