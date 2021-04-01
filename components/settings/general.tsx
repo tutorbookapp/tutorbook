@@ -103,7 +103,6 @@ export default function General(): JSX.Element {
           onChange={onVenueChange}
           className={styles.field}
           outlined
-          required={org ? org.profiles.includes('venue') : false}
         />
       </div>
       <div className={styles.divider} />
