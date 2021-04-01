@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { Org, User } from 'lib/model';
+import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
 import send from 'lib/mail/send';
 
