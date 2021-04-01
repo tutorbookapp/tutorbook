@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 
 import { APIError } from 'lib/api/error';
-import { Match } from 'lib/model';
+import { Match } from 'lib/model/match';
 import { db } from 'lib/api/firebase';
 
 /**

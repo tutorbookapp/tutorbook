@@ -1,4 +1,4 @@
-import { User } from 'lib/model';
+import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
 export default function updateUserOrgs(user: User): User {

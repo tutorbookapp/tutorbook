@@ -1,7 +1,7 @@
 import { dequal } from 'dequal/lite';
 
 import { APIError } from 'lib/api/error';
-import { Org } from 'lib/model';
+import { Org } from 'lib/model/org';
 
 /**
  * Verifies that the org members were not changed.

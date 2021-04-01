@@ -1,12 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
-import {
-  Meeting,
-  MeetingAction,
-  MeetingJSON,
-  isMeetingJSON,
-} from 'lib/model/meeting';
+import { Meeting, MeetingAction, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import analytics from 'lib/api/analytics';
 import createMeetingDoc from 'lib/api/create/meeting-doc';

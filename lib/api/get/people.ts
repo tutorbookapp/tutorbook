@@ -1,4 +1,5 @@
-import { Person, User } from 'lib/model';
+import { Person } from 'lib/model/person';
+import { User } from 'lib/model/user';
 import getPerson from 'lib/api/get/person';
 
 /**

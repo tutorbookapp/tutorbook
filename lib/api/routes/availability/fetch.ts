@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { AvailabilityJSON } from 'lib/model';
+import { AvailabilityJSON } from 'lib/model/availability';
 import { handle } from 'lib/api/error';
 import getAvailability from 'lib/api/get/availability';
 import verifyAvailabilityQuery from 'lib/api/verify/availability-query';
