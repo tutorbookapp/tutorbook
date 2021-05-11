@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from 'react';
+import { FormEvent, Fragment, useCallback, useMemo } from 'react';
 import { IconButton } from '@rmwc/icon-button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -6,13 +6,16 @@ import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
+import Button from 'components/button';
 import EditIcon from 'components/icons/edit';
 import FactCheckIcon from 'components/icons/fact-check';
+import Placeholder from 'components/placeholder';
 import RequestForm from 'components/user/request-form';
 
 import { getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { User } from 'lib/model/user';
 import { useOrg } from 'lib/context/org';
+import useTrack from 'lib/hooks/track';
 import { useUser } from 'lib/context/user';
 
 import styles from './display.module.scss';
@@ -36,6 +39,16 @@ export default function UserDisplay({
     orgs,
     user?.orgs,
   ]);
+
+  const track = useTrack();
+  const openPicktime = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      track('Match Linked Clicked');
+      if (org?.matchURL) window.open(org.matchURL);
+    },
+    [track, org]
+  );
 
   return (
     <main
@@ -172,7 +185,20 @@ export default function UserDisplay({
             <dd className={styles.langs} />
           </dl>
         )}
-        <div className={styles.form}>{user && <RequestForm user={user} />}</div>
+        <div className={styles.form}>
+          {user && !org?.matchURL && <RequestForm user={user} />}
+          {user && org?.matchURL && (
+            <form className={styles.picktime} onSubmit={openPicktime}>
+              <Placeholder>
+                {t('common:picktime-body', {
+                  org: org.name,
+                  user: user.firstName,
+                })}
+              </Placeholder>
+              <Button label={t('common:picktime-btn')} raised arrow />
+            </form>
+          )}
+        </div>
       </div>
     </main>
   );

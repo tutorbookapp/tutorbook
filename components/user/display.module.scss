@@ -4,6 +4,26 @@
 @use '@material/icon-button';
 @use '@material/elevation';
 
+:global(html:not(.dark)) form.picktime {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+form.picktime {
+  position: relative;
+  border-radius: 8px;
+  border: 1px solid var(--accents-2);
+  padding: 16px;
+
+  > div {
+    min-height: unset;
+  }
+
+  button {
+    margin-top: 16px;
+    width: 100%;
+  }
+}
+
 .main {
   @include common.wrapper;
 
