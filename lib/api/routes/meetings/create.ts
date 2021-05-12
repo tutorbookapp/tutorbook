@@ -42,6 +42,8 @@ export default async function createMeeting(
     );
     const people = await getPeople(body.match.people);
 
+    console.log(`Creating ${body.toString()}...`);
+
     // TODO: Actually implement availability verification.
     verifyTimeInAvailability(body.time, people);
     verifySubjectsCanBeTutored(body.match.subjects, people);
@@ -114,6 +116,8 @@ export default async function createMeeting(
     await sendEmails(meeting, people, creator, org, orgAdmins);
 
     res.status(200).json(meeting.toJSON());
+
+    console.log(`Created ${meeting.toString()}.`);
 
     segment.track({
       userId: creator.id,

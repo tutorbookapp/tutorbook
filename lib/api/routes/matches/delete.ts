@@ -21,6 +21,8 @@ export default async function deleteMatch(
     const id = verifyQueryId(req.query);
     const match = await getMatch(id);
 
+    console.log(`Deleting ${match.toString()}...`);
+
     const { uid } = await verifyAuth(req.headers, {
       userIds: match.people.map((p) => p.id),
       orgIds: [match.org],
@@ -32,6 +34,8 @@ export default async function deleteMatch(
     ]);
 
     res.status(200).end();
+
+    console.log(`Deleted ${match.toString()}.`);
 
     segment.track({
       userId: uid,

@@ -24,6 +24,8 @@ export default async function updateUser(
   try {
     const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
 
+    console.log(`Updating ${body.toString()}...`);
+
     // TODO: Check the existing data, not the data that is being sent with the
     // request (e.g. b/c I could fake data and add users to my org).
     const { uid } = await verifyAuth(req.headers, {
@@ -43,6 +45,8 @@ export default async function updateUser(
     await Promise.all([updateUserDoc(user), updateUserSearchObj(user)]);
 
     res.status(200).json(user.toJSON());
+
+    console.log(`Updated ${user.toString()}.`);
 
     segment.identify({ userId: user.id, traits: user.toSegment() });
     segment.track({

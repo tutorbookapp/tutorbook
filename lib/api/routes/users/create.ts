@@ -27,6 +27,8 @@ export default async function createUser(
   try {
     const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
 
+    console.log(`Creating ${body.toString()}...`);
+
     // TODO: Update the photo after creating the auth user ID so that we can
     // organize our GCP Storage bucket by user (that would require two calls to
     // the auth API, however, so not ideal... perhaps I should assign uIDs).
@@ -59,6 +61,8 @@ export default async function createUser(
     ]);
 
     const hash = getUserHash(user.id);
+
+    console.log(`Created ${user.toString()}.`);
 
     // TODO: Don't send the user a custom login token once #116 is fixed and we
     // get rid of the semi-deprecated (and very unsecure) org signup page.

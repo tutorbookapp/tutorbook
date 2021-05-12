@@ -36,6 +36,8 @@ export default async function deleteMeeting(
     const id = verifyQueryId(req.query);
     const meeting = await getMeeting(id);
 
+    console.log(`Deleting ${meeting.toString()}...`);
+
     // TODO: Verify the option data types just like we do for the request body.
     const options = verifyOptions<DeleteMeetingOptions>(req.body, {
       deleting: meeting.toJSON(),
@@ -118,6 +120,8 @@ export default async function deleteMeeting(
     }
 
     res.status(200).end();
+
+    console.log(`Deleted ${deleting.toString()}.`);
 
     segment.track({
       userId: uid,
