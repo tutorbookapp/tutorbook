@@ -34,13 +34,13 @@ export default function Avatar({
     <div
       className={cn(styles.wrapper, className, { [styles.loading]: loading })}
     >
-      {!loading && !!img && !validPhoto(img) && (
+      {!loading && !validPhoto(img) && (
         <div className={styles.photoWrapper}>
           {priority && <link rel='preload' as='image' href={img} />}
           <img data-cy='avatar' className={styles.photo} src={img} alt='' />
         </div>
       )}
-      {!loading && !!img && validPhoto(img) && size !== 'dynamic' && (
+      {!loading && validPhoto(img) && size !== 'dynamic' && (
         <Image
           data-cy='avatar'
           priority={priority}
@@ -51,7 +51,7 @@ export default function Avatar({
           alt=''
         />
       )}
-      {!loading && !!img && validPhoto(img) && size === 'dynamic' && (
+      {!loading && validPhoto(img) && size === 'dynamic' && (
         <div className={styles.photoWrapper}>
           <Image
             data-cy='avatar'
