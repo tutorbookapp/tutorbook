@@ -23,6 +23,8 @@ export default async function updateMatch(
   try {
     const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);
 
+    console.log(`Updating ${body.toString()}...`);
+
     await verifyDocExists('matches', body.id);
 
     const people = await getPeople(body.people);
@@ -41,6 +43,8 @@ export default async function updateMatch(
     await Promise.all([updateMatchDoc(match), updateMatchSearchObj(match)]);
 
     res.status(200).json(match.toJSON());
+
+    console.log(`Updated ${match.toString()}.`);
 
     segment.track({
       userId: uid,

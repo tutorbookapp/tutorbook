@@ -20,6 +20,8 @@ export default async function deleteUser(
     const id = verifyQueryId(req.query);
     const user = await getUser(id);
 
+    console.log(`Deleting ${user.toString()}...`);
+
     const { uid } = await verifyAuth(req.headers, {
       userId: user.id,
       orgIds: user.orgs,
@@ -36,6 +38,8 @@ export default async function deleteUser(
       deleteUserDoc(user.id),
       deleteUserSearchObj(user.id),
     ]);
+
+    console.log(`Deleted ${user.toString()}.`);
 
     res.status(200).end();
 

@@ -52,6 +52,8 @@ export default async function updateMeeting(
       Meeting
     );
 
+    console.log(`Updating ${body.toString()}...`);
+
     // TODO: Verify the option data types just like we do for the request body.
     const options = verifyOptions<UpdateMeetingOptions>(req.body, {
       original: body.toJSON(),
@@ -123,6 +125,8 @@ export default async function updateMeeting(
 
         res.status(200).json(body.toJSON());
 
+        console.log(`Updated ${body.toString()}.`);
+
         segment.track({
           userId: uid,
           event: 'Meeting Updated',
@@ -177,6 +181,8 @@ export default async function updateMeeting(
 
         res.status(200).json(newMeeting.toJSON());
 
+        console.log(`Updated ${newMeeting.toString()}.`);
+
         segment.track({
           userId: uid,
           event: 'Meeting Updated',
@@ -226,6 +232,8 @@ export default async function updateMeeting(
 
         res.status(200).json(newRecurringMeeting.toJSON());
 
+        console.log(`Updated ${newRecurringMeeting.toString()}.`);
+
         segment.track({
           userId: uid,
           event: 'Meeting Updated',
@@ -256,6 +264,8 @@ export default async function updateMeeting(
       ]);
 
       res.status(200).json(meeting.toJSON());
+
+      console.log(`Updated ${meeting.toString()}.`);
 
       segment.track({
         userId: uid,

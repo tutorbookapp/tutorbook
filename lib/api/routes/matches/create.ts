@@ -34,6 +34,8 @@ export default async function createMatch(
     const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);
     const people = await getPeople(body.people);
 
+    console.log(`Creating ${body.toString()}...`);
+
     verifySubjectsCanBeTutored(body.subjects, people);
 
     // Verify the creator exists and is sending an authorized request.
@@ -53,6 +55,8 @@ export default async function createMatch(
 
     const match = await createMatchDoc(updateMatchTags(body));
     await createMatchSearchObj(match);
+
+    console.log(`Created ${match.toString()}.`);
 
     res.status(201).json(match.toJSON());
 
