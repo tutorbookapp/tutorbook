@@ -6,6 +6,7 @@ import deleteMatchSearchObj from 'lib/api/delete/match-search-obj';
 import getMatch from 'lib/api/get/match';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
@@ -21,7 +22,7 @@ export default async function deleteMatch(
     const id = verifyQueryId(req.query);
     const match = await getMatch(id);
 
-    console.log(`Deleting ${match.toString()}...`);
+    logger.info(`Deleting ${match.toString()}...`);
 
     const { uid } = await verifyAuth(req.headers, {
       userIds: match.people.map((p) => p.id),
@@ -35,7 +36,7 @@ export default async function deleteMatch(
 
     res.status(200).end();
 
-    console.log(`Deleted ${match.toString()}.`);
+    logger.info(`Deleted ${match.toString()}.`);
 
     segment.track({
       userId: uid,

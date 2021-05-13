@@ -10,6 +10,7 @@ import getOrg from 'lib/api/get/org';
 import getUser from 'lib/api/get/user';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/users/create';
 import updateAvailability from 'lib/api/update/availability';
@@ -27,7 +28,7 @@ export default async function createUser(
   try {
     const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
 
-    console.log(`Creating ${body.toString()}...`);
+    logger.info(`Creating ${body.toString()}...`);
 
     // TODO: Update the photo after creating the auth user ID so that we can
     // organize our GCP Storage bucket by user (that would require two calls to
@@ -62,7 +63,7 @@ export default async function createUser(
 
     const hash = getUserHash(user.id);
 
-    console.log(`Created ${user.toString()}.`);
+    logger.info(`Created ${user.toString()}.`);
 
     // TODO: Don't send the user a custom login token once #116 is fixed and we
     // get rid of the semi-deprecated (and very unsecure) org signup page.

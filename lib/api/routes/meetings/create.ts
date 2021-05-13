@@ -16,6 +16,7 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
 import getUser from 'lib/api/get/user';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
 import updateAvailability from 'lib/api/update/availability';
@@ -42,7 +43,7 @@ export default async function createMeeting(
     );
     const people = await getPeople(body.match.people);
 
-    console.log(`Creating ${body.toString()}...`);
+    logger.info(`Creating ${body.toString()}...`);
 
     // TODO: Actually implement availability verification.
     verifyTimeInAvailability(body.time, people);
@@ -117,7 +118,7 @@ export default async function createMeeting(
 
     res.status(200).json(meeting.toJSON());
 
-    console.log(`Created ${meeting.toString()}.`);
+    logger.info(`Created ${meeting.toString()}.`);
 
     segment.track({
       userId: creator.id,

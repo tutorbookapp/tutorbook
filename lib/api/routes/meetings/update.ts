@@ -17,6 +17,7 @@ import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
 import updateAvailability from 'lib/api/update/availability';
@@ -52,7 +53,7 @@ export default async function updateMeeting(
       Meeting
     );
 
-    console.log(`Updating ${body.toString()}...`);
+    logger.info(`Updating ${body.toString()}...`);
 
     // TODO: Verify the option data types just like we do for the request body.
     const options = verifyOptions<UpdateMeetingOptions>(req.body, {
@@ -125,7 +126,7 @@ export default async function updateMeeting(
 
         res.status(200).json(body.toJSON());
 
-        console.log(`Updated ${body.toString()}.`);
+        logger.info(`Updated ${body.toString()}.`);
 
         segment.track({
           userId: uid,
@@ -181,7 +182,7 @@ export default async function updateMeeting(
 
         res.status(200).json(newMeeting.toJSON());
 
-        console.log(`Updated ${newMeeting.toString()}.`);
+        logger.info(`Updated ${newMeeting.toString()}.`);
 
         segment.track({
           userId: uid,
@@ -232,7 +233,7 @@ export default async function updateMeeting(
 
         res.status(200).json(newRecurringMeeting.toJSON());
 
-        console.log(`Updated ${newRecurringMeeting.toString()}.`);
+        logger.info(`Updated ${newRecurringMeeting.toString()}.`);
 
         segment.track({
           userId: uid,
@@ -265,7 +266,7 @@ export default async function updateMeeting(
 
       res.status(200).json(meeting.toJSON());
 
-      console.log(`Updated ${meeting.toString()}.`);
+      logger.info(`Updated ${meeting.toString()}.`);
 
       segment.track({
         userId: uid,
