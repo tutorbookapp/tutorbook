@@ -6,6 +6,7 @@ import deleteUserDoc from 'lib/api/delete/user-doc';
 import deleteUserSearchObj from 'lib/api/delete/user-search-obj';
 import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
@@ -20,7 +21,7 @@ export default async function deleteUser(
     const id = verifyQueryId(req.query);
     const user = await getUser(id);
 
-    console.log(`Deleting ${user.toString()}...`);
+    logger.info(`Deleting ${user.toString()}...`);
 
     const { uid } = await verifyAuth(req.headers, {
       userId: user.id,
@@ -39,7 +40,7 @@ export default async function deleteUser(
       deleteUserSearchObj(user.id),
     ]);
 
-    console.log(`Deleted ${user.toString()}.`);
+    logger.info(`Deleted ${user.toString()}.`);
 
     res.status(200).end();
 

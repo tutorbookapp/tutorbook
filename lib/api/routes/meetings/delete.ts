@@ -12,6 +12,7 @@ import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
 import updateAvailability from 'lib/api/update/availability';
@@ -36,7 +37,7 @@ export default async function deleteMeeting(
     const id = verifyQueryId(req.query);
     const meeting = await getMeeting(id);
 
-    console.log(`Deleting ${meeting.toString()}...`);
+    logger.info(`Deleting ${meeting.toString()}...`);
 
     // TODO: Verify the option data types just like we do for the request body.
     const options = verifyOptions<DeleteMeetingOptions>(req.body, {
@@ -121,7 +122,7 @@ export default async function deleteMeeting(
 
     res.status(200).end();
 
-    console.log(`Deleted ${deleting.toString()}.`);
+    logger.info(`Deleted ${deleting.toString()}.`);
 
     segment.track({
       userId: uid,

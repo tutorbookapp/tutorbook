@@ -9,6 +9,7 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
@@ -34,7 +35,7 @@ export default async function createMatch(
     const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);
     const people = await getPeople(body.people);
 
-    console.log(`Creating ${body.toString()}...`);
+    logger.info(`Creating ${body.toString()}...`);
 
     verifySubjectsCanBeTutored(body.subjects, people);
 
@@ -56,7 +57,7 @@ export default async function createMatch(
     const match = await createMatchDoc(updateMatchTags(body));
     await createMatchSearchObj(match);
 
-    console.log(`Created ${match.toString()}.`);
+    logger.info(`Created ${match.toString()}.`);
 
     res.status(201).json(match.toJSON());
 

@@ -3,6 +3,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { User, UserJSON, isUserJSON } from 'lib/model';
 import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
 import updateAvailability from 'lib/api/update/availability';
@@ -24,7 +25,7 @@ export default async function updateUser(
   try {
     const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
 
-    console.log(`Updating ${body.toString()}...`);
+    logger.info(`Updating ${body.toString()}...`);
 
     // TODO: Check the existing data, not the data that is being sent with the
     // request (e.g. b/c I could fake data and add users to my org).
@@ -46,7 +47,7 @@ export default async function updateUser(
 
     res.status(200).json(user.toJSON());
 
-    console.log(`Updated ${user.toString()}.`);
+    logger.info(`Updated ${user.toString()}.`);
 
     segment.identify({ userId: user.id, traits: user.toSegment() });
     segment.track({
