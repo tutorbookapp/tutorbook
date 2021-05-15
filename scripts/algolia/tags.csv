@@ -13,6 +13,8 @@ tutor,Tutor
 not-tutor,Not tutor
 tutee,Tutee
 not-tutee,Not tutee
+parent,Parent
+not-parent,Not parent
 ,
 recurring,Recurring
 not-recurring,Not recurring

@@ -78,3 +78,5 @@ const generic = async (id) => {
     debugger;
   }
 };
+
+if (require.main === module) generic('tags');
