@@ -309,7 +309,10 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
                   (org?.signup[locale][aspect] || {}).bio ||
                   t('common:bio-placeholder')
                 }
-                helpText={{ persistent: true, children: t('common:bio-help') }}
+                helpText={{
+                  persistent: true,
+                  children: t('common:bio-help', { name: 'your' }),
+                }}
                 value={user.bio}
                 onChange={onBioChange}
                 className={styles.field}
