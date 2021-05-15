@@ -44,7 +44,8 @@ export default async function remind(req: Req, res: Res): Promise<void> {
   } else {
     try {
       verifyAuth(req.headers);
-      const now = new Date();
+      const { time } = req.query;
+      const now = typeof time === 'string' ? new Date(time) : new Date();
       const [
         meetings1hrInFuture,
         meetings24hrsInFuture,
