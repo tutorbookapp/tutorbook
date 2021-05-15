@@ -22,6 +22,7 @@ export default function MakeRecurEmail({
 }: MakeRecurEmailProps): JSX.Element {
   const calendarURL = 'https://tutorbook.org/calendar';
   const isTutoring = people.some((p) => p.roles.includes('tutor'));
+  const noun = isTutoring ? 'tutoring lesson' : 'meeting';
 
   return (
     <Email>
@@ -30,10 +31,7 @@ export default function MakeRecurEmail({
         <P style={{ marginTop: '0px !important' }}>
           Hi {join(people.filter((p) => p.email).map((p) => p.firstName))},
         </P>
-        <P>
-          This is just a friendly reminder to make your{' '}
-          {isTutoring ? 'tutoring lesson' : 'meeting'} recurring:
-        </P>
+        <P>I hope you enjoyed your last {noun} together:</P>
         <MeetingDisplay
           show='description'
           timeZone={people[0].timezone}
@@ -43,8 +41,9 @@ export default function MakeRecurEmail({
         />
         <br />
         <P>
-          To view and edit your {isTutoring ? 'lessons' : 'meetings'}, simply
-          click the button below:
+          If you enjoyed your {noun} and would like to meet again, this is just
+          a friendly reminder to make it recurring. To view and edit your{' '}
+          {isTutoring ? 'lessons' : 'meetings'}, simply click the button below:
         </P>
         <br />
         <Button href={calendarURL}>VIEW CALENDAR</Button>
@@ -54,6 +53,10 @@ export default function MakeRecurEmail({
           <Link href={calendarURL}>{calendarURL}</Link>
         </P>
         <br />
+        <P>
+          If you missed your {noun} or if this seems like a mistake, please get
+          in touch by using the contact info above.
+        </P>
         <P style={{ marginBottom: '0px !important' }}>Thank you.</P>
       </Item>
       <Footer>
