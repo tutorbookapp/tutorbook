@@ -6,7 +6,8 @@ import { APIError, handle } from 'lib/api/error';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import getMeetings from 'lib/api/get/meetings';
 import getPeople from 'lib/api/get/people';
-import sendEmails from 'lib/mail/meetings/remind';
+import send1hrReminderEmails from 'lib/mail/meetings/remind/1hr';
+import send24hrReminderEmails from 'lib/mail/meetings/remind/24hr';
 
 function verifyAuth(headers: IncomingHttpHeaders): void {
   if (typeof headers.authorization !== 'string')
@@ -19,9 +20,12 @@ function verifyAuth(headers: IncomingHttpHeaders): void {
 }
 
 /**
- * GET - Sends reminders to people who have meetings within the next 24 hours.
+ * GET - Sends a 24-hr reminder for meetings btwn 24 (inclusive) and 25
+ *       (non-inclusive) hrs from now AND sends a 1-hr reminder for meetings
+ *       btwn 1 (inclusive) and 2 (non-inclusive) hrs from now.
  *
  * Requires a special authentication token only known to our CRON job.
+ * This endpoint is "hit" every hour by a GCP scheduled CRON job.
  */
 export default async function remind(req: Req, res: Res): Promise<void> {
   if (req.method !== 'GET') {
@@ -30,15 +34,31 @@ export default async function remind(req: Req, res: Res): Promise<void> {
   } else {
     try {
       verifyAuth(req.headers);
-      const from = new Date();
-      const to = new Date(from.valueOf() + 864e5);
-      const meetings = await getMeetings(new MeetingsQuery({ from, to }));
-      await Promise.all(
-        meetings.results.map(async (meeting) => {
+      const now = new Date();
+      const [meetings1hrAway, meetings24hrsAway] = await Promise.all([
+        getMeetings(
+          new MeetingsQuery({
+            from: new Date(now.valueOf() + 1 * 60 * 60 * 1000),
+            to: new Date(now.valueOf() + 2 * 60 * 60 * 1000 - 1),
+          })
+        ),
+        getMeetings(
+          new MeetingsQuery({
+            from: new Date(now.valueOf() + 24 * 60 * 60 * 1000),
+            to: new Date(now.valueOf() + 25 * 60 * 60 * 1000 - 1),
+          })
+        ),
+      ]);
+      await Promise.all([
+        ...meetings1hrAway.results.map(async (meeting) => {
           const people = await getPeople(meeting.match.people);
-          return sendEmails(meeting, people);
-        })
-      );
+          return send1hrReminderEmails(meeting, people);
+        }),
+        ...meetings24hrsAway.results.map(async (meeting) => {
+          const people = await getPeople(meeting.match.people);
+          return send24hrReminderEmails(meeting, people);
+        }),
+      ]);
       res.status(200).end();
     } catch (e) {
       handle(e, res);

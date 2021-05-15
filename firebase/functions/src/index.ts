@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // eslint-disable-next-line import/prefer-default-export
 export const sendReminders = functions.pubsub
-  .schedule('every 24 hours')
+  .schedule('every hour')
   .onRun(() => {
     const { token } = functions.config().remind as { token: string };
     const headers = { Authorization: `Bearer ${token}` };
