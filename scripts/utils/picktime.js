@@ -1,5 +1,3 @@
-const CONCURRENCY = 100;
-
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
@@ -9,12 +7,12 @@ const parse = require('csv-parse');
 const winston = require('winston');
 const prompt = require('prompt-sync')();
 const progress = require('cli-progress');
-const asyncPool = require('tiny-async-pool');
 const algoliasearch = require('algoliasearch');
 const parseSync = require('csv-parse/lib/sync');
 const { default: to } = require('await-to-js');
 const { exec } = require('child_process');
 const { nanoid } = require('nanoid');
+const Bottleneck = require('bottleneck');
 
 const logger = winston.createLogger({
   level: 'info',
@@ -25,7 +23,7 @@ const logger = winston.createLogger({
 });
 
 const env = 'production';
-const apiDomain = 'http://localhost:3000';
+const apiDomain = 'http://localhost:5000';
 logger.info(`Loading ${env} environment variables...`);
 [
   path.resolve(__dirname, '../../.env'),
@@ -105,6 +103,7 @@ function caps(str) {
 }
 
 function getStudentName(row) {
+  if (!row[fields.studentName]) return '';
   if (row[fields.studentName].split(' ').length > 1)
     return row[fields.studentName];
   const lastName = row[fields.customerName].split(' ').pop();
@@ -121,6 +120,7 @@ const emptyUser = {
   phone: '',
   bio: '',
   background: '',
+  venue: '',
   socials: [],
   orgs: [],
   zooms: [],
@@ -133,7 +133,9 @@ const emptyUser = {
   visible: false,
   featured: [],
   roles: [],
+  tags: [],
   reference: '',
+  timezone: '',
 };
 
 const validSubjects = parseSync(fs.readFileSync('../algolia/mentoring.csv'), {
@@ -310,6 +312,12 @@ async function importPicktime(path, dryRun = false) {
   logger.info(`Processing ${total} rows...`);
   bar.start(total, count);
 
+  const rrules = {
+    daily: 'RRULE:FREQ=DAILY',
+    weekly: 'RRULE:FREQ=WEEKLY',
+    biweekly: 'RRULE:FREQ=WEEKLY;INTERVAL=2',
+  };
+
   const headers = { authorization: `Bearer ${await getToken()}` };
   const parser = fs.createReadStream(path).pipe(
     parse({
@@ -327,15 +335,20 @@ async function importPicktime(path, dryRun = false) {
       logger.silly(`Skipping ${method.toUpperCase()} ${endpoint}...`);
       return [null, { data }];
     }
+    logger.silly(`HTTP ${method.toUpperCase()} ${apiDomain}${endpoint}`);
     return to(axios[method](`${apiDomain}${endpoint}`, data, { headers }));
   }
 
-  function error(err, action) {
+  function error(err, action, data) {
     const { message } = err.response ? err.response.data : err;
-    logger.error(`${err.name} ${action}: ${message}`);
+    const msg = `${err.name} ${action}: ${message}`;
+    bar.stop();
+    logger.error(msg);
+    logger.error(JSON.stringify(data, null, 2));
+    debugger;
     errors.push({ err, action, data });
     fs.writeFileSync(errorsPath, JSON.stringify(errors, null, 2));
-    debugger;
+    throw new Error(msg);
   }
 
   async function getUser({ name, email, phone }) {
@@ -343,16 +356,20 @@ async function importPicktime(path, dryRun = false) {
       logger.silly(`Found ${name} in users cache.`);
       return users[name];
     }
-    const searchString = (name || '').split(' (')[0];
+    let searchString = (name || '').split(' (')[0];
     const searchOptions = { restrictSearchableAttributes: ['name'] };
+    searchOptions.optionalFilters = 'orgs:quarantunes';
     if (email === '-') {
       logger.debug('Skipping invalid email filter...');
     } else if (email && phone) {
+      searchString = '';
       searchOptions.filters = `email:"${email}"`;
-      searchOptions.optionalFilters = `phone:"${phone}"`;
+      searchOptions.optionalFilters = `orgs:quarantunes AND phone:"${phone}"`;
     } else if (email) {
+      searchString = '';
       searchOptions.filters = `email:"${email}"`;
     } else if (phone) {
+      searchString = '';
       searchOptions.filters = `phone:"${phone}"`;
     }
     const searchOptionsStr = JSON.stringify(searchOptions, null, 2);
@@ -361,6 +378,13 @@ async function importPicktime(path, dryRun = false) {
     if (!hits.length)
       throw new Error(`No results (${searchString}): ${searchOptionsStr}`);
     const user = { ...(hits[0] || {}), id: (hits[0] || {}).objectID || '' };
+    if (!user.orgs.includes('quarantunes')) {
+      const msg = `${user.name} (${user.id}) is not part of QuaranTunes.`;
+      bar.stop();
+      logger.error(msg);
+      debugger;
+      throw new Error(msg);
+    }
     users[name] = user;
     fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
     return user;
@@ -371,11 +395,12 @@ async function importPicktime(path, dryRun = false) {
       const user = await getUser({ name, email, phone });
       return user;
     } catch (e) {
-      logger.warn(
+      logger.debug(
         `${e.name} fetching ${name} (${email || phone}): ${e.message}`
       );
       const user = {
         ...emptyUser,
+        id: dryRun ? nanoid() : '',
         name: name || '',
         email: email || '',
         phone: phone || '',
@@ -384,10 +409,9 @@ async function importPicktime(path, dryRun = false) {
         ...rest,
       };
       logger.debug(`Creating user: ${JSON.stringify(user, null, 2)}`);
-      debugger;
-      const [err, res] = await req('post', `${apiDomain}/api/users`, user);
+      const [err, res] = await req('post', '/api/users', user);
       if (err) {
-        error(err, `creating ${user.name}`);
+        error(err, `creating ${user.name}`, user);
         return user;
       } else {
         logger.verbose(`Created ${res.data.name} (${res.data.id}).`);
@@ -401,7 +425,8 @@ async function importPicktime(path, dryRun = false) {
   let lastExportedDate;
   for await (const row of parser) {
     logger.silly(`Processing row ${row['S.No']}...`);
-    lastExportedDate = getMeetingTime(row[fields.date]).to;
+    const date = getMeetingTime(row[fields.date]).to;
+    lastExportedDate = lastExportedDate > date ? lastExportedDate : date;
 
     delete row['S.No'];
     const rowId = encodeURIComponent(JSON.stringify(Object.values(row)));
@@ -415,7 +440,10 @@ async function importPicktime(path, dryRun = false) {
 
     let student;
     let parent;
-    if (caps(row[fields.customerName] || '') === getStudentName(row)) {
+    if (
+      !getStudentName(row) ||
+      caps(row[fields.customerName] || '') === getStudentName(row)
+    ) {
       student = parent = await getOrCreateUser({
         name: caps(row[fields.customerName] || ''),
         email: row[fields.email] || '',
@@ -467,6 +495,7 @@ async function importPicktime(path, dryRun = false) {
         message: generateMatchMessage(row),
         updated: new Date().toJSON(),
         created: new Date().toJSON(),
+        tags: [],
         id: '',
       };
       if (parent === student) {
@@ -522,7 +551,7 @@ async function importPicktime(path, dryRun = false) {
       logger.silly(`Creating match: ${JSON.stringify(match, null, 2)}`);
       const [err, res] = await req('post', '/api/matches', match);
       if (err) {
-        error(err, `creating ${matchToString(match)}`);
+        error(err, `creating ${matchToString(match)}`, match);
       } else {
         logger.verbose(`Created ${matchToString(res.data)} (${res.data.id}).`);
         matches[matchId] = res.data;
@@ -532,9 +561,9 @@ async function importPicktime(path, dryRun = false) {
 
     const venueId = nanoid(10);
     const meeting = {
-      match: matches[matchId],
       status: statuses[(row[fields.status] || '').toLowerCase()] || 'created',
       creator: matches[matchId].creator,
+      match: matches[matchId],
       venue: {
         id: venueId,
         url: `https://meet.jit.si/TB-${venueId}`,
@@ -545,6 +574,7 @@ async function importPicktime(path, dryRun = false) {
       description: generateMeetingDescription(row),
       updated: new Date().toJSON(),
       created: new Date().toJSON(),
+      tags: [],
       id: '',
     };
 
@@ -554,12 +584,6 @@ async function importPicktime(path, dryRun = false) {
     // interval supported by Tutorbook (daily, weekly, biweekly, and monthly).
     const existingMeetings = meetings[matchId] || [];
     const end = new Date(meeting.time.to);
-
-    const rrules = {
-      daily: 'RRULE:FREQ=DAILY',
-      weekly: 'RRULE:FREQ=WEEKLY',
-      biweekly: 'RRULE:FREQ=WEEKLY;INTERVAL=2',
-    };
 
     function logCheck(dist, mtg) {
       const endStr = end.toLocaleString();
@@ -585,7 +609,17 @@ async function importPicktime(path, dryRun = false) {
       Object.entries(recurChecks).some(([recur, isRecurring]) => {
         const recurring = existingMeetings.find(isRecurring);
         if (!recurring) return false;
-        recurring.time.recur = meeting.time.recur = rrules[recur];
+        const newRecur = rrules[recur];
+        const oldRecur = recurring.time.recur;
+        if (oldRecur && !oldRecur.includes(newRecur)) {
+          // The meeting already has a different recur rule (e.g. biweekly) and
+          // thus we should not change it to be the new recur rule (e.g. weekly)
+          // just because this meeting instance happened to be a week from the
+          // biweekly meeting. Instead, create a new meeting (that will then be
+          // used by future recur rule checks and will allow weekly recur).
+          return false;
+        }
+        recurring.time.recur = meeting.time.recur = newRecur;
         recurring.time.last = meeting.time.to;
         return true;
       })
@@ -601,7 +635,7 @@ async function importPicktime(path, dryRun = false) {
     logger.silly(`Creating meeting: ${JSON.stringify(meeting, null, 2)}`);
     const [err, res] = await req('post', '/api/meetings', meeting);
     if (err) {
-      error(err, `creating ${meetingToString(meeting)}`);
+      error(err, `creating ${meetingToString(meeting)}`, meeting);
     } else {
       logger.verbose(`Created ${meetingToString(res.data)} (${res.data.id}).`);
       meetings[matchId] = [...existingMeetings, res.data];
@@ -610,12 +644,20 @@ async function importPicktime(path, dryRun = false) {
     }
     bar.update((count += 1));
   }
+  bar.stop();
 
+  const recurringBar = new progress.SingleBar(
+    {},
+    progress.Presets.shades_classic
+  );
   const recurringMeetings = Object.values(meetings)
     .flat()
     .filter((m) => m.time.recur);
+  let recurringCount = 0;
+  logger.info(`Updating ${recurringMeetings.length} recurring meetings...`);
+  recurringBar.start(recurringMeetings.length, recurringCount);
 
-  await asyncPool(CONCURRENCY, recurringMeetings, async (recurring) => {
+  async function updateRecurringMeeting(recurring) {
     let last = new Date(recurring.time.last).valueOf();
     if (recurring.time.recur.includes('FREQ=DAILY'))
       last += 24 * 60 * 60 * 1000;
@@ -623,28 +665,61 @@ async function importPicktime(path, dryRun = false) {
       last += 7 * 24 * 60 * 60 * 1000;
     if (recurring.time.recur.includes('FREQ=WEEKLY;INTERVAL=2'))
       last += 14 * 24 * 60 * 60 * 1000;
-
     // Recurring meetings whose last meeting time was within a week of the last
     // exported date from Picktime will be recorded as still recurring.
     if (last < new Date(lastExportedDate).valueOf()) {
-      recurring.time.recur += `;UNTIL=${timeToUntilString(
-        recurring.time.last
-      )}`;
+      const untilStr = `;UNTIL=${timeToUntilString(recurring.time.last)}`;
+      if (recurring.time.recur.includes('UNTIL')) {
+        recurring.time.recur = recurring.time.recur.replace(
+          /\;UNTIL=.*$/,
+          untilStr
+        );
+      } else if (Object.values(rrules).includes(recurring.time.recur)) {
+        recurring.time.recur += untilStr;
+      } else {
+        throw new Error(`Recur rule (${recurring.time.recur}) not supported.`);
+      }
     } else {
       logger.silly(`Marked ${meetingToString(recurring)} as still recurring.`);
     }
-
     logger.debug(`Updating ${meetingToString(recurring)}...`);
     logger.silly(`Updating meeting: ${JSON.stringify(recurring, null, 2)}`);
-    const [err, res] = await req('put', '/api/meetings', recurring);
+    const [err, res] = await req(
+      'put',
+      `/api/meetings/${recurring.id}`,
+      recurring
+    );
     if (err) {
-      error(err, `updating ${meetingToString(recurring)}`);
+      throw new Error((err.response ? err.response.data : err).message);
     } else {
       logger.verbose(`Updated ${meetingToString(res.data)} (${res.data.id}).`);
+      recurringBar.update((recurringCount += 1));
+    }
+  }
+
+  const limiter = new Bottleneck({
+    maxConcurrent: 500,
+    minTime: 100,
+  });
+  limiter.on('failed', async (error, jobInfo) => {
+    const { id } = jobInfo.options;
+    logger.error(`Job (${id}) failed: ${error}`);
+    if (jobInfo.retryCount < 10) {
+      logger.info(`Retrying job (${id}) in 100ms...`);
+      return 100;
     }
   });
+  limiter.on('retry', (error, jobInfo) => {
+    logger.info(`Now retrying job (${jobInfo.options.id})...`);
+  });
+  await Promise.all(
+    recurringMeetings.map((m) =>
+      limiter.schedule({ id: m.id }, updateRecurringMeeting, m)
+    )
+  );
+  fs.writeFileSync(meetingsPath, JSON.stringify(meetings, null, 2));
+  recurringBar.stop();
 
-  bar.stop();
   logger.info(
     `Created ${Object.keys(matches).length} matches and ${
       Object.values(meetings).flat().length
@@ -657,10 +732,14 @@ async function importPicktime(path, dryRun = false) {
   debugger;
 }
 
-importPicktime('./quarantunes-picktime-meetings-feb-1-to-jun-1.csv', true);
+importPicktime('./latest/2021-10.csv');
 
 async function clearPicktimeData(dryRun = false) {
   const headers = { authorization: `Bearer ${await getToken()}` };
+  const limiter = new Bottleneck({
+    maxConcurrent: 100,
+    minTime: 100,
+  });
 
   function req(endpoint) {
     if (dryRun) {
@@ -672,10 +751,12 @@ async function clearPicktimeData(dryRun = false) {
 
   function error(err, action, data) {
     const { message } = err.response ? err.response.data : err;
-    logger.error(`${err.name} ${action}: ${message}`);
+    const msg = `${err.name} ${action}: ${message}`;
+    logger.error(msg);
     debugger;
     errors.push({ err, action, data });
     fs.writeFileSync(errorsPath, JSON.stringify(errors, null, 2));
+    throw new Error(msg);
   }
 
   logger.info('Fetching data...');
@@ -700,15 +781,19 @@ async function clearPicktimeData(dryRun = false) {
   logger.info(`Deleting ${meetings.docs.length} meetings...`);
   meetingsBar.start(meetings.docs.length, count);
 
-  await asyncPool(CONCURRENCY, meetings.docs, async (m) => {
-    const [err] = await req(`/api/meetings/${m.id}`);
-    if (err) {
-      error(err, `deleting ${meetingToString(m.data())}`, m.data());
-    } else {
-      logger.verbose(`Deleted ${meetingToString(m.data())} (${m.id}).`);
-    }
-    meetingsBar.update((count += 1));
-  });
+  await Promise.all(
+    meetings.docs.map((m) =>
+      limiter.schedule(async () => {
+        const [err] = await req(`/api/meetings/${m.id}`);
+        if (err) {
+          error(err, `deleting ${meetingToString(m.data())}`, m.data());
+        } else {
+          logger.verbose(`Deleted ${meetingToString(m.data())} (${m.id}).`);
+        }
+        meetingsBar.update((count += 1));
+      })
+    )
+  );
   meetingsBar.stop();
 
   count = 0;
@@ -720,18 +805,22 @@ async function clearPicktimeData(dryRun = false) {
   matchesBar.start(matches.docs.length, count);
 
   const students = [];
-  await asyncPool(CONCURRENCY, matches.docs, async (m) => {
-    const [err] = await req(`/api/matches/${m.id}`);
-    if (err) {
-      error(err, `deleting ${matchToString(m.data())}`, m.data());
-    } else {
-      logger.verbose(`Deleted ${matchToString(m.data())} (${m.id}).`);
-      const { creator } = m.data();
-      if (!creator.photo && !students.find((s) => s.id === creator.id))
-        students.push(creator);
-    }
-    matchesBar.update((count += 1));
-  });
+  await Promise.all(
+    matches.docs.map((m) =>
+      limiter.schedule(async () => {
+        const [err] = await req(`/api/matches/${m.id}`);
+        if (err) {
+          error(err, `deleting ${matchToString(m.data())}`, m.data());
+        } else {
+          logger.verbose(`Deleted ${matchToString(m.data())} (${m.id}).`);
+          const { creator } = m.data();
+          if (!creator.photo && !students.find((s) => s.id === creator.id))
+            students.push(creator);
+        }
+        matchesBar.update((count += 1));
+      })
+    )
+  );
   matchesBar.stop();
 
   count = 0;
@@ -742,15 +831,19 @@ async function clearPicktimeData(dryRun = false) {
   logger.info(`Deleting ${students.length} students...`);
   studentsBar.start(students.length, count);
 
-  await asyncPool(CONCURRENCY, students, async (s) => {
-    const [err] = await req(`/api/users/${s.id}`);
-    if (err) {
-      error(err, `deleting ${s.name} (${s.id})`, s);
-    } else {
-      logger.verbose(`Deleted ${s.name} (${s.id}).`);
-    }
-    studentsBar.update((count += 1));
-  });
+  await Promise.all(
+    students.map((s) =>
+      limiter.schedule(async () => {
+        const [err] = await req(`/api/users/${s.id}`);
+        if (err) {
+          error(err, `deleting ${s.name} (${s.id})`, s);
+        } else {
+          logger.verbose(`Deleted ${s.name} (${s.id}).`);
+        }
+        studentsBar.update((count += 1));
+      })
+    )
+  );
   studentsBar.stop();
 
   logger.info('Fetching search data...');
