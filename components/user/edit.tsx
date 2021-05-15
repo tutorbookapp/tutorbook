@@ -281,6 +281,7 @@ export default function UserEdit({
                 (org?.signup[locale][org?.aspects[0] || 'tutoring'] || {})
                   .bio || t('common:bio-placeholder')
               }
+              helpText={{ persistent: true, children: t('common:bio-help') }}
               value={user.bio}
               onChange={onBioChange}
               className={styles.field}

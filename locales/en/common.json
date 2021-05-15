@@ -31,6 +31,7 @@
   "venue-placeholder": "Ex: https://example.zoom.us/j/1236547891",
   "venue-help-text": "Specify {{name}} default meeting link: Zoom, Skype, Google Meet, or anything else with a link.",
   "bio-placeholder": "Hint: Simply copy-and-paste your existing LinkedIn or Facebook bio.",
+  "bio-help": "This information will appear on your public profile page. Please write with care.",
   "reference-placeholder": "Ex: I heard about {{org}} from my friend's Instagram story (@my_friend).",
   "subjects-placeholder": "Ex: Computer Science or Biology",
   "tutoring-subjects-placeholder": "Ex: Math or Science",
