@@ -234,6 +234,7 @@ export default function Profile(): JSX.Element {
             <TextField
               label={t('user3rd:bio')}
               placeholder={t('common:bio-placeholder')}
+              helpText={{ persistent: true, children: t('user3rd:bio-help') }}
               value={user.bio}
               onChange={onBioChange}
               className={styles.field}
