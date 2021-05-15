@@ -6,8 +6,10 @@ import { APIError, handle } from 'lib/api/error';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import getMeetings from 'lib/api/get/meetings';
 import getPeople from 'lib/api/get/people';
-import send1hrReminderEmails from 'lib/mail/meetings/remind/1hr';
-import send24hrReminderEmails from 'lib/mail/meetings/remind/24hr';
+import send1hrReminders from 'lib/mail/meetings/remind/1hr';
+import send24hrReminders from 'lib/mail/meetings/remind/24hr';
+import sendDonationReminders from 'lib/mail/meetings/remind/donation';
+import sendMakeRecurReminders from 'lib/mail/meetings/remind/make-recur';
 
 function verifyAuth(headers: IncomingHttpHeaders): void {
   if (typeof headers.authorization !== 'string')
@@ -20,9 +22,17 @@ function verifyAuth(headers: IncomingHttpHeaders): void {
 }
 
 /**
- * GET - Sends a 24-hr reminder for meetings btwn 24 (inclusive) and 25
- *       (non-inclusive) hrs from now AND sends a 1-hr reminder for meetings
- *       btwn 1 (inclusive) and 2 (non-inclusive) hrs from now.
+ * Sends meeting reminder emails:
+ * - A 24-hr reminder for meetings btwn 24 (inclusive) and 25 (non-inclusive)
+ *   hrs from now.
+ * - A 1-hr reminder for meetings btwn 1 (inclusive) and 2 (non-inclusive) hrs
+ *   from now.
+ *
+ * And sends emails after meetings:
+ * - A donation reminder to parents/students for meetings that ended btwn 0
+ *   (inclusive) and 1 (non-inclusive) hrs ago.
+ * - A "make this meeting recurring" reminder to volunteers for non-recurring
+ *   meetings that ended btwn 0 (inclusive) and 1 (non-inclusive) hrs ago.
  *
  * Requires a special authentication token only known to our CRON job.
  * This endpoint is "hit" every hour by a GCP scheduled CRON job.
@@ -35,7 +45,11 @@ export default async function remind(req: Req, res: Res): Promise<void> {
     try {
       verifyAuth(req.headers);
       const now = new Date();
-      const [meetings1hrAway, meetings24hrsAway] = await Promise.all([
+      const [
+        meetings1hrInFuture,
+        meetings24hrsInFuture,
+        meetings1hrInPast,
+      ] = await Promise.all([
         getMeetings(
           new MeetingsQuery({
             from: new Date(now.valueOf() + 1 * 60 * 60 * 1000),
@@ -48,15 +62,28 @@ export default async function remind(req: Req, res: Res): Promise<void> {
             to: new Date(now.valueOf() + 25 * 60 * 60 * 1000 - 1),
           })
         ),
+        getMeetings(
+          new MeetingsQuery({
+            org: 'quarantunes', // TODO: Make this configured in org doc.
+            from: new Date(now.valueOf() - 1 * 60 * 60 * 1000 + 1),
+            to: now,
+          })
+        ),
       ]);
       await Promise.all([
-        ...meetings1hrAway.results.map(async (meeting) => {
+        ...meetings1hrInFuture.results.map(async (meeting) => {
           const people = await getPeople(meeting.match.people);
-          return send1hrReminderEmails(meeting, people);
+          return send1hrReminders(meeting, people);
         }),
-        ...meetings24hrsAway.results.map(async (meeting) => {
+        ...meetings24hrsInFuture.results.map(async (meeting) => {
           const people = await getPeople(meeting.match.people);
-          return send24hrReminderEmails(meeting, people);
+          return send24hrReminders(meeting, people);
+        }),
+        ...meetings1hrInPast.results.map(async (meeting) => {
+          const people = await getPeople(meeting.match.people);
+          await sendDonationReminders(meeting, people);
+          if (meeting.time.recur) return;
+          await sendMakeRecurReminders(meeting, people);
         }),
       ]);
       res.status(200).end();
