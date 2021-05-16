@@ -94,6 +94,19 @@ export default function Calendar({
   const [recurEdit, setRecurEdit] = useState<boolean>(false);
   const [action, setAction] = useState<MeetingAction>('future');
 
+  // Cancel an unintentional RND drag by simply clicking the "Esc" key.
+  // TODO: Perhaps figure out a way to include the dialog closing animation.
+  useEffect(() => {
+    function onKeyUp(evt: KeyboardEvent) {
+      if (!['Esc', 'Escape'].includes(evt.key) && evt.keyCode !== 27) return;
+      setDragging(false);
+      setDialog(false);
+      setRnd(false);
+    }
+    document.addEventListener('keyup', onKeyUp);
+    return () => document.removeEventListener('keyup', onKeyUp);
+  }, []);
+
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated: boolean, sentToAPI: Meeting) => {
       // Don't locally update meetings that have yet to be created.
