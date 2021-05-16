@@ -1,4 +1,4 @@
-import { FormEvent, useCallback } from 'react';
+import { FormEvent, useCallback, useMemo } from 'react';
 import { Select, SelectHTMLProps, SelectProps } from '@rmwc/select';
 
 import { TCallback } from 'lib/model/callback';
@@ -29,14 +29,28 @@ export default function RecurSelect({
 }: RecurSelectProps): JSX.Element {
   const onSelectChange = useCallback(
     (evt: FormEvent<HTMLSelectElement>) => {
+      if (evt.currentTarget.value === getRecurString(value)) return;
       onChange(rrules[evt.currentTarget.value] || undefined);
     },
-    [onChange]
+    [value, onChange]
+  );
+  const options = useMemo(
+    () => [
+      ...new Set([
+        '',
+        'Daily',
+        'Weekly',
+        'Biweekly',
+        'Monthly',
+        getRecurString(value),
+      ]),
+    ],
+    [value]
   );
 
   return (
     <Select
-      options={['', 'Daily', 'Weekly', 'Biweekly', 'Monthly']}
+      options={options}
       onChange={onSelectChange}
       value={getRecurString(value)}
       enhanced

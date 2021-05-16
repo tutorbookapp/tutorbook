@@ -3,18 +3,63 @@ import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
 /**
- * Converts an RRule into one of Tutorbook's officially supported recur options
- * (daily, weekly, biweekly, or monthly). We don't use the `rrule` package
- * client-side because of it's size.
+ * Converts an RRule until string (e.g. `UNTIL=20210515T070000Z`) to a Date.
+ * @see {@link https://git.io/JsCuq}
  */
-export function getRecurString(rrule?: string): string {
-  if (!rrule) return '';
-  if (rrule.includes('FREQ=DAILY')) return 'Daily';
-  if (rrule.includes('FREQ=WEEKLY') && rrule.includes('INTERVAL=2'))
-    return 'Biweekly';
-  if (rrule.includes('FREQ=WEEKLY')) return 'Weekly';
-  if (rrule.includes('FREQ=MONTHLY')) return 'Monthly';
-  return '';
+export function untilStringToDate(until: string): Date | undefined {
+  const re = /^(\d{4})(\d{2})(\d{2})(T(\d{2})(\d{2})(\d{2})Z?)?$/;
+  const bits = re.exec(until);
+  return !bits
+    ? undefined
+    : new Date(
+        Date.UTC(
+          parseInt(bits[1], 10),
+          parseInt(bits[2], 10) - 1,
+          parseInt(bits[3], 10),
+          parseInt(bits[5], 10) || 0,
+          parseInt(bits[6], 10) || 0,
+          parseInt(bits[7], 10) || 0
+        )
+      );
+}
+
+/**
+ * Converts an RRule into one of Tutorbook's officially supported recur options.
+ * We don't use the `rrule` package client-side because of it's bundle size.
+ * @see {@link https://bundlephobia.com/result?p=rrule@2.6.8}
+ * @see {@link https://git.io/JsCuc}
+ */
+export function getRecurString(rrule?: string, locale = 'en'): string {
+  let recur = '';
+  if (!rrule) return recur;
+  if (rrule.includes('FREQ=DAILY')) {
+    recur = 'Daily';
+  } else if (rrule.includes('FREQ=WEEKLY') && rrule.includes('INTERVAL=2')) {
+    recur = 'Biweekly';
+  } else if (rrule.includes('FREQ=WEEKLY')) {
+    recur = 'Weekly';
+  } else if (rrule.includes('FREQ=MONTHLY')) {
+    recur = 'Monthly';
+  }
+  rrule
+    .replace(/^(?:RRULE|EXRULE):/i, '')
+    .split(';')
+    .forEach((attr) => {
+      const [key, value] = attr.split('=');
+      if (key.toUpperCase() === 'UNTIL') {
+        const until = untilStringToDate(value);
+        if (!until) return;
+        const showYear = until.getFullYear() !== new Date().getFullYear();
+        const untilString = until.toLocaleString(locale, {
+          year: showYear ? 'numeric' : undefined,
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        });
+        recur += ` until ${untilString}`;
+      }
+    });
+  return recur;
 }
 
 interface PhoneProps {
