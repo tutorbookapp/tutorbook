@@ -65,16 +65,8 @@ function selectTime(they: boolean = false): void {
 
   // TODO: Why doesn't the `cy.click()` command work here?
   cy.getBySel('prev-month-button').should('be.disabled');
-  cy.getBySel('next-month-button')
-    .trigger('click')
-    .trigger('click')
-    .trigger('click')
-    .should('be.disabled');
-  cy.getBySel('prev-month-button')
-    .trigger('click')
-    .trigger('click')
-    .trigger('click')
-    .should('be.disabled');
+  cy.getBySel('next-month-button').trigger('click').should('be.disabled');
+  cy.getBySel('prev-month-button').trigger('click').should('be.disabled');
 
   const now = new Date();
   cy.getBySel('selected-month').should(
@@ -91,9 +83,10 @@ function selectTime(they: boolean = false): void {
     .should('have.attr', 'aria-selected', 'true')
     .and('have.css', 'background-color', 'rgb(0, 112, 243)');
 
-  // Days in the past should be disabled.
+  // Days before our `from` threshold (of 3 days in advance) should be disabled.
   let past = new Date(now.getFullYear(), now.getMonth());
-  while (past < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
+  const from = new Date(now.valueOf() + 3 * 24 * 60 * 60 * 1000);
+  while (past < new Date(from.getFullYear(), from.getMonth(), from.getDate())) {
     cy.get('@days')
       .eq(past.getDate() - 1)
       .should('be.disabled');
@@ -104,7 +97,11 @@ function selectTime(they: boolean = false): void {
   function dayIsAvailable(day: number, available: boolean): void {
     // Don't error when all the timeslots for the current (usually available)
     // date are already in the past (i.e. changes based on when our CI is run).
-    const tmrw = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const tmrw = new Date(
+      from.getFullYear(),
+      from.getMonth(),
+      from.getDate() + 1
+    );
     if (tmrw.getMonth() !== now.getMonth()) return;
     const date = getDateWithDay(day, tmrw);
     if (date.getMonth() !== now.getMonth()) return;
@@ -129,9 +126,9 @@ function selectTime(they: boolean = false): void {
   const selected = getDateWithDay(
     0,
     new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
+      from.getFullYear(),
+      from.getMonth(),
+      from.getDate(),
       new Date(volunteer.availability[0].from).getHours()
     )
   );
