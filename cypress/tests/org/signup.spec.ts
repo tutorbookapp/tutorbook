@@ -58,7 +58,6 @@ describe('Signup page', () => {
   });
 
   it('signs new volunteers up', () => {
-    cy.intercept('PUT', '/api/users/*').as('update-user');
     cy.intercept('POST', 'https://firebasestorage.googleapis.com/**', {
       fixture: 'users/volunteer.jpg.json',
     }).as('upload-photo');
