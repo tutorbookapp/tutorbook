@@ -1,4 +1,5 @@
-import { FormEvent, useCallback, useMemo } from 'react';
+import { FormEvent, useCallback } from 'react';
+import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import { mutate } from 'swr';
@@ -6,9 +7,7 @@ import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import AvailabilitySelect from 'components/availability-select';
-import Button from 'components/button';
 import LangSelect from 'components/lang-select';
-import Loader from 'components/loader';
 import PhotoInput from 'components/photo-input';
 import Result from 'components/search/result';
 import SubjectSelect from 'components/subject-select';
@@ -17,7 +16,7 @@ import VenueInput from 'components/venue-input';
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { useOrg } from 'lib/context/org';
-import useSingle from 'lib/hooks/single';
+import useContinuous from 'lib/hooks/continuous';
 import useSocialProps from 'lib/hooks/social-props';
 
 import styles from './edit.module.scss';
@@ -51,12 +50,14 @@ export default function UserEdit({
   const {
     data: user,
     setData: setUser,
-    onSubmit,
-    checked,
     loading,
+    checked,
     error,
-  } = useSingle(initialData || empty, updateRemote, updateLocal);
+    retry,
+    timeout,
+  } = useContinuous(initialData || empty, updateRemote, updateLocal);
 
+  const router = useRouter();
   const getSocialProps = useSocialProps(
     user,
     setUser,
@@ -169,23 +170,29 @@ export default function UserEdit({
     [setUser]
   );
 
-  const action = useMemo(() => {
-    return user.id.startsWith('temp') ? 'create' : 'update';
-  }, [user.id]);
-
-  const router = useRouter();
-
   return (
-    <div className={styles.wrapper}>
-      <Result
-        user={user}
-        loading={!initialData}
-        className={styles.display}
-        onClick={() => router.back()}
-      />
-      <div className={styles.card}>
-        <Loader active={loading} checked={checked} />
-        <form className={styles.form} onSubmit={onSubmit}>
+    <>
+      {loading && (
+        <Snackbar message={t('user:loading')} timeout={-1} leading open />
+      )}
+      {checked && <Snackbar message={t('user:checked')} leading open />}
+      {error && (
+        <Snackbar
+          message={t('user:error', { count: timeout / 1000 })}
+          timeout={-1}
+          action={<SnackbarAction label={t('common:retry')} onClick={retry} />}
+          leading
+          open
+        />
+      )}
+      <div className={styles.wrapper}>
+        <Result
+          user={user}
+          loading={!initialData}
+          className={styles.display}
+          onClick={() => router.back()}
+        />
+        <div className={styles.card}>
           <div className={styles.inputs}>
             <TextField
               label={t('user:name')}
@@ -345,21 +352,9 @@ export default function UserEdit({
             <TextField {...getSocialProps('linkedin')} />
             <TextField {...getSocialProps('github')} />
             <TextField {...getSocialProps('indiehackers')} />
-            <Button
-              className={styles.btn}
-              label={t(`user:${action}-btn`)}
-              disabled={loading}
-              raised
-              arrow
-            />
-            {!!error && (
-              <div className={styles.error}>
-                {t(`user:${action}-error`, { error })}
-              </div>
-            )}
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
