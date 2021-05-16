@@ -83,9 +83,6 @@ describe('Student landing page', () => {
 
     cy.get('@buttons').last().click();
 
-    // TODO: Find way to make Cypress wait for Next.js to emit the "client-side
-    // page transition complete" signal (e.g. when the nprogress bar is hidden).
-    cy.loading().percySnapshot('Students Landing Page in Loading State');
     cy.url({ timeout: 60000 }).should('contain', '/default/search');
 
     cy.get('header')
