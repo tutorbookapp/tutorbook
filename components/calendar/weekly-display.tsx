@@ -101,6 +101,9 @@ function WeeklyDisplay({
     start,
   } = useCalendarState();
 
+  const [eventTarget, setEventTarget] = useState<MouseEventHackTarget>();
+  const [eventData, setEventData] = useState<MouseEventHackData>();
+
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const { user } = useUser();
@@ -112,6 +115,8 @@ function WeeklyDisplay({
         id: `temp-${nanoid()}`,
         creator: user.toPerson(),
       });
+      setEventTarget(undefined);
+      setEventData(undefined);
       setEditing(getMeeting(48, pos, creating, cellWidth, start));
       setDialogPage(DialogPage.Create);
       setDialog(true);
@@ -151,9 +156,6 @@ function WeeklyDisplay({
 
   const eventGroups = useMemo(() => placeMeetings(meetings), [meetings]);
   const props = useSpring({ config, marginRight: filtersOpen ? width : 0 });
-
-  const [eventTarget, setEventTarget] = useState<MouseEventHackTarget>();
-  const [eventData, setEventData] = useState<MouseEventHackData>();
 
   const [now, setNow] = useState<Date>(new Date());
   useEffect(() => {
