@@ -50,7 +50,7 @@ export default function DisplayPage({
           >
             <a className={styles.person}>
               <div className={styles.avatar}>
-                <Avatar src={person.photo} size={85} />
+                <Avatar src={person.photo} size={48} />
               </div>
               <div className={styles.label}>
                 <div className={styles.roles}>{join(person.roles)}</div>

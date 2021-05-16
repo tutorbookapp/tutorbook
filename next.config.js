@@ -13,7 +13,7 @@ module.exports = withImages({
   },
   images: {
     domains: ['assets.tutorbook.org', 'firebasestorage.googleapis.com'],
-    imageSizes: [642, 350, 200, 160, 120, 85, 40, 24],
+    imageSizes: [642, 350, 200, 160, 120, 85, 48, 40, 24],
   },
   async redirects() {
     return [
