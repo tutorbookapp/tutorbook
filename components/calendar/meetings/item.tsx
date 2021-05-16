@@ -105,6 +105,7 @@ export default function MeetingItem({
         const view = (e: MouseEvent) => {
           e.stopPropagation();
           removeListeners();
+          setRnd(false);
           setEditing(meeting);
           setDialogPage(DialogPage.Display);
           setDialog(true);
