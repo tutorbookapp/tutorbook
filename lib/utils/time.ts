@@ -183,10 +183,12 @@ export function getTimeslots(
  * @param month - The month to get timeslots for.
  * @param year - The year to get timeslots for.
  * @param [booked] - Booked availability slots (i.e. meeting times).
- * @param [now] - Any timeslots before this date will be excluded; we only
- * include timeslots that are after `now` (i.e. timeslots in the future). You
- * can use this to enforce that lessons must be booked e.g. at least 3 days in
+ * @param [from] - Any timeslots before this date will be excluded. Defaults to
+ * right now (i.e. we only include timeslots in the future by default). You can
+ * use this to enforce that lessons must be booked e.g. at least 3 days in
  * advance (i.e. preventing last minute bookings).
+ * @param [to] - Any timeslots after this date will be excluded. Defaults to the
+ * maximum possible date (see https://stackoverflow.com/a/43794682/10023158).
  * @return Availability full of 30 min timeslots in 15 min intervals for the
  * requested month's date range. Excludes timeslots from the past.
  */
@@ -195,12 +197,18 @@ export function getMonthsTimeslots(
   month: number,
   year: number,
   booked?: Availability,
-  now: Date = new Date()
+  from: Date = new Date(),
+  to: Date = new Date(8640000000000000)
 ): Availability {
-  // If month or year is in past, we know there are no timeslots.
   const timeslots = new Availability();
-  if (year < now.getFullYear()) return timeslots;
-  if (year === now.getFullYear() && month < now.getMonth()) return timeslots;
+
+  // If month or year is before `from`, we know there are no timeslots.
+  if (year < from.getFullYear()) return timeslots;
+  if (year === from.getFullYear() && month < from.getMonth()) return timeslots;
+
+  // If month or year is after `to`, we know there are no timeslots.
+  if (year > to.getFullYear()) return timeslots;
+  if (year === to.getFullYear() && month > to.getMonth()) return timeslots;
 
   const daysInMonth = getDaysInMonth(month, year);
   const weekdayOffset = getWeekdayOfFirst(month, year);
@@ -221,7 +229,8 @@ export function getMonthsTimeslots(
           from: new Date(year, month, date, fromHrs, fromMins),
           to: new Date(year, month, date, toHrs, toMins),
         });
-        if (t.from > now && !booked?.overlaps(t, true)) timeslots.push(t);
+        if (t.from >= from && t.to <= to && !booked?.overlaps(t, true))
+          timeslots.push(t);
       }
       date += 1;
     }
