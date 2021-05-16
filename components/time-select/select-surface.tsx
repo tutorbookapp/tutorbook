@@ -137,7 +137,7 @@ function SelectSurface({
             <IconButton
               icon={<ChevronRightIcon />}
               onClick={viewNextMonth}
-              disabled={getMonthsApart(selected) >= 3}
+              disabled={getMonthsApart(selected) >= 1}
               data-cy='next-month-button'
             />
           </div>
