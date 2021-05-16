@@ -1,8 +1,8 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
+import Router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import { AspectHeader, EmptyHeader } from 'components/navigation';
@@ -15,6 +15,7 @@ import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import { db } from 'lib/api/firebase';
 import usePage from 'lib/hooks/page';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
@@ -41,6 +42,18 @@ function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
       return updated;
     });
   }, [org, query]);
+
+  // Redirect to the user's profile page if they're logged in. Temporary fix for
+  // the revalidation problem that would clear any edits on this signup page.
+  // @see {@link https://github.com/tutorbookapp/tutorbook/issues/181}
+  const { loggedIn } = useUser();
+  useEffect(() => {
+    void Router.prefetch('/profile');
+  }, []);
+  useEffect(() => {
+    if (!loggedIn) return;
+    void Router.replace('/profile');
+  }, [loggedIn]);
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
