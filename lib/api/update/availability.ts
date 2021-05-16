@@ -32,8 +32,6 @@ export default async function updateAvailability(user: User): Promise<void> {
   );
   const idx = client.initIndex(`${prefix}-users`);
 
-  debugger;
-
   const [err] = await to(
     idx.partialUpdateObject({
       _availability: availability,

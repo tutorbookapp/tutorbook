@@ -183,6 +183,10 @@ export function getTimeslots(
  * @param month - The month to get timeslots for.
  * @param year - The year to get timeslots for.
  * @param [booked] - Booked availability slots (i.e. meeting times).
+ * @param [now] - Any timeslots before this date will be excluded; we only
+ * include timeslots that are after `now` (i.e. timeslots in the future). You
+ * can use this to enforce that lessons must be booked e.g. at least 3 days in
+ * advance (i.e. preventing last minute bookings).
  * @return Availability full of 30 min timeslots in 15 min intervals for the
  * requested month's date range. Excludes timeslots from the past.
  */
@@ -190,10 +194,10 @@ export function getMonthsTimeslots(
   baseline: Availability,
   month: number,
   year: number,
-  booked?: Availability
+  booked?: Availability,
+  now: Date = new Date()
 ): Availability {
   // If month or year is in past, we know there are no timeslots.
-  const now = new Date();
   const timeslots = new Availability();
   if (year < now.getFullYear()) return timeslots;
   if (year === now.getFullYear() && month < now.getMonth()) return timeslots;
@@ -287,6 +291,5 @@ export function getAlgoliaAvailability(
     // next 3 months has been booked and thus exclude the time in Algolia.
     return false;
   });
-  debugger;
   return Array.from(filtered.map((timeslot) => timeslot.from.valueOf()));
 }

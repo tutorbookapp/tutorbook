@@ -31,7 +31,11 @@ export default async function getAvailability(
   const meetings = (await getMeetings(query)).results;
   const booked = new Availability(...meetings.map((m) => m.time));
 
-  // 3. Split each of the availability timeslots into 30 min timeslots in 15 min
+  // 3. Enforce that lessons must be booked at least 3 days in advance.
+  // @see {@link https://github.com/tutorbookapp/tutorbook/issues/197}
+  const now = new Date(new Date().valueOf() + 3 * 24 * 60 * 60 * 1000);
+
+  // 4. Split each of the availability timeslots into 30 min timeslots in 15 min
   // intervals. This assumes there is no overlap between the baseline timeslots.
-  return getMonthsTimeslots(baseline, month, year, booked);
+  return getMonthsTimeslots(baseline, month, year, booked, now);
 }
