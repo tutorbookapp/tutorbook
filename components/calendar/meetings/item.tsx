@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import cn from 'classnames';
 
 import { Meeting } from 'lib/model/meeting';
+import { Position } from 'lib/model/position';
 import { TCallback } from 'lib/model/callback';
 import { useClickContext } from 'lib/hooks/click-outside';
 
@@ -74,22 +75,32 @@ export default function MeetingItem({
         evt.stopPropagation();
 
         // Decide what to do after mousedown:
-        // - If mousemove, then edit with RND (this is a drag).
+        // - If mousemove more than 10px, then edit with RND (this is a drag).
         // - If mouseup, then view (this is a click).
+        let mouseMovement = 0;
+        let lastPosition: Position;
         const edit = (e: MouseEvent) => {
           e.stopPropagation();
-          removeListeners();
-          setEditing(meeting);
-          setEventTarget('middle');
-          setEventData({
-            screenX: e.screenX,
-            screenY: e.screenY,
-            clientX: e.clientX,
-            clientY: e.clientY,
-            button: e.button,
-            buttons: e.buttons,
-          });
-          setRnd(true);
+          if (lastPosition)
+            mouseMovement += Math.sqrt(
+              Math.pow(lastPosition.x - e.clientX, 2) +
+                Math.pow(lastPosition.y - e.clientY, 2)
+            );
+          lastPosition = { x: e.clientX, y: e.clientY };
+          if (mouseMovement > 10) {
+            removeListeners();
+            setEditing(meeting);
+            setEventTarget('middle');
+            setEventData({
+              screenX: e.screenX,
+              screenY: e.screenY,
+              clientX: e.clientX,
+              clientY: e.clientY,
+              button: e.button,
+              buttons: e.buttons,
+            });
+            setRnd(true);
+          }
         };
         const view = (e: MouseEvent) => {
           e.stopPropagation();
