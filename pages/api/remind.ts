@@ -6,6 +6,7 @@ import { APIError, handle } from 'lib/api/error';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import getMeetings from 'lib/api/get/meetings';
 import getPeople from 'lib/api/get/people';
+import logger from 'lib/api/logger';
 import send1hrReminders from 'lib/mail/meetings/remind/1hr';
 import send24hrReminders from 'lib/mail/meetings/remind/24hr';
 import sendDonationReminders from 'lib/mail/meetings/remind/donation';
@@ -46,6 +47,22 @@ export default async function remind(req: Req, res: Res): Promise<void> {
       verifyAuth(req.headers);
       const { time } = req.query;
       const now = typeof time === 'string' ? new Date(time) : new Date();
+      logger.verbose(`Fetching meetings from ${now.toString()}...`);
+      logger.verbose(
+        `Fetching meetings from ${new Date(
+          now.valueOf() + 1 * 60 * 60 * 1000
+        ).toString()}...`
+      );
+      logger.verbose(
+        `Fetching meetings from ${new Date(
+          now.valueOf() + 24 * 60 * 60 * 1000
+        ).toString()}...`
+      );
+      logger.verbose(
+        `Fetching meetings from ${new Date(
+          now.valueOf() - 1 * 60 * 60 * 1000 + 1
+        ).toString()}...`
+      );
       const [
         meetings1hrInFuture,
         meetings24hrsInFuture,
@@ -71,6 +88,11 @@ export default async function remind(req: Req, res: Res): Promise<void> {
           })
         ),
       ]);
+      logger.info(
+        `Sending ${meetings1hrInFuture.results.length} 1hr reminders, ` +
+          `${meetings24hrsInFuture.results.length} 24hr reminders, and ` +
+          `${meetings1hrInPast.results.length} donation reminders...`
+      );
       await Promise.all([
         ...meetings1hrInFuture.results.map(async (meeting) => {
           const people = await getPeople(meeting.match.people);
@@ -88,6 +110,7 @@ export default async function remind(req: Req, res: Res): Promise<void> {
         }),
       ]);
       res.status(200).end();
+      logger.info('Sent all reminder emails.');
     } catch (e) {
       handle(e, res);
     }
