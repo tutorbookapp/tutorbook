@@ -79,4 +79,4 @@ const generic = async (id) => {
   }
 };
 
-if (require.main === module) generic('tags');
+if (require.main === module) subjects('mentoring');
