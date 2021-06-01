@@ -190,7 +190,7 @@ export default function UserEdit({
           user={user}
           loading={!initialData}
           className={styles.display}
-          onClick={() => router.back()}
+          onClick={() => router.push(`/${org.id}/users/${user.id}`)}
         />
         <div className={styles.card}>
           <div className={styles.inputs}>
