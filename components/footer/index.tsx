@@ -38,14 +38,6 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
             </Link>
           ))}
         </Group>
-        <Group label={t('common:footer-resources')}>
-          <Link href='https://github.com/orgs/tutorbookapp'>
-            {t('common:footer-open-source')}
-          </Link>
-          <Link href='https://github.com/tutorbookapp/tutorbook#readme'>
-            {t('common:footer-docs')}
-          </Link>
-        </Group>
         <Group label={t('common:footer-socials')}>
           <Link href='https://facebook.com/tutorbookapp'>
             {t('common:facebook')}
@@ -67,6 +59,12 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
           </Link>
         </Group>
         <Group label={t('common:footer-team')}>
+          <Link href='https://github.com/orgs/tutorbookapp'>
+            {t('common:footer-open-source')}
+          </Link>
+          <Link href='https://github.com/tutorbookapp/tutorbook#readme'>
+            {t('common:footer-docs')}
+          </Link>
           <Link href='https://join.slack.com/t/tutorbookapp/shared_invite/zt-ekmpvd9t-uzH_HuS6KbwVg480TAMa5g'>
             {t('common:footer-team-slack')}
           </Link>
