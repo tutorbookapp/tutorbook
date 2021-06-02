@@ -2,8 +2,10 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
+import { dequal } from 'dequal';
 import to from 'await-to-js';
 import { useRouter } from 'next/router';
+import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import SubjectSelect, { SubjectOption } from 'components/subject-select';
@@ -17,8 +19,10 @@ import { Person, Role } from 'lib/model/person';
 import { User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
+import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
+import { UsersQuery } from 'lib/model/query/users';
 import { getErrorMessage } from 'lib/fetch';
 import { loginWithGoogle } from 'lib/firebase/login';
 import { useOrg } from 'lib/context/org';
@@ -41,10 +45,27 @@ export default function RequestForm({
   const { query } = useRouter();
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
-
-  const [childName, setChildName] = useState<string>('');
-  const [childAge, setChildAge] = useState<number>();
+  const { data: children } = useSWR<ListUsersRes>(new UsersQuery({ parents: [user.id] }).endpoint);
+  
+  const [child, setChild] = useState<User>(new User());
   const [student, setStudent] = useState<string>('Me');
+  const [options, setOptions] = useState<Record<string, User>>({
+    'Me': user, 
+    'My child': child,
+  });
+  useEffect(() => {
+    setOptions((prev) => {
+      const kids = children?.users.map((u) => User.fromJSON(u)) || [];
+      const updated = {
+        'Me': user,
+        'My child': child,
+        ...Object.fromEntries(kids.map((u) => [u.name, u])),
+      };
+      if (dequal(updated, prev)) return prev;
+      return updated;
+    });
+  }, [user, child]);
+
   const [subjects, setSubjects] = useState<SubjectOption[]>([]);
   const [message, setMessage] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
@@ -125,31 +146,31 @@ export default function RequestForm({
         volunteerRoles.push('mentor');
         studentRoles.push('mentee');
       }
-      const people: Person[] = [
-        {
-          id: volunteer.id,
-          name: volunteer.name,
-          photo: volunteer.photo,
-          roles: volunteerRoles,
-        },
-      ];
+      const people: Person[] = [{
+        id: volunteer.id,
+        name: volunteer.name,
+        photo: volunteer.photo,
+        roles: volunteerRoles,
+      }];
       const creator: Person = {
         id: updatedUser.id,
         name: updatedUser.name,
         photo: updatedUser.photo,
         roles: [],
       };
-      if (student === 'My child') {
-        const child = new User({
-          parents: [updatedUser.id],
-          roles: studentRoles, // Specifying student roles skips signup emails.
-          name: childName,
-          age: childAge,
-        });
+      if (student === 'Me') {
+        creator.roles = studentRoles;
+        people.push(creator);
+      } else if (student === 'My child') {
+        const updatedChild = {
+          ...child.toJSON(),
+          roles: studentRoles, // Specifying roles skips signup emails.
+          parents: [updatedUser.id], // Use now-logged-in parent ID.
+        };
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
           AxiosError<APIErrorJSON>
-        >(axios.post('/api/users', child.toJSON()));
+        >(axios.post('/api/users', updatedChild));
         if (err) {
           setLoading(false);
           setError(getErrorMessage(err, 'creating child account', t));
@@ -159,15 +180,21 @@ export default function RequestForm({
           creator.roles = ['parent'];
           people.push(creator);
           people.push({
-            id: res.data.id || '',
-            name: res.data.name || '',
-            photo: res.data.photo || '',
+            id: res.data.id,
+            name: res.data.name,
+            photo: res.data.photo,
             roles: studentRoles,
           });
         }
       } else {
-        creator.roles = studentRoles;
+        creator.roles = ['parent'];
         people.push(creator);
+        people.push({
+          id: options[student].id,
+          name: options[student].name,
+          photo: options[student].photo,
+          roles: studentRoles,
+        });
       }
       const meeting = new Meeting({
         time,
@@ -194,16 +221,14 @@ export default function RequestForm({
     [
       user,
       student,
+      volunteer,
+      options,
+      child,
       org,
       time,
       message,
       subjects,
       aspects,
-      volunteer.id,
-      volunteer.name,
-      volunteer.photo,
-      childName,
-      childAge,
       phone,
       reference,
       updateUser,
@@ -217,20 +242,20 @@ export default function RequestForm({
   ]);
   const messagePlaceholder = useMemo(() => {
     const data = {
-      person: student === 'Me' ? 'I' : childName.split(' ')[0] || 'They',
+      person: student === 'Me' ? 'I' : options[student].firstName || 'They',
       subject: join(subjects.map((s) => s.label)) || 'Computer Science',
     };
     if (org?.booking[locale]?.message)
       return translate(org.booking[locale].message, data);
     return t('match3rd:message-placeholder', data);
-  }, [t, locale, org, student, subjects, childName]);
+  }, [t, locale, org, student, subjects, options]);
 
   return (
     <form className={styles.card} onSubmit={onSubmit}>
       <Loader active={loading} checked={checked} />
       <div className={styles.inputs}>
         <Select
-          options={['Me', 'My child']}
+          options={Object.keys(options)}
           value={student}
           onChange={(evt) => setStudent(evt.currentTarget.value)}
           label={t('match3rd:students')}
@@ -243,16 +268,22 @@ export default function RequestForm({
           <>
             <TextField
               label='Child name'
-              value={childName}
-              onChange={(evt) => setChildName(evt.currentTarget.value)}
+              value={child.name}
+              onChange={(evt) => {
+                const name = evt.currentTarget.value;
+                setChild((prev) => new User({ ...prev, name }));
+              }}
               className={styles.field}
               outlined
               required
             />
             <TextField
               label='Child age'
-              value={childAge}
-              onChange={(evt) => setChildAge(Number(evt.currentTarget.value))}
+              value={child.age}
+              onChange={(evt) => {
+                const age = Number(evt.currentTarget.value);
+                setChild((prev) => new User({ ...prev, age }));
+              }}
               className={styles.field}
               type='number'
               outlined
