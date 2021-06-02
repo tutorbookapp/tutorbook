@@ -16,6 +16,7 @@ import { Verification } from 'lib/model/verification';
 import clone from 'lib/utils/clone';
 import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';
+import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserDoc from 'lib/api/update/user-doc';
@@ -146,6 +147,11 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   ]);
 
   res.status(200).json(withAuthUpdate.toJSON());
+  segment.track({
+    userId: withAuthUpdate.id,
+    event: 'Account Updated',
+    properties: withAuthUpdate.toSegment(),
+  });
 }
 
 async function getAccount(req: Req, res: Res): Promise<void> {
@@ -153,6 +159,7 @@ async function getAccount(req: Req, res: Res): Promise<void> {
   res.statusCode = 302;
   res.setHeader('Location', `/api/users/${uid}`);
   res.end();
+  segment.track({ userId: uid, event: 'Account Fetched' });
 }
 
 /**
