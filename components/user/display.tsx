@@ -32,8 +32,8 @@ export default function UserDisplay({
   subjects,
 }: UserDisplayProps): JSX.Element {
   const { org } = useOrg();
+  const { orgs } = useUser();
   const { t, lang: locale } = useTranslation();
-  const { orgs, user: currentUser } = useUser();
 
   const admin = useMemo(() => orgs.some((o) => user?.orgs.includes(o.id)), [
     orgs,
@@ -78,7 +78,7 @@ export default function UserDisplay({
             {!!user && !user.socials.length && <span>No social profiles</span>}
           </div>
         </div>
-        {user && admin && currentUser.id !== user.id && (
+        {user && admin && (
           <div className={styles.contact}>
             {user.email && (
               <a
@@ -116,7 +116,7 @@ export default function UserDisplay({
             src={user?.photo}
             priority
           />
-          {user && admin && currentUser.id !== user.id && (
+          {user && admin && (
             <div className={styles.actions}>
               <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
                 <IconButton icon={<EditIcon />} label='Edit user' />
