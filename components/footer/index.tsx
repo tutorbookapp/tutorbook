@@ -38,20 +38,6 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
             </Link>
           ))}
         </Group>
-        <Group label={t('common:footer-resources')}>
-          <Link href='https://intercom.help/tutorbook'>
-            {t('common:footer-help-center')}
-          </Link>
-          <Link href='https://intercom.help/tutorbook/articles/4048870-how-it-works'>
-            {t('common:footer-how-it-works')}
-          </Link>
-          <Link href='https://github.com/orgs/tutorbookapp'>
-            {t('common:footer-open-source')}
-          </Link>
-          <Link href='https://github.com/tutorbookapp/tutorbook#readme'>
-            {t('common:footer-docs')}
-          </Link>
-        </Group>
         <Group label={t('common:footer-socials')}>
           <Link href='https://facebook.com/tutorbookapp'>
             {t('common:facebook')}
@@ -73,11 +59,11 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
           </Link>
         </Group>
         <Group label={t('common:footer-team')}>
-          <Link href='https://tutorbook.atlassian.net/wiki/spaces/TB/overview'>
-            {t('common:footer-team-home')}
+          <Link href='https://github.com/orgs/tutorbookapp'>
+            {t('common:footer-open-source')}
           </Link>
-          <Link href='https://tutorbook.atlassian.net/people'>
-            {t('common:footer-team-directory')}
+          <Link href='https://github.com/tutorbookapp/tutorbook#readme'>
+            {t('common:footer-docs')}
           </Link>
           <Link href='https://join.slack.com/t/tutorbookapp/shared_invite/zt-ekmpvd9t-uzH_HuS6KbwVg480TAMa5g'>
             {t('common:footer-team-slack')}
