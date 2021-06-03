@@ -3652,6 +3652,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@types/cookie@npm:0.4.0"
+  checksum: be9ef4172b97878fe38874c47d25bddcc58886fa4e621b3336bf2e08983763b5391a0d0b4ace34372adc3bd44da05ea9bcf885b0f5b5ab56bc72e0baba5e6346
+  languageName: node
+  linkType: hard
+
 "@types/d3-path@npm:^1":
   version: 1.0.9
   resolution: "@types/d3-path@npm:1.0.9"
@@ -6867,6 +6874,13 @@ __metadata:
   version: 0.4.0
   resolution: "cookie@npm:0.4.0"
   checksum: 7aaef4b642c533600fdd001d963a507dfcd814267503374e51d9743475d024feeff8b0b4ddd0777a25791a2efbdfd8bc4a0fe0696104efa195e8f8584807d410
+  languageName: node
+  linkType: hard
+
+"cookie@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "cookie@npm:0.4.1"
+  checksum: b8e0928e3e7aba013087974b33a6eec730b0a68b7ec00fc3c089a56ba2883bcf671252fc2ed64775aa1ca64796b6e1f6fdddba25a66808aef77614d235fd3e06
   languageName: node
   linkType: hard
 
@@ -17984,6 +17998,7 @@ resolve@^2.0.0-next.3:
     "@sendgrid/mail": ^7.2.2
     "@types/accept-language-parser": ^1.5.1
     "@types/analytics-node": ^3.1.4
+    "@types/cookie": ^0.4.0
     "@types/node": ^14.0.26
     "@types/nprogress": ^0.2.0
     "@types/phone": ^2.4.0
@@ -18005,6 +18020,7 @@ resolve@^2.0.0-next.3:
     classnames: ^2.2.6
     cli-progress: ^3.8.2
     concurrently: ^6.0.0
+    cookie: ^0.4.1
     cross-env: ^7.0.2
     csv: ^5.3.2
     csv-stringify: ^5.6.2

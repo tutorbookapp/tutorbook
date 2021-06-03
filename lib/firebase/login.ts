@@ -6,6 +6,8 @@ import to from 'await-to-js';
 import { User, UserInterface, UserJSON } from 'lib/model/user';
 import { APIErrorJSON } from 'lib/api/error';
 
+// TODO: This is very insecure; it allows anyone to create an account for and be
+// authenticated as anyone that they have contact info for.
 export async function login(user: User): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
@@ -27,15 +29,6 @@ export async function login(user: User): Promise<User> {
   return User.fromJSON(data);
 }
 
-/**
- * @todo Right now, we can only specify a single domain for GSuite users using
- * Google's OpenID `hd` parameter. That is not enough (e.g. PAUSD uses
- * `pausd.org` for teachers and `pausd.us` for students), so we merely fallback
- * to only showing GSuite accounts (guessing that most students and teachers
- * only have one).
- * @see {@link https://developers.google.com/identity/protocols/oauth2/openid-connect#authenticationuriparameters}
- * @see {@link https://firebase.google.com/docs/reference/js/firebase.auth.GoogleAuthProvider#setcustomparameters}
- */
 export async function loginWithGoogle(
   user?: User,
   gsuite?: boolean
@@ -46,6 +39,12 @@ export async function loginWithGoogle(
   const auth = firebase.auth();
   const provider = new firebase.auth.GoogleAuthProvider();
   if (gsuite) provider.setCustomParameters({ hd: '*' });
+  
+  // As httpOnly cookies are to be used, do not persist any state client side.
+  // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+  // TODO: Sign-in with redirect instead (less likely to be blocked).
   const cred = await auth.signInWithPopup(provider);
 
   if (!cred.user) throw new Error('Did not receive user information.');
@@ -59,23 +58,21 @@ export async function loginWithGoogle(
   };
   const signedInUser = new User({ ...user, ...firebaseUser });
 
-  await mutate('/api/account', signedInUser.toJSON(), false);
-
   // Create the Firestore profile document (we cannot call the `POST /api/users`
-  // endpoint because the Firebase Authentication account already exists).
+  // endpoint because the Firebase Authentication account already exists). This
+  // also sets the authentication cookie because we passed it the ID token.
+  const token = await cred.user.getIdToken();
   const [err, res] = await to<
     AxiosResponse<UserJSON>,
     AxiosError<APIErrorJSON>
-  >(axios.put('/api/account', signedInUser.toJSON()));
+  >(axios.put('/api/account', { ...signedInUser.toJSON(), token }));
 
   if (err && err.response) throw new Error(err.response.data.message);
   if (err && err.request) throw new Error('Users API did not respond.');
   if (err) throw new Error(`Error calling user API: ${err.message}`);
 
   const { data } = res as AxiosResponse<UserJSON>;
-  if (!dequal(data, signedInUser.toJSON())) {
-    await mutate('/api/account', data, false);
-  }
+  await mutate('/api/account', data, false);
 
   return User.fromJSON(data);
 }

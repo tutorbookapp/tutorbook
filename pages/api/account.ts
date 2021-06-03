@@ -1,5 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { dequal } from 'dequal/lite';
+import { serialize } from 'cookie';
 import to from 'await-to-js';
 
 import {
@@ -9,6 +10,8 @@ import {
   UserJSON,
   isUserJSON,
 } from 'lib/model/user';
+import { DecodedIdToken, auth } from 'lib/api/firebase';
+import { APIError } from 'lib/api/error';
 import { Availability } from 'lib/model/availability';
 import { SocialInterface } from 'lib/model/account';
 import { Timeslot } from 'lib/model/timeslot';
@@ -132,10 +135,36 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   // loss of data; `mergeUsers` won't allow falsy values or empty arrays).
   const merged = mergeUsers(body, original || new User());
 
-  // TODO: Check the existing data, not the data that is being sent with the
-  // request (e.g. b/c I could fake data and add users to my org).
-  await verifyAuth(req.headers, { userId: merged.id, orgIds: merged.orgs });
-
+  // Either:
+  // 1. Verify the user's authentication cookie (that this API endpoint sets).
+  // 2. Verify the user's ID token (sent when the user first logs in).
+  const [err] = await to(verifyAuth(req.headers, { userId: merged.id }));
+  if (err) {
+    // TODO: Guard against CSRF attacks (using a CSRF cookie token).
+    const jwt = body.token;
+    if (!jwt) throw new APIError('Could not find an auth cookie or JWT', 401);
+    
+    // Only process if the user just signed in in the last 5 minutes.
+    const [err, token] = await to<DecodedIdToken>(auth.verifyIdToken(jwt, true));
+    if (err) throw new APIError(`Your JWT is invalid: ${err.message}`, 401);
+    if (!token) throw new APIError('Could not decode your ID token', 401);
+    if (new Date().getTime() / 1000 - token.auth_time > 5 * 60) 
+      throw new APIError('A more recent login is required. Try again', 401);
+   
+    // Create and set a new session cookie that expires after 5 days.
+    const expiresIn = 5 * 24 * 60 * 60 * 1000;
+    const [e, cookie] = await to(auth.createSessionCookie(jwt, { expiresIn }));
+    if (e) throw new APIError('Could not create session cookie', 401);
+    res.setHeader(
+      'Set-Cookie',
+      serialize('session', cookie as string, {
+        maxAge: expiresIn,
+        httpOnly: true,
+        secure: true,
+      })
+    );
+  }
+  
   const withOrgsUpdate = updateUserOrgs(merged);
   const withTagsUpdate = updateUserTags(withOrgsUpdate);
   const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
