@@ -8,7 +8,7 @@ import Loader from 'components/loader';
 
 import { join, period } from 'lib/utils';
 import { User } from 'lib/model/user';
-import { signupWithGoogle } from 'lib/firebase/signup';
+import { loginWithGoogle } from 'lib/firebase/login';
 import { useOrg } from 'lib/context/org';
 import useTrack from 'lib/hooks/track';
 
@@ -27,7 +27,7 @@ export default function AuthDialog(): JSX.Element {
     track('Google Login Started');
     const user = new User({ orgs: org ? [org.id] : ['default'] });
     const gsuite = !!org && !!org.domains.length;
-    const [err] = await to(signupWithGoogle(user, gsuite));
+    const [err] = await to(loginWithGoogle(user, gsuite));
     if (err) {
       track('Google Login Errored', { error: period(err.message) });
       setLoggingIn(false);

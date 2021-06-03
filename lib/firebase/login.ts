@@ -6,7 +6,7 @@ import to from 'await-to-js';
 import { User, UserInterface, UserJSON } from 'lib/model/user';
 import { APIErrorJSON } from 'lib/api/error';
 
-export async function signup(user: User): Promise<User> {
+export async function login(user: User): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
 
@@ -36,7 +36,7 @@ export async function signup(user: User): Promise<User> {
  * @see {@link https://developers.google.com/identity/protocols/oauth2/openid-connect#authenticationuriparameters}
  * @see {@link https://firebase.google.com/docs/reference/js/firebase.auth.GoogleAuthProvider#setcustomparameters}
  */
-export async function signupWithGoogle(
+export async function loginWithGoogle(
   user?: User,
   gsuite?: boolean
 ): Promise<User> {

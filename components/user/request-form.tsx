@@ -20,7 +20,7 @@ import { APIErrorJSON } from 'lib/api/error';
 import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import { getErrorMessage } from 'lib/fetch';
-import { signupWithGoogle } from 'lib/firebase/signup';
+import { loginWithGoogle } from 'lib/firebase/login';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -88,7 +88,7 @@ export default function RequestForm({
       setLoading(true);
       let updatedUser = new User({ ...user, phone, reference });
       if (!user.id) {
-        const [err, signedUpUser] = await to(signupWithGoogle(updatedUser));
+        const [err, signedUpUser] = await to(loginWithGoogle(updatedUser));
         if (err) {
           setLoading(false);
           setError(
@@ -299,7 +299,7 @@ export default function RequestForm({
             <Button
               className={styles.btn}
               label={
-                !user.id ? t('match3rd:signup-btn') : t('match3rd:send-btn')
+                !user.id ? t('match3rd:login-btn') : t('match3rd:send-btn')
               }
               disabled={loading}
               google={!user.id}
@@ -349,7 +349,7 @@ export default function RequestForm({
             <Button
               className={styles.btn}
               label={
-                !user.id ? t('match3rd:signup-btn') : t('match3rd:send-btn')
+                !user.id ? t('match3rd:login-btn') : t('match3rd:send-btn')
               }
               disabled={loading}
               google={!user.id}

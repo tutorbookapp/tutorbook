@@ -11,7 +11,7 @@ import Button from 'components/button';
 import { APIErrorJSON } from 'lib/api/error';
 import getLocation from 'lib/utils/location';
 import { period } from 'lib/utils';
-import { signupWithGoogle } from 'lib/firebase/signup';
+import { loginWithGoogle } from 'lib/firebase/login';
 import useTrack from 'lib/hooks/track';
 
 import styles from './login.module.scss';
@@ -72,7 +72,7 @@ export default function Login(): JSX.Element {
   const loginWithGoogle = useCallback(async () => {
     setLoading(true);
     track('Google Login Started');
-    const [err] = await to(signupWithGoogle());
+    const [err] = await to(loginWithGoogle());
     if (err) {
       track('Google Login Errored', { error: period(err.message) });
       return setError(period(err.message));
