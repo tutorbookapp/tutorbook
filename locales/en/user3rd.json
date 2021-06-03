@@ -1,8 +1,7 @@
 {
   "update-btn": "Update profile",
   "create-btn": "Create profile",
-  "update-error": "An error occurred while updating profile. {{error}}",
-  "create-error": "An error occurred while creating profile. {{error}}",
+  "error": "Hmm, it looks like we hit a snag. {{error}}",
   "name": "Your name",
   "email": "Your email address",
   "phone": "Your phone number",

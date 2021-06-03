@@ -356,7 +356,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               />
               {!!error && (
                 <div data-cy='error' className={styles.error}>
-                  {t(`user3rd:${action}-error`, { error })}
+                  {t('user3rd:error', { error })}
                 </div>
               )}
             </div>

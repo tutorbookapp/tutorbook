@@ -8,5 +8,5 @@
   "login-header": "Login to {{name}}",
   "login-body": "You must be a part of {{name}} to see these search results. Please login with your {{domains}} email address and try again.",
   "login-btn": "Continue with Google",
-  "login-err": "An error occurred while logging in with Google. {{error}}"
+  "login-err": "Hmm, it looks like we hit a snag. {{error}}"
 }
