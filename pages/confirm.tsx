@@ -1,7 +1,6 @@
 import Router, { useRouter } from 'next/router';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { dequal } from 'dequal/lite';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
@@ -12,6 +11,7 @@ import Page from 'components/page';
 
 import { PageProps, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
+import { APIErrorJSON } from 'lib/api/error';
 import useLoginPage from 'lib/hooks/login-page';
 import { withI18n } from 'lib/intl';
 
@@ -42,8 +42,12 @@ function ConfirmPage(props: PageProps): JSX.Element {
     async function loginWithEmail(): Promise<void> {
       const { default: firebase } = await import('lib/firebase');
       await import('firebase/auth');
-
       const auth = firebase.auth();
+  
+      // As cookies are to be used, do not persist any state client side.
+      // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
+      auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+
       if (!auth.isSignInWithEmailLink(window.location.href))
         return setError(confirm['invalid-link']);
       const email = localStorage.getItem('email');
@@ -57,17 +61,26 @@ function ConfirmPage(props: PageProps): JSX.Element {
         email: cred.user.email as string,
         phone: cred.user.phoneNumber as string,
       });
-      await mutate('/api/account', user.toJSON(), false);
 
-      // Create the Firestore profile document (we cannot POST to `/api/users`
-      // endpoint because the Firebase Authentication account already exists).
-      const [createErr, res] = await to(
-        axios.put<UserJSON>('/api/account', user.toJSON())
-      );
-      if (createErr || !res) return setError(createErr?.message || '');
-      if (!dequal(res.data, user.toJSON()))
-        await mutate('/api/account', res.data, false);
+      // Create the Firestore profile document (we cannot call the 
+      // `POST /api/users` endpoint because the Firebase Authentication account 
+      // already exists). This also sets the authentication cookie because we 
+      // passed it the ID token.
+      const token = await cred.user.getIdToken();
+      const [err, res] = await to<
+        AxiosResponse<UserJSON>,
+        AxiosError<APIErrorJSON>
+      >(axios.put('/api/account', { ...user.toJSON(), token }));
 
+      let e: string | undefined;
+      if (err && err.response) e = err.response.data.message;
+      if (err && err.request) e = 'Users API did not respond.';
+      if (err) e = `Error calling user API: ${err.message}`;
+      if (e) return setError(e);
+      
+      const { data } = res as AxiosResponse<UserJSON>;
+      await mutate('/api/account', data, false);
+      
       return localStorage.removeItem('email');
     }
 

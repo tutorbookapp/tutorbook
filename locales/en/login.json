@@ -2,5 +2,5 @@
   "title": "Welcome",
   "google": "Continue with Google",
   "signup": "Don't have an account? Signup here",
-  "error": "An error occurred while logging in. {{error}}"
+  "error": "Hmm, it looks like we hit a snag. {{error}}"
 }

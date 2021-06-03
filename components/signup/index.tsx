@@ -18,7 +18,7 @@ import { User, UserJSON } from 'lib/model/user';
 import { Aspect } from 'lib/model/aspect';
 import { Availability } from 'lib/model/availability';
 import { ValidationsContext } from 'lib/context/validations';
-import { signup } from 'lib/firebase/signup';
+import { login } from 'lib/firebase/login';
 import useAnalytics from 'lib/hooks/analytics';
 import { useOrg } from 'lib/context/org';
 import useSingle from 'lib/hooks/single';
@@ -39,7 +39,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     async (updated: User) => {
       if (!updated.id) {
         track('User Signup Started', { ...updated.toSegment(), aspect });
-        const created = await signup(updated);
+        const created = await login(updated);
         track('User Signed Up', { ...created.toSegment(), aspect });
         return created;
       }
@@ -356,7 +356,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               />
               {!!error && (
                 <div data-cy='error' className={styles.error}>
-                  {t(`user3rd:${action}-error`, { error })}
+                  {t('user3rd:error', { error })}
                 </div>
               )}
             </div>

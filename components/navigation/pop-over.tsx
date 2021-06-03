@@ -1,4 +1,4 @@
-import { Fragment, ReactNode, useState } from 'react';
+import { Fragment, ReactNode, useCallback, useState } from 'react';
 import { MenuSurface, MenuSurfaceAnchor } from '@rmwc/menu';
 import { FormField } from '@rmwc/formfield';
 import { Ripple } from '@rmwc/ripple';
@@ -156,8 +156,19 @@ export default function PopOverMenu({
 }: PopOverMenuProps): JSX.Element {
   const { t } = useTranslation();
   const { user, updateUser, orgs } = useUser();
-
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
+  const logout = useCallback(async () => {
+    // TODO: Logging out when on the profile page which has a
+    // `useContinuous` hook attached to this user object doesn't work.
+    setLoggingOut(true);
+    await fetch('/api/logout');
+    // TODO: Set the default langs both here and in `pages/app` to be
+    // the current i18n locale (instead of just English by default).
+    await updateUser(new User({ langs: ['en'] }));
+    window.analytics?.reset();
+    Intercom('shutdown');
+    Intercom('boot');
+  }, []);
 
   return (
     <MenuSurfaceAnchor className={styles.anchor}>
@@ -210,23 +221,7 @@ export default function PopOverMenu({
           <div className={styles.line} />
           <DarkModeSwitch />
           <div className={styles.line} />
-          <PopOverButton
-            id='logout'
-            onClick={async () => {
-              // TODO: Logging out when on the profile page which has a
-              // `useContinuous` hook attached to this user object doesn't work.
-              setLoggingOut(true);
-              const { default: firebase } = await import('lib/firebase');
-              await import('firebase/auth');
-              await firebase.auth().signOut();
-              // TODO: Set the default langs both here and in `pages/app` to be
-              // the current i18n locale (instead of just English by default).
-              await updateUser(new User({ langs: ['en'] }));
-              window.analytics?.reset();
-              Intercom('shutdown');
-              Intercom('boot');
-            }}
-          >
+          <PopOverButton id='logout' onClick={logout}>
             {t(loggingOut ? 'common:logging-out' : 'common:logout')}
           </PopOverButton>
         </div>

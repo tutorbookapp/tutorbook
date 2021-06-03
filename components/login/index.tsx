@@ -11,7 +11,7 @@ import Button from 'components/button';
 import { APIErrorJSON } from 'lib/api/error';
 import getLocation from 'lib/utils/location';
 import { period } from 'lib/utils';
-import { signupWithGoogle } from 'lib/firebase/signup';
+import { loginWithGoogle } from 'lib/firebase/login';
 import useTrack from 'lib/hooks/track';
 
 import styles from './login.module.scss';
@@ -42,7 +42,7 @@ export default function Login(): JSX.Element {
   );
 
   const [email, setEmail] = useState<string>('');
-  const loginWithEmail = useCallback(
+  const withEmail = useCallback(
     async (evt: FormEvent) => {
       evt.preventDefault();
       setLoading(true);
@@ -69,10 +69,10 @@ export default function Login(): JSX.Element {
     [track, email, redirect, query.href]
   );
 
-  const loginWithGoogle = useCallback(async () => {
+  const withGoogle = useCallback(async () => {
     setLoading(true);
     track('Google Login Started');
-    const [err] = await to(signupWithGoogle());
+    const [err] = await to(loginWithGoogle());
     if (err) {
       track('Google Login Errored', { error: period(err.message) });
       return setError(period(err.message));
@@ -85,7 +85,7 @@ export default function Login(): JSX.Element {
       <div className={styles.content}>
         <h2>Welcome</h2>
         <Button
-          onClick={loginWithGoogle}
+          onClick={withGoogle}
           label='Continue with Google'
           disabled={loading}
           google
@@ -95,7 +95,7 @@ export default function Login(): JSX.Element {
         <div className={styles.divider}>
           <span>Or, sign in with your email</span>
         </div>
-        <form onSubmit={loginWithEmail}>
+        <form onSubmit={withEmail}>
           <TextField
             label='Your email address'
             placeholder='Ex: you@domain.com'
