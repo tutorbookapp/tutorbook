@@ -1,12 +1,9 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
-import {
-  UserJSON,
-  UsersQuery,
-  UsersQueryURL,
-  isUsersQueryURL,
-} from 'lib/model';
+import { User, UserJSON } from 'lib/model/user';
+import { UsersQuery, UsersQueryURL, isUsersQueryURL } from 'lib/model/query/users';
+import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUsers from 'lib/api/get/users';
 import { handle } from 'lib/api/error';
@@ -31,16 +28,27 @@ export default async function listUsers(
     );
     const { results, hits } = await getUsers(query);
 
-    // TODO: Don't completely error; instead, conditionally truncated users.
-    const [err, attrs] = await to(
-      verifyAuth(req.headers, { orgIds: query.orgs })
-    );
-    const users = err ? results.map(getTruncatedUser) : results;
+    // Conditionally truncate user data; only certain people can see others'
+    // sensitive contact info, full names, etc.
+    const [err, attrs] = await to(verifyAuth(req.headers));
+    let users: User[];
+    if (err) {
+      users = results.map(getTruncatedUser);
+    } else {
+      const { uid } = attrs as { uid: string };
+      const orgIds = (await getOrgsByAdminId(uid)).map((o) => o.id);
+      users = results.map((r) => {
+        if (r.id === uid) return r;
+        if (r.parents.includes(uid)) return r;
+        if (r.orgs.some((orgId) => orgIds.includes(orgId))) return r;
+        return getTruncatedUser(r);
+      });
+      
+      // TODO: Include the query info as event properties here.
+      segment.track({ userId: uid, event: 'Users Listed' });
+    }
 
     res.status(200).json({ hits, users: users.map((u) => u.toJSON()) });
-
-    if (attrs?.uid)
-      segment.track({ userId: attrs?.uid, event: 'Users Listed' });
   } catch (e) {
     handle(e, res);
   }
