@@ -46,7 +46,7 @@ export default function RequestForm({
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
   const { data: children } = useSWR<ListUsersRes>(user.id ? new UsersQuery({ parents: [user.id] }).endpoint : null);
-  
+    
   const [child, setChild] = useState<User>(new User());
   const [student, setStudent] = useState<string>('Me');
   const [options, setOptions] = useState<Record<string, User>>({
@@ -59,12 +59,12 @@ export default function RequestForm({
       const updated = {
         'Me': user,
         'My child': child,
-        ...Object.fromEntries(kids.map((u) => [u.name, u])),
+        ...Object.fromEntries(kids.map((u) => [u.firstName, u])),
       };
       if (dequal(updated, prev)) return prev;
       return updated;
     });
-  }, [user, child]);
+  }, [user, child, children]);
 
   const [subjects, setSubjects] = useState<SubjectOption[]>([]);
   const [message, setMessage] = useState<string>('');
