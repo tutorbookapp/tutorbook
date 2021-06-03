@@ -42,7 +42,7 @@ export default function Login(): JSX.Element {
   );
 
   const [email, setEmail] = useState<string>('');
-  const loginWithEmail = useCallback(
+  const withEmail = useCallback(
     async (evt: FormEvent) => {
       evt.preventDefault();
       setLoading(true);
@@ -69,7 +69,7 @@ export default function Login(): JSX.Element {
     [track, email, redirect, query.href]
   );
 
-  const loginWithGoogle = useCallback(async () => {
+  const withGoogle = useCallback(async () => {
     setLoading(true);
     track('Google Login Started');
     const [err] = await to(loginWithGoogle());
@@ -85,7 +85,7 @@ export default function Login(): JSX.Element {
       <div className={styles.content}>
         <h2>Welcome</h2>
         <Button
-          onClick={loginWithGoogle}
+          onClick={withGoogle}
           label='Continue with Google'
           disabled={loading}
           google
@@ -95,7 +95,7 @@ export default function Login(): JSX.Element {
         <div className={styles.divider}>
           <span>Or, sign in with your email</span>
         </div>
-        <form onSubmit={loginWithEmail}>
+        <form onSubmit={withEmail}>
           <TextField
             label='Your email address'
             placeholder='Ex: you@domain.com'
