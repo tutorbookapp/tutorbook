@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { dequal } from 'dequal/lite';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 
@@ -35,16 +34,15 @@ export async function loginWithGoogle(
 ): Promise<User> {
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
-
   const auth = firebase.auth();
-  const provider = new firebase.auth.GoogleAuthProvider();
-  if (gsuite) provider.setCustomParameters({ hd: '*' });
   
   // As httpOnly cookies are to be used, do not persist any state client side.
   // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+  auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
   // TODO: Sign-in with redirect instead (less likely to be blocked).
+  const provider = new firebase.auth.GoogleAuthProvider();
+  if (gsuite) provider.setCustomParameters({ hd: '*' });
   const cred = await auth.signInWithPopup(provider);
 
   if (!cred.user) throw new Error('Did not receive user information.');
