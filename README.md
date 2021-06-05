@@ -26,7 +26,12 @@
 
 **💥 Attention: This project needs your help! [Message
 me](mailto:nicholas@tutorbook.org) if you're interested in becoming a
-maintainer.**
+contributor.**
+
+**👨‍💻 Currently: Working on migrating from [Firebase](https://firebase.com) to 
+the open-source [Supabase](https://supabase.io) alternative.**
+
+## About Tutorbook
 
 [Tutorbook](https://tutorbook.org) is the best way to manage online tutoring
 and mentoring programs.
