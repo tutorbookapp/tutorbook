@@ -8,7 +8,8 @@ import {
   MeetingDisplay,
   P,
 } from 'lib/mail/components';
-import { Meeting, User } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
 export interface ReminderEmailProps {
