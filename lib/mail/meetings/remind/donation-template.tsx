@@ -33,13 +33,6 @@ export default function DonationEmail({
           <Link href='mailto:info@quarantuneslessons.com'>email us</Link>.
         </P>
         <P>
-          We are offering free access to an activity book from Solnote, a
-          nonprofit that helps under-priveleged children gain a music education.
-          By choosing to take lessons through QuaranTunes, you get exclusive
-          access to the book, which includes beginner activities for many
-          instruments. The password to access the book is SOLNOTE2020.
-        </P>
-        <P>
           This is just a reminder that every donation makes a difference. To
           donate, simply click the button below:
         </P>
