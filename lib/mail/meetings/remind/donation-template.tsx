@@ -12,23 +12,27 @@ import { join } from 'lib/utils';
 
 export interface DonationEmailProps {
   meeting: Meeting;
-  people: User[];
+  students: User[];
+  volunteer?: User;
 }
 
 export default function DonationEmail({
   meeting,
-  people,
+  students,
+  volunteer,
 }: DonationEmailProps): JSX.Element {
+  const subjects = join(meeting.match.subjects.map((s) => s.toLowerCase()));
+
   return (
     <Email>
       <Header />
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>
-          Hi {join(people.filter((p) => p.email).map((p) => p.firstName))},
+          Hi {join(students.filter((p) => p.email).map((p) => p.firstName))},
         </P>
         <P>
           Thank you for continuing lessons with us and for your continuous
-          support! If you are enjoying your lessons, we would really appreciate
+          support! {volunteer ? `If you enjoyed your ${subjects} lesson with ${volunteer.firstName}` : `If you are enjoying your ${subjects} lessons`}, we would really appreciate
           it if you would be willing to give a testimonial! If so, please{' '}
           <Link href='mailto:info@quarantuneslessons.com'>email us</Link>.
         </P>
