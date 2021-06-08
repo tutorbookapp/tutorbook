@@ -52,15 +52,7 @@ export default function DonationEmail({
         </P>
         <br />
         <P>
-          Thanks to your generosity, we have raised over $30,000 for the CDC
-          foundation to support COVID-related efforts. We have decided to switch
-          our charity to the Save the Music Foundation, a national organization
-          that partners with local communities and school districts to provide
-          instruments, invest in music technology, help teachers with curriculum
-          and professional development, and generally support music education in
-          public schools. With your help, we can give thousands of kids across
-          the country exposure to music in the same way that many of our
-          teachers were first able to.
+          All of our proceeds go directly to the Save the Music Foundation, a national organization that partners with local communities and school districts to provide instruments, invest in music technology, help teachers with curriculum and professional development, and generally support music education in public schools. With your help, we can give thousands of kids across the country exposure to music in the same way that many of our teachers were first able to.
         </P>
         <P>
           Thank you so much and we will keep in touch with you regarding future
