@@ -1,7 +1,7 @@
-import { Person } from 'lib/model/person';
-import { User } from 'lib/model/user';
 import { addRoles, join } from 'lib/utils';
 import { APIError } from 'lib/api/error';
+import { Person } from 'lib/model/person';
+import { User } from 'lib/model/user';
 import getUser from 'lib/api/get/user';
 
 /**

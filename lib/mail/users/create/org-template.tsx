@@ -8,7 +8,6 @@ import {
   P,
   UserDisplay,
 } from 'lib/mail/components';
-
 import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
 
