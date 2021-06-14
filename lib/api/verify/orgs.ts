@@ -1,5 +1,5 @@
 import { APIError } from 'lib/api/error';
-import { User } from 'lib/model/user';
+import { User } from 'lib/model';
 
 /**
  * Verifies that a user belongs to (at least one of) the specified org(s).

@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { OrgJSON } from 'lib/model/org';
+import { OrgJSON } from 'lib/model';
 import getOrg from 'lib/api/get/org';
 import { handle } from 'lib/api/error';
 import verifyQueryId from 'lib/api/verify/query-id';

@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Match, MatchJSON, isMatchJSON } from 'lib/model/match';
+import { Match, MatchJSON, isMatchJSON } from 'lib/model';
 import analytics from 'lib/api/analytics';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';

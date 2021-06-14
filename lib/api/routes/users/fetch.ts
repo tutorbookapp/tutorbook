@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
-import { UserJSON } from 'lib/model/user';
+import { UserJSON } from 'lib/model';
 import definedVals from 'lib/model/defined-vals';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';

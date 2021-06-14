@@ -1,5 +1,4 @@
-import { Timeslot } from 'lib/model/timeslot';
-import { User } from 'lib/model/user';
+import { Timeslot, User } from 'lib/model';
 
 /**
  * Verifies that the given times are included within the given people's

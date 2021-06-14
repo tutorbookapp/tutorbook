@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 
 import { APIError } from 'lib/api/error';
-import { Meeting } from 'lib/model/meeting';
+import { Meeting } from 'lib/model';
 import index from 'lib/api/algolia';
 
 export default async function updateMeetingSearchObj(

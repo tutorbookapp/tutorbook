@@ -8,9 +8,7 @@ import {
   MeetingDisplay,
   P,
 } from 'lib/mail/components';
-import { Meeting } from 'lib/model/meeting';
-import { Org } from 'lib/model/org';
-import { User } from 'lib/model/user';
+import { Meeting, Org, User } from 'lib/model';
 import { getEmailLink, getPhoneLink, join } from 'lib/utils';
 
 export interface MeetingEmailProps {

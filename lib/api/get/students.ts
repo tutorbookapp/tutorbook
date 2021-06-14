@@ -1,4 +1,4 @@
-import { User } from 'lib/model/user';
+import { User } from 'lib/model';
 
 /**
  * Gets the students from an array of people.

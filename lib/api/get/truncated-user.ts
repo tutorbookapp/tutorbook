@@ -1,4 +1,4 @@
-import { User } from 'lib/model/user';
+import { User } from 'lib/model';
 
 /**
  * For privacy reasons, we only add the user's first name and last initial to

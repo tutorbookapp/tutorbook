@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { Meeting } from 'lib/model/meeting';
-import { User } from 'lib/model/user';
+import { Meeting, User } from 'lib/model';
 import { join } from 'lib/utils';
 import send from 'lib/mail/send';
 

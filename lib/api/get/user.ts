@@ -1,5 +1,5 @@
 import { APIError } from 'lib/api/error';
-import { User } from 'lib/model/user';
+import { User } from 'lib/model';
 import { db } from 'lib/api/firebase';
 
 export default async function getUser(uid: string): Promise<User> {

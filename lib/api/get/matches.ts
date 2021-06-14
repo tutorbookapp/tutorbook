@@ -1,5 +1,4 @@
-import { Match } from 'lib/model/match';
-import { MatchesQuery } from 'lib/model/query/matches';
+import { Match, MatchesQuery } from 'lib/model';
 import { addOptionsFilter, list } from 'lib/api/search';
 
 export default async function getMatches(

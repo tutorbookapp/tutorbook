@@ -1,5 +1,5 @@
 import { DocumentSnapshot, db } from 'lib/api/firebase';
-import { Org } from 'lib/model/org';
+import { Org } from 'lib/model';
 
 /**
  * Fetches the orgs that a given user is an admin of.

@@ -7,8 +7,7 @@ import {
   Link,
   P,
 } from 'lib/mail/components';
-import { Meeting } from 'lib/model/meeting';
-import { User } from 'lib/model/user';
+import { Meeting, User } from 'lib/model';
 import { join } from 'lib/utils';
 
 export interface DonationEmailProps {

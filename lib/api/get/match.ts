@@ -1,5 +1,5 @@
 import { APIError } from 'lib/api/error';
-import { Match } from 'lib/model/match';
+import { Match } from 'lib/model';
 import { db } from 'lib/api/firebase';
 
 /**

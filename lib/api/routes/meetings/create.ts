@@ -2,8 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
 import { APIError, handle } from 'lib/api/error';
-import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
-import { Match } from 'lib/model/match';
+import { Match, Meeting, MeetingJSON, isMeetingJSON } from 'lib/model';
 import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';

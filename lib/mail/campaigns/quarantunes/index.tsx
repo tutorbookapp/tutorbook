@@ -2,7 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import Analytics from 'analytics-node';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { User } from 'lib/model/user';
+import { User } from 'lib/model';
 import { db } from 'lib/api/firebase';
 import send from 'lib/mail/send';
 
