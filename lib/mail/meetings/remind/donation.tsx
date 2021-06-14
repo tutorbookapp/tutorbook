@@ -10,11 +10,13 @@ export default async function sendDonationReminderEmails(
   meeting: Meeting,
   people: User[]
 ): Promise<void> {
+  const students = people.filter((p) => ['mentee', 'tutee', 'parent'].some((r) => p.roles.includes(r as Role)));
+  const volunteer = people.filter((p) => ['mentor', 'tutor'].some((r) => p.roles.includes(r as Role)))[0];
   return send({
-    to: people.map((p) => ({ name: p.name, email: p.email })),
+    to: students.map((p) => ({ name: p.name, email: p.email })),
     subject: 'Thank you for your continuous support!',
     html: renderToStaticMarkup(
-      <ReminderTemplate meeting={meeting} people={people} />
+      <ReminderTemplate meeting={meeting} students={students} volunteer={volunteer} />
     ),
   });
 }

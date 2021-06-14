@@ -13,32 +13,29 @@ import { join } from 'lib/utils';
 
 export interface DonationEmailProps {
   meeting: Meeting;
-  people: User[];
+  students: User[];
+  volunteer?: User;
 }
 
 export default function DonationEmail({
   meeting,
-  people,
+  students,
+  volunteer,
 }: DonationEmailProps): JSX.Element {
+  const subjects = join(meeting.match.subjects.map((s) => s.toLowerCase()));
+
   return (
     <Email>
       <Header />
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>
-          Hi {join(people.filter((p) => p.email).map((p) => p.firstName))},
+          Hi {join(students.filter((p) => p.email).map((p) => p.firstName))},
         </P>
         <P>
           Thank you for continuing lessons with us and for your continuous
-          support! If you are enjoying your lessons, we would really appreciate
+          support! {volunteer ? `If you enjoyed your ${subjects} lesson with ${volunteer.firstName}` : `If you are enjoying your ${subjects} lessons`}, we would really appreciate
           it if you would be willing to give a testimonial! If so, please{' '}
           <Link href='mailto:info@quarantuneslessons.com'>email us</Link>.
-        </P>
-        <P>
-          We are offering free access to an activity book from Solnote, a
-          nonprofit that helps under-priveleged children gain a music education.
-          By choosing to take lessons through QuaranTunes, you get exclusive
-          access to the book, which includes beginner activities for many
-          instruments. The password to access the book is SOLNOTE2020.
         </P>
         <P>
           This is just a reminder that every donation makes a difference. To
@@ -56,15 +53,7 @@ export default function DonationEmail({
         </P>
         <br />
         <P>
-          Thanks to your generosity, we have raised over $30,000 for the CDC
-          foundation to support COVID-related efforts. We have decided to switch
-          our charity to the Save the Music Foundation, a national organization
-          that partners with local communities and school districts to provide
-          instruments, invest in music technology, help teachers with curriculum
-          and professional development, and generally support music education in
-          public schools. With your help, we can give thousands of kids across
-          the country exposure to music in the same way that many of our
-          teachers were first able to.
+          All of our proceeds go directly to the Save the Music Foundation, a national organization that partners with local communities and school districts to provide instruments, invest in music technology, help teachers with curriculum and professional development, and generally support music education in public schools. With your help, we can give thousands of kids across the country exposure to music in the same way that many of our teachers were first able to.
         </P>
         <P>
           Thank you so much and we will keep in touch with you regarding future

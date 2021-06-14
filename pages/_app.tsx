@@ -15,29 +15,6 @@ import useTrack from 'lib/hooks/track';
 
 import 'styles/global.scss';
 
-// Installs a service worker and triggers an `/api/account` re-validation once
-// the service worker has been activated and is control of this page (i.e. once
-// the service worker can intercept our fetch requests and append the auth JWT).
-// @see {@link https://bit.ly/3gnChWt}
-async function installServiceWorker(): Promise<void> {
-  if ('serviceWorker' in navigator) {
-    await navigator.serviceWorker
-      .register('/sw.js', { scope: '/' })
-      .then((reg: ServiceWorkerRegistration) => {
-        reg.addEventListener('updatefound', () => {
-          const worker = reg.installing as ServiceWorker;
-          worker.addEventListener('statechange', () => {
-            if (worker.state === 'activated') {
-              void mutate('/api/account');
-            }
-          });
-        });
-      });
-  } else {
-    console.error('Service workers are disabled. Authentication will fail.');
-  }
-}
-
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
@@ -129,12 +106,6 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     },
     [orgs, loggedIn]
   );
-
-  // This service worker appends the Firebase Authentication JWT to all of our
-  // same-origin fetch requests. In the future, it'll handle caching as well.
-  useEffect(() => {
-    void installServiceWorker();
-  }, []);
 
   // Initially set theme using system preferences, cache settings when changed.
   const [theme, setTheme] = useState<Theme>(() => {

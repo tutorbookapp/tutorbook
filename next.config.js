@@ -1,8 +1,7 @@
 const path = require('path');
-const withImages = require('next-images');
 const { locales } = require('./lib/intl/config.json');
 
-module.exports = withImages({
+module.exports = {
   future: { webpack5: true },
   reactStrictMode: true,
   sassOptions: {
@@ -64,4 +63,4 @@ module.exports = withImages({
     }
     return config;
   },
-});
+};

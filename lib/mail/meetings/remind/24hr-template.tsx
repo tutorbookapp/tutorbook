@@ -32,8 +32,8 @@ export default function ReminderEmail({
           Hi {join(people.filter((p) => p.email).map((p) => p.firstName))},
         </P>
         <P>
-          This is just a friendly 24 hour reminder of your{' '}
-          {isTutoring ? 'tutoring lesson' : 'meeting'} together:
+          This is just a friendly reminder of your{' '}
+          {isTutoring ? 'tutoring lesson' : 'meeting'} tomorrow:
         </P>
         <MeetingDisplay
           show='description'

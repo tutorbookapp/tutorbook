@@ -6,12 +6,6 @@ import Spotlight from 'components/landing/spotlight';
 import { TabHeader } from 'components/navigation';
 import UseCases from 'components/landing/use-cases';
 
-import LandingImage from 'components/landing/imgs/landing.png';
-import MatchingImage from 'components/landing/imgs/matching.png';
-import SearchImage from 'components/landing/imgs/search.png';
-import SignupImage from 'components/landing/imgs/signup.png';
-import VettingImage from 'components/landing/imgs/vetting.png';
-
 import { PageProps, getPageProps } from 'lib/page';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
@@ -54,7 +48,7 @@ function OrgsPage(props: PageProps): JSX.Element {
         body='Customize a landing page for your organization to share on social media.'
         mp4='/demos/landing.mp4'
         webm='/demos/landing.webm'
-        img={LandingImage}
+        img='/imgs/landing.png'
       />
       <Spotlight
         num={2}
@@ -62,7 +56,7 @@ function OrgsPage(props: PageProps): JSX.Element {
         body='Onboard new volunteers via a fully customizable signup page.'
         mp4='/demos/signup.mp4'
         webm='/demos/signup.webm'
-        img={SignupImage}
+        img='/imgs/signup.png'
       />
       <Spotlight
         num={3}
@@ -70,7 +64,7 @@ function OrgsPage(props: PageProps): JSX.Element {
         body='Meet with new volunteers before adding them to your secure search view.'
         mp4='/demos/vetting.mp4'
         webm='/demos/vetting.webm'
-        img={VettingImage}
+        img='/imgs/vetting.png'
       />
       <Spotlight
         num={4}
@@ -78,7 +72,7 @@ function OrgsPage(props: PageProps): JSX.Element {
         body='Students can search your vetted volunteers and send them requests directly.'
         mp4='/demos/search.mp4'
         webm='/demos/search.webm'
-        img={SearchImage}
+        img='/imgs/search.png'
       />
       <Spotlight
         num={5}
@@ -86,7 +80,7 @@ function OrgsPage(props: PageProps): JSX.Element {
         body='Match volunteers and schedule meeting times via your admin dashboard.'
         mp4='/demos/matching.mp4'
         webm='/demos/matching.webm'
-        img={MatchingImage}
+        img='/imgs/matching.png'
       />
       <ContactCTA
         header='Student support at scale'

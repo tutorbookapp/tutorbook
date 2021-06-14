@@ -4,9 +4,6 @@ import SpotlightMsg from 'components/spotlight-msg';
 
 import { useUser } from 'lib/context/user';
 
-import OrgVetsVolunteer from './gifs/org-vets-volunteer.gif';
-import StudentRequests from './gifs/student-requests.gif';
-import VolunteerRegisters from './gifs/volunteer-registers.gif';
 import styles from './about.module.scss';
 
 export default function About(): JSX.Element {
@@ -29,7 +26,7 @@ export default function About(): JSX.Element {
           label={t('about:step-one-label')}
           headline={t('about:step-one-title')}
           body={t('about:step-one-body')}
-          img={VolunteerRegisters}
+          img='/gifs/volunteer-registers.gif'
           cta={{
             label: t('about:step-one-cta'),
             href: `/${user.orgs[0] || 'default'}/signup`,
@@ -40,7 +37,7 @@ export default function About(): JSX.Element {
           label={t('about:step-two-label')}
           headline={t('about:step-two-title')}
           body={t('about:step-two-body')}
-          img={OrgVetsVolunteer}
+          img='/gifs/org-vets-volunteer.gif'
           cta={{
             label: t('about:learn-more'),
             href: 'https://github.com/tutorbookapp/tutorbook/issues/75',
@@ -51,7 +48,7 @@ export default function About(): JSX.Element {
           label={t('about:step-three-label')}
           headline={t('about:step-three-title')}
           body={t('about:step-three-body')}
-          img={StudentRequests}
+          img='/gifs/student-requests.gif'
           cta={{
             label: t('about:step-three-cta'),
             href: `/${user.orgs[0] || 'default'}/search`,
