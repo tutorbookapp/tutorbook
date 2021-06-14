@@ -1,5 +1,5 @@
 import { APIError } from 'lib/api/error';
-import { Org } from 'lib/model';
+import { Org } from 'lib/model/org';
 
 export default function verifyIsOrgAdmin(org: Org, uid: string): void {
   if (!org.members.includes(uid)) {

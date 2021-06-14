@@ -1,4 +1,4 @@
-import { Meeting } from 'lib/model';
+import { Meeting } from 'lib/model/meeting';
 import { db } from 'lib/api/firebase';
 
 export default async function getMatchMeetings(

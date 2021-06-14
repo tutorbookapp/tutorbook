@@ -1,13 +1,15 @@
 import { RRule, RRuleSet } from 'rrule';
 import { nanoid } from 'nanoid';
 
-import { Meeting, MeetingsQuery, Timeslot } from 'lib/model';
 import {
   addArrayFilter,
   addOptionsFilter,
   addStringFilter,
   list,
 } from 'lib/api/search';
+import { Meeting } from 'lib/model/meeting';
+import { MeetingsQuery } from 'lib/model/query/meetings';
+import { Timeslot } from 'lib/model/timeslot';
 
 function getFilterStrings(query: MeetingsQuery): string[] {
   let str = query.org ? `match.org:${query.org}` : '';

@@ -1,6 +1,6 @@
 import { RRule, RRuleSet } from 'rrule';
 
-import { Timeslot } from 'lib/model';
+import { Timeslot } from 'lib/model/timeslot';
 
 /**
  * Get the last possible timeslot end time taking into account recurrence rules.
