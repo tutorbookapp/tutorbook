@@ -9,7 +9,7 @@ import Page from 'components/page';
 import { Match, MatchJSON } from 'lib/model/match';
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Org, OrgJSON } from 'lib/model/org';
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { APIError } from 'lib/api/error';
 import { OrgContext } from 'lib/context/org';
@@ -29,7 +29,7 @@ function MatchDisplayPage(props: PageProps): JSX.Element {
   const { data: match, error: matchError } = useSWR<MatchJSON, APIError>(
     typeof query.id === 'string' ? `/api/matches/${query.id}` : null
   );
-  const { data: people, error: peopleError } = useSWR<UserJSON[], APIError>(
+  const { data: people, error: peopleError } = useSWR<User[], APIError>(
     typeof query.id === 'string' ? `/api/matches/${query.id}/people` : null
   );
   const { data: meetings, error: meetingsError } = useSWR<

@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
 import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
@@ -16,7 +16,7 @@ import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyDocExists from 'lib/api/verify/doc-exists';
 
-export type UpdateUserRes = UserJSON;
+export type UpdateUserRes = User;
 
 export default async function updateUser(
   req: Req,

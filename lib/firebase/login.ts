@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 
-import { User, UserInterface, UserJSON } from 'lib/model/user';
+import { UserInterface, User } from 'lib/model/user';
 import { APIErrorJSON } from 'lib/api/error';
 
 // TODO: This is very insecure; it allows anyone to create an account for and be
@@ -13,7 +13,7 @@ export async function login(user: User): Promise<User> {
 
   const auth = firebase.auth();
   const [err, res] = await to<
-    AxiosResponse<UserJSON>,
+    AxiosResponse<User>,
     AxiosError<APIErrorJSON>
   >(axios.post('/api/users', user));
 
@@ -21,7 +21,7 @@ export async function login(user: User): Promise<User> {
   if (err && err.request) throw new Error('Users API did not respond.');
   if (err) throw new Error(`Error calling user API: ${err.message}`);
 
-  const { data } = res as AxiosResponse<UserJSON>;
+  const { data } = res as AxiosResponse<User>;
   await auth.signInWithCustomToken(data.token as string);
   await mutate('/api/account', data, false);
 
@@ -61,7 +61,7 @@ export async function loginWithGoogle(
   // also sets the authentication cookie because we passed it the ID token.
   const token = await cred.user.getIdToken();
   const [err, res] = await to<
-    AxiosResponse<UserJSON>,
+    AxiosResponse<User>,
     AxiosError<APIErrorJSON>
   >(axios.put('/api/account', { ...signedInUser, token }));
 
@@ -69,7 +69,7 @@ export async function loginWithGoogle(
   if (err && err.request) throw new Error('Users API did not respond.');
   if (err) throw new Error(`Error calling user API: ${err.message}`);
 
-  const { data } = res as AxiosResponse<UserJSON>;
+  const { data } = res as AxiosResponse<User>;
   await mutate('/api/account', data, false);
 
   return User.parse(data);

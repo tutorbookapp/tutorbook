@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
 import analytics from 'lib/api/analytics';
 import createAuthUser from 'lib/api/create/auth-user';
@@ -19,7 +19,7 @@ import updatePhoto from 'lib/api/update/photo';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserTags from 'lib/api/update/user-tags';
 
-export type CreateUserRes = UserJSON;
+export type CreateUserRes = User;
 
 export default async function createUser(
   req: Req,

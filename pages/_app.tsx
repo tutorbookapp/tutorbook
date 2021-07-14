@@ -8,7 +8,7 @@ import NProgress from 'components/nprogress';
 import { Org, OrgJSON } from 'lib/model/org';
 import { Theme, ThemeContext } from 'lib/context/theme';
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { APIError } from 'lib/api/error';
 import { accountToSegment } from 'lib/model/account';
 import { fetcher } from 'lib/fetch';
@@ -20,7 +20,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
   const userLoaded = useRef<boolean>(false);
-  const { data, error } = useSWR<UserJSON, APIError>('/api/account', fetcher);
+  const { data, error } = useSWR<User, APIError>('/api/account', fetcher);
   // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
   // effect from within the `withI18n` HOC) to properly set these `langs`.
   const user = useMemo(
@@ -68,7 +68,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       if (prev.timezone === timezone || !prev.id) return prev;
       const updated = User.parse({ ...prev, timezone });
-      void axios.put<UserJSON>('/api/account', updated);
+      void axios.put<User>('/api/account', updated);
       return updated;
     });
   }, [updateUser]);

@@ -15,7 +15,7 @@ import TimeSelect from 'components/time-select';
 
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Person, Role } from 'lib/model/person';
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { first, join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
@@ -123,7 +123,7 @@ export default function RequestForm({
         if (signedUpUser) updatedUser = signedUpUser;
       } else if (userMissingData) {
         const [err, res] = await to<
-          AxiosResponse<UserJSON>,
+          AxiosResponse<User>,
           AxiosError<APIErrorJSON>
         >(axios.put('/api/account', updatedUser));
         if (err) {
@@ -168,7 +168,7 @@ export default function RequestForm({
           parents: [updatedUser.id], // Use now-logged-in parent ID.
         };
         const [err, res] = await to<
-          AxiosResponse<UserJSON>,
+          AxiosResponse<User>,
           AxiosError<APIErrorJSON>
         >(axios.post('/api/users', updatedChild));
         if (err) {

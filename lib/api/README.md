@@ -15,7 +15,7 @@ functions in a certain order.
 For example, this could be the definition of the `POST /api/users` endpoint:
 
 ```typescript
-export type CreateUserRes = UserJSON;
+export type CreateUserRes = User;
 
 export default async function createUser(
   req: Req,

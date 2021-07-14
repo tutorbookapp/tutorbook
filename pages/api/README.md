@@ -104,7 +104,7 @@ Upon request, the `/api/user` serverless API function:
 
 ##### Response
 
-Responds with the created `User` document in JSON form (i.e. `UserJSON` that
+Responds with the created `User` document in JSON form (i.e. `User` that
 exactly matches what is now in our Firestore document-based NoSQL database).
 
 ### `/api/users/[id]`
@@ -123,7 +123,7 @@ Requires a JWT that belongs to either:
 
 ##### Response
 
-Responds with a `User` object in JSON form (i.e. `UserJSON`).
+Responds with a `User` object in JSON form (i.e. `User`).
 
 #### `PUT`
 

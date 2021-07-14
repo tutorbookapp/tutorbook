@@ -324,7 +324,7 @@ const deleteUser = async (uid, heads) => {
   if (err) console.error(`${err.name} deleting user (${uid}): ${err.message}`);
 };
 
-const convertToUserJSON = (userData) => {
+const convertToUser = (userData) => {
   const availability = (userData.availability || []).map((timeslot) => ({
     to: timeslot.to.toDate().toJSON(),
     from: timeslot.from.toDate().toJSON(),

@@ -2,7 +2,7 @@ import useSWR, { mutate } from 'swr';
 import { nanoid } from 'nanoid';
 import { useEffect } from 'react';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { useOrg } from 'lib/context/org';
@@ -28,7 +28,7 @@ export default function UserCarousel({ query, onClick }: Props): JSX.Element {
       {data && (
         <Carousel>
           {data.users
-            .map((u: UserJSON) => User.parse(u))
+            .map((u: User) => User.parse(u))
             .map((user: User) => (
               <UserCard
                 key={user.id}

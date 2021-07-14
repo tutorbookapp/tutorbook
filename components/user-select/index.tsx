@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Option } from 'lib/model/query/base';
@@ -53,7 +53,7 @@ export default function UserSelect({
   );
 
   // Call the `/api/users` API endpoint to get suggestions.
-  const userToOption = useCallback((user: User | UserJSON) => {
+  const userToOption = useCallback((user: User | User) => {
     const u = User.parse(user);
     cache.current[u.id] = { name: u.name, photo: u.photo };
     return { value: u.id, label: u.name, photo: u.photo };
@@ -75,7 +75,7 @@ export default function UserSelect({
         ));
       const suggestions: UserOption[] = [];
       (await Promise.all(promises)).forEach(({ data }) => {
-        data.users.forEach((u: UserJSON) => {
+        data.users.forEach((u: User) => {
           if (suggestions.findIndex(({ value: id }) => id === u.id) < 0)
             suggestions.push(userToOption(u));
         });
@@ -101,9 +101,9 @@ export default function UserSelect({
       // Otherwise, fetch the correct labels (i.e. the users's names) by
       // concurrently calling the `/api/users/[id]` for each `value`.
       const updateLabels = async () => {
-        const users: UserJSON[] = await Promise.all(
+        const users: User[] = await Promise.all(
           value.map(async (id) => {
-            const { data } = await axios.get<UserJSON>(`/api/users/${id}`);
+            const { data } = await axios.get<User>(`/api/users/${id}`);
             return data;
           })
         );

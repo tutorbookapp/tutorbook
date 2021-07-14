@@ -13,7 +13,7 @@ import UserDisplay from 'components/user/display';
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
@@ -31,7 +31,7 @@ import user3rd from 'locales/en/user3rd.json';
 // so as to avoid a flash of invalid data (e.g. locale codes instead of labels).
 interface UserDisplayPageProps extends PageProps {
   org?: OrgJSON;
-  user?: UserJSON;
+  user?: User;
   langs?: string[];
   subjects?: { [key in Aspect]: string[] };
 }
@@ -49,7 +49,7 @@ function UserDisplayPage({
   // That way, SWR will fetch the full user data while Next.js fetches the
   // static props and SWR will then ignore the truncated data.
   // @see {@link https://github.com/vercel/next.js/issues/19492}
-  const { data } = useSWR<UserJSON>(
+  const { data } = useSWR<User>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
     { initialData, revalidateOnMount: true }
   );

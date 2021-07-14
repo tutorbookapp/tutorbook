@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import Placeholder from 'components/placeholder';
 import Result from 'components/search/result';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { Callback } from 'lib/model/callback';
 import { ListUsersRes } from 'lib/api/routes/users/list';
@@ -66,7 +66,7 @@ export default memo(function ResultsList({
   return (
     <animated.div data-cy='results' className={styles.wrapper} style={props}>
       {!searching &&
-        (data?.users || []).map((user: UserJSON) => (
+        (data?.users || []).map((user: User) => (
           <Result
             href={`/${org?.id || ''}/users/${user.id}`}
             user={User.parse(user)}

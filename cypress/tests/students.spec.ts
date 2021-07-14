@@ -1,4 +1,4 @@
-import { UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
 import admin from 'cypress/fixtures/users/admin.json';
@@ -43,7 +43,7 @@ describe('Student landing page', () => {
     cy.wait('@list-users');
     cy.getBySel('user-card').should('have.length', 2).as('cards');
 
-    function isValidCard(idx: number, user: UserJSON): void {
+    function isValidCard(idx: number, user: User): void {
       cy.get('@cards')
         .eq(idx)
         .should('have.attr', 'href', `/default/users/${user.id}`)
@@ -58,8 +58,8 @@ describe('Student landing page', () => {
         });
     }
 
-    isValidCard(0, admin as UserJSON);
-    isValidCard(1, volunteer as UserJSON);
+    isValidCard(0, admin as User);
+    isValidCard(1, volunteer as User);
 
     // TODO: Remove this `click()` workaround b/c that's a bug in our front-end.
     // Instead, seed more user data so that we can actually click around and

@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
-import { UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
 import definedVals from 'lib/model/defined-vals';
 import getTruncatedUser from 'lib/api/get/truncated-user';
@@ -12,7 +12,7 @@ import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
-export type FetchUserRes = UserJSON;
+export type FetchUserRes = User;
 
 export default async function fetchUser(
   req: Req,

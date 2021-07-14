@@ -17,7 +17,7 @@ import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Check, Verification } from 'lib/model/verification';
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import useContinuous from 'lib/hooks/continuous';
@@ -45,7 +45,7 @@ export default function VerificationsTable({
 
   const updateRemote = useCallback(async (updated: User) => {
     const url = `/api/users/${updated.id}`;
-    const { data } = await axios.put<UserJSON>(url, updated);
+    const { data } = await axios.put<User>(url, updated);
     return User.parse(data);
   }, []);
   const updateLocal = useCallback(async (updated: User) => {
