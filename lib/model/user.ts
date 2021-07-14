@@ -95,4 +95,3 @@ export const User = Account.extend({
   hash: z.string().optional(),
 });
 export type User = z.infer<typeof User>;
-export type User = z.input<typeof User>;

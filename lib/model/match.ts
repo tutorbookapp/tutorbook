@@ -28,7 +28,6 @@ export const Match = Resource.extend({
   id: z.string().default(''),
 });
 export type Match = z.infer<typeof Match>;
-export type Match = z.input<typeof Match>;
 
 export function matchToSegment(match: Match): Record<string, unknown> {
   return { 

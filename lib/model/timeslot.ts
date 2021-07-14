@@ -25,7 +25,6 @@ export const Timeslot = z.object({
   last: date.optional(),
 });
 export type Timeslot = z.infer<typeof Timeslot>;
-export type Timeslot = z.input<typeof Timeslot>;
 
 export function timeslotToString(
   t: Timeslot,

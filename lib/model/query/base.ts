@@ -23,4 +23,3 @@ export const Query = z.object({
   page: number.default(0),
 });
 export type Query = z.infer<typeof Query>;
-export type QueryJSON = z.input<typeof Query>;
