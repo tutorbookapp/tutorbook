@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { Person } from 'lib/model/person';
 import { Resource } from 'lib/model/resource';
+import { join } from 'lib/utils';
 
 export const MatchTag = z.literal('meeting'); // Match has at least one meeting.
 export const MatchHitTag = z.union([MatchTag, z.literal('not-meeting')]);
@@ -34,5 +35,25 @@ export function matchToSegment(match: Match): Record<string, unknown> {
     id: match.id, 
     message: match.message, 
     subjects: match.subjects, 
+  };
+}
+
+export function matchToCSV(match: Match): Record<string, string> {
+  const volunteer = match.people.find((p) => p.roles.includes('tutor') || p.roles.includes('mentor'));
+  const student = match.people.find((p) => p.roles.includes('tutee') || p.roles.includes('mentee'));
+
+  return {
+    'Match ID': match.id,
+    'Match Subjects': join(match.subjects),
+    'Match Message': match.message,
+    'Match Tags': join(match.tags),
+    'Match Created': match.created.toString(),
+    'Match Last Updated': match.updated.toString(),
+    'Volunteer ID': volunteer?.id || '',
+    'Volunteer Name': volunteer?.name || '',
+    'Volunteer Photo URL': volunteer?.photo || '',
+    'Student ID': student?.id || '',
+    'Student Name': student?.name || '',
+    'Student Photo URL': student?.photo || '',
   };
 }

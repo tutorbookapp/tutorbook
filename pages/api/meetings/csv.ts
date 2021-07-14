@@ -4,6 +4,7 @@ import csv from 'lib/api/csv';
 import { decode } from 'lib/model/query/meetings';
 import getMeetings from 'lib/api/get/meetings';
 import { handle } from 'lib/api/error';
+import { meetingToCSV } from 'lib/model/meeting';
 import verifyAuth from 'lib/api/verify/auth';
 
 /**
@@ -22,21 +23,13 @@ export default async function meetings(
   }
   try {
     const query = decode(req.query as Record<string, string>);
-
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
     // when we scale up (and have orgs with more than 1000 meetings per week).
     query.hitsPerPage = 1000;
     query.org = query.org || 'default';
-
     await verifyAuth(req.headers, { orgIds: [query.org] });
-
     const { results } = await getMeetings(query);
-
-    csv(
-      res,
-      'meetings',
-      results.map((meeting) => meeting.toCSV())
-    );
+    csv(res, 'meetings', results.map(meetingToCSV));
   } catch (e) {
     handle(e, res);
   }

@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
-import { Match, matchToSegment } from 'lib/model/match';
+import { Match, matchToCSV, matchToSegment } from 'lib/model/match';
 import { Person } from 'lib/model/person';
 import { Resource } from 'lib/model/resource';
 import { Timeslot } from 'lib/model/timeslot';
 import { Venue } from 'lib/model/venue';
+import { join } from 'lib/utils';
 
 export const MeetingTag = z.literal('recurring'); // Meeting is recurring (has rrule).
 export const MeetingHitTag = z.union([MeetingTag, z.literal('not-recurring')]);
@@ -75,5 +76,18 @@ export function meetingToSegment(meeting: Meeting): Record<string, unknown> {
     start: meeting.time.from,
     end: meeting.time.to,
     match: matchToSegment(meeting.match),
+  };
+}
+
+export function meetingToCSV(meeting: Meeting): Record<string, string> {
+  return {
+    'Meeting ID': meeting.id,
+    'Meeting Description': meeting.description,
+    'Meeting Start': meeting.time.from.toString(),
+    'Meeting End': meeting.time.to.toString(),
+    'Meeting Tags': join(meeting.tags),
+    'Meeting Created': meeting.created.toString(),
+    'Meeting Last Updated': meeting.updated.toString(),
+    ...matchToCSV(meeting.match),
   };
 }

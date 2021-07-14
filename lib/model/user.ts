@@ -5,6 +5,7 @@ import { Aspect } from 'lib/model/aspect';
 import { Availability } from 'lib/model/availability';
 import { Role } from 'lib/model/person';
 import { Verification } from 'lib/model/verification';
+import { join } from 'lib/utils';
 
 /**
  * Various tags that are added to the Algolia users search during indexing (via
@@ -95,3 +96,31 @@ export const User = Account.extend({
   hash: z.string().optional(),
 });
 export type User = z.infer<typeof User>;
+
+export function userToCSV(user: User): Record<string, string> {
+  return {
+    'User ID': user.id,
+    'User Name': user.name,
+    'User Email': user.email,
+    'User Phone': user.phone,
+    'User Bio': user.bio,
+    'User Reference': user.reference,
+    'User Languages': join(user.langs),
+    'User Tags': join(user.tags),
+    'Mentoring Subjects': join(user.mentoring.subjects),
+    'Tutoring Subjects': join(user.tutoring.subjects),
+    'Mentoring Searches': join(user.mentoring.searches),
+    'Tutoring Searches': join(user.tutoring.searches),
+    'Profile Image URL': user.photo,
+    'Banner Image URL': user.background,
+    'Website URL': user.socials.find((s) => s.type === 'website')?.url || '',
+    'LinkedIn URL': user.socials.find((s) => s.type === 'linkedin')?.url || '',
+    'Twitter URL': user.socials.find((s) => s.type === 'twitter')?.url || '',
+    'Facebook URL': user.socials.find((s) => s.type === 'facebook')?.url || '',
+    'Instagram URL': user.socials.find((s) => s.type === 'instagram')?.url || '',
+    'GitHub URL': user.socials.find((s) => s.type === 'github')?.url || '',
+    'IndieHackers URL': user.socials.find((s) => s.type === 'indiehackers')?.url || '',
+    'User Created': user.created.toString(),
+    'User Last Updated': user.updated.toString(),
+  };
+}
