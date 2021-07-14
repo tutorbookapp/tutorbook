@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { MatchJSON } from 'lib/model/match';
+import { Match } from 'lib/model/match';
 import getMatch from 'lib/api/get/match';
 import { handle } from 'lib/api/error';
 import { matchToSegment } from 'lib/model/match';
@@ -8,7 +8,7 @@ import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
-export type FetchMatchRes = MatchJSON;
+export type FetchMatchRes = Match;
 
 export default async function fetchMatch(
   req: Req,

@@ -6,7 +6,7 @@ import { EmptyHeader } from 'components/navigation';
 import MatchDisplay from 'components/match/display';
 import Page from 'components/page';
 
-import { Match, MatchJSON } from 'lib/model/match';
+import { Match } from 'lib/model/match';
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Org, OrgJSON } from 'lib/model/org';
 import { User } from 'lib/model/user';
@@ -26,7 +26,7 @@ function MatchDisplayPage(props: PageProps): JSX.Element {
   const { data: org, error: orgError } = useSWR<OrgJSON, APIError>(
     typeof query.org === 'string' ? `/api/orgs/${query.org}` : null
   );
-  const { data: match, error: matchError } = useSWR<MatchJSON, APIError>(
+  const { data: match, error: matchError } = useSWR<Match, APIError>(
     typeof query.id === 'string' ? `/api/matches/${query.id}` : null
   );
   const { data: people, error: peopleError } = useSWR<User[], APIError>(
