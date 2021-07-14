@@ -12,7 +12,7 @@ import { percyHealthCheck } from '@percy/cypress/task';
 import { IntercomGlobal } from 'lib/intercom';
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
-import { OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
 
 import admin from 'cypress/fixtures/users/admin.json';
@@ -27,7 +27,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 // can't use any of the existing type annotations in our app source code.
 // @see {@link https://github.com/cypress-io/cypress/issues/7188}
 // @see {@link https://github.com/cypress-io/cypress/issues/7006}
-// import { Org, OrgJSON, User } from 'lib/model';
+// import { Org, User } from 'lib/model';
 
 // Follow the Next.js convention for loading `.env` files.
 // @see {@link https://nextjs.org/docs/basic-features/environment-variables}
@@ -78,8 +78,8 @@ const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 export interface Overrides {
   match?: Partial<Match> | null;
   meeting?: Partial<Meeting> | null;
-  org?: Partial<OrgJSON> | null;
-  school?: Partial<OrgJSON> | null;
+  org?: Partial<Org> | null;
+  school?: Partial<Org> | null;
   volunteer?: Partial<User> | null;
   student?: Partial<User> | null;
   admin?: Partial<User> | null;
@@ -188,9 +188,9 @@ export default function plugins(
       if (overrides.match === null) delete matches[0];
       matches = matches.filter(Boolean);
 
-      let orgs: OrgJSON[] = [];
-      orgs.push({ ...(org as OrgJSON), ...overrides.org });
-      orgs.push({ ...(school as OrgJSON), ...overrides.school });
+      let orgs: Org[] = [];
+      orgs.push({ ...(org as Org), ...overrides.org });
+      orgs.push({ ...(school as Org), ...overrides.school });
       if (overrides.org === null) delete orgs[0];
       if (overrides.school === null) delete orgs[1];
       orgs = orgs.filter(Boolean);

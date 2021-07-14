@@ -99,4 +99,4 @@ export const Org = Account.extend({
   }),
 });
 export type Org = z.infer<typeof Org>;
-export type OrgJSON = z.input<typeof Org>;
+export type Org = z.input<typeof Org>;

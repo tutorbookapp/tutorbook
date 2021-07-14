@@ -8,7 +8,7 @@ import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import UserVet from 'components/user/vet';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { User } from 'lib/model/user';
 import { OrgContext } from 'lib/context/org';
@@ -22,7 +22,7 @@ import user from 'locales/en/user.json';
 
 interface UserVetPageProps extends PageProps {
   user?: User;
-  org?: OrgJSON;
+  org?: Org;
 }
 
 function UserVetPage({

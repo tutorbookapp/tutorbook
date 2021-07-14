@@ -11,7 +11,7 @@ import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
 import { Aspect, isAspect } from 'lib/model/aspect';
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { User } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
@@ -30,7 +30,7 @@ import user3rd from 'locales/en/user3rd.json';
 // We send the `subjects` and `langs` of the user properly translated as props
 // so as to avoid a flash of invalid data (e.g. locale codes instead of labels).
 interface UserDisplayPageProps extends PageProps {
-  org?: OrgJSON;
+  org?: Org;
   user?: User;
   langs?: string[];
   subjects?: { [key in Aspect]: string[] };

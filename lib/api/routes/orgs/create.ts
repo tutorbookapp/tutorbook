@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { accountToSegment } from 'lib/model/account';
 import createOrgDoc from 'lib/api/create/org-doc';
 import { handle } from 'lib/api/error';
@@ -9,7 +9,7 @@ import updatePhoto from 'lib/api/update/photo';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyIsOrgAdmin from 'lib/api/verify/is-org-admin';
 
-export type CreateOrgRes = OrgJSON;
+export type CreateOrgRes = Org;
 
 export default async function createOrg(
   req: Req,

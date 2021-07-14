@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
-import { OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { useUser } from 'lib/context/user';
 
 import Group from './group';
@@ -10,7 +10,7 @@ import styles from './footer.module.scss';
 
 export interface FooterProps {
   formWidth?: boolean;
-  orgs?: OrgJSON[];
+  orgs?: Org[];
 }
 
 export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {

@@ -1,6 +1,6 @@
 import { GetStaticPathsResult } from 'next';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import supabase from 'lib/api/supabase';
 
 // Orgs must be optional because they are undefined when Next.js renders the
@@ -9,7 +9,7 @@ import supabase from 'lib/api/supabase';
 // See: https://github.com/vercel/next.js/issues/14200
 // See: https://github.com/vercel/next.js/issues/22507
 export interface PageProps {
-  orgs?: OrgJSON[];
+  orgs?: Org[];
 }
 
 export async function getPageProps(): Promise<{ props: PageProps }> {

@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import NProgress from 'components/nprogress';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { Theme, ThemeContext } from 'lib/context/theme';
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { User } from 'lib/model/user';
@@ -86,7 +86,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   }, [track, user, loggedIn]);
 
   // Consumers can update local app-wide org data (proxy to SWR's mutate FN).
-  const { data: orgsData } = useSWR<OrgJSON[], APIError>('/api/orgs', fetcher);
+  const { data: orgsData } = useSWR<Org[], APIError>('/api/orgs', fetcher);
   const orgs = useMemo(
     () => (orgsData ? orgsData.map((o) => Org.parse(o)) : []),
     [orgsData]
