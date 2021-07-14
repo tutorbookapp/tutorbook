@@ -11,7 +11,7 @@ import { percyHealthCheck } from '@percy/cypress/task';
 
 import { IntercomGlobal } from 'lib/intercom';
 import { Match } from 'lib/model/match';
-import { MeetingJSON } from 'lib/model/meeting';
+import { Meeting } from 'lib/model/meeting';
 import { OrgJSON } from 'lib/model/org';
 import { User } from 'lib/model/user';
 
@@ -77,7 +77,7 @@ const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 export interface Overrides {
   match?: Partial<Match> | null;
-  meeting?: Partial<MeetingJSON> | null;
+  meeting?: Partial<Meeting> | null;
   org?: Partial<OrgJSON> | null;
   school?: Partial<OrgJSON> | null;
   volunteer?: Partial<User> | null;
@@ -204,8 +204,8 @@ export default function plugins(
       if (overrides.admin === null) delete users[2];
       users = users.filter(Boolean);
 
-      let meetings: MeetingJSON[] = [];
-      meetings.push({ ...(meeting as MeetingJSON), ...overrides.meeting });
+      let meetings: Meeting[] = [];
+      meetings.push({ ...(meeting as Meeting), ...overrides.meeting });
       if (overrides.meeting === null) delete meetings[0];
       meetings = meetings.filter(Boolean);
 

@@ -67,7 +67,7 @@ export const Meeting = Resource.extend({
   id: z.string().default(''), 
 });
 export type Meeting = z.infer<typeof Meeting>;
-export type MeetingJSON = z.input<typeof Meeting>;
+export type Meeting = z.input<typeof Meeting>;
 
 export function meetingToSegment(meeting: Meeting): Record<string, unknown> {
   return {

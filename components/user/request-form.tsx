@@ -13,7 +13,7 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 import TimeSelect from 'components/time-select';
 
-import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Meeting } from 'lib/model/meeting';
 import { Person, Role } from 'lib/model/person';
 import { User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
@@ -208,7 +208,7 @@ export default function RequestForm({
         }),
       });
       const [err] = await to<
-        AxiosResponse<MeetingJSON>,
+        AxiosResponse<Meeting>,
         AxiosError<APIErrorJSON>
       >(axios.post('/api/meetings', meeting));
       if (err) {

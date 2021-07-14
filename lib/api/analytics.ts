@@ -1,6 +1,6 @@
 import { Analytics, TagTotals } from 'lib/model/analytics';
 import { MatchTag } from 'lib/model/match';
-import { Meeting, MeetingTag } from 'lib/model/meeting';
+import { MeetingTag } from 'lib/model/meeting';
 import { Role, isRole } from 'lib/model/person';
 import { UserTag } from 'lib/model/user';
 import { APIError } from 'lib/api/error';

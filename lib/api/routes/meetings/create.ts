@@ -3,7 +3,7 @@ import to from 'await-to-js';
 
 import { APIError, handle } from 'lib/api/error';
 import { Match, matchToSegment } from 'lib/model/match';
-import { Meeting, MeetingJSON, meetingToSegment } from 'lib/model/meeting';
+import { Meeting, meetingToSegment } from 'lib/model/meeting';
 import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
@@ -29,7 +29,7 @@ import verifyIsOrgAdmin from 'lib/api/verify/is-org-admin';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
-export type CreateMeetingRes = MeetingJSON;
+export type CreateMeetingRes = Meeting;
 
 export default async function createMeeting(
   req: Req,

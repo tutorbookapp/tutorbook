@@ -4,7 +4,7 @@ import { RRule } from 'rrule';
 import {
   Meeting,
   MeetingAction,
-  MeetingJSON,
+  Meeting,
   meetingToSegment
 } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
@@ -35,9 +35,9 @@ import verifyRecurIncludesTime from 'lib/api/verify/recur-includes-time';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
-export type UpdateMeetingRes = MeetingJSON;
+export type UpdateMeetingRes = Meeting;
 export interface UpdateMeetingOptions {
-  original: MeetingJSON;
+  original: Meeting;
   action: MeetingAction;
 }
 
