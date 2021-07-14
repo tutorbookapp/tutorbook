@@ -23,6 +23,7 @@ import { MatchesQuery, endpoint } from 'lib/model/query/matches';
 import { CallbackParam } from 'lib/model/callback';
 import Intercom from 'lib/intercom';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
+import { Match } from 'lib/model/match';
 import { useOrg } from 'lib/context/org';
 import useURLParamSync from 'lib/hooks/url-param-sync';
 import { useUser } from 'lib/context/user';
@@ -171,7 +172,7 @@ export default function Matches({
               <DataTableBody>
                 {!searching &&
                   (data?.matches || []).map((match) => (
-                    <MatchRow match={match} key={match.id} />
+                    <MatchRow match={Match.parse(match)} key={match.id} />
                   ))}
                 {searching && loadingRows}
               </DataTableBody>
@@ -184,7 +185,6 @@ export default function Matches({
           </div>
         )}
         <Pagination
-          model={MatchesQuery}
           setQuery={onQueryChange}
           query={query}
           hits={hits}

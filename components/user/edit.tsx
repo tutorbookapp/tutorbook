@@ -15,8 +15,9 @@ import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
-import { useOrg } from 'lib/context/org';
+import { first } from 'lib/utils';
 import useContinuous from 'lib/hooks/continuous';
+import { useOrg } from 'lib/context/org';
 import useSocialProps from 'lib/hooks/social-props';
 
 import styles from './edit.module.scss';
@@ -240,7 +241,7 @@ export default function UserEdit({
           <div className={styles.divider} />
           <div className={styles.inputs}>
             <VenueInput
-              name={user.firstName}
+              name={first(user.name)}
               label={t('user:venue')}
               value={user.venue}
               onChange={onVenueChange}
@@ -290,7 +291,7 @@ export default function UserEdit({
               }
               helpText={{
                 persistent: true,
-                children: t('common:bio-help', { name: `${user.firstName}'s` }),
+                children: t('common:bio-help', { name: `${first(user.name)}'s` }),
               }}
               value={user.bio}
               onChange={onBioChange}

@@ -2,6 +2,22 @@ import { Availability } from 'lib/model/availability';
 import { Timeslot } from 'lib/model/timeslot';
 
 /**
+ * @param a - The timeslot to check if it's overlapping with b.
+ * @param b - The timeslot to check if it's overlapping with a.
+ * @param [allowBackToBack] - If true, this will allow the timeslots to touch
+ * (but not overlap). Defaults to false.
+ * @return Whether or not a overlaps with b.
+ */
+export function overlaps(
+  a: { from: Date; to: Date },
+  b: { from: Date; to: Date },
+  allowBackToBack: boolean = false
+): boolean {
+  if (allowBackToBack) return a.to > b.from && a.from < b.to;
+  return a.to >= b.from && a.from <= b.to;
+}
+
+/**
  * Checks if two dates are a certain number of months apart.
  * @param date - One of the dates to compare.
  * @param [other] - The other date to compare (defaults to now).
@@ -229,7 +245,7 @@ export function getMonthsTimeslots(
           from: new Date(year, month, date, fromHrs, fromMins),
           to: new Date(year, month, date, toHrs, toMins),
         });
-        if (t.from >= from && t.to <= to && !booked?.overlaps(t, true))
+        if (t.from >= from && t.to <= to && !booked || !overlaps(booked, t, true))
           timeslots.push(t);
       }
       date += 1;
@@ -293,7 +309,7 @@ export function getAlgoliaAvailability(
       const to = new Date(from.valueOf() + timeslot.duration);
       // If any one of the time's instances in the next 3 months can be booked
       // (i.e. it's not already booked), we include the time in Algolia.
-      if (!booked.overlaps(Timeslot.parse({ from, to }), true)) return true;
+      if (!overlaps(booked, Timeslot.parse({ from, to }), true)) return true;
       from = new Date(from.valueOf() + 7 * 24 * 60 * 60 * 1000);
     }
     // Otherwise, we know that every single one of the time's instances in the

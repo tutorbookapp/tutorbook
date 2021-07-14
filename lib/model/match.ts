@@ -6,6 +6,8 @@ import { Resource } from 'lib/model/resource';
 export const MatchTag = z.literal('meeting'); // Match has at least one meeting.
 export const MatchHitTag = z.union([MatchTag, z.literal('not-meeting')]);
 export const MATCH_TAGS: z.infer<typeof MatchTag>[] = ['meeting'];
+export type MatchTag = z.infer<typeof MatchTag>;
+export type MatchHitTag = z.infer<typeof MatchHitTag>;
 
 /**
  * Represents a tutoring lesson or mentoring appointment.

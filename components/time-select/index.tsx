@@ -12,8 +12,8 @@ import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import useTranslation from 'next-translate/useTranslation';
 
+import { Timeslot, timeslotToString } from 'lib/model/timeslot';
 import { TCallback } from 'lib/model/callback';
-import { Timeslot } from 'lib/model/timeslot';
 import { useClickContext } from 'lib/hooks/click-outside';
 import { useUser } from 'lib/context/user';
 
@@ -102,7 +102,7 @@ function TimeSelect({
         readOnly
         textarea={false}
         inputRef={inputRef}
-        value={value?.toString(locale, user.timezone) || ''}
+        value={value ? timeslotToString(value, locale, user.timezone) : ''}
         className={styles.field}
         onFocus={() => {
           if (onFocused) onFocused();

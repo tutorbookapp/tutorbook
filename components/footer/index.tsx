@@ -34,7 +34,7 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
         <Group label={t('common:footer-orgs')}>
           {(orgs || []).map((org) => (
             <Link key={org.id} href={`/${org.id}`}>
-              {org.name}
+              {org.name || ''}
             </Link>
           ))}
         </Group>

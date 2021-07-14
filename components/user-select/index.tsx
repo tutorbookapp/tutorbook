@@ -53,7 +53,8 @@ export default function UserSelect({
   );
 
   // Call the `/api/users` API endpoint to get suggestions.
-  const userToOption = useCallback((u: User | UserJSON) => {
+  const userToOption = useCallback((user: User | UserJSON) => {
+    const u = User.parse(user);
     cache.current[u.id] = { name: u.name, photo: u.photo };
     return { value: u.id, label: u.name, photo: u.photo };
   }, []);

@@ -164,6 +164,13 @@ export function caps(str: string): string {
 }
 
 /**
+ * Get the user's first name.
+ */
+export function first(name: string): string {
+  return caps(name.split(' ')[0] || '');
+}
+
+/**
  * Helper function that returns the intersection of two given arrays (using
  * the given `compare` function to check if elements overlap).
  * @see {@link https://stackoverflow.com/a/16227294/10023158}

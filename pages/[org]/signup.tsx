@@ -9,9 +9,9 @@ import { AspectHeader, EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import Signup from 'components/signup';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
+import { Aspect } from 'lib/model/aspect';
 import { OrgContext } from 'lib/context/org';
 import supabase from 'lib/api/supabase';
 import usePage from 'lib/hooks/page';
@@ -22,7 +22,7 @@ import signup from 'locales/en/signup.json';
 import user3rd from 'locales/en/user3rd.json';
 
 interface SignupPageProps extends PageProps {
-  org?: OrgJSON;
+  org?: Org;
 }
 
 function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
@@ -36,7 +36,8 @@ function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
   usePage({ name: 'Org Signup', org: org?.id });
   useEffect(() => {
     setAspect((prev: Aspect) => {
-      const updated = isAspect(query.aspect) ? query.aspect : prev;
+      const { success } = Aspect.safeParse(query.aspect);
+      const updated = success ? Aspect.parse(query.aspect) : prev;
       if (org && !org.aspects.includes(updated)) return prev;
       return updated;
     });
@@ -73,7 +74,7 @@ export const getStaticProps: GetStaticProps<
   if (!data || !data[0]) return { notFound: true };
   const org = Org.parse(data[0]);
   const { props } = await getPageProps();
-  return { props: { org: org, ...props }, revalidate: 1 };
+  return { props: { org, ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SignupPageQuery> = async () => {

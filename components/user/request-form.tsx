@@ -17,7 +17,7 @@ import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Person, Role } from 'lib/model/person';
 import { User, UserJSON } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
-import { join, translate } from 'lib/utils';
+import { first, join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
 import { Aspect } from 'lib/model/aspect';
 import { ListUsersRes } from 'lib/api/routes/users/list';
@@ -59,7 +59,7 @@ export default function RequestForm({
       const updated = {
         'Me': user,
         'My child': child,
-        ...Object.fromEntries(kids.map((u) => [u.firstName, u])),
+        ...Object.fromEntries(kids.map((u) => [first(u.name), u])),
       };
       if (dequal(updated, prev)) return prev;
       return updated;
@@ -242,7 +242,7 @@ export default function RequestForm({
   ]);
   const messagePlaceholder = useMemo(() => {
     const data = {
-      person: student === 'Me' ? 'I' : options[student].firstName || 'They',
+      person: student === 'Me' ? 'I' : first(options[student].name) || 'They',
       subject: join(subjects.map((s) => s.label)) || 'Computer Science',
     };
     if (org?.booking[locale]?.message)

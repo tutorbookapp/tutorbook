@@ -96,7 +96,6 @@ export default function Search({
         )}
       </div>
       <Pagination
-        model={UsersQuery}
         setQuery={onChange}
         query={query}
         hits={hits}
