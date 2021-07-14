@@ -1,4 +1,4 @@
-import { TimeslotJSON } from 'lib/model/timeslot';
+import { Timeslot } from 'lib/model/timeslot';
 
 import volunteer from 'cypress/fixtures/users/volunteer.json';
 
@@ -186,7 +186,7 @@ describe('Profile page', () => {
     // a regular array when it is compiled by Cypress's test runner.
 
     const availabilityString = volunteer.availability
-      .map((timeslot: TimeslotJSON) => {
+      .map((timeslot: Timeslot) => {
         const from = new Date(timeslot.from);
         const to = new Date(timeslot.to);
 
@@ -232,7 +232,7 @@ describe('Profile page', () => {
 
     // Drag-and-drop the timeslots and assert that their content changes.
     // @see {@link https://bit.ly/2TIuE3i}
-    volunteer.availability.forEach((timeslot: TimeslotJSON, idx: number) => {
+    volunteer.availability.forEach((timeslot: Timeslot, idx: number) => {
       const config = { hour: 'numeric', minute: 'numeric' };
       cy.get('@timeslots')
         .eq(idx)
