@@ -20,7 +20,7 @@ import useTranslation from 'next-translate/useTranslation';
 import ChevronLeftIcon from 'components/icons/chevron-left';
 import ChevronRightIcon from 'components/icons/chevron-right';
 
-import { Availability, AvailabilityJSON } from 'lib/model/availability';
+import { Availability } from 'lib/model/availability';
 import {
   getDate,
   getDaysInMonth,
@@ -121,7 +121,7 @@ function SelectSurface({
     date,
   ]);
 
-  const { data } = useSWR<AvailabilityJSON>(
+  const { data } = useSWR<Availability>(
     uid ? `/api/users/${uid}/availability?month=${month}&year=${year}` : null
   );
   const full = useMemo(() => {
