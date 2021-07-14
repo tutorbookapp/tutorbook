@@ -7,7 +7,7 @@ import MatchDisplay from 'components/match/display';
 import Page from 'components/page';
 
 import { Match } from 'lib/model/match';
-import { Meeting, MeetingJSON } from 'lib/model/meeting';
+import { Meeting } from 'lib/model/meeting';
 import { Org, OrgJSON } from 'lib/model/org';
 import { User } from 'lib/model/user';
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
@@ -33,7 +33,7 @@ function MatchDisplayPage(props: PageProps): JSX.Element {
     typeof query.id === 'string' ? `/api/matches/${query.id}/people` : null
   );
   const { data: meetings, error: meetingsError } = useSWR<
-    MeetingJSON[],
+    Meeting[],
     APIError
   >(typeof query.id === 'string' ? `/api/matches/${query.id}/meetings` : null);
 

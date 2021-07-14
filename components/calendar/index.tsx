@@ -14,7 +14,7 @@ import to from 'await-to-js';
 
 import DialogContent from 'components/dialog';
 
-import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
+import { MeetingAction, Meeting } from 'lib/model/meeting';
 import { MeetingsQuery, endpoint } from 'lib/model/query/meetings';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
 import { APIErrorJSON } from 'lib/api/error';
@@ -138,14 +138,14 @@ export default function Calendar({
   const updateMeetingRemote = useCallback(
     async (updated: Meeting) => {
       if (updated.id.startsWith('temp')) {
-        const { data: createdMeeting } = await axios.post<MeetingJSON>(
+        const { data: createdMeeting } = await axios.post<Meeting>(
           '/api/meetings',
           updated
         );
         return Meeting.parse(createdMeeting);
       }
       const url = `/api/meetings/${updated.id}`;
-      const { data: updatedMeeting } = await axios.put<MeetingJSON>(url, {
+      const { data: updatedMeeting } = await axios.put<Meeting>(url, {
         ...updated,
         options: { action, original: original.current },
       });

@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
-import { Meeting, MeetingAction, MeetingJSON, meetingToSegment } from 'lib/model/meeting';
+import { MeetingAction, Meeting, meetingToSegment } from 'lib/model/meeting';
 import analytics from 'lib/api/analytics';
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
@@ -25,7 +25,7 @@ import verifyQueryId from 'lib/api/verify/query-id';
 
 export type DeleteMeetingRes = void;
 export interface DeleteMeetingOptions {
-  deleting: MeetingJSON;
+  deleting: Meeting;
   action: MeetingAction;
 }
 
