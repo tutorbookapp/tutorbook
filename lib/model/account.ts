@@ -53,7 +53,6 @@ export const Account = Resource.extend({
   socials: z.array(Social).default([]),
 });
 export type Account = z.infer<typeof Account>;
-export type AccountJSON = z.input<typeof Account>;
 
 export function accountToSegment(account: Account): Record<string, unknown> {
   return {
