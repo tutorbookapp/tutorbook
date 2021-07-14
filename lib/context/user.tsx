@@ -1,10 +1,10 @@
 import { createContext, useContext } from 'react';
 
-import { OrgInterface } from 'lib/model/org';
-import { UserInterface } from 'lib/model/user';
+import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 
-export type UpdateUserParam = UserInterface | ((prev: User) => UserInterface);
-export type UpdateOrgParam = OrgInterface | ((prev: Org) => OrgInterface);
+export type UpdateUserParam = User | ((prev: User) => User);
+export type UpdateOrgParam = Org | ((prev: Org) => Org);
 
 export interface UserContextValue {
   user: User;

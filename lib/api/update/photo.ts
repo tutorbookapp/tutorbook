@@ -6,9 +6,8 @@ import smartcrop from 'smartcrop-sharp';
 import to from 'await-to-js';
 import { v4 as uuid } from 'uuid';
 
-import { Account } from 'lib/model/account';
-import { Constructor } from 'lib/model/resource';
 import { APIError } from 'lib/api/error';
+import { Account } from 'lib/model/account';
 import { bucket } from 'lib/api/firebase';
 import clone from 'lib/utils/clone';
 import { getPhotoFilename } from 'lib/utils';
@@ -59,10 +58,7 @@ async function downloadPhoto(src: string): Promise<Buffer> {
  * @param account - The account whose photo we need to update.
  * @return Nothing; this performs side effects on the original account object.
  */
-export default async function updatePhoto<T extends Account>(
-  account: T,
-  Model: Constructor<T>
-): Promise<T> {
+export default async function updatePhoto<T extends Account>(account: T): Promise<T> {
   // Skip 'assets.tutorbook.org' photos that are used during integration tests.
   if (/test-tutorbook\.appspot\.com/.exec(account.photo)) return account;
   if (/assets\.tutorbook\.org/.exec(account.photo)) return account;
@@ -92,5 +88,5 @@ export default async function updatePhoto<T extends Account>(
     `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/` +
     `${encodeURIComponent(file.name)}?alt=media&token=${token}`;
 
-  return new Model(clone({ ...account, photo }));
+  return clone({ ...account, photo });
 }

@@ -35,7 +35,7 @@ export default async function createUser(
     // the auth API, however, so not ideal... perhaps I should assign uIDs).
     const withOrgsUpdate = updateUserOrgs(body);
     const withTagsUpdate = updateUserTags(withOrgsUpdate);
-    const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
+    const withPhotoUpdate = await updatePhoto(withTagsUpdate);
     const user = await createAuthUser(withPhotoUpdate);
 
     // We can perform all of these operations in parallel to speed up our API.

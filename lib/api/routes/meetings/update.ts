@@ -4,13 +4,14 @@ import { RRule } from 'rrule';
 import {
   Meeting,
   MeetingAction,
-  Meeting,
   meetingToSegment
 } from 'lib/model/meeting';
+import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import analytics from 'lib/api/analytics';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
+import { getDuration } from 'lib/utils/time';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import getOrg from 'lib/api/get/org';
@@ -58,10 +59,10 @@ export default async function updateMeeting(
     const beforeUpdateStart = new Date(options.original.time.from);
 
     const [meetingDoc] = await Promise.all([
-      verifyDocExists('meetings', body.parentId || body.id),
-      verifyDocExists('matches', body.match.id),
+      verifyDocExists<Meeting>('meetings', body.parentId || body.id),
+      verifyDocExists<Match>('matches', body.match.id),
     ]);
-    const original = Meeting.fromFirestoreDoc(meetingDoc);
+    const original = Meeting.parse(meetingDoc);
     const people = await getPeople(body.match.people);
 
     // TODO: Actually implement availability verification.
@@ -97,7 +98,7 @@ export default async function updateMeeting(
         // 2. Send the user the meeting instance they sent us.
         const change = body.time.from.valueOf() - beforeUpdateStart.valueOf();
         const from = new Date(original.time.from.valueOf() + change);
-        const to = new Date(from.valueOf() + body.time.duration);
+        const to = new Date(from.valueOf() + getDuration(body.time));
         const time = Timeslot.parse({ ...body.time, from, to });
 
         time.recur = verifyRecurIncludesTime(time);

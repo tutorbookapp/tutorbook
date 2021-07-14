@@ -1,20 +1,5 @@
 import { Meeting } from 'lib/model/meeting';
-
-/**
- * @param a - The timeslot to check if it's overlapping with b.
- * @param b - The timeslot to check if it's overlapping with a.
- * @param [allowBackToBack] - If true, this will allow the timeslots to touch
- * (but not overlap). Defaults to false.
- * @return Whether or not a overlaps with b.
- */
-export function overlaps(
-  a: { from: Date; to: Date },
-  b: { from: Date; to: Date },
-  allowBackToBack: boolean = false
-): boolean {
-  if (allowBackToBack) return a.to > b.from && a.from < b.to;
-  return a.to >= b.from && a.from <= b.to;
-}
+import { timeslotOverlaps } from 'lib/utils/time';
 
 // Expands events at the far right to use up any remaining
 // space. Returns the number of columns the event can
@@ -22,7 +7,7 @@ export function overlaps(
 export function expand(e: Meeting, colIdx: number, cols: Meeting[][]): number {
   let colSpan = 1;
   cols.slice(colIdx + 1).some((col) => {
-    if (col.some((evt) => overlaps(e.time, evt.time, true))) return true;
+    if (col.some((evt) => timeslotOverlaps(e.time, evt.time, true))) return true;
     colSpan += 1;
     return false;
   });
@@ -66,7 +51,7 @@ export function placeMeetings(meetings: Meeting[]): Meeting[][][][] {
         // Try to place the event inside an existing column.
         let placed = false;
         columns.some((col) => {
-          if (!overlaps(col[col.length - 1].time, e.time, true)) {
+          if (!timeslotOverlaps(col[col.length - 1].time, e.time, true)) {
             col.push(e);
             placed = true;
           }

@@ -1,12 +1,11 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { MatchesQuery, MatchesQueryURL, isMatchesQueryURL } from 'lib/model/query/matches';
 import { Match } from 'lib/model/match';
+import { decode } from 'lib/model/query/matches';
 import getMatches from 'lib/api/get/matches';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 export interface ListMatchesRes {
   matches: Match[];
@@ -18,12 +17,7 @@ export default async function listMatches(
   res: Res<ListMatchesRes>
 ): Promise<void> {
   try {
-    const query = verifyQuery<MatchesQuery, MatchesQueryURL>(
-      req.query,
-      isMatchesQueryURL,
-      MatchesQuery
-    );
-
+    const query = decode(req.query as Record<string, string>);
     const { uid } = await verifyAuth(req.headers, {
       userIds: query.people.map((p) => p.value),
       orgIds: query.org ? [query.org] : undefined,

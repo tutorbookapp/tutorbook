@@ -5,31 +5,32 @@ import to from 'await-to-js';
 import { APIError, handle } from 'lib/api/error';
 import { FirebaseError, auth } from 'lib/api/firebase';
 import LoginEmail from 'lib/mail/login';
-import { isJSON } from 'lib/model/json';
 import send from 'lib/mail/send';
 
 async function sendLoginLink(req: Req, res: Res<void>): Promise<void> {
-  if (!isJSON(req.body)) throw new APIError('Invalid request body', 400);
-  if (typeof req.body.email !== 'string')
+  if (typeof req.body !== 'object') 
+    throw new APIError('Invalid request body', 400);
+  const body = req.body as Record<string, unknown>;
+  if (typeof body.email !== 'string')
     throw new APIError('Request body must contain an email', 400);
-  if (typeof req.body.location !== 'string')
+  if (typeof body.location !== 'string')
     throw new APIError('Request body must contain a location', 400);
-  if (typeof req.body.redirect !== 'string')
+  if (typeof body.redirect !== 'string')
     throw new APIError('Request body must contain a redirect', 400);
   const actionCodeSettings = {
     url: `http://${
       req.headers.host || 'tutorbook.org'
-    }/confirm?href=${encodeURIComponent(req.body.redirect)}`,
+    }/confirm?href=${encodeURIComponent(body.redirect)}`,
   };
   const [err, link] = await to<string, FirebaseError>(
-    auth.generateSignInWithEmailLink(req.body.email, actionCodeSettings)
+    auth.generateSignInWithEmailLink(body.email, actionCodeSettings)
   );
   if (err) throw new APIError(`${err.name} creating link: ${err.message}`, 500);
   await send({
-    to: [{ email: req.body.email }],
-    subject: `Tutorbook Login Confirmation (${req.body.location}).`,
+    to: [{ email: body.email }],
+    subject: `Tutorbook Login Confirmation (${body.location}).`,
     html: renderToStaticMarkup(
-      <LoginEmail link={link as string} location={req.body.location} />
+      <LoginEmail link={link as string} location={body.location} />
     ),
   });
   res.status(200).end();

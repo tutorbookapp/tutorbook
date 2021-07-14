@@ -1,15 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import {
-  MeetingsQuery,
-  MeetingsQueryURL,
-  isMeetingsQueryURL,
-} from 'lib/model/query/meetings';
 import csv from 'lib/api/csv';
+import { decode } from 'lib/model/query/meetings';
 import getMeetings from 'lib/api/get/meetings';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 /**
  * GET - Downloads a CSV list of the filtered meetings.
@@ -25,13 +20,8 @@ export default async function meetings(
     res.status(405).end(`Method ${req.method as string} Not Allowed`);
     return;
   }
-
   try {
-    const query = verifyQuery<MeetingsQuery, MeetingsQueryURL>(
-      req.query,
-      isMeetingsQueryURL,
-      MeetingsQuery
-    );
+    const query = decode(req.query as Record<string, string>);
 
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
     // when we scale up (and have orgs with more than 1000 meetings per week).

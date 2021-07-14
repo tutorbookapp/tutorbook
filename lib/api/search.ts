@@ -71,7 +71,7 @@ export function addOptionsFilter(
  * @param indexId - The index to search without the env included (e.g. `users`).
  * @param query - Base query object to extract `page`, `hitsPerPage`, and a
  * text-based `search` (if any).
- * @param fromSearchHit - Method that converts search hit object to data model.
+ * @param parse - Method that converts search hit object to data model.
  * @param filterStrings - An array of Algolia-supported filter strings.
  * @param [optionalFilterStrings] - An array of optional filter strings.
  * @return Object with `hits` (the total number of results that fit the filters)
@@ -80,7 +80,7 @@ export function addOptionsFilter(
 export async function list<T, H = T>(
   indexId: string,
   { page, hitsPerPage, search }: Query,
-  fromSearchHit: (hit: H) => T,
+  parse: (hit: H) => T,
   filterStrings: string[],
   optionalFilters?: string
 ): Promise<{ results: T[]; hits: number }> {
@@ -93,7 +93,7 @@ export async function list<T, H = T>(
       filterStrings.map(async (filters) => {
         const options = { page, hitsPerPage, optionalFilters, filters };
         const res = await idx.search<H>(search, options);
-        res.hits.forEach((hit) => results.push(fromSearchHit(hit)));
+        res.hits.forEach((hit) => results.push(parse(hit)));
         hits += res.nbHits;
       })
     );

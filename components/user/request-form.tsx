@@ -302,7 +302,7 @@ export default function RequestForm({
           className={styles.field}
           onSelectedChange={setSubjects}
           selected={subjects}
-          options={volunteer.subjects}
+          options={[...new Set(volunteer.tutoring.subjects.concat(volunteer.mentoring.subjects))]}
           aspect={aspects.length === 1 ? aspects[0] : undefined}
         />
         <TimeSelect

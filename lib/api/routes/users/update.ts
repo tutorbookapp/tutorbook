@@ -33,11 +33,11 @@ export default async function updateUser(
       userId: body.id,
       orgIds: body.orgs,
     });
-    const originalDoc = await verifyDocExists('users', body.id);
+    const originalDoc = await verifyDocExists<User>('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
     const withTagsUpdate = updateUserTags(withOrgsUpdate);
-    const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
+    const withPhotoUpdate = await updatePhoto(withTagsUpdate);
     const user = await updateAuthUser(withPhotoUpdate);
 
     // TODO: If the user's name or photo has changed, update it across all
@@ -56,7 +56,7 @@ export default async function updateUser(
       properties: accountToSegment(user),
     });
 
-    await analytics(user, 'updated', User.fromFirestoreDoc(originalDoc));
+    await analytics(user, 'updated', originalDoc);
     await updateAvailability(user);
   } catch (e) {
     handle(e, res);

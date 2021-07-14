@@ -27,7 +27,7 @@ export function deleteObj(
   return promise;
 }
 
-export default function index<T extends { toSearchHit: () => object }>(
+export default function index<T>(
   indexId: string,
   obj: T
 ): WaitablePromise<PartialUpdateObjectResponse> {
@@ -35,7 +35,7 @@ export default function index<T extends { toSearchHit: () => object }>(
   // asynchronously (e.g. updating availability and tags in parallel).
   const idx = client.initIndex(`${prefix}-${indexId}`);
   const options = { createIfNotExists: true };
-  const promise = idx.partialUpdateObject(obj.toSearchHit(), options);
+  const promise = idx.partialUpdateObject(obj, options);
 
   // TODO: Test how much slower it is to actually wait for these operations. If
   // it isn't too much slower, we should do it by default (so we're testing the

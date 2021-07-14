@@ -22,6 +22,8 @@ export const SocialType = z.union([
   z.literal('github'),
   z.literal('indiehackers'),
 ]);
+export type SocialType = z.infer<typeof SocialType>;
+
 export const Social = z.object({
   type: SocialType,
   url: z.string(),

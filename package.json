@@ -20,7 +20,7 @@
     "build": "next build",
     "build:analyze": "cross-env ANALYZE=true next build",
     "build:functions": "cd firebase/functions && tsc",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "lint": "eslint --ext .ts,.tsx .",
     "style": "pretty-quick --staged"
   },
   "workspaces": [

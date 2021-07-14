@@ -8,8 +8,6 @@ import { DecodedIdToken, auth } from 'lib/api/firebase';
 import { Social, accountToSegment } from 'lib/model/account';
 import { Subjects, User } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
-import { Timeslot } from 'lib/model/timeslot';
-import { Verification } from 'lib/model/verification';
 import clone from 'lib/utils/clone';
 import getUser from 'lib/api/get/user';
 import segment from 'lib/api/segment';
@@ -32,19 +30,13 @@ function mergeSocials(
   return socials;
 }
 
-interface ModelInterface<T> {
-  new (model: T): T;
-}
-
 function mergeArrays<T>(
   overrides: T[],
   baseline: T[],
-  Model?: ModelInterface<T>
 ): T[] {
-  const merged = clone(overrides).map((m) => (Model ? new Model(m) : m));
+  const merged = clone(overrides);
   baseline.forEach((i) => {
-    if (!merged.some((im) => dequal(im, i)))
-      merged.push(Model ? new Model(clone(i)) : clone(i));
+    if (!merged.some((im) => dequal(im, i))) merged.push(clone(i));
   });
   return merged;
 }
@@ -54,7 +46,7 @@ function mergeAvailability(
   overrides: Availability,
   baseline: Availability
 ): Availability {
-  return Availability.parse(mergeArrays(overrides, baseline, Timeslot));
+  return Availability.parse(mergeArrays(overrides, baseline));
 }
 
 function mergeSubjects(overrides: Subjects, baseline: Subjects): Subjects {
@@ -88,7 +80,6 @@ function mergeUsers(overrides: User, baseline: User): User {
     venue: overrides.venue || baseline.venue,
     socials: mergeSocials(overrides.socials, baseline.socials),
     orgs: mergeArrays(overrides.orgs, baseline.orgs),
-    zooms: mergeArrays(overrides.zooms, baseline.zooms),
     availability: mergeAvailability(
       overrides.availability,
       baseline.availability
@@ -97,11 +88,7 @@ function mergeUsers(overrides: User, baseline: User): User {
     tutoring: mergeSubjects(overrides.tutoring, baseline.tutoring),
     langs: mergeArrays(overrides.langs, baseline.langs),
     parents: mergeArrays(overrides.parents, baseline.parents),
-    verifications: mergeArrays(
-      overrides.verifications,
-      baseline.verifications,
-      Verification
-    ),
+    verifications: mergeArrays(overrides.verifications, baseline.verifications),
     visible: overrides.visible || baseline.visible,
     featured: mergeArrays(overrides.featured, baseline.featured),
     roles: mergeArrays(overrides.roles, baseline.roles),
@@ -159,7 +146,7 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   
   const withOrgsUpdate = updateUserOrgs(merged);
   const withTagsUpdate = updateUserTags(withOrgsUpdate);
-  const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
+  const withPhotoUpdate = await updatePhoto(withTagsUpdate);
   const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
   await Promise.all([

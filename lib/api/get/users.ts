@@ -73,5 +73,5 @@ export default async function getUsers(
 ): Promise<{ hits: number; results: User[] }> {
   const filters = getFilterString(query);
   const optionalFilters = `featured:${query.aspect}`;
-  return list('users', query, User.fromSearchHit, [filters], optionalFilters);
+  return list('users', query, User.parse, [filters], optionalFilters);
 }

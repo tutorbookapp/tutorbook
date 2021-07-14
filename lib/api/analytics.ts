@@ -1,9 +1,9 @@
 import { Analytics, TagTotals } from 'lib/model/analytics';
-import { MatchTag } from 'lib/model/match';
-import { MeetingTag } from 'lib/model/meeting';
-import { Role, isRole } from 'lib/model/person';
-import { UserTag } from 'lib/model/user';
+import { Match, MatchTag } from 'lib/model/match';
+import { Meeting, MeetingTag } from 'lib/model/meeting';
+import { User, UserTag } from 'lib/model/user';
 import { APIError } from 'lib/api/error';
+import { Role } from 'lib/model/person';
 import { db } from 'lib/api/firebase';
 
 export type Action = 'created' | 'updated' | 'deleted';
@@ -16,9 +16,7 @@ async function getMostRecentAnalytics(orgId: string): Promise<Analytics> {
     .orderBy('date', 'desc')
     .limit(1)
     .get();
-  return snapshot.docs[0]
-    ? Analytics.fromFirestoreDoc(snapshot.docs[0])
-    : new Analytics();
+  return Analytics.parse(snapshot.docs[0] ? snapshot.docs[0].data() : {});
 }
 
 function updateTags<T extends UserTag | MatchTag | MeetingTag>(
@@ -30,7 +28,7 @@ function updateTags<T extends UserTag | MatchTag | MeetingTag>(
 ): void {
   // TODO: Get rid of this weird type cast. We should be able to assign to
   // `nums[key][tag]` directly (`nums[key]` should be of type `TagTotals<T>`).
-  const totals = (nums[key] as unknown) as TagTotals<string>;
+  const totals = (nums[key] as unknown) as TagTotals;
 
   // If resource was created (or added to org), increment totals.
   if (action === 'created') totals.total += 1;
@@ -38,7 +36,7 @@ function updateTags<T extends UserTag | MatchTag | MeetingTag>(
   // If resource was deleted (or removed from org), decrement totals.
   if (action === 'deleted') totals.total -= 1;
   currentTags.forEach((tag) => {
-    if (isRole(tag)) return;
+    if (Role.safeParse(tag).success) return;
 
     // If resource was created (or added to org), increment totals.
     if (action === 'created') totals[tag] += 1;
@@ -72,13 +70,13 @@ async function saveAnalytics(orgId: string, nums: Analytics): Promise<void> {
       .doc(orgId)
       .collection('analytics')
       .doc(nums.id)
-      .set(nums.toFirestore());
+      .set(nums);
   } else {
     // Otherwise, create a new analytics doc.
     const ref = db.collection('orgs').doc(orgId).collection('analytics').doc();
     nums.date = now;
     nums.id = ref.id;
-    await ref.set(nums.toFirestore());
+    await ref.set(nums);
   }
 }
 
@@ -95,38 +93,40 @@ export default async function analytics<T extends User | Match | Meeting>(
   action: Action,
   original: T = current
 ): Promise<void> {
-  if (current instanceof User && original instanceof User) {
+  if (User.safeParse(current).success && User.safeParse(original).success) {
+    const orig = User.parse(original);
+    const curr = User.parse(current);
     // If an update removes orgs, we want to decrement those orgs' statistics
-    // based on the original's tags.
-    const removedFromOrgs = original.orgs.filter(
-      (o) => !current.orgs.includes(o)
+    // based on the orig's tags.
+    const removedFromOrgs = orig.orgs.filter(
+      (o) => !curr.orgs.includes(o)
     );
     const removedPromises = removedFromOrgs.map(async (orgId) => {
       const nums = await getMostRecentAnalytics(orgId);
-      original.tags.filter(isRole).forEach((role) => {
-        updateTags(role, 'deleted', nums, original.tags);
+      orig.tags.filter((r) => Role.safeParse(r).success).forEach((role) => {
+        updateTags(Role.parse(role), 'deleted', nums, orig.tags);
       });
       await saveAnalytics(orgId, nums);
     });
 
     // If an update adds orgs, we want to increment those orgs' statistics
-    // based on the current tags.
-    const addedToOrgs = current.orgs.filter((o) => !original.orgs.includes(o));
+    // based on the curr tags.
+    const addedToOrgs = curr.orgs.filter((o) => !orig.orgs.includes(o));
     const addedPromises = addedToOrgs.map(async (orgId) => {
       const nums = await getMostRecentAnalytics(orgId);
-      current.tags.filter(isRole).forEach((role) => {
-        updateTags(role, 'created', nums, current.tags);
+      curr.tags.filter((r) => Role.safeParse(r).success).forEach((role) => {
+        updateTags(Role.parse(role), 'created', nums, curr.tags);
       });
       await saveAnalytics(orgId, nums);
     });
 
     // If an org was already there, we change those org's statistics based on
-    // the change between the original and current tags.
-    const existingOrgs = current.orgs.filter((o) => original.orgs.includes(o));
+    // the change between the orig and curr tags.
+    const existingOrgs = curr.orgs.filter((o) => orig.orgs.includes(o));
     const existingPromises = existingOrgs.map(async (orgId) => {
       const nums = await getMostRecentAnalytics(orgId);
-      current.tags.filter(isRole).forEach((role) => {
-        updateTags(role, action, nums, current.tags, original.tags);
+      curr.tags.filter((r) => Role.safeParse(r).success).forEach((role) => {
+        updateTags(Role.parse(role), action, nums, curr.tags, orig.tags);
       });
       await saveAnalytics(orgId, nums);
     });
@@ -136,16 +136,20 @@ export default async function analytics<T extends User | Match | Meeting>(
       ...removedPromises,
       ...addedPromises,
     ]);
-  } else if (current instanceof Match && original instanceof Match) {
+  } else if (Match.safeParse(current).success && Match.safeParse(original).success) {
+    const orig = Match.parse(original);
+    const curr = Match.parse(current);
     // TODO: Add edge cases when the orgs on a resource changes.
-    const nums = await getMostRecentAnalytics(current.org);
-    updateTags('match', action, nums, current.tags, original.tags);
-    await saveAnalytics(current.org, nums);
-  } else if (current instanceof Meeting && original instanceof Meeting) {
+    const nums = await getMostRecentAnalytics(curr.org);
+    updateTags('match', action, nums, curr.tags, orig.tags);
+    await saveAnalytics(curr.org, nums);
+  } else if (Meeting.safeParse(current).success && Meeting.safeParse(original).success) {
+    const orig = Meeting.parse(original);
+    const curr = Meeting.parse(current);
     // TODO: Add edge cases when the orgs on a resource changes.
-    const nums = await getMostRecentAnalytics(current.match.org);
-    updateTags('meeting', action, nums, current.tags, original.tags);
-    await saveAnalytics(current.match.org, nums);
+    const nums = await getMostRecentAnalytics(curr.match.org);
+    updateTags('meeting', action, nums, curr.tags, orig.tags);
+    await saveAnalytics(curr.match.org, nums);
   } else {
     throw new APIError('Analytics resource not a user/match/meeting.', 500);
   }

@@ -1,3 +1,4 @@
+import phone from 'phone';
 import to from 'await-to-js';
 
 import { FirebaseError, UserRecord, auth } from 'lib/api/firebase';
@@ -10,8 +11,6 @@ import clone from 'lib/utils/clone';
  * @param user - The user to update the account for.
  * @return Promise that resolves to the updated user; throws an `APIError` if we
  * were unable to update the Firebase Authentication account.
- * @todo Perhaps remove the `validatePhone` method as it isn't used anywhere
- * else besides here.
  * @todo Handle common Firebase Authentication errors such as
  * `auth/phone-number-already-exists` or `auth/email-already-exists`.
  * @todo Remove code duplication from the `createAuthUser` component fx.
@@ -20,7 +19,6 @@ import clone from 'lib/utils/clone';
  * add this functionality again?
  */
 export default async function updateAuthUser(user: User): Promise<User> {
-  await user.validatePhone();
   const [err, userRecord] = await to<UserRecord, FirebaseError>(
     auth.updateUser(user.id, {
       disabled: false,
@@ -28,7 +26,7 @@ export default async function updateAuthUser(user: User): Promise<User> {
       emailVerified: false,
       displayName: user.name,
       photoURL: user.photo || undefined,
-      phoneNumber: user.phone || undefined,
+      phoneNumber: phone(user.phone)[0],
     })
   );
   if (err) {

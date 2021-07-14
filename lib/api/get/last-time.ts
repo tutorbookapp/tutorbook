@@ -1,6 +1,7 @@
 import { RRule, RRuleSet } from 'rrule';
 
 import { Timeslot } from 'lib/model/timeslot';
+import { getDuration } from 'lib/utils/time';
 
 /**
  * Get the last possible timeslot end time taking into account recurrence rules.
@@ -16,6 +17,6 @@ export default function getLastTime(time: Timeslot): Date {
   rruleset.rrule(new RRule({ ...options, dtstart: time.from }));
   (time.exdates || []).forEach((d) => rruleset.exdate(d));
   return new Date(
-    (rruleset.all().pop() || time.from).valueOf() + time.duration
+    (rruleset.all().pop() || time.from).valueOf() + getDuration(time)
   );
 }

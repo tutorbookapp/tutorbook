@@ -4,6 +4,7 @@ import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 import send from 'lib/mail/send';
+import { timeslotToString } from 'lib/model/timeslot';
 
 import ReminderTemplate from './24hr-template';
 
@@ -16,7 +17,7 @@ export default async function send24hrReminderEmails(
 ): Promise<void> {
   const isTutoring = people.some((p) => p.roles.includes('tutor'));
   const noun = isTutoring ? 'tutoring lesson' : 'meeting';
-  const date = meeting.time.toString('en', people[0].timezone);
+  const date = timeslotToString(meeting.time, 'en', people[0].timezone);
   return send({
     to: people.map((p) => ({ name: p.name, email: p.email })),
     subject: `24-Hour Reminder: ${join(

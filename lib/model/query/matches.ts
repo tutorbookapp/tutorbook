@@ -12,17 +12,36 @@ export const MatchesQuery = Query.extend({
 });
 export type MatchesQuery = z.infer<typeof MatchesQuery>;
 
-export function endpoint(query: MatchesQuery, pathname = '/api/matches'): string {
-  function encode(p?: unknown): string {
+export function encode(query: MatchesQuery): Record<string, string> {
+  function json<T>(p: T[]): string {
     return encodeURIComponent(JSON.stringify(p));
   }
 
-  const params: Record<string, string | number> = {};
+  const params: Record<string, string> = {};
   if (query.search) params.search = encodeURIComponent(query.search);
-  if (query.hitsPerPage !== 10) params.hitsPerPage = query.hitsPerPage;
-  if (query.page !== 0) params.page = query.page;
+  if (query.hitsPerPage !== 10) params.hitsPerPage = `${query.hitsPerPage}`;
+  if (query.page !== 0) params.page = `${query.page}`;
   if (query.org) params.org = encodeURIComponent(query.org);
-  if (query.people.length) params.people = encode(query.people);
-  if (query.subjects.length) params.subjects = encode(query.subjects);
-  return url.format({ pathname, query: params });
+  if (query.people.length) params.people = json(query.people);
+  if (query.subjects.length) params.subjects = json(query.subjects);
+  return params;
+}
+
+export function decode(params: Record<string, string>): MatchesQuery {
+  function json<T>(p: string): T[] {
+    return JSON.parse(decodeURIComponent(p)) as T[];
+  }
+
+  const query = MatchesQuery.parse({});
+  if (params.search) query.search = decodeURIComponent(params.search);
+  if (params.hitsPerPage) query.hitsPerPage = Number(params.hitsPerPage);
+  if (params.page) query.page = Number(params.page);
+  if (params.org) query.org = decodeURIComponent(params.org);
+  if (params.people.length) query.people = json(params.people);
+  if (params.subjects.length) query.subjects = json(params.subjects);
+  return query;
+}
+
+export function endpoint(query: MatchesQuery, pathname = '/api/matches'): string {
+  return url.format({ pathname, query: encode(query) });
 }
