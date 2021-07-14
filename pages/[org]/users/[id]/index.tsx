@@ -10,12 +10,12 @@ import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
-import { Org } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
-import { User } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
+import { Aspect } from 'lib/model/aspect';
+import { Org } from 'lib/model/org';
 import { OrgContext } from 'lib/context/org';
+import { User } from 'lib/model/user';
 import getOrg from 'lib/api/get/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
@@ -85,7 +85,8 @@ function UserDisplayPage({
 
   const subjectsDisplayed = useMemo(() => {
     if (org?.aspects.length === 1) return subjects[org.aspects[0]];
-    if (isAspect(query.aspect)) return subjects[query.aspect];
+    if (Aspect.safeParse(query.aspect).success) 
+      return subjects[Aspect.parse(query.aspect)];
     // Many subjects can be both tutoring and mentoring subjects, thus we filter
     // for unique subjects (e.g. to prevent "Computer Science" duplications).
     const unique = new Set<string>();
