@@ -14,7 +14,7 @@ import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
 import VenueInput from 'components/venue-input';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { Aspect } from 'lib/model/aspect';
 import { Availability } from 'lib/model/availability';
 import { ValidationsContext } from 'lib/context/validations';
@@ -45,7 +45,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
         return created;
       }
       const url = `/api/users/${updated.id}`;
-      const { data } = await axios.put<UserJSON>(url, updated);
+      const { data } = await axios.put<User>(url, updated);
       track('User Updated', { ...accountToSegment(updated), aspect });
       return User.parse(data);
     },

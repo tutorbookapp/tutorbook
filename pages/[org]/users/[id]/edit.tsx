@@ -10,7 +10,7 @@ import UserEdit from 'components/user/edit';
 
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
 import getUser from 'lib/api/get/user';
@@ -21,7 +21,7 @@ import common from 'locales/en/common.json';
 import user from 'locales/en/user.json';
 
 interface UserEditPageProps extends PageProps {
-  user?: UserJSON;
+  user?: User;
   org?: OrgJSON;
 }
 
@@ -31,7 +31,7 @@ function UserEditPage({
   ...props
 }: UserEditPageProps): JSX.Element {
   const { query } = useRouter();
-  const { data } = useSWR<UserJSON>(
+  const { data } = useSWR<User>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
     { initialData, revalidateOnMount: true }
   );

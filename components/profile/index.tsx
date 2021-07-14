@@ -11,7 +11,7 @@ import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 import VenueInput from 'components/venue-input';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { accountToSegment } from 'lib/model/account';
 import useAnalytics from 'lib/hooks/analytics';
@@ -30,7 +30,7 @@ export default function Profile(): JSX.Element {
   const updateRemote = useCallback(
     async (updated: User) => {
       const url = `/api/users/${updated.id}`;
-      const { data } = await axios.put<UserJSON>(url, updated);
+      const { data } = await axios.put<User>(url, updated);
       track('Profile Updated', accountToSegment(updated));
       return User.parse(data);
     },

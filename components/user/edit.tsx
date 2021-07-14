@@ -13,7 +13,7 @@ import Result from 'components/search/result';
 import SubjectSelect from 'components/subject-select';
 import VenueInput from 'components/venue-input';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { first } from 'lib/utils';
 import useContinuous from 'lib/hooks/continuous';
@@ -37,11 +37,11 @@ export default function UserEdit({
   const updateRemote = useCallback(async (updated: User) => {
     if (updated.id.startsWith('temp')) {
       const json = { ...updated, id: '' };
-      const { data } = await axios.post<UserJSON>('/api/users', json);
+      const { data } = await axios.post<User>('/api/users', json);
       return User.parse(data);
     }
     const url = `/api/users/${updated.id}`;
-    const { data } = await axios.put<UserJSON>(url, updated);
+    const { data } = await axios.put<User>(url, updated);
     return User.parse(data);
   }, []);
 

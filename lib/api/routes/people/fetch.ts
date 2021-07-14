@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import getMatch from 'lib/api/get/match';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
@@ -10,7 +10,7 @@ import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
-export type FetchPeopleRes = UserJSON[];
+export type FetchPeopleRes = User[];
 
 export default async function fetchPeople(
   req: Req,

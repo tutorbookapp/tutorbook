@@ -6,7 +6,7 @@ import to from 'await-to-js';
 import { APIError, handle } from 'lib/api/error';
 import { DecodedIdToken, auth } from 'lib/api/firebase';
 import { Social, accountToSegment } from 'lib/model/account';
-import { Subjects, User, UserJSON } from 'lib/model/user';
+import { Subjects, User } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { Timeslot } from 'lib/model/timeslot';
 import { Verification } from 'lib/model/verification';

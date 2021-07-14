@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { UsersQuery, UsersQueryURL, isUsersQueryURL } from 'lib/model/query/users';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
 import getTruncatedUser from 'lib/api/get/truncated-user';
@@ -12,7 +12,7 @@ import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';
 
 export interface ListUsersRes {
-  users: UserJSON[];
+  users: User[];
   hits: number;
 }
 
