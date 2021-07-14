@@ -107,7 +107,7 @@ export default function SearchSelect({
       };
       void updateLabelsFromAlgolia();
       // Then, temporarily update the options based on locale codes and cache.
-      return value.map((id: T) => {
+      return value.map((id: string) => {
         if (cache.current[id]) return hitToOption(cache.current[id]);
         return { label: id, value: id };
       });

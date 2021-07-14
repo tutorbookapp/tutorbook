@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 import SearchSelect, { SearchSelectProps } from 'components/search-select';
 
 export type LangSelectProps = Omit<
-  SearchSelectProps<string>,
+  SearchSelectProps,
   'index' | 'noResultsMessage' | 'ref'
 >;
 

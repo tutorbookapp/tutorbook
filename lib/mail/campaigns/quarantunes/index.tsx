@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
+import { first } from 'lib/utils';
 import send from 'lib/mail/send';
 import supabase from 'lib/api/supabase';
 
@@ -29,7 +30,7 @@ export default async function quarantunes(req: Req, res: Res): Promise<void> {
       });
       const pixelData = Buffer.from(pixelJSON, 'utf-8').toString('base64');
       const pixel = `https://api.segment.io/v1/pixel/track?data=${pixelData}`;
-      const firstName = user.name.split(' ')[0] || user.name;
+      const firstName = first(user.name);
       return send({
         from: { name: 'Julia Segal', email: 'team@tutorbook.org' },
         bcc: { name: 'Tutorbook', email: 'team@tutorbook.org' },

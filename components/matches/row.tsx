@@ -2,13 +2,13 @@ import { DataTableCell, DataTableRow } from '@rmwc/data-table';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
-import { MatchJSON } from 'lib/model/match';
+import { Match } from 'lib/model/match';
 import { join } from 'lib/utils';
 
 import styles from './matches.module.scss';
 
 interface MatchRowProps {
-  match: MatchJSON;
+  match: Match;
 }
 
 export function MatchRow({ match }: MatchRowProps) {
