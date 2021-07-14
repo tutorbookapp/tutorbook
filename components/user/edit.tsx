@@ -64,7 +64,6 @@ export default function UserEdit({
     setUser,
     styles.field,
     'user',
-    User
   );
 
   const { org } = useOrg();

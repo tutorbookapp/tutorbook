@@ -56,7 +56,7 @@ export default function General(): JSX.Element {
     [setOrg]
   );
 
-  const getSocialProps = useSocialProps(org, setOrg, styles.field, 'org', Org);
+  const getSocialProps = useSocialProps(org, setOrg, styles.field, 'org');
 
   return (
     <div className={styles.card}>

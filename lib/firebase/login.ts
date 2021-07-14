@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { mutate } from 'swr';
 import to from 'await-to-js';
 
-import { UserInterface, User } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { APIErrorJSON } from 'lib/api/error';
 
 // TODO: This is very insecure; it allows anyone to create an account for and be
@@ -38,7 +38,7 @@ export async function loginWithGoogle(
   
   // As httpOnly cookies are to be used, do not persist any state client side.
   // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
-  auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+  await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
   // TODO: Sign-in with redirect instead (less likely to be blocked).
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -47,7 +47,7 @@ export async function loginWithGoogle(
 
   if (!cred.user) throw new Error('Did not receive user information.');
 
-  const firebaseUser: Partial<UserInterface> = {
+  const firebaseUser: Partial<User> = {
     id: cred.user.uid,
     name: cred.user.displayName as string,
     photo: cred.user.photoURL as string,

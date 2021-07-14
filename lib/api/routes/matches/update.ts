@@ -1,11 +1,10 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Match } from 'lib/model/match';
+import { Match, matchToSegment } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
-import { matchToSegment } from 'lib/model/match';
 import segment from 'lib/api/segment';
 import updateMatchDoc from 'lib/api/update/match-doc';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';

@@ -1,5 +1,6 @@
-import { v4 as uuid } from 'uuid';
+import phone from 'phone';
 import to from 'await-to-js';
+import { v4 as uuid } from 'uuid';
 
 import { FirebaseError, UserRecord, auth } from 'lib/api/firebase';
 import { APIError } from 'lib/api/error';
@@ -11,13 +12,10 @@ import clone from 'lib/utils/clone';
  * @param user - The user to create the account for.
  * @return Promise that resolves to the created user; throws an `APIError` if we
  * were unable to create the Firebase Authentication account.
- * @todo Perhaps remove the `validatePhone` method as it isn't used anywhere
- * else besides here.
  * @todo Handle common Firebase Authentication errors such as
  * `auth/phone-number-already-exists` or `auth/email-already-exists`.
  */
 export default async function createAuthUser(user: User): Promise<User> {
-  await user.validatePhone();
   const [err, userRecord] = await to<UserRecord, FirebaseError>(
     auth.createUser({
       disabled: false,
@@ -25,7 +23,7 @@ export default async function createAuthUser(user: User): Promise<User> {
       emailVerified: false,
       displayName: user.name,
       photoURL: user.photo || undefined,
-      phoneNumber: user.phone || undefined,
+      phoneNumber: phone(user.phone)[0],
     })
   );
   if (err) {

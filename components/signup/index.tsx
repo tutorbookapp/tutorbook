@@ -76,7 +76,6 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     setUser,
     styles.field,
     'user3rd',
-    User
   );
 
   useEffect(() => {

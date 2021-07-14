@@ -130,7 +130,6 @@ export default function Profile(): JSX.Element {
     setUser,
     styles.field,
     'user3rd',
-    User
   );
 
   return (

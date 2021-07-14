@@ -1,9 +1,8 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Availability } from 'lib/model/availability';
-import { handle } from 'lib/api/error';
 import getAvailability from 'lib/api/get/availability';
-import verifyAvailabilityQuery from 'lib/api/verify/availability-query';
+import { handle } from 'lib/api/error';
 import verifyQueryId from 'lib/api/verify/query-id';
 
 export type FetchAvailabilityRes = Availability;
@@ -18,7 +17,8 @@ export default async function fetchAvailability(
 ): Promise<void> {
   try {
     const id = verifyQueryId(req.query);
-    const { month, year } = verifyAvailabilityQuery(req.query);
+    const month = Number(req.query.month);
+    const year = Number(req.query.year);
     const availability = await getAvailability(id, month, year);
     res.status(200).json(availability);
   } catch (e) {

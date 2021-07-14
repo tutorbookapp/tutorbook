@@ -8,5 +8,5 @@ export default async function getMatches(
   let str = query.org ? `org:${query.org}` : '';
   str = addOptionsFilter(str, query.people, 'people.id', 'OR');
   str = addOptionsFilter(str, query.subjects, 'subjects', 'OR');
-  return list('matches', query, Match.fromSearchHit, [str]);
+  return list('matches', query, Match.parse, [str]);
 }

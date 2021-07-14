@@ -16,6 +16,7 @@ import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
 import { join, period } from 'lib/utils';
+import { timeslotToString } from 'lib/model/timeslot';
 import { useOrg } from 'lib/context/org';
 
 import styles from './display.module.scss';
@@ -166,7 +167,7 @@ export default function MatchDisplay({
                 <Trans
                   i18nKey='matches:event-meeting'
                   components={[<br />]}
-                  values={{ time: meeting.time.toString() }}
+                  values={{ time: timeslotToString(meeting.time) }}
                 />
               </Event>
             ))}

@@ -50,7 +50,8 @@ function FiltersSheet({
     [setQuery]
   );
   const onTagsChange = useCallback(
-    (tags: UserHitTag[]) => {
+    (updated: string[]) => {
+      const tags = updated as UserHitTag[];
       setQuery((prev) => UsersQuery.parse({ ...prev, tags, page: 0 }));
     },
     [setQuery]

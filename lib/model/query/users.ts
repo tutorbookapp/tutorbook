@@ -1,3 +1,5 @@
+import url from 'url';
+
 import { z } from 'zod';
 
 import { Option, Query } from 'lib/model/query/base';
@@ -35,7 +37,48 @@ export const UsersQuery = Query.extend({
 });
 export type UsersQuery = z.infer<typeof UsersQuery>;
 
-// TODO: Actually implement this endpoint conversion function.
+export function encode(query: UsersQuery): Record<string, string> {
+  function json<T>(p: T[]): string {
+    return encodeURIComponent(JSON.stringify(p));
+  }
+
+  const params: Record<string, string> = {};
+  if (query.search) params.search = encodeURIComponent(query.search);
+  if (query.hitsPerPage !== 20) params.hitsPerPage = `${query.hitsPerPage}`;
+  if (query.page !== 0) params.page = `${query.page}`;
+  if (query.parents.length) params.parents = json(query.parents);
+  if (query.orgs.length) params.orgs = json(query.orgs);
+  if (query.tags.length) params.tags = json(query.tags);
+  if (query.aspect !== 'tutoring') params.aspect = query.aspect;
+  if (query.langs.length) params.langs = json(query.langs);
+  if (query.subjects.length) params.subjects = json(query.subjects);
+  if (query.availability.length) params.availability = json(query.availability);
+  if (query.available === true) params.available = 'true';
+  if (typeof query.visible === 'boolean') params.visible = `${query.visible}`;
+  return params;
+}
+
+export function decode(params: Record<string, string>): UsersQuery {
+  function json<T>(p: string): T[] {
+    return JSON.parse(decodeURIComponent(p)) as T[];
+  }
+
+  const query = UsersQuery.parse({});
+  if (params.search) query.search = encodeURIComponent(params.search);
+  if (params.hitsPerPage) query.hitsPerPage = Number(params.hitsPerPage);
+  if (params.page) query.page = Number(params.page);
+  if (params.parents.length) query.parents = json(params.parents);
+  if (params.orgs.length) query.orgs = json(params.orgs);
+  if (params.tags.length) query.tags = json(params.tags);
+  if (params.aspect !== 'tutoring') query.aspect = Aspect.parse(params.aspect);
+  if (params.langs.length) query.langs = json(params.langs);
+  if (params.subjects.length) query.subjects = json(params.subjects);
+  if (params.availability.length) query.availability = json(params.availability);
+  if (params.available === 'true') query.available = true;
+  if (params.visible) query.visible = params.visible === 'true';
+  return query;
+}
+
 export function endpoint(query: UsersQuery, pathname = '/api/users'): string {
-  return pathname;
+  return url.format({ pathname, query: encode(query) });
 }

@@ -24,7 +24,7 @@ export default async function updateOrg(
     const { uid } = await verifyAuth(req.headers, { orgIds: [body.id] });
     const prev = await getOrg(body.id);
     verifyMembersUnchanged(prev, body);
-    const org = await updateOrgDoc(await updatePhoto(body, Org));
+    const org = await updateOrgDoc(await updatePhoto(body));
     res.status(200).json(org);
 
     // TODO: Use `segment.group` calls to associate all admins with updated org.

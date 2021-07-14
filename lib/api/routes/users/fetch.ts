@@ -3,7 +3,6 @@ import to from 'await-to-js';
 
 import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
-import definedVals from 'lib/model/defined-vals';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
 import getUserHash from 'lib/api/get/user-hash';
@@ -11,6 +10,18 @@ import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
+
+/**
+ * Converts a given data model object into a Firestore-valid datatype by
+ * removing any "undefined" values.
+ * @param obj - The data model to clean.
+ * @return The data model without any "undefined" properties.
+ */
+function definedVals<T>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, val]) => val !== undefined)
+  ) as T;
+}
 
 export type FetchUserRes = User;
 

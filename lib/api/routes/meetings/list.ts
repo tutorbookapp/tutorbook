@@ -1,12 +1,11 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { APIError, handle } from 'lib/api/error';
-import { MeetingsQuery, MeetingsQueryURL, isMeetingsQueryURL } from 'lib/model/query/meetings';
 import { Meeting } from 'lib/model/meeting';
+import { decode } from 'lib/model/query/meetings';
 import getMeetings from 'lib/api/get/meetings';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 export interface ListMeetingsRes {
   meetings: Meeting[];
@@ -18,11 +17,7 @@ export default async function listMeetings(
   res: Res<ListMeetingsRes>
 ): Promise<void> {
   try {
-    const query = verifyQuery<MeetingsQuery, MeetingsQueryURL>(
-      req.query,
-      isMeetingsQueryURL,
-      MeetingsQuery
-    );
+    const query = decode(req.query as Record<string, string>);
 
     // User must be either:
     // a) An org admin of the matches requested, OR;
