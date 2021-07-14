@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { accountToSegment } from 'lib/model/account';
 import getOrg from 'lib/api/get/org';
 import { handle } from 'lib/api/error';
@@ -10,7 +10,7 @@ import updatePhoto from 'lib/api/update/photo';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyMembersUnchanged from 'lib/api/verify/members-unchanged';
 
-export type UpdateOrgRes = OrgJSON;
+export type UpdateOrgRes = Org;
 
 // TODO: Add API route specs that define what is able to be changed and what is
 // not (e.g. here, you cannot change the org's members and for the `api/users`

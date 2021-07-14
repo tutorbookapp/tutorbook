@@ -8,7 +8,7 @@ import Page from 'components/page';
 
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { APIError } from 'lib/api/error';
@@ -23,7 +23,7 @@ import matches from 'locales/en/matches.json';
 function MatchDisplayPage(props: PageProps): JSX.Element {
   const { loggedIn } = useUser();
   const { query } = useRouter();
-  const { data: org, error: orgError } = useSWR<OrgJSON, APIError>(
+  const { data: org, error: orgError } = useSWR<Org, APIError>(
     typeof query.org === 'string' ? `/api/orgs/${query.org}` : null
   );
   const { data: match, error: matchError } = useSWR<Match, APIError>(

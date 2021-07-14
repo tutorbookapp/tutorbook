@@ -11,7 +11,7 @@ import Page from 'components/page';
 import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { CallbackParam } from 'lib/model/callback';
@@ -35,7 +35,7 @@ import query3rd from 'locales/en/query3rd.json';
 import search from 'locales/en/search.json';
 
 interface SearchPageProps extends PageProps {
-  org?: OrgJSON;
+  org?: Org;
 }
 
 function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {

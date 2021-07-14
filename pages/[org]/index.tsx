@@ -8,7 +8,7 @@ import { EmptyHeader } from 'components/navigation';
 import Home from 'components/home';
 import Page from 'components/page';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
 import supabase from 'lib/api/supabase';
@@ -19,7 +19,7 @@ import common from 'locales/en/common.json';
 import home from 'locales/en/home.json';
 
 interface HomePageProps extends PageProps {
-  org?: OrgJSON;
+  org?: Org;
 }
 
 function HomePage({ org: initialData, ...props }: HomePageProps): JSX.Element {

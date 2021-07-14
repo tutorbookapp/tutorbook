@@ -1,12 +1,12 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 
-export type ListOrgsRes = OrgJSON[];
+export type ListOrgsRes = Org[];
 
 /**
  * Lists the orgs that you are an admin of.

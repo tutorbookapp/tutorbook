@@ -7,7 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Header from 'components/header';
 
-import { Org, OrgJSON } from 'lib/model/org';
+import { Org } from 'lib/model/org';
 import useContinuous from 'lib/hooks/continuous';
 import { useUser } from 'lib/context/user';
 
@@ -36,7 +36,7 @@ export default function Settings({
   );
   const updateRemote = useCallback(async (updated: Org) => {
     const url = `/api/orgs/${updated.id}`;
-    const { data } = await axios.put<OrgJSON>(url, updated);
+    const { data } = await axios.put<Org>(url, updated);
     return Org.parse(data);
   }, []);
 
