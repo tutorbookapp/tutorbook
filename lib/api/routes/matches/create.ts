@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Match, MatchJSON, matchToSegment } from 'lib/model/match';
+import { Match, matchToSegment } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
@@ -17,7 +17,7 @@ import verifyAuth from 'lib/api/verify/auth';
 import verifyIsOrgAdmin from 'lib/api/verify/is-org-admin';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 
-export type CreateMatchRes = MatchJSON;
+export type CreateMatchRes = Match;
 
 /**
  * Creates a new match: A pairing of people (typically between a student and a

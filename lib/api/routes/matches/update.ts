@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Match, MatchJSON } from 'lib/model/match';
+import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
@@ -15,7 +15,7 @@ import verifyAuth from 'lib/api/verify/auth';
 import verifyDocExists from 'lib/api/verify/doc-exists';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 
-export type UpdateMatchRes = MatchJSON;
+export type UpdateMatchRes = Match;
 
 export default async function updateMatch(
   req: Req,

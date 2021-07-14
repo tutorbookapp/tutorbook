@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { MatchesQuery, MatchesQueryURL, isMatchesQueryURL } from 'lib/model/query/matches';
-import { MatchJSON } from 'lib/model/match';
+import { Match } from 'lib/model/match';
 import getMatches from 'lib/api/get/matches';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
@@ -9,7 +9,7 @@ import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';
 
 export interface ListMatchesRes {
-  matches: MatchJSON[];
+  matches: Match[];
   hits: number;
 }
 

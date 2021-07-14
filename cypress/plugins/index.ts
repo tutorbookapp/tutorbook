@@ -10,7 +10,7 @@ import firebase from 'firebase-admin';
 import { percyHealthCheck } from '@percy/cypress/task';
 
 import { IntercomGlobal } from 'lib/intercom';
-import { MatchJSON } from 'lib/model/match';
+import { Match } from 'lib/model/match';
 import { MeetingJSON } from 'lib/model/meeting';
 import { OrgJSON } from 'lib/model/org';
 import { User } from 'lib/model/user';
@@ -76,7 +76,7 @@ const matchesIdx = search.initIndex(`${prefix}-matches`);
 const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 export interface Overrides {
-  match?: Partial<MatchJSON> | null;
+  match?: Partial<Match> | null;
   meeting?: Partial<MeetingJSON> | null;
   org?: Partial<OrgJSON> | null;
   school?: Partial<OrgJSON> | null;
@@ -183,8 +183,8 @@ export default function plugins(
       return null;
     },
     async seed(overrides: Overrides = {}): Promise<null> {
-      let matches: MatchJSON[] = [];
-      matches.push({ ...(match as MatchJSON), ...overrides.match });
+      let matches: Match[] = [];
+      matches.push({ ...(match as Match), ...overrides.match });
       if (overrides.match === null) delete matches[0];
       matches = matches.filter(Boolean);
 
