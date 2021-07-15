@@ -37,8 +37,8 @@ export function decode(params: Record<string, string>): MatchesQuery {
   if (params.hitsPerPage) query.hitsPerPage = Number(params.hitsPerPage);
   if (params.page) query.page = Number(params.page);
   if (params.org) query.org = decodeURIComponent(params.org);
-  if (params.people.length) query.people = json(params.people);
-  if (params.subjects.length) query.subjects = json(params.subjects);
+  if (params.people) query.people = json(params.people);
+  if (params.subjects) query.subjects = json(params.subjects);
   return query;
 }
 

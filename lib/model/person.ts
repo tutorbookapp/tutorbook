@@ -25,7 +25,7 @@ export type Role = z.infer<typeof Role>;
 export const Person = z.object({
   id: z.string().default(''), 
   name: z.string().default(''), 
-  photo: z.string().url().default(''),
+  photo: z.string().default(''),
   roles: z.array(Role).default([]), 
 });
 export type Person = z.infer<typeof Person>;

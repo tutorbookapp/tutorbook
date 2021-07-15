@@ -46,12 +46,12 @@ export type Social = z.infer<typeof Social>;
 export const Account = Resource.extend({
   id: z.string().default(''),
   name: z.string().default(''),
-  photo: z.string().url().nullable().default(null).transform((s) => s || ''),
-  email: z.string().email().nullable().default(null).transform((s) => s || ''),
-  phone: z.string().regex(/^(\+\d{1,3})\d{10}$/).nullable().default(null).transform((s) => s || ''),
+  photo: z.string().url().nullable().default(null).transform((s) => s || '').or(z.literal('')),
+  email: z.string().email().nullable().default(null).transform((s) => s || '').or(z.literal('')),
+  phone: z.string().regex(/^(\+\d{1,3})\d{10}$/).nullable().default(null).transform((s) => s || '').or(z.literal('')),
   bio: z.string().default(''),
-  background: z.string().url().nullable().default(null).transform((s) => s || ''),
-  venue: z.string().url().nullable().default(null).transform((s) => s || ''),
+  background: z.string().url().nullable().default(null).transform((s) => s || '').or(z.literal('')),
+  venue: z.string().url().nullable().default(null).transform((s) => s || '').or(z.literal('')),
   socials: z.array(Social).default([]),
 });
 export type Account = z.infer<typeof Account>;

@@ -15,7 +15,7 @@ import to from 'await-to-js';
 import DialogContent from 'components/dialog';
 
 import { MeetingAction, Meeting } from 'lib/model/meeting';
-import { MeetingsQuery, endpoint } from 'lib/model/query/meetings';
+import { MeetingsQuery, decode, encode, endpoint } from 'lib/model/query/meetings';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
 import { APIErrorJSON } from 'lib/api/error';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
@@ -53,7 +53,7 @@ export default function Calendar({
   const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(MeetingsQuery.parse({}));
 
-  useURLParamSync(query, setQuery, MeetingsQuery, endpoint, byOrg ? ['org'] : ['people']);
+  useURLParamSync(query, setQuery, decode, encode, byOrg ? ['org'] : ['people']);
 
   const { org } = useOrg();
   const { user } = useUser();
