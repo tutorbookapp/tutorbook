@@ -47,7 +47,7 @@ export function decode(params: Record<string, string>): MeetingsQuery {
   if (params.search) query.search = decodeURIComponent(params.search);
   if (params.hitsPerPage) query.hitsPerPage = Number(params.hitsPerPage);
   if (params.page) query.page = Number(params.page);
-  if (params.tags.length) query.tags = json(params.tags);
+  if (params.tags) query.tags = json(params.tags);
   query.from = new Date(params.from);
   query.to = new Date(params.to);
   return query;

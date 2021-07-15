@@ -19,7 +19,7 @@ import Header from 'components/header';
 import Pagination from 'components/pagination';
 import Placeholder from 'components/placeholder';
 
-import { MatchesQuery, endpoint } from 'lib/model/query/matches';
+import { MatchesQuery, decode, encode, endpoint } from 'lib/model/query/matches';
 import { CallbackParam } from 'lib/model/callback';
 import Intercom from 'lib/intercom';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
@@ -56,7 +56,7 @@ export default function Matches({
   const [query, setQuery] = useState<MatchesQuery>(MatchesQuery.parse({}));
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
-  useURLParamSync(query, setQuery, MatchesQuery, endpoint, byOrg ? ['org'] : ['people']);
+  useURLParamSync(query, setQuery, decode, encode, byOrg ? ['org'] : ['people']);
 
   const onQueryChange = useCallback((param: CallbackParam<MatchesQuery>) => {
     setQuery((prev) => {

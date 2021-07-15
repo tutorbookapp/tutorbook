@@ -5,11 +5,11 @@ import axios from 'axios';
 
 import NProgress from 'components/nprogress';
 
-import { Org } from 'lib/model/org';
 import { Theme, ThemeContext } from 'lib/context/theme';
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
-import { User } from 'lib/model/user';
 import { APIError } from 'lib/api/error';
+import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
 import { fetcher } from 'lib/fetch';
 import useTrack from 'lib/hooks/track';

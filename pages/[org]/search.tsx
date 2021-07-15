@@ -13,7 +13,7 @@ import Search from 'components/search';
 
 import { Org } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
-import { UsersQuery, endpoint } from 'lib/model/query/users';
+import { UsersQuery, decode, encode, endpoint } from 'lib/model/query/users';
 import { CallbackParam } from 'lib/model/callback';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
@@ -50,7 +50,7 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(true);
 
-  useURLParamSync(query, setQuery, UsersQuery, endpoint, [
+  useURLParamSync(query, setQuery, decode, encode, [
     'orgs',
     'available',
     'visible',
@@ -214,8 +214,10 @@ export const getStaticProps: GetStaticProps<
   const { data } = await supabase.from<Org>('orgs').select().eq('id', ctx.params.org);
   if (!data || !data[0]) return { notFound: true };
   const { props } = await getPageProps();
+  const org = Org.parse(data[0]);
+  debugger;
   return {
-    props: { org: Org.parse(data[0]), ...props },
+    props: { org, ...props },
     revalidate: 1,
   };
 };

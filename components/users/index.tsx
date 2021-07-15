@@ -3,7 +3,7 @@ import { dequal } from 'dequal/lite';
 
 import Pagination from 'components/pagination';
 
-import { UsersQuery, endpoint } from 'lib/model/query/users';
+import { UsersQuery, decode, encode } from 'lib/model/query/users';
 import { CallbackParam } from 'lib/model/callback';
 import { useOrg } from 'lib/context/org';
 import useURLParamSync from 'lib/hooks/url-param-sync';
@@ -40,7 +40,7 @@ export default function Users(): JSX.Element {
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
-  useURLParamSync(query, setQuery, UsersQuery, endpoint, ['orgs']);
+  useURLParamSync(query, setQuery, decode, encode, ['orgs']);
 
   const onQueryChange = useCallback((param: CallbackParam<UsersQuery>) => {
     setQuery((prev) => {

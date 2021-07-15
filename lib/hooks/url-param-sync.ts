@@ -7,10 +7,6 @@ import { useEffect } from 'react';
 import { Callback } from 'lib/model/callback';
 import { Query } from 'lib/model/query/base';
 
-interface Constructor<T extends Query> {
-  parse: (params: unknown) => T;
-}
-
 // Syncs the initial query state in URL parameters. This gives users a sharable
 // link that contains their query state (e.g. I can share a link showing all the
 // Songwriting teachers with another org admin).
@@ -19,30 +15,28 @@ interface Constructor<T extends Query> {
 export default function useURLParamSync<T extends Query>(
   query: T,
   setQuery: Callback<T>,
-  Model: Constructor<T>,
-  endpoint: (query: T) => string,
+  decode: (params: Record<string, string>) => T,
+  encode: (query: T) => Record<string, string>,
   overrides: string[] = []
 ): void {
   useEffect(() => {
     setQuery((prev) => {
       if (typeof window === 'undefined') return prev;
       const params = new URLSearchParams(window.location.search);
-      const updated = Model.parse({
-        ...Object.fromEntries(new URLSearchParams(endpoint(prev)).entries()),
-        ...Object.fromEntries(params.entries()),
-      });
+      const updated = { 
+        ...prev, 
+        ...decode(Object.fromEntries(params.entries()))
+      };
       if (dequal(prev, updated)) return prev;
       return updated;
     });
-  }, [endpoint, setQuery, Model]);
+  }, [setQuery, decode]);
 
   // TODO: Don't include query params that are specified in other ways (e.g. the
   // users dashboard specifies org in the `[org]` dynamic page param).
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const params = Object.fromEntries(
-      new URLSearchParams(endpoint(query)).entries()
-    );
+    const params = encode(query);
     overrides.forEach((field) => {
       delete params[field];
     });
@@ -53,5 +47,5 @@ export default function useURLParamSync<T extends Query>(
     const prevURL = `${window.location.pathname}${window.location.search}`;
     if (updatedURL === prevURL) return;
     void Router.replace(updatedURL, undefined, { shallow: true });
-  }, [endpoint, query, overrides]);
+  }, [encode, query, overrides]);
 }

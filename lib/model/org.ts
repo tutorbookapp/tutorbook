@@ -7,13 +7,13 @@ const SignupConfig = z.object({}).catchall(z.object({
   mentoring: z.object({
     header: z.string(),
     body: z.string(),
-    bio: z.string(),
-  }),
+    bio: z.string().optional(),
+  }).optional(),
   tutoring: z.object({
     header: z.string(),
     body: z.string(),
-    bio: z.string(),
-  }),
+    bio: z.string().optional(),
+  }).optional(),
 }));
 const HomeConfig = z.object({}).catchall(z.object({
   header: z.string(),
@@ -41,9 +41,9 @@ const BookingConfig = z.object({}).catchall(z.object({
 export const Org = Account.extend({
   members: z.array(z.string()).default([]),
   aspects: z.array(Aspect).nonempty().default(['tutoring']),
-  domains: z.array(z.string()).default([]),
-  profiles: z.array(z.string()).default(['name', 'email', 'bio', 'subjects', 'langs', 'availability']),
-  subjects: z.array(z.string()).optional(), 
+  domains: z.array(z.string()).nullable().default(null),
+  profiles: z.array(z.string()).nullable().default(['name', 'email', 'bio', 'subjects', 'langs', 'availability']),
+  subjects: z.array(z.string()).nullable().default(null), 
   signup: SignupConfig.default({
     en: {
       mentoring: {

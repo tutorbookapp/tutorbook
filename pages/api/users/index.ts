@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import listUsers, { ListUsersRes } from 'lib/api/routes/users/list';
 import createUser, { CreateUserRes } from 'lib/api/routes/users/create';
+import listUsers, { ListUsersRes } from 'lib/api/routes/users/list';
 import { APIError } from 'lib/api/error';
 
 /**
