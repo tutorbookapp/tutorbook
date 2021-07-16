@@ -1,15 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import {
-  MatchesQuery,
-  MatchesQueryURL,
-  isMatchesQueryURL,
-} from 'lib/model/query/matches';
 import csv from 'lib/api/csv';
+import { decode } from 'lib/model/query/matches';
 import getMatches from 'lib/api/get/matches';
 import { handle } from 'lib/api/error';
+import { matchToCSV } from 'lib/model/match';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 /**
  * GET - Downloads a CSV list of the filtered matches.
@@ -25,28 +21,15 @@ export default async function matches(
     res.status(405).end(`Method ${req.method as string} Not Allowed`);
     return;
   }
-
   try {
-    const query = verifyQuery<MatchesQuery, MatchesQueryURL>(
-      req.query,
-      isMatchesQueryURL,
-      MatchesQuery
-    );
-
+    const query = decode(req.query as Record<string, string>);
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
     // when we scale up (and have orgs with more than 1000 matches each).
     query.hitsPerPage = 1000;
     query.org = query.org || 'default';
-
     await verifyAuth(req.headers, { orgIds: [query.org] });
-
     const { results } = await getMatches(query);
-
-    csv(
-      res,
-      'matches',
-      results.map((meeting) => meeting.toCSV())
-    );
+    csv(res, 'matches', results.map(matchToCSV));
   } catch (e) {
     handle(e, res);
   }

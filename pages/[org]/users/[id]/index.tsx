@@ -1,6 +1,6 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
+import { GetStaticProps, GetStaticPropsContext } from 'next';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
@@ -10,15 +10,16 @@ import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
 import { Org, OrgJSON } from 'lib/model/org';
-import { PageProps, getPageProps } from 'lib/page';
+import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
+import { Aspect } from 'lib/model/aspect';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
+import json from 'lib/model/json';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
@@ -38,7 +39,7 @@ interface UserDisplayPageProps extends PageProps {
 
 function UserDisplayPage({
   org,
-  user: initialData,
+  user: jsn,
   langs: initialLangs,
   subjects: initialSubjects,
   ...props
@@ -49,9 +50,9 @@ function UserDisplayPage({
   // That way, SWR will fetch the full user data while Next.js fetches the
   // static props and SWR will then ignore the truncated data.
   // @see {@link https://github.com/vercel/next.js/issues/19492}
-  const { data } = useSWR<UserJSON>(
+  const { data } = useSWR<User>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { initialData: jsn ? User.parse(jsn) : undefined, revalidateOnMount: true }
   );
   const [langs, setLangs] = useState<string[]>(initialLangs || []);
   const [subjects, setSubjects] = useState<{ [key in Aspect]: string[] }>(
@@ -84,8 +85,10 @@ function UserDisplayPage({
   }, [data, locale]);
 
   const subjectsDisplayed = useMemo(() => {
-    if (org?.aspects.length === 1) return subjects[org.aspects[0]];
-    if (isAspect(query.aspect)) return subjects[query.aspect];
+    if (org?.aspects && org.aspects.length === 1) 
+      return subjects[org.aspects[0]];
+    if (Aspect.safeParse(query.aspect).success) 
+      return subjects[Aspect.parse(query.aspect)];
     // Many subjects can be both tutoring and mentoring subjects, thus we filter
     // for unique subjects (e.g. to prevent "Computer Science" duplications).
     const unique = new Set<string>();
@@ -97,7 +100,7 @@ function UserDisplayPage({
   usePage({ name: 'User Display', org: org?.id });
 
   return (
-    <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
+    <OrgContext.Provider value={{ org: org ? Org.parse(org) : undefined }}>
       <Page
         title={`${data?.name || 'Loading'} - Tutorbook`}
         description={data?.bio}
@@ -105,7 +108,7 @@ function UserDisplayPage({
       >
         <EmptyHeader />
         <UserDisplay
-          user={data ? User.fromJSON(data) : undefined}
+          user={data ? User.parse(data) : undefined}
           subjects={subjectsDisplayed}
           langs={langs}
         />
@@ -145,10 +148,10 @@ export const getStaticProps: GetStaticProps<
     //    "teaches" section could change.
     return {
       props: {
+        org: json(org),
         langs,
-        org: org.toJSON(),
         subjects: { tutoring, mentoring },
-        user: getTruncatedUser(user).toJSON(),
+        user: json(getTruncatedUser(user)),
         ...props,
       },
       revalidate: 1,
@@ -158,8 +161,6 @@ export const getStaticProps: GetStaticProps<
   }
 };
 
-export const getStaticPaths: GetStaticPaths<UserDisplayPageQuery> = async () => {
-  return { paths: [], fallback: true };
-};
+export const getStaticPaths = getPagePaths;
 
 export default withI18n(UserDisplayPage, { common, error, match3rd, user3rd });

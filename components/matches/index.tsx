@@ -19,10 +19,11 @@ import Header from 'components/header';
 import Pagination from 'components/pagination';
 import Placeholder from 'components/placeholder';
 
+import { MatchesQuery, decode, encode, endpoint } from 'lib/model/query/matches';
 import { CallbackParam } from 'lib/model/callback';
-import { MatchesQuery } from 'lib/model/query/matches';
 import Intercom from 'lib/intercom';
 import { ListMatchesRes } from 'lib/api/routes/matches/list';
+import { Match } from 'lib/model/match';
 import { useOrg } from 'lib/context/org';
 import useURLParamSync from 'lib/hooks/url-param-sync';
 import { useUser } from 'lib/context/user';
@@ -52,10 +53,10 @@ export default function Matches({
   const { user } = useUser();
 
   const [searching, setSearching] = useState<boolean>(true);
-  const [query, setQuery] = useState<MatchesQuery>(new MatchesQuery());
+  const [query, setQuery] = useState<MatchesQuery>(MatchesQuery.parse({}));
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
-  useURLParamSync(query, setQuery, MatchesQuery, byOrg ? ['org'] : ['people']);
+  useURLParamSync(query, setQuery, decode, encode, byOrg ? ['org'] : ['people']);
 
   const onQueryChange = useCallback((param: CallbackParam<MatchesQuery>) => {
     setQuery((prev) => {
@@ -68,13 +69,13 @@ export default function Matches({
     });
   }, []);
   const downloadResults = useCallback(() => {
-    if (query) window.open(query.getURL('/api/matches/csv'));
+    if (query) window.open(endpoint(query, '/api/matches/csv'));
   }, [query]);
 
   useEffect(() => {
     onQueryChange((prev) => {
       if (!byOrg || !org || org.id === prev.org) return prev;
-      return new MatchesQuery({ ...prev, org: org.id });
+      return MatchesQuery.parse({ ...prev, org: org.id });
     });
   }, [byOrg, org, onQueryChange]);
   useEffect(() => {
@@ -82,14 +83,14 @@ export default function Matches({
       if (!byUser || !user) return prev;
       const people = [{ label: user.name, value: user.id }];
       if (dequal(prev.people, people)) return prev;
-      return new MatchesQuery({ ...prev, people });
+      return MatchesQuery.parse({ ...prev, people });
     });
   }, [byUser, user, onQueryChange]);
 
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListMatchesRes>(
     (byOrg && query.org) || (byUser && query.people.length)
-      ? query.endpoint
+      ? endpoint(query)
       : null
   );
 
@@ -104,7 +105,7 @@ export default function Matches({
   useEffect(() => {
     setSearching(true);
     const timeoutId = setTimeout(() => {
-      setQuery((prev) => new MatchesQuery({ ...prev, search, page: 0 }));
+      setQuery((prev) => MatchesQuery.parse({ ...prev, search, page: 0 }));
     }, 500);
     return () => clearTimeout(timeoutId);
   }, [search]);
@@ -171,7 +172,7 @@ export default function Matches({
               <DataTableBody>
                 {!searching &&
                   (data?.matches || []).map((match) => (
-                    <MatchRow match={match} key={match.id} />
+                    <MatchRow match={Match.parse(match)} key={match.id} />
                   ))}
                 {searching && loadingRows}
               </DataTableBody>
@@ -184,7 +185,6 @@ export default function Matches({
           </div>
         )}
         <Pagination
-          model={MatchesQuery}
           setQuery={onQueryChange}
           query={query}
           hits={hits}

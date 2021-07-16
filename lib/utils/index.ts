@@ -145,7 +145,7 @@ export function notTags<T extends string>(tags: T[], TAGS: T[]): T[] {
  * @return A `User` object that contains all data combined.
  */
 export function addRoles(user: User, roles: Role[]): User {
-  return new User(clone({ ...user, roles }));
+  return User.parse(clone({ ...user, roles }));
 }
 
 /**
@@ -161,6 +161,13 @@ export function period(msg: string): string {
  */
 export function caps(str: string): string {
   return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+}
+
+/**
+ * Get the user's first name.
+ */
+export function first(name: string): string {
+  return caps(name.split(' ')[0] || '');
 }
 
 /**

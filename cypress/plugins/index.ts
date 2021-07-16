@@ -10,10 +10,10 @@ import firebase from 'firebase-admin';
 import { percyHealthCheck } from '@percy/cypress/task';
 
 import { IntercomGlobal } from 'lib/intercom';
-import { MatchJSON } from 'lib/model/match';
-import { MeetingJSON } from 'lib/model/meeting';
-import { OrgJSON } from 'lib/model/org';
-import { UserJSON } from 'lib/model/user';
+import { Match } from 'lib/model/match';
+import { Meeting } from 'lib/model/meeting';
+import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 
 import admin from 'cypress/fixtures/users/admin.json';
 import match from 'cypress/fixtures/match.json';
@@ -27,7 +27,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 // can't use any of the existing type annotations in our app source code.
 // @see {@link https://github.com/cypress-io/cypress/issues/7188}
 // @see {@link https://github.com/cypress-io/cypress/issues/7006}
-// import { Org, OrgJSON, User, UserJSON } from 'lib/model';
+// import { Org, User } from 'lib/model';
 
 // Follow the Next.js convention for loading `.env` files.
 // @see {@link https://nextjs.org/docs/basic-features/environment-variables}
@@ -76,13 +76,13 @@ const matchesIdx = search.initIndex(`${prefix}-matches`);
 const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 export interface Overrides {
-  match?: Partial<MatchJSON> | null;
-  meeting?: Partial<MeetingJSON> | null;
-  org?: Partial<OrgJSON> | null;
-  school?: Partial<OrgJSON> | null;
-  volunteer?: Partial<UserJSON> | null;
-  student?: Partial<UserJSON> | null;
-  admin?: Partial<UserJSON> | null;
+  match?: Partial<Match> | null;
+  meeting?: Partial<Meeting> | null;
+  org?: Partial<Org> | null;
+  school?: Partial<Org> | null;
+  volunteer?: Partial<User> | null;
+  student?: Partial<User> | null;
+  admin?: Partial<User> | null;
 }
 
 declare global {
@@ -183,29 +183,29 @@ export default function plugins(
       return null;
     },
     async seed(overrides: Overrides = {}): Promise<null> {
-      let matches: MatchJSON[] = [];
-      matches.push({ ...(match as MatchJSON), ...overrides.match });
+      let matches: Match[] = [];
+      matches.push({ ...(match as Match), ...overrides.match });
       if (overrides.match === null) delete matches[0];
       matches = matches.filter(Boolean);
 
-      let orgs: OrgJSON[] = [];
-      orgs.push({ ...(org as OrgJSON), ...overrides.org });
-      orgs.push({ ...(school as OrgJSON), ...overrides.school });
+      let orgs: Org[] = [];
+      orgs.push({ ...(org as Org), ...overrides.org });
+      orgs.push({ ...(school as Org), ...overrides.school });
       if (overrides.org === null) delete orgs[0];
       if (overrides.school === null) delete orgs[1];
       orgs = orgs.filter(Boolean);
 
-      let users: UserJSON[] = [];
-      users.push({ ...(volunteer as UserJSON), ...overrides.volunteer });
-      users.push({ ...(student as UserJSON), ...overrides.student });
-      users.push({ ...(admin as UserJSON), ...overrides.admin });
+      let users: User[] = [];
+      users.push({ ...(volunteer as User), ...overrides.volunteer });
+      users.push({ ...(student as User), ...overrides.student });
+      users.push({ ...(admin as User), ...overrides.admin });
       if (overrides.volunteer === null) delete users[0];
       if (overrides.student === null) delete users[1];
       if (overrides.admin === null) delete users[2];
       users = users.filter(Boolean);
 
-      let meetings: MeetingJSON[] = [];
-      meetings.push({ ...(meeting as MeetingJSON), ...overrides.meeting });
+      let meetings: Meeting[] = [];
+      meetings.push({ ...(meeting as Meeting), ...overrides.meeting });
       if (overrides.meeting === null) delete meetings[0];
       meetings = meetings.filter(Boolean);
 

@@ -2,6 +2,45 @@ import { Availability } from 'lib/model/availability';
 import { Timeslot } from 'lib/model/timeslot';
 
 /**
+ * @param a - The timeslot to check if it's overlapping with b.
+ * @param b - The timeslot to check if it's overlapping with a.
+ * @param [allowBackToBack] - If true, this will allow the timeslots to touch
+ * (but not overlap). Defaults to false.
+ * @return Whether or not a overlaps with b.
+ */
+export function timeslotOverlaps(
+  a: { from: Date; to: Date },
+  b: { from: Date; to: Date },
+  allowBackToBack: boolean = false
+): boolean {
+  if (allowBackToBack) return a.to > b.from && a.from < b.to;
+  return a.to >= b.from && a.from <= b.to;
+}
+
+/**
+ * @param a - The timeslot to check if it's overlapping with b.
+ * @param b - The timeslot to check if it's overlapping with a.
+ * @param [allowBackToBack] - If true, this will allow the timeslots to touch
+ * (but not overlap). Defaults to false.
+ * @return Whether or not a overlaps with b.
+ */
+export function availabilityOverlaps(
+  availability: Availability,
+  timeslot: { from: Date; to: Date },
+  allowBackToBack: boolean = false
+): boolean {
+  return availability.some((t) => timeslotOverlaps(t, timeslot, allowBackToBack));
+}
+
+/**
+ * @param timeslot - The timeslot to get the duration of.
+ * @return The duration of the timeslot.
+ */
+export function getDuration(timeslot: { from: Date; to: Date }): number {
+  return timeslot.to.valueOf() - timeslot.from.valueOf();
+}
+
+/**
  * Checks if two dates are a certain number of months apart.
  * @param date - One of the dates to compare.
  * @param [other] - The other date to compare (defaults to now).
@@ -165,11 +204,11 @@ export function getTimeslots(
   duration = 30,
   interval = 15
 ): Availability {
-  const timeslots = new Availability();
+  const timeslots = Availability.parse([]);
   let from = roundStartTime(start, interval);
   while (from.valueOf() <= end.valueOf() - duration * 6e4) {
     const to = new Date(from.valueOf() + duration * 6e4);
-    timeslots.push(new Timeslot({ from, to }));
+    timeslots.push(Timeslot.parse({ from, to }));
     from = new Date(from.valueOf() + interval * 6e4);
   }
   return timeslots;
@@ -200,7 +239,7 @@ export function getMonthsTimeslots(
   from: Date = new Date(),
   to: Date = new Date(8640000000000000)
 ): Availability {
-  const timeslots = new Availability();
+  const timeslots = Availability.parse([]);
 
   // If month or year is before `from`, we know there are no timeslots.
   if (year < from.getFullYear()) return timeslots;
@@ -225,11 +264,11 @@ export function getMonthsTimeslots(
     let date = 1;
     while (date <= daysInMonth) {
       if ((date - 1 + weekdayOffset) % 7 === weekday) {
-        const t = new Timeslot({
+        const t = Timeslot.parse({
           from: new Date(year, month, date, fromHrs, fromMins),
           to: new Date(year, month, date, toHrs, toMins),
         });
-        if (t.from >= from && t.to <= to && !booked?.overlaps(t, true))
+        if (t.from >= from && t.to <= to && (!booked || !availabilityOverlaps(booked, t, true)))
           timeslots.push(t);
       }
       date += 1;
@@ -253,13 +292,13 @@ export function sliceAvailability(
   interval: number = 15,
   duration: number = 60
 ): Availability {
-  const sliced = new Availability();
+  const sliced = Availability.parse([]);
   const minsToMillis = 60 * 1000;
   availability.sort().forEach((timeslot) => {
     let from = roundStartTime(timeslot.from, interval);
     while (from.valueOf() <= timeslot.to.valueOf() - duration * minsToMillis) {
       const to = new Date(from.valueOf() + duration * minsToMillis);
-      sliced.push(new Timeslot({ from, to }));
+      sliced.push(Timeslot.parse({ from, to }));
       from = new Date(from.valueOf() + interval * minsToMillis);
     }
   });
@@ -289,11 +328,11 @@ export function getAlgoliaAvailability(
   const sliced = sliceAvailability(availability, interval, duration);
   const filtered = sliced.filter((timeslot) => {
     let from = nextDateWithDayAndTime(timeslot.from);
-    while (from.valueOf() <= until.valueOf() + timeslot.duration) {
-      const to = new Date(from.valueOf() + timeslot.duration);
+    while (from.valueOf() <= until.valueOf() + getDuration(timeslot)) {
+      const to = new Date(from.valueOf() + getDuration(timeslot));
       // If any one of the time's instances in the next 3 months can be booked
       // (i.e. it's not already booked), we include the time in Algolia.
-      if (!booked.overlaps(new Timeslot({ from, to }), true)) return true;
+      if (!availabilityOverlaps(booked, Timeslot.parse({ from, to }), true)) return true;
       from = new Date(from.valueOf() + 7 * 24 * 60 * 60 * 1000);
     }
     // Otherwise, we know that every single one of the time's instances in the

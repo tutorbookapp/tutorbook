@@ -1,13 +1,13 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { MatchJSON } from 'lib/model/match';
+import { Match, matchToSegment } from 'lib/model/match';
 import getMatch from 'lib/api/get/match';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
-export type FetchMatchRes = MatchJSON;
+export type FetchMatchRes = Match;
 
 export default async function fetchMatch(
   req: Req,
@@ -22,12 +22,12 @@ export default async function fetchMatch(
       orgIds: [match.org],
     });
 
-    res.status(200).json(match.toJSON());
+    res.status(200).json(match);
 
     segment.track({
       userId: uid,
       event: 'Match Fetched',
-      properties: match.toSegment(),
+      properties: matchToSegment(match),
     });
   } catch (e) {
     handle(e, res);

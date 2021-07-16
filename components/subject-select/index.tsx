@@ -7,7 +7,6 @@ import useTranslation from 'next-translate/useTranslation';
 import Select, { SelectControllerProps } from 'components/select';
 
 import { Aspect } from 'lib/model/aspect';
-import { GradeAlias } from 'lib/model/user';
 import { Option } from 'lib/model/query/base';
 import { intersection } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
@@ -22,17 +21,17 @@ interface SubjectHit extends ObjectWithObjectID {
   name: string;
 }
 
-export interface SubjectOption extends Option<string> {
+export interface SubjectOption extends Option {
   aspect?: Aspect;
 }
 
 interface UniqueSubjectSelectProps {
   options?: string[];
-  grade?: GradeAlias;
+  grade?: number;
   aspect?: Aspect;
 }
 
-export type SubjectSelectProps = SelectControllerProps<string, SubjectOption> &
+export type SubjectSelectProps = SelectControllerProps<SubjectOption> &
   UniqueSubjectSelectProps;
 
 /**

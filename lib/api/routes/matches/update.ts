@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Match, MatchJSON, isMatchJSON } from 'lib/model/match';
+import { Match, matchToSegment } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
@@ -11,18 +11,17 @@ import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyBody from 'lib/api/verify/body';
 import verifyDocExists from 'lib/api/verify/doc-exists';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 
-export type UpdateMatchRes = MatchJSON;
+export type UpdateMatchRes = Match;
 
 export default async function updateMatch(
   req: Req,
   res: Res<UpdateMatchRes>
 ): Promise<void> {
   try {
-    const body = verifyBody<Match, MatchJSON>(req.body, isMatchJSON, Match);
+    const body = Match.parse(req.body);
 
     logger.info(`Updating ${body.toString()}...`);
 
@@ -43,14 +42,14 @@ export default async function updateMatch(
 
     await Promise.all([updateMatchDoc(match), updateMatchSearchObj(match)]);
 
-    res.status(200).json(match.toJSON());
+    res.status(200).json(match);
 
     logger.info(`Updated ${match.toString()}.`);
 
     segment.track({
       userId: uid,
       event: 'Match Updated',
-      properties: match.toSegment(),
+      properties: matchToSegment(match),
     });
 
     await Promise.all([

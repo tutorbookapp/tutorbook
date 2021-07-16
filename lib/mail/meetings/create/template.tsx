@@ -11,7 +11,7 @@ import {
 import { Meeting } from 'lib/model/meeting';
 import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
-import { getEmailLink, getPhoneLink, join } from 'lib/utils';
+import { first, getEmailLink, getPhoneLink, join } from 'lib/utils';
 
 export interface MeetingEmailProps {
   org: Org;
@@ -34,7 +34,7 @@ export default function MeetingEmail({
       <Header />
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>
-          Hi {join(people.filter((p) => p.email).map((p) => p.firstName))},
+          Hi {join(people.filter((p) => p.email).map((p) => first(p.name)))},
         </P>
         <P>
           {creator.name} from {org.name} scheduled a new{' '}
@@ -64,7 +64,7 @@ export default function MeetingEmail({
         <br />
         <P>
           If you&apos;re unable to attend or if this doesn&apos;t seem like a
-          good match, please get in touch with {creator.firstName} by replying
+          good match, please get in touch with {first(creator.name)} by replying
           to this email or by using the following contact info:
         </P>
         <P>

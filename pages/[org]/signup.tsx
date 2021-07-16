@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -9,11 +9,12 @@ import { AspectHeader, EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import Signup from 'components/signup';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
+import { Aspect } from 'lib/model/aspect';
 import { OrgContext } from 'lib/context/org';
-import { db } from 'lib/api/firebase';
+import json from 'lib/model/json';
+import supabase from 'lib/api/supabase';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
@@ -25,7 +26,9 @@ interface SignupPageProps extends PageProps {
   org?: OrgJSON;
 }
 
-function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
+function SignupPage({ org: jsn, ...props }: SignupPageProps): JSX.Element {
+  const org = useMemo(() => jsn ? Org.parse(jsn) : undefined, [jsn]);
+
   const { query } = useRouter();
   const { lang: locale } = useTranslation();
   const [aspect, setAspect] = useState<Aspect>(() => {
@@ -36,14 +39,15 @@ function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
   usePage({ name: 'Org Signup', org: org?.id });
   useEffect(() => {
     setAspect((prev: Aspect) => {
-      const updated = isAspect(query.aspect) ? query.aspect : prev;
+      const { success } = Aspect.safeParse(query.aspect);
+      const updated = success ? Aspect.parse(query.aspect) : prev;
       if (org && !org.aspects.includes(updated)) return prev;
       return updated;
     });
   }, [org, query]);
 
   return (
-    <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
+    <OrgContext.Provider value={{ org: org ? Org.parse(org) : undefined }}>
       <Page
         title={`${org?.name || 'Loading'} - Signup - Tutorbook`}
         description={org ? org.signup[locale][aspect]?.body : undefined}
@@ -69,16 +73,16 @@ export const getStaticProps: GetStaticProps<
   SignupPageQuery
 > = async (ctx: GetStaticPropsContext<SignupPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
-  const doc = await db.collection('orgs').doc(ctx.params.org).get();
-  if (!doc.exists) return { notFound: true };
-  const org = Org.fromFirestoreDoc(doc);
+  const { data } = await supabase.from<Org>('orgs').select().eq('id', ctx.params.org);
+  if (!data || !data[0]) return { notFound: true };
+  const org: OrgJSON = json(Org.parse(data[0]));
   const { props } = await getPageProps();
-  return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
+  return { props: { org, ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SignupPageQuery> = async () => {
-  const orgs = (await db.collection('orgs').get()).docs;
-  const paths = orgs.map((org) => ({ params: { org: org.id } }));
+  const { data } = await supabase.from<Org>('orgs').select();
+  const paths = (data || []).map((org) => ({ params: { org: org.id } }));
   return { paths, fallback: true };
 };
 

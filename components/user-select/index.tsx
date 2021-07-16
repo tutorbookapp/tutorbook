@@ -5,13 +5,13 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
+import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Option } from 'lib/model/query/base';
-import { UsersQuery } from 'lib/model/query/users';
 import { useUser } from 'lib/context/user';
 
-export interface UserOption extends Option<string> {
+export interface UserOption extends Option {
   photo?: string;
 }
 
@@ -30,7 +30,7 @@ export default function UserSelect({
   selected,
   onSelectedChange,
   ...props
-}: SelectControllerProps<string, UserOption>): JSX.Element {
+}: SelectControllerProps<UserOption>): JSX.Element {
   // Only show users that are either:
   // a) Within one of the orgs that the current user is an admin of.
   // b) A child of the current user.
@@ -53,7 +53,8 @@ export default function UserSelect({
   );
 
   // Call the `/api/users` API endpoint to get suggestions.
-  const userToOption = useCallback((u: User | UserJSON) => {
+  const userToOption = useCallback((user: User | User) => {
+    const u = User.parse(user);
     cache.current[u.id] = { name: u.name, photo: u.photo };
     return { value: u.id, label: u.name, photo: u.photo };
   }, []);
@@ -63,18 +64,18 @@ export default function UserSelect({
       if (orgs.length)
         promises.push(
           axios.get<ListUsersRes>(
-            new UsersQuery({ search, orgs: orgs.map((o) => o.id) }).endpoint
+            endpoint(UsersQuery.parse({ search, orgs: orgs.map((o) => o.id) }))
           )
         );
       if (user.id)
         promises.push(
           axios.get<ListUsersRes>(
-            new UsersQuery({ search, parents: [user.id] }).endpoint
-          )
-        );
+            endpoint(UsersQuery.parse({ search, parents: [user.id] })
+                    )
+        ));
       const suggestions: UserOption[] = [];
       (await Promise.all(promises)).forEach(({ data }) => {
-        data.users.forEach((u: UserJSON) => {
+        data.users.forEach((u: User) => {
           if (suggestions.findIndex(({ value: id }) => id === u.id) < 0)
             suggestions.push(userToOption(u));
         });
@@ -100,9 +101,9 @@ export default function UserSelect({
       // Otherwise, fetch the correct labels (i.e. the users's names) by
       // concurrently calling the `/api/users/[id]` for each `value`.
       const updateLabels = async () => {
-        const users: UserJSON[] = await Promise.all(
+        const users: User[] = await Promise.all(
           value.map(async (id) => {
-            const { data } = await axios.get<UserJSON>(`/api/users/${id}`);
+            const { data } = await axios.get<User>(`/api/users/${id}`);
             return data;
           })
         );

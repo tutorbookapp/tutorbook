@@ -1,72 +1,47 @@
-import { Option, Query, QueryInterface } from 'lib/model/query/base';
-import construct from 'lib/model/construct';
+import url from 'url';
 
-// TODO: Should the `people` query be instead `UserOption` objects?
-export interface MatchesQueryInterface extends QueryInterface {
-  org?: string;
-  people: Option<string>[];
-  subjects: Option<string>[];
+import { z } from 'zod';
+
+import { Option, Query, number } from 'lib/model/query/base';
+
+export const MatchesQuery = Query.extend({
+  org: z.string().optional(),
+  people: z.array(Option).default([]),
+  subjects: z.array(Option).default([]),
+  hitsPerPage: number.default(10),
+});
+export type MatchesQuery = z.infer<typeof MatchesQuery>;
+
+export function encode(query: MatchesQuery): Record<string, string> {
+  function json<T>(p: T[]): string {
+    return encodeURIComponent(JSON.stringify(p));
+  }
+
+  const params: Record<string, string> = {};
+  if (query.search) params.search = encodeURIComponent(query.search);
+  if (query.hitsPerPage !== 10) params.hitsPerPage = `${query.hitsPerPage}`;
+  if (query.page !== 0) params.page = `${query.page}`;
+  if (query.org) params.org = encodeURIComponent(query.org);
+  if (query.people.length) params.people = json(query.people);
+  if (query.subjects.length) params.subjects = json(query.subjects);
+  return params;
 }
 
-export type MatchesQueryJSON = MatchesQueryInterface;
+export function decode(params: Record<string, string>): MatchesQuery {
+  function json<T>(p: string): T[] {
+    return JSON.parse(decodeURIComponent(p)) as T[];
+  }
 
-export type MatchesQueryURL = { [key in keyof MatchesQueryInterface]?: string };
-
-// TODO: Implement this to verify that the given query params are valid.
-export function isMatchesQueryURL(query: unknown): query is MatchesQueryURL {
-  return true;
+  const query = MatchesQuery.parse({});
+  if (params.search) query.search = decodeURIComponent(params.search);
+  if (params.hitsPerPage) query.hitsPerPage = Number(params.hitsPerPage);
+  if (params.page) query.page = Number(params.page);
+  if (params.org) query.org = decodeURIComponent(params.org);
+  if (params.people) query.people = json(params.people);
+  if (params.subjects) query.subjects = json(params.subjects);
+  return query;
 }
 
-export class MatchesQuery extends Query implements MatchesQueryInterface {
-  public org?: string;
-
-  public people: Option<string>[] = [];
-
-  public subjects: Option<string>[] = [];
-
-  public hitsPerPage = 10;
-
-  public constructor(query: Partial<MatchesQueryInterface> = {}) {
-    super(query);
-    construct<MatchesQueryInterface>(this, query);
-  }
-
-  public getURLParams(): Record<string, string | number | boolean> {
-    function encode(p?: Option<any>[]): string {
-      return encodeURIComponent(JSON.stringify(p));
-    }
-
-    const query = super.getURLParams();
-    if (this.hitsPerPage !== 10) {
-      query.hitsPerPage = this.hitsPerPage;
-    } else {
-      delete query.hitsPerPage;
-    }
-    if (this.org) query.org = encodeURIComponent(this.org);
-    if (this.people.length) query.people = encode(this.people);
-    if (this.subjects.length) query.subjects = encode(this.subjects);
-    return query;
-  }
-
-  public static fromURLParams(params: MatchesQueryURL): MatchesQuery {
-    function decode<T = string>(p?: string): Option<T>[] {
-      return p ? (JSON.parse(decodeURIComponent(p)) as Option<T>[]) : [];
-    }
-
-    return new MatchesQuery({
-      ...Query.fromURLParams(params),
-      people: decode(params.people),
-      subjects: decode(params.subjects),
-      org: params.org ? decodeURIComponent(params.org) : undefined,
-      hitsPerPage: Number(decodeURIComponent(params.hitsPerPage || '10')),
-    });
-  }
-
-  public get endpoint(): string {
-    return this.getURL('/api/matches');
-  }
-
-  public static fromJSON(json: MatchesQueryJSON): MatchesQuery {
-    return new MatchesQuery(Query.fromJSON(json));
-  }
+export function endpoint(query: MatchesQuery, pathname = '/api/matches'): string {
+  return url.format({ pathname, query: encode(query) });
 }

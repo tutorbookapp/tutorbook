@@ -10,6 +10,7 @@ import {
 import { Meeting } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
+import { getDuration } from 'lib/utils/time';
 
 function getFilterStrings(query: MeetingsQuery): string[] {
   let str = query.org ? `match.org:${query.org}` : '';
@@ -41,7 +42,7 @@ export default async function getMeetings(
   query: MeetingsQuery
 ): Promise<{ hits: number; results: Meeting[] }> {
   const filters = getFilterStrings(query);
-  const data = await list('meetings', query, Meeting.fromSearchHit, filters);
+  const data = await list('meetings', query, Meeting.parse, filters);
   let { hits } = data;
   const meetings = data.results.map((meeting) => {
     if (!meeting.time.recur) return [meeting];
@@ -54,12 +55,12 @@ export default async function getMeetings(
     hits += startTimes.length - 1;
     return startTimes.map((startTime) => {
       if (startTime.valueOf() === meeting.time.from.valueOf()) return meeting;
-      const to = new Date(startTime.valueOf() + meeting.time.duration);
-      return new Meeting({
+      const to = new Date(startTime.valueOf() + getDuration(meeting.time));
+      return Meeting.parse({
         ...meeting,
         id: nanoid(),
         parentId: meeting.id,
-        time: new Timeslot({ ...meeting.time, to, from: startTime }),
+        time: Timeslot.parse({ ...meeting.time, to, from: startTime }),
       });
     });
   });

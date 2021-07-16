@@ -6,10 +6,10 @@ import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 import UserSelect from 'components/user-select';
 
-import { MEETING_TAGS, MeetingHitTag } from 'lib/model/meeting';
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Option } from 'lib/model/query/base';
+import { MEETING_TAGS } from 'lib/model/meeting';
 
 import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';
@@ -28,20 +28,20 @@ function FiltersSheet({
   const props = useSpring({ config, width: filtersOpen ? width : 0 });
 
   const onSubjectsChange = useCallback(
-    (subjects: Option<string>[]) => {
-      setQuery((prev) => new MeetingsQuery({ ...prev, subjects, page: 0 }));
+    (subjects: Option[]) => {
+      setQuery((prev) => MeetingsQuery.parse({ ...prev, subjects, page: 0 }));
     },
     [setQuery]
   );
   const onPeopleChange = useCallback(
-    (people: Option<string>[]) => {
-      setQuery((prev) => new MeetingsQuery({ ...prev, people, page: 0 }));
+    (people: Option[]) => {
+      setQuery((prev) => MeetingsQuery.parse({ ...prev, people, page: 0 }));
     },
     [setQuery]
   );
   const onTagsChange = useCallback(
-    (tags: MeetingHitTag[]) => {
-      setQuery((prev) => new MeetingsQuery({ ...prev, tags, page: 0 }));
+    (tags: string[]) => {
+      setQuery((prev) => MeetingsQuery.parse({ ...prev, tags, page: 0 }));
     },
     [setQuery]
   );

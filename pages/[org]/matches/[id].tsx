@@ -6,10 +6,10 @@ import { EmptyHeader } from 'components/navigation';
 import MatchDisplay from 'components/match/display';
 import Page from 'components/page';
 
-import { Match, MatchJSON } from 'lib/model/match';
-import { Meeting, MeetingJSON } from 'lib/model/meeting';
-import { Org, OrgJSON } from 'lib/model/org';
-import { User, UserJSON } from 'lib/model/user';
+import { Match } from 'lib/model/match';
+import { Meeting } from 'lib/model/meeting';
+import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { APIError } from 'lib/api/error';
 import { OrgContext } from 'lib/context/org';
@@ -23,17 +23,17 @@ import matches from 'locales/en/matches.json';
 function MatchDisplayPage(props: PageProps): JSX.Element {
   const { loggedIn } = useUser();
   const { query } = useRouter();
-  const { data: org, error: orgError } = useSWR<OrgJSON, APIError>(
+  const { data: org, error: orgError } = useSWR<Org, APIError>(
     typeof query.org === 'string' ? `/api/orgs/${query.org}` : null
   );
-  const { data: match, error: matchError } = useSWR<MatchJSON, APIError>(
+  const { data: match, error: matchError } = useSWR<Match, APIError>(
     typeof query.id === 'string' ? `/api/matches/${query.id}` : null
   );
-  const { data: people, error: peopleError } = useSWR<UserJSON[], APIError>(
+  const { data: people, error: peopleError } = useSWR<User[], APIError>(
     typeof query.id === 'string' ? `/api/matches/${query.id}/people` : null
   );
   const { data: meetings, error: meetingsError } = useSWR<
-    MeetingJSON[],
+    Meeting[],
     APIError
   >(typeof query.id === 'string' ? `/api/matches/${query.id}/meetings` : null);
 
@@ -57,14 +57,14 @@ function MatchDisplayPage(props: PageProps): JSX.Element {
   });
 
   return (
-    <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
+    <OrgContext.Provider value={{ org: org ? Org.parse(org) : undefined }}>
       <Page title='Match - Tutorbook' {...props}>
         <EmptyHeader />
         <MatchDisplay
-          match={match ? Match.fromJSON(match) : undefined}
-          people={people ? people.map((p) => User.fromJSON(p)) : undefined}
+          match={match ? Match.parse(match) : undefined}
+          people={people ? people.map((p) => User.parse(p)) : undefined}
           meetings={
-            meetings ? meetings.map((m) => Meeting.fromJSON(m)) : undefined
+            meetings ? meetings.map((m) => Meeting.parse(m)) : undefined
           }
         />
       </Page>

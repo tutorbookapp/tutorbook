@@ -1,6 +1,6 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
+import { GetStaticProps, GetStaticPropsContext } from 'next';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
@@ -9,11 +9,12 @@ import Page from 'components/page';
 import UserVet from 'components/user/vet';
 
 import { Org, OrgJSON } from 'lib/model/org';
-import { PageProps, getPageProps } from 'lib/page';
+import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
 import { OrgContext } from 'lib/context/org';
 import getOrg from 'lib/api/get/org';
 import getUser from 'lib/api/get/user';
+import json from 'lib/model/json';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
@@ -26,14 +27,14 @@ interface UserVetPageProps extends PageProps {
 }
 
 function UserVetPage({
-  user: initialData,
+  user: jsn,
   org,
   ...props
 }: UserVetPageProps): JSX.Element {
   const { query } = useRouter();
-  const { data } = useSWR<UserJSON>(
+  const { data } = useSWR<User>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { initialData: jsn ? User.parse(jsn) : undefined, revalidateOnMount: true }
   );
 
   usePage({
@@ -45,14 +46,14 @@ function UserVetPage({
   });
 
   return (
-    <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
+    <OrgContext.Provider value={{ org: org ? Org.parse(org) : undefined }}>
       <Page
         title={`${data?.name || 'Loading'} - Vet - Tutorbook`}
         formWidth
         {...props}
       >
         <EmptyHeader formWidth />
-        <UserVet user={data ? User.fromJSON(data) : undefined} />
+        <UserVet user={data ? User.parse(data) : undefined} />
       </Page>
     </OrgContext.Provider>
   );
@@ -77,7 +78,7 @@ export const getStaticProps: GetStaticProps<
     ]);
     const { props } = await getPageProps();
     return {
-      props: { org: org.toJSON(), user: user.toJSON(), ...props },
+      props: { org: json(org), user: json(user), ...props },
       revalidate: 1,
     };
   } catch (e) {
@@ -88,8 +89,6 @@ export const getStaticProps: GetStaticProps<
 // TODO: We want to statically generate skeleton loading pages for each org.
 // @see {@link https://github.com/vercel/next.js/issues/14200}
 // @see {@link https://github.com/vercel/next.js/discussions/14486}
-export const getStaticPaths: GetStaticPaths<UserVetPageQuery> = async () => {
-  return { paths: [], fallback: true };
-};
+export const getStaticPaths = getPagePaths;
 
 export default withI18n(UserVetPage, { common, user });

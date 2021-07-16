@@ -7,9 +7,7 @@ module.exports = {
   parserOptions: {
     project: [
       path.resolve(__dirname, 'tsconfig.json'),
-      path.resolve(__dirname, 'sw/tsconfig.json'),
       path.resolve(__dirname, 'firebase/functions/tsconfig.json'),
-      path.resolve(__dirname, 'aws/tsconfig.json'),
       path.resolve(__dirname, 'cypress/tsconfig.json'),
     ],
   },
@@ -80,7 +78,7 @@ module.exports = {
     // @see {@link https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-inferrable-types.md}
     // @example
     // async function search(query: string = '') {
-    //   const { users } = await new Query({ query }).search();
+    //   const { users } = await Query.parse({ query }).search();
     //   return users.map(userToOption);
     // }
     '@typescript-eslint/no-inferrable-types': [

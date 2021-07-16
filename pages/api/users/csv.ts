@@ -1,15 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import {
-  UsersQuery,
-  UsersQueryURL,
-  isUsersQueryURL,
-} from 'lib/model/query/users';
 import csv from 'lib/api/csv';
+import { decode } from 'lib/model/query/users';
 import getUsers from 'lib/api/get/users';
 import { handle } from 'lib/api/error';
+import { userToCSV } from 'lib/model/user';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 /**
  * GET - Downloads a CSV list of the filtered users.
@@ -25,28 +21,15 @@ export default async function users(
     res.status(405).end(`Method ${req.method as string} Not Allowed`);
     return;
   }
-
   try {
-    const query = verifyQuery<UsersQuery, UsersQueryURL>(
-      req.query,
-      isUsersQueryURL,
-      UsersQuery
-    );
-
+    const query = decode(req.query as Record<string, string>);
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
     // when we start scaling up (and have orgs with more than 1000 users each).
     query.hitsPerPage = 1000;
-
     await verifyAuth(req.headers, { orgIds: query.orgs });
-
     const { results } = await getUsers(query);
-
     // TODO: Replace the language codes with their actual i18n names.
-    csv(
-      res,
-      'users',
-      results.map((user) => user.toCSV())
-    );
+    csv(res, 'users', results.map(userToCSV));
   } catch (e) {
     handle(e, res);
   }

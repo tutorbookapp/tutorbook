@@ -10,7 +10,7 @@ import {
 } from 'lib/mail/components';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
-import { getEmailLink, getPhoneLink } from 'lib/utils';
+import { first, getEmailLink, getPhoneLink } from 'lib/utils';
 
 export interface DirectMeetingEmailProps {
   meeting: Meeting;
@@ -32,7 +32,7 @@ export default function DirectMeetingEmail({
     <Email>
       <Header />
       <Item left='48px' right='48px'>
-        <P style={{ marginTop: '0px !important' }}>Hi {recipient.firstName},</P>
+        <P style={{ marginTop: '0px !important' }}>Hi {first(recipient.name)},</P>
         <P>
           {creator.name} scheduled a new{' '}
           {isTutoring ? 'tutoring lesson' : 'meeting'} with you:
@@ -59,7 +59,7 @@ export default function DirectMeetingEmail({
         <br />
         <P>
           If you&apos;re unable to attend or if this doesn&apos;t seem like a
-          good match, please get in touch with {creator.firstName} by replying
+          good match, please get in touch with {first(creator.name)} by replying
           to this email or by using the following contact info:
         </P>
         <P>

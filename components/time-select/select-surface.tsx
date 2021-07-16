@@ -20,18 +20,50 @@ import useTranslation from 'next-translate/useTranslation';
 import ChevronLeftIcon from 'components/icons/chevron-left';
 import ChevronRightIcon from 'components/icons/chevron-right';
 
-import { Availability, AvailabilityJSON } from 'lib/model/availability';
+import { Availability } from 'lib/model/availability';
 import {
   getDate,
   getDaysInMonth,
   getMonthsApart,
   getMonthsTimeslots,
   getWeekdayOfFirst,
+  sameDate
 } from 'lib/utils/time';
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';
 
 import styles from './time-select.module.scss';
+
+/**
+ * Checks if a timeslot occurs on a given date.
+ * @param timeslot - The timeslot to check.
+ * @param date - The date which we expect the timeslot to be on.
+ * @return Whether or not the timeslot occurs on the given date.
+ */
+function timeslotOnDate(timeslot: Timeslot, date: Date): boolean {
+  return sameDate(timeslot.from, date) && sameDate(timeslot.to, date);
+}
+
+/**
+ * Returns the timeslots that are available on a given date.
+ * @param date - The JavaScript `Date` object from which we determine the
+ * date (e.g. 1st or 31st), month, and year.
+ * @return An array of timeslots of the requested duration that are available
+ * on the given date.
+ */
+function onDate(availability: Availability, date: Date): Availability {
+  return availability.filter((t) => timeslotOnDate(t, date));
+}
+  
+/**
+ * Returns whether or not there is any availability on a given date.
+ * @param date - The JavaScript `Date` object from which we determine the
+ * date (e.g. 1st or 31st), month, and year.
+ * @return Whether or not there is any available on the given date.
+ */
+function hasDate(availability: Availability, date: Date): boolean {
+  return availability.some((t) => timeslotOnDate(t, date));
+}
 
 export interface SelectSurfaceProps {
   uid?: string;
@@ -89,23 +121,23 @@ function SelectSurface({
     date,
   ]);
 
-  const { data } = useSWR<AvailabilityJSON>(
+  const { data } = useSWR<Availability>(
     uid ? `/api/users/${uid}/availability?month=${month}&year=${year}` : null
   );
   const full = useMemo(() => {
-    const full = new Availability();
+    const all = Availability.parse({});
     const days = Array(7).fill(null);
     days.forEach((_, day) => {
-      full.push(new Timeslot({ from: getDate(day, 0), to: getDate(day, 24) }));
+      all.push(Timeslot.parse({ from: getDate(day, 0), to: getDate(day, 24) }));
     });
-    return getMonthsTimeslots(full, month, year);
+    return getMonthsTimeslots(all, month, year);
   }, [month, year]);
   const availability = useMemo(() => {
     // TODO: Shouldn't I make this empty by default? Not filled?
-    const base = data ? Availability.fromJSON(data) : full;
-    return new Availability(...base.filter((t) => t.from > now));
-  }, [data, month, year, now, full]);
-  const availabilityOnSelected = useMemo(() => availability.onDate(selected), [
+    const base = data ? Availability.parse(data) : full;
+    return Availability.parse(base.filter((t) => t.from > now));
+  }, [data, now, full]);
+  const availabilityOnSelected = useMemo(() => onDate(availability, selected), [
     selected,
     availability,
   ]);
@@ -113,7 +145,7 @@ function SelectSurface({
     () =>
       Array(getDaysInMonth(month))
         .fill(null)
-        .map((_, idx) => availability.hasDate(new Date(year, month, idx + 1))),
+        .map((_, idx) => hasDate(availability, new Date(year, month, idx + 1))),
     [year, month, availability]
   );
 

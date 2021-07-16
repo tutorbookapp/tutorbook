@@ -11,7 +11,7 @@ import Avatar from 'components/avatar';
 import ContactSupportIcon from 'components/icons/contact-support';
 import Intercom from 'lib/intercom';
 
-import { AccountInterface } from 'lib/model/account';
+import { Account } from 'lib/model/account';
 import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
 import Link from 'lib/intl/link';
@@ -89,7 +89,7 @@ export function DarkModeSwitch(): JSX.Element {
 }
 
 interface PopOverAccountProps {
-  account: AccountInterface;
+  account: Account;
 }
 
 export function PopOverAccountButton({
@@ -164,7 +164,7 @@ export default function PopOverMenu({
     await fetch('/api/logout');
     // TODO: Set the default langs both here and in `pages/app` to be
     // the current i18n locale (instead of just English by default).
-    await updateUser(new User({ langs: ['en'] }));
+    await updateUser(User.parse({ langs: ['en'] }));
     window.analytics?.reset();
     Intercom('shutdown');
     Intercom('boot');

@@ -15,17 +15,17 @@ functions in a certain order.
 For example, this could be the definition of the `POST /api/users` endpoint:
 
 ```typescript
-export type CreateUserRes = UserJSON;
+export type CreateUserRes = User;
 
 export default async function createUser(
   req: Req,
   res: Res<CreateUserRes>
 ): Promise<void> {
   try {
-    const body = verifyBody<User, UserJSON>(req.body, isUserJSON, User);
+    const body = User.parse(req.body);
     const user = await createUserDoc(await createAuthUser(body));
     await createUserNotification(user);
-    res.status(201).json(user.toJSON());
+    res.status(201).json(user);
   } catch (e) {
     handle(e, res);
   }

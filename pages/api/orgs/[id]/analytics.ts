@@ -85,12 +85,12 @@ export default async function analytics(
 
       // Analytics snapshots going backwards in time (i.e. latest first).
       const timeline = docs
-        .map(Analytics.fromFirestoreDoc)
+        .map((d) => Analytics.parse(d.data()))
         .sort((a, b) => b.date.valueOf() - a.date.valueOf());
 
       // Calculate the percent change from last week's data (i.e. the latest
       // data from at least a week ago).
-      const current = timeline[0] || new Analytics();
+      const current = Analytics.parse(timeline[0] || {});
       const lastWeekDate = new Date().valueOf() - 6048e5;
       const lastWeek =
         timeline.find((d) => d.date.valueOf() <= lastWeekDate) || current;
@@ -98,19 +98,19 @@ export default async function analytics(
       res.status(200).json({
         volunteers: {
           change: getPercentChange(
-            lastWeek.volunteer.total,
-            current.volunteer.total
+            lastWeek.mentor.total + lastWeek.tutor.total,
+            current.mentor.total + current.tutor.total
           ),
-          total: current.volunteer.total,
-          matched: current.volunteer.matched,
+          total: current.mentor.total + current.tutor.total,
+          matched: current.mentor.matched + current.tutor.matched,
         },
         students: {
           change: getPercentChange(
-            lastWeek.student.total,
-            current.student.total
+            lastWeek.mentee.total + lastWeek.tutee.total,
+            current.mentee.total + current.tutee.total
           ),
-          total: current.student.total,
-          matched: current.student.matched,
+          total: current.mentee.total + current.tutee.total,
+          matched: current.mentee.matched + current.tutee.matched,
         },
         matches: {
           change: getPercentChange(lastWeek.match.total, current.match.total),
@@ -118,7 +118,7 @@ export default async function analytics(
           // TODO: This "average per volunteer" statistic is *really* hacky and
           // isn't really the mean of the # of matches each volunteer have.
           perVolunteer: Math.round(
-            current.match.total / current.volunteer.matched
+            current.match.total / current.mentor.matched + current.tutor.matched
           ),
         },
         meetings: {
@@ -131,8 +131,8 @@ export default async function analytics(
         },
         timeline: timeline.reverse().map((a) => ({
           date: a.date.valueOf(),
-          volunteers: a.volunteer.total,
-          students: a.student.total,
+          volunteers: a.mentor.total + a.tutor.total,
+          students: a.mentee.total + a.tutee.total,
           matches: a.match.total,
           meetings: a.meeting.total,
         })),

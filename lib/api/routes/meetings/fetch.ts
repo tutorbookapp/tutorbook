@@ -1,14 +1,15 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { MeetingJSON } from 'lib/model/meeting';
+import { Meeting } from 'lib/model/meeting';
 import getMatch from 'lib/api/get/match';
 import getMatchMeetings from 'lib/api/get/match-meetings';
 import { handle } from 'lib/api/error';
+import { matchToSegment } from 'lib/model/match';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQueryId from 'lib/api/verify/query-id';
 
-export type FetchMeetingsRes = MeetingJSON[];
+export type FetchMeetingsRes = Meeting[];
 
 export default async function fetchMeetings(
   req: Req,
@@ -26,12 +27,12 @@ export default async function fetchMeetings(
       orgIds: [match.org],
     });
 
-    res.status(200).json(meetings.map((m) => m.toJSON()));
+    res.status(200).json(meetings);
 
     segment.track({
       userId: uid,
       event: 'Match Meetings Fetched',
-      properties: match.toSegment(),
+      properties: matchToSegment(match),
     });
   } catch (e) {
     handle(e, res);

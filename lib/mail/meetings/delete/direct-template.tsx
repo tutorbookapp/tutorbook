@@ -10,7 +10,7 @@ import {
 } from 'lib/mail/components';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
-import { getEmailLink, getPhoneLink, join } from 'lib/utils';
+import { first, getEmailLink, getPhoneLink, join } from 'lib/utils';
 
 export interface DirectMeetingEmailProps {
   meeting: Meeting;
@@ -32,7 +32,7 @@ export default function DirectMeetingEmail({
       <Header />
       <Item left='48px' right='48px'>
         <P style={{ marginTop: '0px !important' }}>
-          Hi {join(recipients.map((p) => p.firstName))},
+          Hi {join(recipients.map((p) => first(p.name)))},
         </P>
         <P>
           {deleter.name} canceled a {isTutoring ? 'tutoring lesson' : 'meeting'}{' '}
@@ -60,7 +60,7 @@ export default function DirectMeetingEmail({
         <br />
         <P>
           If this cancellation seems like a mistake, please get in touch with{' '}
-          {deleter.firstName} by replying to this email or by using the
+          {first(deleter.name)} by replying to this email or by using the
           following contact info:
         </P>
         <P>

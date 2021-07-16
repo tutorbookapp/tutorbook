@@ -6,7 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Pagination from 'components/pagination';
 import Placeholder from 'components/placeholder';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { Callback } from 'lib/model/callback';
 import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
@@ -17,7 +17,7 @@ import styles from './search.module.scss';
 
 interface SearchProps {
   onChange: Callback<UsersQuery>;
-  results: UserJSON[];
+  results: User[];
   hits: number;
   searching: boolean;
   query: UsersQuery;
@@ -71,7 +71,7 @@ export default function Search({
               const search = event.currentTarget.value;
               // TODO: Throttle the actual API requests but immediately show the
               // loading state (i.e. we can't just throttle `setQuery` updates).
-              onChange((p) => new UsersQuery({ ...p, search, page: 0 }));
+              onChange((p) => UsersQuery.parse({ ...p, search, page: 0 }));
             }}
           />
         </div>
@@ -82,7 +82,7 @@ export default function Search({
           results.map((res) => (
             <Result
               key={res.id}
-              user={User.fromJSON(res)}
+              user={User.parse(res)}
               href={`/${org?.id || 'default'}/users/${res.id}?aspect=${
                 query.aspect
               }`}
@@ -96,7 +96,6 @@ export default function Search({
         )}
       </div>
       <Pagination
-        model={UsersQuery}
         setQuery={onChange}
         query={query}
         hits={hits}

@@ -1,4 +1,5 @@
 import { Meeting } from 'lib/model/meeting';
+import { timeslotOverlaps } from 'lib/utils/time';
 
 // Expands events at the far right to use up any remaining
 // space. Returns the number of columns the event can
@@ -6,7 +7,7 @@ import { Meeting } from 'lib/model/meeting';
 export function expand(e: Meeting, colIdx: number, cols: Meeting[][]): number {
   let colSpan = 1;
   cols.slice(colIdx + 1).some((col) => {
-    if (col.some((evt) => e.time.overlaps(evt.time, true))) return true;
+    if (col.some((evt) => timeslotOverlaps(e.time, evt.time, true))) return true;
     colSpan += 1;
     return false;
   });
@@ -50,7 +51,7 @@ export function placeMeetings(meetings: Meeting[]): Meeting[][][][] {
         // Try to place the event inside an existing column.
         let placed = false;
         columns.some((col) => {
-          if (!col[col.length - 1].time.overlaps(e.time, true)) {
+          if (!timeslotOverlaps(col[col.length - 1].time, e.time, true)) {
             col.push(e);
             placed = true;
           }

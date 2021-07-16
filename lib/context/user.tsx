@@ -1,10 +1,10 @@
 import { createContext, useContext } from 'react';
 
-import { Org, OrgInterface } from 'lib/model/org';
-import { User, UserInterface } from 'lib/model/user';
+import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 
-export type UpdateUserParam = UserInterface | ((prev: User) => UserInterface);
-export type UpdateOrgParam = OrgInterface | ((prev: Org) => OrgInterface);
+export type UpdateUserParam = User | ((prev: User) => User);
+export type UpdateOrgParam = Org | ((prev: Org) => Org);
 
 export interface UserContextValue {
   user: User;
@@ -15,7 +15,7 @@ export interface UserContextValue {
 }
 
 export const UserContext = createContext<UserContextValue>({
-  user: new User(),
+  user: User.parse({}),
   orgs: [],
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   updateUser: async (user: UpdateUserParam) => {},

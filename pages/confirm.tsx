@@ -10,7 +10,7 @@ import Notification from 'components/notification';
 import Page from 'components/page';
 
 import { PageProps, getPageProps } from 'lib/page';
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
 import { APIErrorJSON } from 'lib/api/error';
 import useLoginPage from 'lib/hooks/login-page';
 import { withI18n } from 'lib/intl';
@@ -54,7 +54,7 @@ function ConfirmPage(props: PageProps): JSX.Element {
       if (!email) return setError(confirm['no-email']);
       const [signInErr, cred] = await to(auth.signInWithEmailLink(email));
       if (signInErr || !cred?.user) return setError(signInErr?.message || '');
-      const user = new User({
+      const user = User.parse({
         id: cred.user.uid,
         name: cred.user.displayName as string,
         photo: cred.user.photoURL as string,
@@ -68,9 +68,9 @@ function ConfirmPage(props: PageProps): JSX.Element {
       // passed it the ID token.
       const token = await cred.user.getIdToken();
       const [err, res] = await to<
-        AxiosResponse<UserJSON>,
+        AxiosResponse<User>,
         AxiosError<APIErrorJSON>
-      >(axios.put('/api/account', { ...user.toJSON(), token }));
+      >(axios.put('/api/account', { ...user, token }));
 
       let e: string | undefined;
       if (err && err.response) e = err.response.data.message;
@@ -78,7 +78,7 @@ function ConfirmPage(props: PageProps): JSX.Element {
       if (err) e = `Error calling user API: ${err.message}`;
       if (e) return setError(e);
       
-      const { data } = res as AxiosResponse<UserJSON>;
+      const { data } = res as AxiosResponse<User>;
       await mutate('/api/account', data, false);
       
       return localStorage.removeItem('email');
