@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -9,10 +9,11 @@ import { AspectHeader, EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import Signup from 'components/signup';
 
-import { Org } from 'lib/model/org';
+import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { Aspect } from 'lib/model/aspect';
 import { OrgContext } from 'lib/context/org';
+import json from 'lib/model/json';
 import supabase from 'lib/api/supabase';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
@@ -22,10 +23,12 @@ import signup from 'locales/en/signup.json';
 import user3rd from 'locales/en/user3rd.json';
 
 interface SignupPageProps extends PageProps {
-  org?: Org;
+  org?: OrgJSON;
 }
 
-function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
+function SignupPage({ org: jsn, ...props }: SignupPageProps): JSX.Element {
+  const org = useMemo(() => jsn ? Org.parse(jsn) : undefined, [jsn]);
+
   const { query } = useRouter();
   const { lang: locale } = useTranslation();
   const [aspect, setAspect] = useState<Aspect>(() => {
@@ -72,7 +75,7 @@ export const getStaticProps: GetStaticProps<
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const { data } = await supabase.from<Org>('orgs').select().eq('id', ctx.params.org);
   if (!data || !data[0]) return { notFound: true };
-  const org = Org.parse(data[0]);
+  const org: OrgJSON = json(Org.parse(data[0]));
   const { props } = await getPageProps();
   return { props: { org, ...props }, revalidate: 1 };
 };

@@ -8,9 +8,10 @@ import { EmptyHeader } from 'components/navigation';
 import Home from 'components/home';
 import Page from 'components/page';
 
-import { Org } from 'lib/model/org';
+import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
+import json from 'lib/model/json';
 import supabase from 'lib/api/supabase';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
@@ -19,14 +20,14 @@ import common from 'locales/en/common.json';
 import home from 'locales/en/home.json';
 
 interface HomePageProps extends PageProps {
-  org?: Org;
+  org?: OrgJSON;
 }
 
-function HomePage({ org: initialData, ...props }: HomePageProps): JSX.Element {
+function HomePage({ org: jsn, ...props }: HomePageProps): JSX.Element {
   const { query } = useRouter();
   const { data: org } = useSWR(
     typeof query.org === 'string' ? `/api/orgs/${query.org}` : null,
-    { initialData, revalidateOnMount: true }
+    { initialData: jsn ? Org.parse(jsn) : undefined, revalidateOnMount: true }
   );
 
   usePage({ name: 'Org Home', org: org?.id });
@@ -58,7 +59,7 @@ export const getStaticProps: GetStaticProps<
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const { data } = await supabase.from<Org>('orgs').select().eq('id', ctx.params.org);
   if (!data || !data[0]) return { notFound: true };
-  const org = Org.parse(data[0]);
+  const org: OrgJSON = json(Org.parse(data[0]));
   const { props } = await getPageProps();
   return { props: { org: org, ...props }, revalidate: 1 };
 };

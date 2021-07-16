@@ -96,6 +96,7 @@ export const User = Account.extend({
   hash: z.string().optional(),
 });
 export type User = z.infer<typeof User>;
+export type UserJSON = z.input<typeof User>;
 
 export function userToCSV(user: User): Record<string, string> {
   return {

@@ -11,7 +11,7 @@ import Page from 'components/page';
 import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
 
-import { Org } from 'lib/model/org';
+import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { UsersQuery, decode, encode, endpoint } from 'lib/model/query/users';
 import { CallbackParam } from 'lib/model/callback';
@@ -20,6 +20,7 @@ import { OrgContext } from 'lib/context/org';
 import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
 import clone from 'lib/utils/clone';
+import json from 'lib/model/json';
 import { prefetch } from 'lib/fetch';
 import supabase from 'lib/api/supabase';
 import useAnalytics from 'lib/hooks/analytics';
@@ -35,12 +36,14 @@ import query3rd from 'locales/en/query3rd.json';
 import search from 'locales/en/search.json';
 
 interface SearchPageProps extends PageProps {
-  org?: Org;
+  org?: OrgJSON;
 }
 
-function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
+function SearchPage({ org: jsn, ...props }: SearchPageProps): JSX.Element {
+  const org = useMemo(() => jsn ? Org.parse(jsn) : undefined, [jsn]);
+  
   usePage({ name: 'Org Search', org: org?.id });
-
+  
   const { t } = useTranslation();
   const { user: currentUser, orgs, loggedIn } = useUser();
 
@@ -73,7 +76,7 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
       setCanSearch(false);
     } else if (
       currentUser.orgs.includes(org.id) ||
-      !org.domains.length ||
+      !org.domains ||
       org.domains.some((d: string) => currentUser.email.endsWith(`@${d}`)) ||
       orgs.some(({ id }) => id === org.id)
     ) {
@@ -213,13 +216,9 @@ export const getStaticProps: GetStaticProps<
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const { data } = await supabase.from<Org>('orgs').select().eq('id', ctx.params.org);
   if (!data || !data[0]) return { notFound: true };
+  const org: OrgJSON = json(Org.parse(data[0]));
   const { props } = await getPageProps();
-  const org = Org.parse(data[0]);
-  debugger;
-  return {
-    props: { org, ...props },
-    revalidate: 1,
-  };
+  return { props: { org, ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SearchPageQuery> = async () => {
