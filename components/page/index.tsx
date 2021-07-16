@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { GoogleFonts } from 'next-google-fonts';
 import Head from 'next/head';
 import cn from 'classnames';
@@ -6,6 +6,7 @@ import cn from 'classnames';
 import Footer from 'components/footer';
 import Segment from 'components/segment';
 
+import { Org } from 'lib/model/org';
 import { PageProps } from 'lib/page';
 
 import segmentSnippet from './segment-snippet';
@@ -22,13 +23,15 @@ export interface PageComponentProps extends PageProps {
 
 export default function PageComponent({
   title,
-  orgs,
+  orgs: jsn,
   description,
   children,
   formWidth,
   borderless,
   intercom,
 }: PageComponentProps): JSX.Element {
+  const orgs = useMemo(() => jsn ? jsn.map((o) => Org.parse(o)) : jsn, [jsn]);
+
   useEffect(() => {
     if (intercom) return document.body.classList.add('intercom');
     return document.body.classList.remove('intercom');

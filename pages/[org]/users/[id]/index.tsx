@@ -1,6 +1,6 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
+import { GetStaticProps, GetStaticPropsContext } from 'next';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
@@ -10,15 +10,16 @@ import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
-import { PageProps, getPageProps } from 'lib/page';
+import { Org, OrgJSON } from 'lib/model/org';
+import { PageProps, getPagePaths, getPageProps } from 'lib/page';
+import { User, UserJSON } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
 import { Aspect } from 'lib/model/aspect';
-import { Org } from 'lib/model/org';
 import { OrgContext } from 'lib/context/org';
-import { User } from 'lib/model/user';
 import getOrg from 'lib/api/get/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUser from 'lib/api/get/user';
+import json from 'lib/model/json';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
@@ -30,15 +31,15 @@ import user3rd from 'locales/en/user3rd.json';
 // We send the `subjects` and `langs` of the user properly translated as props
 // so as to avoid a flash of invalid data (e.g. locale codes instead of labels).
 interface UserDisplayPageProps extends PageProps {
-  org?: Org;
-  user?: User;
+  org?: OrgJSON;
+  user?: UserJSON;
   langs?: string[];
   subjects?: { [key in Aspect]: string[] };
 }
 
 function UserDisplayPage({
   org,
-  user: initialData,
+  user: jsn,
   langs: initialLangs,
   subjects: initialSubjects,
   ...props
@@ -51,7 +52,7 @@ function UserDisplayPage({
   // @see {@link https://github.com/vercel/next.js/issues/19492}
   const { data } = useSWR<User>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { initialData: jsn ? User.parse(jsn) : undefined, revalidateOnMount: true }
   );
   const [langs, setLangs] = useState<string[]>(initialLangs || []);
   const [subjects, setSubjects] = useState<{ [key in Aspect]: string[] }>(
@@ -84,7 +85,8 @@ function UserDisplayPage({
   }, [data, locale]);
 
   const subjectsDisplayed = useMemo(() => {
-    if (org?.aspects.length === 1) return subjects[org.aspects[0]];
+    if (org?.aspects && org.aspects.length === 1) 
+      return subjects[org.aspects[0]];
     if (Aspect.safeParse(query.aspect).success) 
       return subjects[Aspect.parse(query.aspect)];
     // Many subjects can be both tutoring and mentoring subjects, thus we filter
@@ -146,10 +148,10 @@ export const getStaticProps: GetStaticProps<
     //    "teaches" section could change.
     return {
       props: {
-        org,
+        org: json(org),
         langs,
         subjects: { tutoring, mentoring },
-        user: getTruncatedUser(user),
+        user: json(getTruncatedUser(user)),
         ...props,
       },
       revalidate: 1,
@@ -159,8 +161,6 @@ export const getStaticProps: GetStaticProps<
   }
 };
 
-export const getStaticPaths: GetStaticPaths<UserDisplayPageQuery> = async () => {
-  return { paths: [], fallback: true };
-};
+export const getStaticPaths = getPagePaths;
 
 export default withI18n(UserDisplayPage, { common, error, match3rd, user3rd });
