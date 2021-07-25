@@ -13,7 +13,7 @@ import { Resource } from 'lib/model/resource';
  * `UserDialog` making it easy for students (and/or their parents) to view and
  * feel assured about a potential tutor's qualifications.
  */
-export const SocialType = z.union([ 
+export const SocialType = z.union([
   z.literal('website'),
   z.literal('linkedin'),
   z.literal('twitter'),
@@ -44,14 +44,18 @@ export type Social = z.infer<typeof Social>;
  * @property socials - An array of the account's social media links.
  */
 export const Account = Resource.extend({
-  id: z.string().or(z.number()).transform((i) => `${i}`).default(''),
+  id: z.string().default(''),
   name: z.string().default(''),
-  photo: z.string().url().nullable().default(null).transform((s) => s || '').or(z.literal('')),
-  email: z.string().email().nullable().default(null).transform((s) => s || '').or(z.literal('')),
-  phone: z.string().regex(/^(\+\d{1,3})\d{10}$/).nullable().default(null).transform((s) => s || '').or(z.literal('')),
+  photo: z.string().url().nullable().default(null),
+  email: z.string().email().nullable().default(null),
+  phone: z
+    .string()
+    .regex(/^(\+\d{1,3})\d{10}$/)
+    .nullable()
+    .default(null),
   bio: z.string().default(''),
-  background: z.string().url().nullable().default(null).transform((s) => s || '').or(z.literal('')),
-  venue: z.string().url().nullable().default(null).transform((s) => s || '').or(z.literal('')),
+  background: z.string().url().nullable().default(null),
+  venue: z.string().url().nullable().default(null),
   socials: z.array(Social).default([]),
 });
 export type Account = z.infer<typeof Account>;
