@@ -38,6 +38,9 @@ export function encode(query: MeetingsQuery): Record<string, string> {
   if (query.search) params.search = encodeURIComponent(query.search);
   if (query.hitsPerPage !== 1000) params.hitsPerPage = `${query.hitsPerPage}`;
   if (query.page !== 0) params.page = `${query.page}`;
+  if (query.org) params.org = encodeURIComponent(query.org);
+  if (query.people.length) params.people = json(query.people);
+  if (query.subjects.length) params.subjects = json(query.subjects);
   if (query.tags.length) params.tags = json(query.tags);
   params.from = query.from.toJSON();
   params.to = query.to.toJSON();
@@ -53,9 +56,14 @@ export function decode(params: Record<string, string>): MeetingsQuery {
   if (params.search) query.search = decodeURIComponent(params.search);
   if (params.hitsPerPage) query.hitsPerPage = Number(params.hitsPerPage);
   if (params.page) query.page = Number(params.page);
+  if (params.org) query.org = decodeURIComponent(params.org);
+  if (params.people) query.people = json(params.people);
+  if (params.subjects) query.subjects = json(params.subjects);
   if (params.tags) query.tags = json(params.tags);
-  query.from = new Date(params.from);
-  query.to = new Date(params.to);
+  if (params.from && !Number.isNaN(new Date(params.from).valueOf()))
+    query.from = new Date(params.from);
+  if (params.to && !Number.isNaN(new Date(params.to).valueOf()))
+    query.to = new Date(params.to);
   return query;
 }
 
