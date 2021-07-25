@@ -4,7 +4,6 @@ import { RRule } from 'rrule';
 import { MeetingAction, Meeting, meetingToSegment } from 'lib/model/meeting';
 import analytics from 'lib/api/analytics';
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
-import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMeeting from 'lib/api/get/meeting';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
@@ -17,7 +16,6 @@ import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
 import updateAvailability from 'lib/api/update/availability';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
-import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyOptions from 'lib/api/verify/options';
@@ -85,7 +83,6 @@ export default async function deleteMeeting(
       // TODO: Specify in email that this is only canceling this meeting.
       await Promise.all([
         updateMeetingDoc(meeting),
-        updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
       ]);
     } else if (isRecurring && options.action === 'future') {
@@ -108,14 +105,12 @@ export default async function deleteMeeting(
       // TODO: Specify in email that this is canceling all following meetings.
       await Promise.all([
         updateMeetingDoc(meeting),
-        updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
       ]);
     } else {
       // Delete all meetings. Identical to deleting a non-recurring meeting.
       await Promise.all([
         deleteMeetingDoc(meeting.id),
-        deleteMeetingSearchObj(meeting.id),
         sendEmails(meeting, people, deleter, org),
       ]);
     }

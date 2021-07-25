@@ -7,7 +7,6 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import updateMatchDoc from 'lib/api/update/match-doc';
-import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
@@ -40,7 +39,7 @@ export default async function updateMatch(
 
     const match = updateMatchTags(body);
 
-    await Promise.all([updateMatchDoc(match), updateMatchSearchObj(match)]);
+    await updateMatchDoc(match);
 
     res.status(200).json(match);
 

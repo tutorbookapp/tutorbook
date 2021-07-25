@@ -15,7 +15,6 @@ import updateAuthUser from 'lib/api/update/auth-user';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserDoc from 'lib/api/update/user-doc';
 import updateUserOrgs from 'lib/api/update/user-orgs';
-import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 
@@ -138,10 +137,7 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   const withPhotoUpdate = await updatePhoto(withTagsUpdate);
   const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
-  await Promise.all([
-    updateUserDoc(withAuthUpdate),
-    updateUserSearchObj(withAuthUpdate),
-  ]);
+  await updateUserDoc(withAuthUpdate);
 
   res.status(200).json(withAuthUpdate);
   segment.track({

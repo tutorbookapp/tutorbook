@@ -2,7 +2,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import analytics from 'lib/api/analytics';
 import deleteMatchDoc from 'lib/api/delete/match-doc';
-import deleteMatchSearchObj from 'lib/api/delete/match-search-obj';
 import getMatch from 'lib/api/get/match';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
@@ -30,10 +29,7 @@ export default async function deleteMatch(
       orgIds: [match.org],
     });
 
-    await Promise.all([
-      deleteMatchDoc(match.id),
-      deleteMatchSearchObj(match.id),
-    ]);
+    await deleteMatchDoc(match.id);
 
     res.status(200).end();
 

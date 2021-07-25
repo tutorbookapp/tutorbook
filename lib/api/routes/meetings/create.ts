@@ -6,9 +6,7 @@ import { Match, matchToSegment } from 'lib/model/match';
 import { Meeting, meetingToSegment } from 'lib/model/meeting';
 import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
-import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
-import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMatch from 'lib/api/get/match';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
@@ -75,7 +73,6 @@ export default async function createMeeting(
 
       // Create match (b/c it doesn't already exist).
       body.match = await createMatchDoc(updateMatchTags(body.match));
-      await createMatchSearchObj(body.match);
 
       segment.track({
         userId: creator.id,
@@ -107,7 +104,6 @@ export default async function createMeeting(
     body.time.last = getLastTime(body.time);
 
     const meeting = await createMeetingDoc(updateMeetingTags(body));
-    await createMeetingSearchObj(meeting);
 
     const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));
     await sendEmails(meeting, people, creator, org, orgAdmins);

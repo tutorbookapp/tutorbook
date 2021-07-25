@@ -3,7 +3,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { Match, matchToSegment } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
-import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
@@ -54,7 +53,6 @@ export default async function createMatch(
       verifyIsOrgAdmin(await getOrg(body.org), creator.id);
 
     const match = await createMatchDoc(updateMatchTags(body));
-    await createMatchSearchObj(match);
 
     logger.info(`Created ${match.toString()}.`);
 
