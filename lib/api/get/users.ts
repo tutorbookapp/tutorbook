@@ -74,5 +74,6 @@ export default async function getUsers(
       query.hitsPerPage * query.page + 1,
       query.hitsPerPage * (query.page + 1)
     );
-  return { hits: count || 0, results: data || [] };
+  const results = (data || []).map((u) => User.parse(u));
+  return { results, hits: count || results.length };
 }
