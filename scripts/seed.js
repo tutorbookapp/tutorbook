@@ -81,67 +81,6 @@ const usersIdx = search.initIndex(`${prefix}-users`);
 const matchesIdx = search.initIndex(`${prefix}-matches`);
 const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
-function createIndices() {
-  logger.info('Creating indices...');
-  return Promise.all([
-    usersIdx.setSettings({
-      searchableAttributes: [
-        'name',
-        'unordered(email)',
-        'unordered(phone)',
-        'unordered(bio)',
-        'unordered(reference)',
-        'unordered(verifications.notes)',
-        'unordered(tutoring)',
-        'unordered(mentoring)',
-        'unordered(socials.url)',
-      ],
-      attributesForFaceting: [
-        'filterOnly(_availability)',
-        'filterOnly(email)',
-        'filterOnly(featured)',
-        'filterOnly(langs)',
-        'filterOnly(mentoring)',
-        'filterOnly(tutoring)',
-        'filterOnly(orgs)',
-        'filterOnly(parents)',
-        'filterOnly(phone)',
-        'filterOnly(verifications.checks)',
-      ],
-    }),
-    matchesIdx.setSettings({
-      attributesForFaceting: [
-        'filterOnly(org)',
-        'filterOnly(people.id)',
-        'filterOnly(subjects)',
-      ],
-    }),
-    meetingsIdx.setSettings({
-      attributesForFaceting: [
-        'filterOnly(match.org)',
-        'filterOnly(match.people.id)',
-        'filterOnly(match.subjects)',
-        'filterOnly(time.from)',
-        'filterOnly(time.last)',
-      ],
-    }),
-  ]);
-}
-
-async function clear() {
-  logger.info('Clearing data...');
-  const clearFirestoreEndpoint =
-    `http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/` +
-    `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}/databases/(default)/` +
-    `documents`;
-  await Promise.all([
-    usersIdx.clearObjects(),
-    matchesIdx.clearObjects(),
-    meetingsIdx.clearObjects(),
-    axios.delete(clearFirestoreEndpoint),
-  ]);
-}
-
 async function seed(overrides = {}) {
   let matches = [];
   matches.push({ ...match, ...overrides.match });
@@ -195,10 +134,4 @@ async function seed(overrides = {}) {
   await create('meetings', meetings);
 }
 
-async function main(overrides) {
-  await clear();
-  await createIndices();
-  await seed(overrides);
-}
-
-if (require.main === module) main();
+if (require.main === module) seed();
