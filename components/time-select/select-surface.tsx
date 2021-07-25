@@ -27,7 +27,7 @@ import {
   getMonthsApart,
   getMonthsTimeslots,
   getWeekdayOfFirst,
-  sameDate
+  sameDate,
 } from 'lib/utils/time';
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';
@@ -54,7 +54,7 @@ function timeslotOnDate(timeslot: Timeslot, date: Date): boolean {
 function onDate(availability: Availability, date: Date): Availability {
   return availability.filter((t) => timeslotOnDate(t, date));
 }
-  
+
 /**
  * Returns whether or not there is any availability on a given date.
  * @param date - The JavaScript `Date` object from which we determine the
@@ -125,18 +125,17 @@ function SelectSurface({
     uid ? `/api/users/${uid}/availability?month=${month}&year=${year}` : null
   );
   const full = useMemo(() => {
-    const all = Availability.parse({});
+    const all: Availability = [];
     const days = Array(7).fill(null);
     days.forEach((_, day) => {
       all.push(Timeslot.parse({ from: getDate(day, 0), to: getDate(day, 24) }));
     });
     return getMonthsTimeslots(all, month, year);
   }, [month, year]);
-  const availability = useMemo(() => {
-    // TODO: Shouldn't I make this empty by default? Not filled?
-    const base = data ? Availability.parse(data) : full;
-    return Availability.parse(base.filter((t) => t.from > now));
-  }, [data, now, full]);
+  const availability = useMemo(
+    () => Availability.parse((data || full).filter((t) => t.from > now)),
+    [data, now, full]
+  );
   const availabilityOnSelected = useMemo(() => onDate(availability, selected), [
     selected,
     availability,
