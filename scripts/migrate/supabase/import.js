@@ -12,7 +12,8 @@ const logger = require('../../lib/logger');
 
 function email(email, required = false) {
   if (!required && email === null) return null;
-  if (/^[A-Za-z0-9._~+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$/.test(email)) return email;
+  if (/^[A-Za-z0-9._~+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$/.test(email))
+    return email;
   logger.error(`Invalid email: ${email}`);
   debugger;
   throw new Error(`Invalid email: ${email}`);
@@ -119,8 +120,8 @@ async function fetchUsers() {
       recur: t.recur || null,
       last: t.last ? t.last.toDate() : null,
     })),
-    mentoring: d.mentoring,
-    tutoring: d.tutoring,
+    mentoring: d.mentoring.subjects,
+    tutoring: d.tutoring.subjects,
     langs: d.langs.length ? d.langs : ['en'],
     visible: d.visible || false,
     featured: d.featured || [],
@@ -151,27 +152,31 @@ function buildVerifications() {
   const orgIds = require(path.resolve(__dirname, './ids-orgs.json'));
   const users = require(path.resolve(__dirname, './orig-users.json'));
   logger.info(`Parsing ${users.length} users' verifications...`);
-  const verifications = users.map((u) => u.verifications.map((v) => {
-    if (v.user === 'wxFMAbyEuHUkVeORImH3iSMdlL93')
-      v.user = '1j0tRKGtpjSX33gLsLnalxvd1Tl2';
-    if (!userIds[v.user]) {
-      logger.error(`No user (${v.user}): ${JSON.stringify(v, null, 2)}`);
-      debugger;
-    }
-    if (!userIds[u.id]) {
-      logger.error(`No user (${u.id}): ${JSON.stringify(u, null, 2)}`);
-      debugger;
-    }
-    return {
-      creator: userIds[v.user],
-      user: userIds[v.user],
-      org: orgIds[v.org] || orgIds[u.orgs[0]],
-      checks: v.checks || [],
-      notes: v.notes || '',
-      created: date(v.created),
-      updated: date(v.updated),
-    };
-  })).flat();
+  const verifications = users
+    .map((u) =>
+      u.verifications.map((v) => {
+        if (v.user === 'wxFMAbyEuHUkVeORImH3iSMdlL93')
+          v.user = '1j0tRKGtpjSX33gLsLnalxvd1Tl2';
+        if (!userIds[v.user]) {
+          logger.error(`No user (${v.user}): ${JSON.stringify(v, null, 2)}`);
+          debugger;
+        }
+        if (!userIds[u.id]) {
+          logger.error(`No user (${u.id}): ${JSON.stringify(u, null, 2)}`);
+          debugger;
+        }
+        return {
+          creator: userIds[v.user],
+          user: userIds[v.user],
+          org: orgIds[v.org] || orgIds[u.orgs[0]],
+          checks: v.checks || [],
+          notes: v.notes || '',
+          created: date(v.created),
+          updated: date(v.updated),
+        };
+      })
+    )
+    .flat();
   const verificationsPath = path.resolve(__dirname, './verifications.json');
   logger.info(`Saving parsed verifications to ${verificationsPath}...`);
   fs.writeFileSync(verificationsPath, JSON.stringify(verifications, null, 2));
@@ -182,26 +187,30 @@ function buildRelationPeople() {
   const userIds = require(path.resolve(__dirname, './ids-users.json'));
   const matches = require(path.resolve(__dirname, './orig-matches.json'));
   logger.info(`Parsing ${matches.length} people relations...`);
-  const people = matches.map((m) => m.people.map((p) => {
-    if (!userIds[p.id]) {
-      logger.error(`No user (${m.id}): ${JSON.stringify(p, null, 2)}`);
-      debugger;
-    }
-    if (!matchIds[m.id]) {
-      logger.error(`No match (${m.id}): ${JSON.stringify(m, null, 2)}`);
-      debugger;
-    }
-    if (!p.roles.length) {
-      logger.error(`No roles (${m.id}): ${JSON.stringify(p, null, 2)}`);
-      debugger;
-    }
-    return {
-      user: userIds[p.id],
-      meeting: null,
-      match: matchIds[m.id],
-      roles: p.roles,
-    };
-  })).flat();
+  const people = matches
+    .map((m) =>
+      m.people.map((p) => {
+        if (!userIds[p.id]) {
+          logger.error(`No user (${m.id}): ${JSON.stringify(p, null, 2)}`);
+          debugger;
+        }
+        if (!matchIds[m.id]) {
+          logger.error(`No match (${m.id}): ${JSON.stringify(m, null, 2)}`);
+          debugger;
+        }
+        if (!p.roles.length) {
+          logger.error(`No roles (${m.id}): ${JSON.stringify(p, null, 2)}`);
+          debugger;
+        }
+        return {
+          user: userIds[p.id],
+          meeting: null,
+          match: matchIds[m.id],
+          roles: p.roles,
+        };
+      })
+    )
+    .flat();
   const peoplePath = path.resolve(__dirname, './relation_people.json');
   logger.info(`Saving parsed people relations to ${peoplePath}...`);
   fs.writeFileSync(peoplePath, JSON.stringify(people, null, 2));
@@ -212,20 +221,24 @@ function buildRelationOrgs() {
   const orgIds = require(path.resolve(__dirname, './ids-orgs.json'));
   const users = require(path.resolve(__dirname, './orig-users.json'));
   logger.info(`Parsing ${users.length} org relations...`);
-  const orgs = users.map((u) => u.orgs.map((orgId) => {
-    if (!userIds[u.id]) {
-      logger.error(`No user (${u.id}): ${JSON.stringify(u, null, 2)}`);
-      debugger;
-    }
-    if (!orgIds[orgId]) {
-      logger.error(`No org (${u.id}): (${orgId})`);
-      debugger;
-    }
-    return {
-      user: userIds[u.id],
-      org: orgIds[orgId],
-    };
-  })).flat();
+  const orgs = users
+    .map((u) =>
+      u.orgs.map((orgId) => {
+        if (!userIds[u.id]) {
+          logger.error(`No user (${u.id}): ${JSON.stringify(u, null, 2)}`);
+          debugger;
+        }
+        if (!orgIds[orgId]) {
+          logger.error(`No org (${u.id}): (${orgId})`);
+          debugger;
+        }
+        return {
+          user: userIds[u.id],
+          org: orgIds[orgId],
+        };
+      })
+    )
+    .flat();
   const orgsPath = path.resolve(__dirname, './relation_orgs.json');
   logger.info(`Saving parsed org relations to ${orgsPath}...`);
   fs.writeFileSync(orgsPath, JSON.stringify(orgs, null, 2));
@@ -236,20 +249,24 @@ function buildRelationMembers() {
   const orgIds = require(path.resolve(__dirname, './ids-orgs.json'));
   const orgs = require(path.resolve(__dirname, './orig-orgs.json'));
   logger.info(`Parsing ${orgs.length} member relations...`);
-  const members = orgs.map((o) => o.members.map((id) => {
-    if (!userIds[id]) {
-      logger.error(`No user (${o.id}): (${id})`);
-      debugger;
-    }
-    if (!orgIds[o.id]) {
-      logger.error(`No org (${o.id}): ${JSON.stringify(o, null, 2)}`);
-      debugger;
-    }
-    return {
-      user: userIds[id],
-      org: orgIds[o.id],
-    };
-  })).flat();
+  const members = orgs
+    .map((o) =>
+      o.members.map((id) => {
+        if (!userIds[id]) {
+          logger.error(`No user (${o.id}): (${id})`);
+          debugger;
+        }
+        if (!orgIds[o.id]) {
+          logger.error(`No org (${o.id}): ${JSON.stringify(o, null, 2)}`);
+          debugger;
+        }
+        return {
+          user: userIds[id],
+          org: orgIds[o.id],
+        };
+      })
+    )
+    .flat();
   const membersPath = path.resolve(__dirname, './relation_members.json');
   logger.info(`Saving parsed member relations to ${membersPath}...`);
   fs.writeFileSync(membersPath, JSON.stringify(members, null, 2));
@@ -259,20 +276,24 @@ function buildRelationParents() {
   const userIds = require(path.resolve(__dirname, './ids-users.json'));
   const users = require(path.resolve(__dirname, './orig-users.json'));
   logger.info(`Parsing ${users.length} parent relations...`);
-  const parents = users.map((u) => u.parents.map((id) => {
-    if (!userIds[u.id]) {
-      logger.error(`No user (${u.id}): ${JSON.stringify(u, null, 2)}`);
-      debugger;
-    }
-    if (!userIds[id]) {
-      logger.error(`No parent (${u.id}): (${id})`);
-      debugger;
-    }
-    return {
-      user: userIds[u.id],
-      parent: userIds[id],
-    };
-  })).flat();
+  const parents = users
+    .map((u) =>
+      u.parents.map((id) => {
+        if (!userIds[u.id]) {
+          logger.error(`No user (${u.id}): ${JSON.stringify(u, null, 2)}`);
+          debugger;
+        }
+        if (!userIds[id]) {
+          logger.error(`No parent (${u.id}): (${id})`);
+          debugger;
+        }
+        return {
+          user: userIds[u.id],
+          parent: userIds[id],
+        };
+      })
+    )
+    .flat();
   const parentsPath = path.resolve(__dirname, './relation_parents.json');
   logger.info(`Saving parsed parent relations to ${parentsPath}...`);
   fs.writeFileSync(parentsPath, JSON.stringify(parents, null, 2));
@@ -291,14 +312,18 @@ async function insert(table, debug = false) {
   });
   logger.info(`Inserting ${rows.length} rows into ${table}...`);
   if (debug) {
-    await Promise.all(rows.map(async (row) => {
-      const { data, error } = await supabase.from(table).insert(row);
-      if (error) {
-        logger.error(`Error inserting row: ${JSON.stringify(error, null, 2)}`);
-        debugger;
-        throw new Error(`Error inserting row: ${error.message}`);
-      }
-    }));
+    await Promise.all(
+      rows.map(async (row) => {
+        const { data, error } = await supabase.from(table).insert(row);
+        if (error) {
+          logger.error(
+            `Error inserting row: ${JSON.stringify(error, null, 2)}`
+          );
+          debugger;
+          throw new Error(`Error inserting row: ${error.message}`);
+        }
+      })
+    );
   } else {
     const { data, error } = await supabase.from(table).insert(rows);
     if (error) {

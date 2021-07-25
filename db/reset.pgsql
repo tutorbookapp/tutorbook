@@ -9,8 +9,6 @@ drop type role cascade;
 drop type social_type cascade;
 drop type social cascade;
 
-drop type subjects cascade;
-
 drop type timeslot cascade;
 
 drop type venue cascade;
