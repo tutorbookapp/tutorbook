@@ -36,7 +36,9 @@ export default function Avatar({
     >
       {!loading && !validPhoto(img) && (
         <div className={styles.photoWrapper}>
-          {priority && <link rel='preload' as='image' href={img} />}
+          {priority && (
+            <link rel='preload' as='image' href={img} crossOrigin='anonymous' />
+          )}
           <img data-cy='avatar' className={styles.photo} src={img} alt='' />
         </div>
       )}
