@@ -52,16 +52,26 @@ function getFilterString(query: UsersQuery): string {
 export default async function getUsers(
   query: UsersQuery
 ): Promise<{ hits: number; results: User[] }> {
+  // TODO: Figure out how to perform JOIN queries with the `relation_orgs` and
+  // `relation_parents` tables. See: https://git.io/J4IPY
+  // TODO: Setup availability indexing and filtering using PostgreSQL.
+  // TODO: Order by multiple attributes to show featured results first.
   const { data, count } = await supabase
     .from<User>('users')
     .select('*', { count: 'exact' })
-    .overlaps('parents', query.parents)
-    .overlaps('orgs', query.orgs)
-    .overlaps('tags', query.tags)
-    .overlaps(`${query.aspect}->subjects` as keyof User, query.subjects)
-    .overlaps('langs', query.langs)
+    .contains('tags', query.tags)
+    .contains(
+      query.aspect,
+      query.subjects.map((s) => s.value)
+    )
+    .contains(
+      'langs',
+      query.langs.map((s) => s.value)
+    )
+    .eq('visible', query.visible)
+    .order('id', { ascending: false }) // Show newer people first.
     .range(
-      query.hitsPerPage * query.page,
+      query.hitsPerPage * query.page + 1,
       query.hitsPerPage * (query.page + 1)
     );
   return { hits: count || 0, results: data || [] };
