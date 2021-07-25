@@ -78,7 +78,7 @@ export type Subjects = z.infer<typeof Subjects>;
  * meetings).
  */
 export const User = Account.extend({
-  age: z.number().optional(),
+  age: z.number().nullable().default(null),
   orgs: z.array(z.string()).default([]),
   availability: Availability.default(Availability.parse([])),
   mentoring: Subjects.default({ subjects: [], searches: [] }),
@@ -91,7 +91,7 @@ export const User = Account.extend({
   roles: z.array(Role).default([]),
   tags: z.array(UserTag).default([]),
   reference: z.string().default(''),
-  timezone: z.string().default('America/Los_Angeles'),
+  timezone: z.string().nullable().default(null),
   token: z.string().optional(),
   hash: z.string().optional(),
 });

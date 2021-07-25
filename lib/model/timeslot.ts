@@ -20,9 +20,9 @@ export const Timeslot = z.object({
   id: z.string().default(() => nanoid(5)),
   from: date.default(() => new Date()),
   to: date.default(() => new Date()),
-  exdates: z.array(date).optional(),
-  recur: z.string().optional(),
-  last: date.optional(),
+  exdates: z.array(date).default([]),
+  recur: z.string().nullable().default(null),
+  last: date.nullable().default(null),
 });
 export type Timeslot = z.infer<typeof Timeslot>;
 

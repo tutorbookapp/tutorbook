@@ -44,7 +44,7 @@ export type Social = z.infer<typeof Social>;
  * @property socials - An array of the account's social media links.
  */
 export const Account = Resource.extend({
-  id: z.string().default(''),
+  id: z.string().or(z.number()).transform((i) => `${i}`).default(''),
   name: z.string().default(''),
   photo: z.string().url().nullable().default(null).transform((s) => s || '').or(z.literal('')),
   email: z.string().email().nullable().default(null).transform((s) => s || '').or(z.literal('')),

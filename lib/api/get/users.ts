@@ -2,25 +2,15 @@ import {
   addArrayFilter,
   addOptionsFilter,
   addStringFilter,
-  list,
 } from 'lib/api/search';
 import { getDate, sliceAvailability } from 'lib/utils/time';
 import { Availability } from 'lib/model/availability';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
 import { UsersQuery } from 'lib/model/query/users';
+import logger from 'lib/api/logger';
+import supabase from 'lib/api/supabase';
 
-/**
- * Creates and returns the filter string to search our Algolia index based on
- * `this.props.filters`. Note that due to Algolia restrictions, we can't nest
- * ANDs with ORs (e.g. `(A AND B) OR (B AND C)`). Because of this limitation, we
- * merge results from many queries on the client side (e.g. get results for
- * `A AND B` and merge them with the results for `B AND C`).
- * @see {@link http://bit.ly/3aHh6Pn}
- * @see {@link http://bit.ly/3avDhI6}
- * @see {@link http://bit.ly/38IXW9d}
- * @todo Why do we use `OR` to concat the `orgs` prop filter?
- */
 function getFilterString(query: UsersQuery): string {
   let str = '';
   if (typeof query.visible === 'boolean')
@@ -59,19 +49,21 @@ function getFilterString(query: UsersQuery): string {
   return addArrayFilter(str, filtering, '_availability', 'OR');
 }
 
-/**
- * Fetches users from our Algolia search indices based on a given query.
- * @param query - The query to use while searching.
- * @return Promise that resolves to an object containing:
- * 1. The total number of hits for that query (`hits`).
- * 2. The requested results (`users`) as an array of `User` objects.
- * We set `featured` as an optional filter in order to promote those results.
- * @see {@link http://bit.ly/2LVJcM9}
- */
 export default async function getUsers(
   query: UsersQuery
 ): Promise<{ hits: number; results: User[] }> {
-  const filters = getFilterString(query);
-  const optionalFilters = `featured:${query.aspect}`;
-  return list('users', query, User.parse, [filters], optionalFilters);
+  const { data, count } = await supabase
+    .from<User>('users')
+    .select('*', { count: 'exact' })
+    .overlaps('parents', query.parents)
+    .overlaps('orgs', query.orgs)
+    .overlaps('tags', query.tags)
+    .overlaps(`${query.aspect}->subjects` as keyof User, query.subjects)
+    .overlaps('langs', query.langs)
+    .range(
+      query.hitsPerPage * query.page, 
+      query.hitsPerPage * (query.page + 1)
+    );
+  debugger;
+  return { hits: count || 0, results: data || [] }; 
 }
