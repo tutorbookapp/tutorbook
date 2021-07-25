@@ -23,9 +23,9 @@ export default function useURLParamSync<T extends Query>(
     setQuery((prev) => {
       if (typeof window === 'undefined') return prev;
       const params = new URLSearchParams(window.location.search);
-      const updated = { 
-        ...prev, 
-        ...decode(Object.fromEntries(params.entries()))
+      const updated = {
+        ...prev,
+        ...decode(Object.fromEntries(params.entries())),
       };
       if (dequal(prev, updated)) return prev;
       return updated;
@@ -40,11 +40,9 @@ export default function useURLParamSync<T extends Query>(
     overrides.forEach((field) => {
       delete params[field];
     });
-    const updatedURL = url.format({
-      pathname: window.location.pathname,
-      query: params,
-    });
-    const prevURL = `${window.location.pathname}${window.location.search}`;
+    const { pathname } = window.location;
+    const updatedURL = url.format({ pathname, query: params });
+    const prevURL = `${pathname}${window.location.search}`;
     if (updatedURL === prevURL) return;
     void Router.replace(updatedURL, undefined, { shallow: true });
   }, [encode, query, overrides]);
