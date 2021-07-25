@@ -19,7 +19,11 @@ export interface APIErrorJSON {
  * indicating that the user's JWT is invalid could be `auth/no-jwt`).
  */
 export class APIError extends Error {
-  public constructor(message: string, public readonly code: number = 400) {
+  public constructor(
+    message: string,
+    public readonly code: number = 400,
+    public readonly statusMessage: string = message
+  ) {
     super(period(message));
   }
 
@@ -36,7 +40,7 @@ function send(e: APIError, res: ServerResponse): void {
   const stringified = JSON.stringify(e);
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Content-Length', Buffer.byteLength(stringified));
-  res.statusMessage = e.message;
+  res.statusMessage = e.statusMessage;
   res.statusCode = e.code;
   res.end(stringified);
 }
@@ -47,7 +51,7 @@ export function handle(e: unknown, res: ServerResponse): void {
   if (e instanceof APIError) return send(e, res);
   if (e instanceof ZodError) {
     debugger;
-    return send(new APIError(e.message, 400), res);
+    return send(new APIError(e.message, 400, 'Type Error'), res);
   }
   if (e instanceof Error) return send(new APIError(e.message, 500), res);
   if (typeof e === 'string') return send(new APIError(e, 500), res);
