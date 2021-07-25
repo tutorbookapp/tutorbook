@@ -108,6 +108,7 @@ async function fetchOrgs() {
 
 async function fetchUsers() {
   await fetch('users', (d) => ({
+    id: d.id,
     name: d.name,
     photo: url(d.photo || null),
     email: email(d.email || null),

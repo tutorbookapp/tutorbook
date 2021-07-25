@@ -29,7 +29,7 @@ create type venue as (
 /* TODO: See if there's a way to simply extend the existing `role` enum. */
 create type user_tag as enum ('vetted', 'matched', 'meeting', 'tutor', 'tutee', 'mentor', 'mentee', 'parent');
 create table public.users (
-  "id" bigint generated always as identity primary key,
+  "id" text unique not null primary key,
   "uid" uuid references auth.users(id) unique,
   "name" text not null check(length(name) > 1 AND name !~ '^\s+$'),
   "photo" url,
@@ -80,8 +80,8 @@ create table public.orgs (
 create type verification_check as enum('email', 'background-check', 'academic-email', 'training', 'interview');
 create table public.verifications (
   "id" bigint generated always as identity primary key,
-  "creator" bigint references public.users(id) not null,
-  "user" bigint references public.users(id) not null,
+  "creator" text references public.users(id) not null,
+  "user" text references public.users(id) not null,
   "org" text references public.orgs(id) not null,
   "checks" verification_check[] not null check(cardinality(checks) > 0),
   "notes" text not null,
@@ -93,7 +93,7 @@ create type match_tag as enum('meeting');
 create table public.matches (
   "id" bigint generated always as identity primary key,
   "org" text references public.orgs(id) not null,
-  "creator" bigint references public.users(id) not null,
+  "creator" text references public.users(id) not null,
   "subjects" text[] not null check(cardinality(subjects) > 0),
   "message" text not null,
   "tags" match_tag[] not null,
@@ -106,7 +106,7 @@ create type meeting_status as enum('created', 'pending', 'logged', 'approved');
 create table public.meetings (
   "id" bigint generated always as identity primary key,
   "org" text references public.orgs(id) not null,
-  "creator" bigint references public.users(id) not null,
+  "creator" text references public.users(id) not null,
   "subjects" text[] not null check(cardinality(subjects) > 0),
   "status" meeting_status not null default 'created',
   "match" bigint references public.matches(id),
@@ -119,22 +119,22 @@ create table public.meetings (
 );
 
 create table relation_parents (
-  "user" bigint references public.users(id) not null,
-  "parent" bigint references public.users(id) not null,
+  "user" text references public.users(id) not null,
+  "parent" text references public.users(id) not null,
   primary key ("user", "parent")
 );
 create table relation_orgs (
-  "user" bigint references public.users(id) not null,
+  "user" text references public.users(id) not null,
   "org" text references public.orgs(id) not null,
   primary key ("user", "org")
 );
 create table relation_members (
-  "user" bigint references public.users(id) not null,
+  "user" text references public.users(id) not null,
   "org" text references public.orgs(id) not null,
   primary key ("user", "org")
 );
 create table relation_people (
-  "user" bigint references public.users(id) not null,
+  "user" text references public.users(id) not null,
   "meeting" bigint references public.meetings(id),
   "match" bigint references public.matches(id),
   "roles" role[] not null check(cardinality(roles) > 0),
