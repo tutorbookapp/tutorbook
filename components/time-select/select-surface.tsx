@@ -12,6 +12,7 @@ import { Button } from '@rmwc/button';
 import { IconButton } from '@rmwc/icon-button';
 import cn from 'classnames';
 import { dequal } from 'dequal/lite';
+import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 import useSWR from 'swr';
@@ -20,7 +21,6 @@ import useTranslation from 'next-translate/useTranslation';
 import ChevronLeftIcon from 'components/icons/chevron-left';
 import ChevronRightIcon from 'components/icons/chevron-right';
 
-import { Availability } from 'lib/model/availability';
 import {
   getDate,
   getDaysInMonth,
@@ -29,6 +29,7 @@ import {
   getWeekdayOfFirst,
   sameDate,
 } from 'lib/utils/time';
+import { Availability } from 'lib/model/availability';
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';
 
@@ -128,7 +129,14 @@ function SelectSurface({
     const all: Availability = [];
     const days = Array(7).fill(null);
     days.forEach((_, day) => {
-      all.push(Timeslot.parse({ from: getDate(day, 0), to: getDate(day, 24) }));
+      all.push({
+        from: getDate(day, 0),
+        to: getDate(day, 24),
+        id: nanoid(5),
+        exdates: [],
+        recur: null,
+        last: null,
+      });
     });
     return getMonthsTimeslots(all, month, year);
   }, [month, year]);
