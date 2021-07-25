@@ -19,10 +19,7 @@ import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 
-function mergeSocials(
-  overrides: Social[],
-  baseline: Social[]
-): Social[] {
+function mergeSocials(overrides: Social[], baseline: Social[]): Social[] {
   const socials = clone(overrides);
   baseline.forEach((s) => {
     if (!socials.some((sc) => sc.type === s.type)) socials.push(clone(s));
@@ -30,10 +27,7 @@ function mergeSocials(
   return socials;
 }
 
-function mergeArrays<T>(
-  overrides: T[],
-  baseline: T[],
-): T[] {
+function mergeArrays<T>(overrides: T[], baseline: T[]): T[] {
   const merged = clone(overrides);
   baseline.forEach((i) => {
     if (!merged.some((im) => dequal(im, i))) merged.push(clone(i));
@@ -47,13 +41,6 @@ function mergeAvailability(
   baseline: Availability
 ): Availability {
   return Availability.parse(mergeArrays(overrides, baseline));
-}
-
-function mergeSubjects(overrides: Subjects, baseline: Subjects): Subjects {
-  return {
-    subjects: mergeArrays(overrides.subjects, baseline.subjects),
-    searches: mergeArrays(overrides.searches, baseline.searches),
-  };
 }
 
 /**
@@ -84,8 +71,8 @@ function mergeUsers(overrides: User, baseline: User): User {
       overrides.availability,
       baseline.availability
     ),
-    mentoring: mergeSubjects(overrides.mentoring, baseline.mentoring),
-    tutoring: mergeSubjects(overrides.tutoring, baseline.tutoring),
+    mentoring: mergeArrays(overrides.mentoring, baseline.mentoring),
+    tutoring: mergeArrays(overrides.tutoring, baseline.tutoring),
     langs: mergeArrays(overrides.langs, baseline.langs),
     parents: mergeArrays(overrides.parents, baseline.parents),
     verifications: mergeArrays(overrides.verifications, baseline.verifications),
@@ -122,14 +109,16 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
     // TODO: Guard against CSRF attacks (using a CSRF cookie token).
     const jwt = body.token;
     if (!jwt) throw new APIError('Could not find an auth cookie or JWT', 401);
-    
+
     // Only process if the user just signed in in the last 5 minutes.
-    const [err, token] = await to<DecodedIdToken>(auth.verifyIdToken(jwt, true));
+    const [err, token] = await to<DecodedIdToken>(
+      auth.verifyIdToken(jwt, true)
+    );
     if (err) throw new APIError(`Your JWT is invalid: ${err.message}`, 401);
     if (!token) throw new APIError('Could not decode your ID token', 401);
-    if (new Date().getTime() / 1000 - token.auth_time > 5 * 60) 
+    if (new Date().getTime() / 1000 - token.auth_time > 5 * 60)
       throw new APIError('A more recent login is required. Try again', 401);
-   
+
     // Create and set a new session cookie that expires after 5 days.
     const expiresIn = 5 * 24 * 60 * 60 * 1000;
     const [e, cookie] = await to(auth.createSessionCookie(jwt, { expiresIn }));
@@ -143,7 +132,7 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
       })
     );
   }
-  
+
   const withOrgsUpdate = updateUserOrgs(merged);
   const withTagsUpdate = updateUserTags(withOrgsUpdate);
   const withPhotoUpdate = await updatePhoto(withTagsUpdate);
