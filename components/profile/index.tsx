@@ -102,18 +102,16 @@ export default function Profile(): JSX.Element {
   );
   const onMentoringSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          User.parse({ ...prev, mentoring: { ...prev.mentoring, subjects } })
+      setUser((prev) =>
+        User.parse({ ...prev, mentoring: { ...prev.mentoring, subjects } })
       );
     },
     [setUser]
   );
   const onTutoringSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          User.parse({ ...prev, tutoring: { ...prev.tutoring, subjects } })
+      setUser((prev) =>
+        User.parse({ ...prev, tutoring: { ...prev.tutoring, subjects } })
       );
     },
     [setUser]
@@ -125,12 +123,7 @@ export default function Profile(): JSX.Element {
     [setUser]
   );
 
-  const getSocialProps = useSocialProps(
-    user,
-    setUser,
-    styles.field,
-    'user3rd',
-  );
+  const getSocialProps = useSocialProps(user, setUser, styles.field, 'user3rd');
 
   return (
     <>
@@ -252,7 +245,7 @@ export default function Profile(): JSX.Element {
               className={styles.field}
               label={t('user3rd:tutoring-subjects')}
               onChange={onTutoringSubjectsChange}
-              value={user.tutoring.subjects}
+              value={user.tutoring}
               placeholder={t('common:tutoring-subjects-placeholder')}
               aspect='tutoring'
               outlined
@@ -261,7 +254,7 @@ export default function Profile(): JSX.Element {
               className={styles.field}
               label={t('user3rd:mentoring-subjects')}
               onChange={onMentoringSubjectsChange}
-              value={user.mentoring.subjects}
+              value={user.mentoring}
               placeholder={t('common:mentoring-subjects-placeholder')}
               aspect='mentoring'
               outlined

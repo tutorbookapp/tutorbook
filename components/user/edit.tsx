@@ -59,12 +59,7 @@ export default function UserEdit({
   } = useContinuous(initialData || empty, updateRemote, updateLocal);
 
   const router = useRouter();
-  const getSocialProps = useSocialProps(
-    user,
-    setUser,
-    styles.field,
-    'user',
-  );
+  const getSocialProps = useSocialProps(user, setUser, styles.field, 'user');
 
   const { org } = useOrg();
   const { t, lang: locale } = useTranslation();
@@ -122,36 +117,32 @@ export default function UserEdit({
   );
   const onMentoringSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          User.parse({ ...prev, mentoring: { ...prev.mentoring, subjects } })
+      setUser((prev) =>
+        User.parse({ ...prev, mentoring: { ...prev.mentoring, subjects } })
       );
     },
     [setUser]
   );
   const onMentoringSearchesChange = useCallback(
     (searches: string[]) => {
-      setUser(
-        (prev) =>
-          User.parse({ ...prev, mentoring: { ...prev.mentoring, searches } })
+      setUser((prev) =>
+        User.parse({ ...prev, mentoring: { ...prev.mentoring, searches } })
       );
     },
     [setUser]
   );
   const onTutoringSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          User.parse({ ...prev, tutoring: { ...prev.tutoring, subjects } })
+      setUser((prev) =>
+        User.parse({ ...prev, tutoring: { ...prev.tutoring, subjects } })
       );
     },
     [setUser]
   );
   const onTutoringSearchesChange = useCallback(
     (searches: string[]) => {
-      setUser(
-        (prev) =>
-          User.parse({ ...prev, tutoring: { ...prev.tutoring, searches } })
+      setUser((prev) =>
+        User.parse({ ...prev, tutoring: { ...prev.tutoring, searches } })
       );
     },
     [setUser]
@@ -290,7 +281,9 @@ export default function UserEdit({
               }
               helpText={{
                 persistent: true,
-                children: t('common:bio-help', { name: `${first(user.name)}'s` }),
+                children: t('common:bio-help', {
+                  name: `${first(user.name)}'s`,
+                }),
               }}
               value={user.bio}
               onChange={onBioChange}
@@ -305,7 +298,7 @@ export default function UserEdit({
             <SubjectSelect
               label={t('user:mentoring-subjects')}
               placeholder={t('common:mentoring-subjects-placeholder')}
-              value={user.mentoring.subjects}
+              value={user.mentoring}
               onChange={onMentoringSubjectsChange}
               aspect='mentoring'
               className={styles.field}
@@ -325,7 +318,7 @@ export default function UserEdit({
             <SubjectSelect
               label={t('user:tutoring-subjects')}
               placeholder={t('common:tutoring-subjects-placeholder')}
-              value={user.tutoring.subjects}
+              value={user.tutoring}
               onChange={onTutoringSubjectsChange}
               aspect='tutoring'
               className={styles.field}

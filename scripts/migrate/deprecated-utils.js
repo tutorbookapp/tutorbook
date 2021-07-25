@@ -105,7 +105,7 @@ const users = async () => {
   await Promise.all(
     users.map((user) => {
       const data = user.data();
-      const subjects = updateSubjects(data.tutoring.subjects, tutoringSubjects);
+      const subjects = updateSubjects(data.tutoring, tutoringSubjects);
       return user.ref.set({
         id: data.uid || user.id,
         name: data.name || '',
@@ -121,7 +121,7 @@ const users = async () => {
         verifications: data.verifications || [],
         orgs: updateOrgs(data.orgs),
         mentoring: {
-          subjects: updateSubjects(data.mentoring.subjects, mentoringSubjects),
+          subjects: updateSubjects(data.mentoring, mentoringSubjects),
           searches: updateSubjects(data.mentoring.searches, mentoringSubjects),
         },
         tutoring: {
@@ -672,11 +672,7 @@ const stringify = require('csv-stringify/lib/sync');
 const fetchQuarantunesStringTeachers = async () => {
   const { docs: stringTeachers } = await db
     .collection('users')
-    .where('mentoring.subjects', 'array-contains-any', [
-      'Violin',
-      'Viola',
-      'Cello',
-    ])
+    .where('mentoring', 'array-contains-any', ['Violin', 'Viola', 'Cello'])
     .get();
   const data = stringify(
     stringTeachers

@@ -159,11 +159,11 @@ function tag(usersData, matchesData, meetingsData) {
       const created = new Date(data.created || new Date());
       const updated = new Date(data.updated || new Date());
       const tags = [];
-      if (user.mentoring.subjects.length || user.tags.includes('mentor'))
+      if (user.mentoring.length || user.tags.includes('mentor'))
         tags.push('mentor');
       if (user.mentoring.searches.length || user.tags.includes('mentee'))
         tags.push('mentee');
-      if (user.tutoring.subjects.length || user.tags.includes('tutor'))
+      if (user.tutoring.length || user.tags.includes('tutor'))
         tags.push('tutor');
       if (user.tutoring.searches.length || user.tags.includes('tutee'))
         tags.push('tutee');

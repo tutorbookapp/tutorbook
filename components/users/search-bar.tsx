@@ -21,7 +21,7 @@ export interface SearchBarProps {
 
 // TODO: Don't include both the "User types" filters in the FilterSheet and the
 // aspect chips in this SearchBar. Instead, refactor the UsersQuery data model
-// to have `tutoring.subjects` and `mentoring.subjects` at the same time.
+// to have `tutoring` and `mentoring` at the same time.
 function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
   const { t } = useTranslation();
   const { org } = useOrg();

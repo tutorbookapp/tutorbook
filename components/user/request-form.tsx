@@ -45,19 +45,21 @@ export default function RequestForm({
   const { query } = useRouter();
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
-  const { data: children } = useSWR<ListUsersRes>(user.id ? endpoint(UsersQuery.parse({ parents: [user.id] })) : null);
-    
+  const { data: children } = useSWR<ListUsersRes>(
+    user.id ? endpoint(UsersQuery.parse({ parents: [user.id] })) : null
+  );
+
   const [child, setChild] = useState<User>(User.parse({}));
   const [student, setStudent] = useState<string>('Me');
   const [options, setOptions] = useState<Record<string, User>>({
-    'Me': user, 
+    Me: user,
     'My child': child,
   });
   useEffect(() => {
     setOptions((prev) => {
       const kids = children?.users.map((u) => User.parse(u)) || [];
       const updated = {
-        'Me': user,
+        Me: user,
         'My child': child,
         ...Object.fromEntries(kids.map((u) => [first(u.name), u])),
       };
@@ -87,7 +89,8 @@ export default function RequestForm({
   const aspects = useMemo(() => {
     if (org?.aspects.length === 1) return org.aspects;
     const asps = new Set<Aspect>();
-    if (Aspect.safeParse(query.aspect).success) asps.add(Aspect.parse(query.aspect));
+    if (Aspect.safeParse(query.aspect).success)
+      asps.add(Aspect.parse(query.aspect));
     subjects.forEach((s) => s.aspect && asps.add(s.aspect));
     return [...asps].filter((a) => !org || org.aspects.includes(a));
   }, [org, query.aspect, subjects]);
@@ -146,12 +149,14 @@ export default function RequestForm({
         volunteerRoles.push('mentor');
         studentRoles.push('mentee');
       }
-      const people: Person[] = [{
-        id: volunteer.id,
-        name: volunteer.name,
-        photo: volunteer.photo,
-        roles: volunteerRoles,
-      }];
+      const people: Person[] = [
+        {
+          id: volunteer.id,
+          name: volunteer.name,
+          photo: volunteer.photo,
+          roles: volunteerRoles,
+        },
+      ];
       const creator: Person = {
         id: updatedUser.id,
         name: updatedUser.name,
@@ -207,10 +212,9 @@ export default function RequestForm({
           subjects: subjects.map((s) => s.value),
         }),
       });
-      const [err] = await to<
-        AxiosResponse<Meeting>,
-        AxiosError<APIErrorJSON>
-      >(axios.post('/api/meetings', meeting));
+      const [err] = await to<AxiosResponse<Meeting>, AxiosError<APIErrorJSON>>(
+        axios.post('/api/meetings', meeting)
+      );
       if (err) {
         setLoading(false);
         setError(getErrorMessage(err, 'creating meeting', t));
@@ -302,7 +306,7 @@ export default function RequestForm({
           className={styles.field}
           onSelectedChange={setSubjects}
           selected={subjects}
-          options={[...new Set(volunteer.tutoring.subjects.concat(volunteer.mentoring.subjects))]}
+          options={[...new Set(volunteer.tutoring.concat(volunteer.mentoring))]}
           aspect={aspects.length === 1 ? aspects[0] : undefined}
         />
         <TimeSelect

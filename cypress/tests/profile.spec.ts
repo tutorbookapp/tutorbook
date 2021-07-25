@@ -159,17 +159,17 @@ describe('Profile page', () => {
 
     cy.contains('What can you tutor?')
       .children('.mdc-chip')
-      .should('have.length', volunteer.tutoring.subjects.length)
+      .should('have.length', volunteer.tutoring.length)
       .as('tutoring-subjects');
-    volunteer.tutoring.subjects.forEach((subject: string, idx: number) => {
+    volunteer.tutoring.forEach((subject: string, idx: number) => {
       cy.get('@tutoring-subjects').eq(idx).should('contain', subject);
     });
 
     cy.contains('What are your fields of expertise?')
       .children('.mdc-chip')
-      .should('have.length', volunteer.mentoring.subjects.length)
+      .should('have.length', volunteer.mentoring.length)
       .as('mentoring-subjects');
-    volunteer.mentoring.subjects.forEach((subject: string, idx: number) => {
+    volunteer.mentoring.forEach((subject: string, idx: number) => {
       cy.get('@mentoring-subjects').eq(idx).should('contain', subject);
     });
 

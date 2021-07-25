@@ -76,8 +76,8 @@ export default function VerificationsTable({
     (evt: FormEvent<HTMLInputElement>, c: Check) => {
       const enabled = evt.currentTarget.checked;
       return setUser((prev) => {
-        const verifications = clone(prev.verifications).map(
-          (v) => Verification.parse(v)
+        const verifications = clone(prev.verifications).map((v) =>
+          Verification.parse(v)
         );
         const idx = verifications.findIndex((v) => v.checks.includes(c));
         if (idx < 0 && enabled) {
@@ -114,8 +114,8 @@ export default function VerificationsTable({
       const enabled = evt.currentTarget.checked;
       return setUser((prev) => {
         if (!enabled) return User.parse({ ...prev, verifications: [] });
-        const verifications = clone(prev.verifications).map(
-          (v) => Verification.parse(v)
+        const verifications = clone(prev.verifications).map((v) =>
+          Verification.parse(v)
         );
         const isChecked = verifications.reduce(
           (a, c) => a.concat(c.checks),
@@ -152,8 +152,8 @@ export default function VerificationsTable({
     (evt: FormEvent<HTMLInputElement>, c: Check) => {
       const { value: notes } = evt.currentTarget;
       return setUser((prev) => {
-        const verifications = clone(prev.verifications).map(
-          (v) => Verification.parse(v)
+        const verifications = clone(prev.verifications).map((v) =>
+          Verification.parse(v)
         );
         const idx = verifications.findIndex((v) => v.checks.includes(c));
         if (idx < 0) {
@@ -191,8 +191,8 @@ export default function VerificationsTable({
       return setUser((prev) => {
         const featured: Aspect[] = [];
         if (!isFeatured) return User.parse({ ...prev, featured });
-        if (prev.tutoring.subjects.length) featured.push('tutoring');
-        if (prev.mentoring.subjects.length) featured.push('mentoring');
+        if (prev.tutoring.length) featured.push('tutoring');
+        if (prev.mentoring.length) featured.push('mentoring');
         return User.parse({ ...prev, featured });
       });
     },
@@ -272,9 +272,7 @@ export default function VerificationsTable({
         label={t('user:featured')}
         checked={!!user.featured.length}
         onChange={onFeaturedChange}
-        disabled={
-          !user.tutoring.subjects.length && !user.mentoring.subjects.length
-        }
+        disabled={!user.tutoring.length && !user.mentoring.length}
       />
     </>
   );

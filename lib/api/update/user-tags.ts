@@ -7,9 +7,9 @@ export default function updateUserTags(
 ): User {
   const tags = new Set<UserTag>([...user.tags, ...user.roles]);
 
-  if (user.mentoring.subjects.length) tags.add('mentor');
+  if (user.mentoring.length) tags.add('mentor');
   if (user.mentoring.searches.length) tags.add('mentee');
-  if (user.tutoring.subjects.length) tags.add('tutor');
+  if (user.tutoring.length) tags.add('tutor');
   if (user.tutoring.searches.length) tags.add('tutee');
 
   if (user.verifications.length) tags.add('vetted');

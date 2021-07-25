@@ -28,7 +28,7 @@
 me](mailto:nicholas@tutorbook.org) if you're interested in becoming a
 contributor.**
 
-**👨‍💻 Currently: Working on migrating from [Firebase](https://firebase.com) to 
+**👨‍💻 Currently: Working on migrating from [Firebase](https://firebase.com) to
 the open-source [Supabase](https://supabase.io) alternative.**
 
 ## About Tutorbook
@@ -70,7 +70,7 @@ for always up-to-date Typescript data model definitions.
 A user is a person. This person could be a tutor, mentor, student, admin or all
 of them at the same time. Those roles are not inscribed on each user but rather
 implied by role-specific properties (e.g. a mentor will have subjects specified
-in their `mentoring.subjects` property).
+in their `mentoring` property).
 
 #### Tags
 
@@ -83,7 +83,7 @@ in their `mentoring.subjects` property).
 
 Users also have role-based tags (tutor/tutee/mentor/mentee) that are set when:
 
-1. The user is created or updated. Ex: If a user has `tutoring.subjects`, they
+1. The user is created or updated. Ex: If a user has `tutoring`, they
    are a tutor and thus get the `tutor` tag.
 2. A match is created or updated. Ex: If a user is a `tutor` in at least one
    match at some point in time, they are a tutor and thus get the `tutor` tag.

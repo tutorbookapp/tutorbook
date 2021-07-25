@@ -50,7 +50,9 @@ export default function CreatePage({
       if (match) {
         setEditing((prev) => Meeting.parse({ ...prev, match }));
       } else {
-        setEditing((prev) => Meeting.parse({ ...prev, match: Match.parse({}) }));
+        setEditing((prev) =>
+          Meeting.parse({ ...prev, match: Match.parse({}) })
+        );
       }
     },
     [setEditing]
@@ -98,10 +100,9 @@ export default function CreatePage({
   const subjectOptions = useMemo(() => {
     const subjects = new Set<string>();
     people.forEach((p) => {
-      if (p.roles.includes('tutor'))
-        p.tutoring.subjects.forEach((s) => subjects.add(s));
+      if (p.roles.includes('tutor')) p.tutoring.forEach((s) => subjects.add(s));
       if (p.roles.includes('mentor'))
-        p.mentoring.subjects.forEach((s) => subjects.add(s));
+        p.mentoring.forEach((s) => subjects.add(s));
     });
     return subjects.size ? [...subjects] : undefined;
   }, [people]);

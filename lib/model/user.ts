@@ -43,12 +43,6 @@ export const USER_TAGS: UserTag[] = [
 export type UserTag = z.infer<typeof UserTag>;
 export type UserHitTag = z.infer<typeof UserHitTag>;
 
-export const Subjects = z.object({ 
-  subjects: z.array(z.string()),
-  searches: z.array(z.string()),
-});
-export type Subjects = z.infer<typeof Subjects>;
-
 /**
  * A user object (that is stored in their Firestore profile document by uID).
  * @typedef {Object} UserInterface
@@ -81,8 +75,8 @@ export const User = Account.extend({
   age: z.number().nullable().default(null),
   orgs: z.array(z.string()).default([]),
   availability: Availability.default(Availability.parse([])),
-  mentoring: Subjects.default({ subjects: [], searches: [] }),
-  tutoring: Subjects.default({ subjects: [], searches: [] }),
+  mentoring: z.array(z.string()).default([]),
+  tutoring: z.array(z.string()).default([]),
   langs: z.array(z.string()).default(['en']),
   parents: z.array(z.string()).default([]),
   verifications: z.array(Verification).default([]),
@@ -108,19 +102,19 @@ export function userToCSV(user: User): Record<string, string> {
     'User Reference': user.reference,
     'User Languages': join(user.langs),
     'User Tags': join(user.tags),
-    'Mentoring Subjects': join(user.mentoring.subjects),
-    'Tutoring Subjects': join(user.tutoring.subjects),
-    'Mentoring Searches': join(user.mentoring.searches),
-    'Tutoring Searches': join(user.tutoring.searches),
+    'Mentoring Subjects': join(user.mentoring),
+    'Tutoring Subjects': join(user.tutoring),
     'Profile Image URL': user.photo,
     'Banner Image URL': user.background,
     'Website URL': user.socials.find((s) => s.type === 'website')?.url || '',
     'LinkedIn URL': user.socials.find((s) => s.type === 'linkedin')?.url || '',
     'Twitter URL': user.socials.find((s) => s.type === 'twitter')?.url || '',
     'Facebook URL': user.socials.find((s) => s.type === 'facebook')?.url || '',
-    'Instagram URL': user.socials.find((s) => s.type === 'instagram')?.url || '',
+    'Instagram URL':
+      user.socials.find((s) => s.type === 'instagram')?.url || '',
     'GitHub URL': user.socials.find((s) => s.type === 'github')?.url || '',
-    'IndieHackers URL': user.socials.find((s) => s.type === 'indiehackers')?.url || '',
+    'IndieHackers URL':
+      user.socials.find((s) => s.type === 'indiehackers')?.url || '',
     'User Created': user.created.toString(),
     'User Last Updated': user.updated.toString(),
   };

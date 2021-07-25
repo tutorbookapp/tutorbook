@@ -13,9 +13,9 @@ export default function usePeople(match: Match): User[] {
     return match.people.map((p) => {
       const user = User.parse(p);
       if (p.roles.includes('tutor')) {
-        user.tutoring.subjects = match.subjects;
+        user.tutoring = match.subjects;
       } else if (p.roles.includes('mentor')) {
-        user.mentoring.subjects = match.subjects;
+        user.mentoring = match.subjects;
       }
       return user;
     });

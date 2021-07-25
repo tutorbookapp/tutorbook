@@ -47,12 +47,11 @@ export default function EditPage({
   // ignores any changes to the match data (when PUT /api/meetings/[id]).
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setEditing(
-        (prev) =>
-          Meeting.parse({
-            ...prev,
-            match: Match.parse({ ...prev.match, subjects }),
-          })
+      setEditing((prev) =>
+        Meeting.parse({
+          ...prev,
+          match: Match.parse({ ...prev.match, subjects }),
+        })
       );
     },
     [setEditing]
@@ -93,10 +92,9 @@ export default function EditPage({
   const subjectOptions = useMemo(() => {
     const subjects = new Set<string>();
     people.forEach((p) => {
-      if (p.roles.includes('tutor'))
-        p.tutoring.subjects.forEach((s) => subjects.add(s));
+      if (p.roles.includes('tutor')) p.tutoring.forEach((s) => subjects.add(s));
       if (p.roles.includes('mentor'))
-        p.mentoring.subjects.forEach((s) => subjects.add(s));
+        p.mentoring.forEach((s) => subjects.add(s));
     });
     return subjects.size ? [...subjects] : undefined;
   }, [people]);

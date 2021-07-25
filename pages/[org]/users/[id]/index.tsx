@@ -76,8 +76,8 @@ function UserDisplayPage({
     async function fetchSubjects(): Promise<void> {
       if (!data) return;
       const [tutoring, mentoring] = await Promise.all([
-        getSubjectLabels(data.tutoring.subjects, locale),
-        getSubjectLabels(data.mentoring.subjects, locale),
+        getSubjectLabels(data.tutoring, locale),
+        getSubjectLabels(data.mentoring, locale),
       ]);
       setSubjects({ tutoring, mentoring });
     }
@@ -85,9 +85,9 @@ function UserDisplayPage({
   }, [data, locale]);
 
   const subjectsDisplayed = useMemo(() => {
-    if (org?.aspects && org.aspects.length === 1) 
+    if (org?.aspects && org.aspects.length === 1)
       return subjects[org.aspects[0]];
-    if (Aspect.safeParse(query.aspect).success) 
+    if (Aspect.safeParse(query.aspect).success)
       return subjects[Aspect.parse(query.aspect)];
     // Many subjects can be both tutoring and mentoring subjects, thus we filter
     // for unique subjects (e.g. to prevent "Computer Science" duplications).
@@ -136,8 +136,8 @@ export const getStaticProps: GetStaticProps<
     ]);
     const [langs, tutoring, mentoring] = await Promise.all([
       getLangLabels(user.langs),
-      getSubjectLabels(user.tutoring.subjects),
-      getSubjectLabels(user.mentoring.subjects),
+      getSubjectLabels(user.tutoring),
+      getSubjectLabels(user.mentoring),
     ]);
     const { props } = await getPageProps();
     // Note that because Next.js cannot expose the `req` object when fetching

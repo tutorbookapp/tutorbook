@@ -13,8 +13,8 @@ export default async function sendEmails(
   orgAdmins: User[]
 ): Promise<void> {
   const [tutoring, mentoring, langs] = await Promise.all([
-    getSubjectLabels(user.tutoring.subjects),
-    getSubjectLabels(user.mentoring.subjects),
+    getSubjectLabels(user.tutoring),
+    getSubjectLabels(user.mentoring),
     getLangLabels(user.langs),
   ]);
 

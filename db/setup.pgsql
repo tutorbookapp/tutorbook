@@ -12,11 +12,6 @@ create type social as (
   "url" url
 );
 
-create type subjects as (
-  "subjects" text[],
-  "searches" text[]
-);
-
 create type timeslot as (
   "id" text,
   "from" timestamptz,
@@ -45,8 +40,8 @@ create table public.users (
   "venue" url,
   "socials" social[] not null,
   "availability" timeslot[] not null,
-  "mentoring" subjects not null,
-  "tutoring" subjects not null,
+  "mentoring" text[] not null,
+  "tutoring" text[] not null,
   "langs" text[] not null check(cardinality(langs) > 0),
   "visible" boolean not null,
   "featured" aspect[] not null,
