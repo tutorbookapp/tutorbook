@@ -67,7 +67,7 @@ create table public.orgs (
   "aspects" aspect[] not null check(cardinality(aspects) > 0),
   "domains" text[] check(cardinality(domains) > 0),
   /* TODO: Check that at least one contact info field is included. */
-  "profiles" profile_field[] check(cardinality(profiles) > 3),
+  "profiles" profile_field[] not null check(cardinality(profiles) > 3),
   "subjects" text[] check(cardinality(subjects) > 0),
   /* TODO: Verify these are valid config objects. */
   "signup" jsonb not null,

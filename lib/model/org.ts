@@ -3,25 +3,35 @@ import { z } from 'zod';
 import { Account } from 'lib/model/account';
 import { Aspect } from 'lib/model/aspect';
 
-const SignupConfig = z.object({}).catchall(z.object({
-  mentoring: z.object({
+const SignupConfig = z.object({}).catchall(
+  z.object({
+    mentoring: z
+      .object({
+        header: z.string(),
+        body: z.string(),
+        bio: z.string().optional(),
+      })
+      .optional(),
+    tutoring: z
+      .object({
+        header: z.string(),
+        body: z.string(),
+        bio: z.string().optional(),
+      })
+      .optional(),
+  })
+);
+const HomeConfig = z.object({}).catchall(
+  z.object({
     header: z.string(),
     body: z.string(),
-    bio: z.string().optional(),
-  }).optional(),
-  tutoring: z.object({
-    header: z.string(),
-    body: z.string(),
-    bio: z.string().optional(),
-  }).optional(),
-}));
-const HomeConfig = z.object({}).catchall(z.object({
-  header: z.string(),
-  body: z.string(),
-}));
-const BookingConfig = z.object({}).catchall(z.object({
-  message: z.string(),
-}));
+  })
+);
+const BookingConfig = z.object({}).catchall(
+  z.object({
+    message: z.string(),
+  })
+);
 
 /**
  * An `Org` object represents a non-profit organization that is using Tutorbook
@@ -42,8 +52,10 @@ export const Org = Account.extend({
   members: z.array(z.string()).default([]),
   aspects: z.array(Aspect).nonempty().default(['tutoring']),
   domains: z.array(z.string()).nullable().default(null),
-  profiles: z.array(z.string()).nullable().default(['name', 'email', 'bio', 'subjects', 'langs', 'availability']),
-  subjects: z.array(z.string()).nullable().default(null), 
+  profiles: z
+    .array(z.string())
+    .default(['name', 'email', 'bio', 'subjects', 'langs', 'availability']),
+  subjects: z.array(z.string()).nullable().default(null),
   signup: SignupConfig.default({
     en: {
       mentoring: {
@@ -76,7 +88,6 @@ export const Org = Account.extend({
           'that I can!',
       },
     },
- 
   }),
   home: HomeConfig.default({
     en: {
