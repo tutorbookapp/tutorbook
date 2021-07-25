@@ -7,8 +7,8 @@
   "email": "erik@example.com",
   "phone": "+16505550175",
   "photo": "https://assets.tutorbook.org/jpgs/student.jpg",
-  "background": "",
-  "venue": "",
+  "background": null,
+  "venue": null,
   "bio": "I'm a student at Gunn High School passionate about Computer Science and running. I've been learning Python and TensorFlow with dreams of becoming a data scientist. Currently, I'm looking for somebody to help me with my learning!",
   "socials": [
     {
@@ -43,14 +43,8 @@
   "orgs": ["gunn"],
   "zooms": [],
   "availability": [],
-  "mentoring": {
-    "subjects": [],
-    "searches": ["Computer Science", "Data Science", "Artificial Intelligence"]
-  },
-  "tutoring": {
-    "subjects": [],
-    "searches": ["Computer Science"]
-  },
+  "mentoring": [],
+  "tutoring": [],
   "langs": ["en"],
   "parents": [],
   "verifications": [],

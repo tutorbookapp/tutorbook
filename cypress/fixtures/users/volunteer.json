@@ -8,7 +8,7 @@
   "phone": "+16505550137",
   "photo": "https://assets.tutorbook.org/jpgs/volunteer.jpg",
   "background": "https://assets.tutorbook.org/jpgs/volunteer-banner.jpg",
-  "venue": "",
+  "venue": null,
   "bio": "I'm currently an electrical engineering Ph.D. student at Stanford University who has been volunteering with AmeriCorps (tutoring local high schoolers) for over five years now. I'm passionate about teaching and would love to help you in any way that I can!",
   "socials": [
     {
@@ -64,14 +64,8 @@
       "id": "XNsG0de1YnEqmAWnA4A_M"
     }
   ],
-  "mentoring": {
-    "subjects": ["Computer Science", "Artificial Intelligence"],
-    "searches": []
-  },
-  "tutoring": {
-    "subjects": ["Computer Science", "Math"],
-    "searches": []
-  },
+  "mentoring": ["Computer Science", "Artificial Intelligence"],
+  "tutoring": ["Computer Science", "Math"],
   "langs": ["en", "es"],
   "parents": [],
   "verifications": [],

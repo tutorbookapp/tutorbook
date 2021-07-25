@@ -8,7 +8,7 @@
   "phone": "+12025550151",
   "photo": "https://assets.tutorbook.org/jpgs/child.jpg",
   "background": "https://assets.tutorbook.org/jpgs/child-banner.jpg",
-  "venue": "",
+  "venue": null,
   "bio": "",
   "socials": [
     {
@@ -43,14 +43,8 @@
   "orgs": ["gunn"],
   "zooms": [],
   "availability": [],
-  "mentoring": {
-    "subjects": [],
-    "searches": ["Computer Science"]
-  },
-  "tutoring": {
-    "subjects": [],
-    "searches": ["Computer Science", "Math"]
-  },
+  "mentoring": [],
+  "tutoring": [],
   "langs": ["en", "es"],
   "parents": [],
   "verifications": [],
