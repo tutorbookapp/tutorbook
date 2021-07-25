@@ -3,6 +3,7 @@ const path = require('path');
 const algoliasearch = require('algoliasearch');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const { serialize } = require('cookie');
 const firebaseAdminLib = require('firebase-admin');
 const firebaseClient = require('firebase/app');
 require('firebase/auth');
@@ -59,7 +60,15 @@ async function getHeaders(uid) {
   await clientAuth.signInWithCustomToken(token);
   const jwt = await clientAuth.currentUser.getIdToken(true);
   await clientAuth.signOut();
-  return { authorization: `Bearer ${jwt || ''}` };
+  const expiresIn = 5 * 24 * 60 * 60 * 1000;
+  const cookie = await adminAuth.createSessionCookie(jwt, { expiresIn });
+  return {
+    cookie: serialize('session', cookie, {
+      maxAge: expiresIn,
+      httpOnly: true,
+      secure: true,
+    }),
+  };
 }
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
