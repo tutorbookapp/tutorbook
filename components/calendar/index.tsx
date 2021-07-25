@@ -14,8 +14,13 @@ import to from 'await-to-js';
 
 import DialogContent from 'components/dialog';
 
-import { MeetingAction, Meeting } from 'lib/model/meeting';
-import { MeetingsQuery, decode, encode, endpoint } from 'lib/model/query/meetings';
+import { Meeting, MeetingAction } from 'lib/model/meeting';
+import {
+  MeetingsQuery,
+  decode,
+  encode,
+  endpoint,
+} from 'lib/model/query/meetings';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
 import { APIErrorJSON } from 'lib/api/error';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
@@ -53,7 +58,13 @@ export default function Calendar({
   const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(MeetingsQuery.parse({}));
 
-  useURLParamSync(query, setQuery, decode, encode, byOrg ? ['org'] : ['people']);
+  useURLParamSync(
+    query,
+    setQuery,
+    decode,
+    encode,
+    byOrg ? ['org'] : ['people']
+  );
 
   const { org } = useOrg();
   const { user } = useUser();
@@ -74,7 +85,7 @@ export default function Calendar({
   useEffect(() => {
     setQuery((prev) => {
       if (!byOrg || !org || org.id === prev.org) return prev;
-      return MeetingsQuery.parse({ ...prev, org: org.id });
+      return { ...prev, org: org.id };
     });
   }, [byOrg, org]);
   useEffect(() => {
@@ -82,7 +93,7 @@ export default function Calendar({
       if (!byUser || !user) return prev;
       const people = [{ label: user.name, value: user.id }];
       if (dequal(prev.people, people)) return prev;
-      return MeetingsQuery.parse({ ...prev, people });
+      return { ...prev, people };
     });
   }, [byUser, user]);
 
