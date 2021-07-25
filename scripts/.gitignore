@@ -1,1 +1,9 @@
+# Secrets
 admin-cred.json
+
+# Backups
+*.json
+*.xlsx
+*.csv
+*.txt
+*.log
