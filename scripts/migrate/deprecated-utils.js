@@ -120,14 +120,8 @@ const users = async () => {
         socials: (data.socials || []).filter((s) => !!s.url),
         verifications: data.verifications || [],
         orgs: updateOrgs(data.orgs),
-        mentoring: {
-          subjects: updateSubjects(data.mentoring, mentoringSubjects),
-          searches: updateSubjects(data.mentoring.searches, mentoringSubjects),
-        },
-        tutoring: {
-          subjects: subjects,
-          searches: updateSubjects(data.tutoring.searches, tutoringSubjects),
-        },
+        mentoring: updateSubjects(data.mentoring, mentoringSubjects),
+        tutoring: subjects,
         visible: false,
       });
     })

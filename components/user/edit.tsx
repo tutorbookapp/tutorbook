@@ -123,26 +123,10 @@ export default function UserEdit({
     },
     [setUser]
   );
-  const onMentoringSearchesChange = useCallback(
-    (searches: string[]) => {
-      setUser((prev) =>
-        User.parse({ ...prev, mentoring: { ...prev.mentoring, searches } })
-      );
-    },
-    [setUser]
-  );
   const onTutoringSubjectsChange = useCallback(
     (subjects: string[]) => {
       setUser((prev) =>
         User.parse({ ...prev, tutoring: { ...prev.tutoring, subjects } })
-      );
-    },
-    [setUser]
-  );
-  const onTutoringSearchesChange = useCallback(
-    (searches: string[]) => {
-      setUser((prev) =>
-        User.parse({ ...prev, tutoring: { ...prev.tutoring, searches } })
       );
     },
     [setUser]
@@ -306,30 +290,10 @@ export default function UserEdit({
               outlined
             />
             <SubjectSelect
-              label={t('user:mentoring-searches')}
-              placeholder={t('common:mentoring-subjects-placeholder')}
-              value={user.mentoring.searches}
-              onChange={onMentoringSearchesChange}
-              aspect='mentoring'
-              className={styles.field}
-              renderToPortal
-              outlined
-            />
-            <SubjectSelect
               label={t('user:tutoring-subjects')}
               placeholder={t('common:tutoring-subjects-placeholder')}
               value={user.tutoring}
               onChange={onTutoringSubjectsChange}
-              aspect='tutoring'
-              className={styles.field}
-              renderToPortal
-              outlined
-            />
-            <SubjectSelect
-              label={t('user:tutoring-searches')}
-              placeholder={t('common:tutoring-subjects-placeholder')}
-              value={user.tutoring.searches}
-              onChange={onTutoringSearchesChange}
               aspect='tutoring'
               className={styles.field}
               renderToPortal

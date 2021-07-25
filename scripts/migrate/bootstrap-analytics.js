@@ -161,12 +161,8 @@ function tag(usersData, matchesData, meetingsData) {
       const tags = [];
       if (user.mentoring.length || user.tags.includes('mentor'))
         tags.push('mentor');
-      if (user.mentoring.searches.length || user.tags.includes('mentee'))
-        tags.push('mentee');
       if (user.tutoring.length || user.tags.includes('tutor'))
         tags.push('tutor');
-      if (user.tutoring.searches.length || user.tags.includes('tutee'))
-        tags.push('tutee');
       if (user.verifications.length) tags.push('vetted');
       return { ...user, created, updated, tags };
     })
