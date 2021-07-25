@@ -8,17 +8,23 @@ import { date } from 'lib/model/timeslot';
 import { number } from 'lib/model/query/base';
 
 export const MeetingsQuery = MatchesQuery.extend({
-  tags: z.array(MeetingHitTag),
-  from: date.default(() => new Date(
-    new Date().getFullYear(),
-    new Date().getMonth(),
-    new Date().getDate() - new Date().getDay()
-  )),
-  to: date.default(() => new Date(
-    new Date().getFullYear(),
-    new Date().getMonth(),
-    new Date().getDate() - new Date().getDay() + 7
-  )),
+  tags: z.array(MeetingHitTag).default([]),
+  from: date.default(
+    () =>
+      new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate() - new Date().getDay()
+      )
+  ),
+  to: date.default(
+    () =>
+      new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate() - new Date().getDay() + 7
+      )
+  ),
   hitsPerPage: number.default(1000),
 });
 export type MeetingsQuery = z.infer<typeof MeetingsQuery>;
@@ -53,6 +59,9 @@ export function decode(params: Record<string, string>): MeetingsQuery {
   return query;
 }
 
-export function endpoint(query: MeetingsQuery, pathname = '/api/meetings'): string {
+export function endpoint(
+  query: MeetingsQuery,
+  pathname = '/api/meetings'
+): string {
   return url.format({ pathname, query: encode(query) });
 }
