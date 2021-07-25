@@ -9,10 +9,11 @@ export default async function createUserDoc(user: User): Promise<User> {
   delete copy.orgs;
   delete copy.roles;
   delete copy.parents;
+  delete copy.verifications;
   const { data, error } = await supabase.from('users').insert(copy);
   if (error) {
     const msg = `Error saving user (${user.toString()}) in database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
   }
-  return User.parse(data);
+  return User.parse(data ? data[0] : user);
 }

@@ -9,7 +9,8 @@ export default async function updateUserDoc(user: User): Promise<void> {
   delete copy.orgs;
   delete copy.roles;
   delete copy.parents;
-  const { error } = await supabase.from('users').update(copy).eq('id', user.id);
+  delete copy.verifications;
+  const { error } = await supabase.from('users').upsert(copy).eq('id', user.id);
   if (error) {
     const msg = `Error updating user (${user.toString()}) in database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
