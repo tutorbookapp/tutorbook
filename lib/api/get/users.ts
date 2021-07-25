@@ -61,9 +61,8 @@ export default async function getUsers(
     .overlaps(`${query.aspect}->subjects` as keyof User, query.subjects)
     .overlaps('langs', query.langs)
     .range(
-      query.hitsPerPage * query.page, 
+      query.hitsPerPage * query.page,
       query.hitsPerPage * (query.page + 1)
     );
-  debugger;
-  return { hits: count || 0, results: data || [] }; 
+  return { hits: count || 0, results: data || [] };
 }
