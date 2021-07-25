@@ -1,6 +1,7 @@
 {
   "name": "Tutorbook",
   "short_name": "Tutorbook",
+  "lang": "en-US",
   "scope": "/",
   "start_url": "/",
   "display": "standalone",
