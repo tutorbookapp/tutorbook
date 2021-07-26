@@ -4,9 +4,6 @@ const algoliasearch = require('algoliasearch');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const { serialize } = require('cookie');
-const firebaseAdminLib = require('firebase-admin');
-const firebaseClient = require('firebase/app');
-require('firebase/auth');
 const logger = require('./lib/logger');
 
 const admin = require('../cypress/fixtures/users/admin.json');
@@ -29,48 +26,6 @@ const env = process.env.NODE_ENV || 'development';
   logger.info(`Loaded env from ${dotfile}`);
   dotenv.config({ path: dotfile });
 });
-
-const credentials = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-};
-if (!firebaseClient.apps.length) firebaseClient.initializeApp(credentials);
-const clientAuth = firebaseClient.auth();
-
-const firebaseAdmin = firebaseAdminLib.initializeApp({
-  credential: firebaseAdminLib.credential.cert({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    privateKey: (process.env.FIREBASE_ADMIN_KEY || '').replace(/\\n/g, '\n'),
-    clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-  }),
-  serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-  databaseAuthVariableOverride: { uid: 'server' },
-});
-const adminAuth = firebaseAdmin.auth();
-
-async function getHeaders(uid) {
-  const token = await adminAuth.createCustomToken(uid);
-  await clientAuth.signInWithCustomToken(token);
-  const jwt = await clientAuth.currentUser.getIdToken(true);
-  await clientAuth.signOut();
-  const expiresIn = 5 * 24 * 60 * 60 * 1000;
-  const cookie = await adminAuth.createSessionCookie(jwt, { expiresIn });
-  return {
-    cookie: serialize('session', cookie, {
-      maxAge: expiresIn,
-      httpOnly: true,
-      secure: true,
-    }),
-  };
-}
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID;
 const algoliaKey = process.env.ALGOLIA_ADMIN_KEY;
@@ -108,7 +63,9 @@ async function seed(overrides = {}) {
   if (overrides.meeting === null) delete meetings[0];
   meetings = meetings.filter(Boolean);
 
-  const rconfig = { headers: await getHeaders(admin.id) };
+  const rconfig = {
+    headers: { authorization: `Bearer ${process.env.API_TOKEN}` },
+  };
 
   async function create(route, data) {
     logger.info(`Creating ${data.length} ${route}...`);
@@ -116,7 +73,16 @@ async function seed(overrides = {}) {
     await Promise.all(data.map((d) => axios.post(endpoint, d, rconfig)));
   }
 
-  await create('orgs', orgs);
+  async function update(route, data) {
+    logger.info(`Updating ${data.length} ${route}...`);
+    const end = `http://localhost:3000/api/${route}`;
+    await Promise.all(data.map((d) => axios.put(`${end}/${d.id}`, d, rconfig)));
+  }
+
+  await create(
+    'orgs',
+    orgs.map((o) => ({ ...o, members: [] }))
+  );
 
   // We have to create the admin first because TB's back-end will try to
   // fetch his data when sending user creation notification emails.
@@ -124,6 +90,9 @@ async function seed(overrides = {}) {
     'users',
     users.filter((u) => u.id === 'admin')
   );
+
+  await update('orgs', orgs);
+
   await create(
     'users',
     users.filter((u) => u.id !== 'admin')
