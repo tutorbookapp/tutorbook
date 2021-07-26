@@ -57,16 +57,19 @@ export type MeetingStatus = z.infer<typeof MeetingStatus>;
  * @property [parentId] - The recurring parent meeting ID (if any).
  */
 export const Meeting = Resource.extend({
-  status: MeetingStatus.default('created'),
+  org: z.string().default('default'),
+  subjects: z.array(z.string()).default([]),
+  people: z.array(Person).default([]),
   creator: Person.default(Person.parse({})),
+  description: z.string().default(''),
+  tags: z.array(MeetingTag).default([]),
+  status: MeetingStatus.default('created'),
   match: Match.default(Match.parse({})),
   venue: z
     .string()
     .url()
     .default(() => `https://meet.jit.si/TB-${nanoid(10)}`),
   time: Timeslot.default(Timeslot.parse({})),
-  description: z.string().default(''),
-  tags: z.array(MeetingTag).default([]),
   parentId: z.string().optional(),
   id: z.number().optional(),
 });
