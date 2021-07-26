@@ -48,7 +48,4 @@ const firebase = admin.initializeApp(
 );
 
 export const auth = firebase.auth();
-export const db = firebase.firestore();
 export const bucket = firebase.storage().bucket();
-
-db.settings({ ignoreUndefinedProperties: true });
