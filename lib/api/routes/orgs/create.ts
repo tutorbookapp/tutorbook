@@ -18,7 +18,7 @@ export default async function createOrg(
   try {
     const body = Org.parse(req.body);
     const { uid } = await verifyAuth(req.headers);
-    verifyIsOrgAdmin(body, uid);
+    if (uid !== 'admin') verifyIsOrgAdmin(body, uid);
     const org = await createOrgDoc(await updatePhoto(body));
     res.status(201).json(org);
 

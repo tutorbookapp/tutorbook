@@ -11,8 +11,6 @@ drop type social cascade;
 
 drop type timeslot cascade;
 
-drop type venue cascade;
-
 drop type user_tag cascade;
 drop table public.users cascade;
 

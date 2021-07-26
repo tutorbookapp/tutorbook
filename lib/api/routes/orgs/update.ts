@@ -22,8 +22,10 @@ export default async function updateOrg(
   try {
     const body = Org.parse(req.body);
     const { uid } = await verifyAuth(req.headers, { orgIds: [body.id] });
-    const prev = await getOrg(body.id);
-    verifyMembersUnchanged(prev, body);
+    if (uid !== 'admin') {
+      const prev = await getOrg(body.id);
+      verifyMembersUnchanged(prev, body);
+    }
     const org = await updateOrgDoc(await updatePhoto(body));
     res.status(200).json(org);
 

@@ -2,7 +2,6 @@ import { Meeting } from 'lib/model/meeting';
 import { Org } from 'lib/model/org';
 import { Role } from 'lib/model/person';
 import { User } from 'lib/model/user';
-import { Venue } from 'lib/model/venue';
 
 /**
  * Get the meeting venue:
@@ -17,15 +16,15 @@ export default function getMeetingVenue(
   meeting: Meeting,
   org: Org,
   people: User[]
-): Venue {
-  if (!meeting.venue.url.includes('meet.jit.si')) return meeting.venue;
-  if (org.venue) return Venue.parse({ url: org.venue });
+): string {
+  if (!meeting.venue.includes('meet.jit.si')) return meeting.venue;
+  if (org.venue) return org.venue;
 
   const priority: Role[] = ['tutor', 'mentor', 'parent', 'tutee', 'mentee'];
   // eslint-disable-next-line no-restricted-syntax
   for (const role of priority) {
     const person = people.find((p) => p.roles.includes(role) && p.venue);
-    if (person?.venue) return Venue.parse({ url: person.venue });
+    if (person?.venue) return person.venue;
   }
 
   return meeting.venue;

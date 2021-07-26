@@ -30,10 +30,13 @@ export default async function verifyAuth(
   headers: IncomingHttpHeaders,
   options?: { userId?: string; userIds?: string[]; orgIds?: string[] }
 ): Promise<{ adminOf?: string[]; uid: string }> {
+  if (headers.authorization === `Bearer ${process.env.API_TOKEN}`)
+    return { uid: 'admin' };
+
   if (typeof headers.cookie !== 'string')
     throw new APIError('You must be logged in', 401);
   const { session } = parse(headers.cookie);
-  if (typeof session !== 'string') 
+  if (typeof session !== 'string')
     throw new APIError('You must be logged in', 401);
   const [err, token] = await to<DecodedIdToken>(
     auth.verifySessionCookie(session, true)

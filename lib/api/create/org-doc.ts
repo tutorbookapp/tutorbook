@@ -8,8 +8,14 @@ export default async function createOrgDoc(org: Org): Promise<Org> {
   delete copy.members;
   const { error } = await supabase.from('orgs').insert(copy);
   if (error) {
-    const msg = `Error saving org (${org.toString()}) in database`;
+    const msg = `Error saving org (${org.name}) in database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+  const members = org.members.map((m) => ({ user: m, org: org.id }));
+  const { error: e } = await supabase.from('relation_members').insert(members);
+  if (e) {
+    const msg = `Error saving members for org (${org.name}) in database`;
+    throw new APIError(`${msg}: ${e.message}`, 500);
   }
   return org;
 }

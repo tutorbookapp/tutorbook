@@ -21,11 +21,6 @@ create type timeslot as (
   "last" timestamptz
 );
 
-create type venue as (
-  "id" text,
-  "url" url
-);
-
 /* TODO: See if there's a way to simply extend the existing `role` enum. */
 create type user_tag as enum ('vetted', 'matched', 'meeting', 'tutor', 'tutee', 'mentor', 'mentee', 'parent');
 create table public.users (
@@ -110,7 +105,7 @@ create table public.meetings (
   "subjects" text[] not null check(cardinality(subjects) > 0),
   "status" meeting_status not null default 'created',
   "match" bigint references public.matches(id),
-  "venue" venue not null,
+  "venue" url not null,
   "time" timeslot not null,
   "description" text not null,
   "tags" meeting_tag[] not null,

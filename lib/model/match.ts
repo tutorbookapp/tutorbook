@@ -26,21 +26,25 @@ export const Match = Resource.extend({
   creator: Person.default(Person.parse({})),
   message: z.string().default(''),
   tags: z.array(MatchTag).default([]),
-  id: z.string().default(''),
+  id: z.number().optional(),
 });
 export type Match = z.infer<typeof Match>;
 
 export function matchToSegment(match: Match): Record<string, unknown> {
-  return { 
-    id: match.id, 
-    message: match.message, 
-    subjects: match.subjects, 
+  return {
+    id: match.id,
+    message: match.message,
+    subjects: match.subjects,
   };
 }
 
 export function matchToCSV(match: Match): Record<string, string> {
-  const volunteer = match.people.find((p) => p.roles.includes('tutor') || p.roles.includes('mentor'));
-  const student = match.people.find((p) => p.roles.includes('tutee') || p.roles.includes('mentee'));
+  const volunteer = match.people.find(
+    (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
+  );
+  const student = match.people.find(
+    (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
+  );
 
   return {
     'Match ID': match.id,

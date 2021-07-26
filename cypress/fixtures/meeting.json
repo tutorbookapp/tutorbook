@@ -1,5 +1,4 @@
 {
-  "id": "meeting",
   "tags": [],
   "status": "pending",
   "created": "2020-10-20T19:03:00",
@@ -9,14 +8,7 @@
     "to": "2020-12-23T11:00:00.000Z",
     "id": "CEzvTUDpaM9f9pDCTyI75"
   },
-  "venue": {
-    "type": "jitsi",
-    "id": "bffQbpagCt",
-    "url": "https://meet.jit.si/TB-bffQbpagCt",
-    "invite": "Open https://meet.jit.si/TB-bffQbpagCt to join your meeting.",
-    "created": "2020-10-15T19:04:10",
-    "updated": "2020-10-15T19:04:10"
-  },
+  "venue": "https://meet.jit.si/TB-bffQbpagCt",
   "creator": {
     "roles": [],
     "photo": "https://assets.tutorbook.org/jpgs/admin.jpg",
@@ -26,7 +18,6 @@
   },
   "description": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
   "match": {
-    "id": "match",
     "tags": [],
     "created": "2020-10-15T19:04:10",
     "updated": "2020-10-15T19:04:10",

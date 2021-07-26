@@ -1,10 +1,10 @@
+import { nanoid } from 'nanoid';
 import { z } from 'zod';
 
 import { Match, matchToCSV, matchToSegment } from 'lib/model/match';
 import { Person } from 'lib/model/person';
 import { Resource } from 'lib/model/resource';
 import { Timeslot } from 'lib/model/timeslot';
-import { Venue } from 'lib/model/venue';
 import { join } from 'lib/utils';
 
 export const MeetingTag = z.literal('recurring'); // Meeting is recurring (has rrule).
@@ -60,12 +60,15 @@ export const Meeting = Resource.extend({
   status: MeetingStatus.default('created'),
   creator: Person.default(Person.parse({})),
   match: Match.default(Match.parse({})),
-  venue: Venue.default(Venue.parse({})),
+  venue: z
+    .string()
+    .url()
+    .default(() => `https://meet.jit.si/TB-${nanoid(10)}`),
   time: Timeslot.default(Timeslot.parse({})),
   description: z.string().default(''),
   tags: z.array(MeetingTag).default([]),
   parentId: z.string().optional(),
-  id: z.string().default(''), 
+  id: z.number().optional(),
 });
 export type Meeting = z.infer<typeof Meeting>;
 
@@ -81,7 +84,7 @@ export function meetingToSegment(meeting: Meeting): Record<string, unknown> {
 
 export function meetingToCSV(meeting: Meeting): Record<string, string> {
   return {
-    'Meeting ID': meeting.id,
+    'Meeting ID': meeting.id || '',
     'Meeting Description': meeting.description,
     'Meeting Start': meeting.time.from.toString(),
     'Meeting End': meeting.time.to.toString(),
