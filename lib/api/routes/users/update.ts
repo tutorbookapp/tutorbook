@@ -2,7 +2,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
-import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
@@ -55,7 +54,6 @@ export default async function updateUser(
       properties: accountToSegment(user),
     });
 
-    await analytics(user, 'updated', originalDoc);
     await updateAvailability(user);
   } catch (e) {
     handle(e, res);

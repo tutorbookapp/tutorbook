@@ -1,6 +1,5 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import analytics from 'lib/api/analytics';
 import deleteMatchDoc from 'lib/api/delete/match-doc';
 import getMatch from 'lib/api/get/match';
 import getPeople from 'lib/api/get/people';
@@ -45,10 +44,7 @@ export default async function deleteMatch(
 
     // TODO: We shouldn't remove the `matched` tag from a user if they still
     // have other matches. Perhaps calculate this using a CRON job instead.
-    await Promise.all([
-      analytics(match, 'deleted'),
-      updatePeopleTags(people, { remove: ['matched'] }),
-    ]);
+    await updatePeopleTags(people, { remove: ['matched'] });
   } catch (e) {
     handle(e, res);
   }

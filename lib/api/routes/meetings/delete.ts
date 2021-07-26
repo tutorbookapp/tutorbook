@@ -2,7 +2,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
 import { MeetingAction, Meeting, meetingToSegment } from 'lib/model/meeting';
-import analytics from 'lib/api/analytics';
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import getLastTime from 'lib/api/get/last-time';
 import getMeeting from 'lib/api/get/meeting';
@@ -131,7 +130,6 @@ export default async function deleteMeeting(
     // TODO: We shouldn't remove the `meeting` tag from a user if they still
     // have other meetings. Perhaps calculate this using a CRON job instead.
     await Promise.all([
-      analytics(deleting, 'deleted'),
       updatePeopleTags(people, { remove: ['meeting'] }),
       ...people.map((p) => updateAvailability(p)),
     ]);

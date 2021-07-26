@@ -4,7 +4,6 @@ import { RRule } from 'rrule';
 import { Meeting, MeetingAction, meetingToSegment } from 'lib/model/meeting';
 import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
-import analytics from 'lib/api/analytics';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import { getDuration } from 'lib/utils/time';
 import getLastTime from 'lib/api/get/last-time';
@@ -123,7 +122,6 @@ export default async function updateMeeting(
         });
 
         await Promise.all([
-          analytics(body, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
           ...people.map((p) => updateAvailability(p)),
         ]);
@@ -177,7 +175,6 @@ export default async function updateMeeting(
         });
 
         await Promise.all([
-          analytics(newMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
           ...people.map((p) => updateAvailability(p)),
         ]);
@@ -226,7 +223,6 @@ export default async function updateMeeting(
         });
 
         await Promise.all([
-          analytics(newRecurringMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
           ...people.map((p) => updateAvailability(p)),
         ]);
@@ -258,7 +254,6 @@ export default async function updateMeeting(
 
       // TODO: Should we also track the match update?
       await Promise.all([
-        analytics(meeting, 'updated'),
         updatePeopleTags(people, { add: ['meeting'] }),
         ...people.map((p) => updateAvailability(p)),
       ]);

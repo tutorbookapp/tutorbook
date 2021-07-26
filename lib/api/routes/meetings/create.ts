@@ -4,7 +4,6 @@ import to from 'await-to-js';
 import { APIError, handle } from 'lib/api/error';
 import { Match, matchToSegment } from 'lib/model/match';
 import { Meeting, meetingToSegment } from 'lib/model/meeting';
-import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import getLastTime from 'lib/api/get/last-time';
@@ -80,10 +79,7 @@ export default async function createMeeting(
         properties: matchToSegment(body.match),
       });
 
-      await Promise.all([
-        analytics(body.match, 'created'),
-        updatePeopleTags(people, { add: ['matched'] }),
-      ]);
+      await updatePeopleTags(people, { add: ['matched'] });
     } else {
       // Match org cannot change (security issue if it can).
       // TODO: Nothing in the match should be able to change (because this API
@@ -119,7 +115,6 @@ export default async function createMeeting(
     });
 
     await Promise.all([
-      analytics(meeting, 'created'),
       updatePeopleTags(people, { add: ['meeting'] }),
       ...people.map((p) => updateAvailability(p)),
     ]);

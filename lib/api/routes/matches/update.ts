@@ -1,7 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, matchToSegment } from 'lib/model/match';
-import analytics from 'lib/api/analytics';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
@@ -51,10 +50,7 @@ export default async function updateMatch(
       properties: matchToSegment(match),
     });
 
-    await Promise.all([
-      analytics(match, 'updated'),
-      updatePeopleTags(people, { add: ['matched'] }),
-    ]);
+    await updatePeopleTags(people, { add: ['matched'] });
   } catch (e) {
     handle(e, res);
   }

@@ -1,7 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, matchToSegment } from 'lib/model/match';
-import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
@@ -64,10 +63,7 @@ export default async function createMatch(
       properties: matchToSegment(match),
     });
 
-    await Promise.all([
-      analytics(match, 'created'),
-      updatePeopleTags(people, { add: ['matched'] }),
-    ]);
+    await updatePeopleTags(people, { add: ['matched'] });
   } catch (e) {
     handle(e, res);
   }

@@ -2,7 +2,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
-import analytics from 'lib/api/analytics';
 import createAuthUser from 'lib/api/create/auth-user';
 import createCustomToken from 'lib/api/create/custom-token';
 import createUserDoc from 'lib/api/create/user-doc';
@@ -76,7 +75,6 @@ export default async function createUser(
       properties: accountToSegment(user),
     });
 
-    await analytics(user, 'created');
     await updateAvailability(user);
   } catch (e) {
     handle(e, res);

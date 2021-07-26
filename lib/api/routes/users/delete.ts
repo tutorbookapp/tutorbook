@@ -1,7 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { accountToSegment } from 'lib/model/account';
-import analytics from 'lib/api/analytics';
 import deleteAuthUser from 'lib/api/delete/auth-user';
 import deleteUserDoc from 'lib/api/delete/user-doc';
 import getUser from 'lib/api/get/user';
@@ -45,8 +44,6 @@ export default async function deleteUser(
       event: 'User Deleted',
       properties: accountToSegment(user),
     });
-
-    await analytics(user, 'deleted');
   } catch (e) {
     handle(e, res);
   }
