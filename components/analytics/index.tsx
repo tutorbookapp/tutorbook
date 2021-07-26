@@ -4,13 +4,12 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
-
 import { GraphProps } from 'components/analytics/graph';
 import Header from 'components/header';
 
 import { useOrg } from 'lib/context/org';
 
+import { AnalyticsRes } from './types';
 import fallback from './fallback';
 import styles from './analytics.module.scss';
 

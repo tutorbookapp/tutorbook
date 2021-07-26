@@ -1,4 +1,4 @@
-import { AnalyticsRes, AnalyticsSnapshot } from 'pages/api/orgs/[id]/analytics';
+import { AnalyticsRes, AnalyticsSnapshot } from './types';
 
 // The default 3mo timeline shows relatively linear growth for all data points.
 function getFallbackNums(): AnalyticsRes {

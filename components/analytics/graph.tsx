@@ -12,11 +12,10 @@ import {
 import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
-import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
-
 import { caps } from 'lib/utils';
 import { sameDate } from 'lib/utils/time';
 
+import { AnalyticsRes } from './types';
 import styles from './graph.module.scss';
 
 interface CustomDotProps extends DotProps {
