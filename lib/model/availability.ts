@@ -6,10 +6,19 @@ export const Availability = z.array(Timeslot);
 export type Availability = z.infer<typeof Availability>;
 
 export function availabilityToString(
-  availability: Availability, 
+  availability: Availability,
   locale = 'en',
-  timeZone = 'America/Los_Angeles',
+  timeZone?: string | null,
   showTimeZone = false
 ): string {
-  return availability.map((t) => timeslotToString(t, locale, timeZone, showTimeZone)).join(', ');
+  return availability
+    .map((t) =>
+      timeslotToString(
+        t,
+        locale,
+        timeZone || 'America/Los_Angeles',
+        showTimeZone
+      )
+    )
+    .join(', ');
 }

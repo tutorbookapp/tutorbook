@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { Person } from 'lib/model/person';
 import { Resource } from 'lib/model/resource';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
 export const MatchTag = z.literal('meeting'); // Match has at least one meeting.
@@ -22,8 +22,8 @@ export type MatchHitTag = z.infer<typeof MatchHitTag>;
 export const Match = Resource.extend({
   org: z.string().default('default'),
   subjects: z.array(z.string()).default([]),
-  people: z.array(Person).default([]),
-  creator: Person.default(Person.parse({})),
+  people: z.array(User).default([]),
+  creator: User.default(User.parse({})),
   message: z.string().default(''),
   tags: z.array(MatchTag).default([]),
   id: z.number().optional(),

@@ -2,9 +2,9 @@ import { nanoid } from 'nanoid';
 import { z } from 'zod';
 
 import { Match, matchToCSV, matchToSegment } from 'lib/model/match';
-import { Person } from 'lib/model/person';
 import { Resource } from 'lib/model/resource';
 import { Timeslot } from 'lib/model/timeslot';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
 export const MeetingTag = z.literal('recurring'); // Meeting is recurring (has rrule).
@@ -59,8 +59,8 @@ export type MeetingStatus = z.infer<typeof MeetingStatus>;
 export const Meeting = Resource.extend({
   org: z.string().default('default'),
   subjects: z.array(z.string()).default([]),
-  people: z.array(Person).default([]),
-  creator: Person.default(Person.parse({})),
+  people: z.array(User).default([]),
+  creator: User.default(User.parse({})),
   description: z.string().default(''),
   tags: z.array(MeetingTag).default([]),
   status: MeetingStatus.default('created'),
