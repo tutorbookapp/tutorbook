@@ -121,7 +121,7 @@ export default function Calendar({
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated: boolean, sentToAPI: Meeting) => {
       // Don't locally update meetings that have yet to be created.
-      if (mutated.id.startsWith('temp')) return;
+      if (mutated.id === undefined) return;
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
         if (!hasBeenUpdated) mutatedMeetingIds.add(sentToAPI.id);
@@ -148,7 +148,7 @@ export default function Calendar({
   const original = useRef<Meeting>(initialEditData);
   const updateMeetingRemote = useCallback(
     async (updated: Meeting) => {
-      if (updated.id.startsWith('temp')) {
+      if (updated.id === undefined) {
         const { data: createdMeeting } = await axios.post<Meeting>(
           '/api/meetings',
           updated
@@ -201,7 +201,7 @@ export default function Calendar({
   // elsewhere, we want the editing state to reflect those updates.
   useEffect(() => {
     setEditing((prev) => {
-      if (prev?.id.startsWith('temp')) return prev;
+      if (prev?.id === undefined) return prev;
       const idx = meetings.findIndex((m) => m.id === prev?.id);
       if (idx < 0) {
         setDialog(false); // TODO: Animate the dialog closed before removing.

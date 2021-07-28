@@ -71,13 +71,13 @@ export default function MeetingRnd({
     // editings from being created when the resize cursor moves ahead of RND.
     setTimeout(() => setDragging(false), 0);
     setOffset({ x: 0, y: 0 });
-    if (editing.id.startsWith('temp')) return;
+    if (editing.id === undefined) return;
     onEditStop();
     setRnd(false);
   }, [setDragging, onEditStop, setRnd, editing.id]);
   const onDragStop = useCallback(() => {
     setTimeout(() => setDragging(false), 0);
-    if (editing.id.startsWith('temp')) return;
+    if (editing.id === undefined) return;
     onEditStop();
     setRnd(false);
   }, [setDragging, onEditStop, setRnd, editing.id]);

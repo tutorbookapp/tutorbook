@@ -42,7 +42,7 @@ export default function DialogSurface({
   // Remove dialog when dragging an existing meeting. This mimics GCal behavior
   // and prevents awkward loading states shown within the dialog display page.
   useEffect(() => {
-    if (editing.id.startsWith('temp')) return;
+    if (editing.id === undefined) return;
     setVisible((prev) => prev && !dragging);
   }, [editing.id, dragging]);
 
