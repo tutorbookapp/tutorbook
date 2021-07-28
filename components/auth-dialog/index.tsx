@@ -50,7 +50,7 @@ export default function AuthDialog(): JSX.Element {
           <p className={styles.body}>
             {t('search:login-body', {
               name: org ? org.name : 'this organization',
-              domains: org
+              domains: org?.domains
                 ? join(
                     org.domains.map((domain) => `@${domain}`),
                     'or'
