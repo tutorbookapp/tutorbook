@@ -17,7 +17,7 @@ import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 import useTranslation from 'next-translate/useTranslation';
 
-import { availabilityToString, Availability } from 'lib/model/availability';
+import { Availability, availabilityToString } from 'lib/model/availability';
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 import { TCallback } from 'lib/model/callback';
 import { Timeslot } from 'lib/model/timeslot';
@@ -119,7 +119,7 @@ function AvailabilitySelect({
       if (!updated)
         return Availability.parse([
           ...prev.slice(0, origIdx),
-          ...prev.slice(origIdx + 1)
+          ...prev.slice(origIdx + 1),
         ]);
       let avail: Availability;
       if (origIdx < 0) {
@@ -128,7 +128,7 @@ function AvailabilitySelect({
         avail = Availability.parse([
           ...prev.slice(0, origIdx),
           updated,
-          ...prev.slice(origIdx + 1)
+          ...prev.slice(origIdx + 1),
         ]).sort();
       }
       const idx = avail.findIndex((t) => t.id === updated.id);
@@ -138,14 +138,14 @@ function AvailabilitySelect({
         if (last.to.valueOf() >= updated.to.valueOf())
           return Availability.parse([
             ...avail.slice(0, idx),
-            ...avail.slice(idx + 1)
+            ...avail.slice(idx + 1),
           ]);
         // Overlapping with end of another timeslot.
         if (last.to.valueOf() >= updated.from.valueOf())
           return Availability.parse([
             ...avail.slice(0, idx - 1),
             Timeslot.parse({ ...last, to: updated.to }),
-            ...avail.slice(idx + 1)
+            ...avail.slice(idx + 1),
           ]);
       }
       const next = avail[idx + 1];
@@ -155,7 +155,7 @@ function AvailabilitySelect({
           return Availability.parse([
             ...avail.slice(0, idx),
             Timeslot.parse({ ...next, from: updated.from }),
-            ...avail.slice(idx + 2)
+            ...avail.slice(idx + 2),
           ]);
       }
       return avail;
