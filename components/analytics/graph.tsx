@@ -38,14 +38,17 @@ function CustomDot({ cx, cy, fill, value }: CustomDotProps): JSX.Element {
   );
 }
 
+/* eslint-disable react/no-unused-prop-types */
 interface TickProps {
   x: number;
   y: number;
   payload: { value: number };
 }
+/* eslint-enable react/no-unused-prop-types */
 
 export type GraphProps = Pick<AnalyticsRes, 'timeline'>;
 
+/* eslint-disable-next-line react/prop-types */
 export default function Graph({ timeline }: GraphProps): JSX.Element {
   const { lang: locale } = useTranslation();
   const domain = useMemo(() => {
