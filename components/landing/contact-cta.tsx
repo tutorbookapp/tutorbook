@@ -2,6 +2,7 @@ import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
+
 import Intercom from 'lib/intercom';
 
 import styles from './contact-cta.module.scss';

@@ -26,61 +26,68 @@ export interface ResultsListProps {
   open: boolean;
 }
 
-export default memo(function ResultsList({
-  query,
-  searching,
-  setSearching,
-  setHits,
-  open,
-}: ResultsListProps): JSX.Element {
-  const { org } = useOrg();
-  const { t } = useTranslation();
-  const { data, isValidating } = useSWR<ListUsersRes>(endpoint(query));
+export default memo(
+  ({
+    query,
+    searching,
+    setSearching,
+    setHits,
+    open,
+  }: ResultsListProps): JSX.Element => {
+    const { org } = useOrg();
+    const { t } = useTranslation();
+    const { data, isValidating } = useSWR<ListUsersRes>(endpoint(query));
 
-  // Prefetch the next page of results (using SWR's global cache).
-  // @see {@link https://swr.vercel.app/docs/prefetching}
-  useEffect(() => {
-    const nextPageQuery = UsersQuery.parse(
-      clone({ ...query, page: query.page + 1 })
+    // Prefetch the next page of results (using SWR's global cache).
+    // @see {@link https://swr.vercel.app/docs/prefetching}
+    useEffect(() => {
+      const nextPageQuery = UsersQuery.parse(
+        clone({ ...query, page: query.page + 1 })
+      );
+      void prefetch(endpoint(nextPageQuery));
+    }, [query]);
+
+    // TODO: Avoid code duplication from the main search page by porting over all
+    // of this logic into custom hooks or a shared lib directory.
+    useEffect(() => setHits((prev) => data?.hits || prev), [
+      setHits,
+      data?.hits,
+    ]);
+    useEffect(() => {
+      setSearching((prev) => prev && (isValidating || !data));
+    }, [isValidating, data]);
+
+    const loadingRows: JSX.Element[] = useMemo(
+      () =>
+        // TODO: When we know there are only 3 results (i.e. results 111-113 of 113)
+        // only show 3 loading rows. We'll have to include some pagination parsing
+        // logic here (using `prevHits` and `query.page`).
+        Array(query.hitsPerPage)
+          .fill(null)
+          .map(() => <Result className={styles.item} loading key={uuid()} />),
+      [query.hitsPerPage]
     );
-    void prefetch(endpoint(nextPageQuery));
-  }, [query]);
+    const props = useSpring({ config, marginLeft: open ? width : 0 });
 
-  // TODO: Avoid code duplication from the main search page by porting over all
-  // of this logic into custom hooks or a shared lib directory.
-  useEffect(() => setHits((prev) => data?.hits || prev), [setHits, data?.hits]);
-  useEffect(() => {
-    setSearching((prev) => prev && (isValidating || !data));
-  }, [isValidating, data]);
-
-  const loadingRows: JSX.Element[] = useMemo(() => {
-    // TODO: When we know there are only 3 results (i.e. results 111-113 of 113)
-    // only show 3 loading rows. We'll have to include some pagination parsing
-    // logic here (using `prevHits` and `query.page`).
-    return Array(query.hitsPerPage)
-      .fill(null)
-      .map(() => <Result className={styles.item} loading key={uuid()} />);
-  }, [query.hitsPerPage]);
-  const props = useSpring({ config, marginLeft: open ? width : 0 });
-
-  return (
-    <animated.div data-cy='results' className={styles.wrapper} style={props}>
-      {!searching &&
-        (data?.users || []).map((user: User) => (
-          <Result
-            href={`/${org?.id || ''}/users/${user.id}`}
-            user={User.parse(user)}
-            className={styles.item}
-            key={user.id}
-            newTab
-          />
-        ))}
-      {!searching && !(data?.users || []).length && (
-        <div className={styles.empty}>
-          <Placeholder>{t('users:empty')}</Placeholder>
-        </div>
-      )}
-      {searching && loadingRows}
-    </animated.div>
-  );
-});
+    return (
+      <animated.div data-cy='results' className={styles.wrapper} style={props}>
+        {!searching &&
+          (data?.users || []).map((user: User) => (
+            <Result
+              href={`/${org?.id || ''}/users/${user.id}`}
+              user={User.parse(user)}
+              className={styles.item}
+              key={user.id}
+              newTab
+            />
+          ))}
+        {!searching && !(data?.users || []).length && (
+          <div className={styles.empty}>
+            <Placeholder>{t('users:empty')}</Placeholder>
+          </div>
+        )}
+        {searching && loadingRows}
+      </animated.div>
+    );
+  }
+);

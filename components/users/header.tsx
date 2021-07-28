@@ -3,8 +3,9 @@ import { Snackbar } from '@rmwc/snackbar';
 import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
 
-import Intercom from 'lib/intercom';
 import TitleHeader from 'components/header';
+
+import Intercom from 'lib/intercom';
 
 export interface HeaderProps {
   orgId: string;
@@ -39,61 +40,63 @@ async function copyTextToClipboard(text: string): Promise<void> {
   if (err) return fallbackCopyTextToClipboard(text);
 }
 
-export default memo(function Header({
-  orgId,
-  orgName,
-}: HeaderProps): JSX.Element {
-  const [snackbar, setSnackbar] = useState<boolean>(false);
-  const hideSnackbar = useCallback(() => setSnackbar(false), []);
-  const copySignupLink = useCallback(async () => {
-    await copyTextToClipboard(
-      `${window.location.protocol}//${window.location.host}/${orgId}/signup`
+export default memo(
+  ({ orgId, orgName }: HeaderProps): JSX.Element => {
+    const [snackbar, setSnackbar] = useState<boolean>(false);
+    const hideSnackbar = useCallback(() => setSnackbar(false), []);
+    const copySignupLink = useCallback(async () => {
+      await copyTextToClipboard(
+        `${window.location.protocol}//${window.location.host}/${orgId}/signup`
+      );
+      setSnackbar(true);
+    }, [orgId]);
+    const copySearchLink = useCallback(async () => {
+      await copyTextToClipboard(
+        `${window.location.protocol}//${window.location.host}/${orgId}/search`
+      );
+      setSnackbar(true);
+    }, [orgId]);
+
+    const { t } = useTranslation();
+    const importData = useCallback(
+      () => Intercom('showNewMessage', t('users:import-data-msg')),
+      [t]
     );
-    setSnackbar(true);
-  }, [orgId]);
-  const copySearchLink = useCallback(async () => {
-    await copyTextToClipboard(
-      `${window.location.protocol}//${window.location.host}/${orgId}/search`
-    );
-    setSnackbar(true);
-  }, [orgId]);
 
-  const { t } = useTranslation();
-  const importData = useCallback(() => {
-    return Intercom('showNewMessage', t('users:import-data-msg'));
-  }, [t]);
+    // TODO: Once the types are updated, restore the snackbar's SVG dismiss icon.
+    // @see {@link https://github.com/jamesmfriedman/rmwc/pull/727}
 
-  // TODO: Once the types are updated, restore the snackbar's SVG dismiss icon.
-  // @see {@link https://github.com/jamesmfriedman/rmwc/pull/727}
-
-  return (
-    <>
-      {snackbar && (
-        <Snackbar
-          onClose={hideSnackbar}
-          message={t('users:link-copied')}
-          leading
-          open
+    return (
+      <>
+        {snackbar && (
+          <Snackbar
+            onClose={hideSnackbar}
+            message={t('users:link-copied')}
+            leading
+            open
+          />
+        )}
+        <TitleHeader
+          header={t('common:users')}
+          body={t('users:subtitle', {
+            name: orgName ? `${orgName}'s` : 'your',
+          })}
+          actions={[
+            {
+              label: t('users:share-signup-link'),
+              onClick: copySignupLink,
+            },
+            {
+              label: t('users:share-search-link'),
+              onClick: copySearchLink,
+            },
+            {
+              label: t('common:import-data'),
+              onClick: importData,
+            },
+          ]}
         />
-      )}
-      <TitleHeader
-        header={t('common:users')}
-        body={t('users:subtitle', { name: orgName ? `${orgName}'s` : 'your' })}
-        actions={[
-          {
-            label: t('users:share-signup-link'),
-            onClick: copySignupLink,
-          },
-          {
-            label: t('users:share-search-link'),
-            onClick: copySearchLink,
-          },
-          {
-            label: t('common:import-data'),
-            onClick: importData,
-          },
-        ]}
-      />
-    </>
-  );
-});
+      </>
+    );
+  }
+);

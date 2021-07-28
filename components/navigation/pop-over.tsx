@@ -9,8 +9,8 @@ import useTranslation from 'next-translate/useTranslation';
 import AddIcon from 'components/icons/add';
 import Avatar from 'components/avatar';
 import ContactSupportIcon from 'components/icons/contact-support';
-import Intercom from 'lib/intercom';
 
+import Intercom from 'lib/intercom';
 import { Account } from 'lib/model/account';
 import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';

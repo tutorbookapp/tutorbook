@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
-import { parse } from 'cookie';
 
+import { parse } from 'cookie';
 import to from 'await-to-js';
 
 import { DecodedIdToken, auth } from 'lib/api/firebase';

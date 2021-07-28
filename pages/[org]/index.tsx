@@ -57,11 +57,14 @@ export const getStaticProps: GetStaticProps<
   HomePageQuery
 > = async (ctx: GetStaticPropsContext<HomePageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
-  const { data } = await supabase.from<Org>('orgs').select().eq('id', ctx.params.org);
+  const { data } = await supabase
+    .from<Org>('orgs')
+    .select()
+    .eq('id', ctx.params.org);
   if (!data || !data[0]) return { notFound: true };
   const org: OrgJSON = json(Org.parse(data[0]));
   const { props } = await getPageProps();
-  return { props: { org: org, ...props }, revalidate: 1 };
+  return { props: { org, ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<HomePageQuery> = async () => {

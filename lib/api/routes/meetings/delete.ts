@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
-import { MeetingAction, Meeting, meetingToSegment } from 'lib/model/meeting';
+import { Meeting, MeetingAction, meetingToSegment } from 'lib/model/meeting';
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import getLastTime from 'lib/api/get/last-time';
 import getMeeting from 'lib/api/get/meeting';

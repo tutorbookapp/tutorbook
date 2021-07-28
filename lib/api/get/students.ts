@@ -7,7 +7,8 @@ import { User } from 'lib/model/user';
  * include either `tutee` or `mentee`).
  */
 export default function getStudents(people: User[]): User[] {
-  return people.filter((person: User) => {
-    return person.roles.includes('tutee') || person.roles.includes('mentee');
-  });
+  return people.filter(
+    (person: User) =>
+      person.roles.includes('tutee') || person.roles.includes('mentee')
+  );
 }

@@ -77,9 +77,11 @@ export default function MatchDisplay({
   const { org } = useOrg();
   const { t } = useTranslation();
 
-  const loading = useMemo(() => {
-    return !match || !people || !meetings;
-  }, [match, people, meetings]);
+  const loading = useMemo(() => !match || !people || !meetings, [
+    match,
+    people,
+    meetings,
+  ]);
   const creator = useMemo(() => {
     if (loading || !match || !people) return;
     const idx = people.findIndex((p) => p.id === match.creator.id);
