@@ -17,8 +17,6 @@ const Graph = dynamic<GraphProps>(() => import('components/analytics/graph'));
 
 interface LabelProps {
   percent: number;
-  positive?: boolean;
-  negative?: boolean;
 }
 
 function Label({ percent }: LabelProps): JSX.Element {
