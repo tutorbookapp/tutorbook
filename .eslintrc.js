@@ -196,4 +196,19 @@ module.exports = {
       exclude: /\/node_modules\//,
     },
   },
+  overrides: [
+    {
+      files: 'lib/model/**/*.ts',
+      rules: {
+        // Intentionally declare the `zod` types as the same name as the `zod`
+        // schema object value. This way, I can import `User` and use it both as
+        // a type and as a value (exactly how I would previously import classes).
+        // @see {@link https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-redeclare.md}
+        // @example
+        // export const User = z.object({ name: z.string().default('') });
+        // export type User = z.infer<typeof User>;
+        '@typescript-eslint/no-redeclare': 'off',
+      },
+    },
+  ],
 };
