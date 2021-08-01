@@ -56,7 +56,7 @@ export async function getUsers(
       'langs',
       query.langs.map((s) => s.value)
     )
-    .eq('visible', query.visible)
+    .eq('visible', query.visible || false) // TODO: Omit this when not needed.
     .order('id', { ascending: false }) // Show newer people first.
     .range(
       query.hitsPerPage * query.page + 1,
