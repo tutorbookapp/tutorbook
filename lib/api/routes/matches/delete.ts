@@ -3,7 +3,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import analytics from 'lib/api/analytics';
 import deleteMatchDoc from 'lib/api/delete/match-doc';
 import deleteMatchSearchObj from 'lib/api/delete/match-search-obj';
-import getMatch from 'lib/api/get/match';
+import { getMatch } from 'lib/api/db/match';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';

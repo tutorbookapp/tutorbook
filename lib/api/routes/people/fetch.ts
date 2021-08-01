@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { UserJSON } from 'lib/model/user';
-import getMatch from 'lib/api/get/match';
+import { getMatch } from 'lib/api/db/match';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import { getUser } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';

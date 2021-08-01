@@ -10,7 +10,7 @@ import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
-import getMatch from 'lib/api/get/match';
+import { getMatch } from 'lib/api/db/match';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';

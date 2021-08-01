@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { MeetingJSON } from 'lib/model/meeting';
-import getMatch from 'lib/api/get/match';
+import { getMatch } from 'lib/api/db/match';
 import getMatchMeetings from 'lib/api/get/match-meetings';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
