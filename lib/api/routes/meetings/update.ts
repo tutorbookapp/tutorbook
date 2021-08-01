@@ -7,9 +7,9 @@ import {
   MeetingJSON,
   isMeetingJSON,
 } from 'lib/model/meeting';
+import { createMeeting, updateMeeting } from 'lib/api/db/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import analytics from 'lib/api/analytics';
-import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
@@ -24,7 +24,6 @@ import updateAvailability from 'lib/api/update/availability';
 import { updateMatch } from 'lib/api/db/match';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
-import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
@@ -42,7 +41,7 @@ export interface UpdateMeetingOptions {
   action: MeetingAction;
 }
 
-export default async function updateMeeting(
+export default async function updateMeetingAPI(
   req: Req,
   res: Res<UpdateMeetingRes>
 ): Promise<void> {
@@ -119,7 +118,7 @@ export default async function updateMeeting(
         // TODO: Ensure the emails that are being sent display the time's rrule
         // in a human readable format (e.g. 'Weekly on Tuesdays 3-4pm').
         await Promise.all([
-          updateMeetingDoc(withTagsUpdate),
+          updateMeeting(withTagsUpdate),
           updateMeetingSearchObj(withTagsUpdate),
           sendEmails(withTagsUpdate, people, updater, org),
         ]);
@@ -152,7 +151,7 @@ export default async function updateMeeting(
         body.venue = getMeetingVenue(body, org, people);
 
         const withTagsUpdate = updateMeetingTags(body);
-        const newMeeting = await createMeetingDoc(withTagsUpdate);
+        const newMeeting = await createMeeting(withTagsUpdate);
         await createMeetingSearchObj(newMeeting);
 
         // TODO: Exdates have to be exact dates that would otherwise be
@@ -175,7 +174,7 @@ export default async function updateMeeting(
         const originalWithTagsUpdate = updateMeetingTags(original);
 
         await Promise.all([
-          updateMeetingDoc(originalWithTagsUpdate),
+          updateMeeting(originalWithTagsUpdate),
           updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newMeeting, people, updater, org),
         ]);
@@ -207,7 +206,7 @@ export default async function updateMeeting(
         body.venue = getMeetingVenue(body, org, people);
 
         const withTagsUpdate = updateMeetingTags(body);
-        const newRecurringMeeting = await createMeetingDoc(withTagsUpdate);
+        const newRecurringMeeting = await createMeeting(withTagsUpdate);
         await createMeetingSearchObj(newRecurringMeeting);
 
         // TODO: This `until` property should be 12am (on the original meeting
@@ -226,7 +225,7 @@ export default async function updateMeeting(
         const originalWithTagsUpdate = updateMeetingTags(original);
 
         await Promise.all([
-          updateMeetingDoc(originalWithTagsUpdate),
+          updateMeeting(originalWithTagsUpdate),
           updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newRecurringMeeting, people, updater, org),
         ]);
@@ -259,7 +258,7 @@ export default async function updateMeeting(
       await Promise.all([
         updateMatch(meeting.match),
         updateMatchSearchObj(meeting.match),
-        updateMeetingDoc(meeting),
+        updateMeeting(meeting),
         updateMeetingSearchObj(meeting),
         sendEmails(meeting, people, updater, org),
       ]);

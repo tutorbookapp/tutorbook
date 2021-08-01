@@ -3,14 +3,13 @@ import to from 'await-to-js';
 
 import { APIError, handle } from 'lib/api/error';
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
+import { createMatch, getMatch } from 'lib/api/db/match';
 import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
-import { createMatch } from 'lib/api/db/match';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
-import createMeetingDoc from 'lib/api/create/meeting-doc';
+import { createMeeting } from 'lib/api/db/meeting';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
-import { getMatch } from 'lib/api/db/match';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
@@ -32,7 +31,7 @@ import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
 export type CreateMeetingRes = MeetingJSON;
 
-export default async function createMeeting(
+export default async function createMeetingAPI(
   req: Req,
   res: Res<CreateMeetingRes>
 ): Promise<void> {
@@ -111,7 +110,7 @@ export default async function createMeeting(
     body.venue = getMeetingVenue(body, org, people);
     body.time.last = getLastTime(body.time);
 
-    const meeting = await createMeetingDoc(updateMeetingTags(body));
+    const meeting = await createMeeting(updateMeetingTags(body));
     await createMeetingSearchObj(meeting);
 
     const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));

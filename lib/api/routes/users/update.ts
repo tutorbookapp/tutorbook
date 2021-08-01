@@ -18,7 +18,7 @@ import verifyDocExists from 'lib/api/verify/doc-exists';
 
 export type UpdateUserRes = UserJSON;
 
-export default async function updateUser(
+export default async function updateUserAPI(
   req: Req,
   res: Res<UpdateUserRes>
 ): Promise<void> {

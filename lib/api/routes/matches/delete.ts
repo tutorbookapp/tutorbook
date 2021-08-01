@@ -1,9 +1,8 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
+import { deleteMatch, getMatch } from 'lib/api/db/match';
 import analytics from 'lib/api/analytics';
-import deleteMatchDoc from 'lib/api/delete/match-doc';
 import deleteMatchSearchObj from 'lib/api/delete/match-search-obj';
-import { getMatch } from 'lib/api/db/match';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
@@ -14,7 +13,7 @@ import verifyQueryId from 'lib/api/verify/query-id';
 
 export type DeleteMatchRes = void;
 
-export default async function deleteMatch(
+export default async function deleteMatchAPI(
   req: Req,
   res: Res<DeleteMatchRes>
 ): Promise<void> {
@@ -29,10 +28,7 @@ export default async function deleteMatch(
       orgIds: [match.org],
     });
 
-    await Promise.all([
-      deleteMatchDoc(match.id),
-      deleteMatchSearchObj(match.id),
-    ]);
+    await Promise.all([deleteMatch(match.id), deleteMatchSearchObj(match.id)]);
 
     res.status(200).end();
 

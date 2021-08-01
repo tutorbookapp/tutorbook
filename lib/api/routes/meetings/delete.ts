@@ -2,11 +2,10 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
 import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
+import { deleteMeeting, getMeeting } from 'lib/api/db/meeting';
 import analytics from 'lib/api/analytics';
-import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
-import { getMeeting } from 'lib/api/db/meeting';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
@@ -29,7 +28,7 @@ export interface DeleteMeetingOptions {
   action: MeetingAction;
 }
 
-export default async function deleteMeeting(
+export default async function deleteMeetingAPI(
   req: Req,
   res: Res<DeleteMeetingRes>
 ): Promise<void> {
@@ -114,7 +113,7 @@ export default async function deleteMeeting(
     } else {
       // Delete all meetings. Identical to deleting a non-recurring meeting.
       await Promise.all([
-        deleteMeetingDoc(meeting.id),
+        deleteMeeting(meeting.id),
         deleteMeetingSearchObj(meeting.id),
         sendEmails(meeting, people, deleter, org),
       ]);

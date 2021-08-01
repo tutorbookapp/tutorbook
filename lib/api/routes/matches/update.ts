@@ -17,7 +17,7 @@ import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 
 export type UpdateMatchRes = MatchJSON;
 
-export default async function updateMatch(
+export default async function updateMatchAPI(
   req: Req,
   res: Res<UpdateMatchRes>
 ): Promise<void> {
