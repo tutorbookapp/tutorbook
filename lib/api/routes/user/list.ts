@@ -38,7 +38,7 @@ export default async function listUsers(
         if (r.orgs.some((orgId) => orgIds.includes(orgId))) return r;
         return getTruncatedUser(r);
       });
-      
+
       // TODO: Include the query info as event properties here.
       segment.track({ userId: uid, event: 'Users Listed' });
     }
