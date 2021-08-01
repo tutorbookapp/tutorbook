@@ -27,7 +27,7 @@ export type CreateMatchRes = MatchJSON;
  * (or, even better, add this timeslot to their availability and then remove it
  * during post-creation logic).
  */
-export default async function createMatch(
+export default async function createMatchAPI(
   req: Req,
   res: Res<CreateMatchRes>
 ): Promise<void> {

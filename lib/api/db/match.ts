@@ -70,11 +70,11 @@ export async function updateMatch(match: Match): Promise<void> {
   );
 }
 
-export async function deleteMatch(matchId: number): Promise<void> {
+export async function deleteMatch(matchId: string): Promise<void> {
   const { error } = await supabase
     .from<DBMatch>('matches')
     .delete()
-    .eq('id', matchId);
+    .eq('id', Number(matchId));
   if (error) {
     const msg = `Error deleting match (${matchId}) from database`;
     throw new APIError(`${msg}: ${error.message}`, 500);

@@ -2,7 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
 import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
-import { deleteMeeting, getMeeting } from 'lib/api/db/meeting';
+import { deleteMeeting, getMeeting, updateMeeting } from 'lib/api/db/meeting';
 import analytics from 'lib/api/analytics';
 import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
@@ -15,7 +15,6 @@ import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
 import updateAvailability from 'lib/api/update/availability';
-import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
@@ -83,7 +82,7 @@ export default async function deleteMeetingAPI(
 
       // TODO: Specify in email that this is only canceling this meeting.
       await Promise.all([
-        updateMeetingDoc(meeting),
+        updateMeeting(meeting),
         updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
       ]);
@@ -106,7 +105,7 @@ export default async function deleteMeetingAPI(
 
       // TODO: Specify in email that this is canceling all following meetings.
       await Promise.all([
-        updateMeetingDoc(meeting),
+        updateMeeting(meeting),
         updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
       ]);
