@@ -269,7 +269,7 @@ export class User extends Account implements UserInterface {
 
   public tutoring: Subjects = { subjects: [], searches: [] };
 
-  public langs: string[] = [];
+  public langs: string[] = ['en'];
 
   public parents: string[] = [];
 
