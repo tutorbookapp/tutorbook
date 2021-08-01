@@ -6,7 +6,7 @@ import analytics from 'lib/api/analytics';
 import deleteMeetingDoc from 'lib/api/delete/meeting-doc';
 import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
-import getMeeting from 'lib/api/get/meeting';
+import { getMeeting } from 'lib/api/db/meeting';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
