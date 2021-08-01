@@ -35,10 +35,10 @@ export async function loginWithGoogle(
   const { default: firebase } = await import('lib/firebase');
   await import('firebase/auth');
   const auth = firebase.auth();
-  
+
   // As httpOnly cookies are to be used, do not persist any state client side.
   // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
-  auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+  await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
   // TODO: Sign-in with redirect instead (less likely to be blocked).
   const provider = new firebase.auth.GoogleAuthProvider();
