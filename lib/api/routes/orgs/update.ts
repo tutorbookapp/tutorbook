@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Org, OrgJSON, isOrgJSON } from 'lib/model/org';
-import getOrg from 'lib/api/get/org';
+import { getOrg } from 'lib/api/db/org';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import updateOrgDoc from 'lib/api/update/org-doc';

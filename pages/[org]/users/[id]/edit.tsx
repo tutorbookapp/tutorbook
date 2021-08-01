@@ -12,7 +12,7 @@ import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
 import { OrgContext } from 'lib/context/org';
-import getOrg from 'lib/api/get/org';
+import { getOrg } from 'lib/api/db/org';
 import { getUser } from 'lib/api/db/user';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';

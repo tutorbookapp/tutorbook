@@ -4,7 +4,7 @@ import { Match, MatchJSON, isMatchJSON } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
-import getOrg from 'lib/api/get/org';
+import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';

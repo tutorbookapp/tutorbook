@@ -16,7 +16,7 @@ import { PageProps, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
 import { getLangLabels, getSubjectLabels } from 'lib/intl/utils';
 import { OrgContext } from 'lib/context/org';
-import getOrg from 'lib/api/get/org';
+import { getOrg } from 'lib/api/db/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import { getUser } from 'lib/api/db/user';
 import usePage from 'lib/hooks/page';

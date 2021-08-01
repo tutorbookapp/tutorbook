@@ -8,7 +8,7 @@ import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMeeting from 'lib/api/get/meeting';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
-import getOrg from 'lib/api/get/org';
+import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
