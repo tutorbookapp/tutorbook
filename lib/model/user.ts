@@ -374,12 +374,12 @@ export class User extends Account implements UserInterface {
     return new User({
       id: record.id,
       name: record.name,
-      photo: record.photo || undefined,
-      email: record.email || undefined,
-      phone: record.phone || undefined,
+      photo: record.photo || '',
+      email: record.email || '',
+      phone: record.phone || '',
       bio: record.bio,
-      background: record.background || undefined,
-      venue: record.venue || undefined,
+      background: record.background || '',
+      venue: record.venue || '',
       socials: record.socials,
       availability: new Availability(
         ...record.availability.map(
@@ -400,7 +400,7 @@ export class User extends Account implements UserInterface {
       visible: record.visible,
       featured: record.featured,
       reference: record.reference,
-      timezone: record.timezone || undefined,
+      timezone: record.timezone || '',
       age: record.age || undefined,
       tags: record.tags,
       created: record.created,
