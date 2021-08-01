@@ -12,7 +12,7 @@ import { db } from 'lib/api/firebase';
  * @todo This won't error if the given document doesn't exist; we must use the
  * `DocumentReference#set` method in order to remove data. Should we error?
  */
-export default async function updateMatchDoc(match: Match): Promise<void> {
+export default async function updateMatch(match: Match): Promise<void> {
   const ref = db.collection('matches').doc(match.id);
   const [err] = await to(ref.set(match.toFirestore()));
   if (err) {

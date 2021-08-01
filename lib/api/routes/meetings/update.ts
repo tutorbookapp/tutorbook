@@ -21,7 +21,7 @@ import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
 import updateAvailability from 'lib/api/update/availability';
-import updateMatchDoc from 'lib/api/update/match-doc';
+import { updateMatch } from 'lib/api/db/match';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingDoc from 'lib/api/update/meeting-doc';
@@ -257,7 +257,7 @@ export default async function updateMeeting(
       // TODO: Should I send a 200 status code *and then* send emails? Would that
       // make the front-end feel faster? Or is that a bad development practice?
       await Promise.all([
-        updateMatchDoc(meeting.match),
+        updateMatch(meeting.match),
         updateMatchSearchObj(meeting.match),
         updateMeetingDoc(meeting),
         updateMeetingSearchObj(meeting),

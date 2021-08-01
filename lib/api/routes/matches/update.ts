@@ -6,7 +6,7 @@ import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
-import updateMatchDoc from 'lib/api/update/match-doc';
+import { updateMatch } from 'lib/api/db/match';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
@@ -41,7 +41,7 @@ export default async function updateMatch(
 
     const match = updateMatchTags(body);
 
-    await Promise.all([updateMatchDoc(match), updateMatchSearchObj(match)]);
+    await Promise.all([updateMatch(match), updateMatchSearchObj(match)]);
 
     res.status(200).json(match.toJSON());
 
