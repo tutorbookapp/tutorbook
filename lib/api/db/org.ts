@@ -1,0 +1,95 @@
+import { DBAspect, DBSocial, DBUser } from 'lib/api/db/user';
+import { APIError } from 'lib/api/error';
+import { Org } from 'lib/model/org';
+import supabase from 'lib/api/supabase';
+
+export interface DBOrg {
+  id: string;
+  name: string;
+  photo: string | null;
+  email: string | null;
+  phone: string | null;
+  bio: string;
+  background: string | null;
+  venue: string | null;
+  socials: DBSocial[];
+  aspects: DBAspect[];
+  domains: string[] | null;
+  profiles: (keyof DBUser)[];
+  subjects: string[] | null;
+  signup: object;
+  home: object;
+  booking: object;
+  created: Date;
+  updated: Date;
+}
+
+export interface DBRelationMember {
+  user: string;
+  org: string;
+}
+
+export async function createOrg(org: Org): Promise<Org> {
+  const { error } = await supabase.from<DBOrg>('orgs').insert({
+    id: org.id,
+    name: org.name,
+    photo: org.photo || null,
+    email: org.email || null,
+    phone: org.phone || null,
+    bio: org.bio,
+    background: org.background || null,
+    venue: org.venue || null,
+    socials: org.socials,
+    aspects: org.aspects,
+    domains: org.domains.length ? org.domains : null,
+    profiles: org.profiles as (keyof DBUser)[],
+    subjects: org.subjects?.length ? org.subjects : null,
+    signup: org.signup,
+    home: org.home,
+    booking: org.booking,
+    created: org.created,
+    updated: org.updated,
+  });
+  if (error) {
+    const msg = `Error saving org (${org.name}) in database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+  const members = org.members.map((m) => ({ user: m, org: org.id }));
+  const { error: e } = await supabase.from('relation_members').insert(members);
+  if (e) {
+    const msg = `Error saving members for org (${org.name}) in database`;
+    throw new APIError(`${msg}: ${e.message}`, 500);
+  }
+  return org;
+}
+
+export async function getOrg(id: string): Promise<Org> {
+  const { data } = await supabase.from<Org>('orgs').select().eq('id', id);
+  if (!data || !data[0])
+    throw new APIError(`Org (${id}) does not exist in database`);
+  const { data: members } = await supabase
+    .from<{ user: string; org: string }>('relation_members')
+    .select('user')
+    .eq('org', id);
+  const org = new Org(data[0]);
+  org.members = (members || []).map((m) => m.user);
+  return org;
+}
+
+export async function updateOrg(org: Org): Promise<Org> {
+  const { error } = await supabase
+    .from<DBOrg>('orgs')
+    .upsert(copy, { onConflict: 'id' })
+    .eq('id', org.id);
+  if (error) {
+    const msg = `Error updating org (${org.name}) in database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+  const members = org.members.map((m) => ({ user: m, org: org.id }));
+  const { error: e } = await supabase.from('relation_members').upsert(members);
+  if (e) {
+    const msg = `Error updating members for org (${org.name}) in database`;
+    throw new APIError(`${msg}: ${e.message}`, 500);
+  }
+  return org;
+}
