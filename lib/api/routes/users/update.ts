@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { User, UserJSON, isUserJSON } from 'lib/model/user';
+import { DBUser, User, UserJSON, isUserJSON } from 'lib/model/user';
 import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
@@ -14,7 +14,7 @@ import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
-import verifyDocExists from 'lib/api/verify/doc-exists';
+import verifyRecordExists from 'lib/api/verify/record-exists';
 
 export type UpdateUserRes = UserJSON;
 
@@ -33,7 +33,7 @@ export default async function updateUserAPI(
       userId: body.id,
       orgIds: body.orgs,
     });
-    const originalDoc = await verifyDocExists('users', body.id);
+    const originalRecord = await verifyRecordExists<DBUser>('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
     const withTagsUpdate = updateUserTags(withOrgsUpdate);
@@ -56,7 +56,7 @@ export default async function updateUserAPI(
       properties: user.toSegment(),
     });
 
-    await analytics(user, 'updated', User.fromFirestoreDoc(originalDoc));
+    await analytics(user, 'updated', User.fromDB(originalRecord));
     await updateAvailability(user);
   } catch (e) {
     handle(e, res);

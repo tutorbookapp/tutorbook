@@ -2,12 +2,14 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
 import {
+  DBMeeting,
   Meeting,
   MeetingAction,
   MeetingJSON,
   isMeetingJSON,
 } from 'lib/model/meeting';
 import { createMeeting, updateMeeting } from 'lib/api/db/meeting';
+import { DBMatch } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import analytics from 'lib/api/analytics';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
@@ -29,8 +31,8 @@ import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
-import verifyDocExists from 'lib/api/verify/doc-exists';
 import verifyOptions from 'lib/api/verify/options';
+import verifyRecordExists from 'lib/api/verify/record-exists';
 import verifyRecurIncludesTime from 'lib/api/verify/recur-includes-time';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
@@ -61,11 +63,14 @@ export default async function updateMeetingAPI(
     });
     const beforeUpdateStart = new Date(options.original.time.from);
 
-    const [meetingDoc] = await Promise.all([
-      verifyDocExists('meetings', body.parentId || body.id),
-      verifyDocExists('matches', body.match.id),
+    const [meetingRecord] = await Promise.all([
+      verifyRecordExists<DBMeeting>(
+        'meetings',
+        Number(body.parentId || body.id)
+      ),
+      verifyRecordExists<DBMatch>('matches', Number(body.match.id)),
     ]);
-    const original = Meeting.fromFirestoreDoc(meetingDoc);
+    const original = Meeting.fromDB(meetingRecord);
     const people = await getPeople(body.match.people);
 
     // TODO: Actually implement availability verification.

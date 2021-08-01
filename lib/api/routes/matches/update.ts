@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { Match, MatchJSON, isMatchJSON } from 'lib/model/match';
+import { DBMatch, Match, MatchJSON, isMatchJSON } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
@@ -12,7 +12,7 @@ import updateMatchTags from 'lib/api/update/match-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
-import verifyDocExists from 'lib/api/verify/doc-exists';
+import verifyRecordExists from 'lib/api/verify/record-exists';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 
 export type UpdateMatchRes = MatchJSON;
@@ -26,7 +26,7 @@ export default async function updateMatchAPI(
 
     logger.info(`Updating ${body.toString()}...`);
 
-    await verifyDocExists('matches', body.id);
+    await verifyRecordExists<DBMatch>('matches', Number(body.id));
 
     const people = await getPeople(body.people);
 
