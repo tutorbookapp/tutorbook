@@ -12,8 +12,8 @@ import { UsersQuery } from 'lib/model/query/users';
 import clone from 'lib/utils/clone';
 import supabase from 'lib/api/supabase';
 
-type DBAspect = 'mentoring' | 'tutoring';
-interface DBSocial {
+export type DBAspect = 'mentoring' | 'tutoring';
+export interface DBSocial {
   type:
     | 'website'
     | 'linkedin'
@@ -24,7 +24,7 @@ interface DBSocial {
     | 'indiehackers';
   url: string;
 }
-interface DBTimeslot {
+export interface DBTimeslot {
   id: string;
   from: Date;
   to: Date;
@@ -32,7 +32,7 @@ interface DBTimeslot {
   recur: string;
   last: Date;
 }
-interface DBUser {
+export interface DBUser {
   id: string;
   uid: string | null;
   name: string;

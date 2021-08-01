@@ -3,7 +3,7 @@ import { Org } from 'lib/model/org';
 import clone from 'lib/utils/clone';
 import supabase from 'lib/api/supabase';
 
-interface DBOrg {
+export interface DBOrg {
   id: string;
   name: string;
   photo: string | null;
@@ -24,7 +24,7 @@ interface DBOrg {
   updated: Date;
 }
 
-interface DBRelationMember {
+export interface DBRelationMember {
   user: string;
   org: string;
 }

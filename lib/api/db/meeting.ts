@@ -8,6 +8,7 @@ import {
   list,
 } from 'lib/api/search';
 import { APIError } from 'lib/api/error';
+import { DBTimeslot } from 'lib/api/db/user';
 import { Meeting } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
@@ -15,7 +16,7 @@ import clone from 'lib/utils/clone';
 import { getDuration } from 'lib/utils/time';
 import supabase from 'lib/api/supabase';
 
-interface DBMeeting {
+export interface DBMeeting {
   id: number;
   org: string;
   creator: string;
@@ -31,12 +32,20 @@ interface DBMeeting {
 }
 
 export async function createMeeting(meeting: Meeting): Promise<Meeting> {
-  const copy: Partial<Meeting> = clone(meeting);
-  delete copy.people;
-  delete copy.id;
-  copy.match = meeting.match.id;
-  copy.creator = meeting.creator.id;
-  const { data, error } = await supabase.from<Meeting>('meetings').insert(copy);
+  const { data, error } = await supabase.from<DBMeeting>('meetings').insert({
+    id: meeting.id,
+    org: meeting.org,
+    creator: meeting.creator.id,
+    subjects: meeting.subjects,
+    status: meeting.status,
+    match: meeting.match.id,
+    venue: meeting.venue,
+    time: meeting.time,
+    description: meeting.description,
+    tags: meeting.tags,
+    created: meeting.created,
+    updated: meeting.updated,
+  });
   if (error) {
     const msg = `Error saving meeting (${meeting.toString()}) to database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
