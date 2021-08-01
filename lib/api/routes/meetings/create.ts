@@ -5,7 +5,7 @@ import { APIError, handle } from 'lib/api/error';
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
 import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
-import createMatchDoc from 'lib/api/create/match-doc';
+import { createMatch } from 'lib/api/db/match';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
@@ -79,7 +79,7 @@ export default async function createMeeting(
         verifyIsOrgAdmin(org, creator.id);
 
       // Create match (b/c it doesn't already exist).
-      body.match = await createMatchDoc(updateMatchTags(body.match));
+      body.match = await createMatch(updateMatchTags(body.match));
       await createMatchSearchObj(body.match);
 
       segment.track({

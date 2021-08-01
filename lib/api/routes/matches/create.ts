@@ -2,7 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Match, MatchJSON, isMatchJSON } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
-import createMatchDoc from 'lib/api/create/match-doc';
+import { createMatch } from 'lib/api/db/match';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
@@ -54,7 +54,7 @@ export default async function createMatch(
     )
       verifyIsOrgAdmin(await getOrg(body.org), creator.id);
 
-    const match = await createMatchDoc(updateMatchTags(body));
+    const match = await createMatch(updateMatchTags(body));
     await createMatchSearchObj(match);
 
     logger.info(`Created ${match.toString()}.`);
