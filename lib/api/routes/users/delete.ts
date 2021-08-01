@@ -4,7 +4,7 @@ import analytics from 'lib/api/analytics';
 import deleteAuthUser from 'lib/api/delete/auth-user';
 import deleteUserDoc from 'lib/api/delete/user-doc';
 import deleteUserSearchObj from 'lib/api/delete/user-search-obj';
-import getUser from 'lib/api/get/user';
+import { getUser } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';

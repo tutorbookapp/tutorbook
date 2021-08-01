@@ -7,7 +7,7 @@ import createCustomToken from 'lib/api/create/custom-token';
 import createUserDoc from 'lib/api/create/user-doc';
 import createUserSearchObj from 'lib/api/create/user-search-obj';
 import getOrg from 'lib/api/get/org';
-import getUser from 'lib/api/get/user';
+import { getUser } from 'lib/api/db/user';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';

@@ -16,7 +16,7 @@ import getOrg from 'lib/api/get/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
-import getUser from 'lib/api/get/user';
+import { getUser } from 'lib/api/db/user';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';

@@ -17,7 +17,7 @@ import { SocialInterface } from 'lib/model/account';
 import { Timeslot } from 'lib/model/timeslot';
 import { Verification } from 'lib/model/verification';
 import clone from 'lib/utils/clone';
-import getUser from 'lib/api/get/user';
+import { getUser } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
@@ -143,14 +143,16 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
     // TODO: Guard against CSRF attacks (using a CSRF cookie token).
     const jwt = body.token;
     if (!jwt) throw new APIError('Could not find an auth cookie or JWT', 401);
-    
+
     // Only process if the user just signed in in the last 5 minutes.
-    const [err, token] = await to<DecodedIdToken>(auth.verifyIdToken(jwt, true));
+    const [err, token] = await to<DecodedIdToken>(
+      auth.verifyIdToken(jwt, true)
+    );
     if (err) throw new APIError(`Your JWT is invalid: ${err.message}`, 401);
     if (!token) throw new APIError('Could not decode your ID token', 401);
-    if (new Date().getTime() / 1000 - token.auth_time > 5 * 60) 
+    if (new Date().getTime() / 1000 - token.auth_time > 5 * 60)
       throw new APIError('A more recent login is required. Try again', 401);
-   
+
     // Create and set a new session cookie that expires after 5 days.
     const expiresIn = 5 * 24 * 60 * 60 * 1000;
     const [e, cookie] = await to(auth.createSessionCookie(jwt, { expiresIn }));
@@ -164,7 +166,7 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
       })
     );
   }
-  
+
   const withOrgsUpdate = updateUserOrgs(merged);
   const withTagsUpdate = updateUserTags(withOrgsUpdate);
   const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
