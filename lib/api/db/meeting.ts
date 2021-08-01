@@ -1,20 +1,3 @@
-import { APIError } from 'lib/api/error';
-import { Meeting } from 'lib/model/meeting';
-import supabase from 'lib/api/supabase';
-
-export default async function updateMeetingDoc(
-  meeting: Meeting
-): Promise<void> {
-  const { error } = await supabase
-    .from('meetings')
-    .update(meeting)
-    .eq('id', meeting.id);
-  if (error) {
-    const m = `Error updating meeting (${meeting.toString()}) in database`;
-    throw new APIError(`${m}: ${error.message}`, 500);
-  }
-}
-
 import { RRule, RRuleSet } from 'rrule';
 import { nanoid } from 'nanoid';
 
@@ -24,10 +7,67 @@ import {
   addStringFilter,
   list,
 } from 'lib/api/search';
+import { APIError } from 'lib/api/error';
 import { Meeting } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
+import clone from 'lib/utils/clone';
 import { getDuration } from 'lib/utils/time';
+import supabase from 'lib/api/supabase';
+
+interface DBMeeting {
+  id: number;
+  org: string;
+  creator: string;
+  subjects: string[];
+  status: 'created' | 'pending' | 'logged' | 'approved';
+  match: number;
+  venue: string;
+  time: DBTimeslot;
+  description: string;
+  tags: 'recurring'[];
+  created: Date;
+  updated: Date;
+}
+
+export async function createMeeting(meeting: Meeting): Promise<Meeting> {
+  const copy: Partial<Meeting> = clone(meeting);
+  delete copy.people;
+  delete copy.id;
+  copy.match = meeting.match.id;
+  copy.creator = meeting.creator.id;
+  const { data, error } = await supabase.from<Meeting>('meetings').insert(copy);
+  if (error) {
+    const msg = `Error saving meeting (${meeting.toString()}) to database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+  const people = meeting.people.map((p) => ({
+    user: p.id,
+    roles: p.roles,
+    meeting: data ? data[0].id : meeting.id,
+  }));
+  const { error: e } = await supabase.from('relation_people').insert(people);
+  if (e) {
+    const msg = `Error saving people (${JSON.stringify(people)}) to database`;
+    throw new APIError(`${msg}: ${e.message}`, 500);
+  }
+  return Meeting.parse({
+    ...(data ? data[0] : meeting),
+    match: meeting.match,
+    people: meeting.people,
+    creator: meeting.creator,
+  });
+}
+
+export async function getMeeting(id: string): Promise<Meeting> {
+  const { data } = await supabase
+    .from<Meeting>('meetings')
+    .select()
+    .eq('id', id);
+  if (!data || !data[0])
+    throw new APIError(`Meeting (${id}) does not exist in database`);
+  return Meeting.parse(data[0]);
+}
 
 function getFilterStrings(query: MeetingsQuery): string[] {
   let str = query.org ? `match.org:${query.org}` : '';
@@ -55,7 +95,7 @@ function getFilterStrings(query: MeetingsQuery): string[] {
 
 // TODO: Generate instance meetings (from recurring parent meetings returned by
 // query) within requested time window and send those to the client.
-export default async function getMeetings(
+export async function getMeetings(
   query: MeetingsQuery
 ): Promise<{ hits: number; results: Meeting[] }> {
   const filters = getFilterStrings(query);
@@ -84,41 +124,18 @@ export default async function getMeetings(
   return { hits, results: meetings.flat() };
 }
 
-import { APIError } from 'lib/api/error';
-import { Meeting } from 'lib/model/meeting';
-import supabase from 'lib/api/supabase';
-
-interface DBMeeting {
-  id: number;
-  org: string;
-  creator: string;
-  subjects: string[];
-  status: 'created' | 'pending' | 'logged' | 'approved';
-  match: number;
-  venue: string;
-  time: DBTimeslot;
-  description: string;
-  tags: 'recurring'[];
-  created: Date;
-  updated: Date;
+export async function updateMeeting(meeting: Meeting): Promise<void> {
+  const { error } = await supabase
+    .from('meetings')
+    .update(meeting)
+    .eq('id', meeting.id);
+  if (error) {
+    const m = `Error updating meeting (${meeting.toString()}) in database`;
+    throw new APIError(`${m}: ${error.message}`, 500);
+  }
 }
 
-export default async function getMeeting(id: string): Promise<Meeting> {
-  const { data } = await supabase
-    .from<Meeting>('meetings')
-    .select()
-    .eq('id', id);
-  if (!data || !data[0])
-    throw new APIError(`Meeting (${id}) does not exist in database`);
-  return Meeting.parse(data[0]);
-}
-
-import { APIError } from 'lib/api/error';
-import supabase from 'lib/api/supabase';
-
-export default async function deleteMeetingDoc(
-  meetingId: string
-): Promise<void> {
+export async function deleteMeeting(meetingId: string): Promise<void> {
   const { error } = await supabase
     .from('meetings')
     .delete()
@@ -127,40 +144,4 @@ export default async function deleteMeetingDoc(
     const msg = `Error deleting meeting (${meetingId}) from database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
   }
-}
-
-import { APIError } from 'lib/api/error';
-import { Meeting } from 'lib/model/meeting';
-import clone from 'lib/utils/clone';
-import supabase from 'lib/api/supabase';
-
-export default async function createMeetingDoc(
-  meeting: Meeting
-): Promise<Meeting> {
-  const copy: Partial<Meeting> = clone(meeting);
-  delete copy.people;
-  delete copy.id;
-  copy.match = meeting.match.id;
-  copy.creator = meeting.creator.id;
-  const { data, error } = await supabase.from<Meeting>('meetings').insert(copy);
-  if (error) {
-    const msg = `Error saving meeting (${meeting.toString()}) to database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
-  const people = meeting.people.map((p) => ({
-    user: p.id,
-    roles: p.roles,
-    meeting: data ? data[0].id : meeting.id,
-  }));
-  const { error: e } = await supabase.from('relation_people').insert(people);
-  if (e) {
-    const msg = `Error saving people (${JSON.stringify(people)}) to database`;
-    throw new APIError(`${msg}: ${e.message}`, 500);
-  }
-  return Meeting.parse({
-    ...(data ? data[0] : meeting),
-    match: meeting.match,
-    people: meeting.people,
-    creator: meeting.creator,
-  });
 }

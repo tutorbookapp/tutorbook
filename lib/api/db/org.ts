@@ -3,30 +3,6 @@ import { Org } from 'lib/model/org';
 import clone from 'lib/utils/clone';
 import supabase from 'lib/api/supabase';
 
-export default async function updateOrgDoc(org: Org): Promise<Org> {
-  const copy: Partial<Org> = clone(org);
-  delete copy.members;
-  const { error } = await supabase
-    .from('orgs')
-    .upsert(copy, { onConflict: 'id' })
-    .eq('id', org.id);
-  if (error) {
-    const msg = `Error updating org (${org.name}) in database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
-  const members = org.members.map((m) => ({ user: m, org: org.id }));
-  const { error: e } = await supabase.from('relation_members').upsert(members);
-  if (e) {
-    const msg = `Error updating members for org (${org.name}) in database`;
-    throw new APIError(`${msg}: ${e.message}`, 500);
-  }
-  return org;
-}
-
-import { APIError } from 'lib/api/error';
-import { Org } from 'lib/model/org';
-import supabase from 'lib/api/supabase';
-
 interface DBOrg {
   id: string;
   name: string;
@@ -53,7 +29,24 @@ interface DBRelationMember {
   org: string;
 }
 
-export default async function getOrg(id: string): Promise<Org> {
+export async function createOrg(org: Org): Promise<Org> {
+  const copy: Partial<Org> = clone(org);
+  delete copy.members;
+  const { error } = await supabase.from('orgs').insert(copy);
+  if (error) {
+    const msg = `Error saving org (${org.name}) in database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+  const members = org.members.map((m) => ({ user: m, org: org.id }));
+  const { error: e } = await supabase.from('relation_members').insert(members);
+  if (e) {
+    const msg = `Error saving members for org (${org.name}) in database`;
+    throw new APIError(`${msg}: ${e.message}`, 500);
+  }
+  return org;
+}
+
+export async function getOrg(id: string): Promise<Org> {
   const { data } = await supabase.from<Org>('orgs').select().eq('id', id);
   if (!data || !data[0])
     throw new APIError(`Org (${id}) does not exist in database`);
@@ -66,23 +59,21 @@ export default async function getOrg(id: string): Promise<Org> {
   return org;
 }
 
-import { APIError } from 'lib/api/error';
-import { Org } from 'lib/model/org';
-import clone from 'lib/utils/clone';
-import supabase from 'lib/api/supabase';
-
-export default async function createOrgDoc(org: Org): Promise<Org> {
+export async function updateOrg(org: Org): Promise<Org> {
   const copy: Partial<Org> = clone(org);
   delete copy.members;
-  const { error } = await supabase.from('orgs').insert(copy);
+  const { error } = await supabase
+    .from('orgs')
+    .upsert(copy, { onConflict: 'id' })
+    .eq('id', org.id);
   if (error) {
-    const msg = `Error saving org (${org.name}) in database`;
+    const msg = `Error updating org (${org.name}) in database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
   }
   const members = org.members.map((m) => ({ user: m, org: org.id }));
-  const { error: e } = await supabase.from('relation_members').insert(members);
+  const { error: e } = await supabase.from('relation_members').upsert(members);
   if (e) {
-    const msg = `Error saving members for org (${org.name}) in database`;
+    const msg = `Error updating members for org (${org.name}) in database`;
     throw new APIError(`${msg}: ${e.message}`, 500);
   }
   return org;
