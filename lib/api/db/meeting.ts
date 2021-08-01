@@ -1,46 +1,12 @@
+import { DBMeeting, Meeting } from 'lib/model/meeting';
 import { APIError } from 'lib/api/error';
-import { DBRelationPerson } from 'lib/api/db/match';
-import { DBTimeslot } from 'lib/api/db/user';
-import { Meeting } from 'lib/model/meeting';
+import { DBRelationPerson } from 'lib/model/match';
 import supabase from 'lib/api/supabase';
 
-export interface DBMeeting {
-  id: number;
-  org: string;
-  creator: string;
-  subjects: string[];
-  status: 'created' | 'pending' | 'logged' | 'approved';
-  match: number;
-  venue: string;
-  time: DBTimeslot;
-  description: string;
-  tags: 'recurring'[];
-  created: Date;
-  updated: Date;
-}
-
 export async function createMeeting(meeting: Meeting): Promise<Meeting> {
-  const { data, error } = await supabase.from<DBMeeting>('meetings').insert({
-    id: Number(meeting.id),
-    org: meeting.match.org,
-    creator: meeting.creator.id,
-    subjects: meeting.match.subjects,
-    status: meeting.status,
-    match: Number(meeting.match.id),
-    venue: meeting.venue.url,
-    time: {
-      id: meeting.time.id,
-      from: meeting.time.from,
-      to: meeting.time.to,
-      exdates: meeting.time.exdates || null,
-      recur: meeting.time.recur || null,
-      last: meeting.time.last || null,
-    },
-    description: meeting.description,
-    tags: meeting.tags,
-    created: meeting.created,
-    updated: meeting.updated,
-  });
+  const { data, error } = await supabase
+    .from<DBMeeting>('meetings')
+    .insert(meeting.toDB());
   if (error) {
     const msg = `Error saving meeting (${meeting.toString()}) to database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
@@ -75,33 +41,13 @@ export async function getMeeting(id: string): Promise<Meeting> {
     .eq('id', Number(id));
   if (!data || !data[0])
     throw new APIError(`Meeting (${id}) does not exist in database`);
-  return new Meeting(data[0]);
+  return Meeting.fromDB(data[0]);
 }
 
 export async function updateMeeting(meeting: Meeting): Promise<void> {
   const { error } = await supabase
     .from<DBMeeting>('meetings')
-    .update({
-      id: Number(meeting.id),
-      org: meeting.match.org,
-      creator: meeting.creator.id,
-      subjects: meeting.match.subjects,
-      status: meeting.status,
-      match: Number(meeting.match.id),
-      venue: meeting.venue.url,
-      time: {
-        id: meeting.time.id,
-        from: meeting.time.from,
-        to: meeting.time.to,
-        exdates: meeting.time.exdates || null,
-        recur: meeting.time.recur || null,
-        last: meeting.time.last || null,
-      },
-      description: meeting.description,
-      tags: meeting.tags,
-      created: meeting.created,
-      updated: meeting.updated,
-    })
+    .update(meeting.toDB())
     .eq('id', Number(meeting.id));
   if (error) {
     const m = `Error updating meeting (${meeting.toString()}) in database`;

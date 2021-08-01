@@ -9,8 +9,8 @@ import {
   isAccountJSON,
 } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
+import { DBAspect, DBSocial, DBUser, UserInterface } from 'lib/model/user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
-import { UserInterface } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -126,6 +126,32 @@ export interface OrgInterface extends AccountInterface {
   matchURL?: string;
 }
 
+export interface DBOrg {
+  id: string;
+  name: string;
+  photo: string | null;
+  email: string | null;
+  phone: string | null;
+  bio: string;
+  background: string | null;
+  venue: string | null;
+  socials: DBSocial[];
+  aspects: DBAspect[];
+  domains: string[] | null;
+  profiles: (keyof DBUser)[];
+  subjects: string[] | null;
+  signup: object;
+  home: object;
+  booking: object;
+  created: Date;
+  updated: Date;
+}
+
+export interface DBRelationMember {
+  user: string;
+  org: string;
+}
+
 export type OrgJSON = Omit<OrgInterface, keyof Account> & AccountJSON;
 export type OrgSearchHit = Omit<OrgInterface, keyof Account> & AccountSearchHit;
 export type OrgFirestore = Omit<OrgInterface, keyof Account> & AccountFirestore;
@@ -236,6 +262,52 @@ export class Org extends Account implements OrgInterface {
 
   public get clone(): Org {
     return new Org(clone(this));
+  }
+
+  public toDB(): DBOrg {
+    return {
+      id: this.id,
+      name: this.name,
+      photo: this.photo || null,
+      email: this.email || null,
+      phone: this.phone || null,
+      bio: this.bio,
+      background: this.background || null,
+      venue: this.venue || null,
+      socials: this.socials,
+      aspects: this.aspects,
+      domains: this.domains.length ? this.domains : null,
+      profiles: this.profiles as (keyof DBUser)[],
+      subjects: this.subjects?.length ? this.subjects : null,
+      signup: this.signup,
+      home: this.home,
+      booking: this.booking,
+      created: this.created,
+      updated: this.updated,
+    };
+  }
+
+  public static fromDB(record: DBOrg): Org {
+    return new Org({
+      id: record.id,
+      name: record.name,
+      photo: record.photo || undefined,
+      email: record.email || undefined,
+      phone: record.phone || undefined,
+      bio: record.bio,
+      background: record.background || undefined,
+      venue: record.venue || undefined,
+      socials: record.socials,
+      aspects: record.aspects,
+      domains: record.domains?.length ? record.domains : undefined,
+      profiles: record.profiles as (keyof UserInterface | 'subjects')[],
+      subjects: record.subjects?.length ? record.subjects : undefined,
+      signup: record.signup as SignupConfig,
+      home: record.home as HomeConfig,
+      booking: record.booking as BookingConfig,
+      created: record.created,
+      updated: record.updated,
+    });
   }
 
   public toJSON(): OrgJSON {

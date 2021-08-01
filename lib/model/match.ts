@@ -48,6 +48,24 @@ export interface MatchInterface extends ResourceInterface {
   id: string;
 }
 
+export interface DBMatch {
+  id: number;
+  org: string;
+  creator: string;
+  subjects: string[];
+  message: string;
+  tags: 'meeting'[];
+  created: Date;
+  updated: Date;
+}
+
+export interface DBRelationPerson {
+  user: string;
+  meeting: number | null;
+  match: number | null;
+  roles: ('tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent')[];
+}
+
 export type MatchJSON = Omit<MatchInterface, keyof Resource> & ResourceJSON;
 export type MatchSearchHit = ObjectWithObjectID &
   Omit<MatchInterface, keyof Resource | 'id' | 'tags'> &
@@ -126,6 +144,37 @@ export class Match extends Resource implements MatchInterface {
 
   public toString(): string {
     return `Match for ${join(this.subjects) || 'No Subjects'}`;
+  }
+
+  public toDB(): DBMatch {
+    return {
+      id: Number(this.id),
+      org: this.org,
+      creator: this.creator.id,
+      subjects: this.subjects,
+      message: this.message,
+      tags: this.tags,
+      created: this.created,
+      updated: this.updated,
+    };
+  }
+
+  public static fromDB(record: DBMatch): Match {
+    return new Match({
+      id: record.id.toString(),
+      org: record.org,
+      creator: {
+        id: record.creator,
+        name: '',
+        photo: '',
+        roles: [],
+      },
+      subjects: record.subjects,
+      message: record.message,
+      tags: record.tags,
+      created: record.created,
+      updated: record.updated,
+    });
   }
 
   public toJSON(): MatchJSON {

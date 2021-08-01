@@ -39,6 +39,15 @@ export interface TimeslotInterface<T = Date> {
   last?: T;
 }
 
+export interface DBTimeslot {
+  id: string;
+  from: Date;
+  to: Date;
+  exdates: Date[] | null;
+  recur: string | null;
+  last: Date | null;
+}
+
 export type TimeslotFirestore = TimeslotInterface<Timestamp>;
 export type TimeslotJSON = TimeslotInterface<string>;
 export type TimeslotSearchHit = TimeslotInterface<number>;
