@@ -31,7 +31,8 @@ function date(t) {
 
 function url(url, required = false) {
   if (!required && url === null) return null;
-  if (/^https?:\/\/\S+$/.test(url)) return url;
+  if (typeof url !== 'string') return null;
+  if (/^https?:\/\/\S+$/.test(url.trim())) return url.trim();
   logger.error(`Invalid URL: ${url}`);
   debugger;
   throw new Error(`Invalid URL: ${url}`);
@@ -124,7 +125,7 @@ async function fetchUsers() {
       id: t.id || nanoid(),
       from: t.from.toDate(),
       to: t.to.toDate(),
-      exdates: (t.exdates || []).map((d) => d.toDate()),
+      exdates: t.exdates ? t.exdates.map((d) => d.toDate()) : null,
       recur: t.recur || null,
       last: t.last ? t.last.toDate() : null,
     })),
@@ -164,7 +165,16 @@ async function fetchMeetings() {
     subjects: d.match.subjects,
     status: d.status || 'created',
     match: matchIds[d.match.id],
-    venue: d.venue || `https://meet.jit.si/TB-${nanoid(10)}`,
+    venue: url(d.venue.url || `https://meet.jit.si/TB-${nanoid(10)}`),
+    time: {
+      id: d.time.id || nanoid(),
+      from: d.time.from.toDate(),
+      to: d.time.to.toDate(),
+      exdates: d.time.exdates ? d.time.exdates.map((d) => d.toDate()) : null,
+      recur: d.time.recur || null,
+      last: d.time.last ? d.time.last.toDate() : null,
+    },
+    description: d.description || d.match.message || '',
     tags: d.tags || [],
     created: d.created.toDate(),
     updated: d.updated.toDate(),
