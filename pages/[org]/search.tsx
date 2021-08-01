@@ -4,6 +4,7 @@ import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { dequal } from 'dequal/lite';
+import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
 import AuthDialog from 'components/auth-dialog';
@@ -13,13 +14,13 @@ import Search from 'components/search';
 
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
+import { getOrg, getOrgs } from 'lib/api/db/org';
 import { CallbackParam } from 'lib/model/callback';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { OrgContext } from 'lib/context/org';
 import { User } from 'lib/model/user';
 import { UsersQuery } from 'lib/model/query/users';
 import clone from 'lib/utils/clone';
-import { db } from 'lib/api/firebase';
 import { prefetch } from 'lib/fetch';
 import useAnalytics from 'lib/hooks/analytics';
 import usePage from 'lib/hooks/page';
@@ -210,18 +211,14 @@ export const getStaticProps: GetStaticProps<
   SearchPageQuery
 > = async (ctx: GetStaticPropsContext<SearchPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
-  const doc = await db.collection('orgs').doc(ctx.params.org).get();
-  if (!doc.exists) return { notFound: true };
+  const [error, org] = await to(getOrg(ctx.params.org));
+  if (error || !org) return { notFound: true };
   const { props } = await getPageProps();
-  return {
-    props: { org: Org.fromFirestoreDoc(doc).toJSON(), ...props },
-    revalidate: 1,
-  };
+  return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SearchPageQuery> = async () => {
-  const orgs = (await db.collection('orgs').get()).docs;
-  const paths = orgs.map((org) => ({ params: { org: org.id } }));
+  const paths = (await getOrgs()).map((org) => ({ params: { org: org.id } }));
   return { paths, fallback: true };
 };
 

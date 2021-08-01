@@ -44,6 +44,20 @@ export async function getMeeting(id: string): Promise<Meeting> {
   return Meeting.fromDB(data[0]);
 }
 
+export async function getMeetingsByMatchId(
+  matchId: string
+): Promise<Meeting[]> {
+  const { data, error } = await supabase
+    .from<DBMeeting>('meetings')
+    .select()
+    .eq('match', Number(matchId));
+  if (error)
+    throw new APIError(
+      `Error fetching meetings by match (${matchId}): ${error.message}`
+    );
+  return (data || []).map((d) => Meeting.fromDB(d));
+}
+
 export async function updateMeeting(meeting: Meeting): Promise<void> {
   const { error } = await supabase
     .from<DBMeeting>('meetings')

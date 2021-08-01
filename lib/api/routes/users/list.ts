@@ -2,8 +2,12 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
 import { User, UserJSON } from 'lib/model/user';
-import { UsersQuery, UsersQueryURL, isUsersQueryURL } from 'lib/model/query/users';
-import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
+import {
+  UsersQuery,
+  UsersQueryURL,
+  isUsersQueryURL,
+} from 'lib/model/query/users';
+import { getOrgsByAdminId } from 'lib/api/db/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import getUsers from 'lib/api/get/users';
 import { handle } from 'lib/api/error';
@@ -43,7 +47,7 @@ export default async function listUsers(
         if (r.orgs.some((orgId) => orgIds.includes(orgId))) return r;
         return getTruncatedUser(r);
       });
-      
+
       // TODO: Include the query info as event properties here.
       segment.track({ userId: uid, event: 'Users Listed' });
     }

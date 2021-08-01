@@ -32,6 +32,25 @@ export async function getOrg(id: string): Promise<Org> {
   return org;
 }
 
+export async function getOrgs(): Promise<Org[]> {
+  const { data, error } = await supabase.from<DBOrg>('orgs').select();
+  if (error) throw new APIError(`Error fetching orgs: ${error.message}`, 500);
+  return (data || []).map((d) => Org.fromDB(d));
+}
+
+export async function getOrgsByAdminId(adminId: string): Promise<Org[]> {
+  const { data, error } = await supabase
+    .from<DBRelationMember>('relation_members')
+    .select('org (*)')
+    .eq('user', adminId);
+  if (error)
+    throw new APIError(
+      `Error fetching orgs by admin (${adminId}): ${error.message}`,
+      500
+    );
+  return (data || []).map(({ org }) => Org.fromDB((org as unknown) as DBOrg));
+}
+
 export async function updateOrg(org: Org): Promise<Org> {
   const { error } = await supabase
     .from<DBOrg>('orgs')

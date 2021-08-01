@@ -1,7 +1,7 @@
 import { GetStaticPathsResult } from 'next';
 
-import { Org, OrgJSON } from 'lib/model/org';
-import { db } from 'lib/api/firebase';
+import { OrgJSON } from 'lib/model/org';
+import { getOrgs } from 'lib/api/db/org';
 
 // Orgs must be optional because they are undefined when Next.js renders the
 // fallback page during build-time. They are updated afterwards.
@@ -13,8 +13,7 @@ export interface PageProps {
 }
 
 export async function getPageProps(): Promise<{ props: PageProps }> {
-  const { docs } = await db.collection('orgs').get();
-  const orgs = docs.map((d) => Org.fromFirestoreDoc(d).toJSON());
+  const orgs = (await getOrgs()).map((o) => o.toJSON());
   return { props: { orgs } };
 }
 
