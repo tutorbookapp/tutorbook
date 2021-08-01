@@ -22,7 +22,7 @@ import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
 import updatePhoto from 'lib/api/update/photo';
-import updateUserDoc from 'lib/api/update/user-doc';
+import { updateUser } from 'lib/api/db/user';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updateUserTags from 'lib/api/update/user-tags';
@@ -173,7 +173,7 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
   await Promise.all([
-    updateUserDoc(withAuthUpdate),
+    updateUser(withAuthUpdate),
     updateUserSearchObj(withAuthUpdate),
   ]);
 
