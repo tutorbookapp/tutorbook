@@ -185,17 +185,20 @@ function SelectSurface({
           {Array(7)
             .fill(null)
             .map((_, idx) => (
+              /* eslint-disable react/no-array-index-key */
               <div className={styles.weekday} key={`day-${idx}`}>
                 {getDate(idx, 0).toLocaleString(locale, {
                   weekday: 'narrow',
                 })}
               </div>
+              /* eslint-enable react/no-array-index-key */
             ))}
         </div>
         <div className={styles.dates}>
           {Array(getDaysInMonth(month))
             .fill(null)
             .map((_, idx) => (
+              /* eslint-disable react/no-array-index-key */
               <IconButton
                 type='button'
                 data-cy='day-button'
@@ -217,6 +220,7 @@ function SelectSurface({
                 }}
                 aria-selected={idx + 1 === date}
               />
+              /* eslint-enable react/no-array-index-key */
             ))}
         </div>
       </div>

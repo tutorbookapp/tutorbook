@@ -71,7 +71,7 @@ export default function General(): JSX.Element {
         />
         <TextField
           label={t('org:email')}
-          value={org.email}
+          value={org.email || ''}
           onChange={onEmailChange}
           className={styles.field}
           type='email'
@@ -80,7 +80,7 @@ export default function General(): JSX.Element {
         />
         <TextField
           label={t('org:phone')}
-          value={org.phone ? org.phone : undefined}
+          value={org.phone || undefined}
           onChange={onPhoneChange}
           className={styles.field}
           type='tel'

@@ -7,7 +7,7 @@ type TextFieldPropOverrides = 'helpText' | 'placeholder';
 
 interface UniqueVenueInputProps {
   name?: string;
-  value: string;
+  value: string | null;
   onChange: TCallback<string>;
 }
 
@@ -36,7 +36,7 @@ export default function VenueInput({
         }),
       }}
       onChange={(evt) => onChange(evt.currentTarget.value)}
-      value={value}
+      value={value || ''}
     />
   );
 }

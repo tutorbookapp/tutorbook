@@ -73,7 +73,7 @@ export default function CreatePage({
     [setEditing]
   );
   const onRecurChange = useCallback(
-    (recur?: string) => {
+    (recur: string | null) => {
       setEditing((prev) => {
         const time = Timeslot.parse({ ...prev.time, recur });
         return Meeting.parse({ ...prev, time });

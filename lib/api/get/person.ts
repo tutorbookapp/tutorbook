@@ -1,6 +1,5 @@
 import { addRoles, join } from 'lib/utils';
 import { APIError } from 'lib/api/error';
-import { Person } from 'lib/model/person';
 import { User } from 'lib/model/user';
 import getUser from 'lib/api/get/user';
 
@@ -14,7 +13,7 @@ import getUser from 'lib/api/get/user';
  * @return Promise that resolve to the person's complete user data.
  */
 export default async function getPerson(
-  { id, roles, name }: Partial<Person> & { id: string },
+  { id, roles, name }: Partial<User> & { id: string },
   people: User[] = []
 ): Promise<User> {
   if (!id) {

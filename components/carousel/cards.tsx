@@ -1,6 +1,6 @@
-import React from 'react';
 import Link from 'next/link';
 import { Ripple } from '@rmwc/ripple';
+import { SyntheticEvent } from 'react';
 import cn from 'classnames';
 
 import Avatar from 'components/avatar';
@@ -11,7 +11,7 @@ import { User } from 'lib/model/user';
 import styles from './cards.module.scss';
 
 interface UserCardProps {
-  onClick?: TCallback<React.SyntheticEvent<HTMLDivElement>>;
+  onClick?: TCallback<SyntheticEvent<HTMLDivElement>>;
   href?: string;
   user: User;
 }

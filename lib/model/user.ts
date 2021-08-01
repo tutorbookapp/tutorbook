@@ -3,9 +3,17 @@ import { z } from 'zod';
 import { Account } from 'lib/model/account';
 import { Aspect } from 'lib/model/aspect';
 import { Availability } from 'lib/model/availability';
-import { Role } from 'lib/model/person';
 import { Verification } from 'lib/model/verification';
 import { join } from 'lib/utils';
+
+export const Role = z.union([
+  z.literal('tutor'),
+  z.literal('tutee'),
+  z.literal('mentor'),
+  z.literal('mentee'),
+  z.literal('parent'),
+]);
+export type Role = z.infer<typeof Role>;
 
 /**
  * Various tags that are added to the Algolia users search during indexing (via

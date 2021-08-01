@@ -15,8 +15,8 @@ const rrules: Record<string, string> = {
 };
 
 export type RecurSelectProps = {
-  value?: string;
-  onChange: TCallback<string | undefined>;
+  value: string | null;
+  onChange: TCallback<string | null>;
 } & Omit<SelectProps, 'value' | 'onChange'> &
   Omit<SelectHTMLProps, 'value' | 'onChange'>;
 
@@ -30,7 +30,7 @@ export default function RecurSelect({
   const onSelectChange = useCallback(
     (evt: FormEvent<HTMLSelectElement>) => {
       if (evt.currentTarget.value === getRecurString(value)) return;
-      onChange(rrules[evt.currentTarget.value] || undefined);
+      onChange(rrules[evt.currentTarget.value] || null);
     },
     [value, onChange]
   );

@@ -6,8 +6,8 @@ import useTranslation from 'next-translate/useTranslation';
 import Pagination from 'components/pagination';
 import Placeholder from 'components/placeholder';
 
-import { User } from 'lib/model/user';
 import { Callback } from 'lib/model/callback';
+import { User } from 'lib/model/user';
 import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
 

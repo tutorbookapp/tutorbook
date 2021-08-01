@@ -31,7 +31,7 @@ export default async function updateUser(
       userId: body.id,
       orgIds: body.orgs,
     });
-    const originalDoc = await verifyDocExists<User>('users', body.id);
+    await verifyDocExists<User>('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
     const withTagsUpdate = updateUserTags(withOrgsUpdate);

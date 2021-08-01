@@ -39,6 +39,7 @@ export default function DialogContent({
     })
   );
 
+  /* eslint-disable react/no-array-index-key */
   return (
     <div className={styles.pages}>
       {children.map((child, idx) => (
@@ -52,4 +53,5 @@ export default function DialogContent({
       ))}
     </div>
   );
+  /* eslint-enable react/no-array-index-key */
 }

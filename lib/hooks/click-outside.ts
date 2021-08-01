@@ -19,8 +19,8 @@ export interface ClickOutsideProps {
 }
 
 export const ClickContext = createContext<ClickOutsideProps>({
-  updateEl: (id: string, el: HTMLElement) => {},
-  removeEl: (id: string) => {},
+  updateEl: () => {},
+  removeEl: () => {},
 });
 
 export function useClickContext(): ClickOutsideProps {

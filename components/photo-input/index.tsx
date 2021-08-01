@@ -13,7 +13,7 @@ import styles from './photo-input.module.scss';
 type TextFieldPropOverrides = 'helpText' | 'inputRef' | 'invalid';
 
 interface UniquePhotoInputProps {
-  value: string;
+  value: string | null;
   onChange: TCallback<string>;
 }
 

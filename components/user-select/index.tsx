@@ -5,14 +5,14 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
 
-import { User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Option } from 'lib/model/query/base';
+import { User } from 'lib/model/user';
 import { useUser } from 'lib/context/user';
 
 export interface UserOption extends Option {
-  photo?: string;
+  photo?: string | null;
 }
 
 /**
@@ -37,7 +37,9 @@ export default function UserSelect({
   const { user, orgs } = useUser();
 
   // Store a cache of labels fetched (i.e. a map of values and labels).
-  const cache = useRef<Record<string, { name: string; photo: string }>>({});
+  const cache = useRef<Record<string, { name: string; photo: string | null }>>(
+    {}
+  );
 
   // Directly control the `Select` component (just like the `SubjectSelect`).
   const [selectedOptions, setSelectedOptions] = useState<UserOption[]>(
@@ -53,8 +55,7 @@ export default function UserSelect({
   );
 
   // Call the `/api/users` API endpoint to get suggestions.
-  const userToOption = useCallback((user: User | User) => {
-    const u = User.parse(user);
+  const userToOption = useCallback((u: User) => {
     cache.current[u.id] = { name: u.name, photo: u.photo };
     return { value: u.id, label: u.name, photo: u.photo };
   }, []);
@@ -70,9 +71,9 @@ export default function UserSelect({
       if (user.id)
         promises.push(
           axios.get<ListUsersRes>(
-            endpoint(UsersQuery.parse({ search, parents: [user.id] })
-                    )
-        ));
+            endpoint(UsersQuery.parse({ search, parents: [user.id] }))
+          )
+        );
       const suggestions: UserOption[] = [];
       (await Promise.all(promises)).forEach(({ data }) => {
         data.users.forEach((u: User) => {

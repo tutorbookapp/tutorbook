@@ -11,8 +11,8 @@ import PhotoInput from 'components/photo-input';
 import SubjectSelect from 'components/subject-select';
 import VenueInput from 'components/venue-input';
 
-import { User } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
+import { User } from 'lib/model/user';
 import { accountToSegment } from 'lib/model/account';
 import useAnalytics from 'lib/hooks/analytics';
 import useContinuous from 'lib/hooks/continuous';
@@ -163,7 +163,7 @@ export default function Profile(): JSX.Element {
             />
             <TextField
               label={t('user3rd:email')}
-              value={user.email}
+              value={user.email || ''}
               className={styles.field}
               type='email'
               disabled
@@ -173,7 +173,7 @@ export default function Profile(): JSX.Element {
             />
             <TextField
               label={t('user3rd:phone')}
-              value={user.phone ? user.phone : undefined}
+              value={user.phone || undefined}
               onChange={onPhoneChange}
               className={styles.field}
               type='tel'

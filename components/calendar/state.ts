@@ -1,6 +1,6 @@
 import { FormEvent, createContext, useContext } from 'react';
 
-import { Callback, CallbackParam } from 'lib/model/callback';
+import { Callback } from 'lib/model/callback';
 import { Meeting } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 
@@ -27,15 +27,15 @@ export interface CalendarState {
 export const CalendarStateContext = createContext<CalendarState>({
   start: MeetingsQuery.parse({}).from,
   editing: Meeting.parse({}),
-  setEditing: (param: CallbackParam<Meeting>) => {},
-  onEditStop: (evt?: FormEvent) => {},
+  setEditing: () => {},
+  onEditStop: () => {},
   rnd: false,
-  setRnd: (param: CallbackParam<boolean>) => {},
+  setRnd: () => {},
   dialog: false,
-  setDialog: (param: CallbackParam<boolean>) => {},
-  setDialogPage: (param: CallbackParam<DialogPage>) => {},
+  setDialog: () => {},
+  setDialogPage: () => {},
   dragging: false,
-  setDragging: (param: CallbackParam<boolean>) => {},
+  setDragging: () => {},
 });
 
 export const useCalendarState = (): CalendarState =>

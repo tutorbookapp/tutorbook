@@ -10,7 +10,7 @@ interface AvatarProps {
   className?: string;
   priority?: boolean;
   loading?: boolean;
-  src?: string;
+  src?: string | null;
 }
 
 /**

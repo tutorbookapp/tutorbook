@@ -1,7 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import { Snackbar } from '@rmwc/snackbar';
-import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
+import useTranslation from 'next-translate/useTranslation';
 
 import TitleHeader from 'components/header';
 

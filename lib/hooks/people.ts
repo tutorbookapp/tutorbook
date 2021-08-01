@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
 
-import { User } from 'lib/model/user';
 import { Match } from 'lib/model/match';
+import { User } from 'lib/model/user';
 
 export default function usePeople(match: Match): User[] {
   const { data } = useSWR<User[]>(

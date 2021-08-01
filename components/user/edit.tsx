@@ -13,8 +13,8 @@ import Result from 'components/search/result';
 import SubjectSelect from 'components/subject-select';
 import VenueInput from 'components/venue-input';
 
-import { User } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
+import { User } from 'lib/model/user';
 import { first } from 'lib/utils';
 import useContinuous from 'lib/hooks/continuous';
 import { useOrg } from 'lib/context/org';
@@ -179,7 +179,7 @@ export default function UserEdit({
             />
             <TextField
               label={t('user:email')}
-              value={user.email}
+              value={user.email || ''}
               onChange={onEmailChange}
               className={styles.field}
               type='email'
@@ -188,7 +188,7 @@ export default function UserEdit({
             />
             <TextField
               label={t('user:phone')}
-              value={user.phone ? user.phone : undefined}
+              value={user.phone || undefined}
               onChange={onPhoneChange}
               className={styles.field}
               type='tel'

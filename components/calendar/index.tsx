@@ -55,7 +55,7 @@ export default function Calendar({
   user: byUser,
 }: CalendarProps): JSX.Element {
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
-  const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
+  const [mutatedIds, setMutatedIds] = useState<Set<number>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(MeetingsQuery.parse({}));
 
   useURLParamSync(
@@ -124,6 +124,7 @@ export default function Calendar({
       if (mutated.id === undefined) return;
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
+        if (sentToAPI.id === undefined) return mutatedMeetingIds;
         if (!hasBeenUpdated) mutatedMeetingIds.add(sentToAPI.id);
         if (hasBeenUpdated) mutatedMeetingIds.delete(sentToAPI.id);
         return mutatedMeetingIds;

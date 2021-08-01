@@ -8,10 +8,9 @@ import { Availability } from 'lib/model/availability';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
 import { UsersQuery } from 'lib/model/query/users';
-import logger from 'lib/api/logger';
 import supabase from 'lib/api/supabase';
 
-function getFilterString(query: UsersQuery): string {
+export function getFilterString(query: UsersQuery): string {
   let str = '';
   if (typeof query.visible === 'boolean')
     str = addStringFilter(str, `visible=${query.visible ? 1 : 0}`);

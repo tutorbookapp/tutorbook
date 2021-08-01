@@ -1,14 +1,14 @@
+import { ReactNode } from 'react';
+
 import styles from './notification.module.scss';
 
 export interface NotificationProps {
   header: string;
-  intercom?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export default function Notification({
   header,
-  intercom,
   children,
 }: NotificationProps): JSX.Element {
   return (

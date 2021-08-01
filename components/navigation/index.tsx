@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import cn from 'classnames';
+import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
@@ -7,8 +7,8 @@ import FilterForm from 'components/filter-form';
 
 import { Callback, TCallback } from 'lib/model/callback';
 import { Aspect } from 'lib/model/aspect';
-import { UsersQuery } from 'lib/model/query/users';
 import Link from 'lib/intl/link';
+import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 

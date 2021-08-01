@@ -13,7 +13,7 @@ import Button from 'components/button';
 import Loader from 'components/loader';
 import TimeSelect from 'components/time-select';
 
-import { Person, Role } from 'lib/model/person';
+import { Role, User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { first, join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/api/error';
@@ -22,7 +22,6 @@ import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
-import { User } from 'lib/model/user';
 import { getErrorMessage } from 'lib/fetch';
 import { loginWithGoogle } from 'lib/firebase/login';
 import { useOrg } from 'lib/context/org';
@@ -149,20 +148,8 @@ export default function RequestForm({
         volunteerRoles.push('mentor');
         studentRoles.push('mentee');
       }
-      const people: Person[] = [
-        {
-          id: volunteer.id,
-          name: volunteer.name,
-          photo: volunteer.photo,
-          roles: volunteerRoles,
-        },
-      ];
-      const creator: Person = {
-        id: updatedUser.id,
-        name: updatedUser.name,
-        photo: updatedUser.photo,
-        roles: [],
-      };
+      const people: User[] = [{ ...volunteer, roles: volunteerRoles }];
+      const creator: User = { ...updatedUser, roles: [] };
       if (student === 'Me') {
         creator.roles = studentRoles;
         people.push(creator);
@@ -184,22 +171,12 @@ export default function RequestForm({
         if (res) {
           creator.roles = ['parent'];
           people.push(creator);
-          people.push({
-            id: res.data.id,
-            name: res.data.name,
-            photo: res.data.photo,
-            roles: studentRoles,
-          });
+          people.push(User.parse({ ...res.data, roles: studentRoles }));
         }
       } else {
         creator.roles = ['parent'];
         people.push(creator);
-        people.push({
-          id: options[student].id,
-          name: options[student].name,
-          photo: options[student].photo,
-          roles: studentRoles,
-        });
+        people.push({ ...options[student], roles: studentRoles });
       }
       const meeting = Meeting.parse({
         time,

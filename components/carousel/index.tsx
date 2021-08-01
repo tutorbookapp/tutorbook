@@ -2,9 +2,9 @@ import useSWR, { mutate } from 'swr';
 import { nanoid } from 'nanoid';
 import { useEffect } from 'react';
 
-import { User } from 'lib/model/user';
 import { UsersQuery, endpoint } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import { User } from 'lib/model/user';
 import { useOrg } from 'lib/context/org';
 
 import { LoadingCard, UserCard } from './cards';

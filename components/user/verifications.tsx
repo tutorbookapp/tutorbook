@@ -17,8 +17,8 @@ import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import { Check, Verification } from 'lib/model/verification';
-import { User } from 'lib/model/user';
 import { Aspect } from 'lib/model/aspect';
+import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import useContinuous from 'lib/hooks/continuous';
 import { useUser } from 'lib/context/user';

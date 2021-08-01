@@ -71,12 +71,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     () => error && { ...accountToSegment(user), error, aspect }
   );
 
-  const getSocialProps = useSocialProps(
-    user,
-    setUser,
-    styles.field,
-    'user3rd',
-  );
+  const getSocialProps = useSocialProps(user, setUser, styles.field, 'user3rd');
 
   useEffect(() => {
     if (!org) return;
@@ -155,9 +150,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
       track('User Subjects Updated', { aspect, subjects }, 2500);
-      setUser(
-        (prev) => User.parse({ ...prev, [aspect]: { ...prev[aspect], subjects } })
-      );
+      setUser((prev) => User.parse({ ...prev, [aspect]: subjects }));
     },
     [track, setUser, aspect]
   );
@@ -225,7 +218,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               />
               <TextField
                 label={t('user3rd:email')}
-                value={user.email}
+                value={user.email || ''}
                 onChange={onEmailChange}
                 className={styles.field}
                 type='email'
@@ -234,7 +227,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               />
               <TextField
                 label={t('user3rd:phone')}
-                value={user.phone ? user.phone : undefined}
+                value={user.phone || undefined}
                 onChange={onPhoneChange}
                 className={styles.field}
                 type='tel'
@@ -277,7 +270,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               <SubjectSelect
                 label={t(`user3rd:${aspect}-subjects`)}
                 placeholder={t(`common:${aspect}-subjects-placeholder`)}
-                value={user[aspect].subjects}
+                value={user[aspect]}
                 onChange={onSubjectsChange}
                 className={styles.field}
                 aspect={aspect}

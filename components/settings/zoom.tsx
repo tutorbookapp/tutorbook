@@ -1,7 +1,7 @@
 import { FormField } from '@rmwc/formfield';
 import { Switch } from '@rmwc/switch';
-import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 
 import styles from './settings.module.scss';
 

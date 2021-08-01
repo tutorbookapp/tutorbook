@@ -6,8 +6,8 @@ import to from 'await-to-js';
 import { APIError, handle } from 'lib/api/error';
 import { DecodedIdToken, auth } from 'lib/api/firebase';
 import { Social, accountToSegment } from 'lib/model/account';
-import { Subjects, User } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
+import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import getUser from 'lib/api/get/user';
 import segment from 'lib/api/segment';
@@ -103,8 +103,8 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   // Either:
   // 1. Verify the user's authentication cookie (that this API endpoint sets).
   // 2. Verify the user's ID token (sent when the user first logs in).
-  const [err] = await to(verifyAuth(req.headers, { userId: merged.id }));
-  if (err) {
+  const [error] = await to(verifyAuth(req.headers, { userId: merged.id }));
+  if (error) {
     // TODO: Guard against CSRF attacks (using a CSRF cookie token).
     const jwt = body.token;
     if (!jwt) throw new APIError('Could not find an auth cookie or JWT', 401);

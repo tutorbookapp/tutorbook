@@ -1,11 +1,10 @@
 import { CSSProperties, createContext, useContext } from 'react';
 import { RRule } from 'rrule';
 
+import { Role, User } from 'lib/model/user';
 import { caps, getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { Meeting } from 'lib/model/meeting';
 import { Org } from 'lib/model/org';
-import { Role } from 'lib/model/person';
-import { User } from 'lib/model/user';
 import { timeslotToString } from 'lib/model/timeslot';
 
 const fontFamily = [

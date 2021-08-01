@@ -6,8 +6,8 @@ import PhotoInput from 'components/photo-input';
 
 import { Org } from 'lib/model/org';
 
-import { useSettings } from './context';
 import styles from './settings.module.scss';
+import { useSettings } from './context';
 
 export default function Home(): JSX.Element {
   const { t, lang: locale } = useTranslation();

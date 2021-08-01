@@ -1,5 +1,4 @@
-import { Role } from 'lib/model/person';
-import { User } from 'lib/model/user';
+import { Role, User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 
 /**
@@ -29,7 +28,7 @@ export function untilStringToDate(until: string): Date | undefined {
  * @see {@link https://bundlephobia.com/result?p=rrule@2.6.8}
  * @see {@link https://git.io/JsCuc}
  */
-export function getRecurString(rrule?: string, locale = 'en'): string {
+export function getRecurString(rrule: string | null, locale = 'en'): string {
   let recur = '';
   if (!rrule) return recur;
   if (rrule.includes('FREQ=DAILY')) {
@@ -79,10 +78,11 @@ export function getPhoneLink({ name, phone }: PhoneProps): string {
 
 interface EmailProps {
   name?: string;
-  email: string;
+  email: string | null;
 }
 
 export function getEmailLink({ name, email }: EmailProps): string {
+  if (!email) return '';
   if (!name) return `mailto:${email}`;
   return `mailto:${encodeURIComponent(`"${name}"<${email}>`)}`;
 }

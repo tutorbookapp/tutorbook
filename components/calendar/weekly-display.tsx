@@ -10,7 +10,6 @@ import {
 } from 'react';
 import { animated, useSpring } from 'react-spring';
 import mergeRefs from 'react-merge-refs';
-import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 
@@ -228,6 +227,7 @@ function WeeklyDisplay({
                     now.getDate() === date.getDate();
                   const { y: top } = getPosition(now);
 
+                  /* eslint-disable react/no-array-index-key */
                   return (
                     <div key={day} className={styles.cell} ref={cellMeasureRef}>
                       {today && (
@@ -257,6 +257,7 @@ function WeeklyDisplay({
                         .flat(2)}
                     </div>
                   );
+                  /* eslint-enable react/no-array-index-key */
                 })}
               </div>
             </div>

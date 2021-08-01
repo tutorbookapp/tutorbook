@@ -7,9 +7,9 @@ import TagSelect from 'components/tag-select';
 import UserSelect from 'components/user-select';
 
 import { Callback } from 'lib/model/callback';
+import { MEETING_TAGS } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Option } from 'lib/model/query/base';
-import { MEETING_TAGS } from 'lib/model/meeting';
 
 import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';

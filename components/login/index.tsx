@@ -10,8 +10,8 @@ import Button from 'components/button';
 
 import { APIErrorJSON } from 'lib/api/error';
 import getLocation from 'lib/utils/location';
-import { period } from 'lib/utils';
 import { loginWithGoogle } from 'lib/firebase/login';
+import { period } from 'lib/utils';
 import useTrack from 'lib/hooks/track';
 
 import styles from './login.module.scss';
