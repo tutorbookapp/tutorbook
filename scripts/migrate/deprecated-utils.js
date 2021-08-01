@@ -1,3 +1,11 @@
+// A massive file of all our old utility functions. Whenever I needed to get
+// something done, I would just create a new function here and run the file.
+// That process has made this file grow to unmanageable sizes and thus I'm going
+// to be better organizing my utility scripts in the future.
+//
+// Hence, this file is deprecated but is being kept around in case I need to
+// copy some of it's code into a more organized script.
+
 const url = require('url');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -97,7 +105,7 @@ const users = async () => {
   await Promise.all(
     users.map((user) => {
       const data = user.data();
-      const subjects = updateSubjects(data.tutoring.subjects, tutoringSubjects);
+      const subjects = updateSubjects(data.tutoring, tutoringSubjects);
       return user.ref.set({
         id: data.uid || user.id,
         name: data.name || '',
@@ -112,14 +120,8 @@ const users = async () => {
         socials: (data.socials || []).filter((s) => !!s.url),
         verifications: data.verifications || [],
         orgs: updateOrgs(data.orgs),
-        mentoring: {
-          subjects: updateSubjects(data.mentoring.subjects, mentoringSubjects),
-          searches: updateSubjects(data.mentoring.searches, mentoringSubjects),
-        },
-        tutoring: {
-          subjects: subjects,
-          searches: updateSubjects(data.tutoring.searches, tutoringSubjects),
-        },
+        mentoring: updateSubjects(data.mentoring, mentoringSubjects),
+        tutoring: subjects,
         visible: false,
       });
     })
@@ -316,7 +318,7 @@ const deleteUser = async (uid, heads) => {
   if (err) console.error(`${err.name} deleting user (${uid}): ${err.message}`);
 };
 
-const convertToUserJSON = (userData) => {
+const convertToUser = (userData) => {
   const availability = (userData.availability || []).map((timeslot) => ({
     to: timeslot.to.toDate().toJSON(),
     from: timeslot.from.toDate().toJSON(),
@@ -664,11 +666,7 @@ const stringify = require('csv-stringify/lib/sync');
 const fetchQuarantunesStringTeachers = async () => {
   const { docs: stringTeachers } = await db
     .collection('users')
-    .where('mentoring.subjects', 'array-contains-any', [
-      'Violin',
-      'Viola',
-      'Cello',
-    ])
+    .where('mentoring', 'array-contains-any', ['Violin', 'Viola', 'Cello'])
     .get();
   const data = stringify(
     stringTeachers

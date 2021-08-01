@@ -1,16 +1,25 @@
+// Script that creates the analytics documents for org activity by:
+// 1. Fetching all org users, meetings, and matches.
+// 2. Updating the tags on all of those resources.
+// 3. Iterating over those resources, trying to add to existing analytics doc
+//    (within 24 hours of resource create timestamp). If we can't, create a new
+//    analytics doc and insert it into the growing timeline.
+// 4. Uploading the created timeline to Firestore.
+
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const dotenv = require('dotenv');
+const logger = require('../lib/logger');
 
 const env = process.env.NODE_ENV || 'production';
-console.log(`Loading ${env} environment variables...`);
+logger.info(`Loading ${env} environment variables...`);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}`) });
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${env}.local`) });
 
-console.log(
+logger.info(
   'Using Firebase configuration:',
   JSON.stringify(
     {
@@ -65,7 +74,7 @@ const matchesIdx = client.initIndex(`${env}-matches`);
 const meetingsIdx = client.initIndex(`${env}-meetings`);
 
 async function downloadData(orgId) {
-  console.log(`Downloading (${orgId}) data...`);
+  logger.info(`Downloading (${orgId}) data...`);
   const [users, matches, meetings] = (
     await Promise.all([
       db.collection('users').where('orgs', 'array-contains', orgId).get(),
@@ -80,14 +89,14 @@ async function downloadData(orgId) {
     }))
   );
 
-  console.log('Saving as JSON...');
+  logger.info('Saving as JSON...');
   fs.writeFileSync(`./${orgId}-users.json`, JSON.stringify(users));
   fs.writeFileSync(`./${orgId}-matches.json`, JSON.stringify(matches));
   fs.writeFileSync(`./${orgId}-meetings.json`, JSON.stringify(meetings));
 }
 
 async function uploadTimeline(orgId, timeline) {
-  console.log(`Creating ${timeline.length} database records...`);
+  logger.info(`Creating ${timeline.length} database records...`);
   await Promise.all(
     timeline.map(async (nums) => {
       const ref = db
@@ -103,15 +112,15 @@ async function uploadTimeline(orgId, timeline) {
 }
 
 async function updateResourceTags(orgId, dryRun = false) {
-  console.log(`Fetching (${orgId}) cache...`);
+  logger.info(`Fetching (${orgId}) cache...`);
   const usersData = require(`./${orgId}-users.json`);
   const matchesData = require(`./${orgId}-matches.json`);
   const meetingsData = require(`./${orgId}-meetings.json`);
 
-  console.log('Updating tags...');
+  logger.info('Updating tags...');
   const [users, matches, meetings] = tag(usersData, matchesData, meetingsData);
 
-  console.log(
+  logger.info(
     `Updating ${users.length} users, ${matches.length} matches, and ${meetings.length} meetings...`
   );
   const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
@@ -140,7 +149,7 @@ async function updateResourceTags(orgId, dryRun = false) {
   ]);
 
   bar.stop();
-  console.log('\nUpdate resource tags.');
+  logger.info('\nUpdate resource tags.');
 }
 
 function tag(usersData, matchesData, meetingsData) {
@@ -150,14 +159,10 @@ function tag(usersData, matchesData, meetingsData) {
       const created = new Date(data.created || new Date());
       const updated = new Date(data.updated || new Date());
       const tags = [];
-      if (user.mentoring.subjects.length || user.tags.includes('mentor'))
+      if (user.mentoring.length || user.tags.includes('mentor'))
         tags.push('mentor');
-      if (user.mentoring.searches.length || user.tags.includes('mentee'))
-        tags.push('mentee');
-      if (user.tutoring.subjects.length || user.tags.includes('tutor'))
+      if (user.tutoring.length || user.tags.includes('tutor'))
         tags.push('tutor');
-      if (user.tutoring.searches.length || user.tags.includes('tutee'))
-        tags.push('tutee');
       if (user.verifications.length) tags.push('vetted');
       return { ...user, created, updated, tags };
     })
@@ -219,15 +224,15 @@ function tag(usersData, matchesData, meetingsData) {
 }
 
 function generateTimeline(orgId) {
-  console.log(`Fetching (${orgId}) cache...`);
+  logger.info(`Fetching (${orgId}) cache...`);
   const usersData = require(`./${orgId}-users.json`);
   const matchesData = require(`./${orgId}-matches.json`);
   const meetingsData = require(`./${orgId}-meetings.json`);
 
-  console.log('Updating tags...');
+  logger.info('Updating tags...');
   const [users, matches, meetings] = tag(usersData, matchesData, meetingsData);
 
-  console.log('Creating timeline...');
+  logger.info('Creating timeline...');
   const now = new Date();
   const current = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const firstUser = users[0].created.valueOf();
@@ -288,7 +293,7 @@ function generateTimeline(orgId) {
     );
   }
 
-  console.log(`Adding ${users.length} users to timeline...`);
+  logger.info(`Adding ${users.length} users to timeline...`);
   users.forEach((user) => {
     const current = timeline.find((n) => sameDate(n.date, user.created));
     const currentIdx = timeline.indexOf(current);
@@ -299,7 +304,7 @@ function generateTimeline(orgId) {
     });
   });
 
-  console.log(`Adding ${matches.length} matches to timeline...`);
+  logger.info(`Adding ${matches.length} matches to timeline...`);
   matches.forEach((match) => {
     const current = timeline.find((n) => sameDate(n.date, match.created));
     const currentIdx = timeline.indexOf(current);
@@ -308,7 +313,7 @@ function generateTimeline(orgId) {
     });
   });
 
-  console.log(`Adding ${meetings.length} meetings to timeline...`);
+  logger.info(`Adding ${meetings.length} meetings to timeline...`);
   meetings.forEach((meeting) => {
     const current = timeline.find((n) => sameDate(n.date, meeting.created));
     const currentIdx = timeline.indexOf(current);
@@ -317,21 +322,12 @@ function generateTimeline(orgId) {
     });
   });
 
-  console.log('Writing timeline to JSON...');
+  logger.info('Writing timeline to JSON...');
   fs.writeFileSync('./timeline.json', JSON.stringify(timeline, null, 2));
 
   return timeline;
 }
 
-/**
- * Script that creates the analytics documents for org activity by:
- * 1. Fetching all org users, meetings, and matches.
- * 2. Updating the tags on all of those resources.
- * 3. Iterating over those resources, trying to add to existing analytics doc
- *    (within 24 hours of resource create timestamp). If we can't, create a new
- *    analytics doc and insert it into the growing timeline.
- * 4. Uploading the created timeline to Firestore.
- */
 async function main(orgId) {
   await downloadData(orgId);
   await Promise.all([
@@ -341,12 +337,12 @@ async function main(orgId) {
 }
 
 async function inspectData(orgId, tags) {
-  console.log(`Fetching (${orgId}) cache...`);
+  logger.info(`Fetching (${orgId}) cache...`);
   const usersData = require(`./${orgId}-users.json`);
   const matchesData = require(`./${orgId}-matches.json`);
   const meetingsData = require(`./${orgId}-meetings.json`);
 
-  console.log('Updating tags...');
+  logger.info('Updating tags...');
   const [users, matches, meetings] = tag(usersData, matchesData, meetingsData);
 
   async function getToken(uid = '1j0tRKGtpjSX33gLsLnalxvd1Tl2') {
@@ -357,7 +353,7 @@ async function inspectData(orgId, tags) {
     return idToken;
   }
 
-  console.log(`Downloading (${orgId}) data (${tags.join(', ')})...`);
+  logger.info(`Downloading (${orgId}) data (${tags.join(', ')})...`);
   const headers = { authorization: `Bearer ${await getToken()}` };
   const endpoint = url.format({
     pathname: 'https://develop.tutorbook.org/api/users',
@@ -367,8 +363,10 @@ async function inspectData(orgId, tags) {
       tags: JSON.stringify(tags),
     },
   });
-  console.log('Endpoint:', endpoint);
+  logger.info(`Endpoint: ${endpoint}`);
   const { data } = await axios.get(endpoint, { headers });
 
   debugger;
 }
+
+if (require.main === module) main();

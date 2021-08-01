@@ -1,10 +1,24 @@
+// Imports Picktime data (exported from the "Reports" tab by month) as matches
+// and recurring meetings. Creates new students and parents as necessary.
+//
+// This script is resumable as it creates multiple "cache" files that are used
+// to keep track of progress:
+// - `errors.json` is a record of all the errors encountered while importing.
+// - `matches-created.json` is a record of all the matches created.
+// - `meetings-created.json` is a record of all the meetings created, organized
+// by match (i.e. each `matchId` is a key that holds an array of meetings).
+// - `name-to-user.json` maps Picktime user names with TB's user data.
+// - `rows-created.txt` keeps track of the CSV rows already processed.
+//
+// Removing any of those files and restarting the script will result in data
+// duplication. DO NOT DO THIS.
+
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const phone = require('phone');
 const dotenv = require('dotenv');
 const parse = require('csv-parse');
-const winston = require('winston');
 const prompt = require('prompt-sync')();
 const progress = require('cli-progress');
 const algoliasearch = require('algoliasearch');
@@ -14,22 +28,27 @@ const { exec } = require('child_process');
 const { nanoid } = require('nanoid');
 const Bottleneck = require('bottleneck');
 
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.Console({ format: winston.format.simple() }),
-  ],
-});
+const errorsPath = './errors.json';
+const errors = require(errorsPath);
+const matchesPath = './matches-created.json';
+const matches = require(matchesPath);
+const meetingsPath = './meetings-created.json';
+const meetings = require(meetingsPath);
+const usersPath = './name-to-user.json';
+const users = require(usersPath);
+const rowsPath = './rows-created.txt';
+const rows = fs.readFileSync(rowsPath).toString().split('\n');
+
+const logger = require('../../lib/logger');
 
 const env = 'production';
 const apiDomain = 'http://localhost:5000';
 logger.info(`Loading ${env} environment variables...`);
 [
-  path.resolve(__dirname, '../../.env'),
-  path.resolve(__dirname, '../../.env.local'),
-  path.resolve(__dirname, `../../.env.${env}`),
-  path.resolve(__dirname, `../../.env.${env}.local`),
+  path.resolve(__dirname, '../../../.env'),
+  path.resolve(__dirname, '../../../.env.local'),
+  path.resolve(__dirname, `../../../.env.${env}`),
+  path.resolve(__dirname, `../../../.env.${env}.local`),
 ].forEach((path) => {
   logger.debug(`Loading .env file (${path})...`);
   dotenv.config({ path });
@@ -287,17 +306,6 @@ function timeToUntilString(time, utc = true) {
     utc ? 'Z' : '',
   ].join('');
 }
-
-const errorsPath = './errors.json';
-const errors = require(errorsPath);
-const matchesPath = './matches-created.json';
-const matches = require(matchesPath);
-const meetingsPath = './meetings-created.json';
-const meetings = require(meetingsPath);
-const usersPath = './name-to-user.json';
-const users = require(usersPath);
-const rowsPath = './rows-created.txt';
-const rows = fs.readFileSync(rowsPath).toString().split('\n');
 
 async function importPicktime(path, dryRun = false) {
   let count = 0;
