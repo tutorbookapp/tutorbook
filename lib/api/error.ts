@@ -34,13 +34,12 @@ function send(e: APIError, res: ServerResponse): void {
   const stringified = JSON.stringify(e);
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Content-Length', Buffer.byteLength(stringified));
-  res.statusMessage = e.message;
   res.statusCode = e.code;
   res.end(stringified);
 }
 
 export function handle(e: unknown, res: ServerResponse): void {
-  if (!(e instanceof APIError) || e.code !== 401)
+  if (!(e instanceof APIError && e.code === 401))
     console.error('API endpoint encountered error:', e);
   if (e instanceof APIError) return send(e, res);
   if (e instanceof Error) return send(new APIError(e.message, 500), res);

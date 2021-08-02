@@ -9,7 +9,7 @@ import {
 } from 'lib/model/query/users';
 import { getOrgsByAdminId } from 'lib/api/db/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
-import getUsers from 'lib/api/get/users';
+import { getUsers } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';

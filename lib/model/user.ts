@@ -188,6 +188,11 @@ export interface DBUser {
   )[];
   created: Date;
   updated: Date;
+  times: number[];
+}
+export interface DBViewUser extends DBUser {
+  orgs: string[] | null;
+  parents: string[] | null;
 }
 export interface DBRelationParent {
   user: string;
@@ -367,10 +372,11 @@ export class User extends Account implements UserInterface {
       tags: this.tags,
       created: this.created,
       updated: this.updated,
+      times: [],
     };
   }
 
-  public static fromDB(record: DBUser): User {
+  public static fromDB(record: DBUser | DBViewUser): User {
     return new User({
       id: record.id,
       name: record.name,
@@ -405,6 +411,8 @@ export class User extends Account implements UserInterface {
       tags: record.tags,
       created: record.created,
       updated: record.updated,
+      orgs: 'orgs' in record ? record.orgs || [] : [],
+      parents: 'parents' in record ? record.parents || [] : [],
     });
   }
 
