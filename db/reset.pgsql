@@ -30,4 +30,5 @@ drop table public.meetings cascade;
 drop table relation_parents cascade;
 drop table relation_orgs cascade;
 drop table relation_members cascade;
-drop table relation_people cascade;
+drop table relation_match_people cascade;
+drop table relation_meeting_people cascade;

@@ -1,6 +1,5 @@
-import { DBMeeting, Meeting } from 'lib/model/meeting';
+import { DBMeeting, DBRelationMeetingPerson, Meeting } from 'lib/model/meeting';
 import { APIError } from 'lib/api/error';
-import { DBRelationPerson } from 'lib/model/match';
 import supabase from 'lib/api/supabase';
 
 export async function createMeeting(meeting: Meeting): Promise<Meeting> {
@@ -11,14 +10,13 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
     const msg = `Error saving meeting (${meeting.toString()}) to database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
   }
-  const people: DBRelationPerson[] = meeting.match.people.map((p) => ({
+  const people: DBRelationMeetingPerson[] = meeting.match.people.map((p) => ({
     user: p.id,
     roles: p.roles,
     meeting: data ? data[0].id : Number(meeting.id),
-    match: null,
   }));
   const { error: e } = await supabase
-    .from<DBRelationPerson>('relation_people')
+    .from<DBRelationMeetingPerson>('relation_meeting_people')
     .insert(people);
   if (e) {
     const msg = `Error saving people (${JSON.stringify(people)}) to database`;

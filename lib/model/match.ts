@@ -59,10 +59,9 @@ export interface DBMatch {
   updated: Date;
 }
 
-export interface DBRelationPerson {
+export interface DBRelationMatchPerson {
   user: string;
-  meeting: number | null;
-  match: number | null;
+  match: number;
   roles: ('tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent')[];
 }
 

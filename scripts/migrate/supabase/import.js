@@ -238,14 +238,13 @@ function buildRelationMatchPeople() {
         }
         return {
           user: userIds[p.id],
-          meeting: null,
           match: matchIds[m.id],
           roles: p.roles,
         };
       })
     )
     .flat();
-  const peoplePath = path.resolve(__dirname, './relation_people.json');
+  const peoplePath = path.resolve(__dirname, './relation_match_people.json');
   logger.info(`Saving parsed people relations to ${peoplePath}...`);
   fs.writeFileSync(peoplePath, JSON.stringify(people, null, 2));
 }
@@ -273,13 +272,12 @@ function buildRelationMeetingPeople() {
         return {
           user: userIds[p.id],
           meeting: meetingIds[m.id],
-          match: null,
           roles: p.roles,
         };
       })
     )
     .flat();
-  const peoplePath = path.resolve(__dirname, './relation_people.json');
+  const peoplePath = path.resolve(__dirname, './relation_meeting_people.json');
   logger.info(`Saving parsed people relations to ${peoplePath}...`);
   fs.writeFileSync(peoplePath, JSON.stringify(people, null, 2));
 }
@@ -426,12 +424,12 @@ async function migrate() {
   await fetchMatches();
   await insert('matches');
   buildRelationMatchPeople();
-  await insert('relation_people');
+  await insert('relation_match_people');
 
   await fetchMeetings();
   await insert('meetings');
   buildRelationMeetingPeople();
-  await insert('relation_people');
+  await insert('relation_meeting_people');
 }
 
 if (require.main === module) migrate();

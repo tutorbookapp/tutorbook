@@ -110,6 +110,12 @@ export interface DBMeeting {
   updated: Date;
 }
 
+export interface DBRelationMeetingPerson {
+  user: string;
+  meeting: number;
+  roles: ('tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent')[];
+}
+
 export type MeetingJSON = Omit<
   MeetingInterface,
   keyof Resource | 'time' | 'venue' | 'match'

@@ -75,9 +75,9 @@ create table public.orgs (
 create type verification_check as enum('email', 'background-check', 'academic-email', 'training', 'interview');
 create table public.verifications (
   "id" bigint generated always as identity primary key,
-  "creator" text references public.users(id) not null,
-  "user" text references public.users(id) not null,
-  "org" text references public.orgs(id) not null,
+  "creator" text references public.users(id) on delete cascade not null,
+  "user" text references public.users(id) on delete cascade not null,
+  "org" text references public.orgs(id) on delete cascade not null,
   "checks" verification_check[] not null check(cardinality(checks) > 0),
   "notes" text not null,
   "created" timestamptz not null,
@@ -87,8 +87,8 @@ create table public.verifications (
 create type match_tag as enum('meeting');
 create table public.matches (
   "id" bigint generated always as identity primary key,
-  "org" text references public.orgs(id) not null,
-  "creator" text references public.users(id) not null,
+  "org" text references public.orgs(id) on delete cascade not null,
+  "creator" text references public.users(id) on delete cascade not null,
   "subjects" text[] not null check(cardinality(subjects) > 0),
   "message" text not null,
   "tags" match_tag[] not null,
@@ -100,11 +100,11 @@ create type meeting_tag as enum('recurring');
 create type meeting_status as enum('created', 'pending', 'logged', 'approved');
 create table public.meetings (
   "id" bigint generated always as identity primary key,
-  "org" text references public.orgs(id) not null,
-  "creator" text references public.users(id) not null,
+  "org" text references public.orgs(id) on delete cascade not null,
+  "creator" text references public.users(id) on delete cascade not null,
   "subjects" text[] not null check(cardinality(subjects) > 0),
   "status" meeting_status not null default 'created',
-  "match" bigint references public.matches(id),
+  "match" bigint references public.matches(id) on delete cascade,
   "venue" url not null,
   "time" timeslot not null,
   "description" text not null,
@@ -114,24 +114,36 @@ create table public.meetings (
 );
 
 create table relation_parents (
-  "user" text references public.users(id) not null,
-  "parent" text references public.users(id) not null,
+  "user" text references public.users(id) on delete cascade not null,
+  "parent" text references public.users(id) on delete cascade not null,
   primary key ("user", "parent")
 );
 create table relation_orgs (
-  "user" text references public.users(id) not null,
-  "org" text references public.orgs(id) not null,
+  "user" text references public.users(id) on delete cascade not null,
+  "org" text references public.orgs(id) on delete cascade not null,
   primary key ("user", "org")
 );
 create table relation_members (
-  "user" text references public.users(id) not null,
-  "org" text references public.orgs(id) not null,
+  "user" text references public.users(id) on delete cascade not null,
+  "org" text references public.orgs(id) on delete cascade not null,
   primary key ("user", "org")
 );
-create table relation_people (
-  "user" text references public.users(id) not null,
-  "meeting" bigint references public.meetings(id),
-  "match" bigint references public.matches(id),
+
+/* 
+Note: I have to include "roles" in the primary key so users can book meetings
+and create matches with themselves (a pretty common scenario when they're first
+testing out the app.
+*/
+
+create table relation_match_people (
+  "user" text references public.users(id) on delete cascade not null,
+  "match" bigint references public.matches(id) on delete cascade not null,
   "roles" role[] not null check(cardinality(roles) > 0),
-  check("meeting" is not null or "match" is not null)
+  primary key ("user", "match", "roles")
+);
+create table relation_meeting_people (
+  "user" text references public.users(id) on delete cascade not null,
+  "meeting" bigint references public.meetings(id) on delete cascade not null,
+  "roles" role[] not null check(cardinality(roles) > 0),
+  primary key ("user", "meeting", "roles")
 );

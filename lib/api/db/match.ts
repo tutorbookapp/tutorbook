@@ -1,4 +1,4 @@
-import { DBMatch, DBRelationPerson, Match } from 'lib/model/match';
+import { DBMatch, DBRelationMatchPerson, Match } from 'lib/model/match';
 import { APIError } from 'lib/api/error';
 import supabase from 'lib/api/supabase';
 
@@ -10,14 +10,13 @@ export async function createMatch(match: Match): Promise<Match> {
     const msg = `Error saving match (${match.toString()}) to database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
   }
-  const people: DBRelationPerson[] = match.people.map((p) => ({
+  const people: DBRelationMatchPerson[] = match.people.map((p) => ({
     user: p.id,
     roles: p.roles,
     match: data ? data[0].id : Number(match.id),
-    meeting: null,
   }));
   const { error: e } = await supabase
-    .from<DBRelationPerson>('relation_people')
+    .from<DBRelationMatchPerson>('relation_match_people')
     .insert(people);
   if (e) {
     const msg = `Error saving people (${JSON.stringify(people)})`;
@@ -53,12 +52,11 @@ export async function updateMatch(match: Match): Promise<void> {
   await Promise.all(
     match.people.map(async (p) => {
       const { error: e } = await supabase
-        .from<DBRelationPerson>('relation_people')
+        .from<DBRelationMatchPerson>('relation_match_people')
         .update({
           user: p.id,
           roles: p.roles,
           match: Number(match.id),
-          meeting: null,
         })
         .eq('match', Number(match.id))
         .eq('user', p.id);
