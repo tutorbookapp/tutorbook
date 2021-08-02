@@ -6,6 +6,7 @@ const phone = require('phone');
 const { default: to } = require('await-to-js');
 const { v4: uuid } = require('uuid');
 const { nanoid } = require('nanoid');
+const getTimes = require('../../lib/times');
 const supabase = require('../../lib/supabase');
 const firebase = require('../../lib/firebase');
 const logger = require('../../lib/logger');
@@ -140,6 +141,7 @@ async function fetchUsers() {
     tags: d.tags || [],
     created: d.created.toDate(),
     updated: d.updated.toDate(),
+    times: [],
   }));
 }
 
@@ -365,7 +367,55 @@ function buildRelationParents() {
   fs.writeFileSync(parentsPath, JSON.stringify(parents, null, 2));
 }
 
-async function insert(table, debug = false) {
+function buildUsersAvailability() {
+  const usersPath = path.resolve(__dirname, './users.json');
+  const users = require(usersPath);
+  const meetings = require(path.resolve(__dirname, './orig-meetings.json'));
+  logger.info(`Parsing ${users.length} availabilities...`);
+  users.forEach((user) => {
+    const query = {
+      from: new Date(),
+      to: new Date(new Date().getFullYear(), new Date().getMonth() + 3),
+    };
+    const booked = meetings
+      .filter((m) => m.match.people.some((p) => p.id === user.id))
+      .filter((m) => {
+        const from = new Date(m.time.from._seconds * 1000);
+        const to = new Date(m.time.to._seconds * 1000);
+        const last = new Date((m.time.last || m.time.to)._seconds * 1000);
+        const endWithin = last >= query.from && last <= query.to;
+        const startWithin = from >= query.from && from <= query.to;
+        // TODO: While this query seems to be the same as the one used to filter
+        // our meetings in production, I'm not splitting the resulting meetings
+        // into their child instances that would appear in the query results.
+        return (
+          // Start is before window but end is within.
+          (from < query.from && endWithin) ||
+          // Both start and end are within window.
+          (startWithin && endWithin) ||
+          // End is after window but start is within.
+          (last > query.to && startWithin) ||
+          // Start is before window and end is after.
+          (from < query.from && last > query.to)
+        );
+      })
+      .map((m) => ({
+        from: new Date(m.time.from._seconds * 1000),
+        to: new Date(m.time.to._seconds * 1000),
+      }));
+    logger.verbose(`Booked: ${JSON.stringify(booked)}`);
+    const availability = user.availability.map((m) => ({
+      from: new Date(m.from),
+      to: new Date(m.to),
+    }));
+    user.times = getTimes(availability, booked, query.to);
+    logger.verbose(`Times: ${JSON.stringify(user.times)}`);
+  });
+  logger.info(`Saving parsed user availabilities to ${usersPath}...`);
+  fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+}
+
+async function insert(table, debug = false, upsert = false) {
   const rowsPath = path.resolve(__dirname, `./${table}.json`);
   const rowIdsPath = path.resolve(__dirname, `./ids-${table}.json`);
   logger.info(`Fetching parsed data from ${rowsPath}...`);
@@ -380,7 +430,9 @@ async function insert(table, debug = false) {
   if (debug) {
     await Promise.all(
       rows.map(async (row) => {
-        const { data, error } = await supabase.from(table).insert(row);
+        const { data, error } = await supabase
+          .from(table)
+          [upsert ? 'upsert' : 'insert'](row);
         if (error) {
           logger.error(
             `Error inserting row: ${JSON.stringify(error, null, 2)}`
@@ -391,7 +443,9 @@ async function insert(table, debug = false) {
       })
     );
   } else {
-    const { data, error } = await supabase.from(table).insert(rows);
+    const { data, error } = await supabase
+      .from(table)
+      [upsert ? 'upsert' : 'insert'](rows);
     if (error) {
       logger.error(`Error inserting rows: ${JSON.stringify(error, null, 2)}`);
       debugger;
@@ -430,6 +484,9 @@ async function migrate() {
   await insert('meetings');
   buildRelationMeetingPeople();
   await insert('relation_meeting_people');
+
+  //buildUsersAvailability();
+  //await insert('users', false, true);
 }
 
 if (require.main === module) migrate();
