@@ -19,6 +19,7 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import {
+  DBDate,
   DBTimeslot,
   Timeslot,
   TimeslotFirestore,
@@ -106,8 +107,8 @@ export interface DBMeeting {
   time: DBTimeslot;
   description: string;
   tags: 'recurring'[];
-  created: Date;
-  updated: Date;
+  created: DBDate;
+  updated: DBDate;
 }
 
 export interface DBRelationMeetingPerson {
@@ -217,18 +218,11 @@ export class Meeting extends Resource implements MeetingInterface {
       status: this.status,
       match: Number(this.match.id),
       venue: this.venue.url,
-      time: {
-        id: this.time.id,
-        from: this.time.from,
-        to: this.time.to,
-        exdates: this.time.exdates || null,
-        recur: this.time.recur || null,
-        last: this.time.last || null,
-      },
+      time: this.time.toDB(),
       description: this.description,
       tags: this.tags,
-      created: this.created,
-      updated: this.updated,
+      created: this.created.toISOString(),
+      updated: this.updated.toISOString(),
     };
   }
 
@@ -243,18 +237,11 @@ export class Meeting extends Resource implements MeetingInterface {
       },
       status: record.status,
       venue: new Venue({ url: record.venue }),
-      time: new Timeslot({
-        id: record.time.id,
-        from: record.time.from,
-        to: record.time.to,
-        exdates: record.time.exdates || undefined,
-        recur: record.time.recur || undefined,
-        last: record.time.last || undefined,
-      }),
+      time: Timeslot.fromDB(record.time),
       description: record.description,
       tags: record.tags,
-      created: record.created,
-      updated: record.updated,
+      created: new Date(record.created),
+      updated: new Date(record.updated),
       match: new Match({
         id: record.match.toString(),
         org: record.org,

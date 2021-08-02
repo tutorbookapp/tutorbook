@@ -11,6 +11,7 @@ import {
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { DBAspect, DBSocial, DBUser, UserInterface } from 'lib/model/user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
+import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -143,8 +144,8 @@ export interface DBOrg {
   signup: object;
   home: object;
   booking: object;
-  created: Date;
-  updated: Date;
+  created: DBDate;
+  updated: DBDate;
 }
 
 export interface DBRelationMember {
@@ -282,8 +283,8 @@ export class Org extends Account implements OrgInterface {
       signup: this.signup,
       home: this.home,
       booking: this.booking,
-      created: this.created,
-      updated: this.updated,
+      created: this.created.toISOString(),
+      updated: this.updated.toISOString(),
     };
   }
 
@@ -305,8 +306,8 @@ export class Org extends Account implements OrgInterface {
       signup: record.signup as SignupConfig,
       home: record.home as HomeConfig,
       booking: record.booking as BookingConfig,
-      created: record.created,
-      updated: record.updated,
+      created: new Date(record.created),
+      updated: new Date(record.updated),
     });
   }
 

@@ -1,4 +1,5 @@
 import {
+  DBTimeslot,
   Timeslot,
   TimeslotFirestore,
   TimeslotInterface,
@@ -7,8 +8,8 @@ import {
   TimeslotSegment,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import { sameDate } from 'lib/utils/time';
 import clone from 'lib/utils/clone';
+import { sameDate } from 'lib/utils/time';
 
 /**
  * One's availability contains all your open timeslots (the inverse of one's
@@ -202,6 +203,14 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
         timeZoneName: showTimeZone ? 'short' : undefined,
       })}`;
     }).join(', ');
+  }
+
+  public toDB(): DBTimeslot[] {
+    return Array.from(this.map((t) => t.toDB()));
+  }
+
+  public static fromDB(record: DBTimeslot[]): Availability {
+    return new Availability(...record.map((t) => Timeslot.fromDB(t)));
   }
 
   public toFirestore(): AvailabilityFirestore {

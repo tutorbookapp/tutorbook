@@ -39,13 +39,14 @@ export interface TimeslotInterface<T = Date> {
   last?: T;
 }
 
+export type DBDate = string;
 export interface DBTimeslot {
   id: string;
-  from: Date;
-  to: Date;
-  exdates: Date[] | null;
-  recur: string | null;
-  last: Date | null;
+  from: DBDate;
+  to: DBDate;
+  exdates: DBDate[] | null;
+  recur: DBDate | null;
+  last: DBDate | null;
 }
 
 export type TimeslotFirestore = TimeslotInterface<Timestamp>;
@@ -186,6 +187,28 @@ export class Timeslot implements TimeslotInterface {
       minute: 'numeric',
       timeZoneName: showTimeZone ? 'short' : undefined,
     })}`;
+  }
+
+  public toDB(): DBTimeslot {
+    return {
+      id: this.id,
+      from: this.from.toISOString(),
+      to: this.to.toISOString(),
+      exdates: this.exdates?.map((d) => d.toISOString()) || null,
+      recur: this.recur || null,
+      last: this.last?.toISOString() || null,
+    };
+  }
+
+  public static fromDB(record: DBTimeslot): Timeslot {
+    return new Timeslot({
+      id: record.id,
+      from: new Date(record.from),
+      to: new Date(record.to),
+      exdates: record.exdates?.map((d) => new Date(d)) || undefined,
+      recur: record.recur || undefined,
+      last: record.last ? new Date(record.last) : undefined,
+    });
   }
 
   public toFirestore(): TimeslotFirestore {

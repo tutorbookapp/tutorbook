@@ -13,6 +13,7 @@ import {
 import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import { Aspect } from 'lib/model/aspect';
+import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -55,8 +56,8 @@ export interface DBMatch {
   subjects: string[];
   message: string;
   tags: 'meeting'[];
-  created: Date;
-  updated: Date;
+  created: DBDate;
+  updated: DBDate;
 }
 
 export interface DBRelationMatchPerson {
@@ -153,8 +154,8 @@ export class Match extends Resource implements MatchInterface {
       subjects: this.subjects,
       message: this.message,
       tags: this.tags,
-      created: this.created,
-      updated: this.updated,
+      created: this.created.toISOString(),
+      updated: this.updated.toISOString(),
     };
   }
 
@@ -171,8 +172,8 @@ export class Match extends Resource implements MatchInterface {
       subjects: record.subjects,
       message: record.message,
       tags: record.tags,
-      created: record.created,
-      updated: record.updated,
+      created: new Date(record.created),
+      updated: new Date(record.updated),
     });
   }
 
