@@ -302,7 +302,7 @@ export class Org extends Account implements OrgInterface {
       aspects: record.aspects,
       domains: record.domains?.length ? record.domains : [],
       profiles: record.profiles as (keyof UserInterface | 'subjects')[],
-      subjects: record.subjects?.length ? record.subjects : [],
+      subjects: record.subjects?.length ? record.subjects : undefined,
       signup: record.signup as SignupConfig,
       home: record.home as HomeConfig,
       booking: record.booking as BookingConfig,
