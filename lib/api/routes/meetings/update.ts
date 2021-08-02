@@ -22,7 +22,7 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
-import updateAvailability from 'lib/api/update/availability';
+import { updateUser } from 'lib/api/db/user';
 import { updateMatch } from 'lib/api/db/match';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
@@ -141,7 +141,7 @@ export default async function updateMeetingAPI(
         await Promise.all([
           analytics(body, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
-          ...people.map((p) => updateAvailability(p)),
+          ...people.map((p) => updateUser(p)),
         ]);
       } else if (options.action === 'this') {
         // Update this meeting only:
@@ -197,7 +197,7 @@ export default async function updateMeetingAPI(
         await Promise.all([
           analytics(newMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
-          ...people.map((p) => updateAvailability(p)),
+          ...people.map((p) => updateUser(p)),
         ]);
       } else {
         // Update this and all following meetings:
@@ -248,7 +248,7 @@ export default async function updateMeetingAPI(
         await Promise.all([
           analytics(newRecurringMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
-          ...people.map((p) => updateAvailability(p)),
+          ...people.map((p) => updateUser(p)),
         ]);
       }
     } else {
@@ -282,7 +282,7 @@ export default async function updateMeetingAPI(
       await Promise.all([
         analytics(meeting, 'updated'),
         updatePeopleTags(people, { add: ['meeting'] }),
-        ...people.map((p) => updateAvailability(p)),
+        ...people.map((p) => updateUser(p)),
       ]);
     }
   } catch (e) {

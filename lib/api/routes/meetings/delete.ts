@@ -14,7 +14,7 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
-import updateAvailability from 'lib/api/update/availability';
+import { updateUser } from 'lib/api/db/user';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
@@ -136,7 +136,7 @@ export default async function deleteMeetingAPI(
     await Promise.all([
       analytics(deleting, 'deleted'),
       updatePeopleTags(people, { remove: ['meeting'] }),
-      ...people.map((p) => updateAvailability(p)),
+      ...people.map((p) => updateUser(p)),
     ]);
   } catch (e) {
     handle(e, res);

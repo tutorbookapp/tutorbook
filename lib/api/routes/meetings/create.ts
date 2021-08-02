@@ -19,7 +19,7 @@ import { getUser } from 'lib/api/db/user';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
-import updateAvailability from 'lib/api/update/availability';
+import { updateUser } from 'lib/api/db/user';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
@@ -129,7 +129,7 @@ export default async function createMeetingAPI(
     await Promise.all([
       analytics(meeting, 'created'),
       updatePeopleTags(people, { add: ['meeting'] }),
-      ...people.map((p) => updateAvailability(p)),
+      ...people.map((p) => updateUser(p)),
     ]);
   } catch (e) {
     handle(e, res);

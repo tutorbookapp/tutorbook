@@ -12,7 +12,6 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/users/create';
-import updateAvailability from 'lib/api/update/availability';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserTags from 'lib/api/update/user-tags';
@@ -78,7 +77,6 @@ export default async function createUserAPI(
     });
 
     await analytics(user, 'created');
-    await updateAvailability(user);
   } catch (e) {
     handle(e, res);
   }

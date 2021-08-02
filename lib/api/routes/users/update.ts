@@ -6,7 +6,6 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
-import updateAvailability from 'lib/api/update/availability';
 import updatePhoto from 'lib/api/update/photo';
 import { updateUser } from 'lib/api/db/user';
 import updateUserOrgs from 'lib/api/update/user-orgs';
@@ -57,7 +56,6 @@ export default async function updateUserAPI(
     });
 
     await analytics(user, 'updated', User.fromDB(originalRecord));
-    await updateAvailability(user);
   } catch (e) {
     handle(e, res);
   }
