@@ -4,7 +4,7 @@ import to from 'await-to-js';
 import { UserJSON } from 'lib/model/user';
 import definedVals from 'lib/model/defined-vals';
 import getTruncatedUser from 'lib/api/get/truncated-user';
-import getUser from 'lib/api/get/user';
+import { getUser } from 'lib/api/db/user';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';

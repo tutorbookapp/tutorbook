@@ -19,6 +19,7 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import {
+  DBTimeslot,
   Timeslot,
   TimeslotFirestore,
   TimeslotJSON,
@@ -92,6 +93,27 @@ export interface MeetingInterface extends ResourceInterface {
   tags: MeetingTag[];
   parentId?: string;
   id: string;
+}
+
+export interface DBMeeting {
+  id: number;
+  org: string;
+  creator: string;
+  subjects: string[];
+  status: 'created' | 'pending' | 'logged' | 'approved';
+  match: number;
+  venue: string;
+  time: DBTimeslot;
+  description: string;
+  tags: 'recurring'[];
+  created: Date;
+  updated: Date;
+}
+
+export interface DBRelationMeetingPerson {
+  user: string;
+  meeting: number;
+  roles: ('tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent')[];
 }
 
 export type MeetingJSON = Omit<
@@ -184,6 +206,61 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public toString(): string {
     return `Meeting on ${this.time.toString()}`;
+  }
+
+  public toDB(): DBMeeting {
+    return {
+      id: Number(this.id),
+      org: this.match.org,
+      creator: this.creator.id,
+      subjects: this.match.subjects,
+      status: this.status,
+      match: Number(this.match.id),
+      venue: this.venue.url,
+      time: {
+        id: this.time.id,
+        from: this.time.from,
+        to: this.time.to,
+        exdates: this.time.exdates || null,
+        recur: this.time.recur || null,
+        last: this.time.last || null,
+      },
+      description: this.description,
+      tags: this.tags,
+      created: this.created,
+      updated: this.updated,
+    };
+  }
+
+  public static fromDB(record: DBMeeting): Meeting {
+    return new Meeting({
+      id: record.id.toString(),
+      creator: {
+        id: record.creator,
+        name: '',
+        photo: '',
+        roles: [],
+      },
+      status: record.status,
+      venue: new Venue({ url: record.venue }),
+      time: new Timeslot({
+        id: record.time.id,
+        from: record.time.from,
+        to: record.time.to,
+        exdates: record.time.exdates || undefined,
+        recur: record.time.recur || undefined,
+        last: record.time.last || undefined,
+      }),
+      description: record.description,
+      tags: record.tags,
+      created: record.created,
+      updated: record.updated,
+      match: new Match({
+        id: record.match.toString(),
+        org: record.org,
+        subjects: record.subjects,
+      }),
+    });
   }
 
   public toJSON(): MeetingJSON {

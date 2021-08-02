@@ -16,6 +16,8 @@ env:
   INTERCOM_KEY: ${{ secrets.INTERCOM_KEY }}
   REMIND_TOKEN: ${{ secrets.REMIND_TOKEN }}
   SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
 jobs:
   build:
@@ -35,6 +37,8 @@ jobs:
             node_modules
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
+      - run: yarn supabase init
+      - run: yarn start:sb
       - run: yarn start:db & yarn wait-on http-get://localhost:8080
       - run: yarn build
       - uses: actions/upload-artifact@v2
@@ -69,6 +73,8 @@ jobs:
             node_modules
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
+      - run: yarn supabase init
+      - run: yarn start:sb
       # Each job uses its own Algolia index so as to not mess up the state of
       # other jobs. Ideally, we'd run Algolia locally, but this works for now.
       - run: echo "ALGOLIA_PREFIX=test-$(uuidgen)" >> $GITHUB_ENV

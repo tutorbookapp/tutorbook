@@ -2,7 +2,7 @@ import { Availability } from 'lib/model/availability';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import getMeetings from 'lib/api/get/meetings';
 import { getMonthsTimeslots } from 'lib/utils/time';
-import getUser from 'lib/api/get/user';
+import { getUser } from 'lib/api/db/user';
 
 /**
  * Calculates the user's availability for a given month and returns an array of

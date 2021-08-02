@@ -1,6 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
-import { User, UserJSON, isUserJSON } from 'lib/model/user';
+import { DBUser, User, UserJSON, isUserJSON } from 'lib/model/user';
 import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
@@ -8,17 +8,17 @@ import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
 import updateAvailability from 'lib/api/update/availability';
 import updatePhoto from 'lib/api/update/photo';
-import updateUserDoc from 'lib/api/update/user-doc';
+import { updateUser } from 'lib/api/db/user';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
-import verifyDocExists from 'lib/api/verify/doc-exists';
+import verifyRecordExists from 'lib/api/verify/record-exists';
 
 export type UpdateUserRes = UserJSON;
 
-export default async function updateUser(
+export default async function updateUserAPI(
   req: Req,
   res: Res<UpdateUserRes>
 ): Promise<void> {
@@ -33,7 +33,7 @@ export default async function updateUser(
       userId: body.id,
       orgIds: body.orgs,
     });
-    const originalDoc = await verifyDocExists('users', body.id);
+    const originalRecord = await verifyRecordExists<DBUser>('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
     const withTagsUpdate = updateUserTags(withOrgsUpdate);
@@ -43,7 +43,7 @@ export default async function updateUser(
     // TODO: If the user's name or photo has changed, update it across all
     // meetings and matches the user is a `Person` on.
 
-    await Promise.all([updateUserDoc(user), updateUserSearchObj(user)]);
+    await Promise.all([updateUser(user), updateUserSearchObj(user)]);
 
     res.status(200).json(user.toJSON());
 
@@ -56,7 +56,7 @@ export default async function updateUser(
       properties: user.toSegment(),
     });
 
-    await analytics(user, 'updated', User.fromFirestoreDoc(originalDoc));
+    await analytics(user, 'updated', User.fromDB(originalRecord));
     await updateAvailability(user);
   } catch (e) {
     handle(e, res);

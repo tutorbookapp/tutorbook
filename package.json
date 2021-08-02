@@ -7,6 +7,8 @@
   "homepage": "https://tutorbook.org/",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
+    "stop:sb": "docker-compose --file .supabase/docker/docker-compose.yml --project-name supabase stop",
+    "start:sb": "docker-compose --file .supabase/docker/docker-compose.yml --project-name supabase up --detach",
     "start:db": "firebase emulators:start --project test-tutorbook --only firestore",
     "start:next": "next start -p 3000",
     "start:cy": "percy exec -- cypress run",
@@ -93,8 +95,10 @@
     "prompt-sync": "^4.2.0",
     "release": "^6.3.0",
     "source-map-support": "^0.5.19",
+    "supabase": "^0.4.4",
     "ts-node": "^10.0.0",
     "typescript": "^4.2.3",
+    "wait-on": "^6.0.0",
     "webpack-bundle-analyzer": "^4.3.0"
   },
   "dependencies": {
@@ -126,6 +130,7 @@
     "@sendgrid/client": "^7.2.2",
     "@sendgrid/helpers": "^7.2.0",
     "@sendgrid/mail": "^7.2.2",
+    "@supabase/supabase-js": "^1.21.0",
     "accept-language-parser": "^1.5.0",
     "algoliasearch": "^4.8.6",
     "analytics-node": "^4.0.1",

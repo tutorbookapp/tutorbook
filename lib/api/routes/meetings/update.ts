@@ -2,18 +2,20 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
 
 import {
+  DBMeeting,
   Meeting,
   MeetingAction,
   MeetingJSON,
   isMeetingJSON,
 } from 'lib/model/meeting';
+import { createMeeting, updateMeeting } from 'lib/api/db/meeting';
+import { DBMatch } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import analytics from 'lib/api/analytics';
-import createMeetingDoc from 'lib/api/create/meeting-doc';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
-import getOrg from 'lib/api/get/org';
+import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
@@ -21,17 +23,16 @@ import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
 import updateAvailability from 'lib/api/update/availability';
-import updateMatchDoc from 'lib/api/update/match-doc';
+import { updateMatch } from 'lib/api/db/match';
 import updateMatchSearchObj from 'lib/api/update/match-search-obj';
 import updateMatchTags from 'lib/api/update/match-tags';
-import updateMeetingDoc from 'lib/api/update/meeting-doc';
 import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
-import verifyDocExists from 'lib/api/verify/doc-exists';
 import verifyOptions from 'lib/api/verify/options';
+import verifyRecordExists from 'lib/api/verify/record-exists';
 import verifyRecurIncludesTime from 'lib/api/verify/recur-includes-time';
 import verifySubjectsCanBeTutored from 'lib/api/verify/subjects-can-be-tutored';
 import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
@@ -42,7 +43,7 @@ export interface UpdateMeetingOptions {
   action: MeetingAction;
 }
 
-export default async function updateMeeting(
+export default async function updateMeetingAPI(
   req: Req,
   res: Res<UpdateMeetingRes>
 ): Promise<void> {
@@ -62,11 +63,14 @@ export default async function updateMeeting(
     });
     const beforeUpdateStart = new Date(options.original.time.from);
 
-    const [meetingDoc] = await Promise.all([
-      verifyDocExists('meetings', body.parentId || body.id),
-      verifyDocExists('matches', body.match.id),
+    const [meetingRecord] = await Promise.all([
+      verifyRecordExists<DBMeeting>(
+        'meetings',
+        Number(body.parentId || body.id)
+      ),
+      verifyRecordExists<DBMatch>('matches', Number(body.match.id)),
     ]);
-    const original = Meeting.fromFirestoreDoc(meetingDoc);
+    const original = Meeting.fromDB(meetingRecord);
     const people = await getPeople(body.match.people);
 
     // TODO: Actually implement availability verification.
@@ -119,7 +123,7 @@ export default async function updateMeeting(
         // TODO: Ensure the emails that are being sent display the time's rrule
         // in a human readable format (e.g. 'Weekly on Tuesdays 3-4pm').
         await Promise.all([
-          updateMeetingDoc(withTagsUpdate),
+          updateMeeting(withTagsUpdate),
           updateMeetingSearchObj(withTagsUpdate),
           sendEmails(withTagsUpdate, people, updater, org),
         ]);
@@ -152,7 +156,7 @@ export default async function updateMeeting(
         body.venue = getMeetingVenue(body, org, people);
 
         const withTagsUpdate = updateMeetingTags(body);
-        const newMeeting = await createMeetingDoc(withTagsUpdate);
+        const newMeeting = await createMeeting(withTagsUpdate);
         await createMeetingSearchObj(newMeeting);
 
         // TODO: Exdates have to be exact dates that would otherwise be
@@ -175,7 +179,7 @@ export default async function updateMeeting(
         const originalWithTagsUpdate = updateMeetingTags(original);
 
         await Promise.all([
-          updateMeetingDoc(originalWithTagsUpdate),
+          updateMeeting(originalWithTagsUpdate),
           updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newMeeting, people, updater, org),
         ]);
@@ -207,7 +211,7 @@ export default async function updateMeeting(
         body.venue = getMeetingVenue(body, org, people);
 
         const withTagsUpdate = updateMeetingTags(body);
-        const newRecurringMeeting = await createMeetingDoc(withTagsUpdate);
+        const newRecurringMeeting = await createMeeting(withTagsUpdate);
         await createMeetingSearchObj(newRecurringMeeting);
 
         // TODO: This `until` property should be 12am (on the original meeting
@@ -226,7 +230,7 @@ export default async function updateMeeting(
         const originalWithTagsUpdate = updateMeetingTags(original);
 
         await Promise.all([
-          updateMeetingDoc(originalWithTagsUpdate),
+          updateMeeting(originalWithTagsUpdate),
           updateMeetingSearchObj(originalWithTagsUpdate),
           sendEmails(newRecurringMeeting, people, updater, org),
         ]);
@@ -257,9 +261,9 @@ export default async function updateMeeting(
       // TODO: Should I send a 200 status code *and then* send emails? Would that
       // make the front-end feel faster? Or is that a bad development practice?
       await Promise.all([
-        updateMatchDoc(meeting.match),
+        updateMatch(meeting.match),
         updateMatchSearchObj(meeting.match),
-        updateMeetingDoc(meeting),
+        updateMeeting(meeting),
         updateMeetingSearchObj(meeting),
         sendEmails(meeting, people, updater, org),
       ]);

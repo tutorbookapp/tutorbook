@@ -1,11 +1,11 @@
 import { IncomingHttpHeaders } from 'http';
-import { parse } from 'cookie';
 
+import { parse } from 'cookie';
 import to from 'await-to-js';
 
 import { DecodedIdToken, auth } from 'lib/api/firebase';
 import { APIError } from 'lib/api/error';
-import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
+import { getOrgsByAdminId } from 'lib/api/db/org';
 
 /**
  * Verifies the authorization cookie by:
@@ -34,7 +34,6 @@ export default async function verifyAuth(
     throw new APIError('You must provide a valid authorization cookie', 401);
 
   const { session } = parse(headers.cookie);
-  debugger;
   const [err, token] = await to<DecodedIdToken>(
     auth.verifySessionCookie(session, true)
   );

@@ -1,7 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { OrgJSON } from 'lib/model/org';
-import getOrgsByAdminId from 'lib/api/get/orgs-by-admin-id';
+import { getOrgsByAdminId } from 'lib/api/db/org';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';

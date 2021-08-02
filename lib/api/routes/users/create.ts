@@ -1,13 +1,12 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { User, UserJSON, isUserJSON } from 'lib/model/user';
+import { createUser, getUser } from 'lib/api/db/user';
 import analytics from 'lib/api/analytics';
 import createAuthUser from 'lib/api/create/auth-user';
 import createCustomToken from 'lib/api/create/custom-token';
-import createUserDoc from 'lib/api/create/user-doc';
 import createUserSearchObj from 'lib/api/create/user-search-obj';
-import getOrg from 'lib/api/get/org';
-import getUser from 'lib/api/get/user';
+import { getOrg } from 'lib/api/db/org';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
@@ -21,7 +20,7 @@ import verifyBody from 'lib/api/verify/body';
 
 export type CreateUserRes = UserJSON;
 
-export default async function createUser(
+export default async function createUserAPI(
   req: Req,
   res: Res<CreateUserRes>
 ): Promise<void> {
@@ -41,7 +40,7 @@ export default async function createUser(
     // We can perform all of these operations in parallel to speed up our API.
     const [token] = await Promise.all([
       createCustomToken(user.id),
-      createUserDoc(user),
+      createUser(user),
       createUserSearchObj(user),
       Promise.all(
         user.orgs.map(async (orgId) => {

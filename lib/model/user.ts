@@ -16,6 +16,7 @@ import {
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
+import { DBTimeslot, Timeslot } from 'lib/model/timeslot';
 import { Person, Role, isRole } from 'lib/model/person';
 import {
   Verification,
@@ -143,6 +144,60 @@ export interface UserInterface extends AccountInterface {
   hash?: string;
 }
 
+export type DBAspect = 'mentoring' | 'tutoring';
+export interface DBSocial {
+  type:
+    | 'website'
+    | 'linkedin'
+    | 'twitter'
+    | 'facebook'
+    | 'instagram'
+    | 'github'
+    | 'indiehackers';
+  url: string;
+}
+export interface DBUser {
+  id: string;
+  uid: string | null;
+  name: string;
+  photo: string | null;
+  email: string | null;
+  phone: string | null;
+  bio: string;
+  background: string | null;
+  venue: string | null;
+  socials: DBSocial[];
+  availability: DBTimeslot[];
+  mentoring: string[];
+  tutoring: string[];
+  langs: string[];
+  visible: boolean;
+  featured: DBAspect[];
+  reference: string;
+  timezone: string | null;
+  age: number | null;
+  tags: (
+    | 'vetted'
+    | 'matched'
+    | 'meeting'
+    | 'tutor'
+    | 'tutee'
+    | 'mentor'
+    | 'mentee'
+    | 'parent'
+  )[];
+  created: Date;
+  updated: Date;
+}
+export interface DBRelationParent {
+  user: string;
+  parent: string;
+}
+export interface DBRelationOrg {
+  user: string;
+  org: string;
+}
+
 export type UserJSON = Omit<
   UserInterface,
   keyof Account | 'availability' | 'verifications' | 'zooms'
@@ -214,7 +269,7 @@ export class User extends Account implements UserInterface {
 
   public tutoring: Subjects = { subjects: [], searches: [] };
 
-  public langs: string[] = [];
+  public langs: string[] = ['en'];
 
   public parents: string[] = [];
 
@@ -279,6 +334,78 @@ export class User extends Account implements UserInterface {
       photo: this.photo,
       roles: this.roles,
     };
+  }
+
+  public toDB(): DBUser {
+    return {
+      id: this.id,
+      uid: null,
+      name: this.name,
+      photo: this.photo || null,
+      email: this.email || null,
+      phone: this.phone || null,
+      bio: this.bio,
+      background: this.background || null,
+      venue: this.venue || null,
+      socials: this.socials,
+      availability: this.availability.map((t) => ({
+        id: t.id,
+        from: t.from,
+        to: t.to,
+        exdates: t.exdates || null,
+        recur: t.recur || null,
+        last: t.last || null,
+      })),
+      mentoring: this.mentoring.subjects,
+      tutoring: this.tutoring.subjects,
+      langs: this.langs,
+      visible: this.visible,
+      featured: this.featured,
+      reference: this.reference,
+      timezone: this.timezone || null,
+      age: this.age || null,
+      tags: this.tags,
+      created: this.created,
+      updated: this.updated,
+    };
+  }
+
+  public static fromDB(record: DBUser): User {
+    return new User({
+      id: record.id,
+      name: record.name,
+      photo: record.photo || '',
+      email: record.email || '',
+      phone: record.phone || '',
+      bio: record.bio,
+      background: record.background || '',
+      venue: record.venue || '',
+      socials: record.socials,
+      availability: new Availability(
+        ...record.availability.map(
+          (t) =>
+            new Timeslot({
+              id: t.id,
+              from: t.from,
+              to: t.to,
+              exdates: t.exdates || undefined,
+              recur: t.recur || undefined,
+              last: t.last || undefined,
+            })
+        )
+      ),
+      mentoring: { subjects: record.mentoring, searches: [] },
+      tutoring: { subjects: record.tutoring, searches: [] },
+      langs: record.langs,
+      visible: record.visible,
+      featured: record.featured,
+      reference: record.reference,
+      timezone: record.timezone || '',
+      age: record.age || undefined,
+      tags: record.tags,
+      created: record.created,
+      updated: record.updated,
+    });
   }
 
   public toJSON(): UserJSON {

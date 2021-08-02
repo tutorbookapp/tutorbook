@@ -1,10 +1,9 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
+import { deleteUser, getUser } from 'lib/api/db/user';
 import analytics from 'lib/api/analytics';
 import deleteAuthUser from 'lib/api/delete/auth-user';
-import deleteUserDoc from 'lib/api/delete/user-doc';
 import deleteUserSearchObj from 'lib/api/delete/user-search-obj';
-import getUser from 'lib/api/get/user';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
@@ -13,7 +12,7 @@ import verifyQueryId from 'lib/api/verify/query-id';
 
 export type DeleteUserRes = void;
 
-export default async function deleteUser(
+export default async function deleteUserAPI(
   req: Req,
   res: Res<DeleteUserRes>
 ): Promise<void> {
@@ -36,7 +35,7 @@ export default async function deleteUser(
 
     await Promise.all([
       deleteAuthUser(user.id),
-      deleteUserDoc(user.id),
+      deleteUser(user.id),
       deleteUserSearchObj(user.id),
     ]);
 

@@ -1,8 +1,8 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { MeetingJSON } from 'lib/model/meeting';
-import getMatch from 'lib/api/get/match';
-import getMatchMeetings from 'lib/api/get/match-meetings';
+import { getMatch } from 'lib/api/db/match';
+import { getMeetingsByMatchId } from 'lib/api/db/meeting';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
@@ -18,7 +18,7 @@ export default async function fetchMeetings(
     const id = verifyQueryId(req.query);
     const [match, meetings] = await Promise.all([
       getMatch(id),
-      getMatchMeetings(id),
+      getMeetingsByMatchId(id),
     ]);
 
     const { uid } = await verifyAuth(req.headers, {

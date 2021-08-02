@@ -3,20 +3,19 @@ import to from 'await-to-js';
 
 import { APIError, handle } from 'lib/api/error';
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
+import { createMatch, getMatch } from 'lib/api/db/match';
 import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
-import createMatchDoc from 'lib/api/create/match-doc';
 import createMatchSearchObj from 'lib/api/create/match-search-obj';
-import createMeetingDoc from 'lib/api/create/meeting-doc';
+import { createMeeting } from 'lib/api/db/meeting';
 import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
-import getMatch from 'lib/api/get/match';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
-import getOrg from 'lib/api/get/org';
+import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
-import getUser from 'lib/api/get/user';
+import { getUser } from 'lib/api/db/user';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
@@ -32,7 +31,7 @@ import verifyTimeInAvailability from 'lib/api/verify/time-in-availability';
 
 export type CreateMeetingRes = MeetingJSON;
 
-export default async function createMeeting(
+export default async function createMeetingAPI(
   req: Req,
   res: Res<CreateMeetingRes>
 ): Promise<void> {
@@ -79,7 +78,7 @@ export default async function createMeeting(
         verifyIsOrgAdmin(org, creator.id);
 
       // Create match (b/c it doesn't already exist).
-      body.match = await createMatchDoc(updateMatchTags(body.match));
+      body.match = await createMatch(updateMatchTags(body.match));
       await createMatchSearchObj(body.match);
 
       segment.track({
@@ -111,7 +110,7 @@ export default async function createMeeting(
     body.venue = getMeetingVenue(body, org, people);
     body.time.last = getLastTime(body.time);
 
-    const meeting = await createMeetingDoc(updateMeetingTags(body));
+    const meeting = await createMeeting(updateMeetingTags(body));
     await createMeetingSearchObj(meeting);
 
     const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));

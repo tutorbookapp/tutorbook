@@ -2,6 +2,7 @@ import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useEffect, useState } from 'react';
+import to from 'await-to-js';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -12,8 +13,8 @@ import Signup from 'components/signup';
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
+import { getOrg, getOrgs } from 'lib/api/db/org';
 import { OrgContext } from 'lib/context/org';
-import { db } from 'lib/api/firebase';
 import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
@@ -69,16 +70,14 @@ export const getStaticProps: GetStaticProps<
   SignupPageQuery
 > = async (ctx: GetStaticPropsContext<SignupPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
-  const doc = await db.collection('orgs').doc(ctx.params.org).get();
-  if (!doc.exists) return { notFound: true };
-  const org = Org.fromFirestoreDoc(doc);
+  const [error, org] = await to(getOrg(ctx.params.org));
+  if (error || !org) return { notFound: true };
   const { props } = await getPageProps();
   return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
 };
 
 export const getStaticPaths: GetStaticPaths<SignupPageQuery> = async () => {
-  const orgs = (await db.collection('orgs').get()).docs;
-  const paths = orgs.map((org) => ({ params: { org: org.id } }));
+  const paths = (await getOrgs()).map((org) => ({ params: { org: org.id } }));
   return { paths, fallback: true };
 };
 
