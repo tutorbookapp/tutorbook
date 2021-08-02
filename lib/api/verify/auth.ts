@@ -31,27 +31,25 @@ export default async function verifyAuth(
   options?: { userId?: string; userIds?: string[]; orgIds?: string[] }
 ): Promise<{ adminOf?: string[]; uid: string }> {
   if (typeof headers.cookie !== 'string')
-    throw new APIError('You must provide a valid authorization cookie', 401);
-  try {
-    const { session } = parse(headers.cookie);
-    const { uid } = await auth.verifySessionCookie(session, true);
+    throw new APIError('You must be logged in', 401);
+  const { session } = parse(headers.cookie);
+  if (typeof session !== 'string')
+    throw new APIError('You must be logged in', 401);
+  const [err, token] = await to<DecodedIdToken>(
+    auth.verifySessionCookie(session, true)
+  );
+  if (err) throw new APIError(`Your login is invalid: ${err.message}`, 401);
 
-    // Check if JWT belongs to `userId` OR an admin to any one of the `orgIds`
-    if (!options) return { uid };
-    if (options.userId && options.userId === uid) return { uid };
-    if (options.userIds && options.userIds.includes(uid)) return { uid };
-    if (options.orgIds && options.orgIds.length) {
-      const orgIds = (await getOrgsByAdminId(uid)).map((o) => o.id);
-      if (options.orgIds.some((orgId) => orgIds.includes(orgId)))
-        return { uid, adminOf: orgIds };
-    }
-  } catch (e) {
-    if (e instanceof Error)
-      throw new APIError(`Your cookie is invalid: ${e.message}`, 401);
-    if (typeof e === 'string')
-      throw new APIError(`Your cookie is invalid: ${e}`, 401);
-    throw new APIError('Your cookie is invalid', 401);
+  // Check if JWT belongs to `userId` OR an admin to any one of the `orgIds`
+  const { uid } = token as DecodedIdToken;
+  if (!options) return { uid };
+  if (options.userId && options.userId === uid) return { uid };
+  if (options.userIds && options.userIds.includes(uid)) return { uid };
+  if (options.orgIds && options.orgIds.length) {
+    const orgIds = (await getOrgsByAdminId(uid)).map((o) => o.id);
+    if (options.orgIds.some((orgId) => orgIds.includes(orgId)))
+      return { uid, adminOf: orgIds };
   }
-  // TODO: Replace this with a `403` error code instead.
+  // TODO: Use `403 Forbidden` HTTP status code instead of `401`.
   throw new APIError('You are not authorized to perform this action', 401);
 }
