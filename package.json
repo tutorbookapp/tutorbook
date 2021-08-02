@@ -98,6 +98,7 @@
     "supabase": "^0.4.4",
     "ts-node": "^10.0.0",
     "typescript": "^4.2.3",
+    "wait-on": "^6.0.0",
     "webpack-bundle-analyzer": "^4.3.0"
   },
   "dependencies": {
