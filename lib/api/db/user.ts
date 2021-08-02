@@ -70,8 +70,6 @@ export async function getUsers(
   let select = supabase
     .from<DBViewUser>('view_users')
     .select('*', { count: 'exact' })
-    .contains('parents', query.parents)
-    .contains('orgs', query.orgs)
     .contains('tags', query.tags)
     .contains(
       'langs',
@@ -89,6 +87,8 @@ export async function getUsers(
     );
   if (typeof query.visible === 'boolean')
     select = select.eq('visible', query.visible);
+  if (query.parents.length) select = select.overlaps('parents', query.parents);
+  if (query.orgs.length) select = select.overlaps('orgs', query.orgs);
 
   // Filtering by availability shows volunteers that the student can book. In
   // other (more technical) terms, we show volunteers who have at least one
@@ -107,15 +107,23 @@ export async function getUsers(
   //      at 11 AM from the volunteer's availability).
   // 2. At search time, filter by results that contain any of the hour-long
   //    timeslot start times within the student's requested availability.
-  const full = new Availability();
-  const days = Array(7).fill(null);
-  days.forEach((_, day) => {
-    full.push(new Timeslot({ from: getDate(day, 0), to: getDate(day, 24) }));
-  });
-  const fallback = query.available ? full : new Availability();
-  const baseline = query.availability.length ? query.availability : fallback;
-  const filtering = sliceAvailability(baseline).map((t) => t.from.valueOf());
-  select = select.contains('times', filtering);
+  if (query.available && !query.availability.length) {
+    // If `query.available` is true, we only show results that have at least one
+    // available time (even if `query.availability` is empty).
+    select = select.eq('available', true);
+  } else if (query.availability.length) {
+    // TODO: There is probably a bigger limitation here than with Algolia. I bet
+    // I won't be able to filter by all ~600 slices for a full availability.
+    const sliced = sliceAvailability(query.availability);
+    console.log(
+      'Filtering:',
+      sliced.map((t) => t.from.valueOf())
+    );
+    select = select.overlaps(
+      'times',
+      sliced.map((t) => t.from.valueOf())
+    );
+  }
 
   const { data, count } = await select;
   const results = (data || []).map((u) => User.fromDB(u));

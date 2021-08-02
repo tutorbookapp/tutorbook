@@ -45,7 +45,8 @@ create table public.users (
   "age" integer,
   "tags" user_tag[] not null,
   "created" timestamptz not null,
-  "updated" timestamptz not null
+  "updated" timestamptz not null,
+  "times" bigint[] not null
 );
 
 create type profile_field as enum('name', 'photo', 'email', 'phone', 'bio', 'background', 'venue', 'availability', 'subjects', 'langs', 'reference'); 
@@ -155,6 +156,7 @@ create table relation_meeting_people (
 -- 3. Creating `JOIN` views abstracts away the many-to-many `relation_*` tables.
 create view view_users as select 
   users.*,
+  cardinality(times) > 0 as available,
   coalesce(orgs, array[]::text[]) as orgs,
   coalesce(parents, array[]::text[]) as parents
 from users 
