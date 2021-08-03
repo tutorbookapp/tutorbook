@@ -6,10 +6,9 @@ import {
   ResourceInterface,
   ResourceJSON,
 } from 'lib/model/resource';
+import { Role, UserTag } from 'lib/model/user';
 import { MatchTag } from 'lib/model/match';
 import { MeetingTag } from 'lib/model/meeting';
-import { Role } from 'lib/model/person';
-import { UserTag } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';

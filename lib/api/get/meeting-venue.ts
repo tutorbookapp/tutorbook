@@ -1,7 +1,6 @@
+import { Role, User } from 'lib/model/user';
 import { Meeting } from 'lib/model/meeting';
 import { Org } from 'lib/model/org';
-import { Role } from 'lib/model/person';
-import { User } from 'lib/model/user';
 import { Venue } from 'lib/model/venue';
 
 /**

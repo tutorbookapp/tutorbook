@@ -111,10 +111,7 @@ function WeeklyDisplay({
     (event: MouseEvent) => {
       if (dragging) return;
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
-      const creating = new Meeting({
-        id: `temp-${nanoid()}`,
-        creator: user.toPerson(),
-      });
+      const creating = new Meeting({ id: `temp-${nanoid()}`, creator: user });
       setEventTarget(undefined);
       setEventData(undefined);
       setEditing(getMeeting(48, pos, creating, cellWidth, start));
