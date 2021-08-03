@@ -65,6 +65,18 @@ function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
             }}
             selected={query.visible === false}
           />
+          <Chip
+            label={t('users:filters-available')}
+            checkmark
+            onInteraction={() => {
+              setQuery((prev) => {
+                const { available: aprev } = prev;
+                const available = aprev === true ? undefined : true;
+                return new UsersQuery({ ...prev, available, page: 0 });
+              });
+            }}
+            selected={query.available === true}
+          />
           {org?.aspects.length === 2 && (
             <Chip
               label={t('common:mentoring')}
