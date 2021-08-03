@@ -1,11 +1,8 @@
 import path from 'path';
 
-import 'firebase/auth';
 import axios from 'axios';
-import client from 'firebase/app';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
-import firebase from 'firebase-admin';
 import { percyHealthCheck } from '@percy/cypress/task';
 
 import { IntercomGlobal } from 'lib/intercom';
@@ -37,34 +34,6 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
   path.resolve(__dirname, '../../.env'),
 ].forEach((dotfile: string) => dotenv.config({ path: dotfile }));
 
-const clientCredentials = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-};
-if (!client.apps.length) client.initializeApp(clientCredentials);
-
-const app = firebase.initializeApp({
-  credential: firebase.credential.cert({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    privateKey: (process.env.FIREBASE_ADMIN_KEY || '').replace(/\\n/g, '\n'),
-    clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-  }),
-  serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-  databaseAuthVariableOverride: { uid: 'server' },
-});
-const auth = app.auth();
-const db = app.firestore();
-
-db.settings({ ignoreUndefinedProperties: true });
-
 export interface Overrides {
   match?: Partial<MatchJSON> | null;
   meeting?: Partial<MeetingJSON> | null;
@@ -86,14 +55,6 @@ declare global {
       task(event: 'login', uid: string): Chainable<string>;
     }
   }
-}
-
-async function getHeaders(uid: string): Promise<{ authorization: string }> {
-  const token = await auth.createCustomToken(uid);
-  await client.auth().signInWithCustomToken(token);
-  const jwt = await client.auth().currentUser?.getIdToken(true);
-  await client.auth().signOut();
-  return { authorization: `Bearer ${jwt || ''}` };
 }
 
 export default function plugins(
@@ -138,11 +99,9 @@ export default function plugins(
       if (overrides.meeting === null) delete meetings[0];
       meetings = meetings.filter(Boolean);
 
-      const rconfig = { headers: await getHeaders(admin.id) };
-
       async function create(route: string, data: unknown[]): Promise<void> {
         const endpoint = `http://localhost:3000/api/${route}`;
-        await Promise.all(data.map((d) => axios.post(endpoint, d, rconfig)));
+        await Promise.all(data.map((d) => axios.post(endpoint, d)));
       }
 
       await create('orgs', orgs);
