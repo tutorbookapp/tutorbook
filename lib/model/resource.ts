@@ -1,3 +1,5 @@
+import * as admin from 'firebase-admin';
+
 import { isDateJSON, isJSON } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
@@ -5,6 +7,8 @@ import construct from 'lib/model/construct';
 export interface Constructor<T> {
   new (partial: Partial<T>): T;
 }
+
+type Timestamp = admin.firestore.Timestamp;
 
 /**
  * The base interface for all of our data models.
@@ -20,6 +24,11 @@ export interface ResourceInterface {
 export interface ResourceJSON {
   created: string;
   updated: string;
+}
+
+export interface ResourceFirestore {
+  created: Timestamp;
+  updated: Timestamp;
 }
 
 export function isResourceJSON(json: unknown): json is ResourceJSON {
@@ -53,6 +62,20 @@ export class Resource implements ResourceInterface {
     return new Resource({
       created: new Date(json.created),
       updated: new Date(json.updated),
+    });
+  }
+
+  public toFirestore(): ResourceFirestore {
+    return {
+      created: (this.created as unknown) as Timestamp,
+      updated: (this.updated as unknown) as Timestamp,
+    };
+  }
+
+  public static fromFirestore(data: ResourceFirestore): Resource {
+    return new Resource({
+      created: data.created.toDate(),
+      updated: data.updated.toDate(),
     });
   }
 }
