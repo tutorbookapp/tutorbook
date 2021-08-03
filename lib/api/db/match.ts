@@ -5,6 +5,7 @@ import {
   Match,
 } from 'lib/model/match';
 import { APIError } from 'lib/api/error';
+import { MatchesQuery } from 'lib/model/query/matches';
 import supabase from 'lib/api/supabase';
 
 export async function createMatch(match: Match): Promise<Match> {
@@ -38,6 +39,23 @@ export async function getMatch(id: string): Promise<Match> {
   if (!data || !data[0])
     throw new APIError(`Match (${id}) does not exist in database`);
   return Match.fromDB(data[0]);
+}
+
+export async function getMatches(
+  query: MatchesQuery
+): Promise<{ hits: number; results: Match[] }> {
+  let select = supabase
+    .from<DBViewMatch>('view_matches')
+    .select()
+    .contains('subjects', query.subjects);
+  if (query.org) select = select.eq('org', query.org);
+  if (query.people.length) {
+    const peopleIds = query.people.map((p) => p.value);
+    select = select.overlaps('people_ids', peopleIds);
+  }
+  const { data, count } = await select;
+  const results = (data || []).map((m) => Match.fromDB(m));
+  return { results, hits: count || results.length };
 }
 
 export async function updateMatch(match: Match): Promise<void> {
