@@ -1,19 +1,18 @@
 import { GetStaticPathsResult } from 'next';
 
-import { OrgJSON } from 'lib/model/org';
-import { getOrgs } from 'lib/api/db/org';
+import { DBViewOrg, Org, OrgJSON } from 'lib/model/org';
+import supabase from 'lib/api/supabase';
 
-// Orgs must be optional because they are undefined when Next.js renders the
-// fallback page during build-time. They are updated afterwards.
-// See: https://nextjs.org/docs/basic-features/data-fetching#fallback-true
-// See: https://github.com/vercel/next.js/issues/14200
-// See: https://github.com/vercel/next.js/issues/22507
 export interface PageProps {
   orgs?: OrgJSON[];
 }
 
+// TODO: Remove this temporary fix for Next.js's tree-shaking bug where it
+// doesn't get rid of re-exported imports and replace it with `getOrgs`.
+// @see {@link https://github.com/vercel/next.js/issues/27741}
 export async function getPageProps(): Promise<{ props: PageProps }> {
-  const orgs = (await getOrgs()).map((o) => o.toJSON());
+  const { data } = await supabase.from<DBViewOrg>('view_orgs').select();
+  const orgs = (data || []).map((d) => Org.fromDB(d).toJSON());
   return { props: { orgs } };
 }
 
