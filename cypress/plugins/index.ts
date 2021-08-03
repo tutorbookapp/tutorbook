@@ -1,7 +1,6 @@
 import path from 'path';
 
 import 'firebase/auth';
-import algoliasearch from 'algoliasearch';
 import axios from 'axios';
 import client from 'firebase/app';
 import codecov from '@cypress/code-coverage/task';
@@ -66,15 +65,6 @@ const db = app.firestore();
 
 db.settings({ ignoreUndefinedProperties: true });
 
-const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
-const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
-const search = algoliasearch(algoliaId, algoliaKey);
-
-const prefix = process.env.ALGOLIA_PREFIX || (process.env.APP_ENV as string);
-const usersIdx = search.initIndex(`${prefix}-users`);
-const matchesIdx = search.initIndex(`${prefix}-matches`);
-const meetingsIdx = search.initIndex(`${prefix}-meetings`);
-
 export interface Overrides {
   match?: Partial<MatchJSON> | null;
   meeting?: Partial<MeetingJSON> | null;
@@ -113,73 +103,12 @@ export default function plugins(
   codecov(on, config);
   on('task', {
     percyHealthCheck,
-    async createIndices(): Promise<null> {
-      await Promise.all([
-        usersIdx.setSettings({
-          searchableAttributes: [
-            'name',
-            'unordered(email)',
-            'unordered(phone)',
-            'unordered(bio)',
-            'unordered(reference)',
-            'unordered(verifications.notes)',
-            'unordered(tutoring.subjects)',
-            'unordered(mentoring.subjects)',
-            'unordered(socials.url)',
-          ],
-          attributesForFaceting: [
-            'filterOnly(_availability)',
-            'filterOnly(email)',
-            'filterOnly(featured)',
-            'filterOnly(langs)',
-            'filterOnly(mentoring.searches)',
-            'filterOnly(mentoring.subjects)',
-            'filterOnly(tutoring.searches)',
-            'filterOnly(tutoring.subjects)',
-            'filterOnly(orgs)',
-            'filterOnly(parents)',
-            'filterOnly(phone)',
-            'filterOnly(verifications.checks)',
-          ],
-        }),
-        matchesIdx.setSettings({
-          attributesForFaceting: [
-            'filterOnly(org)',
-            'filterOnly(people.id)',
-            'filterOnly(subjects)',
-          ],
-        }),
-        meetingsIdx.setSettings({
-          attributesForFaceting: [
-            'filterOnly(match.org)',
-            'filterOnly(match.people.id)',
-            'filterOnly(match.subjects)',
-            'filterOnly(time.from)',
-            'filterOnly(time.last)',
-          ],
-        }),
-      ]);
-      return null;
-    },
-    async deleteIndices(): Promise<null> {
-      await Promise.all([
-        usersIdx.delete(),
-        matchesIdx.delete(),
-        meetingsIdx.delete(),
-      ]);
-      return null;
-    },
     async clear(): Promise<null> {
       const clearFirestoreEndpoint =
         `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
         `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
         `databases/(default)/documents`;
-      await Promise.all([
-        usersIdx.clearObjects(),
-        matchesIdx.clearObjects(),
-        meetingsIdx.clearObjects(),
-        axios.delete(clearFirestoreEndpoint),
-      ]);
+      await axios.delete(clearFirestoreEndpoint);
       return null;
     },
     async seed(overrides: Overrides = {}): Promise<null> {
