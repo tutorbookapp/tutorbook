@@ -2,7 +2,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { deleteMatch, getMatch } from 'lib/api/db/match';
 import analytics from 'lib/api/analytics';
-import deleteMatchSearchObj from 'lib/api/delete/match-search-obj';
 import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
@@ -28,7 +27,7 @@ export default async function deleteMatchAPI(
       orgIds: [match.org],
     });
 
-    await Promise.all([deleteMatch(match.id), deleteMatchSearchObj(match.id)]);
+    await deleteMatch(match.id);
 
     res.status(200).end();
 

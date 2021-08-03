@@ -5,7 +5,6 @@ import { createUser, getUser } from 'lib/api/db/user';
 import analytics from 'lib/api/analytics';
 import createAuthUser from 'lib/api/create/auth-user';
 import createCustomToken from 'lib/api/create/custom-token';
-import createUserSearchObj from 'lib/api/create/user-search-obj';
 import { getOrg } from 'lib/api/db/org';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
@@ -40,7 +39,6 @@ export default async function createUserAPI(
     const [token] = await Promise.all([
       createCustomToken(user.id),
       createUser(user),
-      createUserSearchObj(user),
       Promise.all(
         user.orgs.map(async (orgId) => {
           // Skip the org signup notification emails if the user is a child

@@ -6,9 +6,7 @@ import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
 import { createMatch, getMatch } from 'lib/api/db/match';
 import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
-import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import { createMeeting } from 'lib/api/db/meeting';
-import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
@@ -79,7 +77,6 @@ export default async function createMeetingAPI(
 
       // Create match (b/c it doesn't already exist).
       body.match = await createMatch(updateMatchTags(body.match));
-      await createMatchSearchObj(body.match);
 
       segment.track({
         userId: creator.id,
@@ -111,7 +108,6 @@ export default async function createMeetingAPI(
     body.time.last = getLastTime(body.time);
 
     const meeting = await createMeeting(updateMeetingTags(body));
-    await createMeetingSearchObj(meeting);
 
     const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));
     await sendEmails(meeting, people, creator, org, orgAdmins);

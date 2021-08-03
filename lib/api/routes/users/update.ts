@@ -9,7 +9,6 @@ import updateAuthUser from 'lib/api/update/auth-user';
 import updatePhoto from 'lib/api/update/photo';
 import { updateUser } from 'lib/api/db/user';
 import updateUserOrgs from 'lib/api/update/user-orgs';
-import updateUserSearchObj from 'lib/api/update/user-search-obj';
 import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
@@ -42,7 +41,7 @@ export default async function updateUserAPI(
     // TODO: If the user's name or photo has changed, update it across all
     // meetings and matches the user is a `Person` on.
 
-    await Promise.all([updateUser(user), updateUserSearchObj(user)]);
+    await updateUser(user);
 
     res.status(200).json(user.toJSON());
 
