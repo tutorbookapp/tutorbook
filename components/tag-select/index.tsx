@@ -3,12 +3,12 @@ import useTranslation from 'next-translate/useTranslation';
 
 import SearchSelect, { SearchSelectProps } from 'components/search-select';
 
-import { MatchHitTag, MatchTag } from 'lib/model/match';
-import { MeetingHitTag, MeetingTag } from 'lib/model/meeting';
-import { UserHitTag, UserTag } from 'lib/model/user';
+import { DBMatchTag, MatchTag } from 'lib/model/match';
+import { DBMeetingTag, MeetingTag } from 'lib/model/meeting';
+import { DBUserTag, UserTag } from 'lib/model/user';
 
 export type TagSelectProps<
-  HitTag extends UserHitTag | MatchHitTag | MeetingHitTag,
+  HitTag extends DBUserTag | DBMatchTag | DBMeetingTag,
   Tag extends UserTag | MatchTag | MeetingTag
 > = Omit<
   SearchSelectProps<HitTag>,
@@ -19,12 +19,12 @@ export type TagSelectProps<
 // component is going to be left un-optimized for now.
 // @see {@link https://github.com/facebook/react/issues/21003}
 export default function TagSelect<
-  HitTag extends UserHitTag | MatchHitTag | MeetingHitTag,
+  HitTag extends DBUserTag | DBMatchTag | DBMeetingTag,
   Tag extends UserTag | MatchTag | MeetingTag
 >({ options, ...props }: TagSelectProps<HitTag, Tag>): JSX.Element {
   const { t } = useTranslation();
 
-  // TODO: TypeScript should know that if HitTag is UserHitTag then Tag has to
+  // TODO: TypeScript should know that if HitTag is DBUserTag then Tag has to
   // be UserTag (and cannot be MatchTag or MeetingTag) and vice versa.
   const selectOptions = useMemo(
     () => [

@@ -1,7 +1,7 @@
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { Availability, AvailabilityJSON } from 'lib/model/availability';
 import { Option, Query, QueryInterface } from 'lib/model/query/base';
-import { UserHitTag } from 'lib/model/user';
+import { DBUserTag } from 'lib/model/user';
 import construct from 'lib/model/construct';
 
 /**
@@ -24,7 +24,7 @@ import construct from 'lib/model/construct';
 export interface UsersQueryInterface extends QueryInterface {
   parents: string[];
   orgs: string[];
-  tags: UserHitTag[];
+  tags: DBUserTag[];
   aspect: Aspect;
   langs: Option<string>[];
   subjects: Option<string>[];
@@ -49,7 +49,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
 
   public orgs: string[] = [];
 
-  public tags: UserHitTag[] = [];
+  public tags: DBUserTag[] = [];
 
   public aspect: Aspect = 'tutoring';
 
@@ -105,7 +105,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
       ...super.fromURLParams(params),
       parents: decode<string>(params.parents),
       orgs: decode<string>(params.orgs),
-      tags: decode<UserHitTag>(params.tags),
+      tags: decode<DBUserTag>(params.tags),
       langs: decode<Option<string>>(params.langs),
       subjects: decode<Option<string>>(params.subjects),
       visible: params.visible ? params.visible === 'true' : undefined,

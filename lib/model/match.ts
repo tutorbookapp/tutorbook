@@ -16,7 +16,7 @@ import definedVals from 'lib/model/defined-vals';
 
 export type MatchTag = 'meeting'; // Match has at least one meeting.
 
-export type MatchHitTag = MatchTag | 'not-meeting';
+export type DBMatchTag = MatchTag | 'not-meeting';
 
 export const MATCH_TAGS: MatchTag[] = ['meeting'];
 
@@ -49,7 +49,7 @@ export interface DBMatch {
   creator: string;
   subjects: string[];
   message: string;
-  tags: 'meeting'[];
+  tags: DBMatchTag[];
   created: DBDate;
   updated: DBDate;
 }
@@ -145,7 +145,7 @@ export class Match extends Resource implements MatchInterface {
       creator: this.creator.id,
       subjects: this.subjects,
       message: this.message,
-      tags: this.tags,
+      tags: [...this.tags, ...notTags(this.tags, MATCH_TAGS)],
       created: this.created.toISOString(),
       updated: this.updated.toISOString(),
     };
@@ -177,7 +177,7 @@ export class Match extends Resource implements MatchInterface {
       },
       subjects: record.subjects,
       message: record.message,
-      tags: record.tags,
+      tags: record.tags.filter(isMatchTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
     });
