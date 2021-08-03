@@ -38,7 +38,7 @@ create type user_tag as enum (
   'not-tutee', 
   'not-mentor', 
   'not-mentee', 
-  'not-parent',
+  'not-parent'
 );
 create table public.users (
   "id" text unique not null primary key,
