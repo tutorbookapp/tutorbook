@@ -27,7 +27,7 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
   const { error: err } = await supabase
     .from<DBRelationMeetingPerson>('relation_meeting_people')
     .insert(people);
-  handle('creating', 'people', people, err);
+  handle('creating', 'meeting people', people, err);
   return m;
 }
 
@@ -45,8 +45,8 @@ export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
   }));
   const { error: err } = await supabase
     .from<DBRelationMeetingPerson>('relation_meeting_people')
-    .upsert(people);
-  handle('updating', 'people', people, err);
+    .upsert(people, { onConflict: 'user,meeting,roles' });
+  handle('updating', 'meeting people', people, err);
   return m;
 }
 

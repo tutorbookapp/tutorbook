@@ -25,7 +25,7 @@ export async function updateOrg(org: Org): Promise<Org> {
   const members = org.members.map((m) => ({ user: m, org: o.id }));
   const { error: err } = await supabase
     .from<DBRelationMember>('relation_members')
-    .upsert(members);
+    .upsert(members, { onConflict: 'user,org' });
   handle('updating', 'members', members, err);
   return o;
 }

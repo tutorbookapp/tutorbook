@@ -23,7 +23,7 @@ export async function createMatch(match: Match): Promise<Match> {
   const { error: err } = await supabase
     .from<DBRelationMatchPerson>('relation_match_people')
     .insert(people);
-  handle('creating', 'people', people, err);
+  handle('creating', 'match people', people, err);
   return m;
 }
 
@@ -41,8 +41,8 @@ export async function updateMatch(match: Match): Promise<Match> {
   }));
   const { error: err } = await supabase
     .from<DBRelationMatchPerson>('relation_match_people')
-    .upsert(people);
-  handle('updating', 'people', people, err);
+    .upsert(people, { onConflict: 'user,match,roles' });
+  handle('updating', 'match people', people, err);
   return m;
 }
 
