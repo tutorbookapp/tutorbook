@@ -22,7 +22,24 @@ create type timeslot as (
 );
 
 -- TODO: See if there's a way to simply extend the existing `role` enum.
-create type user_tag as enum ('vetted', 'matched', 'meeting', 'tutor', 'tutee', 'mentor', 'mentee', 'parent');
+create type user_tag as enum (
+  'vetted', 
+  'matched', 
+  'meeting', 
+  'tutor', 
+  'tutee', 
+  'mentor', 
+  'mentee', 
+  'parent',
+  'not-vetted', 
+  'not-matched', 
+  'not-meeting', 
+  'not-tutor', 
+  'not-tutee', 
+  'not-mentor', 
+  'not-mentee', 
+  'not-parent',
+);
 create table public.users (
   "id" text unique not null primary key,
   "uid" uuid references auth.users(id) unique,
@@ -49,7 +66,19 @@ create table public.users (
   "times" bigint[] not null
 );
 
-create type profile_field as enum('name', 'photo', 'email', 'phone', 'bio', 'background', 'venue', 'availability', 'subjects', 'langs', 'reference'); 
+create type profile_field as enum(
+  'name', 
+  'photo', 
+  'email', 
+  'phone', 
+  'bio', 
+  'background', 
+  'venue', 
+  'availability', 
+  'subjects', 
+  'langs', 
+  'reference'
+); 
 create table public.orgs (
   "id" text unique not null primary key,
   "name" text not null check(length(name) > 1 AND name !~ '^\s+$'),
@@ -73,7 +102,13 @@ create table public.orgs (
   "updated" timestamptz not null
 );
 
-create type verification_check as enum('email', 'background-check', 'academic-email', 'training', 'interview');
+create type verification_check as enum(
+  'email', 
+  'background-check', 
+  'academic-email', 
+  'training', 
+  'interview'
+);
 create table public.verifications (
   "id" bigint generated always as identity primary key,
   "creator" text references public.users(id) on delete cascade on update cascade not null,
@@ -85,7 +120,7 @@ create table public.verifications (
   "updated" timestamptz not null
 );
 
-create type match_tag as enum('meeting');
+create type match_tag as enum('meeting', 'not-meeting');
 create table public.matches (
   "id" bigint generated always as identity primary key,
   "org" text references public.orgs(id) on delete cascade on update cascade not null,
@@ -97,7 +132,7 @@ create table public.matches (
   "updated" timestamptz not null
 );
 
-create type meeting_tag as enum('recurring');
+create type meeting_tag as enum('recurring', 'not-recurring');
 create type meeting_status as enum('created', 'pending', 'logged', 'approved');
 create table public.meetings (
   "id" bigint generated always as identity primary key,
