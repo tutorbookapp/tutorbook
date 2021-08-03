@@ -154,6 +154,17 @@ create table relation_meeting_people (
 -- 1. They're generally more performant than complex `JOIN` queries at runtime.
 -- 2. Supabase doesn't support running raw SQL queries yet.
 -- 3. Creating `JOIN` views abstracts away the many-to-many `relation_*` tables.
+create view view_orgs as 
+select 
+  orgs.*,
+  coalesce(members, array[]::text[]) as members
+from orgs
+  left outer join (
+    select "org",array_agg("user") as members 
+    from relation_members group by "org"
+  ) as members on members."org" = id
+order by id;
+
 create view view_users as 
 select 
   users.*,
@@ -170,6 +181,26 @@ from users
     from relation_parents group by "user"
   ) as parents on parents."user" = id
 order by id;
+
+create view view_matches as
+select 
+  matches.*,
+  people,
+  coalesce(people_ids,array[]::text[]) as people_ids
+from matches left outer join (
+  select 
+    "match",
+    json_agg(person.*) as people,
+    array_agg(person.id) as people_ids 
+  from (
+    -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
+    -- the `"match"` property from the aggregated `people` column of objs.
+    select "match",roles,users.* 
+    from relation_match_people 
+    inner join users on "user" = users.id
+  ) as person group by "match"
+) as people on "match" = matches.id
+order by matches.id;
 
 create view view_meetings as
 select 
@@ -196,23 +227,3 @@ from meetings left outer join (
   ) as person group by meeting
 ) as people on meeting = meetings.id
 order by meetings.id;
-
-create view view_matches as
-select 
-  matches.*,
-  people,
-  coalesce(people_ids,array[]::text[]) as people_ids
-from matches left outer join (
-  select 
-    "match",
-    json_agg(person.*) as people,
-    array_agg(person.id) as people_ids 
-  from (
-    -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
-    -- the `"match"` property from the aggregated `people` column of objs.
-    select "match",roles,users.* 
-    from relation_match_people 
-    inner join users on "user" = users.id
-  ) as person group by "match"
-) as people on "match" = matches.id
-order by matches.id;

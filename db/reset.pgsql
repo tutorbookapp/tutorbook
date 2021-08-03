@@ -33,4 +33,7 @@ drop table relation_members cascade;
 drop table relation_match_people cascade;
 drop table relation_meeting_people cascade;
 
+drop view if exists view_orgs cascade;
 drop view if exists view_users cascade;
+drop view if exists view_matches cascade;
+drop view if exists view_meetings cascade;
