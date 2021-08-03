@@ -3,6 +3,8 @@ import { dequal } from 'dequal/lite';
 import { serialize } from 'cookie';
 import to from 'await-to-js';
 
+import { APIError, handle } from 'lib/api/error';
+import { DecodedIdToken, auth } from 'lib/api/firebase';
 import {
   Subjects,
   User,
@@ -10,19 +12,15 @@ import {
   UserJSON,
   isUserJSON,
 } from 'lib/model/user';
-import { DecodedIdToken, auth } from 'lib/api/firebase';
-import { APIError } from 'lib/api/error';
+import { createUser, getUser, updateUser } from 'lib/api/db/user';
 import { Availability } from 'lib/model/availability';
 import { SocialInterface } from 'lib/model/account';
 import { Timeslot } from 'lib/model/timeslot';
 import { Verification } from 'lib/model/verification';
 import clone from 'lib/utils/clone';
-import { getUser } from 'lib/api/db/user';
-import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
 import updatePhoto from 'lib/api/update/photo';
-import { updateUser } from 'lib/api/db/user';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserTags from 'lib/api/update/user-tags';
 import verifyAuth from 'lib/api/verify/auth';
@@ -143,10 +141,10 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
     if (!jwt) throw new APIError('Could not find an auth cookie or JWT', 401);
 
     // Only process if the user just signed in in the last 5 minutes.
-    const [err, token] = await to<DecodedIdToken>(
+    const [error, token] = await to<DecodedIdToken>(
       auth.verifyIdToken(jwt, true)
     );
-    if (err) throw new APIError(`Your JWT is invalid: ${err.message}`, 401);
+    if (error) throw new APIError(`Your JWT is invalid: ${error.message}`, 401);
     if (!token) throw new APIError('Could not decode your ID token', 401);
     if (new Date().getTime() / 1000 - token.auth_time > 5 * 60)
       throw new APIError('A more recent login is required. Try again', 401);
@@ -170,7 +168,8 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   const withPhotoUpdate = await updatePhoto(withTagsUpdate, User);
   const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
-  await updateUser(withAuthUpdate);
+  const [error] = await to(updateUser(withAuthUpdate));
+  if (error) await createUser(withAuthUpdate);
 
   res.status(200).json(withAuthUpdate.toJSON());
   segment.track({
