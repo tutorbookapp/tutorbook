@@ -15,8 +15,7 @@ import TimeSelect from 'components/time-select';
 
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
-import { Person, Role } from 'lib/model/person';
-import { User, UserJSON } from 'lib/model/user';
+import { Role, User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/model/error';
 import { ListUsersRes } from 'lib/api/routes/users/list';
@@ -148,20 +147,10 @@ export default function RequestForm({
         volunteerRoles.push('mentor');
         studentRoles.push('mentee');
       }
-      const people: Person[] = [
-        {
-          id: volunteer.id,
-          name: volunteer.name,
-          photo: volunteer.photo,
-          roles: volunteerRoles,
-        },
+      const people: User[] = [
+        new User({ ...volunteer, roles: volunteerRoles }),
       ];
-      const creator: Person = {
-        id: updatedUser.id,
-        name: updatedUser.name,
-        photo: updatedUser.photo,
-        roles: [],
-      };
+      const creator: User = new User({ ...updatedUser, roles: [] });
       if (student === 'Me') {
         creator.roles = studentRoles;
         people.push(creator);
@@ -183,22 +172,14 @@ export default function RequestForm({
         if (res) {
           creator.roles = ['parent'];
           people.push(creator);
-          people.push({
-            id: res.data.id,
-            name: res.data.name,
-            photo: res.data.photo,
-            roles: studentRoles,
-          });
+          people.push(
+            new User({ ...User.fromJSON(res.data), roles: studentRoles })
+          );
         }
       } else {
         creator.roles = ['parent'];
         people.push(creator);
-        people.push({
-          id: options[student].id,
-          name: options[student].name,
-          photo: options[student].photo,
-          roles: studentRoles,
-        });
+        people.push(new User({ ...options[student], roles: studentRoles }));
       }
       const meeting = new Meeting({
         time,

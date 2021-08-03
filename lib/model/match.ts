@@ -1,4 +1,4 @@
-import { Person, Role, isPerson } from 'lib/model/person';
+import { DBUser, Role, User, UserJSON, isUserJSON } from 'lib/model/user';
 import {
   Resource,
   ResourceInterface,
@@ -9,7 +9,6 @@ import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import { Aspect } from 'lib/model/aspect';
 import { DBDate } from 'lib/model/timeslot';
-import { DBUser } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -36,8 +35,8 @@ export function isMatchTag(tag: unknown): tag is MatchTag {
 export interface MatchInterface extends ResourceInterface {
   org: string;
   subjects: string[];
-  people: Person[];
-  creator: Person;
+  people: User[];
+  creator: User;
   message: string;
   tags: MatchTag[];
   id: string;
@@ -63,7 +62,11 @@ export interface DBRelationMatchPerson {
   roles: ('tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent')[];
 }
 
-export type MatchJSON = Omit<MatchInterface, keyof Resource> & ResourceJSON;
+export type MatchJSON = Omit<
+  MatchInterface,
+  keyof Resource | 'creator' | 'people'
+> &
+  ResourceJSON & { creator: UserJSON; people: UserJSON[] };
 
 export interface MatchSegment {
   id: string;
@@ -78,8 +81,8 @@ export function isMatchJSON(json: unknown): json is MatchJSON {
   if (!(json.subjects instanceof Array)) return false;
   if (json.subjects.some((s) => typeof s !== 'string')) return false;
   if (!(json.people instanceof Array)) return false;
-  if (json.people.some((p) => !isPerson(p))) return false;
-  if (!isPerson(json.creator)) return false;
+  if (json.people.some((p) => !isUserJSON(p))) return false;
+  if (!isUserJSON(json.creator)) return false;
   if (typeof json.message !== 'string') return false;
   if (!isArray(json.tags, isMatchTag)) return false;
   if (typeof json.id !== 'string') return false;
@@ -91,14 +94,9 @@ export class Match extends Resource implements MatchInterface {
 
   public subjects: string[] = [];
 
-  public people: Person[] = [];
+  public people: User[] = [];
 
-  public creator: Person = {
-    id: '',
-    name: '',
-    photo: '',
-    roles: [],
-  };
+  public creator: User = new User();
 
   public message = '';
 
@@ -116,19 +114,19 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public get aspect(): Aspect {
-    const isTutor = (a: Person) => a.roles.indexOf('tutor') >= 0;
-    const isTutee = (a: Person) => a.roles.indexOf('tutee') >= 0;
+    const isTutor = (a: User) => a.roles.indexOf('tutor') >= 0;
+    const isTutee = (a: User) => a.roles.indexOf('tutee') >= 0;
     if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
     return 'mentoring';
   }
 
-  public get volunteer(): Person | undefined {
+  public get volunteer(): User | undefined {
     return this.people.find(
       (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
     );
   }
 
-  public get student(): Person | undefined {
+  public get student(): User | undefined {
     return this.people.find(
       (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
     );
@@ -158,23 +156,15 @@ export class Match extends Resource implements MatchInterface {
         : undefined;
     const people =
       'people' in record
-        ? (record.people || []).map((p) => ({
-            id: p.id,
-            name: p.name,
-            photo: p.photo || '',
-            roles: p.roles,
-          }))
+        ? (record.people || []).map((p) => User.fromDB(p))
         : [];
     return new Match({
       people,
       id: record.id.toString(),
       org: record.org,
-      creator: {
-        id: record.creator,
-        name: creator?.name || '',
-        photo: creator?.photo || '',
-        roles: creator?.roles || [],
-      },
+      creator: creator
+        ? User.fromDB(creator)
+        : new User({ id: record.creator }),
       subjects: record.subjects,
       message: record.message,
       tags: record.tags.filter(isMatchTag),
@@ -184,11 +174,21 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toJSON(): MatchJSON {
-    return definedVals({ ...this, ...super.toJSON() });
+    return definedVals({
+      ...this,
+      ...super.toJSON(),
+      creator: this.creator.toJSON(),
+      people: this.people.map((p) => p.toJSON()),
+    });
   }
 
   public static fromJSON(json: MatchJSON): Match {
-    return new Match({ ...json, ...Resource.fromJSON(json) });
+    return new Match({
+      ...json,
+      ...Resource.fromJSON(json),
+      creator: User.fromJSON(json.creator),
+      people: json.people.map((p) => User.fromJSON(p)),
+    });
   }
 
   public toCSV(): Record<string, string> {

@@ -11,7 +11,6 @@ import {
   isAvailabilityJSON,
 } from 'lib/model/availability';
 import { DBDate, DBTimeslot } from 'lib/model/timeslot';
-import { Person, Role, isRole } from 'lib/model/person';
 import {
   Verification,
   VerificationJSON,
@@ -22,6 +21,12 @@ import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
+
+export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent';
+export function isRole(role: unknown): role is Role {
+  if (typeof role !== 'string') return false;
+  return ['tutor', 'tutee', 'mentor', 'mentee', 'parent'].includes(role);
+}
 
 /**
  * Various tags that are added to the Algolia users search during indexing (via
@@ -272,15 +277,6 @@ export class User extends Account implements UserInterface {
   public get subjects(): string[] {
     const subjects = this.tutoring.subjects.concat(this.mentoring.subjects);
     return [...new Set<string>(subjects)];
-  }
-
-  public toPerson(): Person {
-    return {
-      id: this.id,
-      name: this.name,
-      photo: this.photo,
-      roles: this.roles,
-    };
   }
 
   public toDB(): DBUser {

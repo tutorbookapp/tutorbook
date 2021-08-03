@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import Avatar from 'components/avatar';
 
 import { Match } from 'lib/model/match';
-import { Person } from 'lib/model/person';
+import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
 
 import styles from './result.module.scss';
@@ -30,7 +30,7 @@ export default function MatchResult({
         className={cn(styles.result, className, { [styles.loading]: !match })}
         onClick={onClick}
       >
-        {(match?.people || Array(2).fill(null)).map((person: Person | null) => (
+        {(match?.people || Array(2).fill(null)).map((person: User | null) => (
           <div key={person?.id || nanoid()} className={styles.person}>
             <div className={styles.avatar}>
               <Avatar src={person?.photo} loading={!person} size={85} />
