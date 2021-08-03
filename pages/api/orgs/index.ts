@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import createOrg, { CreateOrgRes } from 'lib/api/routes/orgs/create';
 import listOrgs, { ListOrgsRes } from 'lib/api/routes/orgs/list';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Lists the orgs that the given user is a member of.

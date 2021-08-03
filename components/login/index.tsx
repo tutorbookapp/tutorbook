@@ -8,7 +8,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Button from 'components/button';
 
-import { APIErrorJSON } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/model/error';
 import getLocation from 'lib/utils/location';
 import { period } from 'lib/utils';
 import { loginWithGoogle } from 'lib/firebase/login';

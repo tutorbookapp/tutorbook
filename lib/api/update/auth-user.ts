@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 
 import { FirebaseError, UserRecord, auth } from 'lib/api/firebase';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { User } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 

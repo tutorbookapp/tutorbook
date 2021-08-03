@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 
 import { FirebaseError, auth } from 'lib/api/firebase';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * Creates a custom login token that can be used by the client when they signup

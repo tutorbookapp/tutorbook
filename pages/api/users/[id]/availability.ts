@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import fetchAvailability, {
   FetchAvailabilityRes,
 } from 'lib/api/routes/availability/fetch';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Fetches the requested user's availability.

@@ -4,7 +4,7 @@ import { mutate } from 'swr';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
-import { APIError, APIErrorJSON } from 'lib/api/error';
+import { APIError, APIErrorJSON } from 'lib/model/error';
 import { Callback } from 'lib/model/callback';
 import { period } from 'lib/utils';
 

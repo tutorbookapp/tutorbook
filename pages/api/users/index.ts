@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import listUsers, { ListUsersRes } from 'lib/api/routes/users/list';
 import createUser, { CreateUserRes } from 'lib/api/routes/users/create';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Lists all of Tutorbook's users (applying the given filters).

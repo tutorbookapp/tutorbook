@@ -1,4 +1,4 @@
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import supabase from 'lib/api/supabase';
 
 export default async function verifyRecordExists<T extends { id: unknown }>(

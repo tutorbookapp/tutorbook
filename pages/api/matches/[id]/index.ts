@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import deleteMatch, { DeleteMatchRes } from 'lib/api/routes/matches/delete';
 import fetchMatch, { FetchMatchRes } from 'lib/api/routes/matches/fetch';
 import updateMatch, { UpdateMatchRes } from 'lib/api/routes/matches/update';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Fetches the match (from our Firestore database).

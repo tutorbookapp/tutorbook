@@ -4,7 +4,7 @@ import createMeeting, {
   CreateMeetingRes,
 } from 'lib/api/routes/meetings/create';
 import listMeetings, { ListMeetingsRes } from 'lib/api/routes/meetings/list';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Lists meetings (applying the given filters).

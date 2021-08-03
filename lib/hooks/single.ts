@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 
-import { APIErrorJSON } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/model/error';
 import { Callback } from 'lib/model/callback';
 import { Validations } from 'lib/context/validations';
 

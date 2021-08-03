@@ -4,7 +4,7 @@ import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 import to from 'await-to-js';
 
-import { APIErrorJSON } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/model/error';
 import { Callback } from 'lib/model/callback';
 
 interface ContinuousProps<T> {

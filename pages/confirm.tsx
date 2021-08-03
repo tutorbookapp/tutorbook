@@ -11,7 +11,7 @@ import Page from 'components/page';
 
 import { PageProps, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
-import { APIErrorJSON } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/model/error';
 import useLoginPage from 'lib/hooks/login-page';
 import { withI18n } from 'lib/intl';
 
@@ -43,7 +43,7 @@ function ConfirmPage(props: PageProps): JSX.Element {
       const { default: firebase } = await import('lib/firebase');
       await import('firebase/auth');
       const auth = firebase.auth();
-  
+
       // As cookies are to be used, do not persist any state client side.
       // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
       auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
@@ -62,9 +62,9 @@ function ConfirmPage(props: PageProps): JSX.Element {
         phone: cred.user.phoneNumber as string,
       });
 
-      // Create the Firestore profile document (we cannot call the 
-      // `POST /api/users` endpoint because the Firebase Authentication account 
-      // already exists). This also sets the authentication cookie because we 
+      // Create the Firestore profile document (we cannot call the
+      // `POST /api/users` endpoint because the Firebase Authentication account
+      // already exists). This also sets the authentication cookie because we
       // passed it the ID token.
       const token = await cred.user.getIdToken();
       const [err, res] = await to<
@@ -77,10 +77,10 @@ function ConfirmPage(props: PageProps): JSX.Element {
       if (err && err.request) e = 'Users API did not respond.';
       if (err) e = `Error calling user API: ${err.message}`;
       if (e) return setError(e);
-      
+
       const { data } = res as AxiosResponse<UserJSON>;
       await mutate('/api/account', data, false);
-      
+
       return localStorage.removeItem('email');
     }
 

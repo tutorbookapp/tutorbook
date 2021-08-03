@@ -6,7 +6,7 @@ import {
   User,
 } from 'lib/model/user';
 import { getAlgoliaAvailability, sliceAvailability } from 'lib/utils/time';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { Availability } from 'lib/model/availability';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { UsersQuery } from 'lib/model/query/users';

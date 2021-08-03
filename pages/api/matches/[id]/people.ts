@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import fetchPeople, { FetchPeopleRes } from 'lib/api/routes/people/fetch';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Fetches the people data for a given match.

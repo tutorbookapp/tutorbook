@@ -9,7 +9,7 @@ import { Org, OrgJSON } from 'lib/model/org';
 import { Theme, ThemeContext } from 'lib/context/theme';
 import { UpdateOrgParam, UpdateUserParam, UserContext } from 'lib/context/user';
 import { User, UserJSON } from 'lib/model/user';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { fetcher } from 'lib/fetch';
 import useTrack from 'lib/hooks/track';
 

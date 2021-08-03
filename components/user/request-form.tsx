@@ -18,7 +18,7 @@ import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Person, Role } from 'lib/model/person';
 import { User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
-import { APIErrorJSON } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/model/error';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
@@ -45,19 +45,21 @@ export default function RequestForm({
   const { query } = useRouter();
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
-  const { data: children } = useSWR<ListUsersRes>(user.id ? new UsersQuery({ parents: [user.id] }).endpoint : null);
-    
+  const { data: children } = useSWR<ListUsersRes>(
+    user.id ? new UsersQuery({ parents: [user.id] }).endpoint : null
+  );
+
   const [child, setChild] = useState<User>(new User());
   const [student, setStudent] = useState<string>('Me');
   const [options, setOptions] = useState<Record<string, User>>({
-    'Me': user, 
+    Me: user,
     'My child': child,
   });
   useEffect(() => {
     setOptions((prev) => {
       const kids = children?.users.map((u) => User.fromJSON(u)) || [];
       const updated = {
-        'Me': user,
+        Me: user,
         'My child': child,
         ...Object.fromEntries(kids.map((u) => [u.firstName, u])),
       };
@@ -146,12 +148,14 @@ export default function RequestForm({
         volunteerRoles.push('mentor');
         studentRoles.push('mentee');
       }
-      const people: Person[] = [{
-        id: volunteer.id,
-        name: volunteer.name,
-        photo: volunteer.photo,
-        roles: volunteerRoles,
-      }];
+      const people: Person[] = [
+        {
+          id: volunteer.id,
+          name: volunteer.name,
+          photo: volunteer.photo,
+          roles: volunteerRoles,
+        },
+      ];
       const creator: Person = {
         id: updatedUser.id,
         name: updatedUser.name,

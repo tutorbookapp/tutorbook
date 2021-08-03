@@ -1,4 +1,4 @@
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { Org } from 'lib/model/org';
 
 export default function verifyIsOrgAdmin(org: Org, uid: string): void {

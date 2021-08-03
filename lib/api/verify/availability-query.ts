@@ -1,5 +1,5 @@
 import { isJSON, isNumberJSON } from 'lib/model/json';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 interface AvailabilityQuery {
   month: number;

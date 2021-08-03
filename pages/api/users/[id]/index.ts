@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import deleteUser, { DeleteUserRes } from 'lib/api/routes/users/delete';
 import fetchUser, { FetchUserRes } from 'lib/api/routes/users/fetch';
 import updateUser, { UpdateUserRes } from 'lib/api/routes/users/update';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Fetches the user (from our Firestore database).

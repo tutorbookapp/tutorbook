@@ -3,7 +3,7 @@ import { Match, MatchTag } from 'lib/model/match';
 import { Meeting, MeetingTag } from 'lib/model/meeting';
 import { Role, isRole } from 'lib/model/person';
 import { User, UserTag } from 'lib/model/user';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { db } from 'lib/api/firebase';
 
 export type Action = 'created' | 'updated' | 'deleted';

@@ -6,7 +6,7 @@ import deleteMeeting, {
 import updateMeeting, {
   UpdateMeetingRes,
 } from 'lib/api/routes/meetings/update';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * PUT - Updates a meeting. Errors if the meeting's match data does not match

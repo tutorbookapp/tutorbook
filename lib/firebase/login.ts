@@ -3,7 +3,7 @@ import { mutate } from 'swr';
 import to from 'await-to-js';
 
 import { User, UserInterface, UserJSON } from 'lib/model/user';
-import { APIErrorJSON } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/model/error';
 
 // TODO: This is very insecure; it allows anyone to create an account for and be
 // authenticated as anyone that they have contact info for.

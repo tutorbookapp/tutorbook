@@ -1,7 +1,7 @@
 import to from 'await-to-js';
 
 import { FirebaseError, auth } from 'lib/api/firebase';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * Deletes the Firebase Authentication account for the given user.

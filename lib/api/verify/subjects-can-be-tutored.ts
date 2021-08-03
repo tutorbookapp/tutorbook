@@ -1,4 +1,4 @@
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { User } from 'lib/model/user';
 
 /**

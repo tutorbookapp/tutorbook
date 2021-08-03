@@ -1,5 +1,5 @@
 import { addRoles, join } from 'lib/utils';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { Person } from 'lib/model/person';
 import { User } from 'lib/model/user';
 import { getUser } from 'lib/api/db/user';

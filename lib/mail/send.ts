@@ -1,7 +1,7 @@
 import mail from '@sendgrid/mail';
 import to from 'await-to-js';
 
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { Email } from 'lib/mail/types';
 
 export default async function send(email: Email): Promise<void> {

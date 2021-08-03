@@ -1,6 +1,6 @@
 import { dequal } from 'dequal/lite';
 
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { Org } from 'lib/model/org';
 
 /**

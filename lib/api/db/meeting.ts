@@ -7,7 +7,7 @@ import {
   DBViewMeeting,
   Meeting,
 } from 'lib/model/meeting';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
 import handle from 'lib/api/db/error';

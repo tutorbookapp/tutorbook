@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid';
 
 import { Account } from 'lib/model/account';
 import { Constructor } from 'lib/model/resource';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { bucket } from 'lib/api/firebase';
 import clone from 'lib/utils/clone';
 import { getPhotoFilename } from 'lib/utils';

@@ -1,6 +1,6 @@
 import { PostgrestError } from '@supabase/supabase-js';
 
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 export default function handle(
   action: string,

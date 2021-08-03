@@ -1,9 +1,9 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
-import { APIError, handle } from 'lib/api/error';
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
 import { createMatch, getMatch } from 'lib/api/db/match';
+import { APIError } from 'lib/model/error';
 import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import { createMeeting } from 'lib/api/db/meeting';
@@ -14,6 +14,7 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
 import { getUser } from 'lib/api/db/user';
+import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';

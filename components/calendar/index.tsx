@@ -16,7 +16,7 @@ import DialogContent from 'components/dialog';
 
 import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
 import useClickOutside, { ClickContext } from 'lib/hooks/click-outside';
-import { APIErrorJSON } from 'lib/api/error';
+import { APIErrorJSON } from 'lib/model/error';
 import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Position } from 'lib/model/position';

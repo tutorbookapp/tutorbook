@@ -4,7 +4,7 @@ import {
   DBViewMatch,
   Match,
 } from 'lib/model/match';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { MatchesQuery } from 'lib/model/query/matches';
 import handle from 'lib/api/db/error';
 import supabase from 'lib/api/supabase';

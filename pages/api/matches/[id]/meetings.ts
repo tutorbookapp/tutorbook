@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import fetchMeetings, { FetchMeetingsRes } from 'lib/api/routes/meetings/fetch';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Fetches the timeline of meetings for a given match. This is merely

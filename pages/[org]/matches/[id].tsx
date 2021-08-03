@@ -11,7 +11,7 @@ import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Org, OrgJSON } from 'lib/model/org';
 import { User, UserJSON } from 'lib/model/user';
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
-import { APIError } from 'lib/api/error';
+import { APIError } from 'lib/model/error';
 import { OrgContext } from 'lib/context/org';
 import usePage from 'lib/hooks/page';
 import { useUser } from 'lib/context/user';

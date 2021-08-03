@@ -2,9 +2,10 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { renderToStaticMarkup } from 'react-dom/server';
 import to from 'await-to-js';
 
-import { APIError, handle } from 'lib/api/error';
 import { FirebaseError, auth } from 'lib/api/firebase';
+import { APIError } from 'lib/model/error';
 import LoginEmail from 'lib/mail/login';
+import { handle } from 'lib/api/error';
 import { isJSON } from 'lib/model/json';
 import send from 'lib/mail/send';
 
