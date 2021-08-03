@@ -6,7 +6,7 @@ import {
   isUsersQueryURL,
 } from 'lib/model/query/users';
 import csv from 'lib/api/csv';
-import getUsers from 'lib/api/get/users';
+import { getUsers } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';

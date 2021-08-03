@@ -11,6 +11,7 @@ import {
 import { Aspect, isAspect } from 'lib/model/aspect';
 import { DBAspect, DBSocial, DBUser, UserInterface } from 'lib/model/user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
+import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -143,10 +144,12 @@ export interface DBOrg {
   signup: object;
   home: object;
   booking: object;
-  created: Date;
-  updated: Date;
+  created: DBDate;
+  updated: DBDate;
 }
-
+export interface DBViewOrg extends DBOrg {
+  members: string[];
+}
 export interface DBRelationMember {
   user: string;
   org: string;
@@ -282,12 +285,12 @@ export class Org extends Account implements OrgInterface {
       signup: this.signup,
       home: this.home,
       booking: this.booking,
-      created: this.created,
-      updated: this.updated,
+      created: this.created.toISOString(),
+      updated: this.updated.toISOString(),
     };
   }
 
-  public static fromDB(record: DBOrg): Org {
+  public static fromDB(record: DBOrg | DBViewOrg): Org {
     return new Org({
       id: record.id,
       name: record.name,
@@ -301,12 +304,13 @@ export class Org extends Account implements OrgInterface {
       aspects: record.aspects,
       domains: record.domains?.length ? record.domains : [],
       profiles: record.profiles as (keyof UserInterface | 'subjects')[],
-      subjects: record.subjects?.length ? record.subjects : [],
+      subjects: record.subjects?.length ? record.subjects : undefined,
       signup: record.signup as SignupConfig,
       home: record.home as HomeConfig,
       booking: record.booking as BookingConfig,
-      created: record.created,
-      updated: record.updated,
+      created: new Date(record.created),
+      updated: new Date(record.updated),
+      members: 'members' in record ? record.members : [],
     });
   }
 

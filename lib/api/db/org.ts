@@ -1,4 +1,4 @@
-import { DBOrg, DBRelationMember, Org } from 'lib/model/org';
+import { DBOrg, DBRelationMember, DBViewOrg, Org } from 'lib/model/org';
 import { APIError } from 'lib/api/error';
 import supabase from 'lib/api/supabase';
 
@@ -20,35 +20,31 @@ export async function createOrg(org: Org): Promise<Org> {
 }
 
 export async function getOrg(id: string): Promise<Org> {
-  const { data } = await supabase.from<DBOrg>('orgs').select().eq('id', id);
-  if (!data || !data[0])
-    throw new APIError(`Org (${id}) does not exist in database`);
-  const { data: members } = await supabase
-    .from<DBRelationMember>('relation_members')
-    .select('user')
-    .eq('org', id);
-  const org = Org.fromDB(data[0]);
-  org.members = (members || []).map((m) => m.user);
-  return org;
+  const { data } = await supabase
+    .from<DBViewOrg>('view_orgs')
+    .select()
+    .eq('id', id);
+  if (!data || !data[0]) throw new APIError(`Org (${id}) does not exist`);
+  return Org.fromDB(data[0]);
 }
 
 export async function getOrgs(): Promise<Org[]> {
-  const { data, error } = await supabase.from<DBOrg>('orgs').select();
+  const { data, error } = await supabase.from<DBViewOrg>('view_orgs').select();
   if (error) throw new APIError(`Error fetching orgs: ${error.message}`, 500);
   return (data || []).map((d) => Org.fromDB(d));
 }
 
 export async function getOrgsByAdminId(adminId: string): Promise<Org[]> {
   const { data, error } = await supabase
-    .from<DBRelationMember>('relation_members')
-    .select('org (*)')
-    .eq('user', adminId);
+    .from<DBViewOrg>('view_orgs')
+    .select()
+    .contains('members', [adminId]);
   if (error)
     throw new APIError(
       `Error fetching orgs by admin (${adminId}): ${error.message}`,
       500
     );
-  return (data || []).map(({ org }) => Org.fromDB((org as unknown) as DBOrg));
+  return (data || []).map((d) => Org.fromDB(d));
 }
 
 export async function updateOrg(org: Org): Promise<Org> {

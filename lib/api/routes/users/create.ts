@@ -5,14 +5,12 @@ import { createUser, getUser } from 'lib/api/db/user';
 import analytics from 'lib/api/analytics';
 import createAuthUser from 'lib/api/create/auth-user';
 import createCustomToken from 'lib/api/create/custom-token';
-import createUserSearchObj from 'lib/api/create/user-search-obj';
 import { getOrg } from 'lib/api/db/org';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/users/create';
-import updateAvailability from 'lib/api/update/availability';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserTags from 'lib/api/update/user-tags';
@@ -41,7 +39,6 @@ export default async function createUserAPI(
     const [token] = await Promise.all([
       createCustomToken(user.id),
       createUser(user),
-      createUserSearchObj(user),
       Promise.all(
         user.orgs.map(async (orgId) => {
           // Skip the org signup notification emails if the user is a child
@@ -78,7 +75,6 @@ export default async function createUserAPI(
     });
 
     await analytics(user, 'created');
-    await updateAvailability(user);
   } catch (e) {
     handle(e, res);
   }

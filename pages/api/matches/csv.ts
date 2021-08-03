@@ -6,7 +6,7 @@ import {
   isMatchesQueryURL,
 } from 'lib/model/query/matches';
 import csv from 'lib/api/csv';
-import getMatches from 'lib/api/get/matches';
+import { getMatches } from 'lib/api/db/match';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';

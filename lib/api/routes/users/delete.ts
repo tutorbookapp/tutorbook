@@ -3,7 +3,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { deleteUser, getUser } from 'lib/api/db/user';
 import analytics from 'lib/api/analytics';
 import deleteAuthUser from 'lib/api/delete/auth-user';
-import deleteUserSearchObj from 'lib/api/delete/user-search-obj';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
@@ -33,11 +32,7 @@ export default async function deleteUserAPI(
     // TODO: Delete this user from all meetings and matches. Notify the other
     // people on each of those meetings/matches that the user has been deleted.
 
-    await Promise.all([
-      deleteAuthUser(user.id),
-      deleteUser(user.id),
-      deleteUserSearchObj(user.id),
-    ]);
+    await Promise.all([deleteAuthUser(user.id), deleteUser(user.id)]);
 
     logger.info(`Deleted ${user.toString()}.`);
 

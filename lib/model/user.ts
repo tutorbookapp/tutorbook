@@ -16,7 +16,7 @@ import {
   AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
-import { DBTimeslot, Timeslot } from 'lib/model/timeslot';
+import { DBDate, DBTimeslot } from 'lib/model/timeslot';
 import { Person, Role, isRole } from 'lib/model/person';
 import {
   Verification,
@@ -186,8 +186,14 @@ export interface DBUser {
     | 'mentee'
     | 'parent'
   )[];
-  created: Date;
-  updated: Date;
+  created: DBDate;
+  updated: DBDate;
+  times: number[];
+}
+export interface DBViewUser extends DBUser {
+  orgs: string[] | null;
+  parents: string[] | null;
+  available: boolean;
 }
 export interface DBRelationParent {
   user: string;
@@ -348,14 +354,7 @@ export class User extends Account implements UserInterface {
       background: this.background || null,
       venue: this.venue || null,
       socials: this.socials,
-      availability: this.availability.map((t) => ({
-        id: t.id,
-        from: t.from,
-        to: t.to,
-        exdates: t.exdates || null,
-        recur: t.recur || null,
-        last: t.last || null,
-      })),
+      availability: this.availability.toDB(),
       mentoring: this.mentoring.subjects,
       tutoring: this.tutoring.subjects,
       langs: this.langs,
@@ -365,12 +364,13 @@ export class User extends Account implements UserInterface {
       timezone: this.timezone || null,
       age: this.age || null,
       tags: this.tags,
-      created: this.created,
-      updated: this.updated,
+      created: this.created.toISOString(),
+      updated: this.updated.toISOString(),
+      times: [],
     };
   }
 
-  public static fromDB(record: DBUser): User {
+  public static fromDB(record: DBUser | DBViewUser): User {
     return new User({
       id: record.id,
       name: record.name,
@@ -381,19 +381,7 @@ export class User extends Account implements UserInterface {
       background: record.background || '',
       venue: record.venue || '',
       socials: record.socials,
-      availability: new Availability(
-        ...record.availability.map(
-          (t) =>
-            new Timeslot({
-              id: t.id,
-              from: t.from,
-              to: t.to,
-              exdates: t.exdates || undefined,
-              recur: t.recur || undefined,
-              last: t.last || undefined,
-            })
-        )
-      ),
+      availability: Availability.fromDB(record.availability),
       mentoring: { subjects: record.mentoring, searches: [] },
       tutoring: { subjects: record.tutoring, searches: [] },
       langs: record.langs,
@@ -403,8 +391,10 @@ export class User extends Account implements UserInterface {
       timezone: record.timezone || '',
       age: record.age || undefined,
       tags: record.tags,
-      created: record.created,
-      updated: record.updated,
+      created: new Date(record.created),
+      updated: new Date(record.updated),
+      orgs: 'orgs' in record ? record.orgs || [] : [],
+      parents: 'parents' in record ? record.parents || [] : [],
     });
   }
 

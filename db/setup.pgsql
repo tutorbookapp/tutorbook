@@ -21,7 +21,7 @@ create type timeslot as (
   "last" timestamptz
 );
 
-/* TODO: See if there's a way to simply extend the existing `role` enum. */
+-- TODO: See if there's a way to simply extend the existing `role` enum.
 create type user_tag as enum ('vetted', 'matched', 'meeting', 'tutor', 'tutee', 'mentor', 'mentee', 'parent');
 create table public.users (
   "id" text unique not null primary key,
@@ -45,7 +45,8 @@ create table public.users (
   "age" integer,
   "tags" user_tag[] not null,
   "created" timestamptz not null,
-  "updated" timestamptz not null
+  "updated" timestamptz not null,
+  "times" bigint[] not null
 );
 
 create type profile_field as enum('name', 'photo', 'email', 'phone', 'bio', 'background', 'venue', 'availability', 'subjects', 'langs', 'reference'); 
@@ -61,10 +62,10 @@ create table public.orgs (
   "socials" social[] not null,
   "aspects" aspect[] not null check(cardinality(aspects) > 0),
   "domains" text[] check(cardinality(domains) > 0),
-  /* TODO: Check that at least one contact info field is included. */
+  -- TODO: Check that at least one contact info field is included.
   "profiles" profile_field[] not null check(cardinality(profiles) > 3),
   "subjects" text[] check(cardinality(subjects) > 0),
-  /* TODO: Verify these are valid config objects. */
+  -- TODO: Verify these are valid config objects.
   "signup" jsonb not null,
   "home" jsonb not null,
   "booking" jsonb not null,
@@ -113,6 +114,9 @@ create table public.meetings (
   "updated" timestamptz not null
 );
 
+-- RELATIONS
+-- These are the best way to setup many-to-many relationships in a relational
+-- database like PostgreSQL (in order to use references properly).
 create table relation_parents (
   "user" text references public.users(id) on delete cascade not null,
   "parent" text references public.users(id) on delete cascade not null,
@@ -129,12 +133,9 @@ create table relation_members (
   primary key ("user", "org")
 );
 
-/* 
-Note: I have to include "roles" in the primary key so users can book meetings
-and create matches with themselves (a pretty common scenario when they're first
-testing out the app.
-*/
-
+-- Note: I have to include "roles" in the primary key so users can book meetings
+-- and create matches with themselves (a pretty common scenario when they're 
+-- first testing out the app.
 create table relation_match_people (
   "user" text references public.users(id) on delete cascade not null,
   "match" bigint references public.matches(id) on delete cascade not null,
@@ -147,3 +148,82 @@ create table relation_meeting_people (
   "roles" role[] not null check(cardinality(roles) > 0),
   primary key ("user", "meeting", "roles")
 );
+
+-- VIEWS
+-- These views exist to make queries easier because:
+-- 1. They're generally more performant than complex `JOIN` queries at runtime.
+-- 2. Supabase doesn't support running raw SQL queries yet.
+-- 3. Creating `JOIN` views abstracts away the many-to-many `relation_*` tables.
+create view view_orgs as 
+select 
+  orgs.*,
+  coalesce(members, array[]::text[]) as members
+from orgs
+  left outer join (
+    select "org",array_agg("user") as members 
+    from relation_members group by "org"
+  ) as members on members."org" = id
+order by id;
+
+create view view_users as 
+select 
+  users.*,
+  cardinality(times) > 0 as available,
+  coalesce(orgs, array[]::text[]) as orgs,
+  coalesce(parents, array[]::text[]) as parents
+from users 
+  left outer join (
+    select "user",array_agg(org) as orgs 
+    from relation_orgs group by "user"
+  ) as orgs on orgs."user" = id
+  left outer join (
+    select "user",array_agg(parent) as parents 
+    from relation_parents group by "user"
+  ) as parents on parents."user" = id
+order by id;
+
+create view view_matches as
+select 
+  matches.*,
+  people,
+  coalesce(people_ids,array[]::text[]) as people_ids
+from matches left outer join (
+  select 
+    "match",
+    json_agg(person.*) as people,
+    array_agg(person.id) as people_ids 
+  from (
+    -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
+    -- the `"match"` property from the aggregated `people` column of objs.
+    select "match",roles,users.* 
+    from relation_match_people 
+    inner join users on "user" = users.id
+  ) as person group by "match"
+) as people on "match" = matches.id
+order by matches.id;
+
+create view view_meetings as
+select 
+  meetings.*,
+  -- TODO: Remove this `time_from` columns as they're only required b/c of an
+  -- upstream limitation with PostgREST that disallows composite types.
+  -- See: https://github.com/PostgREST/postgrest/issues/1543
+  (meetings.time).from as time_from,
+  (meetings.time).to as time_to,
+  (meetings.time).last as time_last,
+  people,
+  coalesce(people_ids,array[]::text[]) as people_ids 
+from meetings left outer join (
+  select 
+    meeting,
+    json_agg(person.*) as people,
+    array_agg(person.id) as people_ids 
+  from (
+    -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
+    -- the `meeting` property from the aggregated `people` column of objs.
+    select meeting,roles,users.* 
+    from relation_meeting_people 
+    inner join users on "user" = users.id
+  ) as person group by meeting
+) as people on meeting = meetings.id
+order by meetings.id;

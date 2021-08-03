@@ -4,7 +4,6 @@ import { RRule } from 'rrule';
 import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
 import { deleteMeeting, getMeeting, updateMeeting } from 'lib/api/db/meeting';
 import analytics from 'lib/api/analytics';
-import deleteMeetingSearchObj from 'lib/api/delete/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
@@ -14,8 +13,7 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
-import updateAvailability from 'lib/api/update/availability';
-import updateMeetingSearchObj from 'lib/api/update/meeting-search-obj';
+import { updateUser } from 'lib/api/db/user';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyOptions from 'lib/api/verify/options';
@@ -83,7 +81,6 @@ export default async function deleteMeetingAPI(
       // TODO: Specify in email that this is only canceling this meeting.
       await Promise.all([
         updateMeeting(meeting),
-        updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
       ]);
     } else if (isRecurring && options.action === 'future') {
@@ -106,14 +103,12 @@ export default async function deleteMeetingAPI(
       // TODO: Specify in email that this is canceling all following meetings.
       await Promise.all([
         updateMeeting(meeting),
-        updateMeetingSearchObj(meeting),
         sendEmails(deleting, people, deleter, org),
       ]);
     } else {
       // Delete all meetings. Identical to deleting a non-recurring meeting.
       await Promise.all([
         deleteMeeting(meeting.id),
-        deleteMeetingSearchObj(meeting.id),
         sendEmails(meeting, people, deleter, org),
       ]);
     }
@@ -136,7 +131,7 @@ export default async function deleteMeetingAPI(
     await Promise.all([
       analytics(deleting, 'deleted'),
       updatePeopleTags(people, { remove: ['meeting'] }),
-      ...people.map((p) => updateAvailability(p)),
+      ...people.map((p) => updateUser(p)),
     ]);
   } catch (e) {
     handle(e, res);

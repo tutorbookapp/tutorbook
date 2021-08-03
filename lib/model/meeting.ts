@@ -2,6 +2,15 @@ import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
 import {
+  DBDate,
+  DBTimeslot,
+  Timeslot,
+  TimeslotFirestore,
+  TimeslotJSON,
+  TimeslotSearchHit,
+  isTimeslotJSON,
+} from 'lib/model/timeslot';
+import {
   Match,
   MatchFirestore,
   MatchJSON,
@@ -9,7 +18,7 @@ import {
   MatchSegment,
   isMatchJSON,
 } from 'lib/model/match';
-import { Person, isPerson } from 'lib/model/person';
+import { Person, Role, isPerson } from 'lib/model/person';
 import {
   Resource,
   ResourceFirestore,
@@ -19,14 +28,6 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import {
-  DBTimeslot,
-  Timeslot,
-  TimeslotFirestore,
-  TimeslotJSON,
-  TimeslotSearchHit,
-  isTimeslotJSON,
-} from 'lib/model/timeslot';
-import {
   Venue,
   VenueFirestore,
   VenueJSON,
@@ -35,6 +36,7 @@ import {
 } from 'lib/model/venue';
 import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
+import { DBUser } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -106,10 +108,13 @@ export interface DBMeeting {
   time: DBTimeslot;
   description: string;
   tags: 'recurring'[];
-  created: Date;
-  updated: Date;
+  created: DBDate;
+  updated: DBDate;
 }
-
+export interface DBViewMeeting extends DBMeeting {
+  people: (DBUser & { roles: Role[] })[];
+  people_ids: string[];
+}
 export interface DBRelationMeetingPerson {
   user: string;
   meeting: number;
@@ -217,48 +222,50 @@ export class Meeting extends Resource implements MeetingInterface {
       status: this.status,
       match: Number(this.match.id),
       venue: this.venue.url,
-      time: {
-        id: this.time.id,
-        from: this.time.from,
-        to: this.time.to,
-        exdates: this.time.exdates || null,
-        recur: this.time.recur || null,
-        last: this.time.last || null,
-      },
+      time: this.time.toDB(),
       description: this.description,
       tags: this.tags,
-      created: this.created,
-      updated: this.updated,
+      created: this.created.toISOString(),
+      updated: this.updated.toISOString(),
     };
   }
 
-  public static fromDB(record: DBMeeting): Meeting {
+  public static fromDB(record: DBMeeting | DBViewMeeting): Meeting {
+    const creator =
+      'people' in record
+        ? record.people.find((p) => p.id === record.creator)
+        : undefined;
     return new Meeting({
       id: record.id.toString(),
       creator: {
         id: record.creator,
-        name: '',
-        photo: '',
-        roles: [],
+        name: creator?.name || '',
+        photo: creator?.photo || '',
+        roles: creator?.roles || [],
       },
       status: record.status,
       venue: new Venue({ url: record.venue }),
-      time: new Timeslot({
-        id: record.time.id,
-        from: record.time.from,
-        to: record.time.to,
-        exdates: record.time.exdates || undefined,
-        recur: record.time.recur || undefined,
-        last: record.time.last || undefined,
-      }),
+      time: Timeslot.fromDB(record.time),
       description: record.description,
       tags: record.tags,
-      created: record.created,
-      updated: record.updated,
+      created: new Date(record.created),
+      updated: new Date(record.updated),
       match: new Match({
         id: record.match.toString(),
         org: record.org,
         subjects: record.subjects,
+        people: ('people' in record ? record.people : []).map((p) => ({
+          id: p.id,
+          name: p.name,
+          photo: p.photo || '',
+          roles: p.roles,
+        })),
+        creator: {
+          id: record.creator,
+          name: creator?.name || '',
+          photo: creator?.photo || '',
+          roles: creator?.roles || [],
+        },
       }),
     });
   }

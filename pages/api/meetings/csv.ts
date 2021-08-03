@@ -6,7 +6,7 @@ import {
   isMeetingsQueryURL,
 } from 'lib/model/query/meetings';
 import csv from 'lib/api/csv';
-import getMeetings from 'lib/api/get/meetings';
+import { getMeetings } from 'lib/api/db/meeting';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';

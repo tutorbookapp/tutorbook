@@ -1,11 +1,17 @@
-import { DBMatch, DBRelationMatchPerson, Match } from 'lib/model/match';
+import {
+  DBMatch,
+  DBRelationMatchPerson,
+  DBViewMatch,
+  Match,
+} from 'lib/model/match';
 import { APIError } from 'lib/api/error';
+import { MatchesQuery } from 'lib/model/query/matches';
 import supabase from 'lib/api/supabase';
 
 export async function createMatch(match: Match): Promise<Match> {
   const { data, error } = await supabase
     .from<DBMatch>('matches')
-    .insert(match.toDB());
+    .insert({ ...match.toDB(), id: undefined });
   if (error) {
     const msg = `Error saving match (${match.toString()}) to database`;
     throw new APIError(`${msg}: ${error.message}`, 500);
@@ -22,17 +28,12 @@ export async function createMatch(match: Match): Promise<Match> {
     const msg = `Error saving people (${JSON.stringify(people)})`;
     throw new APIError(`${msg} in database: ${e.message}`, 500);
   }
-  return new Match({
-    ...(data ? data[0] : match),
-    people: match.people,
-    creator: match.creator,
-    id: data ? data[0].id.toString() : match.id,
-  });
+  return data ? Match.fromDB(data[0]) : match;
 }
 
 export async function getMatch(id: string): Promise<Match> {
   const { data } = await supabase
-    .from<DBMatch>('matches')
+    .from<DBViewMatch>('view_matches')
     .select()
     .eq('id', id);
   if (!data || !data[0])
@@ -40,10 +41,27 @@ export async function getMatch(id: string): Promise<Match> {
   return Match.fromDB(data[0]);
 }
 
+export async function getMatches(
+  query: MatchesQuery
+): Promise<{ hits: number; results: Match[] }> {
+  let select = supabase
+    .from<DBViewMatch>('view_matches')
+    .select()
+    .contains('subjects', query.subjects);
+  if (query.org) select = select.eq('org', query.org);
+  if (query.people.length) {
+    const peopleIds = query.people.map((p) => p.value);
+    select = select.overlaps('people_ids', peopleIds);
+  }
+  const { data, count } = await select;
+  const results = (data || []).map((m) => Match.fromDB(m));
+  return { results, hits: count || results.length };
+}
+
 export async function updateMatch(match: Match): Promise<void> {
   const { error } = await supabase
     .from<DBMatch>('matches')
-    .update(match.toDB())
+    .update({ ...match.toDB(), id: undefined })
     .eq('id', Number(match.id));
   if (error) {
     const msg = `Error updating match (${match.toString()}) in database`;

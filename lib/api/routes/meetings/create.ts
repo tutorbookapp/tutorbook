@@ -6,9 +6,7 @@ import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
 import { createMatch, getMatch } from 'lib/api/db/match';
 import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
-import createMatchSearchObj from 'lib/api/create/match-search-obj';
 import { createMeeting } from 'lib/api/db/meeting';
-import createMeetingSearchObj from 'lib/api/create/meeting-search-obj';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
@@ -19,7 +17,7 @@ import { getUser } from 'lib/api/db/user';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
-import updateAvailability from 'lib/api/update/availability';
+import { updateUser } from 'lib/api/db/user';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
@@ -79,7 +77,6 @@ export default async function createMeetingAPI(
 
       // Create match (b/c it doesn't already exist).
       body.match = await createMatch(updateMatchTags(body.match));
-      await createMatchSearchObj(body.match);
 
       segment.track({
         userId: creator.id,
@@ -111,7 +108,6 @@ export default async function createMeetingAPI(
     body.time.last = getLastTime(body.time);
 
     const meeting = await createMeeting(updateMeetingTags(body));
-    await createMeetingSearchObj(meeting);
 
     const orgAdmins = await Promise.all(org.members.map((id) => getUser(id)));
     await sendEmails(meeting, people, creator, org, orgAdmins);
@@ -129,7 +125,7 @@ export default async function createMeetingAPI(
     await Promise.all([
       analytics(meeting, 'created'),
       updatePeopleTags(people, { add: ['meeting'] }),
-      ...people.map((p) => updateAvailability(p)),
+      ...people.map((p) => updateUser(p)),
     ]);
   } catch (e) {
     handle(e, res);
