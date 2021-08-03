@@ -135,7 +135,7 @@ create table relation_members (
 
 -- Note: I have to include "roles" in the primary key so users can book meetings
 -- and create matches with themselves (a pretty common scenario when they're 
--- first testing out the app.
+-- first testing out the app).
 create table relation_match_people (
   "user" text references public.users(id) on delete cascade on update cascade not null,
   "match" bigint references public.matches(id) on delete cascade on update cascade not null,
