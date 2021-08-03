@@ -11,6 +11,7 @@ import { Availability } from 'lib/model/availability';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { UsersQuery } from 'lib/model/query/users';
 import { getMeetings } from 'lib/api/db/meeting';
+import handle from 'lib/api/db/error';
 import supabase from 'lib/api/supabase';
 
 async function times(user: User): Promise<number[]> {
@@ -28,33 +29,57 @@ export async function createUser(user: User): Promise<User> {
   const { data, error } = await supabase
     .from<DBUser>('users')
     .insert({ ...user.toDB(), times: await times(user) });
-  if (error) {
-    const msg = `Error saving user (${user.toString()}) in database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
-  const parents = user.parents.map((p) => ({ parent: p, user: user.id }));
+  handle('creating', 'user', user, error);
+  const u = data ? User.fromDB(data[0]) : user;
+  const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
   const { error: err } = await supabase
     .from<DBRelationParent>('relation_parents')
     .insert(parents);
-  if (err) {
-    const msg = `Error saving parents for user (${user.name}) in database`;
-    throw new APIError(`${msg}: ${err.message}`, 500);
-  }
-  const orgs = user.orgs.map((o) => ({ org: o, user: user.id }));
+  handle('creating', 'parents', parents, err);
+  const orgs = user.orgs.map((o) => ({ org: o, user: u.id }));
   const { error: e } = await supabase
     .from<DBRelationOrg>('relation_orgs')
     .insert(orgs);
-  if (e) {
-    const msg = `Error saving orgs for user (${user.name}) in database`;
-    throw new APIError(`${msg}: ${e.message}`, 500);
-  }
-  return data ? User.fromDB(data[0]) : user;
+  handle('creating', 'orgs', orgs, e);
+  return u;
+}
+
+export async function updateUser(user: User): Promise<User> {
+  const { data, error } = await supabase
+    .from<DBUser>('users')
+    .update({ ...user.toDB(), times: await times(user) })
+    .eq('id', user.id);
+  handle('updating', 'user', user, error);
+  const u = data ? User.fromDB(data[0]) : user;
+  const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
+  const { error: err } = await supabase
+    .from<DBRelationParent>('relation_parents')
+    .upsert(parents);
+  handle('updating', 'parents', parents, err);
+  const orgs = user.orgs.map((o) => ({ org: o, user: u.id }));
+  const { error: e } = await supabase
+    .from<DBRelationOrg>('relation_orgs')
+    .upsert(orgs);
+  handle('updating', 'orgs', orgs, e);
+  return u;
+}
+
+export async function deleteUser(id: string): Promise<User> {
+  const { data, error } = await supabase
+    .from<DBUser>('users')
+    .delete()
+    .eq('id', id);
+  handle('deleting', 'user', id, error);
+  return data ? User.fromDB(data[0]) : new User({ id });
 }
 
 export async function getUser(uid: string): Promise<User> {
-  const { data } = await supabase.from<DBUser>('users').select().eq('id', uid);
-  if (!data || !data[0])
-    throw new APIError(`User (${uid}) does not exist`, 400);
+  const { data, error } = await supabase
+    .from<DBUser>('users')
+    .select()
+    .eq('id', uid);
+  handle('getting', 'user', uid, error);
+  if (!data?.length) throw new APIError(`User (${uid}) does not exist`, 404);
   return User.fromDB(data[0]);
 }
 
@@ -112,44 +137,8 @@ export async function getUsers(
     const nums = sliced.map((t) => t.from.valueOf());
     select = select.overlaps('times', nums);
   }
-  const { data, count } = await select;
+  const { data, error, count } = await select;
+  handle('getting', 'users', query, error);
   const results = (data || []).map((u) => User.fromDB(u));
   return { results, hits: count || results.length };
-}
-
-export async function updateUser(user: User): Promise<void> {
-  const { error } = await supabase
-    .from<DBUser>('users')
-    .upsert({ ...user.toDB(), times: await times(user) }, { onConflict: 'id' })
-    .eq('id', user.id);
-  if (error) {
-    const msg = `Error updating user (${user.toString()}) in database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
-  await Promise.all(
-    user.parents.map(async (p) => {
-      await supabase
-        .from<DBRelationParent>('relation_parents')
-        .update({ parent: p, user: user.id })
-        .eq('parent', p)
-        .eq('user', user.id);
-    })
-  );
-  await Promise.all(
-    user.orgs.map(async (o) => {
-      await supabase
-        .from<DBRelationOrg>('relation_orgs')
-        .update({ org: o, user: user.id })
-        .eq('org', o)
-        .eq('user', user.id);
-    })
-  );
-}
-
-export async function deleteUser(uid: string): Promise<void> {
-  const { error } = await supabase.from<DBUser>('users').delete().eq('id', uid);
-  if (error) {
-    const msg = `Error deleting user (${uid}) from database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
 }

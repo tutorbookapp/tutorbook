@@ -10,38 +10,62 @@ import {
 import { APIError } from 'lib/api/error';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
+import handle from 'lib/api/db/error';
 import supabase from 'lib/api/supabase';
 
 export async function createMeeting(meeting: Meeting): Promise<Meeting> {
   const { data, error } = await supabase
     .from<DBMeeting>('meetings')
     .insert({ ...meeting.toDB(), id: undefined });
-  if (error) {
-    const msg = `Error saving meeting (${meeting.toString()}) to database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
+  handle('creating', 'meeting', meeting, error);
+  const m = data ? Meeting.fromDB(data[0]) : meeting;
   const people: DBRelationMeetingPerson[] = meeting.match.people.map((p) => ({
     user: p.id,
     roles: p.roles,
-    meeting: data ? data[0].id : Number(meeting.id),
+    meeting: Number(m.id),
   }));
-  const { error: e } = await supabase
+  const { error: err } = await supabase
     .from<DBRelationMeetingPerson>('relation_meeting_people')
     .insert(people);
-  if (e) {
-    const msg = `Error saving people (${JSON.stringify(people)}) to database`;
-    throw new APIError(`${msg}: ${e.message}`, 500);
-  }
-  return data ? Meeting.fromDB(data[0]) : meeting;
+  handle('creating', 'people', people, err);
+  return m;
+}
+
+export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
+  const { data, error } = await supabase
+    .from<DBMeeting>('meetings')
+    .update({ ...meeting.toDB(), id: undefined })
+    .eq('id', Number(meeting.id));
+  handle('updating', 'meeting', meeting, error);
+  const m = data ? Meeting.fromDB(data[0]) : meeting;
+  const people: DBRelationMeetingPerson[] = meeting.match.people.map((p) => ({
+    user: p.id,
+    roles: p.roles,
+    meeting: Number(m.id),
+  }));
+  const { error: err } = await supabase
+    .from<DBRelationMeetingPerson>('relation_meeting_people')
+    .upsert(people);
+  handle('updating', 'people', people, err);
+  return m;
+}
+
+export async function deleteMeeting(id: string): Promise<Meeting> {
+  const { data, error } = await supabase
+    .from<DBMeeting>('meetings')
+    .delete()
+    .eq('id', Number(id));
+  handle('deleting', 'meeting', id, error);
+  return data ? Meeting.fromDB(data[0]) : new Meeting({ id });
 }
 
 export async function getMeeting(id: string): Promise<Meeting> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from<DBViewMeeting>('view_meetings')
     .select()
     .eq('id', Number(id));
-  if (!data || !data[0])
-    throw new APIError(`Meeting (${id}) does not exist in database`);
+  handle('getting', 'meeting', id, error);
+  if (!data?.length) throw new APIError(`Meeting (${id}) does not exist`, 404);
   return Meeting.fromDB(data[0]);
 }
 
@@ -70,7 +94,8 @@ export async function getMeetings(
     const peopleIds = query.people.map((p) => p.value);
     select = select.overlaps('people_ids', peopleIds);
   }
-  const { data, count } = await select;
+  const { data, error, count } = await select;
+  handle('getting', 'meetings', query, error);
   let hits = count || (data || []).length;
   const meetings = (data || [])
     .map((m) => Meeting.fromDB(m))
@@ -101,34 +126,9 @@ export async function getMeetingsByMatchId(
   matchId: string
 ): Promise<Meeting[]> {
   const { data, error } = await supabase
-    .from<DBMeeting>('meetings')
+    .from<DBViewMeeting>('view_meetings')
     .select()
     .eq('match', Number(matchId));
-  if (error)
-    throw new APIError(
-      `Error fetching meetings by match (${matchId}): ${error.message}`
-    );
+  handle('getting', 'meetings by match', matchId, error);
   return (data || []).map((d) => Meeting.fromDB(d));
-}
-
-export async function updateMeeting(meeting: Meeting): Promise<void> {
-  const { error } = await supabase
-    .from<DBMeeting>('meetings')
-    .update({ ...meeting.toDB(), id: undefined })
-    .eq('id', Number(meeting.id));
-  if (error) {
-    const m = `Error updating meeting (${meeting.toString()}) in database`;
-    throw new APIError(`${m}: ${error.message}`, 500);
-  }
-}
-
-export async function deleteMeeting(meetingId: string): Promise<void> {
-  const { error } = await supabase
-    .from<DBMeeting>('meetings')
-    .delete()
-    .eq('id', Number(meetingId));
-  if (error) {
-    const msg = `Error deleting meeting (${meetingId}) from database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
 }

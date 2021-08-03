@@ -6,38 +6,62 @@ import {
 } from 'lib/model/match';
 import { APIError } from 'lib/api/error';
 import { MatchesQuery } from 'lib/model/query/matches';
+import handle from 'lib/api/db/error';
 import supabase from 'lib/api/supabase';
 
 export async function createMatch(match: Match): Promise<Match> {
   const { data, error } = await supabase
     .from<DBMatch>('matches')
     .insert({ ...match.toDB(), id: undefined });
-  if (error) {
-    const msg = `Error saving match (${match.toString()}) to database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
+  handle('creating', 'match', match, error);
+  const m = data ? Match.fromDB(data[0]) : match;
   const people: DBRelationMatchPerson[] = match.people.map((p) => ({
     user: p.id,
     roles: p.roles,
-    match: data ? data[0].id : Number(match.id),
+    match: Number(m.id),
   }));
-  const { error: e } = await supabase
+  const { error: err } = await supabase
     .from<DBRelationMatchPerson>('relation_match_people')
     .insert(people);
-  if (e) {
-    const msg = `Error saving people (${JSON.stringify(people)})`;
-    throw new APIError(`${msg} in database: ${e.message}`, 500);
-  }
-  return data ? Match.fromDB(data[0]) : match;
+  handle('creating', 'people', people, err);
+  return m;
+}
+
+export async function updateMatch(match: Match): Promise<Match> {
+  const { data, error } = await supabase
+    .from<DBMatch>('matches')
+    .update({ ...match.toDB(), id: undefined })
+    .eq('id', Number(match.id));
+  handle('updating', 'match', match, error);
+  const m = data ? Match.fromDB(data[0]) : match;
+  const people: DBRelationMatchPerson[] = match.people.map((p) => ({
+    user: p.id,
+    roles: p.roles,
+    match: Number(m.id),
+  }));
+  const { error: err } = await supabase
+    .from<DBRelationMatchPerson>('relation_match_people')
+    .upsert(people);
+  handle('updating', 'people', people, err);
+  return m;
+}
+
+export async function deleteMatch(id: string): Promise<Match> {
+  const { data, error } = await supabase
+    .from<DBMatch>('matches')
+    .delete()
+    .eq('id', Number(id));
+  handle('deleting', 'match', id, error);
+  return data ? Match.fromDB(data[0]) : new Match({ id });
 }
 
 export async function getMatch(id: string): Promise<Match> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from<DBViewMatch>('view_matches')
     .select()
     .eq('id', id);
-  if (!data || !data[0])
-    throw new APIError(`Match (${id}) does not exist in database`);
+  handle('getting', 'match', id, error);
+  if (!data?.length) throw new APIError(`Match (${id}) does not exist`, 404);
   return Match.fromDB(data[0]);
 }
 
@@ -53,46 +77,8 @@ export async function getMatches(
     const peopleIds = query.people.map((p) => p.value);
     select = select.overlaps('people_ids', peopleIds);
   }
-  const { data, count } = await select;
+  const { data, error, count } = await select;
+  handle('getting', 'matches', query, error);
   const results = (data || []).map((m) => Match.fromDB(m));
   return { results, hits: count || results.length };
-}
-
-export async function updateMatch(match: Match): Promise<void> {
-  const { error } = await supabase
-    .from<DBMatch>('matches')
-    .update({ ...match.toDB(), id: undefined })
-    .eq('id', Number(match.id));
-  if (error) {
-    const msg = `Error updating match (${match.toString()}) in database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
-  await Promise.all(
-    match.people.map(async (p) => {
-      const { error: e } = await supabase
-        .from<DBRelationMatchPerson>('relation_match_people')
-        .update({
-          user: p.id,
-          roles: p.roles,
-          match: Number(match.id),
-        })
-        .eq('match', Number(match.id))
-        .eq('user', p.id);
-      if (e) {
-        const msg = `Error updating person (${JSON.stringify(p)})`;
-        throw new APIError(`${msg} in database: ${e.message}`, 500);
-      }
-    })
-  );
-}
-
-export async function deleteMatch(matchId: string): Promise<void> {
-  const { error } = await supabase
-    .from<DBMatch>('matches')
-    .delete()
-    .eq('id', Number(matchId));
-  if (error) {
-    const msg = `Error deleting match (${matchId}) from database`;
-    throw new APIError(`${msg}: ${error.message}`, 500);
-  }
 }
