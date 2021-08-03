@@ -102,7 +102,6 @@
     "webpack-bundle-analyzer": "^4.3.0"
   },
   "dependencies": {
-    "@algolia/client-common": "^4.8.6",
     "@algolia/client-search": "^4.8.6",
     "@juggle/resize-observer": "^3.2.0",
     "@material/menu-surface": "^5.1.0",
