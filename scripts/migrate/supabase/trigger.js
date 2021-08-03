@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const { serialize } = require('cookie');
+const progress = require('cli-progress');
 const Bottleneck = require('bottleneck');
 
 const logger = require('../../lib/logger');
@@ -30,17 +31,21 @@ async function trigger() {
   const users = require(path.resolve(__dirname, './users.json'));
   const origUsers = require(path.resolve(__dirname, './orig-users.json'));
   logger.info(`Triggering update for ${users.length} users...`);
-  const limiter = new Bottleneck({ maxConcurrent: 500, minTime: 100 });
+  const limiter = new Bottleneck({ maxConcurrent: 100, minTime: 500 });
+  let count = 0;
+  const bar = new progress.SingleBar({}, progress.Presets.shades_classic);
+  bar.start(users.length, count);
+  limiter.on('done', () => bar.update((count += 1)));
   limiter.on('failed', async (error, jobInfo) => {
     const { id } = jobInfo.options;
     logger.error(`Job (${id}) failed: ${error}`);
     if (jobInfo.retryCount < 10) {
-      logger.info(`Retrying job (${id}) in 100ms...`);
+      logger.verbose(`Retrying job (${id}) in 100ms...`);
       return 100;
     }
   });
   limiter.on('retry', (error, jobInfo) => {
-    logger.info(`Now retrying job (${jobInfo.options.id})...`);
+    logger.verbose(`Now retrying job (${jobInfo.options.id})...`);
   });
   await Promise.all(
     users.map((user, idx) =>
