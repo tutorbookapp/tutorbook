@@ -61,7 +61,7 @@ export interface DBMatch {
   updated: DBDate;
 }
 export interface DBViewMatch extends DBMatch {
-  people: (DBUser & { roles: Role[] })[];
+  people: (DBUser & { roles: Role[] })[] | null;
   people_ids: string[];
 }
 export interface DBRelationMatchPerson {
@@ -166,9 +166,19 @@ export class Match extends Resource implements MatchInterface {
   public static fromDB(record: DBMatch | DBViewMatch): Match {
     const creator =
       'people' in record
-        ? record.people.find((p) => p.id === record.creator)
+        ? (record.people || []).find((p) => p.id === record.creator)
         : undefined;
+    const people =
+      'people' in record
+        ? (record.people || []).map((p) => ({
+            id: p.id,
+            name: p.name,
+            photo: p.photo || '',
+            roles: p.roles,
+          }))
+        : [];
     return new Match({
+      people,
       id: record.id.toString(),
       org: record.org,
       creator: {
@@ -182,12 +192,6 @@ export class Match extends Resource implements MatchInterface {
       tags: record.tags,
       created: new Date(record.created),
       updated: new Date(record.updated),
-      people: ('people' in record ? record.people : []).map((p) => ({
-        id: p.id,
-        name: p.name,
-        photo: p.photo || '',
-        roles: p.roles,
-      })),
     });
   }
 

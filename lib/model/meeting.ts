@@ -112,7 +112,7 @@ export interface DBMeeting {
   updated: DBDate;
 }
 export interface DBViewMeeting extends DBMeeting {
-  people: (DBUser & { roles: Role[] })[];
+  people: (DBUser & { roles: Role[] })[] | null;
   people_ids: string[];
 }
 export interface DBRelationMeetingPerson {
@@ -233,8 +233,17 @@ export class Meeting extends Resource implements MeetingInterface {
   public static fromDB(record: DBMeeting | DBViewMeeting): Meeting {
     const creator =
       'people' in record
-        ? record.people.find((p) => p.id === record.creator)
+        ? (record.people || []).find((p) => p.id === record.creator)
         : undefined;
+    const people =
+      'people' in record
+        ? (record.people || []).map((p) => ({
+            id: p.id,
+            name: p.name,
+            photo: p.photo || '',
+            roles: p.roles,
+          }))
+        : [];
     return new Meeting({
       id: record.id.toString(),
       creator: {
@@ -251,15 +260,10 @@ export class Meeting extends Resource implements MeetingInterface {
       created: new Date(record.created),
       updated: new Date(record.updated),
       match: new Match({
+        people,
         id: record.match.toString(),
         org: record.org,
         subjects: record.subjects,
-        people: ('people' in record ? record.people : []).map((p) => ({
-          id: p.id,
-          name: p.name,
-          photo: p.photo || '',
-          roles: p.roles,
-        })),
         creator: {
           id: record.creator,
           name: creator?.name || '',
