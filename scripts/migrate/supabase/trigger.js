@@ -72,7 +72,6 @@ async function trigger() {
           updated: user.updated,
           verifications: [],
           parents: origUsers[idx].parents,
-          zooms: [],
           roles: [],
           orgs: origUsers[idx].orgs,
         },

@@ -25,13 +25,6 @@ import {
   VerificationSearchHit,
   isVerificationJSON,
 } from 'lib/model/verification';
-import {
-  ZoomUser,
-  ZoomUserFirestore,
-  ZoomUserJSON,
-  ZoomUserSearchHit,
-  isZoomUserJSON,
-} from 'lib/model/zoom-user';
 import { caps, join, notTags } from 'lib/utils';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import clone from 'lib/utils/clone';
@@ -102,10 +95,6 @@ export function isSubjects(json: unknown): json is Subjects {
  * @extends AccountInterface
  * @property [age] - The user's age (mostly used for students).
  * @property orgs - An array of the IDs of the orgs this user belongs to.
- * @property zooms - An array of Zoom user accounts. These are used when
- * creating Zoom meetings for a match. Each TB user can have multiple Zoom user
- * accounts managed by different orgs; we use the Zoom account belonging to the
- * org that owns the match when creating Zoom meetings for said match.
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property mentoring - The subjects that the user wants a and can mentor for.
  * @property tutoring - The subjects that the user wants a and can tutor for.
@@ -120,14 +109,10 @@ export function isSubjects(json: unknown): json is Subjects {
  * collected by our front-end and used by our back-end when sending reminders.
  * @property [token] - The user's Firebase Authentication JWT `idToken`.
  * @property [hash] - The user's Intercom HMAC for identity verifications.
- * @todo Add a `zoom` prop that contains the user's personal Zoom OAuth token
- * (e.g. for freelancers who want to user their own Zoom account when creating
- * meetings).
  */
 export interface UserInterface extends AccountInterface {
   age?: number;
   orgs: string[];
-  zooms: ZoomUser[];
   availability: Availability;
   mentoring: Subjects;
   tutoring: Subjects;
@@ -206,32 +191,29 @@ export interface DBRelationOrg {
 
 export type UserJSON = Omit<
   UserInterface,
-  keyof Account | 'availability' | 'verifications' | 'zooms'
+  keyof Account | 'availability' | 'verifications'
 > &
   AccountJSON & {
     availability: AvailabilityJSON;
     verifications: VerificationJSON[];
-    zooms: ZoomUserJSON[];
   };
 
 export type UserFirestore = Omit<
   UserInterface,
-  keyof Account | 'availability' | 'verifications' | 'zooms'
+  keyof Account | 'availability' | 'verifications'
 > &
   AccountFirestore & {
     availability: AvailabilityFirestore;
     verifications: VerificationFirestore[];
-    zooms: ZoomUserFirestore[];
   };
 
 export type UserSearchHit = Omit<
   UserInterface,
-  keyof Account | 'availability' | 'verifications' | 'zooms' | 'tags'
+  keyof Account | 'availability' | 'verifications' | 'tags'
 > &
   AccountSearchHit & {
     availability: AvailabilitySearchHit;
     verifications: VerificationSearchHit[];
-    zooms: ZoomUserSearchHit[];
     _tags: UserHitTag[];
   };
 
@@ -240,7 +222,6 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isJSON(json)) return false;
   if (json.age && typeof json.age !== 'number') return false;
   if (!isStringArray(json.orgs)) return false;
-  if (!isArray(json.zooms, isZoomUserJSON)) return false;
   if (!isAvailabilityJSON(json.availability)) return false;
   if (!isSubjects(json.mentoring)) return false;
   if (!isSubjects(json.tutoring)) return false;
@@ -266,8 +247,6 @@ export class User extends Account implements UserInterface {
   public age?: number;
 
   public orgs: string[] = [];
-
-  public zooms: ZoomUser[] = [];
 
   public availability: Availability = new Availability();
 
@@ -399,13 +378,12 @@ export class User extends Account implements UserInterface {
   }
 
   public toJSON(): UserJSON {
-    const { availability, verifications, zooms, ...rest } = this;
+    const { availability, verifications, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toJSON(),
       availability: availability.toJSON(),
       verifications: verifications.map((v) => v.toJSON()),
-      zooms: zooms.map((z) => z.toJSON()),
       token: undefined,
       hash: undefined,
     });
@@ -414,7 +392,6 @@ export class User extends Account implements UserInterface {
   public static fromJSON({
     availability,
     verifications = [],
-    zooms = [],
     ...rest
   }: UserJSON): User {
     return new User({
@@ -422,18 +399,16 @@ export class User extends Account implements UserInterface {
       ...Account.fromJSON(rest),
       availability: Availability.fromJSON(availability),
       verifications: verifications.map((v) => Verification.fromJSON(v)),
-      zooms: zooms.map((z) => ZoomUser.fromJSON(z)),
     });
   }
 
   public toFirestore(): UserFirestore {
-    const { availability, verifications, zooms, ...rest } = this;
+    const { availability, verifications, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toFirestore(),
       availability: availability.toFirestore(),
       verifications: verifications.map((v) => v.toFirestore()),
-      zooms: zooms.map((z) => z.toFirestore()),
       token: undefined,
       hash: undefined,
     });
@@ -442,7 +417,6 @@ export class User extends Account implements UserInterface {
   public static fromFirestore({
     availability,
     verifications = [],
-    zooms = [],
     ...rest
   }: UserFirestore): User {
     return new User({
@@ -450,7 +424,6 @@ export class User extends Account implements UserInterface {
       ...Account.fromFirestore(rest),
       availability: Availability.fromFirestore(availability),
       verifications: verifications.map((v) => Verification.fromFirestore(v)),
-      zooms: zooms.map((z) => ZoomUser.fromFirestore(z)),
     });
   }
 
@@ -466,13 +439,12 @@ export class User extends Account implements UserInterface {
   }
 
   public toSearchHit(): UserSearchHit {
-    const { availability, verifications, zooms, tags, ...rest } = this;
+    const { availability, verifications, tags, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toSearchHit(),
       availability: availability.toSearchHit(),
       verifications: verifications.map((v) => v.toSearchHit()),
-      zooms: zooms.map((z) => z.toSearchHit()),
       _tags: [...tags, ...notTags(tags, USER_TAGS)],
       tags: undefined,
       token: undefined,
@@ -484,7 +456,6 @@ export class User extends Account implements UserInterface {
   public static fromSearchHit({
     availability,
     verifications = [],
-    zooms = [],
     _tags = [],
     ...rest
   }: UserSearchHit): User {
@@ -493,7 +464,6 @@ export class User extends Account implements UserInterface {
       ...Account.fromSearchHit(rest),
       availability: Availability.fromSearchHit(availability),
       verifications: verifications.map((v) => Verification.fromSearchHit(v)),
-      zooms: zooms.map((z) => ZoomUser.fromSearchHit(z)),
       tags: _tags.filter(isUserTag),
     });
   }

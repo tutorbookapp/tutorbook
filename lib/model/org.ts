@@ -60,42 +60,6 @@ export function isBookingConfig(config: unknown): config is BookingConfig {
 }
 
 /**
- * The only two Zoom OAuth scopes that we ever will request access to.
- * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
- * @see {@link https://marketplace.zoom.us/docs/guides/auth/oauth/oauth-scopes}
- */
-export type ZoomScope = 'meeting:write:admin' | 'user:write:admin';
-
-export function isZoomScope(json: unknown): json is ZoomScope {
-  if (typeof json !== 'string') return false;
-  return ['meeting:write:admin', 'user:write:admin'].includes(json);
-}
-
-/**
- * An authentication config for a certain Zoom account. This enables us to call
- * Zoom APIs on behalf of a user or org (using OAuth patterns).
- * @typedef {Object} ZoomAccount
- * @property id - The Zoom account ID that has given us authorization.
- * @property token - The Zoom `refresh_token` we can use to access Zoom APIs.
- * @property scopes - The scopes that `refresh_token` gives us access to.
- * @see {@link https://github.com/tutorbookapp/tutorbook/issues/100}
- * @see {@link https://marketplace.zoom.us/docs/guides/auth/oauth}
- */
-export interface ZoomAccount {
-  id: string;
-  token: string;
-  scopes: ZoomScope[];
-}
-
-export function isZoomAccount(json: unknown): json is ZoomAccount {
-  if (!isJSON(json)) return false;
-  if (typeof json.id !== 'string') return false;
-  if (typeof json.token !== 'string') return false;
-  if (!isArray(json.scopes, isZoomScope)) return false;
-  return true;
-}
-
-/**
  * An `Org` object represents a non-profit organization that is using Tutorbook
  * to manage their virtual tutoring programs.
  * @typedef {Object} Org
@@ -105,8 +69,6 @@ export function isZoomAccount(json: unknown): json is ZoomAccount {
  * @property domains - Array of valid email domains that can access this org's
  * data (e.g. `pausd.us` and `pausd.org`).
  * @property profiles - Array of required profile fields (e.g. `phone`).
- * @property [zoom] - This org's Zoom OAuth config. Used to create meetings and
- * (optionally) users.
  * @property signup - Configuration for the org's unique custom sign-up page.
  * @property home - Configuration for the org's unique custom landing homepage.
  * @property booking - Configuration for the org's user booking pages.
@@ -120,7 +82,6 @@ export interface OrgInterface extends AccountInterface {
   domains: string[];
   profiles: (keyof UserInterface | 'subjects')[];
   subjects?: string[];
-  zoom?: ZoomAccount;
   signup: SignupConfig;
   home: HomeConfig;
   booking: BookingConfig;
@@ -168,7 +129,6 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isStringArray(json.domains)) return false;
   if (!isStringArray(json.profiles)) return false;
   if (json.subjects && !isStringArray(json.subjects)) return false;
-  if (json.zoom && !isZoomAccount(json.zoom)) return false;
   if (!isSignupConfig(json.signup)) return false;
   if (!isHomeConfig(json.home)) return false;
   if (!isBookingConfig(json.booking)) return false;
@@ -193,8 +153,6 @@ export class Org extends Account implements OrgInterface {
   ];
 
   public subjects?: string[];
-
-  public zoom?: ZoomAccount;
 
   // TODO: Don't only include org data that the user is an admin of. Instead,
   // keep an app-wide org context that includes the org configurations for all
