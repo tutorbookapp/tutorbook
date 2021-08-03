@@ -15,7 +15,7 @@ import { Availability } from 'lib/model/availability';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
 import { UsersQuery } from 'lib/model/query/users';
-import getMeetings from 'lib/api/get/meetings';
+import { getMeetings } from 'lib/api/db/meeting';
 import supabase from 'lib/api/supabase';
 
 async function times(user: User): Promise<number[]> {
