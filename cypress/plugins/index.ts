@@ -19,12 +19,6 @@ import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
 import volunteer from 'cypress/fixtures/users/volunteer.json';
 
-// Right now, we can't use the `baseUrl` Typescript compiler options, so we
-// can't use any of the existing type annotations in our app source code.
-// @see {@link https://github.com/cypress-io/cypress/issues/7188}
-// @see {@link https://github.com/cypress-io/cypress/issues/7006}
-// import { Org, OrgJSON, User, UserJSON } from 'lib/model';
-
 // Follow the Next.js convention for loading `.env` files.
 // @see {@link https://nextjs.org/docs/basic-features/environment-variables}
 [
