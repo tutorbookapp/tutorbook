@@ -16,9 +16,6 @@ node_modules
 # Email Previews
 pages/mail.tsx
 
-# Supabase
-/.supabase/
-
 # Next.js
 /.next/
 /out/
@@ -44,3 +41,6 @@ ui-debug.log*
 
 # Vercel Linkage
 .vercel
+
+# Supabase
+.supabase
