@@ -1,7 +1,6 @@
 import {
   DBTimeslot,
   Timeslot,
-  TimeslotFirestore,
   TimeslotInterface,
   TimeslotJSON,
   TimeslotSegment,
@@ -16,7 +15,6 @@ import { sameDate } from 'lib/utils/time';
  */
 export type AvailabilityAlias = TimeslotInterface[];
 export type AvailabilityJSON = TimeslotJSON[];
-export type AvailabilityFirestore = TimeslotFirestore[];
 
 export function isAvailabilityJSON(json: unknown): json is AvailabilityJSON {
   if (!(json instanceof Array)) return false;
@@ -209,16 +207,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
 
   public static fromDB(record: DBTimeslot[]): Availability {
     return new Availability(...record.map((t) => Timeslot.fromDB(t)));
-  }
-
-  public toFirestore(): AvailabilityFirestore {
-    return Array.from(this.map((t) => t.toFirestore()));
-  }
-
-  public static fromFirestore(data: AvailabilityFirestore): Availability {
-    const availability: Availability = new Availability();
-    data.forEach((t) => availability.push(Timeslot.fromFirestore(t)));
-    return availability;
   }
 
   public toJSON(): AvailabilityJSON {

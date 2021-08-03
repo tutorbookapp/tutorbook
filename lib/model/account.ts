@@ -1,8 +1,5 @@
-import * as admin from 'firebase-admin';
-
 import {
   Resource,
-  ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
   isResourceJSON,
@@ -11,8 +8,6 @@ import { isArray, isJSON } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 /**
  * Represents a user verification to provide social proof. Supported types are:
@@ -87,8 +82,6 @@ export interface AccountInterface extends ResourceInterface {
 }
 
 export type AccountJSON = Omit<AccountInterface, keyof Resource> & ResourceJSON;
-export type AccountFirestore = Omit<AccountInterface, keyof Resource> &
-  ResourceFirestore;
 
 export function isAccountJSON(json: unknown): json is AccountJSON {
   const stringFields = [
@@ -182,25 +175,6 @@ export class Account extends Resource implements AccountInterface {
 
   public static fromJSON(json: AccountJSON): Account {
     return new Account({ ...json, ...Resource.fromJSON(json) });
-  }
-
-  public toFirestore(): AccountFirestore {
-    return definedVals({ ...this, ...super.toFirestore() });
-  }
-
-  public static fromFirestore(data: AccountFirestore): Account {
-    return new Account({ ...data, ...Resource.fromFirestore(data) });
-  }
-
-  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Account {
-    if (!snapshot.exists) return new Account();
-    const overrides = definedVals({
-      created: snapshot.createTime?.toDate(),
-      updated: snapshot.updateTime?.toDate(),
-      id: snapshot.id,
-    });
-    const account = Account.fromFirestore(snapshot.data() as AccountFirestore);
-    return new Account({ ...account, ...overrides });
   }
 
   public toString(): string {

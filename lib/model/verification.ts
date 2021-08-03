@@ -1,6 +1,5 @@
 import {
   Resource,
-  ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
   isResourceJSON,
@@ -61,11 +60,6 @@ export type VerificationJSON = Omit<
   keyof ResourceInterface
 > &
   ResourceJSON;
-export type VerificationFirestore = Omit<
-  VerificationInterface,
-  keyof ResourceInterface
-> &
-  ResourceFirestore;
 
 export function isVerificationJSON(json: unknown): json is VerificationJSON {
   if (!isResourceJSON(json)) return false;
@@ -105,13 +99,5 @@ export class Verification extends Resource implements VerificationInterface {
 
   public static fromJSON(json: VerificationJSON): Verification {
     return new Verification({ ...json, ...Resource.fromJSON(json) });
-  }
-
-  public toFirestore(): VerificationFirestore {
-    return { ...this, ...super.toFirestore() };
-  }
-
-  public static fromFirestore(data: VerificationFirestore): Verification {
-    return new Verification({ ...data, ...Resource.fromFirestore(data) });
   }
 }

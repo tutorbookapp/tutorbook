@@ -2,7 +2,6 @@ import { nanoid } from 'nanoid';
 
 import {
   Resource,
-  ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
   isResourceJSON,
@@ -24,8 +23,6 @@ export interface VenueInterface extends ResourceInterface {
 }
 
 export type VenueJSON = Omit<VenueInterface, keyof Resource> & ResourceJSON;
-export type VenueFirestore = Omit<VenueInterface, keyof Resource> &
-  ResourceFirestore;
 
 export function isVenueJSON(json: unknown): json is VenueJSON {
   if (!isResourceJSON(json)) return false;
@@ -55,13 +52,5 @@ export class Venue extends Resource implements VenueInterface {
 
   public static fromJSON(json: VenueJSON): Venue {
     return new Venue({ ...json, ...Resource.fromJSON(json) });
-  }
-
-  public toFirestore(): VenueFirestore {
-    return { ...this, ...super.toFirestore() };
-  }
-
-  public static fromFirestore(data: VenueFirestore): Venue {
-    return new Venue({ ...data, ...Resource.fromFirestore(data) });
   }
 }
