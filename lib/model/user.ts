@@ -35,7 +35,7 @@ export type UserTag =
   | 'meeting' // Has at least one meeting.
   | Role; // Has this role in at least one match.
 
-export type UserHitTag =
+export type DBUserTag =
   | UserTag
   | 'not-tutor'
   | 'not-tutee'
@@ -151,16 +151,7 @@ export interface DBUser {
   reference: string;
   timezone: string | null;
   age: number | null;
-  tags: (
-    | 'vetted'
-    | 'matched'
-    | 'meeting'
-    | 'tutor'
-    | 'tutee'
-    | 'mentor'
-    | 'mentee'
-    | 'parent'
-  )[];
+  tags: DBUserTag[];
   created: DBDate;
   updated: DBDate;
   times: number[];
@@ -313,7 +304,7 @@ export class User extends Account implements UserInterface {
       reference: this.reference,
       timezone: this.timezone || null,
       age: this.age || null,
-      tags: this.tags,
+      tags: [...this.tags, ...notTags(this.tags, USER_TAGS)],
       created: this.created.toISOString(),
       updated: this.updated.toISOString(),
       times: [],
@@ -340,7 +331,7 @@ export class User extends Account implements UserInterface {
       reference: record.reference,
       timezone: record.timezone || '',
       age: record.age || undefined,
-      tags: record.tags,
+      tags: record.tags.filter(isUserTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
       orgs: 'orgs' in record ? record.orgs || [] : [],

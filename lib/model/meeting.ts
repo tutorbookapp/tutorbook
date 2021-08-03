@@ -23,7 +23,7 @@ import definedVals from 'lib/model/defined-vals';
 
 export type MeetingTag = 'recurring'; // Meeting is recurring (has rrule).
 
-export type MeetingHitTag = MeetingTag | 'not-recurring';
+export type DBMeetingTag = MeetingTag | 'not-recurring';
 
 export const MEETING_TAGS: MeetingTag[] = ['recurring'];
 
@@ -85,7 +85,7 @@ export interface DBMeeting {
   venue: string;
   time: DBTimeslot;
   description: string;
-  tags: 'recurring'[];
+  tags: DBMeetingTag[];
   created: DBDate;
   updated: DBDate;
 }
@@ -182,7 +182,7 @@ export class Meeting extends Resource implements MeetingInterface {
       venue: this.venue.url,
       time: this.time.toDB(),
       description: this.description,
-      tags: this.tags,
+      tags: [...this.tags, ...notTags(this.tags, MEETING_TAGS)],
       created: this.created.toISOString(),
       updated: this.updated.toISOString(),
     };
@@ -214,7 +214,7 @@ export class Meeting extends Resource implements MeetingInterface {
       venue: new Venue({ url: record.venue }),
       time: Timeslot.fromDB(record.time),
       description: record.description,
-      tags: record.tags,
+      tags: record.tags.filter(isMeetingTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
       match: new Match({
