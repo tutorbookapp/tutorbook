@@ -7,10 +7,76 @@ import {
   addStringFilter,
   list,
 } from 'lib/api/search';
+import { APIError } from 'lib/api/error';
+import { DBTimeslot } from 'lib/api/db/user';
 import { Meeting } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
+import clone from 'lib/utils/clone';
 import { getDuration } from 'lib/utils/time';
+import supabase from 'lib/api/supabase';
+
+export interface DBMeeting {
+  id: number;
+  org: string;
+  creator: string;
+  subjects: string[];
+  status: 'created' | 'pending' | 'logged' | 'approved';
+  match: number;
+  venue: string;
+  time: DBTimeslot;
+  description: string;
+  tags: 'recurring'[];
+  created: Date;
+  updated: Date;
+}
+
+export async function createMeeting(meeting: Meeting): Promise<Meeting> {
+  const { data, error } = await supabase.from<DBMeeting>('meetings').insert({
+    id: meeting.id,
+    org: meeting.org,
+    creator: meeting.creator.id,
+    subjects: meeting.subjects,
+    status: meeting.status,
+    match: meeting.match.id,
+    venue: meeting.venue,
+    time: meeting.time,
+    description: meeting.description,
+    tags: meeting.tags,
+    created: meeting.created,
+    updated: meeting.updated,
+  });
+  if (error) {
+    const msg = `Error saving meeting (${meeting.toString()}) to database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+  const people = meeting.people.map((p) => ({
+    user: p.id,
+    roles: p.roles,
+    meeting: data ? data[0].id : meeting.id,
+  }));
+  const { error: e } = await supabase.from('relation_people').insert(people);
+  if (e) {
+    const msg = `Error saving people (${JSON.stringify(people)}) to database`;
+    throw new APIError(`${msg}: ${e.message}`, 500);
+  }
+  return Meeting.parse({
+    ...(data ? data[0] : meeting),
+    match: meeting.match,
+    people: meeting.people,
+    creator: meeting.creator,
+  });
+}
+
+export async function getMeeting(id: string): Promise<Meeting> {
+  const { data } = await supabase
+    .from<Meeting>('meetings')
+    .select()
+    .eq('id', id);
+  if (!data || !data[0])
+    throw new APIError(`Meeting (${id}) does not exist in database`);
+  return Meeting.parse(data[0]);
+}
 
 function getFilterStrings(query: MeetingsQuery): string[] {
   let str = query.org ? `match.org:${query.org}` : '';
@@ -38,7 +104,7 @@ function getFilterStrings(query: MeetingsQuery): string[] {
 
 // TODO: Generate instance meetings (from recurring parent meetings returned by
 // query) within requested time window and send those to the client.
-export default async function getMeetings(
+export async function getMeetings(
   query: MeetingsQuery
 ): Promise<{ hits: number; results: Meeting[] }> {
   const filters = getFilterStrings(query);
@@ -65,4 +131,26 @@ export default async function getMeetings(
     });
   });
   return { hits, results: meetings.flat() };
+}
+
+export async function updateMeeting(meeting: Meeting): Promise<void> {
+  const { error } = await supabase
+    .from('meetings')
+    .update(meeting)
+    .eq('id', meeting.id);
+  if (error) {
+    const m = `Error updating meeting (${meeting.toString()}) in database`;
+    throw new APIError(`${m}: ${error.message}`, 500);
+  }
+}
+
+export async function deleteMeeting(meetingId: string): Promise<void> {
+  const { error } = await supabase
+    .from('meetings')
+    .delete()
+    .eq('id', meetingId);
+  if (error) {
+    const msg = `Error deleting meeting (${meetingId}) from database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
 }

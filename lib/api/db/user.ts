@@ -4,13 +4,99 @@ import {
   addStringFilter,
 } from 'lib/api/search';
 import { getDate, sliceAvailability } from 'lib/utils/time';
+import { APIError } from 'lib/api/error';
 import { Availability } from 'lib/model/availability';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
 import { UsersQuery } from 'lib/model/query/users';
+import clone from 'lib/utils/clone';
 import supabase from 'lib/api/supabase';
 
-export function getFilterString(query: UsersQuery): string {
+export type DBAspect = 'mentoring' | 'tutoring';
+export interface DBSocial {
+  type:
+    | 'website'
+    | 'linkedin'
+    | 'twitter'
+    | 'facebook'
+    | 'instagram'
+    | 'github'
+    | 'indiehackers';
+  url: string;
+}
+export interface DBTimeslot {
+  id: string;
+  from: Date;
+  to: Date;
+  exdates: Date[];
+  recur: string;
+  last: Date;
+}
+export interface DBUser {
+  id: string;
+  uid: string | null;
+  name: string;
+  photo: string | null;
+  email: string | null;
+  phone: string | null;
+  bio: string;
+  background: string | null;
+  venue: string | null;
+  socials: DBSocial[];
+  availability: DBTimeslot[];
+  mentoring: string[];
+  tutoring: string[];
+  langs: string[];
+  visible: boolean;
+  featured: DBAspect[];
+  reference: string;
+  timezone: string | null;
+  age: number | null;
+  tags: (
+    | 'vetted'
+    | 'matched'
+    | 'meeting'
+    | 'tutor'
+    | 'tutee'
+    | 'mentor'
+    | 'mentee'
+    | 'parent'
+  )[];
+  created: Date;
+  updated: Date;
+}
+interface DBRelationParent {
+  user: string;
+  parent: string;
+}
+interface DBRelationOrg {
+  user: string;
+  org: string;
+}
+
+export async function createUser(user: User): Promise<User> {
+  // TODO: Insert these relations into the proper relation table.
+  const copy: Partial<User> = clone(user);
+  delete copy.orgs;
+  delete copy.roles;
+  delete copy.parents;
+  delete copy.verifications;
+  const { data, error } = await supabase.from('users').insert(copy);
+  if (error) {
+    const msg = `Error saving user (${user.toString()}) in database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+  return User.parse(data ? data[0] : user);
+}
+
+export async function getUser(uid: string): Promise<User> {
+  const { data } = await supabase.from('users').select().eq('id', uid);
+  if (!data || !data[0])
+    throw new APIError(`User (${uid}) does not exist`, 400);
+  return User.parse(data[0]);
+}
+
+function getFilterString(query: UsersQuery): string {
   let str = '';
   if (typeof query.visible === 'boolean')
     str = addStringFilter(str, `visible=${query.visible ? 1 : 0}`);
@@ -48,7 +134,7 @@ export function getFilterString(query: UsersQuery): string {
   return addArrayFilter(str, filtering, '_availability', 'OR');
 }
 
-export default async function getUsers(
+export async function getUsers(
   query: UsersQuery
 ): Promise<{ hits: number; results: User[] }> {
   // TODO: Figure out how to perform JOIN queries with the `relation_orgs` and
@@ -75,4 +161,29 @@ export default async function getUsers(
     );
   const results = (data || []).map((u) => User.parse(u));
   return { results, hits: count || results.length };
+}
+
+export async function updateUser(user: User): Promise<void> {
+  // TODO: Insert these relations into the proper relation table.
+  const copy: Partial<User> = clone(user);
+  delete copy.orgs;
+  delete copy.roles;
+  delete copy.parents;
+  delete copy.verifications;
+  const { error } = await supabase
+    .from('users')
+    .upsert(copy, { onConflict: 'id' })
+    .eq('id', user.id);
+  if (error) {
+    const msg = `Error updating user (${user.toString()}) in database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
+}
+
+export async function deleteUser(uid: string): Promise<void> {
+  const { error } = await supabase.from('users').delete().eq('id', uid);
+  if (error) {
+    const msg = `Error deleting user (${uid}) from database`;
+    throw new APIError(`${msg}: ${error.message}`, 500);
+  }
 }
