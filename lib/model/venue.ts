@@ -2,10 +2,8 @@ import { nanoid } from 'nanoid';
 
 import {
   Resource,
-  ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
 import clone from 'lib/utils/clone';
@@ -25,10 +23,6 @@ export interface VenueInterface extends ResourceInterface {
 }
 
 export type VenueJSON = Omit<VenueInterface, keyof Resource> & ResourceJSON;
-export type VenueFirestore = Omit<VenueInterface, keyof Resource> &
-  ResourceFirestore;
-export type VenueSearchHit = Omit<VenueInterface, keyof Resource> &
-  ResourceSearchHit;
 
 export function isVenueJSON(json: unknown): json is VenueJSON {
   if (!isResourceJSON(json)) return false;
@@ -58,21 +52,5 @@ export class Venue extends Resource implements VenueInterface {
 
   public static fromJSON(json: VenueJSON): Venue {
     return new Venue({ ...json, ...Resource.fromJSON(json) });
-  }
-
-  public toFirestore(): VenueFirestore {
-    return { ...this, ...super.toFirestore() };
-  }
-
-  public static fromFirestore(data: VenueFirestore): Venue {
-    return new Venue({ ...data, ...Resource.fromFirestore(data) });
-  }
-
-  public toSearchHit(): VenueSearchHit {
-    return { ...this, ...super.toSearchHit() };
-  }
-
-  public static fromSearchHit(hit: VenueSearchHit): Venue {
-    return new Venue({ ...hit, ...Resource.fromSearchHit(hit) });
   }
 }

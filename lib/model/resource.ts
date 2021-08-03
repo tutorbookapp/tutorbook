@@ -31,11 +31,6 @@ export interface ResourceFirestore {
   updated: Timestamp;
 }
 
-export interface ResourceSearchHit {
-  created: number;
-  updated: number;
-}
-
 export function isResourceJSON(json: unknown): json is ResourceJSON {
   if (!isJSON(json)) return false;
   if (!isDateJSON(json.created)) return false;
@@ -81,20 +76,6 @@ export class Resource implements ResourceInterface {
     return new Resource({
       created: data.created.toDate(),
       updated: data.updated.toDate(),
-    });
-  }
-
-  public toSearchHit(): ResourceSearchHit {
-    return {
-      created: this.created.valueOf(),
-      updated: this.updated.valueOf(),
-    };
-  }
-
-  public static fromSearchHit(hit: ResourceSearchHit): Resource {
-    return new Resource({
-      created: new Date(hit.created),
-      updated: new Date(hit.updated),
     });
   }
 }

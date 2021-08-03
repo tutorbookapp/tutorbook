@@ -1,11 +1,7 @@
-import * as admin from 'firebase-admin';
-
 import {
   Account,
-  AccountFirestore,
   AccountInterface,
   AccountJSON,
-  AccountSearchHit,
   isAccountJSON,
 } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
@@ -15,8 +11,6 @@ import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 type Config<T> = { [locale: string]: T };
 type AspectConfig<T> = Config<{ [key in Aspect]?: T }>;
@@ -117,8 +111,6 @@ export interface DBRelationMember {
 }
 
 export type OrgJSON = Omit<OrgInterface, keyof Account> & AccountJSON;
-export type OrgSearchHit = Omit<OrgInterface, keyof Account> & AccountSearchHit;
-export type OrgFirestore = Omit<OrgInterface, keyof Account> & AccountFirestore;
 
 // TODO: Check that the `profiles` key only contains keys of the `User` object.
 export function isOrgJSON(json: unknown): json is OrgJSON {
@@ -278,36 +270,5 @@ export class Org extends Account implements OrgInterface {
 
   public static fromJSON(json: OrgJSON): Org {
     return new Org({ ...json, ...Account.fromJSON(json) });
-  }
-
-  public toFirestore(): OrgFirestore {
-    return definedVals({ ...this, ...super.toFirestore() });
-  }
-
-  public static fromFirestore(data: OrgFirestore): Org {
-    return new Org({ ...data, ...Account.fromFirestore(data) });
-  }
-
-  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Org {
-    if (!snapshot.exists) return new Org();
-    const overrides = definedVals({
-      created: snapshot.createTime?.toDate(),
-      updated: snapshot.updateTime?.toDate(),
-      id: snapshot.id,
-    });
-    const org = Org.fromFirestore(snapshot.data() as OrgFirestore);
-    return new Org({ ...org, ...overrides });
-  }
-
-  public toSearchHit(): OrgSearchHit {
-    return definedVals({
-      ...this,
-      ...super.toSearchHit(),
-      id: undefined,
-    });
-  }
-
-  public static fromSearchHit(hit: OrgSearchHit): Org {
-    return new Org({ ...hit, ...Account.fromSearchHit(hit) });
   }
 }

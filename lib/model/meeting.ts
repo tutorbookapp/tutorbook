@@ -1,47 +1,25 @@
-import * as admin from 'firebase-admin';
-import { ObjectWithObjectID } from '@algolia/client-search';
-
 import {
   DBDate,
   DBTimeslot,
   Timeslot,
-  TimeslotFirestore,
   TimeslotJSON,
-  TimeslotSearchHit,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import {
-  Match,
-  MatchFirestore,
-  MatchJSON,
-  MatchSearchHit,
-  MatchSegment,
-  isMatchJSON,
-} from 'lib/model/match';
+import { Match, MatchJSON, MatchSegment, isMatchJSON } from 'lib/model/match';
 import { Person, Role, isPerson } from 'lib/model/person';
 import {
   Resource,
-  ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
-import {
-  Venue,
-  VenueFirestore,
-  VenueJSON,
-  VenueSearchHit,
-  isVenueJSON,
-} from 'lib/model/venue';
+import { Venue, VenueJSON, isVenueJSON } from 'lib/model/venue';
 import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import { DBUser } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 export type MeetingTag = 'recurring'; // Meeting is recurring (has rrule).
 
@@ -126,26 +104,6 @@ export type MeetingJSON = Omit<
   keyof Resource | 'time' | 'venue' | 'match'
 > &
   ResourceJSON & { time: TimeslotJSON; venue: VenueJSON; match: MatchJSON };
-export type MeetingFirestore = Omit<
-  MeetingInterface,
-  keyof Resource | 'time' | 'venue' | 'match'
-> &
-  ResourceFirestore & {
-    time: TimeslotFirestore;
-    venue: VenueFirestore;
-    match: MatchFirestore;
-  };
-export type MeetingSearchHit = ObjectWithObjectID &
-  Omit<
-    MeetingInterface,
-    keyof Resource | 'time' | 'venue' | 'match' | 'id' | 'tags'
-  > &
-  ResourceSearchHit & {
-    time: TimeslotSearchHit;
-    venue: VenueSearchHit;
-    match: MatchSearchHit;
-    _tags: MeetingHitTag[];
-  };
 
 export interface MeetingSegment {
   id: string;
@@ -297,77 +255,6 @@ export class Meeting extends Resource implements MeetingInterface {
       time: Timeslot.fromJSON(time),
       venue: Venue.fromJSON(venue),
       match: Match.fromJSON(match),
-    });
-  }
-
-  public toFirestore(): MeetingFirestore {
-    const { time, venue, match, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toFirestore(),
-      time: time.toFirestore(),
-      venue: venue.toFirestore(),
-      match: match.toFirestore(),
-    });
-  }
-
-  public static fromFirestore({
-    time,
-    venue,
-    match,
-    ...rest
-  }: MeetingFirestore): Meeting {
-    return new Meeting({
-      ...rest,
-      ...Resource.fromFirestore(rest),
-      time: Timeslot.fromFirestore(time),
-      venue: Venue.fromFirestore(venue),
-      match: Match.fromFirestore(match),
-    });
-  }
-
-  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Meeting {
-    if (!snapshot.exists) return new Meeting();
-    const overrides = definedVals({
-      created: snapshot.createTime?.toDate(),
-      updated: snapshot.updateTime?.toDate(),
-      id: snapshot.id,
-    });
-    const meeting = Meeting.fromFirestore(snapshot.data() as MeetingFirestore);
-    return new Meeting({ ...meeting, ...overrides });
-  }
-
-  public toSearchHit(): MeetingSearchHit {
-    const { time, venue, match, tags, id, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toSearchHit(),
-      time: time.toSearchHit(),
-      venue: venue.toSearchHit(),
-      match: match.toSearchHit(),
-      _tags: [...tags, ...notTags(tags, MEETING_TAGS)],
-      tags: undefined,
-      id: undefined,
-      objectID: id,
-    });
-  }
-
-  public static fromSearchHit({
-    time,
-    venue,
-    match,
-    _tags = [],
-    objectID,
-    ...rest
-  }: MeetingSearchHit): Meeting {
-    return new Meeting({
-      ...rest,
-      ...Resource.fromSearchHit(rest),
-      time: Timeslot.fromSearchHit(time),
-      venue: Venue.fromSearchHit(venue),
-      match: Match.fromSearchHit(match),
-      tags: _tags.filter(isMeetingTag),
-      id: objectID,
     });
   }
 

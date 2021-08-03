@@ -1,13 +1,8 @@
-import * as admin from 'firebase-admin';
-import { ObjectWithObjectID } from '@algolia/client-search';
-
 import { Person, Role, isPerson } from 'lib/model/person';
 import {
   Resource,
-  ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
@@ -18,8 +13,6 @@ import { DBUser } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 export type MatchTag = 'meeting'; // Match has at least one meeting.
 
@@ -71,11 +64,6 @@ export interface DBRelationMatchPerson {
 }
 
 export type MatchJSON = Omit<MatchInterface, keyof Resource> & ResourceJSON;
-export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, keyof Resource | 'id' | 'tags'> &
-  ResourceSearchHit & { _tags: MatchHitTag[] };
-export type MatchFirestore = Omit<MatchInterface, keyof Resource> &
-  ResourceFirestore;
 
 export interface MatchSegment {
   id: string;
@@ -201,50 +189,6 @@ export class Match extends Resource implements MatchInterface {
 
   public static fromJSON(json: MatchJSON): Match {
     return new Match({ ...json, ...Resource.fromJSON(json) });
-  }
-
-  public toFirestore(): MatchFirestore {
-    return definedVals({ ...this, ...super.toFirestore() });
-  }
-
-  public static fromFirestore(data: MatchFirestore): Match {
-    return new Match({ ...data, ...Resource.fromFirestore(data) });
-  }
-
-  public static fromFirestoreDoc(snapshot: DocumentSnapshot): Match {
-    if (!snapshot.exists) return new Match();
-    const overrides = definedVals({
-      created: snapshot.createTime?.toDate(),
-      updated: snapshot.updateTime?.toDate(),
-      id: snapshot.id,
-    });
-    const match = Match.fromFirestore(snapshot.data() as MatchFirestore);
-    return new Match({ ...match, ...overrides });
-  }
-
-  public toSearchHit(): MatchSearchHit {
-    const { tags, id, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toSearchHit(),
-      _tags: [...tags, ...notTags(tags, MATCH_TAGS)],
-      tags: undefined,
-      id: undefined,
-      objectID: id,
-    });
-  }
-
-  public static fromSearchHit({
-    _tags = [],
-    objectID,
-    ...hit
-  }: MatchSearchHit): Match {
-    return new Match({
-      ...hit,
-      ...Resource.fromSearchHit(hit),
-      tags: _tags.filter(isMatchTag),
-      id: objectID,
-    });
   }
 
   public toCSV(): Record<string, string> {

@@ -1,10 +1,8 @@
 import {
   DBTimeslot,
   Timeslot,
-  TimeslotFirestore,
   TimeslotInterface,
   TimeslotJSON,
-  TimeslotSearchHit,
   TimeslotSegment,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
@@ -17,8 +15,6 @@ import { sameDate } from 'lib/utils/time';
  */
 export type AvailabilityAlias = TimeslotInterface[];
 export type AvailabilityJSON = TimeslotJSON[];
-export type AvailabilityFirestore = TimeslotFirestore[];
-export type AvailabilitySearchHit = TimeslotSearchHit[];
 
 export function isAvailabilityJSON(json: unknown): json is AvailabilityJSON {
   if (!(json instanceof Array)) return false;
@@ -213,16 +209,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
     return new Availability(...record.map((t) => Timeslot.fromDB(t)));
   }
 
-  public toFirestore(): AvailabilityFirestore {
-    return Array.from(this.map((t) => t.toFirestore()));
-  }
-
-  public static fromFirestore(data: AvailabilityFirestore): Availability {
-    const availability: Availability = new Availability();
-    data.forEach((t) => availability.push(Timeslot.fromFirestore(t)));
-    return availability;
-  }
-
   public toJSON(): AvailabilityJSON {
     return Array.from(this.map((t) => t.toJSON()));
   }
@@ -230,16 +216,6 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   public static fromJSON(json: AvailabilityJSON): Availability {
     const availability: Availability = new Availability();
     json.forEach((t) => availability.push(Timeslot.fromJSON(t)));
-    return availability;
-  }
-
-  public toSearchHit(): AvailabilitySearchHit {
-    return Array.from(this.map((t) => t.toSearchHit()));
-  }
-
-  public static fromSearchHit(hit: AvailabilitySearchHit): Availability {
-    const availability: Availability = new Availability();
-    hit.forEach((t) => availability.push(Timeslot.fromSearchHit(t)));
     return availability;
   }
 

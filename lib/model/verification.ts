@@ -1,9 +1,7 @@
 import {
   Resource,
-  ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
@@ -62,16 +60,6 @@ export type VerificationJSON = Omit<
   keyof ResourceInterface
 > &
   ResourceJSON;
-export type VerificationFirestore = Omit<
-  VerificationInterface,
-  keyof ResourceInterface
-> &
-  ResourceFirestore;
-export type VerificationSearchHit = Omit<
-  VerificationInterface,
-  keyof Resource
-> &
-  ResourceSearchHit;
 
 export function isVerificationJSON(json: unknown): json is VerificationJSON {
   if (!isResourceJSON(json)) return false;
@@ -111,21 +99,5 @@ export class Verification extends Resource implements VerificationInterface {
 
   public static fromJSON(json: VerificationJSON): Verification {
     return new Verification({ ...json, ...Resource.fromJSON(json) });
-  }
-
-  public toFirestore(): VerificationFirestore {
-    return { ...this, ...super.toFirestore() };
-  }
-
-  public static fromFirestore(data: VerificationFirestore): Verification {
-    return new Verification({ ...data, ...Resource.fromFirestore(data) });
-  }
-
-  public toSearchHit(): VerificationSearchHit {
-    return { ...this, ...super.toSearchHit() };
-  }
-
-  public static fromSearchHit(hit: VerificationSearchHit): Verification {
-    return new Verification({ ...hit, ...Resource.fromSearchHit(hit) });
   }
 }

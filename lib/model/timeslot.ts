@@ -1,21 +1,7 @@
-import * as admin from 'firebase-admin';
-
 import { isArray, isDateJSON, isJSON } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-
-/**
- * This is a painful workaround as we then import the entire Firebase library
- * definition while we only want the `Timestamp` object.
- * @todo Only import the `Timestamp` definition.
- * @todo Add support for the server-side `Timestamp` definition as well; right
- * now, we're not even using these type definitions because the Firebase Admin
- * SDK is telling us that the client-side and server-side type definitions are
- * incompatible.
- * @see {@link https://stackoverflow.com/a/57984831/10023158}
- */
-type Timestamp = admin.firestore.Timestamp;
 
 /**
  * A timeslot is a window of time and provides all the necessary scheduling data
@@ -49,9 +35,7 @@ export interface DBTimeslot {
   last: DBDate | null;
 }
 
-export type TimeslotFirestore = TimeslotInterface<Timestamp>;
 export type TimeslotJSON = TimeslotInterface<string>;
-export type TimeslotSearchHit = TimeslotInterface<number>;
 export type TimeslotSegment = { from: Date; to: Date };
 
 export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
@@ -211,27 +195,6 @@ export class Timeslot implements TimeslotInterface {
     });
   }
 
-  public toFirestore(): TimeslotFirestore {
-    const { from, to, exdates, last, ...rest } = this;
-    return definedVals({
-      ...rest,
-      from: (from as unknown) as Timestamp,
-      to: (to as unknown) as Timestamp,
-      exdates: exdates ? ((exdates as unknown[]) as Timestamp[]) : undefined,
-      last: last ? ((last as unknown) as Timestamp) : undefined,
-    });
-  }
-
-  public static fromFirestore(data: TimeslotFirestore): Timeslot {
-    return new Timeslot({
-      ...data,
-      from: data.from.toDate(),
-      to: data.to.toDate(),
-      exdates: data.exdates?.map((d) => d.toDate()),
-      last: data.last?.toDate(),
-    });
-  }
-
   public toJSON(): TimeslotJSON {
     const { from, to, exdates, last, ...rest } = this;
     return definedVals({
@@ -250,27 +213,6 @@ export class Timeslot implements TimeslotInterface {
       to: new Date(json.to),
       exdates: json.exdates?.map((d) => new Date(d)),
       last: json.last ? new Date(json.last) : undefined,
-    });
-  }
-
-  public toSearchHit(): TimeslotSearchHit {
-    const { from, to, exdates, last, ...rest } = this;
-    return definedVals({
-      ...rest,
-      from: from.valueOf(),
-      to: to.valueOf(),
-      exdates: exdates?.map((d) => d.valueOf()),
-      last: last?.valueOf(),
-    });
-  }
-
-  public static fromSearchHit(hit: TimeslotSearchHit): Timeslot {
-    return new Timeslot({
-      ...hit,
-      from: new Date(hit.from),
-      to: new Date(hit.to),
-      exdates: hit.exdates?.map((d) => new Date(d)),
-      last: hit.last ? new Date(hit.last) : undefined,
     });
   }
 

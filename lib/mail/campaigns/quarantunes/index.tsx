@@ -3,22 +3,18 @@ import Analytics from 'analytics-node';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { User } from 'lib/model/user';
-import { db } from 'lib/api/firebase';
+import { UsersQuery } from 'lib/model/query/users';
+import { getUsers } from 'lib/api/db/user';
 import send from 'lib/mail/send';
 
 import QuaranTunesTemplate from './template';
 
 export default async function quarantunes(req: Req, res: Res): Promise<void> {
-  const users = (
-    await db
-      .collection('users')
-      .where('orgs', 'array-contains', 'quarantunes')
-      .get()
-  ).docs.map((d) => User.fromFirestoreDoc(d));
+  const users = await getUsers(new UsersQuery({ orgs: ['quarantunes'] }));
   const analytics = new Analytics(process.env.SEGMENT_WRITE_KEY as string);
   const baseURL = 'https://tutorbook.org';
   await Promise.all(
-    users.map(async (user: User) => {
+    users.results.map(async (user: User) => {
       analytics.identify({ userId: user.id, traits: user.toSegment() });
       analytics.track({ userId: user.id, event: 'QuaranTunes Email II Sent' });
       const link =

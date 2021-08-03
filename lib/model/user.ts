@@ -1,28 +1,20 @@
-import * as admin from 'firebase-admin';
-
 import {
   Account,
-  AccountFirestore,
   AccountInterface,
   AccountJSON,
-  AccountSearchHit,
   isAccountJSON,
 } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
 import {
   Availability,
-  AvailabilityFirestore,
   AvailabilityJSON,
-  AvailabilitySearchHit,
   isAvailabilityJSON,
 } from 'lib/model/availability';
 import { DBDate, DBTimeslot } from 'lib/model/timeslot';
 import { Person, Role, isRole } from 'lib/model/person';
 import {
   Verification,
-  VerificationFirestore,
   VerificationJSON,
-  VerificationSearchHit,
   isVerificationJSON,
 } from 'lib/model/verification';
 import { caps, join, notTags } from 'lib/utils';
@@ -30,8 +22,6 @@ import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
-
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 /**
  * Various tags that are added to the Algolia users search during indexing (via
@@ -90,7 +80,7 @@ export function isSubjects(json: unknown): json is Subjects {
 }
 
 /**
- * A user object (that is stored in their Firestore profile document by uID).
+ * A user object.
  * @typedef {Object} UserInterface
  * @extends AccountInterface
  * @property [age] - The user's age (mostly used for students).
@@ -196,25 +186,6 @@ export type UserJSON = Omit<
   AccountJSON & {
     availability: AvailabilityJSON;
     verifications: VerificationJSON[];
-  };
-
-export type UserFirestore = Omit<
-  UserInterface,
-  keyof Account | 'availability' | 'verifications'
-> &
-  AccountFirestore & {
-    availability: AvailabilityFirestore;
-    verifications: VerificationFirestore[];
-  };
-
-export type UserSearchHit = Omit<
-  UserInterface,
-  keyof Account | 'availability' | 'verifications' | 'tags'
-> &
-  AccountSearchHit & {
-    availability: AvailabilitySearchHit;
-    verifications: VerificationSearchHit[];
-    _tags: UserHitTag[];
   };
 
 export function isUserJSON(json: unknown): json is UserJSON {
@@ -399,72 +370,6 @@ export class User extends Account implements UserInterface {
       ...Account.fromJSON(rest),
       availability: Availability.fromJSON(availability),
       verifications: verifications.map((v) => Verification.fromJSON(v)),
-    });
-  }
-
-  public toFirestore(): UserFirestore {
-    const { availability, verifications, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toFirestore(),
-      availability: availability.toFirestore(),
-      verifications: verifications.map((v) => v.toFirestore()),
-      token: undefined,
-      hash: undefined,
-    });
-  }
-
-  public static fromFirestore({
-    availability,
-    verifications = [],
-    ...rest
-  }: UserFirestore): User {
-    return new User({
-      ...rest,
-      ...Account.fromFirestore(rest),
-      availability: Availability.fromFirestore(availability),
-      verifications: verifications.map((v) => Verification.fromFirestore(v)),
-    });
-  }
-
-  public static fromFirestoreDoc(snapshot: DocumentSnapshot): User {
-    if (!snapshot.exists) return new User();
-    const overrides = definedVals({
-      created: snapshot.createTime?.toDate(),
-      updated: snapshot.updateTime?.toDate(),
-      id: snapshot.id,
-    });
-    const user = User.fromFirestore(snapshot.data() as UserFirestore);
-    return new User({ ...user, ...overrides });
-  }
-
-  public toSearchHit(): UserSearchHit {
-    const { availability, verifications, tags, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toSearchHit(),
-      availability: availability.toSearchHit(),
-      verifications: verifications.map((v) => v.toSearchHit()),
-      _tags: [...tags, ...notTags(tags, USER_TAGS)],
-      tags: undefined,
-      token: undefined,
-      hash: undefined,
-      id: undefined,
-    });
-  }
-
-  public static fromSearchHit({
-    availability,
-    verifications = [],
-    _tags = [],
-    ...rest
-  }: UserSearchHit): User {
-    return new User({
-      ...rest,
-      ...Account.fromSearchHit(rest),
-      availability: Availability.fromSearchHit(availability),
-      verifications: verifications.map((v) => Verification.fromSearchHit(v)),
-      tags: _tags.filter(isUserTag),
     });
   }
 
