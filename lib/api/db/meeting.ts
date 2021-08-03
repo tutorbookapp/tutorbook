@@ -65,12 +65,12 @@ export async function getMeetings(
         `and(time_from.lt.${from},time_last.gt.${to})`,
       ].join(',')
     );
+  if (query.org) select = select.eq('org', query.org);
   if (query.people.length) {
     const peopleIds = query.people.map((p) => p.value);
     select = select.overlaps('people_ids', peopleIds);
   }
-  if (typeof query.org === 'string') select = select.eq('org', query.org);
-  const { data, count, error } = await select;
+  const { data, count } = await select;
   let hits = count || (data || []).length;
   const meetings = (data || [])
     .map((m) => Meeting.fromDB(m))
