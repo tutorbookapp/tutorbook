@@ -174,6 +174,9 @@ order by id;
 create view view_meetings as
 select 
   meetings.*,
+  -- TODO: Remove this `time_from` columns as they're only required b/c of an
+  -- upstream limitation with PostgREST that disallows composite types.
+  -- See: https://github.com/PostgREST/postgrest/issues/1543
   (meetings.time).from as time_from,
   (meetings.time).to as time_to,
   (meetings.time).last as time_last,
