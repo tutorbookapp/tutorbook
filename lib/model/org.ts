@@ -147,7 +147,9 @@ export interface DBOrg {
   created: DBDate;
   updated: DBDate;
 }
-
+export interface DBViewOrg extends DBOrg {
+  members: string[];
+}
 export interface DBRelationMember {
   user: string;
   org: string;
@@ -288,7 +290,7 @@ export class Org extends Account implements OrgInterface {
     };
   }
 
-  public static fromDB(record: DBOrg): Org {
+  public static fromDB(record: DBOrg | DBViewOrg): Org {
     return new Org({
       id: record.id,
       name: record.name,
@@ -308,6 +310,7 @@ export class Org extends Account implements OrgInterface {
       booking: record.booking as BookingConfig,
       created: new Date(record.created),
       updated: new Date(record.updated),
+      members: 'members' in record ? record.members : [],
     });
   }
 

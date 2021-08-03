@@ -1,9 +1,13 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { APIError, handle } from 'lib/api/error';
-import { MeetingsQuery, MeetingsQueryURL, isMeetingsQueryURL } from 'lib/model/query/meetings';
+import {
+  MeetingsQuery,
+  MeetingsQueryURL,
+  isMeetingsQueryURL,
+} from 'lib/model/query/meetings';
 import { MeetingJSON } from 'lib/model/meeting';
-import getMeetings from 'lib/api/get/meetings';
+import { getMeetings } from 'lib/api/db/meeting';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyQuery from 'lib/api/verify/query';

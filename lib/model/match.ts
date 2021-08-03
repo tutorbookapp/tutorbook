@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
-import { Person, isPerson } from 'lib/model/person';
+import { Person, Role, isPerson } from 'lib/model/person';
 import {
   Resource,
   ResourceFirestore,
@@ -14,6 +14,7 @@ import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import { Aspect } from 'lib/model/aspect';
 import { DBDate } from 'lib/model/timeslot';
+import { DBUser } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -59,7 +60,10 @@ export interface DBMatch {
   created: DBDate;
   updated: DBDate;
 }
-
+export interface DBViewMatch extends DBMatch {
+  people: (DBUser & { roles: Role[] })[];
+  people_ids: string[];
+}
 export interface DBRelationMatchPerson {
   user: string;
   match: number;
@@ -159,21 +163,31 @@ export class Match extends Resource implements MatchInterface {
     };
   }
 
-  public static fromDB(record: DBMatch): Match {
+  public static fromDB(record: DBMatch | DBViewMatch): Match {
+    const creator =
+      'people' in record
+        ? record.people.find((p) => p.id === record.creator)
+        : undefined;
     return new Match({
       id: record.id.toString(),
       org: record.org,
       creator: {
         id: record.creator,
-        name: '',
-        photo: '',
-        roles: [],
+        name: creator?.name || '',
+        photo: creator?.photo || '',
+        roles: creator?.roles || [],
       },
       subjects: record.subjects,
       message: record.message,
       tags: record.tags,
       created: new Date(record.created),
       updated: new Date(record.updated),
+      people: ('people' in record ? record.people : []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        photo: p.photo || '',
+        roles: p.roles,
+      })),
     });
   }
 

@@ -89,7 +89,6 @@ export async function getUsers(
     select = select.eq('visible', query.visible);
   if (query.parents.length) select = select.overlaps('parents', query.parents);
   if (query.orgs.length) select = select.overlaps('orgs', query.orgs);
-
   // Filtering by availability shows volunteers that the student can book. In
   // other (more technical) terms, we show volunteers who have at least one
   // hour-long timeslot within the student's availability in the next 3 months
@@ -115,16 +114,9 @@ export async function getUsers(
     // TODO: There is probably a bigger limitation here than with Algolia. I bet
     // I won't be able to filter by all ~600 slices for a full availability.
     const sliced = sliceAvailability(query.availability);
-    console.log(
-      'Filtering:',
-      sliced.map((t) => t.from.valueOf())
-    );
-    select = select.overlaps(
-      'times',
-      sliced.map((t) => t.from.valueOf())
-    );
+    const nums = sliced.map((t) => t.from.valueOf());
+    select = select.overlaps('times', nums);
   }
-
   const { data, count } = await select;
   const results = (data || []).map((u) => User.fromDB(u));
   return { results, hits: count || results.length };

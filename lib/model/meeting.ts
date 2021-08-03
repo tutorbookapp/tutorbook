@@ -2,23 +2,6 @@ import * as admin from 'firebase-admin';
 import { ObjectWithObjectID } from '@algolia/client-search';
 
 import {
-  Match,
-  MatchFirestore,
-  MatchJSON,
-  MatchSearchHit,
-  MatchSegment,
-  isMatchJSON,
-} from 'lib/model/match';
-import { Person, isPerson } from 'lib/model/person';
-import {
-  Resource,
-  ResourceFirestore,
-  ResourceInterface,
-  ResourceJSON,
-  ResourceSearchHit,
-  isResourceJSON,
-} from 'lib/model/resource';
-import {
   DBDate,
   DBTimeslot,
   Timeslot,
@@ -28,6 +11,23 @@ import {
   isTimeslotJSON,
 } from 'lib/model/timeslot';
 import {
+  Match,
+  MatchFirestore,
+  MatchJSON,
+  MatchSearchHit,
+  MatchSegment,
+  isMatchJSON,
+} from 'lib/model/match';
+import { Person, Role, isPerson } from 'lib/model/person';
+import {
+  Resource,
+  ResourceFirestore,
+  ResourceInterface,
+  ResourceJSON,
+  ResourceSearchHit,
+  isResourceJSON,
+} from 'lib/model/resource';
+import {
   Venue,
   VenueFirestore,
   VenueJSON,
@@ -36,6 +36,7 @@ import {
 } from 'lib/model/venue';
 import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
+import { DBUser } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -110,7 +111,10 @@ export interface DBMeeting {
   created: DBDate;
   updated: DBDate;
 }
-
+export interface DBViewMeeting extends DBMeeting {
+  people: (DBUser & { roles: Role[] })[];
+  people_ids: string[];
+}
 export interface DBRelationMeetingPerson {
   user: string;
   meeting: number;
@@ -226,14 +230,18 @@ export class Meeting extends Resource implements MeetingInterface {
     };
   }
 
-  public static fromDB(record: DBMeeting): Meeting {
+  public static fromDB(record: DBMeeting | DBViewMeeting): Meeting {
+    const creator =
+      'people' in record
+        ? record.people.find((p) => p.id === record.creator)
+        : undefined;
     return new Meeting({
       id: record.id.toString(),
       creator: {
         id: record.creator,
-        name: '',
-        photo: '',
-        roles: [],
+        name: creator?.name || '',
+        photo: creator?.photo || '',
+        roles: creator?.roles || [],
       },
       status: record.status,
       venue: new Venue({ url: record.venue }),
@@ -246,6 +254,18 @@ export class Meeting extends Resource implements MeetingInterface {
         id: record.match.toString(),
         org: record.org,
         subjects: record.subjects,
+        people: ('people' in record ? record.people : []).map((p) => ({
+          id: p.id,
+          name: p.name,
+          photo: p.photo || '',
+          roles: p.roles,
+        })),
+        creator: {
+          id: record.creator,
+          name: creator?.name || '',
+          photo: creator?.photo || '',
+          roles: creator?.roles || [],
+        },
       }),
     });
   }
