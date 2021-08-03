@@ -1,12 +1,10 @@
 import * as admin from 'firebase-admin';
-import { ObjectWithObjectID } from '@algolia/client-search';
 
 import {
   Resource,
   ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
@@ -91,9 +89,6 @@ export interface AccountInterface extends ResourceInterface {
 export type AccountJSON = Omit<AccountInterface, keyof Resource> & ResourceJSON;
 export type AccountFirestore = Omit<AccountInterface, keyof Resource> &
   ResourceFirestore;
-export type AccountSearchHit = ObjectWithObjectID &
-  Omit<AccountInterface, keyof Resource | 'id'> &
-  ResourceSearchHit;
 
 export function isAccountJSON(json: unknown): json is AccountJSON {
   const stringFields = [
@@ -206,27 +201,6 @@ export class Account extends Resource implements AccountInterface {
     });
     const account = Account.fromFirestore(snapshot.data() as AccountFirestore);
     return new Account({ ...account, ...overrides });
-  }
-
-  public toSearchHit(): AccountSearchHit {
-    const { id, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toSearchHit(),
-      id: undefined,
-      objectID: id,
-    });
-  }
-
-  public static fromSearchHit({
-    objectID,
-    ...rest
-  }: AccountSearchHit): Account {
-    return new Account({
-      ...rest,
-      ...Resource.fromSearchHit(rest),
-      id: objectID,
-    });
   }
 
   public toString(): string {

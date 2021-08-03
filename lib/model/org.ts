@@ -5,7 +5,6 @@ import {
   AccountFirestore,
   AccountInterface,
   AccountJSON,
-  AccountSearchHit,
   isAccountJSON,
 } from 'lib/model/account';
 import { Aspect, isAspect } from 'lib/model/aspect';
@@ -117,7 +116,6 @@ export interface DBRelationMember {
 }
 
 export type OrgJSON = Omit<OrgInterface, keyof Account> & AccountJSON;
-export type OrgSearchHit = Omit<OrgInterface, keyof Account> & AccountSearchHit;
 export type OrgFirestore = Omit<OrgInterface, keyof Account> & AccountFirestore;
 
 // TODO: Check that the `profiles` key only contains keys of the `User` object.
@@ -297,17 +295,5 @@ export class Org extends Account implements OrgInterface {
     });
     const org = Org.fromFirestore(snapshot.data() as OrgFirestore);
     return new Org({ ...org, ...overrides });
-  }
-
-  public toSearchHit(): OrgSearchHit {
-    return definedVals({
-      ...this,
-      ...super.toSearchHit(),
-      id: undefined,
-    });
-  }
-
-  public static fromSearchHit(hit: OrgSearchHit): Org {
-    return new Org({ ...hit, ...Account.fromSearchHit(hit) });
   }
 }

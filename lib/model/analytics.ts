@@ -1,12 +1,10 @@
 import * as admin from 'firebase-admin';
-import { ObjectWithObjectID } from '@algolia/client-search';
 
 import {
   Resource,
   ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
 } from 'lib/model/resource';
 import { MatchTag } from 'lib/model/match';
 import { MeetingTag } from 'lib/model/meeting';
@@ -48,9 +46,6 @@ export interface AnalyticsInterface extends ResourceInterface {
 
 export type AnalyticsJSON = Omit<AnalyticsInterface, keyof Resource | 'date'> &
   ResourceJSON & { date: string };
-export type AnalyticsSearchHit = ObjectWithObjectID &
-  Omit<AnalyticsInterface, keyof Resource | 'id' | 'date'> &
-  ResourceSearchHit & { date: number };
 export type AnalyticsFirestore = Omit<
   AnalyticsInterface,
   keyof Resource | 'date'
@@ -180,29 +175,5 @@ export class Analytics extends Resource implements AnalyticsInterface {
       snapshot.data() as AnalyticsFirestore
     );
     return new Analytics({ ...match, ...overrides });
-  }
-
-  public toSearchHit(): AnalyticsSearchHit {
-    const { id, date, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toSearchHit(),
-      date: date.valueOf(),
-      id: undefined,
-      objectID: id,
-    });
-  }
-
-  public static fromSearchHit({
-    objectID,
-    date,
-    ...rest
-  }: AnalyticsSearchHit): Analytics {
-    return new Analytics({
-      ...rest,
-      ...Resource.fromSearchHit(rest),
-      date: new Date(date),
-      id: objectID,
-    });
   }
 }

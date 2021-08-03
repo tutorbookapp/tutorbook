@@ -51,7 +51,6 @@ export interface DBTimeslot {
 
 export type TimeslotFirestore = TimeslotInterface<Timestamp>;
 export type TimeslotJSON = TimeslotInterface<string>;
-export type TimeslotSearchHit = TimeslotInterface<number>;
 export type TimeslotSegment = { from: Date; to: Date };
 
 export function isTimeslotJSON(json: unknown): json is TimeslotJSON {
@@ -250,27 +249,6 @@ export class Timeslot implements TimeslotInterface {
       to: new Date(json.to),
       exdates: json.exdates?.map((d) => new Date(d)),
       last: json.last ? new Date(json.last) : undefined,
-    });
-  }
-
-  public toSearchHit(): TimeslotSearchHit {
-    const { from, to, exdates, last, ...rest } = this;
-    return definedVals({
-      ...rest,
-      from: from.valueOf(),
-      to: to.valueOf(),
-      exdates: exdates?.map((d) => d.valueOf()),
-      last: last?.valueOf(),
-    });
-  }
-
-  public static fromSearchHit(hit: TimeslotSearchHit): Timeslot {
-    return new Timeslot({
-      ...hit,
-      from: new Date(hit.from),
-      to: new Date(hit.to),
-      exdates: hit.exdates?.map((d) => new Date(d)),
-      last: hit.last ? new Date(hit.last) : undefined,
     });
   }
 

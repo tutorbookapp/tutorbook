@@ -1,5 +1,4 @@
 import * as admin from 'firebase-admin';
-import { ObjectWithObjectID } from '@algolia/client-search';
 
 import { Person, Role, isPerson } from 'lib/model/person';
 import {
@@ -7,7 +6,6 @@ import {
   ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
 import { isArray, isJSON } from 'lib/model/json';
@@ -71,9 +69,6 @@ export interface DBRelationMatchPerson {
 }
 
 export type MatchJSON = Omit<MatchInterface, keyof Resource> & ResourceJSON;
-export type MatchSearchHit = ObjectWithObjectID &
-  Omit<MatchInterface, keyof Resource | 'id' | 'tags'> &
-  ResourceSearchHit & { _tags: MatchHitTag[] };
 export type MatchFirestore = Omit<MatchInterface, keyof Resource> &
   ResourceFirestore;
 
@@ -220,31 +215,6 @@ export class Match extends Resource implements MatchInterface {
     });
     const match = Match.fromFirestore(snapshot.data() as MatchFirestore);
     return new Match({ ...match, ...overrides });
-  }
-
-  public toSearchHit(): MatchSearchHit {
-    const { tags, id, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toSearchHit(),
-      _tags: [...tags, ...notTags(tags, MATCH_TAGS)],
-      tags: undefined,
-      id: undefined,
-      objectID: id,
-    });
-  }
-
-  public static fromSearchHit({
-    _tags = [],
-    objectID,
-    ...hit
-  }: MatchSearchHit): Match {
-    return new Match({
-      ...hit,
-      ...Resource.fromSearchHit(hit),
-      tags: _tags.filter(isMatchTag),
-      id: objectID,
-    });
   }
 
   public toCSV(): Record<string, string> {

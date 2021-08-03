@@ -1,5 +1,4 @@
 import * as admin from 'firebase-admin';
-import { ObjectWithObjectID } from '@algolia/client-search';
 
 import {
   DBDate,
@@ -7,14 +6,12 @@ import {
   Timeslot,
   TimeslotFirestore,
   TimeslotJSON,
-  TimeslotSearchHit,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
 import {
   Match,
   MatchFirestore,
   MatchJSON,
-  MatchSearchHit,
   MatchSegment,
   isMatchJSON,
 } from 'lib/model/match';
@@ -24,16 +21,9 @@ import {
   ResourceFirestore,
   ResourceInterface,
   ResourceJSON,
-  ResourceSearchHit,
   isResourceJSON,
 } from 'lib/model/resource';
-import {
-  Venue,
-  VenueFirestore,
-  VenueJSON,
-  VenueSearchHit,
-  isVenueJSON,
-} from 'lib/model/venue';
+import { Venue, VenueFirestore, VenueJSON, isVenueJSON } from 'lib/model/venue';
 import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import { DBUser } from 'lib/model/user';
@@ -134,17 +124,6 @@ export type MeetingFirestore = Omit<
     time: TimeslotFirestore;
     venue: VenueFirestore;
     match: MatchFirestore;
-  };
-export type MeetingSearchHit = ObjectWithObjectID &
-  Omit<
-    MeetingInterface,
-    keyof Resource | 'time' | 'venue' | 'match' | 'id' | 'tags'
-  > &
-  ResourceSearchHit & {
-    time: TimeslotSearchHit;
-    venue: VenueSearchHit;
-    match: MatchSearchHit;
-    _tags: MeetingHitTag[];
   };
 
 export interface MeetingSegment {
@@ -335,40 +314,6 @@ export class Meeting extends Resource implements MeetingInterface {
     });
     const meeting = Meeting.fromFirestore(snapshot.data() as MeetingFirestore);
     return new Meeting({ ...meeting, ...overrides });
-  }
-
-  public toSearchHit(): MeetingSearchHit {
-    const { time, venue, match, tags, id, ...rest } = this;
-    return definedVals({
-      ...rest,
-      ...super.toSearchHit(),
-      time: time.toSearchHit(),
-      venue: venue.toSearchHit(),
-      match: match.toSearchHit(),
-      _tags: [...tags, ...notTags(tags, MEETING_TAGS)],
-      tags: undefined,
-      id: undefined,
-      objectID: id,
-    });
-  }
-
-  public static fromSearchHit({
-    time,
-    venue,
-    match,
-    _tags = [],
-    objectID,
-    ...rest
-  }: MeetingSearchHit): Meeting {
-    return new Meeting({
-      ...rest,
-      ...Resource.fromSearchHit(rest),
-      time: Timeslot.fromSearchHit(time),
-      venue: Venue.fromSearchHit(venue),
-      match: Match.fromSearchHit(match),
-      tags: _tags.filter(isMeetingTag),
-      id: objectID,
-    });
   }
 
   public toCSV(): Record<string, string> {
