@@ -41,7 +41,6 @@
   "roles": [],
   "featured": ["tutoring"],
   "orgs": ["default", "gunn"],
-  "zooms": [],
   "availability": [
     {
       "from": "1970-01-04T17:00:00.000Z",

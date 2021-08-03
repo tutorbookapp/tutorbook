@@ -11,6 +11,5 @@ export * from './availability';
 export * from './match';
 export * from './resource';
 export * from './verification';
-export * from './zoom-user';
 export * from './venue';
 export * from './query/index';

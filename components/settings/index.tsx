@@ -16,7 +16,7 @@ import styles from './settings.module.scss';
 
 export interface SettingsProps {
   orgId: string;
-  active: 'general' | 'home' | 'signup' | 'zoom';
+  active: 'general' | 'home' | 'signup';
   children: ReactNode;
 }
 

@@ -142,7 +142,6 @@ const emptyUser = {
   venue: '',
   socials: [],
   orgs: [],
-  zooms: [],
   availability: [],
   mentoring: { subjects: [], searches: [] },
   tutoring: { subjects: [], searches: [] },
