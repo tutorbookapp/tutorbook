@@ -28,7 +28,7 @@
 me](mailto:nicholas@tutorbook.org) if you're interested in becoming a
 contributor.**
 
-**👨‍💻 Currently: Working on migrating from [Firebase](https://firebase.com) to 
+**👨‍💻 Currently: Working on migrating from [Firebase](https://firebase.com) to
 the open-source [Supabase](https://supabase.io) alternative.**
 
 ## About Tutorbook
@@ -194,56 +194,6 @@ like:
 - Who are the students or volunteers that aren't matched? Why aren't they?
 - Who doesn't have meetings? Why don't they?
 - Which students aren't donating money? Why aren't they?
-
-### Zoom Integration
-
-TB ([Tutorbook](https://tutorbook.org)) creates new recurring Zoom meetings for
-every [match](#match). To do so, TB stores Zoom OAuth refresh tokens and account
-IDs within [user](#user) and [org](#org) profiles.
-
-Orgs have two options when authorizing TB to use their Zoom account:
-
-1. **Create new users:** TB will create new Zoom users (within the org's Zoom
-   account) for each user created on TB (using the user's _actual_ email address
-   and falling back to the user's _TB-assigned anonymous_ email address
-   (e.g. `dfadf-adwei8e-dw934sd@mail.tutorbook.org` instead of
-   `my.personal.email@gmail.com`) if that fails). TB then uses those Zoom users
-   when creating Zoom meetings.
-   - Requires both the **meeting:write:admin** scope _and_ the
-     **user:write:admin** scope.
-2. **Assume users already exist:** TB will assume that Zoom users (using the
-   user's _actual_ email address) already exist (within the org's Zoom account)
-   for each user created on TB. TB then reuses those existing Zoom users when
-   creating Zoom meetings.
-   - Requires only the **meeting:write:admin** scope.
-
-Smaller orgs may opt for option one (for convenience) while larger orgs (e.g.
-entire school districts) will likely use option two (because they already have
-Zoom users for each of their students and tutors).
-
-Option two is recommended when possible because it does not require users to
-login to Zoom using their TB-assigned anonymous email address (as they must be
-logged into the correct Zoom account to host the [match](#match) Zoom meetings).
-
-Because [Zoom pricing](https://zoom.us/pricing) is per user license, TB will
-only create Zoom user accounts when it has to (i.e. when a [match](#match) is
-created and none of the match's `people` already have Zoom user accounts). When
-creating a Zoom meeting for a match:
-
-1. TB will first try using the tutor or mentor Zoom user accounts.
-2. If that fails, TB will try using the student (i.e. `tutee` and `mentee`) Zoom
-   user accounts.
-   - TB will not attempt to use `people` who do not have any `roles` listed (as
-     those people were likely added just because they were on an email thread
-     with one of the tutors, mentors, or students).
-3. If all of that fails (i.e. there are no existing Zoom user accounts for the
-   match's people within the match's org), TB will try to create a new Zoom user
-   account for the match's tutor or mentor within the match's org.
-4. If that still fails (i.e. the org chose option two and doesn't allow TB to
-   create new Zoom users), TB will fallback to using [Jitsi](https://jitsi.org).
-
-For more info on our Zoom integration, see [this
-issue](https://github.com/tutorbookapp/tutorbook/issues/100).
 
 ### Forms and Data Mutation
 
