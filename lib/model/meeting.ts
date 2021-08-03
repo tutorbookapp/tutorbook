@@ -5,8 +5,8 @@ import {
   TimeslotJSON,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
+import { DBUser, Role, User, UserJSON, isUserJSON } from 'lib/model/user';
 import { Match, MatchJSON, MatchSegment, isMatchJSON } from 'lib/model/match';
-import { Person, Role, isPerson } from 'lib/model/person';
 import {
   Resource,
   ResourceInterface,
@@ -16,7 +16,6 @@ import {
 import { Venue, VenueJSON, isVenueJSON } from 'lib/model/venue';
 import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
-import { DBUser } from 'lib/model/user';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -65,7 +64,7 @@ export type MeetingStatus = 'created' | 'pending' | 'logged' | 'approved';
  */
 export interface MeetingInterface extends ResourceInterface {
   status: MeetingStatus;
-  creator: Person;
+  creator: User;
   match: Match;
   venue: Venue;
   time: Timeslot;
@@ -101,9 +100,14 @@ export interface DBRelationMeetingPerson {
 
 export type MeetingJSON = Omit<
   MeetingInterface,
-  keyof Resource | 'time' | 'venue' | 'match'
+  keyof Resource | 'time' | 'venue' | 'match' | 'creator'
 > &
-  ResourceJSON & { time: TimeslotJSON; venue: VenueJSON; match: MatchJSON };
+  ResourceJSON & {
+    time: TimeslotJSON;
+    venue: VenueJSON;
+    match: MatchJSON;
+    creator: UserJSON;
+  };
 
 export interface MeetingSegment {
   id: string;
@@ -119,7 +123,7 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (typeof json.status !== 'string') return false;
   if (!['created', 'pending', 'logged', 'approved'].includes(json.status))
     return false;
-  if (!isPerson(json.creator)) return false;
+  if (!isUserJSON(json.creator)) return false;
   if (!isMatchJSON(json.match)) return false;
   if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
@@ -133,12 +137,7 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
 export class Meeting extends Resource implements MeetingInterface {
   public status: MeetingStatus = 'pending';
 
-  public creator: Person = {
-    id: '',
-    name: '',
-    photo: '',
-    roles: [],
-  };
+  public creator: User = new User();
 
   public match = new Match();
 
@@ -195,21 +194,13 @@ export class Meeting extends Resource implements MeetingInterface {
         : undefined;
     const people =
       'people' in record
-        ? (record.people || []).map((p) => ({
-            id: p.id,
-            name: p.name,
-            photo: p.photo || '',
-            roles: p.roles,
-          }))
+        ? (record.people || []).map((p) => User.fromDB(p))
         : [];
     return new Meeting({
       id: record.id.toString(),
-      creator: {
-        id: record.creator,
-        name: creator?.name || '',
-        photo: creator?.photo || '',
-        roles: creator?.roles || [],
-      },
+      creator: creator
+        ? User.fromDB(creator)
+        : new User({ id: record.creator }),
       status: record.status,
       venue: new Venue({ url: record.venue }),
       time: Timeslot.fromDB(record.time),
@@ -222,39 +213,32 @@ export class Meeting extends Resource implements MeetingInterface {
         id: record.match.toString(),
         org: record.org,
         subjects: record.subjects,
-        creator: {
-          id: record.creator,
-          name: creator?.name || '',
-          photo: creator?.photo || '',
-          roles: creator?.roles || [],
-        },
+        creator: creator
+          ? User.fromDB(creator)
+          : new User({ id: record.creator }),
       }),
     });
   }
 
   public toJSON(): MeetingJSON {
-    const { time, venue, match, ...rest } = this;
     return definedVals({
-      ...rest,
+      ...this,
       ...super.toJSON(),
-      time: time.toJSON(),
-      venue: venue.toJSON(),
-      match: match.toJSON(),
+      time: this.time.toJSON(),
+      venue: this.venue.toJSON(),
+      match: this.match.toJSON(),
+      creator: this.creator.toJSON(),
     });
   }
 
-  public static fromJSON({
-    time,
-    venue,
-    match,
-    ...rest
-  }: MeetingJSON): Meeting {
+  public static fromJSON(json: MeetingJSON): Meeting {
     return new Meeting({
-      ...rest,
-      ...Resource.fromJSON(rest),
-      time: Timeslot.fromJSON(time),
-      venue: Venue.fromJSON(venue),
-      match: Match.fromJSON(match),
+      ...json,
+      ...Resource.fromJSON(json),
+      time: Timeslot.fromJSON(json.time),
+      venue: Venue.fromJSON(json.venue),
+      match: Match.fromJSON(json.match),
+      creator: User.fromJSON(json.creator),
     });
   }
 
