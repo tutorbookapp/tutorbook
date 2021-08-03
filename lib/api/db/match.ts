@@ -83,6 +83,9 @@ export async function getMatches(
     select = select.overlaps('people_ids', peopleIds);
   }
   const { data, error, count } = await select;
+  // TODO: Remove this weird edge case workaround for no results.
+  // @see {@link https://github.com/supabase/postgrest-js/issues/202}
+  if (error instanceof Array) return { results: [], hits: 0 };
   handle('getting', 'matches', query, error);
   const results = (data || []).map((m) => Match.fromDB(m));
   return { results, hits: count || results.length };

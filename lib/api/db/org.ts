@@ -47,6 +47,9 @@ export async function getOrg(id: string): Promise<Org> {
 
 export async function getOrgs(): Promise<Org[]> {
   const { data, error } = await supabase.from<DBViewOrg>('view_orgs').select();
+  // TODO: Remove this weird edge case workaround for no results.
+  // @see {@link https://github.com/supabase/postgrest-js/issues/202}
+  if (error instanceof Array) return [];
   handle('getting', 'orgs', {}, error);
   return (data || []).map((d) => Org.fromDB(d));
 }
@@ -56,6 +59,9 @@ export async function getOrgsByAdminId(adminId: string): Promise<Org[]> {
     .from<DBViewOrg>('view_orgs')
     .select()
     .contains('members', [adminId]);
+  // TODO: Remove this weird edge case workaround for no results.
+  // @see {@link https://github.com/supabase/postgrest-js/issues/202}
+  if (error instanceof Array) return [];
   handle('getting', 'orgs by admin', adminId, error);
   return (data || []).map((d) => Org.fromDB(d));
 }

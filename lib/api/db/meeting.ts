@@ -100,6 +100,9 @@ export async function getMeetings(
     select = select.overlaps('people_ids', peopleIds);
   }
   const { data, error, count } = await select;
+  // TODO: Remove this weird edge case workaround for no results.
+  // @see {@link https://github.com/supabase/postgrest-js/issues/202}
+  if (error instanceof Array) return { results: [], hits: 0 };
   handle('getting', 'meetings', query, error);
   let hits = count || (data || []).length;
   const meetings = (data || [])
@@ -134,6 +137,9 @@ export async function getMeetingsByMatchId(
     .from<DBViewMeeting>('view_meetings')
     .select()
     .eq('match', Number(matchId));
+  // TODO: Remove this weird edge case workaround for no results.
+  // @see {@link https://github.com/supabase/postgrest-js/issues/202}
+  if (error instanceof Array) return [];
   handle('getting', 'meetings by match', matchId, error);
   return (data || []).map((d) => Meeting.fromDB(d));
 }
