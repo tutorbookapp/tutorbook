@@ -131,7 +131,7 @@ export default async function deleteMeetingAPI(
     await Promise.all([
       analytics(deleting, 'deleted'),
       updatePeopleTags(people, { remove: ['meeting'] }),
-      ...people.map((p) => updateUser(p)),
+      Promise.all(people.map((p) => updateUser(p))),
     ]);
   } catch (e) {
     handle(e, res);

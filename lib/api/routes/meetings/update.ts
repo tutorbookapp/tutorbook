@@ -21,11 +21,11 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
-import { updateUser } from 'lib/api/db/user';
 import { updateMatch } from 'lib/api/db/match';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
+import { updateUser } from 'lib/api/db/user';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyBody from 'lib/api/verify/body';
 import verifyOptions from 'lib/api/verify/options';
@@ -137,7 +137,7 @@ export default async function updateMeetingAPI(
         await Promise.all([
           analytics(body, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
-          ...people.map((p) => updateUser(p)),
+          Promise.all(people.map((p) => updateUser(p))),
         ]);
       } else if (options.action === 'this') {
         // Update this meeting only:
@@ -191,7 +191,7 @@ export default async function updateMeetingAPI(
         await Promise.all([
           analytics(newMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
-          ...people.map((p) => updateUser(p)),
+          Promise.all(people.map((p) => updateUser(p))),
         ]);
       } else {
         // Update this and all following meetings:
@@ -240,7 +240,7 @@ export default async function updateMeetingAPI(
         await Promise.all([
           analytics(newRecurringMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
-          ...people.map((p) => updateUser(p)),
+          Promise.all(people.map((p) => updateUser(p))),
         ]);
       }
     } else {
@@ -272,7 +272,7 @@ export default async function updateMeetingAPI(
       await Promise.all([
         analytics(meeting, 'updated'),
         updatePeopleTags(people, { add: ['meeting'] }),
-        ...people.map((p) => updateUser(p)),
+        Promise.all(people.map((p) => updateUser(p))),
       ]);
     }
   } catch (e) {

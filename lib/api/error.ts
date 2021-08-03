@@ -2,7 +2,6 @@ import { ServerResponse } from 'http';
 
 import { APIError } from 'lib/model/error';
 import logger from 'lib/api/logger';
-import { period } from 'lib/utils';
 
 function send(e: APIError, res: ServerResponse): void {
   logger.error(`API encountered (${e.code}) error: ${e.message}`);

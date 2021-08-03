@@ -3,6 +3,7 @@ import to from 'await-to-js';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
 import { createMatch, getMatch } from 'lib/api/db/match';
+import { getUser, updateUser } from 'lib/api/db/user';
 import { APIError } from 'lib/model/error';
 import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
@@ -13,12 +14,10 @@ import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import getStudents from 'lib/api/get/students';
-import { getUser } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
-import { updateUser } from 'lib/api/db/user';
 import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
@@ -126,7 +125,7 @@ export default async function createMeetingAPI(
     await Promise.all([
       analytics(meeting, 'created'),
       updatePeopleTags(people, { add: ['meeting'] }),
-      ...people.map((p) => updateUser(p)),
+      Promise.all(people.map((p) => updateUser(p))),
     ]);
   } catch (e) {
     handle(e, res);
