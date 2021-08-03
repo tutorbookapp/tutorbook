@@ -1,13 +1,16 @@
 import { DBOrg, DBRelationMember, DBViewOrg, Org } from 'lib/model/org';
 import { APIError } from 'lib/model/error';
 import handle from 'lib/api/db/error';
+import logger from 'lib/api/logger';
 import supabase from 'lib/api/supabase';
 
 export async function createOrg(org: Org): Promise<Org> {
+  logger.verbose(`Inserting org (${org.toString()}) row...`);
   const { data, error } = await supabase.from<DBOrg>('orgs').insert(org.toDB());
   handle('creating', 'org', org, error);
   const o = data ? Org.fromDB(data[0]) : org;
   const members = org.members.map((m) => ({ user: m, org: o.id }));
+  logger.verbose(`Inserting org members (${JSON.stringify(members)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationMember>('relation_members')
     .insert(members);
@@ -16,6 +19,7 @@ export async function createOrg(org: Org): Promise<Org> {
 }
 
 export async function updateOrg(org: Org): Promise<Org> {
+  logger.verbose(`Updating org (${org.toString()}) row...`);
   const { data, error } = await supabase
     .from<DBOrg>('orgs')
     .update(org.toDB())
@@ -23,6 +27,7 @@ export async function updateOrg(org: Org): Promise<Org> {
   handle('updating', 'org', org, error);
   const o = data ? Org.fromDB(data[0]) : org;
   const members = org.members.map((m) => ({ user: m, org: o.id }));
+  logger.verbose(`Upserting org members (${JSON.stringify(members)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationMember>('relation_members')
     .upsert(members, { onConflict: 'user,org' });

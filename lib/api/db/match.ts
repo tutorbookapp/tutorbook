@@ -7,9 +7,11 @@ import {
 import { APIError } from 'lib/model/error';
 import { MatchesQuery } from 'lib/model/query/matches';
 import handle from 'lib/api/db/error';
+import logger from 'lib/api/logger';
 import supabase from 'lib/api/supabase';
 
 export async function createMatch(match: Match): Promise<Match> {
+  logger.verbose(`Inserting match (${match.toString()}) row...`);
   const { data, error } = await supabase
     .from<DBMatch>('matches')
     .insert({ ...match.toDB(), id: undefined });
@@ -20,6 +22,7 @@ export async function createMatch(match: Match): Promise<Match> {
     roles: p.roles,
     match: Number(m.id),
   }));
+  logger.verbose(`Inserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationMatchPerson>('relation_match_people')
     .insert(people);
@@ -28,6 +31,7 @@ export async function createMatch(match: Match): Promise<Match> {
 }
 
 export async function updateMatch(match: Match): Promise<Match> {
+  logger.verbose(`Updating match (${match.toString()}) row...`);
   const { data, error } = await supabase
     .from<DBMatch>('matches')
     .update({ ...match.toDB(), id: undefined })
@@ -39,6 +43,7 @@ export async function updateMatch(match: Match): Promise<Match> {
     roles: p.roles,
     match: Number(m.id),
   }));
+  logger.verbose(`Upserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationMatchPerson>('relation_match_people')
     .upsert(people, { onConflict: 'user,match,roles' });
