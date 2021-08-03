@@ -162,7 +162,7 @@ async function fetchMeetings() {
   const matchIds = require(path.resolve(__dirname, './ids-matches.json'));
   const userIds = require(path.resolve(__dirname, './ids-users.json'));
   await fetch('meetings', (d) => ({
-    org: d.org || 'default',
+    org: d.match.org || 'default',
     creator: userIds[d.creator.id],
     subjects: d.match.subjects,
     status: d.status || 'created',
