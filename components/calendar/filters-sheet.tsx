@@ -6,7 +6,7 @@ import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 import UserSelect from 'components/user-select';
 
-import { MEETING_TAGS, MeetingHitTag } from 'lib/model/meeting';
+import { MEETING_TAGS, DBMeetingTag } from 'lib/model/meeting';
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Option } from 'lib/model/query/base';
@@ -40,7 +40,7 @@ function FiltersSheet({
     [setQuery]
   );
   const onTagsChange = useCallback(
-    (tags: MeetingHitTag[]) => {
+    (tags: DBMeetingTag[]) => {
       setQuery((prev) => new MeetingsQuery({ ...prev, tags, page: 0 }));
     },
     [setQuery]
