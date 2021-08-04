@@ -214,9 +214,7 @@ export class Availability extends Array<Timeslot> implements AvailabilityAlias {
   }
 
   public static fromJSON(json: AvailabilityJSON): Availability {
-    const availability: Availability = new Availability();
-    json.forEach((t) => availability.push(Timeslot.fromJSON(t)));
-    return availability;
+    return new Availability(...json.map((t) => Timeslot.fromJSON(t)));
   }
 
   public toURLParam(): string {
