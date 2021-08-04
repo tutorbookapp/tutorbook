@@ -74,6 +74,8 @@ export default function DisplayPage({
           </dd>
           <dt>Recurring</dt>
           <dd>{getRecurString(editing.time.recur) || 'Not recurring'}</dd>
+          <dt>Description</dt>
+          <dd>{editing.description || 'No description'}</dd>
         </dl>
       </div>
       <div className={styles.actions}>
