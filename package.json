@@ -132,7 +132,7 @@
     "@supabase/supabase-js": "^1.21.0",
     "accept-language-parser": "^1.5.0",
     "algoliasearch": "^4.8.6",
-    "analytics-node": "^4.0.1",
+    "analytics-node": "^5.0.0",
     "await-to-js": "^3.0.0",
     "axios": "^0.21.0",
     "classnames": "^2.2.6",
