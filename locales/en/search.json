@@ -1,6 +1,6 @@
 {
   "description": "Search {{name}}'s volunteer tutors and mentors.{{bio}}",
-  "placeholder": "Search results",
+  "placeholder": "Search by name",
   "empty": "NO RESULTS TO SHOW",
   "any-subjects": "Any subjects",
   "any-availability": "Any availability",

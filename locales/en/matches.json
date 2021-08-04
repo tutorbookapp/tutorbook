@@ -1,7 +1,7 @@
 {
   "subtitle": "View {{name}} ongoing matches",
   "empty": "NO MATCHES TO SHOW",
-  "search-placeholder": "Search matches",
+  "search-placeholder": "Search by message",
   "import-data-msg": "Could you help me import some existing matches?",
   "event-created": "created this match.",
   "event-message": "sent a message:<0></0>\"{{message}}\"",

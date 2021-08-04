@@ -50,7 +50,7 @@ function SearchBar({
       <div className={styles.right}>
         <TextField
           outlined
-          placeholder='Search meetings'
+          placeholder='Search by description'
           className={styles.searchField}
           value={query.search}
           onChange={(evt) => {
