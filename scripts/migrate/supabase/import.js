@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const phone = require('phone');
+const { phone } = require('phone');
 const { default: to } = require('await-to-js');
 const { v4: uuid } = require('uuid');
 const { nanoid } = require('nanoid');
