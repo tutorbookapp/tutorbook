@@ -37,18 +37,22 @@ const clientCredentials = {
 };
 if (!firebase.apps.length) firebase.initializeApp(clientCredentials);
 
-function loginWithToken(token: string): Promise<null> {
-  return new Promise<null>((resolve, reject): void => {
-    firebase.auth().onAuthStateChanged((auth: unknown): void => {
-      if (auth) resolve(null);
+function loginWithToken(token: string): Promise<string> {
+  return new Promise<string>((resolve, reject): void => {
+    firebase.auth().onIdTokenChanged((user): void => {
+      if (user) resolve(user.getIdToken());
     });
     firebase.auth().signInWithCustomToken(token).catch(reject);
   });
 }
 
-function login(uid: string): Cypress.Chainable<null> {
+function login(uid: string): Cypress.Chainable {
   if (firebase.auth().currentUser) cy.logout();
-  return cy.task('login', uid).then((token: string) => loginWithToken(token));
+  return cy
+    .task('login', uid)
+    .then((token: string) => loginWithToken(token))
+    .then((jwt: string) => cy.task('cookie', jwt))
+    .then((cookie: string) => cy.setCookie('session', cookie));
 }
 
 function logout(): Cypress.Chainable<null> {

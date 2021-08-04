@@ -142,6 +142,7 @@ function selectTime(they: boolean = false): void {
     .should('have.attr', 'aria-selected', 'true')
     .and('have.css', 'background-color', 'rgb(0, 112, 243)');
   cy.getBySel('selected-day')
+    .scrollIntoView({ offset: { top: -100, left: 0 } })
     .should('be.visible')
     .and(
       'have.text',
@@ -362,6 +363,7 @@ describe('User display page', () => {
 
     cy.contains('button', 'Book meeting').click().should('be.disabled');
     cy.getBySel('loader')
+      .scrollIntoView()
       .should('be.visible')
       .find('svg')
       .should('have.attr', 'data-cy-checked', 'false');

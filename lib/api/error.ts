@@ -4,7 +4,7 @@ import { APIError } from 'lib/model/error';
 import logger from 'lib/api/logger';
 
 function send(e: APIError, res: ServerResponse): void {
-  logger.error(`API encountered (${e.code}) error: ${e.stack}`);
+  logger.error(`API ${e.code}: ${e.stack}`);
   const stringified = JSON.stringify(e);
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Content-Length', Buffer.byteLength(stringified));

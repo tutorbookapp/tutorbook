@@ -1,33 +1,5 @@
 import path from 'path';
-
-import 'firebase/auth';
-import algoliasearch from 'algoliasearch';
-import axios from 'axios';
-import client from 'firebase/app';
-import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
-import firebase from 'firebase-admin';
-import { percyHealthCheck } from '@percy/cypress/task';
-
-import { IntercomGlobal } from 'lib/intercom';
-import { MatchJSON } from 'lib/model/match';
-import { MeetingJSON } from 'lib/model/meeting';
-import { OrgJSON } from 'lib/model/org';
-import { UserJSON } from 'lib/model/user';
-
-import admin from 'cypress/fixtures/users/admin.json';
-import match from 'cypress/fixtures/match.json';
-import meeting from 'cypress/fixtures/meeting.json';
-import org from 'cypress/fixtures/orgs/default.json';
-import school from 'cypress/fixtures/orgs/school.json';
-import student from 'cypress/fixtures/users/student.json';
-import volunteer from 'cypress/fixtures/users/volunteer.json';
-
-// Right now, we can't use the `baseUrl` Typescript compiler options, so we
-// can't use any of the existing type annotations in our app source code.
-// @see {@link https://github.com/cypress-io/cypress/issues/7188}
-// @see {@link https://github.com/cypress-io/cypress/issues/7006}
-// import { Org, OrgJSON, User, UserJSON } from 'lib/model';
 
 // Follow the Next.js convention for loading `.env` files.
 // @see {@link https://nextjs.org/docs/basic-features/environment-variables}
@@ -37,6 +9,41 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
   path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}`),
   path.resolve(__dirname, '../../.env'),
 ].forEach((dotfile: string) => dotenv.config({ path: dotfile }));
+
+import codecov from '@cypress/code-coverage/task';
+import firebase from 'firebase-admin';
+import { percyHealthCheck } from '@percy/cypress/task';
+
+import {
+  DBMatch,
+  DBRelationMatchPerson,
+  Match,
+  MatchJSON,
+} from 'lib/model/match';
+import {
+  DBMeeting,
+  DBRelationMeetingPerson,
+  Meeting,
+  MeetingJSON,
+} from 'lib/model/meeting';
+import { DBOrg, DBRelationMember, Org, OrgJSON } from 'lib/model/org';
+import {
+  DBUser,
+  DBRelationOrg,
+  DBRelationParent,
+  User,
+  UserJSON,
+} from 'lib/model/user';
+import { IntercomGlobal } from 'lib/intercom';
+import supabase from 'lib/api/supabase';
+
+import admin from 'cypress/fixtures/users/admin.json';
+import match from 'cypress/fixtures/match.json';
+import meeting from 'cypress/fixtures/meeting.json';
+import org from 'cypress/fixtures/orgs/default.json';
+import school from 'cypress/fixtures/orgs/school.json';
+import student from 'cypress/fixtures/users/student.json';
+import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 const clientCredentials = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -48,7 +55,6 @@ const clientCredentials = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
-if (!client.apps.length) client.initializeApp(clientCredentials);
 
 const app = firebase.initializeApp({
   credential: firebase.credential.cert({
@@ -62,18 +68,6 @@ const app = firebase.initializeApp({
   databaseAuthVariableOverride: { uid: 'server' },
 });
 const auth = app.auth();
-const db = app.firestore();
-
-db.settings({ ignoreUndefinedProperties: true });
-
-const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
-const algoliaKey = process.env.ALGOLIA_ADMIN_KEY as string;
-const search = algoliasearch(algoliaId, algoliaKey);
-
-const prefix = process.env.ALGOLIA_PREFIX || (process.env.APP_ENV as string);
-const usersIdx = search.initIndex(`${prefix}-users`);
-const matchesIdx = search.initIndex(`${prefix}-matches`);
-const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 export interface Overrides {
   match?: Partial<MatchJSON> | null;
@@ -94,16 +88,9 @@ declare global {
       task(event: 'clear'): Chainable<null>;
       task(event: 'seed', overrides?: Overrides): Chainable<null>;
       task(event: 'login', uid: string): Chainable<string>;
+      task(event: 'cookie', jwt: string): Chainable<string>;
     }
   }
-}
-
-async function getHeaders(uid: string): Promise<{ authorization: string }> {
-  const token = await auth.createCustomToken(uid);
-  await client.auth().signInWithCustomToken(token);
-  const jwt = await client.auth().currentUser?.getIdToken(true);
-  await client.auth().signOut();
-  return { authorization: `Bearer ${jwt || ''}` };
 }
 
 export default function plugins(
@@ -113,129 +100,119 @@ export default function plugins(
   codecov(on, config);
   on('task', {
     percyHealthCheck,
-    async createIndices(): Promise<null> {
-      await Promise.all([
-        usersIdx.setSettings({
-          searchableAttributes: [
-            'name',
-            'unordered(email)',
-            'unordered(phone)',
-            'unordered(bio)',
-            'unordered(reference)',
-            'unordered(verifications.notes)',
-            'unordered(tutoring.subjects)',
-            'unordered(mentoring.subjects)',
-            'unordered(socials.url)',
-          ],
-          attributesForFaceting: [
-            'filterOnly(_availability)',
-            'filterOnly(email)',
-            'filterOnly(featured)',
-            'filterOnly(langs)',
-            'filterOnly(mentoring.searches)',
-            'filterOnly(mentoring.subjects)',
-            'filterOnly(tutoring.searches)',
-            'filterOnly(tutoring.subjects)',
-            'filterOnly(orgs)',
-            'filterOnly(parents)',
-            'filterOnly(phone)',
-            'filterOnly(verifications.checks)',
-          ],
-        }),
-        matchesIdx.setSettings({
-          attributesForFaceting: [
-            'filterOnly(org)',
-            'filterOnly(people.id)',
-            'filterOnly(subjects)',
-          ],
-        }),
-        meetingsIdx.setSettings({
-          attributesForFaceting: [
-            'filterOnly(match.org)',
-            'filterOnly(match.people.id)',
-            'filterOnly(match.subjects)',
-            'filterOnly(time.from)',
-            'filterOnly(time.last)',
-          ],
-        }),
-      ]);
-      return null;
-    },
-    async deleteIndices(): Promise<null> {
-      await Promise.all([
-        usersIdx.delete(),
-        matchesIdx.delete(),
-        meetingsIdx.delete(),
-      ]);
-      return null;
-    },
     async clear(): Promise<null> {
-      const clearFirestoreEndpoint =
-        `http://${process.env.FIRESTORE_EMULATOR_HOST as string}/emulator/v1/` +
-        `projects/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string}/` +
-        `databases/(default)/documents`;
-      await Promise.all([
-        usersIdx.clearObjects(),
-        matchesIdx.clearObjects(),
-        meetingsIdx.clearObjects(),
-        axios.delete(clearFirestoreEndpoint),
-      ]);
+      await supabase.rpc('clear');
       return null;
     },
     async seed(overrides: Overrides = {}): Promise<null> {
-      let matches: MatchJSON[] = [];
-      matches.push({ ...(match as MatchJSON), ...overrides.match });
-      if (overrides.match === null) delete matches[0];
-      matches = matches.filter(Boolean);
-
-      let orgs: OrgJSON[] = [];
-      orgs.push({ ...(org as OrgJSON), ...overrides.org });
-      orgs.push({ ...(school as OrgJSON), ...overrides.school });
+      let orgs: Org[] = [];
+      orgs.push(Org.fromJSON({ ...(org as OrgJSON), ...overrides.org }));
+      orgs.push(Org.fromJSON({ ...(school as OrgJSON), ...overrides.school }));
       if (overrides.org === null) delete orgs[0];
       if (overrides.school === null) delete orgs[1];
       orgs = orgs.filter(Boolean);
 
-      let users: UserJSON[] = [];
-      users.push({ ...(volunteer as UserJSON), ...overrides.volunteer });
-      users.push({ ...(student as UserJSON), ...overrides.student });
-      users.push({ ...(admin as UserJSON), ...overrides.admin });
+      let users: User[] = [];
+      const tutor = { ...(volunteer as UserJSON), ...overrides.volunteer };
+      const tutee = { ...(student as UserJSON), ...overrides.student };
+      const creator = { ...(admin as UserJSON), ...overrides.admin };
+      users.push(User.fromJSON(tutor));
+      users.push(User.fromJSON(tutee));
+      users.push(User.fromJSON(creator));
       if (overrides.volunteer === null) delete users[0];
       if (overrides.student === null) delete users[1];
       if (overrides.admin === null) delete users[2];
-      users = users.filter(Boolean);
+      users = users.filter(Boolean).map((user) => {
+        // Workaround for bug where custom array class methods disappear.
+        // @see {@link https://github.com/cypress-io/cypress/issues/17603}
+        user.availability.toDB = function toDB() {
+          return Array.from(this.map((t) => t.toDB()));
+        };
+        return user;
+      });
 
-      let meetings: MeetingJSON[] = [];
-      meetings.push({ ...(meeting as MeetingJSON), ...overrides.meeting });
+      let matches: Match[] = [];
+      const matchJSON: MatchJSON = {
+        ...(match as Omit<MatchJSON, 'creator' | 'people'>),
+        creator,
+        people: [
+          { ...tutor, roles: ['tutor'] },
+          { ...tutee, roles: ['tutee'] },
+        ],
+        ...overrides.match,
+      };
+      matches.push(Match.fromJSON(matchJSON));
+      if (overrides.match === null) delete matches[0];
+      matches = matches.filter(Boolean);
+
+      let meetings: Meeting[] = [];
+      const meetingJSON: MeetingJSON = {
+        ...(meeting as Omit<MeetingJSON, 'creator' | 'match'>),
+        creator,
+        match: matchJSON,
+        ...overrides.meeting,
+      };
+      meetings.push(Meeting.fromJSON(meetingJSON));
       if (overrides.meeting === null) delete meetings[0];
       meetings = meetings.filter(Boolean);
 
-      const rconfig = { headers: await getHeaders(admin.id) };
+      await supabase.from<DBOrg>('orgs').insert(orgs.map((o) => o.toDB()));
 
-      async function create(route: string, data: unknown[]): Promise<void> {
-        const endpoint = `http://localhost:3000/api/${route}`;
-        await Promise.all(data.map((d) => axios.post(endpoint, d, rconfig)));
-      }
+      await supabase.from<DBUser>('users').insert(users.map((u) => u.toDB()));
+      const parents = users
+        .map((u) => u.parents.map((p) => ({ parent: p, user: u.id })))
+        .flat();
+      await supabase.from<DBRelationParent>('relation_parents').insert(parents);
+      const userOrgs = users
+        .map((u) => u.orgs.map((o) => ({ org: o, user: u.id })))
+        .flat();
+      await supabase.from<DBRelationOrg>('relation_orgs').insert(userOrgs);
 
-      await create('orgs', orgs);
+      const members = orgs
+        .map((o) => o.members.map((m) => ({ user: m, org: o.id })))
+        .flat();
+      await supabase.from<DBRelationMember>('relation_members').insert(members);
 
-      // We have to create the admin first because TB's back-end will try to
-      // fetch his data when sending user creation notification emails.
-      await create(
-        'users',
-        users.filter((u) => u.id === 'admin')
-      );
-      await create(
-        'users',
-        users.filter((u) => u.id !== 'admin')
-      );
+      const { data: matchesData } = await supabase
+        .from<DBMatch>('matches')
+        .insert(matches.map((m) => ({ ...m.toDB(), id: undefined })));
+      const matchPeople = matches
+        .map((m, idx) =>
+          m.people.map((p) => ({
+            user: p.id,
+            roles: p.roles,
+            match: matchesData ? matchesData[idx].id : Number(m.id),
+          }))
+        )
+        .flat();
+      await supabase
+        .from<DBRelationMatchPerson>('relation_match_people')
+        .insert(matchPeople);
 
-      await create('matches', matches);
-      await create('meetings', meetings);
+      const { data: meetingsData } = await supabase
+        .from<DBMeeting>('meetings')
+        .insert(meetings.map((m) => ({ ...m.toDB(), id: undefined })));
+      const meetingPeople = matches
+        .map((m, idx) =>
+          m.people.map((p) => ({
+            user: p.id,
+            roles: p.roles,
+            meeting: meetingsData ? meetingsData[idx].id : Number(m.id),
+          }))
+        )
+        .flat();
+      await supabase
+        .from<DBRelationMeetingPerson>('relation_meeting_people')
+        .insert(meetingPeople);
 
       return null;
     },
     async login(uid: string): Promise<string> {
       return auth.createCustomToken(uid);
+    },
+    async cookie(jwt: string): Promise<string> {
+      const expiresIn = 60 * 60 * 24 * 5 * 1000;
+      return auth.createSessionCookie(jwt, { expiresIn });
     },
   });
   return { ...config, env: { ...config.env, ...clientCredentials } };

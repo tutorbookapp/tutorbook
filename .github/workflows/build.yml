@@ -2,7 +2,6 @@ name: Build
 
 on:
   push:
-  pull_request:
 
 env:
   NODE_ENV: test
@@ -33,7 +32,5 @@ jobs:
             node_modules
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
-      - run: yarn supabase init
-      - run: yarn start:sb
       - run: yarn start:db & yarn wait-on http-get://localhost:8080
       - run: yarn build

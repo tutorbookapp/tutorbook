@@ -2,7 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "isolatedModules": false,
-    "lib": ["es5", "dom"],
+    "lib": ["dom", "esnext"],
     "types": ["cypress", "@percy/cypress", "node"]
   },
   "include": ["**/*.ts"]
