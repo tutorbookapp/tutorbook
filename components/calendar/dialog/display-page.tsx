@@ -64,7 +64,13 @@ export default function DisplayPage({
           <dd>{join(editing.match.subjects)}</dd>
           <dt>Meeting link</dt>
           <dd>
-            <a href={editing.venue.url}>{editing.venue.url}</a>
+            <a
+              href={editing.venue.url}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {editing.venue.url}
+            </a>
           </dd>
           <dt>Recurring</dt>
           <dd>{getRecurString(editing.time.recur) || 'Not recurring'}</dd>
