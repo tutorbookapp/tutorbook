@@ -454,7 +454,9 @@ async function importPicktime(path, dryRun = false) {
       student = parent = await getOrCreateUser({
         name: caps(row[fields.customerName] || ''),
         email: row[fields.email] || '',
-        phone: phone(rows[fields.phone] || row[fields.phoneNumber])[0] || '',
+        phone:
+          phone(rows[fields.phone] || row[fields.phoneNumber]).phoneNumber ||
+          '',
         bio: generateStudentBio(row, subject),
         orgs: ['quarantunes'],
         mentoring: { subjects: [], searches: [subject] },
@@ -466,7 +468,9 @@ async function importPicktime(path, dryRun = false) {
       parent = await getOrCreateUser({
         name: caps(row[fields.customerName] || ''),
         email: row[fields.email] || '',
-        phone: phone(rows[fields.phone] || row[fields.phoneNumber])[0] || '',
+        phone:
+          phone(rows[fields.phone] || row[fields.phoneNumber]).phoneNumber ||
+          '',
         bio: generateParentBio(row),
         orgs: ['quarantunes'],
         mentoring: { subjects: [], searches: [subject] },

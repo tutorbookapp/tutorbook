@@ -166,7 +166,7 @@ export class Account extends Resource implements AccountInterface {
 
   public async validatePhone(): Promise<void> {
     const { default: phone } = await import('phone');
-    this.phone = phone(this.phone)[0] || '';
+    this.phone = phone(this.phone).phoneNumber || '';
   }
 
   public toJSON(): AccountJSON {

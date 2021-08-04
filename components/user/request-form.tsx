@@ -77,7 +77,7 @@ export default function RequestForm({
   useEffect(() => {
     async function validatePhone(): Promise<void> {
       const { default: getPhone } = await import('phone');
-      setPhone((prev) => getPhone(prev)[0] || prev);
+      setPhone((prev) => getPhone(prev).phoneNumber || prev);
     }
     void validatePhone();
   }, [phone]);
