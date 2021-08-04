@@ -5,7 +5,7 @@ import {
   TimeslotJSON,
   isTimeslotJSON,
 } from 'lib/model/timeslot';
-import { DBUser, Role, User, UserJSON, isUserJSON } from 'lib/model/user';
+import { DBPerson, Role, User, UserJSON, isUserJSON } from 'lib/model/user';
 import { Match, MatchJSON, MatchSegment, isMatchJSON } from 'lib/model/match';
 import {
   Resource,
@@ -89,13 +89,13 @@ export interface DBMeeting {
   updated: DBDate;
 }
 export interface DBViewMeeting extends DBMeeting {
-  people: (DBUser & { roles: Role[] })[] | null;
+  people: DBPerson[] | null;
   people_ids: string[];
 }
 export interface DBRelationMeetingPerson {
   user: string;
   meeting: number;
-  roles: ('tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent')[];
+  roles: Role[];
 }
 
 export type MeetingJSON = Omit<

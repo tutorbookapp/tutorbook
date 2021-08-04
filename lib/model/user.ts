@@ -166,6 +166,9 @@ export interface DBViewUser extends DBUser {
   parents: string[] | null;
   available: boolean;
 }
+export interface DBPerson extends DBUser {
+  roles: Role[] | null;
+}
 export interface DBRelationParent {
   user: string;
   parent: string;
@@ -307,7 +310,7 @@ export class User extends Account implements UserInterface {
     };
   }
 
-  public static fromDB(record: DBUser | DBViewUser): User {
+  public static fromDB(record: DBUser | DBViewUser | DBPerson): User {
     return new User({
       id: record.id,
       name: record.name,
@@ -332,6 +335,7 @@ export class User extends Account implements UserInterface {
       updated: new Date(record.updated),
       orgs: 'orgs' in record ? record.orgs || [] : [],
       parents: 'parents' in record ? record.parents || [] : [],
+      roles: 'roles' in record ? record.roles || [] : [],
     });
   }
 

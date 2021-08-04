@@ -1,4 +1,4 @@
-import { DBUser, Role, User, UserJSON, isUserJSON } from 'lib/model/user';
+import { DBPerson, Role, User, UserJSON, isUserJSON } from 'lib/model/user';
 import {
   Resource,
   ResourceInterface,
@@ -53,13 +53,13 @@ export interface DBMatch {
   updated: DBDate;
 }
 export interface DBViewMatch extends DBMatch {
-  people: (DBUser & { roles: Role[] })[] | null;
+  people: DBPerson[] | null;
   people_ids: string[];
 }
 export interface DBRelationMatchPerson {
   user: string;
   match: number;
-  roles: ('tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent')[];
+  roles: Role[];
 }
 
 export type MatchJSON = Omit<
