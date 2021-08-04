@@ -30,6 +30,26 @@
   --mdc-theme-text-icon-on-dark: var(--on-background-3);
 }
 
+.mdc-dialog.mdc-dialog--scrollable .mdc-dialog__title,
+.mdc-dialog.mdc-dialog--scrollable .mdc-dialog__actions {
+  border-color: var(--on-background-2);
+}
+
+.mdc-dialog .mdc-dialog__title {
+  color: var(--on-background-6);
+}
+
+.mdc-dialog .mdc-dialog__content {
+  color: var(--on-background-5);
+}
+
+.mdc-radio
+  .mdc-radio__native-control:enabled:not(:checked)
+  + .mdc-radio__background
+  .mdc-radio__outer-circle {
+  border-color: var(--on-background-4);
+}
+
 .mdc-text-field--outlined:not(.mdc-text-field--disabled)
   .mdc-notched-outline__leading,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled)
