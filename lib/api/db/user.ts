@@ -82,7 +82,7 @@ export async function deleteUser(id: string): Promise<User> {
 
 export async function getUser(uid: string): Promise<User> {
   const { data, error } = await supabase
-    .from<DBUser>('users')
+    .from<DBViewUser>('view_users')
     .select()
     .eq('id', uid);
   handle('getting', 'user', uid, error);
