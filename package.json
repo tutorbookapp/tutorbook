@@ -139,7 +139,7 @@
     "cookie": "^0.4.1",
     "csv-stringify": "^5.6.2",
     "dequal": "^2.0.2",
-    "dotenv": "^8.2.0",
+    "dotenv": "^10.0.0",
     "firebase": "^8.3.1",
     "firebase-admin": "^9.6.0",
     "firebase-functions": "^3.13.0",
