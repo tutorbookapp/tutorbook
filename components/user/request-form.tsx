@@ -184,6 +184,7 @@ export default function RequestForm({
       const meeting = new Meeting({
         time,
         creator,
+        description: message,
         match: new Match({
           creator,
           people,
