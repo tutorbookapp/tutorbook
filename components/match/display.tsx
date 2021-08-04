@@ -12,10 +12,10 @@ import EmailIcon from 'components/icons/email';
 import EventNoteIcon from 'components/icons/event-note';
 import LoadingDots from 'components/loading-dots';
 
+import { join, period } from 'lib/utils';
 import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
-import { join, period } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 
 import styles from './display.module.scss';
@@ -64,26 +64,17 @@ function Endpoint(): JSX.Element {
 
 export interface MatchDisplayProps {
   match?: Match;
-  people?: User[];
   meetings?: Meeting[];
 }
 
 export default function MatchDisplay({
   match,
-  people,
   meetings,
 }: MatchDisplayProps): JSX.Element {
   const { org } = useOrg();
   const { t } = useTranslation();
 
-  const loading = useMemo(() => {
-    return !match || !people || !meetings;
-  }, [match, people, meetings]);
-  const creator = useMemo(() => {
-    if (loading || !match || !people) return;
-    const idx = people.findIndex((p) => p.id === match.creator.id);
-    return idx < 0 ? new User(match.creator) : people[idx];
-  }, [loading, people, match]);
+  const loading = useMemo(() => !match || !meetings, [match, meetings]);
 
   return (
     <>
@@ -91,7 +82,7 @@ export default function MatchDisplay({
         <div className={styles.wrapper}>
           <div className={styles.people}>
             {!loading &&
-              (people || []).map((person) => (
+              (match?.people || []).map((person) => (
                 <Link
                   href={`/${org?.id || 'default'}/users/${person.id}`}
                   key={person.id}
@@ -136,14 +127,14 @@ export default function MatchDisplay({
           <Event
             badge={<AddBoxIcon />}
             time={!loading ? new Date(match?.created || '') : undefined}
-            person={creator}
+            person={match?.creator}
           >
             {t('matches:event-created')}
           </Event>
           <Event
             badge={<EmailIcon />}
             time={!loading ? new Date(match?.created || '') : undefined}
-            person={creator}
+            person={match?.creator}
           >
             <Trans
               i18nKey='matches:event-message'
@@ -158,9 +149,8 @@ export default function MatchDisplay({
                 badge={<EventNoteIcon />}
                 time={new Date(meeting.created)}
                 person={(() => {
-                  if (!people) return;
                   const findCreator = (p: User) => p.id === meeting.creator.id;
-                  return people[people.findIndex(findCreator)];
+                  return match?.people[match.people.findIndex(findCreator)];
                 })()}
               >
                 <Trans

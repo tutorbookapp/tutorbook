@@ -9,7 +9,6 @@ import Page from 'components/page';
 import { Match, MatchJSON } from 'lib/model/match';
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { Org, OrgJSON } from 'lib/model/org';
-import { User, UserJSON } from 'lib/model/user';
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { APIError } from 'lib/model/error';
 import { OrgContext } from 'lib/context/org';
@@ -29,24 +28,17 @@ function MatchDisplayPage(props: PageProps): JSX.Element {
   const { data: match, error: matchError } = useSWR<MatchJSON, APIError>(
     typeof query.id === 'string' ? `/api/matches/${query.id}` : null
   );
-  const { data: people, error: peopleError } = useSWR<UserJSON[], APIError>(
-    typeof query.id === 'string' ? `/api/matches/${query.id}/people` : null
-  );
   const { data: meetings, error: meetingsError } = useSWR<
     MeetingJSON[],
     APIError
   >(typeof query.id === 'string' ? `/api/matches/${query.id}/meetings` : null);
 
   useEffect(() => {
-    if (
-      loggedIn &&
-      [orgError, matchError, peopleError, meetingsError].some(
-        (e) => e?.code === 401
-      )
-    ) {
-      void Router.replace('/404');
-    }
-  }, [loggedIn, orgError, matchError, peopleError, meetingsError]);
+    if (!loggedIn) return;
+    if (![orgError, matchError, meetingsError].some((e) => e?.code === 401))
+      return;
+    void Router.replace('/404');
+  }, [loggedIn, orgError, matchError, meetingsError]);
 
   // TODO: Redirect to 404 page when SWR throws a 401 error.
   usePage({
@@ -62,7 +54,6 @@ function MatchDisplayPage(props: PageProps): JSX.Element {
         <EmptyHeader />
         <MatchDisplay
           match={match ? Match.fromJSON(match) : undefined}
-          people={people ? people.map((p) => User.fromJSON(p)) : undefined}
           meetings={
             meetings ? meetings.map((m) => Meeting.fromJSON(m)) : undefined
           }
