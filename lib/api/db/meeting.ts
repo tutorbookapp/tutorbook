@@ -102,6 +102,10 @@ export async function getMeetings(
     const peopleIds = query.people.map((p) => p.value);
     select = select.overlaps('people_ids', peopleIds);
   }
+  if (query.search) {
+    const config = { config: 'english', type: 'websearch' as 'websearch' };
+    select = select.textSearch('description', query.search, config);
+  }
   const { data, error, count } = await select;
   // TODO: Remove this weird edge case workaround for no results.
   // @see {@link https://github.com/supabase/postgrest-js/issues/202}
