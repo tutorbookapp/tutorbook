@@ -18,7 +18,6 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { Check, Verification } from 'lib/model/verification';
 import { User, UserJSON } from 'lib/model/user';
-import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import useContinuous from 'lib/hooks/continuous';
 import { useUser } from 'lib/context/user';
@@ -185,20 +184,6 @@ export default function VerificationsTable({
     [setUser]
   );
 
-  const onFeaturedChange = useCallback(
-    (evt: FormEvent<HTMLInputElement>) => {
-      const isFeatured = evt.currentTarget.checked;
-      return setUser((prev) => {
-        const featured: Aspect[] = [];
-        if (!isFeatured) return new User({ ...prev, featured });
-        if (prev.tutoring.subjects.length) featured.push('tutoring');
-        if (prev.mentoring.subjects.length) featured.push('mentoring');
-        return new User({ ...prev, featured });
-      });
-    },
-    [setUser]
-  );
-
   return (
     <>
       {loading && (
@@ -266,15 +251,6 @@ export default function VerificationsTable({
         label={t('user:visible')}
         checked={user.visible}
         onChange={onVisibilityChange}
-      />
-      <Switch
-        className={styles.switch}
-        label={t('user:featured')}
-        checked={!!user.featured.length}
-        onChange={onFeaturedChange}
-        disabled={
-          !user.tutoring.subjects.length && !user.mentoring.subjects.length
-        }
       />
     </>
   );
