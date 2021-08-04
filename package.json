@@ -149,7 +149,7 @@
     "next-translate": "^0.17.1",
     "nprogress": "^0.2.0",
     "password-generator": "^2.3.2",
-    "phone": "^2.4.13",
+    "phone": "^3.1.2",
     "prop-types": "^15.7.2",
     "re-resizable": "^6.5.4",
     "react": "^17.0.2",

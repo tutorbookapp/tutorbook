@@ -14440,10 +14440,10 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"phone@npm:^2.4.13":
-  version: 2.4.21
-  resolution: "phone@npm:2.4.21"
-  checksum: 02f47e07f107dd134fc5f5d49a0983c800ea9a907dfa55a09728c418a513ffd0de247b05e37eff09f8e41f7d9f3d13b0d967105ac210da7fd1c5c98c83926a73
+"phone@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "phone@npm:3.1.2"
+  checksum: fc8370812c5e25b0d1b724cc50bf5307ff46a7f257be615274e58fcb2652c74aae1b66cf190f178009d042edfbbc01368bf1a0db4f05406bd4bf552e24bb714a
   languageName: node
   linkType: hard
 
@@ -17947,7 +17947,7 @@ resolve@^2.0.0-next.3:
     nprogress: ^0.2.0
     nyc: ^15.1.0
     password-generator: ^2.3.2
-    phone: ^2.4.13
+    phone: ^3.1.2
     prettier: ^2.0.5
     pretty-quick: ^3.1.0
     prompt-sync: ^4.2.0
