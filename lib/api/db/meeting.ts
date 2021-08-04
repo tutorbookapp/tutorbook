@@ -8,6 +8,7 @@ import {
   Meeting,
 } from 'lib/model/meeting';
 import { APIError } from 'lib/model/error';
+import { Match } from 'lib/model/match';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
 import handle from 'lib/api/db/error';
@@ -31,7 +32,8 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
     .from<DBRelationMeetingPerson>('relation_meeting_people')
     .insert(people);
   handle('creating', 'meeting people', people, err);
-  return m;
+  const match = new Match({ ...m.match, people: meeting.match.people });
+  return new Meeting({ ...m, match });
 }
 
 export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
@@ -52,7 +54,8 @@ export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
     .from<DBRelationMeetingPerson>('relation_meeting_people')
     .upsert(people, { onConflict: 'user,meeting,roles' });
   handle('updating', 'meeting people', people, err);
-  return m;
+  const match = new Match({ ...m.match, people: meeting.match.people });
+  return new Meeting({ ...m, match });
 }
 
 export async function deleteMeeting(id: string): Promise<Meeting> {

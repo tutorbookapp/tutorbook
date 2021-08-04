@@ -45,7 +45,7 @@ export async function createUser(user: User): Promise<User> {
     .from<DBRelationOrg>('relation_orgs')
     .insert(orgs);
   handle('creating', 'user orgs', orgs, e);
-  return u;
+  return new User({ ...u, parents: user.parents, orgs: user.orgs });
 }
 
 export async function updateUser(user: User): Promise<User> {
@@ -68,7 +68,7 @@ export async function updateUser(user: User): Promise<User> {
     .from<DBRelationOrg>('relation_orgs')
     .upsert(orgs, { onConflict: 'user,org' });
   handle('updating', 'user orgs', orgs, e);
-  return u;
+  return new User({ ...u, parents: user.parents, orgs: user.orgs });
 }
 
 export async function deleteUser(id: string): Promise<User> {

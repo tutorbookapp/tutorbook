@@ -15,7 +15,7 @@ export async function createOrg(org: Org): Promise<Org> {
     .from<DBRelationMember>('relation_members')
     .insert(members);
   handle('creating', 'members', members, err);
-  return o;
+  return new Org({ ...o, members: org.members });
 }
 
 export async function updateOrg(org: Org): Promise<Org> {
@@ -32,7 +32,7 @@ export async function updateOrg(org: Org): Promise<Org> {
     .from<DBRelationMember>('relation_members')
     .upsert(members, { onConflict: 'user,org' });
   handle('updating', 'members', members, err);
-  return o;
+  return new Org({ ...o, members: org.members });
 }
 
 export async function getOrg(id: string): Promise<Org> {

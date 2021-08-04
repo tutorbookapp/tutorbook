@@ -27,7 +27,7 @@ export async function createMatch(match: Match): Promise<Match> {
     .from<DBRelationMatchPerson>('relation_match_people')
     .insert(people);
   handle('creating', 'match people', people, err);
-  return m;
+  return new Match({ ...m, people: match.people });
 }
 
 export async function updateMatch(match: Match): Promise<Match> {
@@ -48,7 +48,7 @@ export async function updateMatch(match: Match): Promise<Match> {
     .from<DBRelationMatchPerson>('relation_match_people')
     .upsert(people, { onConflict: 'user,match,roles' });
   handle('updating', 'match people', people, err);
-  return m;
+  return new Match({ ...m, people: match.people });
 }
 
 export async function deleteMatch(id: string): Promise<Match> {
