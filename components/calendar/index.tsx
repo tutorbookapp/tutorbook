@@ -21,7 +21,6 @@ import { ListMeetingsRes } from 'lib/api/routes/meetings/list';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Position } from 'lib/model/position';
 import { useOrg } from 'lib/context/org';
-import usePeople from 'lib/hooks/people';
 import useSingle from 'lib/hooks/single';
 import useURLParamSync from 'lib/hooks/url-param-sync';
 import { useUser } from 'lib/context/user';
@@ -169,8 +168,6 @@ export default function Calendar({
     error: editError,
     setError: setEditError,
   } = useSingle<Meeting>(initialEditData, updateMeetingRemote, mutateMeeting);
-
-  const people = usePeople(editing.match);
 
   // Reset loading/checked/error state when dialog closes so we don't show
   // snackbars for messages already shown in the dialog.
@@ -335,19 +332,19 @@ export default function Calendar({
           <DialogSurface width={width} offset={offset}>
             <DialogContent page={dialogPage}>
               <DisplayPage
-                people={people}
+                people={editing.match.people}
                 loading={editLoading}
                 checked={editChecked}
                 onDeleteStop={onDeleteStop}
               />
               <EditPage
-                people={people}
+                people={editing.match.people}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
               />
               <CreatePage
-                people={people}
+                people={editing.match.people}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}

@@ -6,7 +6,6 @@ import useTranslation from 'next-translate/useTranslation';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import { join } from 'lib/utils';
-import usePeople from 'lib/hooks/people';
 import { useUser } from 'lib/context/user';
 
 import { MouseEventHackData, MouseEventHackTarget } from '../hack-types';
@@ -54,13 +53,12 @@ const MeetingContent = forwardRef(
       return () => clearTimeout(timeoutId);
     }, [eventTarget, eventData]);
 
-    const people = usePeople(meeting.match);
     const headerString = useMemo(() => {
       const subjects = join(meeting.match.subjects);
-      const student = people.find(
+      const student = meeting.match.people.find(
         (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
       );
-      const volunteer = people.find(
+      const volunteer = meeting.match.people.find(
         (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
       );
       if (student?.id === user.id) {
@@ -76,7 +74,7 @@ const MeetingContent = forwardRef(
         if (subjects) return subjects;
       }
       return '';
-    }, [people, meeting.match.subjects, user.id]);
+    }, [meeting.match.people, meeting.match.subjects, user.id]);
     const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
       height,
     ]);
