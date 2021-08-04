@@ -51,6 +51,10 @@ export default async function createMeetingAPI(
     const creator = await getPerson(body.creator, people);
     await verifyAuth(req.headers, { userId: creator.id });
 
+    // TODO: Don't use fire-and-forget triggers for these tags updates. Ideally,
+    // I'd calculate the existance of these user tags using PostgreSQL.
+    let matchWasCreated = false;
+
     // Verify the creator exists, is sending an authorized request, and:
     // - The creator is also the creator of the meeting's match (in which case
     //   we perform the match creator verification), OR;
@@ -77,17 +81,7 @@ export default async function createMeetingAPI(
 
       // Create match (b/c it doesn't already exist).
       body.match = await createMatch(updateMatchTags(body.match));
-
-      segment.track({
-        userId: creator.id,
-        event: 'Match Created',
-        properties: body.match.toSegment(),
-      });
-
-      await Promise.all([
-        analytics(body.match, 'created'),
-        updatePeopleTags(people, { add: ['matched'] }),
-      ]);
+      matchWasCreated = true;
     } else {
       // Match org cannot change (security issue if it can).
       // TODO: Nothing in the match should be able to change (because this API
@@ -115,6 +109,21 @@ export default async function createMeetingAPI(
     res.status(200).json(meeting.toJSON());
 
     logger.info(`Created ${meeting.toString()}.`);
+
+    // We do all of these analytics operations asynchronously after we send the
+    // user a 200 response. TODO: Don't do this b/c Vercel doesn't support it.
+    if (matchWasCreated) {
+      segment.track({
+        userId: creator.id,
+        event: 'Match Created',
+        properties: body.match.toSegment(),
+      });
+
+      await Promise.all([
+        analytics(body.match, 'created'),
+        updatePeopleTags(people, { add: ['matched'] }),
+      ]);
+    }
 
     segment.track({
       userId: creator.id,
