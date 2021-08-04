@@ -75,8 +75,13 @@ export async function getMatches(
 ): Promise<{ hits: number; results: Match[] }> {
   let select = supabase
     .from<DBViewMatch>('view_matches')
-    .select()
-    .contains('subjects', query.subjects);
+    .select('*', { count: 'exact' })
+    .contains('subjects', query.subjects)
+    .order('id', { ascending: false })
+    .range(
+      query.hitsPerPage * query.page,
+      query.hitsPerPage * (query.page + 1) - 1
+    );
   if (query.org) select = select.eq('org', query.org);
   if (query.people.length) {
     const peopleIds = query.people.map((p) => p.value);
