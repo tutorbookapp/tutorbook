@@ -3,6 +3,7 @@ import path from 'path';
 import axios from 'axios';
 import codecov from '@cypress/code-coverage/task';
 import dotenv from 'dotenv';
+import firebase from 'firebase-admin';
 import { percyHealthCheck } from '@percy/cypress/task';
 
 import { IntercomGlobal } from 'lib/intercom';
@@ -27,6 +28,30 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
   path.resolve(__dirname, `../../.env.${process.env.NODE_ENV || 'test'}`),
   path.resolve(__dirname, '../../.env'),
 ].forEach((dotfile: string) => dotenv.config({ path: dotfile }));
+
+const clientCredentials = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
+
+const app = firebase.initializeApp({
+  credential: firebase.credential.cert({
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    privateKey: (process.env.FIREBASE_ADMIN_KEY || '').replace(/\\n/g, '\n'),
+    clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+  }),
+  serviceAccountId: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  databaseAuthVariableOverride: { uid: 'server' },
+});
+const auth = app.auth();
 
 export interface Overrides {
   match?: Partial<MatchJSON> | null;
