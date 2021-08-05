@@ -69,7 +69,7 @@ export default function FilterForm({
           border: 1px solid var(--accents-2);
           display: flex;
           justify-content: space-between;
-          align-items: stretch;
+          align-items: flex-start;
           z-index: 8;
         }
         
