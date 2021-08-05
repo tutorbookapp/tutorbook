@@ -15,6 +15,10 @@
   z-index: 4;
 }
 
+.wrapper.queryHeader {
+  margin-bottom: 32px;
+}
+
 .wrapper.borderless {
   border-bottom: 1px solid transparent;
 }
@@ -40,9 +44,16 @@
 
 .center {
   flex: 1 1 auto;
-  text-align: center;
-  padding: 0 24px;
   min-width: 0;
+  position: relative;
+
+  > :global(form) {
+    position: absolute;
+    top: sizes.$header-height / 2;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: calc(100% - 48px);
+  }
 }
 
 @media only screen and (max-width: 800px) {

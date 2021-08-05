@@ -11,7 +11,7 @@ import { UsersQuery } from 'lib/model/query/users';
 export interface FilterFormProps {
   query: UsersQuery;
   onChange: Callback<UsersQuery>;
-  onSubmit: () => void;
+  onSubmit?: () => void;
 }
 
 export default function FilterForm({
@@ -24,7 +24,7 @@ export default function FilterForm({
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        onSubmit();
+        if (onSubmit) onSubmit();
       }}
     >
       <SubjectSelect

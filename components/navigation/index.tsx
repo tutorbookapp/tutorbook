@@ -186,7 +186,11 @@ export function QueryHeader({
   formWidth,
 }: QueryHeaderProps): JSX.Element {
   return (
-    <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
+    <div
+      className={cn(styles.wrapper, styles.queryHeader, {
+        [styles.formWidth]: formWidth,
+      })}
+    >
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
