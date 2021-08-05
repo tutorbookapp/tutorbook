@@ -1,4 +1,5 @@
 import About from 'components/about';
+import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 
 import { PageProps, getPageProps } from 'lib/page';
@@ -6,8 +7,8 @@ import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import search from 'locales/en/search.json';
 import query3rd from 'locales/en/query3rd.json';
+import search from 'locales/en/search.json';
 
 function AboutPage(props: PageProps): JSX.Element {
   usePage({ name: 'About' });
@@ -19,6 +20,7 @@ function AboutPage(props: PageProps): JSX.Element {
       intercom
       {...props}
     >
+      <EmptyHeader />
       <About />
     </Page>
   );
