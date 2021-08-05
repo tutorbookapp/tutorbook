@@ -57,7 +57,7 @@ export default function FilterForm({
         selected={query.langs}
         outlined
       />
-      <button className='reset button' type='button'>
+      <button className='reset button' type='submit'>
         <SearchIcon />
       </button>
       <style jsx>{`
@@ -97,12 +97,22 @@ export default function FilterForm({
           margin: 0 0 0 8px;
           min-height: 56px;
           max-height: 56px;
-          background: var(--primary);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
           border-radius: 8px;
           padding ${(56 - 24) / 2}px;
+          background: linear-gradient(
+            45deg,
+            var(--title-left) 9.38%, 
+            var(--title-right) 88.54%
+          );
+          transition: transform 0.1s ease 0s;
         }
-        
+
+        .button:focus,
+        .button:active {
+          transform: scale(0.96);
+        }
+
         .button > :global(svg) {
           fill: var(--on-primary);
         }

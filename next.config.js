@@ -22,11 +22,6 @@ module.exports = {
         permanent: true,
       },
       {
-        source: '/search/:slug*',
-        destination: '/default/search/:slug*',
-        permanent: true,
-      },
-      {
         source: '/:org/search/:id',
         destination: '/:org/users/:id',
         permanent: true,

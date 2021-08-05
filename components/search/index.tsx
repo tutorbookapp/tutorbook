@@ -83,9 +83,9 @@ export default function Search({
             <Result
               key={res.id}
               user={User.fromJSON(res)}
-              href={`/${org?.id || 'default'}/users/${res.id}?aspect=${
-                query.aspect
-              }`}
+              href={`/${org?.id || res.orgs[0] || 'default'}/users/${
+                res.id
+              }?aspect=${query.aspect}`}
               newTab
             />
           ))}

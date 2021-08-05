@@ -1,5 +1,5 @@
+import { useCallback, useEffect, useState } from 'react';
 import Router from 'next/router';
-import { useState } from 'react';
 
 import FilterForm from 'components/filter-form';
 import Title from 'components/title';
@@ -8,6 +8,12 @@ import { UsersQuery } from 'lib/model/query/users';
 
 export default function About(): JSX.Element {
   const [query, setQuery] = useState<UsersQuery>(new UsersQuery());
+  const onSubmit = useCallback(async () => {
+    await Router.push(query.getURL('/search'));
+  }, [query]);
+  useEffect(() => {
+    void Router.prefetch(query.getURL('/search'));
+  }, [query]);
 
   return (
     <main>
@@ -18,11 +24,7 @@ export default function About(): JSX.Element {
           Airbnb for tutors
         </Title>
       </header>
-      <FilterForm
-        query={query}
-        onChange={setQuery}
-        onSubmit={() => Router.push(query.getURL('/search'))}
-      />
+      <FilterForm query={query} onChange={setQuery} onSubmit={onSubmit} />
       <article>
         <section>
           <div>

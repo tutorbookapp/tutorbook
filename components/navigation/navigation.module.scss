@@ -236,10 +236,6 @@ button.avatar {
     }
 
     &.loginLink {
-      margin-right: 10px;
-    }
-
-    &.signupLink {
       min-width: auto;
       height: 32px;
       line-height: 0;
@@ -260,33 +256,22 @@ button.avatar {
       flex-shrink: 0;
       margin: 0px;
       color: var(--on-primary);
-      background-color: var(--primary);
-      border: 1px solid var(--primary);
-      transition: all 0.2s ease 0s;
+      background: linear-gradient(
+        45deg,
+        var(--title-left) 9.38%,
+        var(--title-right) 88.54%
+      );
+      transition: transform 0.1s ease 0s;
       user-select: none;
       cursor: pointer;
       overflow: hidden;
       outline: currentColor none medium;
       box-sizing: border-box;
 
-      &:hover {
-        color: var(--primary);
-        background-color: var(--background);
+      &:focus,
+      &:active {
+        transform: scale(0.96);
       }
     }
   }
 }
-
-/*
- *@media (max-width: 675px) {
- *  .desktopLinks {
- *    display: none;
- *    visibility: hidden;
- *  }
- *
- *  .mobileToggle {
- *    display: flex;
- *    visibility: visible;
- *  }
- *}
- */

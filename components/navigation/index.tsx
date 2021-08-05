@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -8,7 +9,6 @@ import FilterForm from 'components/filter-form';
 import { Callback, TCallback } from 'lib/model/callback';
 import { Aspect } from 'lib/model/aspect';
 import { UsersQuery } from 'lib/model/query/users';
-import Link from 'lib/intl/link';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -57,24 +57,14 @@ function Logo(): JSX.Element {
 
 function DesktopNav(): JSX.Element {
   const { user, loggedIn } = useUser();
-  const { org } = useOrg();
   const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
   return (
     <div className={styles.desktopLinks}>
       {loggedIn === false && (
-        <>
-          <Link href='/login'>
-            <a className={`${styles.desktopLink} ${styles.loginLink}`}>
-              {t('common:login')}
-            </a>
-          </Link>
-          <Link href={`/${org?.id || user.orgs[0] || 'default'}/signup`}>
-            <a className={`${styles.desktopLink} ${styles.signupLink}`}>
-              {t('common:signup')}
-            </a>
-          </Link>
-        </>
+        <Link href='/login'>
+          <a className={`${styles.desktopLink} ${styles.loginLink}`}>Login</a>
+        </Link>
       )}
       {loggedIn === undefined && (
         <div className={styles.avatar}>
