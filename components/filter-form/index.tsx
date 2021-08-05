@@ -1,167 +1,112 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { Ripple } from '@rmwc/ripple';
-import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import AvailabilitySelect from 'components/availability-select';
 import LangSelect from 'components/lang-select';
+import SearchIcon from 'components/icons/search';
 import SubjectSelect from 'components/subject-select';
 
-import { Availability } from 'lib/model/availability';
 import { Callback } from 'lib/model/callback';
-import { Option } from 'lib/model/query/base';
 import { UsersQuery } from 'lib/model/query/users';
 
-import styles from './filter-form.module.scss';
-
-interface SearchButtonProps {
-  children: string;
-  onClick: () => void;
-}
-
-function SearchButton({ onClick, children }: SearchButtonProps): JSX.Element {
-  return (
-    <Ripple>
-      <button type='button' onClick={onClick} className={styles.searchButton}>
-        {children}
-      </button>
-    </Ripple>
-  );
-}
-
-function join(options: Option<string>[]): string {
-  return options.map((option: Option<string>) => option.label).join(', ');
-}
-
-interface FilterFormProps {
+export interface FilterFormProps {
   query: UsersQuery;
   onChange: Callback<UsersQuery>;
+  onSubmit: () => void;
 }
-
-type FocusTarget = 'subjects' | 'availability' | 'langs';
 
 export default function FilterForm({
   query,
   onChange,
+  onSubmit,
 }: FilterFormProps): JSX.Element {
-  const [active, setActive] = useState<boolean>(false);
-  const [focused, setFocused] = useState<FocusTarget>();
-
-  const formRef = useRef<HTMLFormElement | null>(null);
-
-  useEffect(() => {
-    if (!formRef.current) return () => {};
-    const element: HTMLElement = formRef.current;
-    const removeClickListener = () => {
-      /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
-      document.removeEventListener('click', outsideClickListener);
-    };
-    const outsideClickListener = (event: MouseEvent) => {
-      if (!element.contains(event.target as Node) && active) {
-        setActive(false);
-        setFocused(undefined);
-        removeClickListener();
-      }
-    };
-    document.addEventListener('click', outsideClickListener);
-    return removeClickListener;
-  });
-
-  const onSubmit = useCallback((evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-    setActive(false);
-  }, []);
-  const onSubjectsChange = useCallback(
-    (subjects: Option<string>[]) => {
-      onChange((prev) => new UsersQuery({ ...prev, subjects, page: 0 }));
-    },
-    [onChange]
-  );
-  const onAvailabilityChange = useCallback(
-    (availability: Availability) => {
-      onChange((prev) => new UsersQuery({ ...prev, availability, page: 0 }));
-    },
-    [onChange]
-  );
-  const onLangsChange = useCallback(
-    (langs: Option<string>[]) => {
-      onChange((prev) => new UsersQuery({ ...prev, langs, page: 0 }));
-    },
-    [onChange]
-  );
-
-  const focusSubjects = useCallback(() => {
-    setActive(true);
-    setFocused('subjects');
-  }, []);
-  const focusAvailability = useCallback(() => {
-    setActive(true);
-    setFocused('availability');
-  }, []);
-  const focusLangs = useCallback(() => {
-    setActive(true);
-    setFocused('langs');
-  }, []);
-  const focusNothing = useCallback(() => setFocused(undefined), []);
-
   const { t } = useTranslation();
-
   return (
-    <>
-      <div className={styles.wrapper}>
-        <form
-          className={cn(styles.form, { [styles.active]: active })}
-          onSubmit={onSubmit}
-          ref={formRef}
-        >
-          <SubjectSelect
-            className={styles.field}
-            focused={focused === 'subjects'}
-            label={t('query3rd:subjects')}
-            onFocused={focusSubjects}
-            onBlurred={focusNothing}
-            onSelectedChange={onSubjectsChange}
-            selected={query.subjects}
-            placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
-            aspect={query.aspect}
-            outlined
-          />
-          <AvailabilitySelect
-            className={styles.field}
-            focused={focused === 'availability'}
-            label={t('query3rd:availability')}
-            onFocused={focusAvailability}
-            onBlurred={focusNothing}
-            onChange={onAvailabilityChange}
-            value={query.availability}
-            outlined
-          />
-          <LangSelect
-            className={styles.field}
-            focused={focused === 'langs'}
-            label={t('query3rd:langs')}
-            placeholder={t('common:langs-placeholder')}
-            onFocused={focusLangs}
-            onBlurred={focusNothing}
-            onSelectedChange={onLangsChange}
-            selected={query.langs}
-            outlined
-          />
-        </form>
-      </div>
-      <div className={styles.search} role='search'>
-        <SearchButton onClick={focusSubjects}>
-          {join(query.subjects) || t('search:any-subjects')}
-        </SearchButton>
-        <span className={styles.searchDivider} />
-        <SearchButton onClick={focusAvailability}>
-          {query.availability.toString() || t('search:any-availability')}
-        </SearchButton>
-        <span className={styles.searchDivider} />
-        <SearchButton onClick={focusLangs}>
-          {join(query.langs) || t('search:any-langs')}
-        </SearchButton>
-      </div>
-    </>
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        onSubmit();
+      }}
+    >
+      <SubjectSelect
+        className='field'
+        label={t('query3rd:subjects')}
+        onSelectedChange={(subjects) =>
+          onChange((prev) => new UsersQuery({ ...prev, subjects, page: 0 }))
+        }
+        selected={query.subjects}
+        placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
+        aspect={query.aspect}
+        outlined
+      />
+      <AvailabilitySelect
+        className='field'
+        label={t('query3rd:availability')}
+        onChange={(availability) =>
+          onChange((prev) => new UsersQuery({ ...prev, availability, page: 0 }))
+        }
+        value={query.availability}
+        outlined
+      />
+      <LangSelect
+        className='field'
+        label={t('query3rd:langs')}
+        placeholder={t('common:langs-placeholder')}
+        onSelectedChange={(langs) =>
+          onChange((prev) => new UsersQuery({ ...prev, langs, page: 0 }))
+        }
+        selected={query.langs}
+        outlined
+      />
+      <button className='reset button' type='button'>
+        <SearchIcon />
+      </button>
+      <style jsx>{`
+        form {
+          background: var(--background);
+          width: 100%;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--accents-2);
+          display: flex;
+          justify-content: space-between;
+          align-items: stretch;
+          z-index: 8;
+        }
+        
+        :global(html:not(.dark)) form {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        form > :global(.field) {
+          margin: 0 8px;
+          flex-grow: 1.5;
+          flex-basis: 0;
+          width: 100%;
+        }
+        
+        form > :global(.field:first-child) {
+          margin-left: 0;
+        }
+
+        form > :global(.field:last-child) {
+          margin-right: 0;
+        }
+
+        .button {
+          flex: none;
+          margin: 0 0 0 8px;
+          min-height: 56px;
+          max-height: 56px;
+          background: var(--primary);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+          border-radius: 8px;
+          padding ${(56 - 24) / 2}px;
+        }
+        
+        .button > :global(svg) {
+          fill: var(--on-primary);
+        }
+      `}</style>
+    </form>
   );
 }

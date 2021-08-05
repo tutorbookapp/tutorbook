@@ -77,3 +77,14 @@ body {
   color: var(--on-background);
   scroll-padding-top: sizes.$header-height;
 }
+
+button.reset {
+  border: unset;
+  background: unset;
+  padding: unset;
+  margin: unset;
+  font: unset;
+  text-align: unset;
+  appearance: unset;
+  cursor: pointer;
+}
