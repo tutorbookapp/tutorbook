@@ -41,6 +41,9 @@
     sans-serif;
   --font-mono: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
     Bitstream Vera Sans Mono, Courier New, monospace;
+
+  --page-width: #{sizes.$page-width};
+  --page-width-with-margin: #{sizes.$page-width-with-margin};
 }
 
 ::selection {
