@@ -1,0 +1,41 @@
+@use 'sass:map';
+@use 'styles/common';
+@use 'styles/typography';
+
+.wrapper {
+  @include common.wrapper;
+}
+
+.summary {
+  padding: 48px 0 72px;
+
+  @media (max-width: 800px) {
+    padding: 24px 0 48px;
+  }
+}
+
+.summary {
+  border-top: 1px solid var(--accents-2);
+  border-bottom: 1px solid var(--accents-2);
+  background: var(--accents-1);
+}
+
+.header {
+  @include typography.typography('headline1');
+}
+
+.subheader {
+  @include typography.typography('headline3');
+
+  @media (max-width: 800px) {
+    @include typography.typography('headline4');
+  }
+}
+
+.body {
+  @include typography.typography('body1');
+}
+
+.bold {
+  font-weight: 600;
+}

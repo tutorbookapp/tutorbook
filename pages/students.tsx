@@ -1,6 +1,6 @@
-import About from 'components/about';
 import Hero from 'components/hero';
 import Page from 'components/page';
+import Students from 'components/students';
 import { TabHeader } from 'components/navigation';
 
 import { PageProps, getPageProps } from 'lib/page';
@@ -37,7 +37,7 @@ function StudentsPage(props: PageProps): JSX.Element {
         ]}
       />
       <Hero />
-      <About />
+      <Students />
     </Page>
   );
 }
