@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -123,8 +123,19 @@ interface EmptyHeaderProps {
 }
 
 export function EmptyHeader({ formWidth }: EmptyHeaderProps): JSX.Element {
+  const [borderless, setBorderless] = useState<boolean>(true);
+  useEffect(() => {
+    const listener = () => setBorderless(window.scrollY <= 0);
+    window.addEventListener('scroll', listener);
+    return () => window.removeEventListener('scroll', listener);
+  }, []);
   return (
-    <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
+    <div
+      className={cn(styles.wrapper, {
+        [styles.formWidth]: formWidth,
+        [styles.borderless]: borderless,
+      })}
+    >
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />

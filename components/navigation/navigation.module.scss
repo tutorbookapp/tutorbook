@@ -11,7 +11,12 @@
   min-height: sizes.$header-height;
   max-height: sizes.$header-height;
   border-bottom: 1px solid var(--accents-2);
+  transition: border-bottom 0.2s ease 0s;
   z-index: 4;
+}
+
+.wrapper.borderless {
+  border-bottom: 1px solid transparent;
 }
 
 .header {
