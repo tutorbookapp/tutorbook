@@ -9,9 +9,10 @@ import { UsersQuery } from 'lib/model/query/users';
 interface SectionProps {
   header: string;
   children: string;
+  video: string;
 }
 
-function Section({ header, children }: SectionProps): JSX.Element {
+function Section({ header, children, video }: SectionProps): JSX.Element {
   return (
     <section>
       <div className='content-wrapper'>
@@ -24,10 +25,7 @@ function Section({ header, children }: SectionProps): JSX.Element {
         <div className='video-wrapper'>
           <div className='video'>
             <video autoPlay loop muted playsInline width='100%' height='100%'>
-              <source
-                src='https://a0.muscache.com/v/36/3d/363dc909-90aa-529c-962b-80447e25b1b7/363dc90990aa529c962b80447e25b1b7_400k_1.mp4'
-                type='video/mp4'
-              />
+              <source src={video} type='video/mp4' />
             </video>
           </div>
         </div>
@@ -69,6 +67,7 @@ function Section({ header, children }: SectionProps): JSX.Element {
           width: 45%;
           border-radius: 24px;
           overflow: hidden;
+          border: 1px solid var(--accents-2);
         }
 
         .video-wrapper {
@@ -110,16 +109,16 @@ export default function About(): JSX.Element {
       </header>
       <FilterForm query={query} onChange={setQuery} onSubmit={onSubmit} />
       <article>
-        <Section header='1. Search'>
+        <Section header='1. Search' video='/about/search.mp4'>
           Start by exploring our volunteer tutors. Apply filters like subject,
           availability, and language to narrow your options.
         </Section>
-        <Section header='2. Book'>
+        <Section header='2. Book' video='/about/book.mp4'>
           Once you’ve found a tutor you like, book a meeting with them in just a
           few clicks. You’ll both receive an email with contact info and your
           meeting link.
         </Section>
-        <Section header='3. Meet'>
+        <Section header='3. Meet' video='/about/meet.mp4'>
           You’re all set! Manage your meetings and track service hours—all
           through Tutorbook. You can also contact us anytime for additional
           support.
