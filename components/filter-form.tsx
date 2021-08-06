@@ -75,7 +75,7 @@ export default function FilterForm({
         }
         
         :global(html:not(.dark)) form {
-          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+          box-shadow: 0 10px 60px rgba(0, 0, 0, 0.12);
         }
 
         form > :global(.field) {
