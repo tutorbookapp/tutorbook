@@ -63,7 +63,7 @@ export default function FilterHeader({
           text-align: center;
           background: var(--background);
           position: relative;
-          padding: 36px 0 8px;
+          padding: 48px 0 8px;
           z-index: 9;
         }
 
