@@ -21,7 +21,7 @@ export default function About(): JSX.Element {
         <Title>
           Tutorbook is
           <br />
-          Airbnb for tutors
+          Airbnb for free tutors
         </Title>
       </header>
       <FilterForm query={query} onChange={setQuery} onSubmit={onSubmit} />
@@ -62,18 +62,11 @@ export default function About(): JSX.Element {
           max-width: var(--page-width-with-margin);
           margin: 0 auto;
           padding: 0 24px;
-          box-sizing: border-box;
         }
 
         header {
           text-align: center;
-          margin: 48px 0;
-        }
-
-        header > :global(h1) {
-          font-size: 72px;
-          font-weight: 700;
-          line-height: 1;
+          margin: 36px 0;
         }
 
         article {

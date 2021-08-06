@@ -3,8 +3,8 @@ import useSWR, { mutate } from 'swr';
 import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
+import FilterHeader from 'components/filter-header';
 import Page from 'components/page';
-import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
 
 import { PageProps, getPageProps } from 'lib/page';
@@ -133,11 +133,7 @@ function SearchPage(props: PageProps): JSX.Element {
       description={t('search:description', { name: 'Tutorbook', bio: '' })}
       {...props}
     >
-      <QueryHeader
-        aspects={['mentoring', 'tutoring']}
-        query={query}
-        onChange={onQueryChange}
-      />
+      <FilterHeader query={query} onChange={setQuery} />
       <Search
         hits={hits}
         query={query}

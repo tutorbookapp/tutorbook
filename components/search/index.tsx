@@ -11,7 +11,6 @@ import { Callback } from 'lib/model/callback';
 import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
 
-import Form from './form';
 import Result from './result';
 import styles from './search.module.scss';
 
@@ -58,7 +57,6 @@ export default function Search({
 
   return (
     <div className={styles.wrapper}>
-      <Form query={query} onChange={onChange} />
       <div className={styles.filters}>
         <div className={styles.left} />
         <div className={styles.right}>

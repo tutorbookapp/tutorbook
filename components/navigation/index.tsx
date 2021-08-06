@@ -4,11 +4,9 @@ import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
-import FilterForm from 'components/filter-form';
 
-import { Callback, TCallback } from 'lib/model/callback';
 import { Aspect } from 'lib/model/aspect';
-import { UsersQuery } from 'lib/model/query/users';
+import { TCallback } from 'lib/model/callback';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -57,7 +55,6 @@ function Logo(): JSX.Element {
 
 function DesktopNav(): JSX.Element {
   const { user, loggedIn } = useUser();
-  const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
   return (
     <div className={styles.desktopLinks}>
@@ -154,47 +151,6 @@ export function AspectHeader({
         <div className={styles.left}>
           <Logo />
           <DesktopTabs aspect={aspect} onChange={onChange} />
-        </div>
-        <div className={styles.right}>
-          <DesktopNav />
-        </div>
-      </header>
-    </div>
-  );
-}
-
-interface QueryHeaderProps extends EmptyHeaderProps {
-  query: UsersQuery;
-  onChange: Callback<UsersQuery>;
-  aspects: Aspect[];
-}
-
-export function QueryHeader({
-  query,
-  onChange,
-  aspects,
-  formWidth,
-}: QueryHeaderProps): JSX.Element {
-  return (
-    <div
-      className={cn(styles.wrapper, styles.queryHeader, {
-        [styles.formWidth]: formWidth,
-      })}
-    >
-      <header className={styles.header}>
-        <div className={styles.left}>
-          <Logo />
-          {aspects.length > 1 && (
-            <DesktopTabs
-              aspect={query.aspect}
-              onChange={(aspect: Aspect) =>
-                onChange(new UsersQuery({ ...query, aspect }))
-              }
-            />
-          )}
-        </div>
-        <div className={styles.center}>
-          <FilterForm query={query} onChange={onChange} />
         </div>
         <div className={styles.right}>
           <DesktopNav />

@@ -33,7 +33,7 @@
   "bio-placeholder": "Hint: Simply copy-and-paste your existing LinkedIn or Facebook bio.",
   "bio-help": "This information will appear on {{name}} public profile page. Please write with care.",
   "reference-placeholder": "Ex: I heard about {{org}} from my friend's Instagram story (@my_friend).",
-  "subjects-placeholder": "Ex: Computer Science or Biology",
+  "subjects-placeholder": "Ex: Science or Music",
   "tutoring-subjects-placeholder": "Ex: Math or Science",
   "mentoring-subjects-placeholder": "Ex: Computer Science or Music",
   "langs-placeholder": "Ex: Spanish or Chinese",

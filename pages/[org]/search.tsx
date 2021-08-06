@@ -8,8 +8,8 @@ import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
 import AuthDialog from 'components/auth-dialog';
+import FilterHeader from 'components/filter-header';
 import Page from 'components/page';
-import { QueryHeader } from 'components/navigation';
 import Search from 'components/search';
 
 import { Org, OrgJSON } from 'lib/model/org';
@@ -183,12 +183,8 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
         })}
         {...props}
       >
-        <QueryHeader
-          aspects={org ? org.aspects : ['mentoring', 'tutoring']}
-          query={query}
-          onChange={onQueryChange}
-        />
         {auth && <AuthDialog />}
+        <FilterHeader query={query} onChange={setQuery} />
         <Search
           hits={hits}
           query={query}

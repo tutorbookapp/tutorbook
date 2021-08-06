@@ -34,8 +34,7 @@ export default function FilterForm({
           onChange((prev) => new UsersQuery({ ...prev, subjects, page: 0 }))
         }
         selected={query.subjects}
-        placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
-        aspect={query.aspect}
+        placeholder={t('common:subjects-placeholder')}
         outlined
       />
       <AvailabilitySelect
