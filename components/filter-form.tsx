@@ -57,9 +57,11 @@ export default function FilterForm({
         selected={query.langs}
         outlined
       />
-      <button className='reset button' type='submit'>
-        <SearchIcon />
-      </button>
+      {onSubmit && (
+        <button className='reset button' type='submit'>
+          <SearchIcon />
+        </button>
+      )}
       <style jsx>{`
         form {
           background: var(--background);
