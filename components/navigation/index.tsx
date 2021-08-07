@@ -107,12 +107,16 @@ export function TabHeader({ switcher, ...rest }: TabHeaderProps): JSX.Element {
 
 interface EmptyHeaderProps {
   formWidth?: boolean;
+  borderless?: boolean;
 }
 
-export function EmptyHeader({ formWidth }: EmptyHeaderProps): JSX.Element {
-  const [borderless, setBorderless] = useState<boolean>(true);
+export function EmptyHeader({
+  formWidth,
+  borderless,
+}: EmptyHeaderProps): JSX.Element {
+  const [scrolled, setScrolled] = useState<boolean>(false);
   useEffect(() => {
-    const listener = () => setBorderless(window.scrollY <= 0);
+    const listener = () => setScrolled(window.scrollY > 0);
     window.addEventListener('scroll', listener);
     return () => window.removeEventListener('scroll', listener);
   }, []);
@@ -120,7 +124,7 @@ export function EmptyHeader({ formWidth }: EmptyHeaderProps): JSX.Element {
     <div
       className={cn(styles.wrapper, {
         [styles.formWidth]: formWidth,
-        [styles.borderless]: borderless,
+        [styles.borderless]: borderless && !scrolled,
       })}
     >
       <header className={styles.header}>

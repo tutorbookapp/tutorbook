@@ -20,7 +20,7 @@ function AboutPage(props: PageProps): JSX.Element {
       intercom
       {...props}
     >
-      <EmptyHeader />
+      <EmptyHeader borderless />
       <About />
     </Page>
   );
