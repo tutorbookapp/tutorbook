@@ -1,11 +1,7 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
-import to from 'await-to-js';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
-import { createMatch, getMatch } from 'lib/api/db/match';
 import { getUser, updateUser } from 'lib/api/db/user';
-import { APIError } from 'lib/model/error';
-import { Match } from 'lib/model/match';
 import analytics from 'lib/api/analytics';
 import { createMeeting } from 'lib/api/db/meeting';
 import getLastTime from 'lib/api/get/last-time';
@@ -13,12 +9,10 @@ import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
-import getStudents from 'lib/api/get/students';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/create';
-import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
@@ -51,46 +45,16 @@ export default async function createMeetingAPI(
     const creator = await getPerson(body.creator, people);
     await verifyAuth(req.headers, { userId: creator.id });
 
-    // TODO: Don't use fire-and-forget triggers for these tags updates. Ideally,
-    // I'd calculate the existance of these user tags using PostgreSQL.
-    let match: Match | undefined;
+    // TODO: Verify that the creator is creating a meeting with people who:
+    // - They've had a meeting with before, OR;
+    // - Are members of an org they're an admin of, OR;
+    // - Are visible in an org that they have access to (i.e. booking).
 
-    // Verify the creator exists, is sending an authorized request, and:
-    // - The creator is also the creator of the meeting's match (in which case
-    //   we perform the match creator verification), OR;
-    // - The meeting's match already exists (i.e. was created by someone else)
-    //   and the creator is one of the original match people or an org admin.
-    const [matchDoesntExist, originalMatch] = await to(getMatch(body.match));
-    if (matchDoesntExist) {
-      // Verify the match creator is:
-      // a) The match student him/herself, OR;
-      // b) Parent of the match student, OR;
-      // c) Admin of the match's org (e.g. Gunn High School).
-      if (
-        !getStudents(people).some(
-          (p) => p.id === creator.id || p.parents.includes(creator.id)
-        )
-      )
-        verifyIsOrgAdmin(org, creator.id);
-
-      // Create match (b/c it doesn't already exist).
-      match = new Match({ ...body, tags: ['meeting'] });
-      body.match = (await createMatch(updateMatchTags(match))).id;
-    } else {
-      // Match org cannot change (security issue if it can).
-      // TODO: Nothing in the match should be able to change (because this API
-      // endpoint doesn't update any resources, it only creates them).
-      if ((originalMatch as Match).org !== body.org) {
-        const msg = `Match org (${org.toString()}) cannot change`;
-        throw new APIError(msg, 400);
-      }
-
-      // Verify the meeting creator is:
-      // a) One of the original match people, OR;
-      // b) Admin of the original match's org (e.g. Gunn High School).
-      const peopleIds = (originalMatch as Match).people.map((p) => p.id);
-      if (!peopleIds.includes(creator.id)) verifyIsOrgAdmin(org, creator.id);
-    }
+    // Verify the meeting creator is:
+    // a) One of the meeting people, OR;
+    // b) Admin of the meeting's org (e.g. Gunn High School).
+    const isMeetingPerson = body.people.some((p) => p.id === creator.id);
+    if (!isMeetingPerson) verifyIsOrgAdmin(org, creator.id);
 
     body.venue = getMeetingVenue(body, org, people);
     body.time.last = getLastTime(body.time);
@@ -104,27 +68,14 @@ export default async function createMeetingAPI(
 
     logger.info(`Created ${meeting.toString()}.`);
 
-    // We do all of these analytics operations asynchronously after we send the
-    // user a 200 response. TODO: Don't do this b/c Vercel doesn't support it.
-    if (match) {
-      segment.track({
-        userId: creator.id,
-        event: 'Match Created',
-        properties: match.toSegment(),
-      });
-
-      await Promise.all([
-        analytics(match, 'created'),
-        updatePeopleTags(people, { add: ['matched'] }),
-      ]);
-    }
-
     segment.track({
       userId: creator.id,
       event: 'Meeting Created',
       properties: meeting.toSegment(),
     });
 
+    // TODO: Don't use fire-and-forget triggers for these tags updates. Ideally,
+    // I'd calculate the existance of these user tags using PostgreSQL.
     await Promise.all([
       analytics(meeting, 'created'),
       updatePeopleTags(people, { add: ['meeting'] }),

@@ -9,7 +9,6 @@ import {
   isMeetingJSON,
 } from 'lib/model/meeting';
 import { createMeeting, updateMeeting } from 'lib/api/db/meeting';
-import { DBMatch } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import analytics from 'lib/api/analytics';
 import getLastTime from 'lib/api/get/last-time';
@@ -58,13 +57,10 @@ export default async function updateMeetingAPI(
     });
     const beforeUpdateStart = new Date(options.original.time.from);
 
-    const [meetingRecord] = await Promise.all([
-      verifyRecordExists<DBMeeting>(
-        'meetings',
-        Number(body.parentId || body.id)
-      ),
-      verifyRecordExists<DBMatch>('matches', body.match),
-    ]);
+    const meetingRecord = await verifyRecordExists<DBMeeting>(
+      'meetings',
+      body.parentId || body.id
+    );
     const original = Meeting.fromDB(meetingRecord);
     const people = await getPeople(body.people);
 
@@ -87,8 +83,6 @@ export default async function updateMeetingAPI(
     // - Admins can change 'approved' to 'pending' or 'logged'.
     // - Meeting people can change 'pending' to 'logged'.
 
-    // TODO: Ensure that we update the match when subjects change on a recurring
-    // meeting update (e.g. when only updating instance, create new match?).
     if (original.id !== body.id && original.time.recur) {
       // User is updating a recurring meeting. We will either:
       // - Update all meetings.
@@ -264,7 +258,6 @@ export default async function updateMeetingAPI(
         properties: meeting.toSegment(),
       });
 
-      // TODO: Should we also track the match update?
       await Promise.all([
         analytics(meeting, 'updated'),
         updatePeopleTags(people, { add: ['meeting'] }),

@@ -133,17 +133,3 @@ export async function getMeetings(
     });
   return { hits, results: meetings.flat() };
 }
-
-export async function getMeetingsByMatchId(
-  matchId: number
-): Promise<Meeting[]> {
-  const { data, error } = await supabase
-    .from<DBViewMeeting>('view_meetings')
-    .select()
-    .eq('match', matchId);
-  // TODO: Remove this weird edge case workaround for no results.
-  // @see {@link https://github.com/supabase/postgrest-js/issues/202}
-  if (error instanceof Array) return [];
-  handle('getting', 'meetings by match', matchId, error);
-  return (data || []).map((d) => Meeting.fromDB(d));
-}
