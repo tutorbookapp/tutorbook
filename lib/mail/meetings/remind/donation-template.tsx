@@ -22,7 +22,7 @@ export default function DonationEmail({
   students,
   volunteer,
 }: DonationEmailProps): JSX.Element {
-  const subjects = join(meeting.match.subjects.map((s) => s.toLowerCase()));
+  const subjects = join(meeting.subjects.map((s) => s.toLowerCase()));
 
   return (
     <Email>
@@ -33,8 +33,12 @@ export default function DonationEmail({
         </P>
         <P>
           Thank you for continuing lessons with us and for your continuous
-          support! {volunteer ? `If you enjoyed your ${subjects} lesson with ${volunteer.firstName}` : `If you are enjoying your ${subjects} lessons`}, we would really appreciate
-          it if you would be willing to give a testimonial! If so, please{' '}
+          support!{' '}
+          {volunteer
+            ? `If you enjoyed your ${subjects} lesson with ${volunteer.firstName}`
+            : `If you are enjoying your ${subjects} lessons`}
+          , we would really appreciate it if you would be willing to give a
+          testimonial! If so, please{' '}
           <Link href='mailto:info@quarantuneslessons.com'>email us</Link>.
         </P>
         <P>
@@ -53,7 +57,13 @@ export default function DonationEmail({
         </P>
         <br />
         <P>
-          All of our proceeds go directly to the Save the Music Foundation, a national organization that partners with local communities and school districts to provide instruments, invest in music technology, help teachers with curriculum and professional development, and generally support music education in public schools. With your help, we can give thousands of kids across the country exposure to music in the same way that many of our teachers were first able to.
+          All of our proceeds go directly to the Save the Music Foundation, a
+          national organization that partners with local communities and school
+          districts to provide instruments, invest in music technology, help
+          teachers with curriculum and professional development, and generally
+          support music education in public schools. With your help, we can give
+          thousands of kids across the country exposure to music in the same way
+          that many of our teachers were first able to.
         </P>
         <P>
           Thank you so much and we will keep in touch with you regarding future

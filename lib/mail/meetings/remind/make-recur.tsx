@@ -16,7 +16,7 @@ export default async function sendMakeRecurReminderEmails(
   return send({
     to: people.map((p) => ({ name: p.name, email: p.email })),
     subject: `Reminder to make your ${join(
-      meeting.match.subjects
+      meeting.subjects
     )} ${noun} recurring.`,
     html: renderToStaticMarkup(
       <ReminderTemplate meeting={meeting} people={people} />
