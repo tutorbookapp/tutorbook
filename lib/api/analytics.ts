@@ -1,5 +1,4 @@
 import { Analytics, TagTotals } from 'lib/model/analytics';
-import { Match, MatchTag } from 'lib/model/match';
 import { Meeting, MeetingTag } from 'lib/model/meeting';
 import { Role, User, UserTag, isRole } from 'lib/model/user';
 import { APIError } from 'lib/model/error';
@@ -20,8 +19,8 @@ async function getMostRecentAnalytics(orgId: string): Promise<Analytics> {
     : new Analytics();
 }
 
-function updateTags<T extends UserTag | MatchTag | MeetingTag>(
-  key: Role | 'match' | 'meeting',
+function updateTags<T extends UserTag | MeetingTag>(
+  key: Role | 'meeting',
   action: Action,
   nums: Analytics,
   currentTags: T[],
@@ -89,7 +88,7 @@ async function saveAnalytics(orgId: string, nums: Analytics): Promise<void> {
  *    new analytics doc.
  * @see {@link https://github.com/tutorbookapp/tutorbook#analytics}
  */
-export default async function analytics<T extends User | Match | Meeting>(
+export default async function analytics<T extends User | Meeting>(
   current: T,
   action: Action,
   original: T = current
@@ -135,17 +134,12 @@ export default async function analytics<T extends User | Match | Meeting>(
       ...removedPromises,
       ...addedPromises,
     ]);
-  } else if (current instanceof Match && original instanceof Match) {
-    // TODO: Add edge cases when the orgs on a resource changes.
-    const nums = await getMostRecentAnalytics(current.org);
-    updateTags('match', action, nums, current.tags, original.tags);
-    await saveAnalytics(current.org, nums);
   } else if (current instanceof Meeting && original instanceof Meeting) {
     // TODO: Add edge cases when the orgs on a resource changes.
     const nums = await getMostRecentAnalytics(current.org);
     updateTags('meeting', action, nums, current.tags, original.tags);
     await saveAnalytics(current.org, nums);
   } else {
-    throw new APIError('Analytics resource not a user/match/meeting.', 500);
+    throw new APIError('Analytics resource not a user or meeting.', 500);
   }
 }

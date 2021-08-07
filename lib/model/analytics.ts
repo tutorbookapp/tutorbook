@@ -7,7 +7,6 @@ import {
   ResourceJSON,
 } from 'lib/model/resource';
 import { Role, UserTag } from 'lib/model/user';
-import { MatchTag } from 'lib/model/match';
 import { MeetingTag } from 'lib/model/meeting';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
@@ -37,7 +36,6 @@ export interface AnalyticsInterface extends ResourceInterface {
   mentor: TagTotals<Exclude<UserTag, Role>>;
   mentee: TagTotals<Exclude<UserTag, Role>>;
   parent: TagTotals<Exclude<UserTag, Role>>;
-  match: TagTotals<MatchTag>;
   meeting: TagTotals<MeetingTag>;
   date: Date;
   id: string;
@@ -87,19 +85,17 @@ export class Analytics extends Resource implements AnalyticsInterface {
     meeting: 0,
   };
 
-  public match: TagTotals<MatchTag> = { total: 0, meeting: 0 };
-
   public meeting: TagTotals<MeetingTag> = { total: 0, recurring: 0 };
 
   public date: Date = new Date();
 
   public id = '';
 
-  public constructor(match: Partial<AnalyticsInterface> = {}) {
-    super(match);
+  public constructor(analytics: Partial<AnalyticsInterface> = {}) {
+    super(analytics);
     construct<AnalyticsInterface, ResourceInterface>(
       this,
-      match,
+      analytics,
       new Resource()
     );
   }
@@ -170,9 +166,9 @@ export class Analytics extends Resource implements AnalyticsInterface {
       updated: snapshot.updateTime?.toDate(),
       id: snapshot.id,
     });
-    const match = Analytics.fromFirestore(
+    const analytics = Analytics.fromFirestore(
       snapshot.data() as AnalyticsFirestore
     );
-    return new Analytics({ ...match, ...overrides });
+    return new Analytics({ ...analytics, ...overrides });
   }
 }
