@@ -32,5 +32,7 @@ $$
   drop view if exists view_orgs cascade;
   drop view if exists view_users cascade;
   drop view if exists view_meetings cascade;
+
+  drop function if exists meeting_users cascade;
 $$
 language sql volatile;
