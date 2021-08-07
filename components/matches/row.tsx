@@ -32,7 +32,7 @@ export function MatchRow({ match }: MatchRowProps) {
           {join(match.subjects)}
         </DataTableCell>
         <DataTableCell className={styles.message}>
-          {match.message}
+          {match.description}
         </DataTableCell>
       </DataTableRow>
     </Link>
