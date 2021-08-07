@@ -1,5 +1,4 @@
 import { RRule, RRuleSet } from 'rrule';
-import { nanoid } from 'nanoid';
 
 import {
   DBMeeting,
@@ -8,11 +7,11 @@ import {
   Meeting,
 } from 'lib/model/meeting';
 import { APIError } from 'lib/model/error';
-import { Match } from 'lib/model/match';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Timeslot } from 'lib/model/timeslot';
 import handle from 'lib/api/db/error';
 import logger from 'lib/api/logger';
+import numid from 'lib/utils/numid';
 import supabase from 'lib/api/supabase';
 
 export async function createMeeting(meeting: Meeting): Promise<Meeting> {
@@ -22,18 +21,17 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
     .insert({ ...meeting.toDB(), id: undefined });
   handle('creating', 'meeting', meeting, error);
   const m = data ? Meeting.fromDB(data[0]) : meeting;
-  const people: DBRelationMeetingPerson[] = meeting.match.people.map((p) => ({
+  const people: DBRelationMeetingPerson[] = meeting.people.map((p) => ({
     user: p.id,
     roles: p.roles,
-    meeting: Number(m.id),
+    meeting: m.id,
   }));
   logger.verbose(`Inserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationMeetingPerson>('relation_meeting_people')
     .insert(people);
   handle('creating', 'meeting people', people, err);
-  const match = new Match({ ...m.match, people: meeting.match.people });
-  return new Meeting({ ...m, match });
+  return new Meeting({ ...m, people: meeting.people });
 }
 
 export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
@@ -41,37 +39,36 @@ export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
   const { data, error } = await supabase
     .from<DBMeeting>('meetings')
     .update({ ...meeting.toDB(), id: undefined })
-    .eq('id', Number(meeting.id));
+    .eq('id', meeting.id);
   handle('updating', 'meeting', meeting, error);
   const m = data ? Meeting.fromDB(data[0]) : meeting;
-  const people: DBRelationMeetingPerson[] = meeting.match.people.map((p) => ({
+  const people: DBRelationMeetingPerson[] = meeting.people.map((p) => ({
     user: p.id,
     roles: p.roles,
-    meeting: Number(m.id),
+    meeting: m.id,
   }));
   logger.verbose(`Upserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationMeetingPerson>('relation_meeting_people')
     .upsert(people, { onConflict: 'user,meeting,roles' });
   handle('updating', 'meeting people', people, err);
-  const match = new Match({ ...m.match, people: meeting.match.people });
-  return new Meeting({ ...m, match });
+  return new Meeting({ ...m, people: meeting.people });
 }
 
-export async function deleteMeeting(id: string): Promise<Meeting> {
+export async function deleteMeeting(id: number): Promise<Meeting> {
   const { data, error } = await supabase
     .from<DBMeeting>('meetings')
     .delete()
-    .eq('id', Number(id));
+    .eq('id', id);
   handle('deleting', 'meeting', id, error);
   return data ? Meeting.fromDB(data[0]) : new Meeting({ id });
 }
 
-export async function getMeeting(id: string): Promise<Meeting> {
+export async function getMeeting(id: number): Promise<Meeting> {
   const { data, error } = await supabase
     .from<DBViewMeeting>('view_meetings')
     .select()
-    .eq('id', Number(id));
+    .eq('id', id);
   handle('getting', 'meeting', id, error);
   if (!data?.length) throw new APIError(`Meeting (${id}) does not exist`, 404);
   return Meeting.fromDB(data[0]);
@@ -128,7 +125,7 @@ export async function getMeetings(
         const endTime = new Date(startTime.valueOf() + meeting.time.duration);
         return new Meeting({
           ...meeting,
-          id: nanoid(),
+          id: numid(),
           parentId: meeting.id,
           time: new Timeslot({ ...meeting.time, from: startTime, to: endTime }),
         });
@@ -138,12 +135,12 @@ export async function getMeetings(
 }
 
 export async function getMeetingsByMatchId(
-  matchId: string
+  matchId: number
 ): Promise<Meeting[]> {
   const { data, error } = await supabase
     .from<DBViewMeeting>('view_meetings')
     .select()
-    .eq('match', Number(matchId));
+    .eq('match', matchId);
   // TODO: Remove this weird edge case workaround for no results.
   // @see {@link https://github.com/supabase/postgrest-js/issues/202}
   if (error instanceof Array) return [];
