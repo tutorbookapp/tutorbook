@@ -60,7 +60,7 @@ export async function deleteMatch(id: number): Promise<Match> {
   return data ? Match.fromDB(data[0]) : new Match({ id });
 }
 
-export async function getMatch(id: string): Promise<Match> {
+export async function getMatch(id: number): Promise<Match> {
   const { data, error } = await supabase
     .from<DBViewMatch>('view_matches')
     .select()
@@ -89,7 +89,7 @@ export async function getMatches(
   }
   if (query.search) {
     const config = { config: 'english', type: 'websearch' as 'websearch' };
-    select = select.textSearch('message', query.search, config);
+    select = select.textSearch('description', query.search, config);
   }
   const { data, error, count } = await select;
   // TODO: Remove this weird edge case workaround for no results.

@@ -142,7 +142,7 @@ export default async function updateMeetingAPI(
         // 1. Create a new non-recurring meeting using this meeting's data.
         // 2. Add date exception to parent meeting instance.
         // 3. Send the created meeting to the client.
-        body.id = '';
+        body.id = 0;
         body.parentId = undefined;
         body.time.recur = undefined;
         body.time.exdates = undefined;
@@ -196,7 +196,7 @@ export default async function updateMeetingAPI(
         // 1. Create a new recurring meeting using this meeting's data.
         // 2. Add 'until' to original's recur rule to exclude this meeting.
         // 3. Send the created meeting data to the client.
-        body.id = '';
+        body.id = 0;
         body.parentId = undefined;
         body.time.recur = verifyRecurIncludesTime(body.time);
         body.time.last = getLastTime(body.time);

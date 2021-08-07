@@ -3,7 +3,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { OrgJSON } from 'lib/model/org';
 import { getOrg } from 'lib/api/db/org';
 import { handle } from 'lib/api/error';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryId } from 'lib/api/verify/query-id';
 
 export type FetchOrgRes = OrgJSON;
 

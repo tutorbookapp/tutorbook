@@ -6,7 +6,7 @@ import { getMeetingsByMatchId } from 'lib/api/db/meeting';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryIdNum } from 'lib/api/verify/query-id';
 
 export type FetchMeetingsRes = MeetingJSON[];
 
@@ -15,7 +15,7 @@ export default async function fetchMeetings(
   res: Res<FetchMeetingsRes>
 ): Promise<void> {
   try {
-    const id = verifyQueryId(req.query);
+    const id = verifyQueryIdNum(req.query);
     const [match, meetings] = await Promise.all([
       getMatch(id),
       getMeetingsByMatchId(id),

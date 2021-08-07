@@ -6,7 +6,7 @@ import { db } from 'lib/api/firebase';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryId } from 'lib/api/verify/query-id';
 
 /**
  * @typedef {Object} AnalyticsSnapshot

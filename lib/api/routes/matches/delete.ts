@@ -8,7 +8,7 @@ import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryIdNum } from 'lib/api/verify/query-id';
 
 export type DeleteMatchRes = void;
 
@@ -17,7 +17,7 @@ export default async function deleteMatchAPI(
   res: Res<DeleteMatchRes>
 ): Promise<void> {
   try {
-    const id = verifyQueryId(req.query);
+    const id = verifyQueryIdNum(req.query);
     const match = await getMatch(id);
 
     logger.info(`Deleting ${match.toString()}...`);

@@ -13,11 +13,11 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/delete';
-import { updateUser } from 'lib/api/db/user';
 import updatePeopleTags from 'lib/api/update/people-tags';
+import { updateUser } from 'lib/api/db/user';
 import verifyAuth from 'lib/api/verify/auth';
 import verifyOptions from 'lib/api/verify/options';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryIdNum } from 'lib/api/verify/query-id';
 
 export type DeleteMeetingRes = void;
 export interface DeleteMeetingOptions {
@@ -30,7 +30,7 @@ export default async function deleteMeetingAPI(
   res: Res<DeleteMeetingRes>
 ): Promise<void> {
   try {
-    const id = verifyQueryId(req.query);
+    const id = verifyQueryIdNum(req.query);
     const meeting = await getMeeting(id);
 
     logger.info(`Deleting ${meeting.toString()}...`);

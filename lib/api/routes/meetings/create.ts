@@ -39,35 +39,29 @@ export default async function createMeetingAPI(
       isMeetingJSON,
       Meeting
     );
-    const people = await getPeople(body.match.people);
+    const people = await getPeople(body.people);
 
     logger.info(`Creating ${body.toString()}...`);
 
     // TODO: Actually implement availability verification.
     verifyTimeInAvailability(body.time, people);
-    verifySubjectsCanBeTutored(body.match.subjects, people);
+    verifySubjectsCanBeTutored(body.subjects, people);
 
-    const org = await getOrg(body.match.org);
+    const org = await getOrg(body.org);
     const creator = await getPerson(body.creator, people);
     await verifyAuth(req.headers, { userId: creator.id });
 
     // TODO: Don't use fire-and-forget triggers for these tags updates. Ideally,
     // I'd calculate the existance of these user tags using PostgreSQL.
-    let matchWasCreated = false;
+    let match: Match | undefined;
 
     // Verify the creator exists, is sending an authorized request, and:
     // - The creator is also the creator of the meeting's match (in which case
     //   we perform the match creator verification), OR;
     // - The meeting's match already exists (i.e. was created by someone else)
     //   and the creator is one of the original match people or an org admin.
-    const [matchDoesntExist, originalMatch] = await to(getMatch(body.match.id));
+    const [matchDoesntExist, originalMatch] = await to(getMatch(body.match));
     if (matchDoesntExist) {
-      // Meeting creator is also the match creator.
-      if (creator.id !== body.match.creator.id) {
-        const msg = `You must be the match creator (${body.match.creator.id})`;
-        throw new APIError(msg, 401);
-      }
-
       // Verify the match creator is:
       // a) The match student him/herself, OR;
       // b) Parent of the match student, OR;
@@ -80,13 +74,13 @@ export default async function createMeetingAPI(
         verifyIsOrgAdmin(org, creator.id);
 
       // Create match (b/c it doesn't already exist).
-      body.match = await createMatch(updateMatchTags(body.match));
-      matchWasCreated = true;
+      match = new Match({ ...body, tags: ['meeting'] });
+      body.match = (await createMatch(updateMatchTags(match))).id;
     } else {
       // Match org cannot change (security issue if it can).
       // TODO: Nothing in the match should be able to change (because this API
       // endpoint doesn't update any resources, it only creates them).
-      if ((originalMatch as Match).org !== body.match.org) {
+      if ((originalMatch as Match).org !== body.org) {
         const msg = `Match org (${org.toString()}) cannot change`;
         throw new APIError(msg, 400);
       }
@@ -112,15 +106,15 @@ export default async function createMeetingAPI(
 
     // We do all of these analytics operations asynchronously after we send the
     // user a 200 response. TODO: Don't do this b/c Vercel doesn't support it.
-    if (matchWasCreated) {
+    if (match) {
       segment.track({
         userId: creator.id,
         event: 'Match Created',
-        properties: body.match.toSegment(),
+        properties: match.toSegment(),
       });
 
       await Promise.all([
-        analytics(body.match, 'created'),
+        analytics(match, 'created'),
         updatePeopleTags(people, { add: ['matched'] }),
       ]);
     }
