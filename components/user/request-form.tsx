@@ -84,14 +84,6 @@ export default function RequestForm({
   useEffect(() => setPhone(user.phone), [user.phone]);
   useEffect(() => setReference(user.reference), [user.reference]);
 
-  const aspects = useMemo(() => {
-    if (org?.aspects.length === 1) return org.aspects;
-    const asps = new Set<Aspect>();
-    if (isAspect(query.aspect)) asps.add(query.aspect);
-    subjects.forEach((s) => s.aspect && asps.add(s.aspect));
-    return [...asps].filter((a) => !org || org.aspects.includes(a));
-  }, [org, query.aspect, subjects]);
-
   const userMissingData = useMemo(
     () =>
       (!user.phone && org?.profiles.includes('phone')) ||
@@ -136,27 +128,15 @@ export default function RequestForm({
           await updateUser(updatedUser);
         }
       }
-      const volunteerRoles: Role[] = [];
-      const studentRoles: Role[] = [];
-      if (aspects.includes('tutoring')) {
-        volunteerRoles.push('tutor');
-        studentRoles.push('tutee');
-      }
-      if (aspects.includes('mentoring')) {
-        volunteerRoles.push('mentor');
-        studentRoles.push('mentee');
-      }
-      const people: User[] = [
-        new User({ ...volunteer, roles: volunteerRoles }),
-      ];
+      const people: User[] = [new User({ ...volunteer, roles: ['tutor'] })];
       const creator: User = new User({ ...updatedUser, roles: [] });
       if (student === 'Me') {
-        creator.roles = studentRoles;
+        creator.roles = ['tutee'];
         people.push(creator);
       } else if (student === 'My child') {
         const updatedChild = {
           ...child.toJSON(),
-          roles: studentRoles, // Specifying roles skips signup emails.
+          roles: ['tutee'], // Specifying roles skips signup emails.
           parents: [updatedUser.id], // Use now-logged-in parent ID.
         };
         const [err, res] = await to<
@@ -172,13 +152,13 @@ export default function RequestForm({
           creator.roles = ['parent'];
           people.push(creator);
           people.push(
-            new User({ ...User.fromJSON(res.data), roles: studentRoles })
+            new User({ ...User.fromJSON(res.data), roles: ['tutee'] })
           );
         }
       } else {
         creator.roles = ['parent'];
         people.push(creator);
-        people.push(new User({ ...options[student], roles: studentRoles }));
+        people.push(new User({ ...options[student], roles: ['tutee'] }));
       }
       const meeting = new Meeting({
         time,
@@ -209,7 +189,6 @@ export default function RequestForm({
       time,
       message,
       subjects,
-      aspects,
       phone,
       reference,
       updateUser,
@@ -284,7 +263,6 @@ export default function RequestForm({
           onSelectedChange={setSubjects}
           selected={subjects}
           options={volunteer.subjects}
-          aspect={aspects.length === 1 ? aspects[0] : undefined}
         />
         <TimeSelect
           required

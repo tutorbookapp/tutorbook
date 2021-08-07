@@ -89,7 +89,6 @@ async function fetchOrgs() {
       type: s.type,
       url: url(social(s).trim().split(' ').join('%20')),
     })),
-    aspects: d.aspects,
     domains: (d.domains || []).length ? d.domains : null,
     profiles: d.profiles || [
       'name',

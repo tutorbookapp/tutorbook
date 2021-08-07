@@ -107,7 +107,6 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
         visible: true,
       });
       if (!org) return dequal(prev, updated) ? prev : updated;
-      if (!org.aspects.includes(prev.aspect)) [updated.aspect] = org.aspects;
       updated.orgs = [org.id];
       return dequal(prev, updated) ? prev : updated;
     });
