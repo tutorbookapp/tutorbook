@@ -38,16 +38,13 @@ export default function DisplayPage({
       <Loader active={!!loading} checked={!!checked} />
       <div className={styles.nav}>
         <IconButton icon={<CloseIcon />} className={styles.btn} onClick={nav} />
-        <Link href={`/${editing.match.org}/matches/${editing.match.id}`}>
+        <Link href={`/${editing.org}/matches/${editing.match}`}>
           <IconButton icon={<OpenInNewIcon />} className={styles.btn} />
         </Link>
       </div>
       <div className={styles.content}>
         {people.map((person) => (
-          <Link
-            href={`/${editing.match.org}/users/${person.id}`}
-            key={person.id}
-          >
+          <Link href={`/${editing.org}/users/${person.id}`} key={person.id}>
             <a className={styles.person}>
               <div className={styles.avatar}>
                 <Avatar src={person.photo} size={48} />
@@ -61,7 +58,7 @@ export default function DisplayPage({
         ))}
         <dl className={styles.info}>
           <dt>Subjects</dt>
-          <dd>{join(editing.match.subjects)}</dd>
+          <dd>{join(editing.subjects)}</dd>
           <dt>Meeting link</dt>
           <dd>
             <a

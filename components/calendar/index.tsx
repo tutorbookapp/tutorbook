@@ -49,7 +49,7 @@ export default function Calendar({
   user: byUser,
 }: CalendarProps): JSX.Element {
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
-  const [mutatedIds, setMutatedIds] = useState<Set<string>>(new Set());
+  const [mutatedIds, setMutatedIds] = useState<Set<number>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(new MeetingsQuery());
 
   useURLParamSync(query, setQuery, MeetingsQuery, byOrg ? ['org'] : ['people']);
@@ -109,7 +109,7 @@ export default function Calendar({
   const mutateMeeting = useCallback(
     async (mutated: Meeting, hasBeenUpdated: boolean, sentToAPI: Meeting) => {
       // Don't locally update meetings that have yet to be created.
-      if (mutated.id.startsWith('temp')) return;
+      if (mutated.id === 0) return;
       setMutatedIds((prev) => {
         const mutatedMeetingIds = new Set(prev);
         if (!hasBeenUpdated) mutatedMeetingIds.add(sentToAPI.id);
@@ -137,7 +137,7 @@ export default function Calendar({
   const original = useRef<Meeting>(initialEditData);
   const updateMeetingRemote = useCallback(
     async (updated: Meeting) => {
-      if (updated.id.startsWith('temp')) {
+      if (updated.id === 0) {
         const { data: createdMeeting } = await axios.post<MeetingJSON>(
           '/api/meetings',
           updated.toJSON()
@@ -188,7 +188,7 @@ export default function Calendar({
   // elsewhere, we want the editing state to reflect those updates.
   useEffect(() => {
     setEditing((prev) => {
-      if (prev?.id.startsWith('temp')) return prev;
+      if (prev?.id === 0) return prev;
       const idx = meetings.findIndex((m) => m.id === prev?.id);
       if (idx < 0) {
         setDialog(false); // TODO: Animate the dialog closed before removing.
@@ -332,19 +332,19 @@ export default function Calendar({
           <DialogSurface width={width} offset={offset}>
             <DialogContent page={dialogPage}>
               <DisplayPage
-                people={editing.match.people}
+                people={editing.people}
                 loading={editLoading}
                 checked={editChecked}
                 onDeleteStop={onDeleteStop}
               />
               <EditPage
-                people={editing.match.people}
+                people={editing.people}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
               />
               <CreatePage
-                people={editing.match.people}
+                people={editing.people}
                 loading={editLoading}
                 checked={editChecked}
                 error={editError}
