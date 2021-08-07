@@ -148,7 +148,7 @@ async function fetchMatches() {
     org: d.org || 'default',
     creator: userIds[d.creator.id],
     subjects: d.subjects,
-    message: d.message,
+    description: d.message,
     tags: d.tags || [],
     created: d.created.toDate(),
     updated: d.updated.toDate(),
@@ -162,7 +162,6 @@ async function fetchMeetings() {
     org: d.match.org || 'default',
     creator: userIds[d.creator.id],
     subjects: d.match.subjects,
-    status: d.status || 'created',
     match: matchIds[d.match.id],
     venue: url(d.venue.url || `https://meet.jit.si/TB-${nanoid(10)}`),
     time: {
