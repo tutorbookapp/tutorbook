@@ -5,7 +5,7 @@ import {
   ResourceJSON,
   isResourceJSON,
 } from 'lib/model/resource';
-import { isArray, isJSON } from 'lib/model/json';
+import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import { Aspect } from 'lib/model/aspect';
 import { DBDate } from 'lib/model/timeslot';
@@ -30,16 +30,35 @@ export function isMatchTag(tag: unknown): tag is MatchTag {
  * @property subjects - The subjects that this match is about (e.g. AP CS).
  * @property people - The people involved in this match (i.e. pupil and tutor).
  * @property creator - The person who created this match (e.g. pupil or admin).
- * @property message - A more detailed description of this match or request.
+ * @property description - A more detailed description of this match.
  */
 export interface MatchInterface extends ResourceInterface {
+  id: number;
+  tags: MatchTag[];
   org: string;
   subjects: string[];
   people: User[];
   creator: User;
-  message: string;
-  tags: MatchTag[];
-  id: string;
+  description: string;
+}
+
+export type MatchJSON = Omit<
+  MatchInterface,
+  keyof Resource | 'creator' | 'people'
+> &
+  ResourceJSON & { creator: UserJSON; people: UserJSON[] };
+
+export function isMatchJSON(json: unknown): json is MatchJSON {
+  if (!isResourceJSON(json)) return false;
+  if (!isJSON(json)) return false;
+  if (typeof json.id !== 'number') return false;
+  if (!isArray(json.tags, isMatchTag)) return false;
+  if (typeof json.org !== 'string') return false;
+  if (!isStringArray(json.subjects)) return false;
+  if (!isArray(json.people, isUserJSON)) return false;
+  if (!isUserJSON(json.creator)) return false;
+  if (typeof json.description !== 'string') return false;
+  return true;
 }
 
 export interface DBMatch {
@@ -47,7 +66,7 @@ export interface DBMatch {
   org: string;
   creator: string;
   subjects: string[];
-  message: string;
+  description: string;
   tags: DBMatchTag[];
   created: DBDate;
   updated: DBDate;
@@ -62,34 +81,17 @@ export interface DBRelationMatchPerson {
   roles: Role[];
 }
 
-export type MatchJSON = Omit<
-  MatchInterface,
-  keyof Resource | 'creator' | 'people'
-> &
-  ResourceJSON & { creator: UserJSON; people: UserJSON[] };
-
 export interface MatchSegment {
-  id: string;
-  message: string;
+  id: number;
+  description: string;
   subjects: string[];
 }
 
-export function isMatchJSON(json: unknown): json is MatchJSON {
-  if (!isResourceJSON(json)) return false;
-  if (!isJSON(json)) return false;
-  if (typeof json.org !== 'string') return false;
-  if (!(json.subjects instanceof Array)) return false;
-  if (json.subjects.some((s) => typeof s !== 'string')) return false;
-  if (!(json.people instanceof Array)) return false;
-  if (json.people.some((p) => !isUserJSON(p))) return false;
-  if (!isUserJSON(json.creator)) return false;
-  if (typeof json.message !== 'string') return false;
-  if (!isArray(json.tags, isMatchTag)) return false;
-  if (typeof json.id !== 'string') return false;
-  return true;
-}
-
 export class Match extends Resource implements MatchInterface {
+  public id = 0;
+
+  public tags: MatchTag[] = [];
+
   public org = 'default';
 
   public subjects: string[] = [];
@@ -98,11 +100,7 @@ export class Match extends Resource implements MatchInterface {
 
   public creator: User = new User();
 
-  public message = '';
-
-  public tags: MatchTag[] = [];
-
-  public id = '';
+  public description = '';
 
   public constructor(match: Partial<MatchInterface> = {}) {
     super(match);
@@ -138,11 +136,11 @@ export class Match extends Resource implements MatchInterface {
 
   public toDB(): DBMatch {
     return {
-      id: Number(this.id),
+      id: this.id,
       org: this.org,
       creator: this.creator.id,
       subjects: this.subjects,
-      message: this.message,
+      description: this.description,
       tags: [...this.tags, ...notTags(this.tags, MATCH_TAGS)],
       created: this.created.toISOString(),
       updated: this.updated.toISOString(),
@@ -160,13 +158,13 @@ export class Match extends Resource implements MatchInterface {
         : [];
     return new Match({
       people,
-      id: record.id.toString(),
+      id: record.id,
       org: record.org,
       creator: creator
         ? User.fromDB(creator)
         : new User({ id: record.creator }),
       subjects: record.subjects,
-      message: record.message,
+      description: record.description,
       tags: record.tags.filter(isMatchTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
@@ -193,9 +191,9 @@ export class Match extends Resource implements MatchInterface {
 
   public toCSV(): Record<string, string> {
     return {
-      'Match ID': this.id,
+      'Match ID': this.id.toString(),
       'Match Subjects': join(this.subjects),
-      'Match Message': this.message,
+      'Match Description': this.description,
       'Match Tags': join(this.tags),
       'Match Created': this.created.toString(),
       'Match Last Updated': this.updated.toString(),
@@ -209,6 +207,7 @@ export class Match extends Resource implements MatchInterface {
   }
 
   public toSegment(): MatchSegment {
-    return { id: this.id, message: this.message, subjects: this.subjects };
+    const { description, subjects, id } = this;
+    return { description, subjects, id };
   }
 }
