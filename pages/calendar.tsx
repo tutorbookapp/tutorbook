@@ -27,10 +27,6 @@ function CalendarPage(props: PageProps): JSX.Element {
             href: '/overview',
           },
           {
-            label: t('common:matches'),
-            href: '/matches',
-          },
-          {
             active: true,
             label: t('common:calendar'),
             href: '/calendar',

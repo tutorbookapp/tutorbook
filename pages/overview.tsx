@@ -27,10 +27,6 @@ function OverviewPage(props: PageProps): JSX.Element {
             href: '/overview',
           },
           {
-            label: t('common:matches'),
-            href: '/matches',
-          },
-          {
             label: t('common:calendar'),
             href: '/calendar',
           },
