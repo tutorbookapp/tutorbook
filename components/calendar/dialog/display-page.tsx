@@ -7,7 +7,6 @@ import CloseIcon from 'components/icons/close';
 import DeleteIcon from 'components/icons/delete';
 import EditIcon from 'components/icons/edit';
 import Loader from 'components/loader';
-import OpenInNewIcon from 'components/icons/open-in-new';
 import { useNav } from 'components/dialog/context';
 
 import { getRecurString, join } from 'lib/utils';
@@ -38,9 +37,6 @@ export default function DisplayPage({
       <Loader active={!!loading} checked={!!checked} />
       <div className={styles.nav}>
         <IconButton icon={<CloseIcon />} className={styles.btn} onClick={nav} />
-        <Link href={`/${editing.org}/matches/${editing.match}`}>
-          <IconButton icon={<OpenInNewIcon />} className={styles.btn} />
-        </Link>
       </div>
       <div className={styles.content}>
         {people.map((person) => (
