@@ -52,16 +52,10 @@ function getFallbackNums(): AnalyticsRes {
     volunteers: {
       change: 12.5,
       total: current.volunteers,
-      matched: Math.round(
-        Math.min(current.matches / matchesPerVolunteer, current.volunteers)
-      ),
     },
     students: {
       change: 12.5,
       total: current.students,
-      matched: Math.round(
-        Math.min(current.matches / matchesPerStudent, current.students)
-      ),
     },
     matches: {
       change: -2.3,

@@ -53,35 +53,30 @@ export class Analytics extends Resource implements AnalyticsInterface {
   public tutor: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public tutee: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public mentor: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public mentee: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public parent: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
@@ -104,7 +99,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
     return {
       total: this.mentor.total + this.tutor.total,
       vetted: this.mentor.vetted + this.tutor.vetted,
-      matched: this.mentor.matched + this.tutor.matched,
       meeting: this.mentor.meeting + this.tutor.meeting,
     };
   }
@@ -113,7 +107,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
     return {
       total: this.mentee.total + this.tutee.total,
       vetted: this.mentee.vetted + this.tutee.vetted,
-      matched: this.mentee.matched + this.tutee.matched,
       meeting: this.mentee.meeting + this.tutee.meeting,
     };
   }

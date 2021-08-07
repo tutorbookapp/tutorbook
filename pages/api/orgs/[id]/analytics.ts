@@ -14,14 +14,12 @@ import { verifyQueryId } from 'lib/api/verify/query-id';
  * @property date - The date in milliseconds form.
  * @property volunteers - Total number of volunteers.
  * @property students - Total number of students.
- * @property matches - Total number of matches.
  * @property meetings - Total number of meetings.
  */
 export interface AnalyticsSnapshot {
   date: number;
   volunteers: number;
   students: number;
-  matches: number;
   meetings: number;
 }
 
@@ -31,9 +29,8 @@ export interface AnalyticsSnapshot {
  * `Analytics` objects stored in the `/org/<orgId>/analytics` subcollection.
  */
 export interface AnalyticsRes {
-  volunteers: { change: number; total: number; matched: number };
-  students: { change: number; total: number; matched: number };
-  matches: { change: number; total: number; perVolunteer: number };
+  volunteers: { change: number; total: number };
+  students: { change: number; total: number };
   meetings: { change: number; total: number; recurring: number };
   timeline: AnalyticsSnapshot[];
 }
@@ -103,7 +100,6 @@ export default async function analytics(
             current.volunteer.total
           ),
           total: current.volunteer.total,
-          matched: current.volunteer.matched,
         },
         students: {
           change: getPercentChange(
@@ -111,16 +107,6 @@ export default async function analytics(
             current.student.total
           ),
           total: current.student.total,
-          matched: current.student.matched,
-        },
-        matches: {
-          change: getPercentChange(lastWeek.match.total, current.match.total),
-          total: current.match.total,
-          // TODO: This "average per volunteer" statistic is *really* hacky and
-          // isn't really the mean of the # of matches each volunteer have.
-          perVolunteer: Math.round(
-            current.match.total / current.volunteer.matched
-          ),
         },
         meetings: {
           change: getPercentChange(
@@ -134,7 +120,6 @@ export default async function analytics(
           date: a.date.valueOf(),
           volunteers: a.volunteer.total,
           students: a.student.total,
-          matches: a.match.total,
           meetings: a.meeting.total,
         })),
       });
