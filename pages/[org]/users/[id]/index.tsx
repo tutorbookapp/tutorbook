@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
@@ -10,7 +10,6 @@ import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { User, UserJSON } from 'lib/model/user';
@@ -33,7 +32,7 @@ interface UserDisplayPageProps extends PageProps {
   org?: OrgJSON;
   user?: UserJSON;
   langs?: string[];
-  subjects?: { [key in Aspect]: string[] };
+  subjects?: string[];
 }
 
 function UserDisplayPage({
@@ -54,12 +53,7 @@ function UserDisplayPage({
     { initialData, revalidateOnMount: true }
   );
   const [langs, setLangs] = useState<string[]>(initialLangs || []);
-  const [subjects, setSubjects] = useState<{ [key in Aspect]: string[] }>(
-    initialSubjects || {
-      tutoring: [],
-      mentoring: [],
-    }
-  );
+  const [subjects, setSubjects] = useState<string[]>(initialSubjects || []);
 
   useEffect(() => setLangs((p) => initialLangs || p), [initialLangs]);
   useEffect(() => setSubjects((p) => initialSubjects || p), [initialSubjects]);
@@ -74,25 +68,10 @@ function UserDisplayPage({
   useEffect(() => {
     async function fetchSubjects(): Promise<void> {
       if (!data) return;
-      const [tutoring, mentoring] = await Promise.all([
-        getSubjectLabels(data.tutoring.subjects, locale),
-        getSubjectLabels(data.mentoring.subjects, locale),
-      ]);
-      setSubjects({ tutoring, mentoring });
+      setSubjects(await getSubjectLabels(data.subjects, locale));
     }
     void fetchSubjects();
   }, [data, locale]);
-
-  const subjectsDisplayed = useMemo(() => {
-    if (org?.aspects.length === 1) return subjects[org.aspects[0]];
-    if (isAspect(query.aspect)) return subjects[query.aspect];
-    // Many subjects can be both tutoring and mentoring subjects, thus we filter
-    // for unique subjects (e.g. to prevent "Computer Science" duplications).
-    const unique = new Set<string>();
-    subjects.tutoring.forEach((s) => unique.add(s));
-    subjects.mentoring.forEach((s) => unique.add(s));
-    return [...unique];
-  }, [org, query.aspect, subjects]);
 
   usePage({ name: 'User Display', org: org?.id });
 
@@ -106,7 +85,7 @@ function UserDisplayPage({
         <EmptyHeader />
         <UserDisplay
           user={data ? User.fromJSON(data) : undefined}
-          subjects={subjectsDisplayed}
+          subjects={subjects}
           langs={langs}
         />
       </Page>
@@ -131,10 +110,9 @@ export const getStaticProps: GetStaticProps<
       getOrg(ctx.params.org),
       getUser(ctx.params.id),
     ]);
-    const [langs, tutoring, mentoring] = await Promise.all([
+    const [langs, subjects] = await Promise.all([
       getLangLabels(user.langs),
-      getSubjectLabels(user.tutoring.subjects),
-      getSubjectLabels(user.mentoring.subjects),
+      getSubjectLabels(user.subjects),
     ]);
     const { props } = await getPageProps();
     // Note that because Next.js cannot expose the `req` object when fetching
@@ -146,8 +124,8 @@ export const getStaticProps: GetStaticProps<
     return {
       props: {
         langs,
+        subjects,
         org: org.toJSON(),
-        subjects: { tutoring, mentoring },
         user: getTruncatedUser(user).toJSON(),
         ...props,
       },

@@ -3,7 +3,6 @@
   "checked": "Updated user.",
   "error": "Could not update user. Retry in {{count}} seconds.",
   "visible": "Visible in search results",
-  "featured": "Featured result",
   "name": "Name",
   "email": "Email address",
   "phone": "Phone number",

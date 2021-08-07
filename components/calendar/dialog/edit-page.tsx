@@ -84,10 +84,8 @@ export default function EditPage({
   const subjectOptions = useMemo(() => {
     const subjects = new Set<string>();
     people.forEach((p) => {
-      if (p.roles.includes('tutor'))
-        p.tutoring.subjects.forEach((s) => subjects.add(s));
-      if (p.roles.includes('mentor'))
-        p.mentoring.subjects.forEach((s) => subjects.add(s));
+      if (p.roles.includes('tutor') || p.roles.includes('mentor'))
+        p.subjects.forEach((s) => subjects.add(s));
     });
     return subjects.size ? [...subjects] : undefined;
   }, [people]);

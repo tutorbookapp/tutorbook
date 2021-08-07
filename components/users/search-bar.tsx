@@ -9,7 +9,6 @@ import DownloadIcon from 'components/icons/download';
 
 import { Callback } from 'lib/model/callback';
 import { UsersQuery } from 'lib/model/query/users';
-import { useOrg } from 'lib/context/org';
 
 import styles from './search-bar.module.scss';
 
@@ -19,12 +18,8 @@ export interface SearchBarProps {
   setOpen: Callback<boolean>;
 }
 
-// TODO: Don't include both the "User types" filters in the FilterSheet and the
-// aspect chips in this SearchBar. Instead, refactor the UsersQuery data model
-// to have `tutoring.subjects` and `mentoring.subjects` at the same time.
 function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
   const { t } = useTranslation();
-  const { org } = useOrg();
 
   return (
     <div className={styles.filters}>
@@ -77,28 +72,6 @@ function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
             }}
             selected={query.available === true}
           />
-          {org?.aspects.length === 2 && (
-            <Chip
-              label={t('common:mentoring')}
-              checkmark
-              onInteraction={() => {
-                const aspect = 'mentoring';
-                setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
-              }}
-              selected={query.aspect === 'mentoring'}
-            />
-          )}
-          {org?.aspects.length === 2 && (
-            <Chip
-              label={t('common:tutoring')}
-              checkmark
-              onInteraction={() => {
-                const aspect = 'tutoring';
-                setQuery((p) => new UsersQuery({ ...p, aspect, page: 0 }));
-              }}
-              selected={query.aspect === 'tutoring'}
-            />
-          )}
         </ChipSet>
       </div>
       <div className={styles.right}>

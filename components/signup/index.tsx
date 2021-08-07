@@ -15,7 +15,6 @@ import Title from 'components/title';
 import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
-import { Aspect } from 'lib/model/aspect';
 import { Availability } from 'lib/model/availability';
 import { ValidationsContext } from 'lib/context/validations';
 import { login } from 'lib/firebase/login';
@@ -28,27 +27,23 @@ import { useUser } from 'lib/context/user';
 
 import styles from './signup.module.scss';
 
-interface SignupProps {
-  aspect: Aspect;
-}
-
-export default function Signup({ aspect }: SignupProps): JSX.Element {
+export default function Signup(): JSX.Element {
   const track = useTrack();
 
   const updateRemote = useCallback(
     async (updated: User) => {
       if (!updated.id) {
-        track('User Signup Started', { ...updated.toSegment(), aspect });
+        track('User Signup Started', updated.toSegment());
         const created = await login(updated);
-        track('User Signed Up', { ...created.toSegment(), aspect });
+        track('User Signed Up', created.toSegment());
         return created;
       }
       const url = `/api/users/${updated.id}`;
       const { data } = await axios.put<UserJSON>(url, updated.toJSON());
-      track('User Updated', { ...updated.toSegment(), aspect });
+      track('User Updated', updated.toSegment());
       return User.fromJSON(data);
     },
-    [track, aspect]
+    [track]
   );
 
   const { org } = useOrg();
@@ -67,7 +62,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
 
   useAnalytics(
     'User Signup Errored',
-    () => error && { ...user.toSegment(), error, aspect }
+    () => error && { ...user.toSegment(), error }
   );
 
   const getSocialProps = useSocialProps(
@@ -87,18 +82,9 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     });
   }, [setUser, org]);
 
-  const mentorsHProps = useSpring({
-    transform: `translateY(-${aspect === 'mentoring' ? 0 : 100}%)`,
-  });
-  const mentorsBProps = useSpring({
-    transform: `translateY(-${aspect === 'mentoring' ? 0 : 100}%)`,
-  });
-  const tutorsHProps = useSpring({
-    transform: `translateY(${aspect === 'tutoring' ? 0 : 100}%)`,
-  });
-  const tutorsBProps = useSpring({
-    transform: `translateY(${aspect === 'tutoring' ? 0 : 100}%)`,
-  });
+  // TODO: Remove these now unnecessary transitions b/c aspects are gone.
+  const tutorsHProps = useSpring({ transform: 'translateY(0%)' });
+  const tutorsBProps = useSpring({ transform: 'translateY(0%)' });
 
   const onNameChange = useCallback(
     (evt: FormEvent<HTMLInputElement>) => {
@@ -154,12 +140,10 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
   );
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
-      track('User Subjects Updated', { aspect, subjects }, 2500);
-      setUser(
-        (prev) => new User({ ...prev, [aspect]: { ...prev[aspect], subjects } })
-      );
+      track('User Subjects Updated', { subjects }, 2500);
+      setUser((prev) => new User({ ...prev, subjects }));
     },
-    [track, setUser, aspect]
+    [track, setUser]
   );
   const onAvailabilityChange = useCallback(
     (availability: Availability) => {
@@ -194,23 +178,13 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
     <ValidationsContext.Provider value={{ validations, setValidations }}>
       <div className={styles.wrapper}>
         <div className={cn(styles.header, { [styles.loading]: !org })}>
-          <animated.div className={styles.title} style={mentorsHProps}>
-            <Title>
-              {!org ? '' : (org.signup[locale].mentoring || {}).header || ''}
-            </Title>
-          </animated.div>
           <animated.div className={styles.title} style={tutorsHProps}>
-            <Title>
-              {!org ? '' : (org.signup[locale].tutoring || {}).header || ''}
-            </Title>
+            <Title>{!org ? '' : (org.signup[locale] || {}).header || ''}</Title>
           </animated.div>
         </div>
         <div className={cn(styles.description, { [styles.loading]: !org })}>
-          <animated.div style={mentorsBProps}>
-            {!org ? '' : (org.signup[locale].mentoring || {}).body || ''}
-          </animated.div>
           <animated.div style={tutorsBProps}>
-            {!org ? '' : (org.signup[locale].tutoring || {}).body || ''}
+            {!org ? '' : (org.signup[locale] || {}).body || ''}
           </animated.div>
         </div>
         <div className={styles.card}>
@@ -277,12 +251,11 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
             <div className={styles.divider} />
             <div className={styles.inputs}>
               <SubjectSelect
-                label={t(`user3rd:${aspect}-subjects`)}
-                placeholder={t(`common:${aspect}-subjects-placeholder`)}
-                value={user[aspect].subjects}
+                label={t('user3rd:subjects')}
+                placeholder={t('common:subjects-placeholder')}
+                value={user.subjects}
                 onChange={onSubjectsChange}
                 className={styles.field}
-                aspect={aspect}
                 required={org ? org.profiles.includes('subjects') : true}
                 outlined
               />
@@ -306,8 +279,7 @@ export default function Signup({ aspect }: SignupProps): JSX.Element {
               <TextField
                 label={t('user3rd:bio')}
                 placeholder={
-                  (org?.signup[locale][aspect] || {}).bio ||
-                  t('common:bio-placeholder')
+                  (org?.signup[locale] || {}).bio || t('common:bio-placeholder')
                 }
                 helpText={{
                   persistent: true,

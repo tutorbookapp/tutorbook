@@ -107,7 +107,6 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
         visible: true,
       });
       if (!org) return dequal(prev, updated) ? prev : updated;
-      if (!org.aspects.includes(prev.aspect)) [updated.aspect] = org.aspects;
       updated.orgs = [org.id];
       return dequal(prev, updated) ? prev : updated;
     });
@@ -141,7 +140,6 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
           org: org ? Org.fromJSON(org).toSegment() : undefined,
           subjects: updated.subjects.map((o) => o.value).join(' AND '),
           langs: updated.langs.map((o) => o.value).join(' AND '),
-          aspect: updated.aspect,
         },
         2500
       );
@@ -163,12 +161,11 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
         org: org ? Org.fromJSON(org).toSegment() : undefined,
         subjects: query.subjects.map((o) => o.value).join(' AND '),
         langs: query.langs.map((o) => o.value).join(' AND '),
-        aspect: query.aspect,
         users: results.map((res, idx) => ({
           ...User.fromJSON(res).toSegment(),
           position: idx,
           url: `${url}/${org?.id || 'default'}/search/${res.id}`,
-          subjects: res[query.aspect].subjects,
+          subjects: res.subjects,
         })),
       }
   );
@@ -201,7 +198,6 @@ interface SearchPageQuery extends ParsedUrlQuery {
   org: string;
 }
 
-// TODO: Incrementally statically generate each empty aspect query.
 export const getStaticProps: GetStaticProps<
   SearchPageProps,
   SearchPageQuery

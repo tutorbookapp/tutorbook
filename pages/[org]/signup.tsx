@@ -1,16 +1,13 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useEffect, useState } from 'react';
 import to from 'await-to-js';
-import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import { AspectHeader, EmptyHeader } from 'components/navigation';
+import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
 import Signup from 'components/signup';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
 import { getOrg, getOrgs } from 'lib/api/db/org';
@@ -27,35 +24,20 @@ interface SignupPageProps extends PageProps {
 }
 
 function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
-  const { query } = useRouter();
   const { lang: locale } = useTranslation();
-  const [aspect, setAspect] = useState<Aspect>(() => {
-    if (!org) return 'mentoring';
-    return org.aspects[0] || 'mentoring';
-  });
 
   usePage({ name: 'Org Signup', org: org?.id });
-  useEffect(() => {
-    setAspect((prev: Aspect) => {
-      const updated = isAspect(query.aspect) ? query.aspect : prev;
-      if (org && !org.aspects.includes(updated)) return prev;
-      return updated;
-    });
-  }, [org, query]);
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page
         title={`${org?.name || 'Loading'} - Signup - Tutorbook`}
-        description={org ? org.signup[locale][aspect]?.body : undefined}
+        description={org ? org.signup[locale]?.body : undefined}
         formWidth
         {...props}
       >
-        {(!org || org.aspects.length === 2) && (
-          <AspectHeader aspect={aspect} onChange={setAspect} formWidth />
-        )}
-        {!!org && org.aspects.length !== 2 && <EmptyHeader formWidth />}
-        <Signup aspect={aspect} />
+        <EmptyHeader formWidth />
+        <Signup />
       </Page>
     </OrgContext.Provider>
   );

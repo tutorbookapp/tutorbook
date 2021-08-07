@@ -4,21 +4,20 @@ import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
 import { dequal } from 'dequal';
 import to from 'await-to-js';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import SubjectSelect, { SubjectOption } from 'components/subject-select';
+import SubjectSelect from 'components/subject-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import TimeSelect from 'components/time-select';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
-import { Role, User, UserJSON } from 'lib/model/user';
+import { User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/model/error';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import { Option } from 'lib/model/query/base';
 import { Timeslot } from 'lib/model/timeslot';
 import { UsersQuery } from 'lib/model/query/users';
 import { getErrorMessage } from 'lib/fetch';
@@ -40,7 +39,6 @@ export default function RequestForm({
   const [error, setError] = useState<string | undefined>();
 
   const { org } = useOrg();
-  const { query } = useRouter();
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
   const { data: children } = useSWR<ListUsersRes>(
@@ -66,7 +64,7 @@ export default function RequestForm({
     });
   }, [user, child, children]);
 
-  const [subjects, setSubjects] = useState<SubjectOption[]>([]);
+  const [subjects, setSubjects] = useState<Option<string>[]>([]);
   const [message, setMessage] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
 
@@ -83,14 +81,6 @@ export default function RequestForm({
 
   useEffect(() => setPhone(user.phone), [user.phone]);
   useEffect(() => setReference(user.reference), [user.reference]);
-
-  const aspects = useMemo(() => {
-    if (org?.aspects.length === 1) return org.aspects;
-    const asps = new Set<Aspect>();
-    if (isAspect(query.aspect)) asps.add(query.aspect);
-    subjects.forEach((s) => s.aspect && asps.add(s.aspect));
-    return [...asps].filter((a) => !org || org.aspects.includes(a));
-  }, [org, query.aspect, subjects]);
 
   const userMissingData = useMemo(
     () =>
@@ -136,27 +126,15 @@ export default function RequestForm({
           await updateUser(updatedUser);
         }
       }
-      const volunteerRoles: Role[] = [];
-      const studentRoles: Role[] = [];
-      if (aspects.includes('tutoring')) {
-        volunteerRoles.push('tutor');
-        studentRoles.push('tutee');
-      }
-      if (aspects.includes('mentoring')) {
-        volunteerRoles.push('mentor');
-        studentRoles.push('mentee');
-      }
-      const people: User[] = [
-        new User({ ...volunteer, roles: volunteerRoles }),
-      ];
+      const people: User[] = [new User({ ...volunteer, roles: ['tutor'] })];
       const creator: User = new User({ ...updatedUser, roles: [] });
       if (student === 'Me') {
-        creator.roles = studentRoles;
+        creator.roles = ['tutee'];
         people.push(creator);
       } else if (student === 'My child') {
         const updatedChild = {
           ...child.toJSON(),
-          roles: studentRoles, // Specifying roles skips signup emails.
+          roles: ['tutee'], // Specifying roles skips signup emails.
           parents: [updatedUser.id], // Use now-logged-in parent ID.
         };
         const [err, res] = await to<
@@ -172,13 +150,13 @@ export default function RequestForm({
           creator.roles = ['parent'];
           people.push(creator);
           people.push(
-            new User({ ...User.fromJSON(res.data), roles: studentRoles })
+            new User({ ...User.fromJSON(res.data), roles: ['tutee'] })
           );
         }
       } else {
         creator.roles = ['parent'];
         people.push(creator);
-        people.push(new User({ ...options[student], roles: studentRoles }));
+        people.push(new User({ ...options[student], roles: ['tutee'] }));
       }
       const meeting = new Meeting({
         time,
@@ -209,7 +187,6 @@ export default function RequestForm({
       time,
       message,
       subjects,
-      aspects,
       phone,
       reference,
       updateUser,
@@ -284,7 +261,6 @@ export default function RequestForm({
           onSelectedChange={setSubjects}
           selected={subjects}
           options={volunteer.subjects}
-          aspect={aspects.length === 1 ? aspects[0] : undefined}
         />
         <TimeSelect
           required

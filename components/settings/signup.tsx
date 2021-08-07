@@ -1,8 +1,7 @@
-import { FormEvent, Fragment, useCallback } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { TextField } from '@rmwc/textfield';
 import useTranslation from 'next-translate/useTranslation';
 
-import { Aspect } from 'lib/model/aspect';
 import { Org } from 'lib/model/org';
 
 import styles from './settings.module.scss';
@@ -13,18 +12,12 @@ export default function Signup(): JSX.Element {
   const { org, setOrg } = useSettings();
 
   const onHeaderChange = useCallback(
-    (evt: FormEvent<HTMLInputElement>, aspect: Aspect) => {
+    (evt: FormEvent<HTMLInputElement>) => {
       const header = evt.currentTarget.value;
       setOrg((prev: Org) => {
         const signup = {
           ...prev.signup,
-          [locale]: {
-            ...prev.signup[locale],
-            [aspect]: {
-              ...prev.signup[locale][aspect],
-              header,
-            },
-          },
+          [locale]: { ...prev.signup[locale], header },
         };
         return new Org({ ...prev, signup });
       });
@@ -32,18 +25,12 @@ export default function Signup(): JSX.Element {
     [locale, setOrg]
   );
   const onBodyChange = useCallback(
-    (evt: FormEvent<HTMLInputElement>, aspect: Aspect) => {
+    (evt: FormEvent<HTMLInputElement>) => {
       const body = evt.currentTarget.value;
       setOrg((prev: Org) => {
         const signup = {
           ...prev.signup,
-          [locale]: {
-            ...prev.signup[locale],
-            [aspect]: {
-              ...prev.signup[locale][aspect],
-              body,
-            },
-          },
+          [locale]: { ...prev.signup[locale], body },
         };
         return new Org({ ...prev, signup });
       });
@@ -51,18 +38,12 @@ export default function Signup(): JSX.Element {
     [locale, setOrg]
   );
   const onBioChange = useCallback(
-    (evt: FormEvent<HTMLInputElement>, aspect: Aspect) => {
+    (evt: FormEvent<HTMLInputElement>) => {
       const bio = evt.currentTarget.value;
       setOrg((prev: Org) => {
         const signup = {
           ...prev.signup,
-          [locale]: {
-            ...prev.signup[locale],
-            [aspect]: {
-              ...prev.signup[locale][aspect],
-              bio,
-            },
-          },
+          [locale]: { ...prev.signup[locale], bio },
         };
         return new Org({ ...prev, signup });
       });
@@ -72,44 +53,39 @@ export default function Signup(): JSX.Element {
 
   return (
     <div className={styles.card}>
-      {org.aspects.map((aspect: Aspect, idx: number) => (
-        <Fragment key={aspect}>
-          {idx > 0 && <div className={styles.divider} />}
-          <div className={styles.inputs}>
-            <TextField
-              label={t(`org:signup-${aspect}-header`)}
-              placeholder={t(`org:signup-${aspect}-header-placeholder`)}
-              value={(org.signup[locale][aspect] || {}).header || ''}
-              onChange={(evt) => onHeaderChange(evt, aspect)}
-              className={styles.field}
-              outlined
-              required
-            />
-            <TextField
-              label={t(`org:signup-${aspect}-body`)}
-              placeholder={t(`org:signup-${aspect}-body-placeholder`)}
-              value={(org.signup[locale][aspect] || {}).body || ''}
-              onChange={(evt) => onBodyChange(evt, aspect)}
-              className={styles.field}
-              outlined
-              required
-              rows={8}
-              textarea
-            />
-            <TextField
-              label={t(`org:signup-${aspect}-bio`)}
-              placeholder={t(`org:signup-${aspect}-bio-placeholder`)}
-              value={(org.signup[locale][aspect] || {}).bio || ''}
-              onChange={(evt) => onBioChange(evt, aspect)}
-              className={styles.field}
-              outlined
-              required
-              rows={8}
-              textarea
-            />
-          </div>
-        </Fragment>
-      ))}
+      <div className={styles.inputs}>
+        <TextField
+          label={t('org:signup-header')}
+          placeholder={t('org:signup-header-placeholder')}
+          value={(org.signup[locale] || {}).header || ''}
+          onChange={onHeaderChange}
+          className={styles.field}
+          outlined
+          required
+        />
+        <TextField
+          label={t('org:signup-body')}
+          placeholder={t('org:signup-body-placeholder')}
+          value={(org.signup[locale] || {}).body || ''}
+          onChange={onBodyChange}
+          className={styles.field}
+          outlined
+          required
+          rows={8}
+          textarea
+        />
+        <TextField
+          label={t('org:signup-bio')}
+          placeholder={t('org:signup-bio-placeholder')}
+          value={(org.signup[locale] || {}).bio || ''}
+          onChange={onBioChange}
+          className={styles.field}
+          outlined
+          required
+          rows={8}
+          textarea
+        />
+      </div>
     </div>
   );
 }
