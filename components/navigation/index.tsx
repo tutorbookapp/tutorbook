@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import cn from 'classnames';
-import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
-import { Aspect } from 'lib/model/aspect';
-import { TCallback } from 'lib/model/callback';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -14,31 +11,6 @@ import Tabs, { TabsProps } from './tabs';
 import PopOver from './pop-over';
 import Switcher from './switcher';
 import styles from './navigation.module.scss';
-
-interface DesktopTabsProps {
-  aspect: Aspect;
-  onChange: TCallback<Aspect>;
-}
-
-function DesktopTabs({ aspect, onChange }: DesktopTabsProps): JSX.Element {
-  const { t } = useTranslation();
-  return (
-    <Tabs
-      tabs={[
-        {
-          label: t('common:mentors'),
-          active: aspect === 'mentoring',
-          onClick: () => onChange('mentoring'),
-        },
-        {
-          label: t('common:tutors'),
-          active: aspect === 'tutoring',
-          onClick: () => onChange('tutoring'),
-        },
-      ]}
-    />
-  );
-}
 
 function Logo(): JSX.Element {
   const { user } = useUser();
@@ -130,31 +102,6 @@ export function EmptyHeader({
       <header className={styles.header}>
         <div className={styles.left}>
           <Logo />
-        </div>
-        <div className={styles.right}>
-          <DesktopNav />
-        </div>
-      </header>
-    </div>
-  );
-}
-
-interface AspectHeaderProps extends EmptyHeaderProps {
-  aspect: Aspect;
-  onChange: TCallback<Aspect>;
-}
-
-export function AspectHeader({
-  aspect,
-  onChange,
-  formWidth,
-}: AspectHeaderProps): JSX.Element {
-  return (
-    <div className={cn(styles.wrapper, { [styles.formWidth]: formWidth })}>
-      <header className={styles.header}>
-        <div className={styles.left}>
-          <Logo />
-          <DesktopTabs aspect={aspect} onChange={onChange} />
         </div>
         <div className={styles.right}>
           <DesktopNav />
