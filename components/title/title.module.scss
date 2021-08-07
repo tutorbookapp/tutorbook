@@ -58,10 +58,12 @@
 }
 
 .title {
-  @include typography.typography('headline2');
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 72px;
   display: inline-block;
-  padding-bottom: 5px; // Otherwise, words with 'g' and 'y' get cut off.
   border: 1px solid var(--background); // Otherwise, blue peaks out underneath.
+  line-height: 1;
   margin: -1px;
 
   @media (max-width: 800px) {
