@@ -10,7 +10,6 @@ import {
 } from 'react';
 import { animated, useSpring } from 'react-spring';
 import mergeRefs from 'react-merge-refs';
-import { nanoid } from 'nanoid';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
 
@@ -111,7 +110,7 @@ function WeeklyDisplay({
     (event: MouseEvent) => {
       if (dragging) return;
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
-      const creating = new Meeting({ id: `temp-${nanoid()}`, creator: user });
+      const creating = new Meeting({ id: 0, creator: user });
       setEventTarget(undefined);
       setEventData(undefined);
       setEditing(getMeeting(48, pos, creating, cellWidth, start));

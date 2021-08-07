@@ -24,7 +24,7 @@ export default async function sendEmails(
     emails.push({
       replyTo: { name: updater.name, email: updater.email },
       to: people.map((p) => ({ name: p.name, email: p.email })),
-      subject: `Updated ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
+      subject: `Updated ${join(meeting.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <MeetingTemplate
           meeting={meeting}
@@ -39,7 +39,7 @@ export default async function sendEmails(
     emails.push({
       replyTo: { name: updater.name, email: updater.email },
       to: people.filter((p) => p.id !== updater.id),
-      subject: `Updated ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
+      subject: `Updated ${join(meeting.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <DirectMeetingTemplate
           meeting={meeting}

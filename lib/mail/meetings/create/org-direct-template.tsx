@@ -40,7 +40,6 @@ export default function OrgDirectMeetingEmail({
           {isTutoring ? 'tutoring lesson' : 'meeting'} with {recipient.name}:
         </P>
         <MeetingDisplay
-          show='message'
           timeZone={creator.timezone}
           meeting={meeting}
           people={people}

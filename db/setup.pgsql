@@ -129,25 +129,23 @@ $$
     "org" text references public.orgs(id) on delete cascade on update cascade not null,
     "creator" text references public.users(id) on delete cascade on update cascade not null,
     "subjects" text[] not null check(cardinality(subjects) > 0),
-    "message" text not null,
+    "description" text not null,
     "tags" match_tag[] not null,
     "created" timestamptz not null,
     "updated" timestamptz not null
   );
 
   create type meeting_tag as enum('recurring', 'not-recurring');
-  create type meeting_status as enum('created', 'pending', 'logged', 'approved');
   create table public.meetings (
     "id" bigint generated always as identity primary key,
     "org" text references public.orgs(id) on delete cascade on update cascade not null,
     "creator" text references public.users(id) on delete cascade on update cascade not null,
     "subjects" text[] not null check(cardinality(subjects) > 0),
-    "status" meeting_status not null default 'created',
+    "description" text not null,
+    "tags" meeting_tag[] not null,
     "match" bigint references public.matches(id) on delete cascade on update cascade,
     "venue" url not null,
     "time" timeslot not null,
-    "description" text not null,
-    "tags" meeting_tag[] not null,
     "created" timestamptz not null,
     "updated" timestamptz not null
   );

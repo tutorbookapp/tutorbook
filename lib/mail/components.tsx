@@ -156,7 +156,6 @@ export function Button({ href, style, children }: HrefProps): JSX.Element {
 }
 
 interface MeetingDisplayProps {
-  show?: 'message' | 'description';
   timeZone: string;
   meeting: Meeting;
   people: User[];
@@ -165,7 +164,6 @@ interface MeetingDisplayProps {
 }
 
 export function MeetingDisplay({
-  show = 'message',
   timeZone,
   meeting,
   people,
@@ -178,9 +176,6 @@ export function MeetingDisplay({
     ...RRule.parseString(meeting.time.recur || ''),
     dtstart: meeting.time.from,
   });
-  const noMessageOrDescription =
-    (show === 'description' && !meeting.description) ||
-    (show === 'message' && !meeting.match.message);
 
   return (
     <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
@@ -189,7 +184,7 @@ export function MeetingDisplay({
           <b>WHO</b>
         </P>
         {people.map((person) => (
-          <Person key={person.id} {...person} org={meeting.match.org} />
+          <Person key={person.id} {...person} org={meeting.org} />
         ))}
         <P>
           <b>WHEN</b>
@@ -208,28 +203,17 @@ export function MeetingDisplay({
           <br />
           <Link href={meeting.venue.url}>{meeting.venue.url}</Link>
         </P>
-        <P style={{ marginBottom: noMessageOrDescription ? '0px' : undefined }}>
+        <P style={{ marginBottom: !meeting.description ? '0px' : undefined }}>
           <b>SUBJECTS</b>
           <br />
-          {join(meeting.match.subjects)}
+          {join(meeting.subjects)}
         </P>
-        {show === 'description' && meeting.description && (
+        {meeting.description && (
           <P style={{ marginBottom: '0px' }}>
             <b>DESCRIPTION</b>
             <br />
             {meeting.description}
           </P>
-        )}
-        {show === 'message' && meeting.match.message && (
-          <>
-            <P style={{ marginBottom: '8px' }}>
-              <b>MESSAGE</b>
-            </P>
-            <Quote
-              text={meeting.match.message}
-              cite={org ? `${sender.name} from ${org.name}` : sender.name}
-            />
-          </>
         )}
       </Item>
     </div>

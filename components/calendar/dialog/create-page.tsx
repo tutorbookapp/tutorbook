@@ -6,13 +6,11 @@ import useTranslation from 'next-translate/useTranslation';
 import Button from 'components/button';
 import CloseIcon from 'components/icons/close';
 import Loader from 'components/loader';
-import MatchSelect from 'components/match-select';
 import RecurSelect from 'components/recur-select';
 import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
 import { useNav } from 'components/dialog/context';
 
-import { Match } from 'lib/model/match';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
@@ -45,22 +43,9 @@ export default function CreatePage({
     if (prevLoading && !loading && checked) setDialogPage(DialogPage.Display);
   }, [prevLoading, loading, checked, setDialogPage]);
 
-  const onMatchChange = useCallback(
-    (match?: Match) => {
-      if (match) {
-        setEditing((prev) => new Meeting({ ...prev, match }));
-      } else {
-        setEditing((prev) => new Meeting({ ...prev, match: new Match() }));
-      }
-    },
-    [setEditing]
-  );
   const onSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setEditing((prev) => {
-        const match = new Match({ ...prev.match, subjects });
-        return new Meeting({ ...prev, match });
-      });
+      setEditing((prev) => new Meeting({ ...prev, subjects }));
     },
     [setEditing]
   );
@@ -86,14 +71,6 @@ export default function CreatePage({
     },
     [setEditing]
   );
-
-  useEffect(() => {
-    if (editing.match.message)
-      setEditing((prev) => {
-        if (prev.description) return prev;
-        return new Meeting({ ...prev, description: editing.match.message });
-      });
-  }, [setEditing, editing.match.message]);
 
   const subjectOptions = useMemo(() => {
     const subjects = new Set<string>();
@@ -124,20 +101,11 @@ export default function CreatePage({
       </div>
       <form className={styles.form} onSubmit={onEditStop}>
         <div className={styles.inputs}>
-          <MatchSelect
-            required
-            label='Select match'
-            onChange={onMatchChange}
-            value={editing.match.id ? editing.match : undefined}
-            className={styles.field}
-            renderToPortal
-            outlined
-          />
           <SubjectSelect
             required
             label='Select subjects'
             onChange={onSubjectsChange}
-            value={editing.match.subjects}
+            value={editing.subjects}
             className={styles.field}
             options={subjectOptions}
             renderToPortal
@@ -165,7 +133,7 @@ export default function CreatePage({
             textarea
             rows={4}
             placeholder={t('meeting:description-placeholder', {
-              subject: join(editing.match.subjects) || 'Computer Science',
+              subject: join(editing.subjects) || 'Computer Science',
             })}
             label='Add description'
             className={styles.field}

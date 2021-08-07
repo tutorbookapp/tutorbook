@@ -40,7 +40,6 @@ export default function OrgMeetingEmail({
           {join(people.map((p) => p.name))}:
         </P>
         <MeetingDisplay
-          show='message'
           timeZone={creator.timezone}
           meeting={meeting}
           people={people}

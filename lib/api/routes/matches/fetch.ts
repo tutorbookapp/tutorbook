@@ -5,7 +5,7 @@ import { getMatch } from 'lib/api/db/match';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryIdNum } from 'lib/api/verify/query-id';
 
 export type FetchMatchRes = MatchJSON;
 
@@ -14,7 +14,7 @@ export default async function fetchMatch(
   res: Res<FetchMatchRes>
 ): Promise<void> {
   try {
-    const id = verifyQueryId(req.query);
+    const id = verifyQueryIdNum(req.query);
     const match = await getMatch(id);
 
     const { uid } = await verifyAuth(req.headers, {

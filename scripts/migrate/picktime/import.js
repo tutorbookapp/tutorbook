@@ -260,8 +260,8 @@ function matchToString(match) {
 
 function meetingToString(meeting) {
   const time = new Date(meeting.time.from).toString();
-  const subjects = meeting.match.subjects.join(', ');
-  const people = meeting.match.people.map((p) => p.name).join(' and ');
+  const subjects = meeting.subjects.join(', ');
+  const people = meeting.people.map((p) => p.name).join(' and ');
   return `meeting at ${time} for ${subjects} with ${people}`;
 }
 

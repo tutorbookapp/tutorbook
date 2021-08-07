@@ -142,9 +142,9 @@ export default async function analytics<T extends User | Match | Meeting>(
     await saveAnalytics(current.org, nums);
   } else if (current instanceof Meeting && original instanceof Meeting) {
     // TODO: Add edge cases when the orgs on a resource changes.
-    const nums = await getMostRecentAnalytics(current.match.org);
+    const nums = await getMostRecentAnalytics(current.org);
     updateTags('meeting', action, nums, current.tags, original.tags);
-    await saveAnalytics(current.match.org, nums);
+    await saveAnalytics(current.org, nums);
   } else {
     throw new APIError('Analytics resource not a user/match/meeting.', 500);
   }

@@ -139,7 +139,7 @@ export default function MatchDisplay({
             <Trans
               i18nKey='matches:event-message'
               components={[<br />]}
-              values={{ message: period(match?.message || '') }}
+              values={{ message: period(match?.description || '') }}
             />
           </Event>
           {!loading &&

@@ -6,7 +6,6 @@ import {
   isTimeslotJSON,
 } from 'lib/model/timeslot';
 import { DBPerson, Role, User, UserJSON, isUserJSON } from 'lib/model/user';
-import { Match, MatchJSON, MatchSegment, isMatchJSON } from 'lib/model/match';
 import {
   Resource,
   ResourceInterface,
@@ -14,8 +13,9 @@ import {
   isResourceJSON,
 } from 'lib/model/resource';
 import { Venue, VenueJSON, isVenueJSON } from 'lib/model/venue';
-import { isArray, isJSON } from 'lib/model/json';
+import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
+import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -40,20 +40,10 @@ export function isMeetingTag(tag: unknown): tag is MeetingTag {
 export type MeetingAction = 'all' | 'future' | 'this';
 
 /**
- * A meeting's status starts as `pending`, becomes `logged` once a tutor or
- * student confirms they've attended the meeting, and finally becomes `approved`
- * once an org admin (or an automation they've setup) approves the logged hours.
- * @typedef MeetingStatus
- * @todo Implement the approval process so that the `approved` status is used.
- */
-export type MeetingStatus = 'created' | 'pending' | 'logged' | 'approved';
-
-/**
  * A meeting is a past appointment logged for a match (e.g. John and Jane met
  * last week for 30 mins on Tuesday 3:00 - 3:30 PM).
  * @typedef {Object} Meeting
  * @extends Resource
- * @property status - This meeting's status (i.e. pending, logged, or approved).
  * @property creator - The person who created this meeting.
  * @property match - This meeting's match.
  * @property venue - Link to the meeting venue (e.g. Zoom or Jitsi).
@@ -63,28 +53,56 @@ export type MeetingStatus = 'created' | 'pending' | 'logged' | 'approved';
  * @property [parentId] - The recurring parent meeting ID (if any).
  */
 export interface MeetingInterface extends ResourceInterface {
-  status: MeetingStatus;
+  id: number;
+  tags: MeetingTag[];
+  org: string;
+  subjects: string[];
+  people: User[];
   creator: User;
-  match: Match;
+  description: string;
   venue: Venue;
   time: Timeslot;
-  description: string;
-  tags: MeetingTag[];
-  parentId?: string;
-  id: string;
+  match: number;
+  parentId?: number;
+}
+
+export type MeetingJSON = Omit<
+  MeetingInterface,
+  keyof Resource | 'time' | 'venue' | 'creator'
+> &
+  ResourceJSON & {
+    time: TimeslotJSON;
+    venue: VenueJSON;
+    creator: UserJSON;
+  };
+
+export function isMeetingJSON(json: unknown): json is MeetingJSON {
+  if (!isResourceJSON(json)) return false;
+  if (!isJSON(json)) return false;
+  if (typeof json.id !== 'number') return false;
+  if (!isArray(json.tags, isMeetingTag)) return false;
+  if (typeof json.org !== 'string') return false;
+  if (!isStringArray(json.subjects)) return false;
+  if (!isArray(json.people, isUserJSON)) return false;
+  if (!isUserJSON(json.creator)) return false;
+  if (typeof json.description !== 'string') return false;
+  if (!isVenueJSON(json.venue)) return false;
+  if (!isTimeslotJSON(json.time)) return false;
+  if (typeof json.match !== 'number') return false;
+  if (json.parentId && typeof json.parentId !== 'number') return false;
+  return true;
 }
 
 export interface DBMeeting {
   id: number;
+  tags: DBMeetingTag[];
   org: string;
-  creator: string;
   subjects: string[];
-  status: 'created' | 'pending' | 'logged' | 'approved';
-  match: number;
+  creator: string;
+  description: string;
   venue: string;
   time: DBTimeslot;
-  description: string;
-  tags: DBMeetingTag[];
+  match: number;
   created: DBDate;
   updated: DBDate;
 }
@@ -98,60 +116,36 @@ export interface DBRelationMeetingPerson {
   roles: Role[];
 }
 
-export type MeetingJSON = Omit<
-  MeetingInterface,
-  keyof Resource | 'time' | 'venue' | 'match' | 'creator'
-> &
-  ResourceJSON & {
-    time: TimeslotJSON;
-    venue: VenueJSON;
-    match: MatchJSON;
-    creator: UserJSON;
-  };
-
 export interface MeetingSegment {
-  id: string;
+  id: number;
   description: string;
+  subjects: string[];
   start: Date;
   end: Date;
-  match: MatchSegment;
-}
-
-export function isMeetingJSON(json: unknown): json is MeetingJSON {
-  if (!isResourceJSON(json)) return false;
-  if (!isJSON(json)) return false;
-  if (typeof json.status !== 'string') return false;
-  if (!['created', 'pending', 'logged', 'approved'].includes(json.status))
-    return false;
-  if (!isUserJSON(json.creator)) return false;
-  if (!isMatchJSON(json.match)) return false;
-  if (!isVenueJSON(json.venue)) return false;
-  if (!isTimeslotJSON(json.time)) return false;
-  if (typeof json.description !== 'string') return false;
-  if (!isArray(json.tags, isMeetingTag)) return false;
-  if (json.parentId && typeof json.parentId !== 'string') return false;
-  if (typeof json.id !== 'string') return false;
-  return true;
 }
 
 export class Meeting extends Resource implements MeetingInterface {
-  public status: MeetingStatus = 'pending';
+  public id = 0;
+
+  public tags: MeetingTag[] = [];
+
+  public org = 'default';
+
+  public subjects: string[] = [];
+
+  public people: User[] = [];
 
   public creator: User = new User();
 
-  public match = new Match();
+  public description = '';
 
   public venue = new Venue();
 
   public time = new Timeslot();
 
-  public description = '';
+  public match = 0;
 
-  public tags: MeetingTag[] = [];
-
-  public parentId?: string;
-
-  public id = '';
+  public parentId?: number;
 
   public constructor(meeting: Partial<MeetingInterface> = {}) {
     super(meeting);
@@ -166,18 +160,36 @@ export class Meeting extends Resource implements MeetingInterface {
     return new Meeting(clone(this));
   }
 
+  public get aspect(): Aspect {
+    const isTutor = (a: User) => a.roles.indexOf('tutor') >= 0;
+    const isTutee = (a: User) => a.roles.indexOf('tutee') >= 0;
+    if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
+    return 'mentoring';
+  }
+
+  public get volunteer(): User | undefined {
+    return this.people.find(
+      (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
+    );
+  }
+
+  public get student(): User | undefined {
+    return this.people.find(
+      (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
+    );
+  }
+
   public toString(): string {
     return `Meeting on ${this.time.toString()}`;
   }
 
   public toDB(): DBMeeting {
     return {
-      id: Number(this.id),
-      org: this.match.org,
+      id: this.id,
+      org: this.org,
       creator: this.creator.id,
-      subjects: this.match.subjects,
-      status: this.status,
-      match: Number(this.match.id),
+      subjects: this.subjects,
+      match: this.match,
       venue: this.venue.url,
       time: this.time.toDB(),
       description: this.description,
@@ -197,26 +209,20 @@ export class Meeting extends Resource implements MeetingInterface {
         ? (record.people || []).map((p) => User.fromDB(p))
         : [];
     return new Meeting({
-      id: record.id.toString(),
+      people,
+      id: record.id,
+      org: record.org,
+      subjects: record.subjects,
       creator: creator
         ? User.fromDB(creator)
         : new User({ id: record.creator }),
-      status: record.status,
       venue: new Venue({ url: record.venue }),
       time: Timeslot.fromDB(record.time),
       description: record.description,
       tags: record.tags.filter(isMeetingTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
-      match: new Match({
-        people,
-        id: record.match.toString(),
-        org: record.org,
-        subjects: record.subjects,
-        creator: creator
-          ? User.fromDB(creator)
-          : new User({ id: record.creator }),
-      }),
+      match: record.match,
     });
   }
 
@@ -226,7 +232,6 @@ export class Meeting extends Resource implements MeetingInterface {
       ...super.toJSON(),
       time: this.time.toJSON(),
       venue: this.venue.toJSON(),
-      match: this.match.toJSON(),
       creator: this.creator.toJSON(),
     });
   }
@@ -237,21 +242,27 @@ export class Meeting extends Resource implements MeetingInterface {
       ...Resource.fromJSON(json),
       time: Timeslot.fromJSON(json.time),
       venue: Venue.fromJSON(json.venue),
-      match: Match.fromJSON(json.match),
       creator: User.fromJSON(json.creator),
     });
   }
 
   public toCSV(): Record<string, string> {
     return {
-      'Meeting ID': this.id,
+      'Meeting ID': this.id.toString(),
+      'Meeting Subjects': join(this.subjects),
       'Meeting Description': this.description,
-      'Meeting Start': this.time.from.toString(),
-      'Meeting End': this.time.to.toString(),
       'Meeting Tags': join(this.tags),
       'Meeting Created': this.created.toString(),
       'Meeting Last Updated': this.updated.toString(),
-      ...this.match.toCSV(),
+      'Volunteer ID': this.volunteer?.id || '',
+      'Volunteer Name': this.volunteer?.name || '',
+      'Volunteer Photo URL': this.volunteer?.photo || '',
+      'Student ID': this.student?.id || '',
+      'Student Name': this.student?.name || '',
+      'Student Photo URL': this.student?.photo || '',
+      'Meeting Start': this.time.from.toString(),
+      'Meeting End': this.time.to.toString(),
+      'Match ID': this.match.toString(),
     };
   }
 
@@ -259,9 +270,9 @@ export class Meeting extends Resource implements MeetingInterface {
     return {
       id: this.id,
       description: this.description,
+      subjects: this.subjects,
       start: this.time.from,
       end: this.time.to,
-      match: this.match.toSegment(),
     };
   }
 }

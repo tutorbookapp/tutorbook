@@ -9,7 +9,7 @@ import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryId } from 'lib/api/verify/query-id';
 
 export type FetchUserRes = UserJSON;
 

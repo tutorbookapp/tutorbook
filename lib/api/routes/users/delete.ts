@@ -7,7 +7,7 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryId } from 'lib/api/verify/query-id';
 
 export type DeleteUserRes = void;
 

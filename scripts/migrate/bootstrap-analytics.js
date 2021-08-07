@@ -189,7 +189,7 @@ function tag(usersData, matchesData, meetingsData) {
       const updated = new Date(data.updated || new Date());
       const tags = [];
       if (meeting.time.recur) tags.push('recurring');
-      meeting.match.people.forEach(({ id: personId }) => {
+      meeting.people.forEach(({ id: personId }) => {
         const person = users.find((p) => p.id === personId);
         if (!person) return;
         if (!person.tags.includes('meeting')) person.tags.push('meeting');

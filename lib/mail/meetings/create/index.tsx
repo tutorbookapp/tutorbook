@@ -27,7 +27,7 @@ export default async function sendEmails(
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
       to: people.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
+      subject: `New ${join(meeting.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <MeetingTemplate
           meeting={meeting}
@@ -39,7 +39,7 @@ export default async function sendEmails(
     });
     emails.push({
       to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
+      subject: `New ${join(meeting.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <OrgMeetingTemplate
           meeting={meeting}
@@ -55,7 +55,7 @@ export default async function sendEmails(
     emails.push({
       replyTo: { name: creator.name, email: creator.email },
       to: [{ name: recipient.name, email: recipient.email }],
-      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
+      subject: `New ${join(meeting.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <DirectMeetingTemplate
           meeting={meeting}
@@ -67,7 +67,7 @@ export default async function sendEmails(
     });
     emails.push({
       to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),
-      subject: `New ${join(meeting.match.subjects)} ${noun} on Tutorbook.`,
+      subject: `New ${join(meeting.subjects)} ${noun} on Tutorbook.`,
       html: renderToStaticMarkup(
         <OrgDirectMeetingTemplate
           meeting={meeting}

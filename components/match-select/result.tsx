@@ -46,7 +46,7 @@ export default function MatchResult({
           </dl>
           <dl>
             <dt>{match && 'Message'}</dt>
-            <dd className={styles.message}>{match?.message || ''}</dd>
+            <dd className={styles.message}>{match?.description || ''}</dd>
           </dl>
         </div>
       </div>

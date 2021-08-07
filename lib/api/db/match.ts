@@ -20,7 +20,7 @@ export async function createMatch(match: Match): Promise<Match> {
   const people: DBRelationMatchPerson[] = match.people.map((p) => ({
     user: p.id,
     roles: p.roles,
-    match: Number(m.id),
+    match: m.id,
   }));
   logger.verbose(`Inserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
@@ -35,13 +35,13 @@ export async function updateMatch(match: Match): Promise<Match> {
   const { data, error } = await supabase
     .from<DBMatch>('matches')
     .update({ ...match.toDB(), id: undefined })
-    .eq('id', Number(match.id));
+    .eq('id', match.id);
   handle('updating', 'match', match, error);
   const m = data ? Match.fromDB(data[0]) : match;
   const people: DBRelationMatchPerson[] = match.people.map((p) => ({
     user: p.id,
     roles: p.roles,
-    match: Number(m.id),
+    match: m.id,
   }));
   logger.verbose(`Upserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
@@ -51,16 +51,16 @@ export async function updateMatch(match: Match): Promise<Match> {
   return new Match({ ...m, people: match.people });
 }
 
-export async function deleteMatch(id: string): Promise<Match> {
+export async function deleteMatch(id: number): Promise<Match> {
   const { data, error } = await supabase
     .from<DBMatch>('matches')
     .delete()
-    .eq('id', Number(id));
+    .eq('id', id);
   handle('deleting', 'match', id, error);
   return data ? Match.fromDB(data[0]) : new Match({ id });
 }
 
-export async function getMatch(id: string): Promise<Match> {
+export async function getMatch(id: number): Promise<Match> {
   const { data, error } = await supabase
     .from<DBViewMatch>('view_matches')
     .select()
@@ -89,7 +89,7 @@ export async function getMatches(
   }
   if (query.search) {
     const config = { config: 'english', type: 'websearch' as 'websearch' };
-    select = select.textSearch('message', query.search, config);
+    select = select.textSearch('description', query.search, config);
   }
   const { data, error, count } = await select;
   // TODO: Remove this weird edge case workaround for no results.

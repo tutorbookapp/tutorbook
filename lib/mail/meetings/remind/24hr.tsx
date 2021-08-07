@@ -19,9 +19,7 @@ export default async function send24hrReminderEmails(
   const date = meeting.time.toString('en', people[0].timezone);
   return send({
     to: people.map((p) => ({ name: p.name, email: p.email })),
-    subject: `24-Hour Reminder: ${join(
-      meeting.match.subjects
-    )} ${noun} on ${date}.`,
+    subject: `24-Hour Reminder: ${join(meeting.subjects)} ${noun} on ${date}.`,
     html: renderToStaticMarkup(
       <ReminderTemplate meeting={meeting} people={people} />
     ),

@@ -19,7 +19,6 @@ import { Role, User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/model/error';
 import { ListUsersRes } from 'lib/api/routes/users/list';
-import { Match } from 'lib/model/match';
 import { Timeslot } from 'lib/model/timeslot';
 import { UsersQuery } from 'lib/model/query/users';
 import { getErrorMessage } from 'lib/fetch';
@@ -183,15 +182,11 @@ export default function RequestForm({
       }
       const meeting = new Meeting({
         time,
+        people,
         creator,
         description: message,
-        match: new Match({
-          creator,
-          people,
-          message,
-          org: org?.id || 'default',
-          subjects: subjects.map((s) => s.value),
-        }),
+        org: org?.id || 'default',
+        subjects: subjects.map((s) => s.value),
       });
       const [err] = await to<
         AxiosResponse<MeetingJSON>,

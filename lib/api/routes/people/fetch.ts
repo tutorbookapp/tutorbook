@@ -7,7 +7,7 @@ import { getUser } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQueryId from 'lib/api/verify/query-id';
+import { verifyQueryIdNum } from 'lib/api/verify/query-id';
 
 export type FetchPeopleRes = UserJSON[];
 
@@ -16,7 +16,7 @@ export default async function fetchPeople(
   res: Res<FetchPeopleRes>
 ): Promise<void> {
   try {
-    const id = verifyQueryId(req.query);
+    const id = verifyQueryIdNum(req.query);
     const match = await getMatch(id);
 
     const { uid, adminOf } = await verifyAuth(req.headers, {

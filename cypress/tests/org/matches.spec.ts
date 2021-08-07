@@ -46,7 +46,7 @@ describe('Org matches page', () => {
         .and('contain', `${match.people[0].name} (${match.people[0].roles[0]})`)
         .and('contain', `${match.people[1].name} (${match.people[1].roles[0]})`)
         .and('contain', match.subjects[0])
-        .and('contain', match.message);
+        .and('contain', match.description);
     }
 
     cy.wait('@list-matches');

@@ -21,8 +21,6 @@ import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import sendEmails from 'lib/mail/meetings/update';
-import { updateMatch } from 'lib/api/db/match';
-import updateMatchTags from 'lib/api/update/match-tags';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import { updateUser } from 'lib/api/db/user';
@@ -65,23 +63,23 @@ export default async function updateMeetingAPI(
         'meetings',
         Number(body.parentId || body.id)
       ),
-      verifyRecordExists<DBMatch>('matches', Number(body.match.id)),
+      verifyRecordExists<DBMatch>('matches', body.match),
     ]);
     const original = Meeting.fromDB(meetingRecord);
-    const people = await getPeople(body.match.people);
+    const people = await getPeople(body.people);
 
     // TODO: Actually implement availability verification.
     verifyTimeInAvailability(body.time, people);
-    verifySubjectsCanBeTutored(body.match.subjects, people);
+    verifySubjectsCanBeTutored(body.subjects, people);
 
     // TODO: Compare the previous data with the requested updates to ensure that
     // the people and org haven't changed (prevent check bypassing).
     const { uid } = await verifyAuth(req.headers, {
-      userIds: body.match.people.map((p) => p.id),
-      orgIds: [body.match.org],
+      userIds: body.people.map((p) => p.id),
+      orgIds: [body.org],
     });
 
-    const org = await getOrg(body.match.org);
+    const org = await getOrg(body.org);
     const updater = await getPerson({ id: uid }, people);
 
     // TODO: Certain users can update certain statuses:
@@ -144,7 +142,7 @@ export default async function updateMeetingAPI(
         // 1. Create a new non-recurring meeting using this meeting's data.
         // 2. Add date exception to parent meeting instance.
         // 3. Send the created meeting to the client.
-        body.id = '';
+        body.id = 0;
         body.parentId = undefined;
         body.time.recur = undefined;
         body.time.exdates = undefined;
@@ -198,7 +196,7 @@ export default async function updateMeetingAPI(
         // 1. Create a new recurring meeting using this meeting's data.
         // 2. Add 'until' to original's recur rule to exclude this meeting.
         // 3. Send the created meeting data to the client.
-        body.id = '';
+        body.id = 0;
         body.parentId = undefined;
         body.time.recur = verifyRecurIncludesTime(body.time);
         body.time.last = getLastTime(body.time);
@@ -246,14 +244,12 @@ export default async function updateMeetingAPI(
     } else {
       body.venue = getMeetingVenue(body, org, people);
       body.time.last = getLastTime(body.time);
-      body.match = updateMatchTags(body.match);
 
       const meeting = updateMeetingTags(body);
 
       // TODO: Should I send a 200 status code *and then* send emails? Would that
       // make the front-end feel faster? Or is that a bad development practice?
       await Promise.all([
-        updateMatch(meeting.match),
         updateMeeting(meeting),
         sendEmails(meeting, people, updater, org),
       ]);

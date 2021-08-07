@@ -54,11 +54,11 @@ const MeetingContent = forwardRef(
     }, [eventTarget, eventData]);
 
     const headerString = useMemo(() => {
-      const subjects = join(meeting.match.subjects);
-      const student = meeting.match.people.find(
+      const subjects = join(meeting.subjects);
+      const student = meeting.people.find(
         (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
       );
-      const volunteer = meeting.match.people.find(
+      const volunteer = meeting.people.find(
         (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
       );
       if (student?.id === user.id) {
@@ -74,7 +74,7 @@ const MeetingContent = forwardRef(
         if (subjects) return subjects;
       }
       return '';
-    }, [meeting.match.people, meeting.match.subjects, user.id]);
+    }, [meeting.people, meeting.subjects, user.id]);
     const headerHeight = useMemo(() => Math.floor((height - 4) / 15) * 15, [
       height,
     ]);

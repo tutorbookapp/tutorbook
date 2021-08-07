@@ -96,15 +96,15 @@ export default async function remind(req: Req, res: Res): Promise<void> {
       );
       await Promise.all([
         ...meetings1hrInFuture.results.map(async (meeting) => {
-          const people = await getPeople(meeting.match.people);
+          const people = await getPeople(meeting.people);
           return send1hrReminders(meeting, people);
         }),
         ...meetings24hrsInFuture.results.map(async (meeting) => {
-          const people = await getPeople(meeting.match.people);
+          const people = await getPeople(meeting.people);
           return send24hrReminders(meeting, people);
         }),
         ...meetings1hrInPast.results.map(async (meeting) => {
-          const people = await getPeople(meeting.match.people);
+          const people = await getPeople(meeting.people);
           await sendDonationReminders(meeting, people);
           if (meeting.time.recur) return;
           await sendMakeRecurReminders(meeting, people);
