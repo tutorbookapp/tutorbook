@@ -35,7 +35,6 @@ export function isRole(role: unknown): role is Role {
  */
 export type UserTag =
   | 'vetted' // Has at least one verification.
-  | 'matched' // In at least one match.
   | 'meeting' // Has at least one meeting.
   | Role; // Has this role in at least one match.
 
@@ -47,7 +46,6 @@ export type DBUserTag =
   | 'not-mentee'
   | 'not-parent'
   | 'not-vetted'
-  | 'not-matched'
   | 'not-meeting';
 
 export const USER_TAGS: UserTag[] = [
@@ -57,13 +55,12 @@ export const USER_TAGS: UserTag[] = [
   'mentee',
   'parent',
   'vetted',
-  'matched',
   'meeting',
 ];
 
 export function isUserTag(tag: unknown): tag is UserTag {
   if (typeof tag !== 'string') return false;
-  return ['vetted', 'matched', 'meeting'].includes(tag) || isRole(tag);
+  return ['vetted', 'meeting'].includes(tag) || isRole(tag);
 }
 
 /**

@@ -62,7 +62,6 @@ export default function Analytics(): JSX.Element {
               <Label percent={nums.volunteers.change} />
             </dt>
             <dd>{nums.volunteers.total}</dd>
-            <div>{nums.volunteers.matched} Matched</div>
           </div>
           <div className={styles.number}>
             <dt>
@@ -70,15 +69,6 @@ export default function Analytics(): JSX.Element {
               <Label percent={nums.students.change} />
             </dt>
             <dd>{nums.students.total}</dd>
-            <div>{nums.students.matched} Matched</div>
-          </div>
-          <div className={styles.number}>
-            <dt>
-              Matches
-              <Label percent={nums.matches.change} />
-            </dt>
-            <dd>{nums.matches.total}</dd>
-            <div>{nums.matches.perVolunteer} Per Volunteer</div>
           </div>
           <div className={styles.number}>
             <dt>

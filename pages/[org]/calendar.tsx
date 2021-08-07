@@ -53,10 +53,6 @@ function OrgCalendarPage(props: PageProps): JSX.Element {
               href: `/${query.org as string}/users`,
             },
             {
-              label: t('common:matches'),
-              href: `/${query.org as string}/matches`,
-            },
-            {
               active: true,
               label: t('common:calendar'),
               href: `/${query.org as string}/calendar`,

@@ -1,36 +1,36 @@
-import {
-  MatchesQuery,
-  MatchesQueryInterface,
-  MatchesQueryJSON,
-  isMatchesQueryURL,
-} from 'lib/model/query/matches';
+import { Option, Query, QueryInterface } from 'lib/model/query/base';
 import { DBMeetingTag } from 'lib/model/meeting';
 import construct from 'lib/model/construct';
 
-export interface MeetingsQueryInterface extends MatchesQueryInterface {
+export interface MeetingsQueryInterface extends QueryInterface {
+  org?: string;
+  people: Option<string>[];
+  subjects: Option<string>[];
   tags: DBMeetingTag[];
   from: Date;
   to: Date;
 }
 
-export type MeetingsQueryJSON = Omit<
-  MeetingsQueryInterface,
-  keyof MatchesQueryInterface | 'from' | 'to'
-> &
-  MatchesQueryJSON & { from: string; to: string };
-
+export type MeetingsQueryJSON = Omit<MeetingsQueryInterface, 'from' | 'to'> & {
+  from: string;
+  to: string;
+};
 export type MeetingsQueryURL = {
   [key in keyof MeetingsQueryInterface]?: string;
 };
 
 // TODO: Implement this to verify that the given query params are valid.
 export function isMeetingsQueryURL(query: unknown): query is MeetingsQueryURL {
-  return isMatchesQueryURL(query);
+  return true;
 }
 
-export class MeetingsQuery
-  extends MatchesQuery
-  implements MeetingsQueryInterface {
+export class MeetingsQuery extends Query implements MeetingsQueryInterface {
+  public org?: string;
+
+  public people: Option<string>[] = [];
+
+  public subjects: Option<string>[] = [];
+
   public tags: DBMeetingTag[] = [];
 
   // Start query on the most recent Sunday at 12am.
@@ -52,11 +52,7 @@ export class MeetingsQuery
 
   public constructor(query: Partial<MeetingsQueryInterface> = {}) {
     super(query);
-    construct<MeetingsQueryInterface, MatchesQueryInterface>(
-      this,
-      query,
-      new MatchesQuery()
-    );
+    construct<MeetingsQueryInterface>(this, query);
   }
 
   public getURLParams(): Record<string, string | number | boolean> {
@@ -70,6 +66,9 @@ export class MeetingsQuery
     } else {
       delete query.hitsPerPage;
     }
+    if (this.org) query.org = encodeURIComponent(this.org);
+    if (this.people.length) query.people = encode(this.people);
+    if (this.subjects.length) query.subjects = encode(this.subjects);
     if (this.tags.length) query.tags = encode(this.tags);
     query.from = this.from.toJSON();
     query.to = this.to.toJSON();
@@ -82,7 +81,10 @@ export class MeetingsQuery
     }
 
     return new MeetingsQuery({
-      ...MatchesQuery.fromURLParams(params),
+      ...Query.fromURLParams(params),
+      people: decode(params.people),
+      subjects: decode(params.subjects),
+      org: params.org ? decodeURIComponent(params.org) : undefined,
       tags: decode<DBMeetingTag>(params.tags),
       from: new Date(params.from || new Date().toJSON()),
       to: new Date(params.to || new Date().toJSON()),
@@ -96,7 +98,8 @@ export class MeetingsQuery
 
   public static fromJSON(json: MeetingsQueryJSON): MeetingsQuery {
     return new MeetingsQuery({
-      ...MatchesQuery.fromJSON(json),
+      ...json,
+      ...Query.fromJSON(json),
       from: new Date(json.from),
       to: new Date(json.to),
     });

@@ -23,16 +23,11 @@ const search = algoliasearch(algoliaId, algoliaKey);
 
 const prefix = process.env.ALGOLIA_PREFIX || env;
 const usersIdx = search.initIndex(`${prefix}-users`);
-const matchesIdx = search.initIndex(`${prefix}-matches`);
 const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 function deleteIndices() {
   logger.info('Deleting indices...');
-  return Promise.all([
-    usersIdx.delete(),
-    matchesIdx.delete(),
-    meetingsIdx.delete(),
-  ]);
+  return Promise.all([usersIdx.delete(), meetingsIdx.delete()]);
 }
 
 async function main() {

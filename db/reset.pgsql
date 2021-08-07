@@ -21,21 +21,16 @@ $$
   drop type verification_check cascade;
   drop table public.verifications cascade;
 
-  drop type match_tag cascade;
-  drop table public.matches cascade;
-
   drop type meeting_tag cascade;
   drop table public.meetings cascade;
 
   drop table relation_parents cascade;
   drop table relation_orgs cascade;
   drop table relation_members cascade;
-  drop table relation_match_people cascade;
-  drop table relation_meeting_people cascade;
+  drop table relation_people cascade;
 
   drop view if exists view_orgs cascade;
   drop view if exists view_users cascade;
-  drop view if exists view_matches cascade;
   drop view if exists view_meetings cascade;
 $$
 language sql volatile;

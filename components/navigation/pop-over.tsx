@@ -179,7 +179,6 @@ export default function PopOverMenu({
           <PopOverLink href={`/${user.orgs[0] || 'default'}/search`}>
             {t('common:search')}
           </PopOverLink>
-          <PopOverLink href='/matches'>{t('common:matches')}</PopOverLink>
           <PopOverLink href='/calendar'>{t('common:calendar')}</PopOverLink>
           <PopOverLink href='/profile'>{t('common:profile')}</PopOverLink>
           {orgs.map((org: Org) => (
@@ -191,9 +190,6 @@ export default function PopOverMenu({
               </PopOverLink>
               <PopOverLink href={`/${org.id}/users`}>
                 {t('common:users')}
-              </PopOverLink>
-              <PopOverLink href={`/${org.id}/matches`}>
-                {t('common:matches')}
               </PopOverLink>
               <PopOverLink href={`/${org.id}/calendar`}>
                 {t('common:calendar')}

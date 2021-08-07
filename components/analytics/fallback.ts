@@ -38,35 +38,21 @@ function getFallbackNums(): AnalyticsRes {
       date: date.valueOf(),
       volunteers: getRandY(date, [200, 300], prev?.volunteers),
       students: getRandY(date, [150, 350], prev?.students),
-      matches: getRandY(date, [300, 550], prev?.matches),
       meetings: getRandY(date, [400, 900], prev?.meetings),
     });
     date = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
   }
 
   const current = timeline[timeline.length - 1];
-  const matchesPerVolunteer = 4;
-  const matchesPerStudent = 2;
   return {
     timeline,
     volunteers: {
       change: 12.5,
       total: current.volunteers,
-      matched: Math.round(
-        Math.min(current.matches / matchesPerVolunteer, current.volunteers)
-      ),
     },
     students: {
       change: 12.5,
       total: current.students,
-      matched: Math.round(
-        Math.min(current.matches / matchesPerStudent, current.students)
-      ),
-    },
-    matches: {
-      change: -2.3,
-      total: current.matches,
-      perVolunteer: matchesPerVolunteer,
     },
     meetings: {
       change: 32.5,

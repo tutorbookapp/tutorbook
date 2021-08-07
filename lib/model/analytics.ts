@@ -7,7 +7,6 @@ import {
   ResourceJSON,
 } from 'lib/model/resource';
 import { Role, UserTag } from 'lib/model/user';
-import { MatchTag } from 'lib/model/match';
 import { MeetingTag } from 'lib/model/meeting';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
@@ -37,7 +36,6 @@ export interface AnalyticsInterface extends ResourceInterface {
   mentor: TagTotals<Exclude<UserTag, Role>>;
   mentee: TagTotals<Exclude<UserTag, Role>>;
   parent: TagTotals<Exclude<UserTag, Role>>;
-  match: TagTotals<MatchTag>;
   meeting: TagTotals<MeetingTag>;
   date: Date;
   id: string;
@@ -55,39 +53,32 @@ export class Analytics extends Resource implements AnalyticsInterface {
   public tutor: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public tutee: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public mentor: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public mentee: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
 
   public parent: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
-    matched: 0,
     meeting: 0,
   };
-
-  public match: TagTotals<MatchTag> = { total: 0, meeting: 0 };
 
   public meeting: TagTotals<MeetingTag> = { total: 0, recurring: 0 };
 
@@ -95,11 +86,11 @@ export class Analytics extends Resource implements AnalyticsInterface {
 
   public id = '';
 
-  public constructor(match: Partial<AnalyticsInterface> = {}) {
-    super(match);
+  public constructor(analytics: Partial<AnalyticsInterface> = {}) {
+    super(analytics);
     construct<AnalyticsInterface, ResourceInterface>(
       this,
-      match,
+      analytics,
       new Resource()
     );
   }
@@ -108,7 +99,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
     return {
       total: this.mentor.total + this.tutor.total,
       vetted: this.mentor.vetted + this.tutor.vetted,
-      matched: this.mentor.matched + this.tutor.matched,
       meeting: this.mentor.meeting + this.tutor.meeting,
     };
   }
@@ -117,7 +107,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
     return {
       total: this.mentee.total + this.tutee.total,
       vetted: this.mentee.vetted + this.tutee.vetted,
-      matched: this.mentee.matched + this.tutee.matched,
       meeting: this.mentee.meeting + this.tutee.meeting,
     };
   }
@@ -170,9 +159,9 @@ export class Analytics extends Resource implements AnalyticsInterface {
       updated: snapshot.updateTime?.toDate(),
       id: snapshot.id,
     });
-    const match = Analytics.fromFirestore(
+    const analytics = Analytics.fromFirestore(
       snapshot.data() as AnalyticsFirestore
     );
-    return new Analytics({ ...match, ...overrides });
+    return new Analytics({ ...analytics, ...overrides });
   }
 }

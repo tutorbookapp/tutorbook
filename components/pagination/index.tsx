@@ -7,7 +7,7 @@ import ChevronLeftIcon from 'components/icons/chevron-left';
 import ChevronRightIcon from 'components/icons/chevron-right';
 
 import { Callback } from 'lib/model/callback';
-import { Query } from 'lib/model/query';
+import { Query } from 'lib/model/query/base';
 
 import styles from './pagination.module.scss';
 
