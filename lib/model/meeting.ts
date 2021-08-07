@@ -39,12 +39,9 @@ export function isMeetingTag(tag: unknown): tag is MeetingTag {
 export type MeetingAction = 'all' | 'future' | 'this';
 
 /**
- * A meeting is a past appointment logged for a match (e.g. John and Jane met
- * last week for 30 mins on Tuesday 3:00 - 3:30 PM).
  * @typedef {Object} Meeting
  * @extends Resource
  * @property creator - The person who created this meeting.
- * @property match - This meeting's match.
  * @property venue - Link to the meeting venue (e.g. Zoom or Jitsi).
  * @property time - Time of the meeting (e.g. Tuesday 3:00 - 3:30 PM).
  * @property creator - The person who logged the meeting (typically the tutor).
@@ -61,7 +58,6 @@ export interface MeetingInterface extends ResourceInterface {
   description: string;
   venue: Venue;
   time: Timeslot;
-  match: number;
   parentId?: number;
 }
 
@@ -87,7 +83,6 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (typeof json.description !== 'string') return false;
   if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
-  if (typeof json.match !== 'number') return false;
   if (json.parentId && typeof json.parentId !== 'number') return false;
   return true;
 }
@@ -99,7 +94,6 @@ export interface DBMeeting {
   subjects: string[];
   description: string;
   tags: DBMeetingTag[];
-  match: number;
   time: DBTimeslot;
   venue: string;
   created: DBDate;
@@ -142,8 +136,6 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public time = new Timeslot();
 
-  public match = 0;
-
   public parentId?: number;
 
   public constructor(meeting: Partial<MeetingInterface> = {}) {
@@ -181,7 +173,6 @@ export class Meeting extends Resource implements MeetingInterface {
       org: this.org,
       creator: this.creator.id,
       subjects: this.subjects,
-      match: this.match,
       venue: this.venue.url,
       time: this.time.toDB(),
       description: this.description,
@@ -214,7 +205,6 @@ export class Meeting extends Resource implements MeetingInterface {
       tags: record.tags.filter(isMeetingTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
-      match: record.match,
     });
   }
 
@@ -254,7 +244,6 @@ export class Meeting extends Resource implements MeetingInterface {
       'Student Photo URL': this.student?.photo || '',
       'Meeting Start': this.time.from.toString(),
       'Meeting End': this.time.to.toString(),
-      'Match ID': this.match.toString(),
     };
   }
 
