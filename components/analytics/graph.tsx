@@ -145,14 +145,6 @@ export default function Graph({ timeline }: GraphProps): JSX.Element {
         />
         <Line
           type='monotone'
-          dataKey='matches'
-          stroke='var(--analytics-matches)'
-          activeDot={CustomDot}
-          strokeWidth={2}
-          dot={false}
-        />
-        <Line
-          type='monotone'
           dataKey='volunteers'
           stroke='var(--analytics-volunteers)'
           activeDot={CustomDot}
