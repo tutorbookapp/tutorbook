@@ -149,7 +149,6 @@ const emptyUser = {
   parents: [],
   verifications: [],
   visible: false,
-  featured: [],
   roles: [],
   tags: [],
   reference: '',

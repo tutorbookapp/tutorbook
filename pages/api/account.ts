@@ -94,7 +94,6 @@ function mergeUsers(overrides: User, baseline: User): User {
       Verification
     ),
     visible: overrides.visible || baseline.visible,
-    featured: mergeArrays(overrides.featured, baseline.featured),
     roles: mergeArrays(overrides.roles, baseline.roles),
     tags: mergeArrays(overrides.tags, baseline.tags),
     reference: overrides.reference || baseline.reference,

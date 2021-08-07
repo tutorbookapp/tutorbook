@@ -132,7 +132,6 @@ async function fetchUsers() {
     subjects: [...d.mentoring.subjects, ...d.tutoring.subjects],
     langs: d.langs.length ? d.langs : ['en'],
     visible: d.visible || false,
-    featured: d.featured || [],
     reference: d.reference || '',
     timezone: d.timezone || null,
     age: d.age ? Math.floor(d.age) : null,

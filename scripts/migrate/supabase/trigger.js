@@ -67,7 +67,6 @@ async function trigger() {
           subjects: user.subjects,
           langs: user.langs,
           visible: user.visible,
-          featured: user.featured,
           reference: user.reference,
           timezone: user.timezone || '',
           age: user.age || undefined,

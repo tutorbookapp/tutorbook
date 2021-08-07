@@ -9,7 +9,6 @@ import DownloadIcon from 'components/icons/download';
 
 import { Callback } from 'lib/model/callback';
 import { UsersQuery } from 'lib/model/query/users';
-import { useOrg } from 'lib/context/org';
 
 import styles from './search-bar.module.scss';
 
@@ -21,7 +20,6 @@ export interface SearchBarProps {
 
 function SearchBar({ query, setQuery, setOpen }: SearchBarProps): JSX.Element {
   const { t } = useTranslation();
-  const { org } = useOrg();
 
   return (
     <div className={styles.filters}>
