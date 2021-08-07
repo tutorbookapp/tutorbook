@@ -11,6 +11,7 @@
   background-size: 400% 100%;
   -webkit-animation: loadingAnimation 8s ease-in-out infinite;
   animation: loadingAnimation 8s ease-in-out infinite;
+  cursor: wait;
 }
 
 @-webkit-keyframes loadingAnimation {
