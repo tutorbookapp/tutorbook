@@ -34,7 +34,6 @@ export default function MakeRecurEmail({
         </P>
         <P>I hope you enjoyed your last {noun} together:</P>
         <MeetingDisplay
-          show='description'
           timeZone={people[0].timezone}
           sender={people[0]}
           meeting={meeting}

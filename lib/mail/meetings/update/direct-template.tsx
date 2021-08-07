@@ -39,7 +39,6 @@ export default function DirectMeetingEmail({
           with you:
         </P>
         <MeetingDisplay
-          show='description'
           timeZone={people[0].timezone}
           meeting={meeting}
           people={people}

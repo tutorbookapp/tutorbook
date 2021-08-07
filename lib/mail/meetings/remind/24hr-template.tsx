@@ -36,7 +36,6 @@ export default function ReminderEmail({
           {isTutoring ? 'tutoring lesson' : 'meeting'} tomorrow:
         </P>
         <MeetingDisplay
-          show='description'
           timeZone={people[0].timezone}
           sender={people[0]}
           meeting={meeting}

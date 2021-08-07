@@ -42,7 +42,6 @@ export default function MeetingEmail({
           {people.length > 2 ? 'all' : 'both'} of you:
         </P>
         <MeetingDisplay
-          show='message'
           timeZone={people[0].timezone}
           meeting={meeting}
           people={people}

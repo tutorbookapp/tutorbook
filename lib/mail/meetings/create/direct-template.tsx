@@ -38,7 +38,6 @@ export default function DirectMeetingEmail({
           {isTutoring ? 'tutoring lesson' : 'meeting'} with you:
         </P>
         <MeetingDisplay
-          show='message'
           timeZone={recipient.timezone}
           meeting={meeting}
           people={people.filter((p) => p.id !== recipient.id)}
