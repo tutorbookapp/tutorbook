@@ -6,9 +6,7 @@ $$
   drop domain email cascade;
   drop domain rrule cascade;
 
-  drop type aspect cascade;
   drop type role cascade;
-
   drop type social_type cascade;
   drop type social cascade;
 
@@ -27,7 +25,6 @@ $$
   drop table public.matches cascade;
 
   drop type meeting_tag cascade;
-  drop type meeting_status cascade;
   drop table public.meetings cascade;
 
   drop table relation_parents cascade;

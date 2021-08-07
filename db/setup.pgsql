@@ -6,10 +6,22 @@ $$
   create domain email as text check (value ~ '^[A-Za-z0-9._~+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$');
   create domain rrule as text check (value ~ '^RRULE:FREQ=(WEEKLY|DAILY);?(INTERVAL=2;?)?(UNTIL=(\d{4})(\d{2})(\d{2})(T(\d{2})(\d{2})(\d{2})Z?)?)?$');
 
-  create type aspect as enum ('mentoring', 'tutoring');
-  create type role as enum('tutor', 'tutee', 'mentor', 'mentee', 'parent');
-
-  create type social_type as enum('website', 'linkedin', 'twitter', 'facebook', 'instagram', 'github', 'indiehackers');
+  create type role as enum(
+    'tutor', 
+    'tutee', 
+    'mentor', 
+    'mentee', 
+    'parent'
+  );
+  create type social_type as enum(
+    'website', 
+    'linkedin', 
+    'twitter', 
+    'facebook', 
+    'instagram', 
+    'github', 
+    'indiehackers'
+  );
   create type social as (
     "type" social_type,
     "url" url
@@ -55,11 +67,9 @@ $$
     "venue" url,
     "socials" social[] not null,
     "availability" timeslot[] not null,
-    "mentoring" text[] not null,
-    "tutoring" text[] not null,
+    "subjects" text[] not null,
     "langs" text[] not null check(cardinality(langs) > 0),
     "visible" boolean not null,
-    "featured" aspect[] not null,
     "reference" text not null,
     "timezone" text,
     "age" integer,
@@ -92,7 +102,6 @@ $$
     "background" url,
     "venue" url,
     "socials" social[] not null,
-    "aspects" aspect[] not null check(cardinality(aspects) > 0),
     "domains" text[] check(cardinality(domains) > 0),
     -- TODO: Check that at least one contact info field is included.
     "profiles" profile_field[] not null check(cardinality(profiles) > 3),
@@ -143,9 +152,9 @@ $$
     "subjects" text[] not null check(cardinality(subjects) > 0),
     "description" text not null,
     "tags" meeting_tag[] not null,
-    "match" bigint references public.matches(id) on delete cascade on update cascade,
-    "venue" url not null,
+    "match" bigint references public.matches(id) on delete cascade on update cascade not null,
     "time" timeslot not null,
+    "venue" url not null,
     "created" timestamptz not null,
     "updated" timestamptz not null
   );

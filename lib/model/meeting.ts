@@ -94,14 +94,14 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
 
 export interface DBMeeting {
   id: number;
-  tags: DBMeetingTag[];
   org: string;
-  subjects: string[];
   creator: string;
+  subjects: string[];
   description: string;
-  venue: string;
-  time: DBTimeslot;
+  tags: DBMeetingTag[];
   match: number;
+  time: DBTimeslot;
+  venue: string;
   created: DBDate;
   updated: DBDate;
 }
