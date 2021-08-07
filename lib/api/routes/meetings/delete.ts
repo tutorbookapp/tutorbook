@@ -43,12 +43,12 @@ export default async function deleteMeetingAPI(
     const deleting = Meeting.fromJSON(options.deleting);
 
     const { uid } = await verifyAuth(req.headers, {
-      userIds: meeting.match.people.map((p) => p.id),
-      orgIds: [meeting.match.org],
+      userIds: meeting.people.map((p) => p.id),
+      orgIds: [meeting.org],
     });
 
-    const org = await getOrg(meeting.match.org);
-    const people = await getPeople(meeting.match.people);
+    const org = await getOrg(meeting.org);
+    const people = await getPeople(meeting.people);
     const deleter = await getPerson({ id: uid }, people);
 
     // User is deleting a recurring meeting. We will either:
