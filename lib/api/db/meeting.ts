@@ -2,7 +2,7 @@ import { RRule, RRuleSet } from 'rrule';
 
 import {
   DBMeeting,
-  DBRelationMeetingPerson,
+  DBRelationPerson,
   DBViewMeeting,
   Meeting,
 } from 'lib/model/meeting';
@@ -21,14 +21,14 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
     .insert({ ...meeting.toDB(), id: undefined });
   handle('creating', 'meeting', meeting, error);
   const m = data ? Meeting.fromDB(data[0]) : meeting;
-  const people: DBRelationMeetingPerson[] = meeting.people.map((p) => ({
+  const people: DBRelationPerson[] = meeting.people.map((p) => ({
     user: p.id,
     roles: p.roles,
     meeting: m.id,
   }));
   logger.verbose(`Inserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
-    .from<DBRelationMeetingPerson>('relation_meeting_people')
+    .from<DBRelationPerson>('relation_people')
     .insert(people);
   handle('creating', 'meeting people', people, err);
   return new Meeting({ ...m, people: meeting.people });
@@ -42,14 +42,14 @@ export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
     .eq('id', meeting.id);
   handle('updating', 'meeting', meeting, error);
   const m = data ? Meeting.fromDB(data[0]) : meeting;
-  const people: DBRelationMeetingPerson[] = meeting.people.map((p) => ({
+  const people: DBRelationPerson[] = meeting.people.map((p) => ({
     user: p.id,
     roles: p.roles,
     meeting: m.id,
   }));
   logger.verbose(`Upserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
-    .from<DBRelationMeetingPerson>('relation_meeting_people')
+    .from<DBRelationPerson>('relation_people')
     .upsert(people, { onConflict: 'user,meeting,roles' });
   handle('updating', 'meeting people', people, err);
   return new Meeting({ ...m, people: meeting.people });

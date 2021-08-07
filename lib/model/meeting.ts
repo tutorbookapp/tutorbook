@@ -103,7 +103,7 @@ export interface DBViewMeeting extends DBMeeting {
   people: DBPerson[] | null;
   people_ids: string[];
 }
-export interface DBRelationMeetingPerson {
+export interface DBRelationPerson {
   user: string;
   meeting: number;
   roles: Role[];

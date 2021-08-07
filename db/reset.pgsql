@@ -27,7 +27,7 @@ $$
   drop table relation_parents cascade;
   drop table relation_orgs cascade;
   drop table relation_members cascade;
-  drop table relation_meeting_people cascade;
+  drop table relation_people cascade;
 
   drop view if exists view_orgs cascade;
   drop view if exists view_users cascade;

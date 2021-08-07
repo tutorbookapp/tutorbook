@@ -165,7 +165,7 @@ $$
 
   -- Note: I have to include "roles" in the primary key so users can book 
   -- meetings with themselves (a common scenario when they're testing the app).
-  create table relation_meeting_people (
+  create table relation_people (
     "user" text references public.users(id) on delete cascade on update cascade not null,
     "meeting" bigint references public.meetings(id) on delete cascade on update cascade not null,
     "roles" role[] not null check(cardinality(roles) > 0),
@@ -225,7 +225,7 @@ $$
       -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
       -- the `meeting` property from the aggregated `people` column of objs.
       select meeting,roles,users.* 
-      from relation_meeting_people 
+      from relation_people 
       inner join users on "user" = users.id
     ) as person group by meeting
   ) as people on meeting = meetings.id
