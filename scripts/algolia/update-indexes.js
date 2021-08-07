@@ -17,17 +17,19 @@ const to = require('await-to-js').default;
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs');
 
-const subjects = async (id) => {
-  const index = client.initIndex(id);
+const subjects = async () => {
+  logger.info('Clearing objects from subjects index...');
+  const index = client.initIndex('subjects');
   const [err] = await to(index.clearObjects());
   if (err) {
-    loggger.error(`${err.name} clearing index (${id}): ${err.message}`);
+    logger.error(`${err.name} clearing subjects index: ${err.message}`);
     debugger;
   }
   index.setSettings({
     attributesForFaceting: ['filterOnly(grades)', 'filterOnly(name)'],
   });
-  const subjects = parse(fs.readFileSync(`./${id}.csv`), {
+  logger.info('Parsing objects from ./subjects.csv...');
+  const subjects = parse(fs.readFileSync('./subjects.csv'), {
     columns: true,
     skip_empty_lines: true,
   })
@@ -39,13 +41,12 @@ const subjects = async (id) => {
       return subject;
     })
     .filter((subject) => !!subject.name);
+  logger.info(`Saving ${subjects.length} objects to subjects index...`);
   const [e, res] = await to(
-    index.saveObjects(subjects, {
-      autoGenerateObjectIDIfNotExist: true,
-    })
+    index.saveObjects(subjects, { autoGenerateObjectIDIfNotExist: true })
   );
   if (e) {
-    logger.error(`${e.name} updating index (${id}): ${e.message}`);
+    logger.error(`${e.name} updating subjects index: ${e.message}`);
     debugger;
   }
 };
@@ -84,4 +85,4 @@ const generic = async (id) => {
   }
 };
 
-if (require.main === module) subjects('mentoring');
+if (require.main === module) subjects();
