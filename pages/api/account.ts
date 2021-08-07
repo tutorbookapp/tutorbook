@@ -4,13 +4,7 @@ import { serialize } from 'cookie';
 import to from 'await-to-js';
 
 import { DecodedIdToken, auth } from 'lib/api/firebase';
-import {
-  Subjects,
-  User,
-  UserInterface,
-  UserJSON,
-  isUserJSON,
-} from 'lib/model/user';
+import { User, UserInterface, UserJSON, isUserJSON } from 'lib/model/user';
 import { createUser, getUser, updateUser } from 'lib/api/db/user';
 import { APIError } from 'lib/model/error';
 import { Availability } from 'lib/model/availability';
@@ -63,13 +57,6 @@ function mergeAvailability(
   return new Availability(...mergeArrays(overrides, baseline, Timeslot));
 }
 
-function mergeSubjects(overrides: Subjects, baseline: Subjects): Subjects {
-  return {
-    subjects: mergeArrays(overrides.subjects, baseline.subjects),
-    searches: mergeArrays(overrides.searches, baseline.searches),
-  };
-}
-
 /**
  * Merges the two users giving priority to `overrides` without any loss of data.
  * @param overrides - The 1st priority data that will override `baseline`.
@@ -98,8 +85,7 @@ function mergeUsers(overrides: User, baseline: User): User {
       overrides.availability,
       baseline.availability
     ),
-    mentoring: mergeSubjects(overrides.mentoring, baseline.mentoring),
-    tutoring: mergeSubjects(overrides.tutoring, baseline.tutoring),
+    subjects: mergeArrays(overrides.subjects, baseline.subjects),
     langs: mergeArrays(overrides.langs, baseline.langs),
     parents: mergeArrays(overrides.parents, baseline.parents),
     verifications: mergeArrays(

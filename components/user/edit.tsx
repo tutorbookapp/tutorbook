@@ -120,39 +120,9 @@ export default function UserEdit({
     },
     [setUser]
   );
-  const onMentoringSubjectsChange = useCallback(
+  const onSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          new User({ ...prev, mentoring: { ...prev.mentoring, subjects } })
-      );
-    },
-    [setUser]
-  );
-  const onMentoringSearchesChange = useCallback(
-    (searches: string[]) => {
-      setUser(
-        (prev) =>
-          new User({ ...prev, mentoring: { ...prev.mentoring, searches } })
-      );
-    },
-    [setUser]
-  );
-  const onTutoringSubjectsChange = useCallback(
-    (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          new User({ ...prev, tutoring: { ...prev.tutoring, subjects } })
-      );
-    },
-    [setUser]
-  );
-  const onTutoringSearchesChange = useCallback(
-    (searches: string[]) => {
-      setUser(
-        (prev) =>
-          new User({ ...prev, tutoring: { ...prev.tutoring, searches } })
-      );
+      setUser((prev) => new User({ ...prev, subjects }));
     },
     [setUser]
   );
@@ -285,8 +255,7 @@ export default function UserEdit({
             <TextField
               label={t('user:bio')}
               placeholder={
-                (org?.signup[locale][org?.aspects[0] || 'tutoring'] || {})
-                  .bio || t('common:bio-placeholder')
+                (org?.signup[locale] || {}).bio || t('common:bio-placeholder')
               }
               helpText={{
                 persistent: true,
@@ -303,41 +272,10 @@ export default function UserEdit({
           <div className={styles.divider} />
           <div className={styles.inputs}>
             <SubjectSelect
-              label={t('user:mentoring-subjects')}
-              placeholder={t('common:mentoring-subjects-placeholder')}
-              value={user.mentoring.subjects}
-              onChange={onMentoringSubjectsChange}
-              aspect='mentoring'
-              className={styles.field}
-              renderToPortal
-              outlined
-            />
-            <SubjectSelect
-              label={t('user:mentoring-searches')}
-              placeholder={t('common:mentoring-subjects-placeholder')}
-              value={user.mentoring.searches}
-              onChange={onMentoringSearchesChange}
-              aspect='mentoring'
-              className={styles.field}
-              renderToPortal
-              outlined
-            />
-            <SubjectSelect
-              label={t('user:tutoring-subjects')}
-              placeholder={t('common:tutoring-subjects-placeholder')}
-              value={user.tutoring.subjects}
-              onChange={onTutoringSubjectsChange}
-              aspect='tutoring'
-              className={styles.field}
-              renderToPortal
-              outlined
-            />
-            <SubjectSelect
-              label={t('user:tutoring-searches')}
-              placeholder={t('common:tutoring-subjects-placeholder')}
-              value={user.tutoring.searches}
-              onChange={onTutoringSearchesChange}
-              aspect='tutoring'
+              label={t('user:subjects')}
+              placeholder={t('common:subjects-placeholder')}
+              value={user.subjects}
+              onChange={onSubjectsChange}
               className={styles.field}
               renderToPortal
               outlined

@@ -99,21 +99,9 @@ export default function Profile(): JSX.Element {
     },
     [setUser]
   );
-  const onMentoringSubjectsChange = useCallback(
+  const onSubjectsChange = useCallback(
     (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          new User({ ...prev, mentoring: { ...prev.mentoring, subjects } })
-      );
-    },
-    [setUser]
-  );
-  const onTutoringSubjectsChange = useCallback(
-    (subjects: string[]) => {
-      setUser(
-        (prev) =>
-          new User({ ...prev, tutoring: { ...prev.tutoring, subjects } })
-      );
+      setUser((prev) => new User({ ...prev, subjects }));
     },
     [setUser]
   );
@@ -250,20 +238,10 @@ export default function Profile(): JSX.Element {
           <div className={styles.inputs}>
             <SubjectSelect
               className={styles.field}
-              label={t('user3rd:tutoring-subjects')}
-              onChange={onTutoringSubjectsChange}
-              value={user.tutoring.subjects}
-              placeholder={t('common:tutoring-subjects-placeholder')}
-              aspect='tutoring'
-              outlined
-            />
-            <SubjectSelect
-              className={styles.field}
-              label={t('user3rd:mentoring-subjects')}
-              onChange={onMentoringSubjectsChange}
-              value={user.mentoring.subjects}
-              placeholder={t('common:mentoring-subjects-placeholder')}
-              aspect='mentoring'
+              label={t('user3rd:subjects')}
+              onChange={onSubjectsChange}
+              value={user.subjects}
+              placeholder={t('common:subjects-placeholder')}
               outlined
             />
           </div>

@@ -16,13 +16,9 @@ export default function verifySubjectsCanBeTutored(
   people: User[]
 ): void {
   people.forEach((person: User) => {
-    const isTutor = person.roles.indexOf('tutor') >= 0;
-    const isMentor = person.roles.indexOf('mentor') >= 0;
-    const canTutor = (s: string) => person.tutoring.subjects.includes(s);
-    const canMentor = (s: string) => person.mentoring.subjects.includes(s);
+    const isTutor = person.roles.includes('tutor');
+    const canTutor = (s: string) => person.subjects.includes(s);
     if (isTutor && !subjects.every(canTutor))
       throw new APIError(`${person.toString()} cannot tutor these subjects`);
-    if (isMentor && !subjects.every(canMentor))
-      throw new APIError(`${person.toString()} cannot mentor these subjects`);
   });
 }

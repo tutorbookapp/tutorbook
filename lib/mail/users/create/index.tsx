@@ -12,21 +12,10 @@ export default async function sendEmails(
   org: Org,
   orgAdmins: User[]
 ): Promise<void> {
-  const [tutoring, mentoring, langs] = await Promise.all([
-    getSubjectLabels(user.tutoring.subjects),
-    getSubjectLabels(user.mentoring.subjects),
+  const [subjects, langs] = await Promise.all([
+    getSubjectLabels(user.subjects),
     getLangLabels(user.langs),
   ]);
-
-  let subjects: string[] = [];
-  if (org.aspects.length === 1) {
-    subjects = org.aspects.includes('tutoring') ? tutoring : mentoring;
-  } else {
-    const unique = new Set<string>();
-    tutoring.forEach((s) => unique.add(s));
-    mentoring.forEach((s) => unique.add(s));
-    subjects = [...unique];
-  }
 
   await send({
     to: orgAdmins.map((p) => ({ name: p.name, email: p.email })),

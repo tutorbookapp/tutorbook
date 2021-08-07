@@ -253,7 +253,7 @@ export default function Signup(): JSX.Element {
               <SubjectSelect
                 label={t('user3rd:subjects')}
                 placeholder={t('common:subjects-placeholder')}
-                value={user.tutoring.subjects}
+                value={user.subjects}
                 onChange={onSubjectsChange}
                 className={styles.field}
                 required={org ? org.profiles.includes('subjects') : true}
