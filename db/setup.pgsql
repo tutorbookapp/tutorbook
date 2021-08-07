@@ -39,7 +39,6 @@ $$
   -- TODO: See if there's a way to simply extend the existing `role` enum.
   create type user_tag as enum (
     'vetted', 
-    'matched', 
     'meeting', 
     'tutor', 
     'tutee', 
@@ -47,7 +46,6 @@ $$
     'mentee', 
     'parent',
     'not-vetted', 
-    'not-matched', 
     'not-meeting', 
     'not-tutor', 
     'not-tutee', 
@@ -132,18 +130,6 @@ $$
     "updated" timestamptz not null
   );
 
-  create type match_tag as enum('meeting', 'not-meeting');
-  create table public.matches (
-    "id" bigint generated always as identity primary key,
-    "org" text references public.orgs(id) on delete cascade on update cascade not null,
-    "creator" text references public.users(id) on delete cascade on update cascade not null,
-    "subjects" text[] not null check(cardinality(subjects) > 0),
-    "description" text not null,
-    "tags" match_tag[] not null,
-    "created" timestamptz not null,
-    "updated" timestamptz not null
-  );
-
   create type meeting_tag as enum('recurring', 'not-recurring');
   create table public.meetings (
     "id" bigint generated always as identity primary key,
@@ -152,7 +138,6 @@ $$
     "subjects" text[] not null check(cardinality(subjects) > 0),
     "description" text not null,
     "tags" meeting_tag[] not null,
-    "match" bigint references public.matches(id) on delete cascade on update cascade not null,
     "time" timeslot not null,
     "venue" url not null,
     "created" timestamptz not null,
@@ -178,15 +163,8 @@ $$
     primary key ("user", "org")
   );
 
-  -- Note: I have to include "roles" in the primary key so users can book meetings
-  -- and create matches with themselves (a pretty common scenario when they're 
-  -- first testing out the app).
-  create table relation_match_people (
-    "user" text references public.users(id) on delete cascade on update cascade not null,
-    "match" bigint references public.matches(id) on delete cascade on update cascade not null,
-    "roles" role[] not null check(cardinality(roles) > 0),
-    primary key ("user", "match", "roles")
-  );
+  -- Note: I have to include "roles" in the primary key so users can book 
+  -- meetings with themselves (a common scenario when they're testing the app).
   create table relation_meeting_people (
     "user" text references public.users(id) on delete cascade on update cascade not null,
     "meeting" bigint references public.meetings(id) on delete cascade on update cascade not null,
@@ -226,26 +204,6 @@ $$
       from relation_parents group by "user"
     ) as parents on parents."user" = id
   order by id;
-
-  create view view_matches as
-  select 
-    matches.*,
-    people,
-    coalesce(people_ids,array[]::text[]) as people_ids
-  from matches left outer join (
-    select 
-      "match",
-      json_agg(person.*) as people,
-      array_agg(person.id) as people_ids 
-    from (
-      -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
-      -- the `"match"` property from the aggregated `people` column of objs.
-      select "match",roles,users.* 
-      from relation_match_people 
-      inner join users on "user" = users.id
-    ) as person group by "match"
-  ) as people on "match" = matches.id
-  order by matches.id;
 
   create view view_meetings as
   select 
