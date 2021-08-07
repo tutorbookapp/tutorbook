@@ -7,7 +7,6 @@ import {
 } from 'lib/model/resource';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
-import { Aspect } from 'lib/model/aspect';
 import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
@@ -109,13 +108,6 @@ export class Match extends Resource implements MatchInterface {
 
   public get clone(): Match {
     return new Match(clone(this));
-  }
-
-  public get aspect(): Aspect {
-    const isTutor = (a: User) => a.roles.indexOf('tutor') >= 0;
-    const isTutee = (a: User) => a.roles.indexOf('tutee') >= 0;
-    if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
-    return 'mentoring';
   }
 
   public get volunteer(): User | undefined {

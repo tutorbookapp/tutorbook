@@ -4,8 +4,7 @@ import {
   AccountJSON,
   isAccountJSON,
 } from 'lib/model/account';
-import { Aspect, isAspect } from 'lib/model/aspect';
-import { DBAspect, DBSocial, DBUser, UserInterface } from 'lib/model/user';
+import { DBSocial, DBUser, UserInterface } from 'lib/model/user';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
@@ -13,9 +12,8 @@ import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
 type Config<T> = { [locale: string]: T };
-type AspectConfig<T> = Config<{ [key in Aspect]?: T }>;
 
-type SignupConfig = AspectConfig<{ header: string; body: string; bio: string }>;
+type SignupConfig = Config<{ header: string; body: string; bio: string }>;
 type HomeConfig = Config<{ header: string; body: string }>;
 type BookingConfig = Config<{ message: string }>;
 
@@ -23,14 +21,11 @@ export function isSignupConfig(config: unknown): config is SignupConfig {
   if (!isJSON(config)) return false;
   return Object.values(config).every((localeConfig) => {
     if (!isJSON(localeConfig)) return false;
-    if (!Object.keys(localeConfig).every((k) => isAspect(k))) return false;
-    return Object.values(localeConfig).every((aspectConfig) => {
-      if (!isJSON(aspectConfig)) return false;
-      if (typeof aspectConfig.header !== 'string') return false;
-      if (typeof aspectConfig.body !== 'string') return false;
-      if (typeof aspectConfig.bio !== 'string') return false;
-      return true;
-    });
+    if (!isJSON(localeConfig)) return false;
+    if (typeof localeConfig.header !== 'string') return false;
+    if (typeof localeConfig.body !== 'string') return false;
+    if (typeof localeConfig.bio !== 'string') return false;
+    return true;
   });
 }
 
@@ -58,8 +53,6 @@ export function isBookingConfig(config: unknown): config is BookingConfig {
  * to manage their virtual tutoring programs.
  * @typedef {Object} Org
  * @property members - An array of user UIDs that are members of this org.
- * @property aspects - The supported aspects of a given org (i.e. are they more
- * focused on `tutoring` or `mentoring`). The first one listed is the default.
  * @property domains - Array of valid email domains that can access this org's
  * data (e.g. `pausd.us` and `pausd.org`).
  * @property profiles - Array of required profile fields (e.g. `phone`).
@@ -72,7 +65,6 @@ export function isBookingConfig(config: unknown): config is BookingConfig {
  */
 export interface OrgInterface extends AccountInterface {
   members: string[];
-  aspects: Aspect[];
   domains: string[];
   profiles: (keyof UserInterface | 'subjects')[];
   subjects?: string[];
@@ -92,7 +84,6 @@ export interface DBOrg {
   background: string | null;
   venue: string | null;
   socials: DBSocial[];
-  aspects: DBAspect[];
   domains: string[] | null;
   profiles: (keyof DBUser)[];
   subjects: string[] | null;
@@ -117,7 +108,6 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isAccountJSON(json)) return false;
   if (!isJSON(json)) return false;
   if (!isStringArray(json.members)) return false;
-  if (!isArray(json.aspects, isAspect)) return false;
   if (!isStringArray(json.domains)) return false;
   if (!isStringArray(json.profiles)) return false;
   if (json.subjects && !isStringArray(json.subjects)) return false;
@@ -130,8 +120,6 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
 
 export class Org extends Account implements OrgInterface {
   public members: string[] = [];
-
-  public aspects: Aspect[] = ['tutoring'];
 
   public domains: string[] = [];
 
@@ -228,7 +216,6 @@ export class Org extends Account implements OrgInterface {
       background: this.background || null,
       venue: this.venue || null,
       socials: this.socials,
-      aspects: this.aspects,
       domains: this.domains.length ? this.domains : null,
       profiles: this.profiles as (keyof DBUser)[],
       subjects: this.subjects?.length ? this.subjects : null,
@@ -251,7 +238,6 @@ export class Org extends Account implements OrgInterface {
       background: record.background || '',
       venue: record.venue || '',
       socials: record.socials,
-      aspects: record.aspects,
       domains: record.domains?.length ? record.domains : [],
       profiles: record.profiles as (keyof UserInterface | 'subjects')[],
       subjects: record.subjects?.length ? record.subjects : undefined,

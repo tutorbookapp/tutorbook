@@ -15,7 +15,6 @@ import {
 import { Venue, VenueJSON, isVenueJSON } from 'lib/model/venue';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
-import { Aspect } from 'lib/model/aspect';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
@@ -158,13 +157,6 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public get clone(): Meeting {
     return new Meeting(clone(this));
-  }
-
-  public get aspect(): Aspect {
-    const isTutor = (a: User) => a.roles.indexOf('tutor') >= 0;
-    const isTutee = (a: User) => a.roles.indexOf('tutee') >= 0;
-    if (this.people.some((a) => isTutor(a) || isTutee(a))) return 'tutoring';
-    return 'mentoring';
   }
 
   public get volunteer(): User | undefined {

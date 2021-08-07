@@ -4,7 +4,6 @@ import {
   AccountJSON,
   isAccountJSON,
 } from 'lib/model/account';
-import { Aspect, isAspect } from 'lib/model/aspect';
 import {
   Availability,
   AvailabilityJSON,
@@ -75,15 +74,6 @@ export function isUserTag(tag: unknown): tag is UserTag {
  */
 export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
-export type Subjects = { subjects: string[]; searches: string[] };
-
-export function isSubjects(json: unknown): json is Subjects {
-  if (!isJSON(json)) return false;
-  if (!isStringArray(json.subjects)) return false;
-  if (!isStringArray(json.searches)) return false;
-  return true;
-}
-
 /**
  * A user object.
  * @typedef {Object} UserInterface
@@ -91,12 +81,10 @@ export function isSubjects(json: unknown): json is Subjects {
  * @property [age] - The user's age (mostly used for students).
  * @property orgs - An array of the IDs of the orgs this user belongs to.
  * @property availability - An array of `Timeslot`'s when the user is free.
- * @property mentoring - The subjects that the user wants a and can mentor for.
- * @property tutoring - The subjects that the user wants a and can tutor for.
+ * @property subjects - The subjects that the user can tutor for.
  * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
  * @property visible - Whether or not this user appears in search results.
- * @property featured - Aspects in which this user is first in search results.
  * @property roles - Always empty unless in context of match or request.
  * @property tags - An array of user tags used for analytics and filtering.
  * @property reference - How the user heard about TB or the org they're joining.
@@ -109,13 +97,11 @@ export interface UserInterface extends AccountInterface {
   age?: number;
   orgs: string[];
   availability: Availability;
-  mentoring: Subjects;
-  tutoring: Subjects;
+  subjects: string[];
   langs: string[];
   parents: string[];
   verifications: Verification[];
   visible: boolean;
-  featured: Aspect[];
   roles: Role[];
   tags: UserTag[];
   reference: string;
@@ -124,7 +110,6 @@ export interface UserInterface extends AccountInterface {
   hash?: string;
 }
 
-export type DBAspect = 'mentoring' | 'tutoring';
 export interface DBSocial {
   type:
     | 'website'
@@ -148,11 +133,9 @@ export interface DBUser {
   venue: string | null;
   socials: DBSocial[];
   availability: DBTimeslot[];
-  mentoring: string[];
-  tutoring: string[];
+  subjects: string[];
   langs: string[];
   visible: boolean;
-  featured: DBAspect[];
   reference: string;
   timezone: string | null;
   age: number | null;
@@ -193,13 +176,11 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (json.age && typeof json.age !== 'number') return false;
   if (!isStringArray(json.orgs)) return false;
   if (!isAvailabilityJSON(json.availability)) return false;
-  if (!isSubjects(json.mentoring)) return false;
-  if (!isSubjects(json.tutoring)) return false;
+  if (!isStringArray(json.subjects)) return false;
   if (!isStringArray(json.langs)) return false;
   if (!isStringArray(json.parents)) return false;
   if (!isArray(json.verifications, isVerificationJSON)) return false;
   if (typeof json.visible !== 'boolean') return false;
-  if (!isArray(json.featured, isAspect)) return false;
   if (!isArray(json.roles, isRole)) return false;
   if (!isArray(json.tags, isUserTag)) return false;
   if (typeof json.reference !== 'string') return false;
@@ -220,9 +201,7 @@ export class User extends Account implements UserInterface {
 
   public availability: Availability = new Availability();
 
-  public mentoring: Subjects = { subjects: [], searches: [] };
-
-  public tutoring: Subjects = { subjects: [], searches: [] };
+  public subjects: string[] = [];
 
   public langs: string[] = ['en'];
 
@@ -231,8 +210,6 @@ export class User extends Account implements UserInterface {
   public verifications: Verification[] = [];
 
   public visible = false;
-
-  public featured: Aspect[] = [];
 
   public roles: Role[] = [];
 
@@ -277,11 +254,6 @@ export class User extends Account implements UserInterface {
     return caps(parts[parts.length - 1] || '');
   }
 
-  public get subjects(): string[] {
-    const subjects = this.tutoring.subjects.concat(this.mentoring.subjects);
-    return [...new Set<string>(subjects)];
-  }
-
   public toDB(): DBUser {
     return {
       id: this.id,
@@ -295,11 +267,9 @@ export class User extends Account implements UserInterface {
       venue: this.venue || null,
       socials: this.socials,
       availability: this.availability.toDB(),
-      mentoring: this.mentoring.subjects,
-      tutoring: this.tutoring.subjects,
+      subjects: this.subjects,
       langs: this.langs,
       visible: this.visible,
-      featured: this.featured,
       reference: this.reference,
       timezone: this.timezone || null,
       age: this.age || null,
@@ -322,11 +292,9 @@ export class User extends Account implements UserInterface {
       venue: record.venue || '',
       socials: record.socials,
       availability: Availability.fromDB(record.availability),
-      mentoring: { subjects: record.mentoring, searches: [] },
-      tutoring: { subjects: record.tutoring, searches: [] },
+      subjects: record.subjects,
       langs: record.langs,
       visible: record.visible,
-      featured: record.featured,
       reference: record.reference,
       timezone: record.timezone || '',
       age: record.age || undefined,
@@ -375,10 +343,7 @@ export class User extends Account implements UserInterface {
       'User Reference': this.reference,
       'User Languages': join(this.langs),
       'User Tags': join(this.tags),
-      'Mentoring Subjects': join(this.mentoring.subjects),
-      'Tutoring Subjects': join(this.tutoring.subjects),
-      'Mentoring Searches': join(this.mentoring.searches),
-      'Tutoring Searches': join(this.tutoring.searches),
+      Subjects: join(this.subjects),
       'Profile Image URL': this.photo,
       'Banner Image URL': this.background,
       'Website URL': this.website,
