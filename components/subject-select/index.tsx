@@ -84,7 +84,7 @@ function SubjectSelect({
       });
       res.hits.forEach((h: SubjectHit) => {
         if (suggestions.findIndex((s) => s.label === h.name) >= 0) return;
-        suggestions.push({ label: h.name, value: h.name });
+        suggestions.push({ label: h.name, value: h.name, key: h.name });
       });
       return suggestions;
     },
@@ -96,17 +96,11 @@ function SubjectSelect({
   useEffect(() => {
     setSelectedOptions((prev: Option<string>[]) => {
       // If they already match, do nothing.
-      if (!value) return prev;
+      const prevValue = prev.map((p) => p.value);
+      if (!value || dequal(prevValue, value)) return prev;
       if (!value.length) return [];
-      if (
-        dequal(
-          prev.map(({ value: val }) => val),
-          value
-        )
-      )
-        return prev;
       // Otherwise, update the options based on the subject codes.
-      return value.map((val: string) => ({ label: val, value: val }));
+      return value.map((val) => ({ label: val, value: val, key: val }));
       // TODO: Add i18n to subjects by including labels for all languages in that
       // search index (and then fetching the correct labels for the given subject
       // codes here by searching that index).

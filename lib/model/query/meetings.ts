@@ -1,10 +1,11 @@
 import { Option, Query, QueryInterface } from 'lib/model/query/base';
 import { DBMeetingTag } from 'lib/model/meeting';
+import { User } from 'lib/model/user';
 import construct from 'lib/model/construct';
 
 export interface MeetingsQueryInterface extends QueryInterface {
   org?: string;
-  people: Option<string>[];
+  people: Option<User>[];
   subjects: Option<string>[];
   tags: DBMeetingTag[];
   from: Date;
@@ -27,7 +28,7 @@ export function isMeetingsQueryURL(query: unknown): query is MeetingsQueryURL {
 export class MeetingsQuery extends Query implements MeetingsQueryInterface {
   public org?: string;
 
-  public people: Option<string>[] = [];
+  public people: Option<User>[] = [];
 
   public subjects: Option<string>[] = [];
 

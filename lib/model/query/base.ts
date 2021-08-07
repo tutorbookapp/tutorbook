@@ -3,6 +3,7 @@ import url from 'url';
 import construct from 'lib/model/construct';
 
 export interface Option<T> {
+  key: string | number;
   label: string;
   value: T;
 }

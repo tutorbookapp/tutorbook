@@ -35,8 +35,9 @@ export default function UserSelect({
   const getSuggestions = useCallback(
     async (search: string = '') => {
       const qry = new UsersQuery({ ...query, search });
-      const { users } = await fetcher<ListUsersRes>(qry.endpoint);
-      return users.map((u) => ({ label: u.name, value: User.fromJSON(u) }));
+      const { users: results } = await fetcher<ListUsersRes>(qry.endpoint);
+      const users = results.map((u) => User.fromJSON(u));
+      return users.map((u) => ({ label: u.name, value: u, key: u.id }));
     },
     [query]
   );
@@ -45,7 +46,7 @@ export default function UserSelect({
     setOptions((prev: Option<User>[]) => {
       const prevValue = prev.map((p) => p.value);
       if (!value || dequal(prevValue, value)) return prev;
-      return value.map((u) => ({ label: u.name, value: u }));
+      return value.map((u) => ({ label: u.name, value: u, key: u.id }));
     });
   }, [value]);
   useEffect(() => {

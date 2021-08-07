@@ -6,10 +6,12 @@ import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 import UserSelect from 'components/user-select';
 
-import { MEETING_TAGS, DBMeetingTag } from 'lib/model/meeting';
+import { DBMeetingTag, MEETING_TAGS } from 'lib/model/meeting';
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { Option } from 'lib/model/query/base';
+import { User } from 'lib/model/user';
+import { useOrg } from 'lib/context/org';
 
 import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';
@@ -34,7 +36,7 @@ function FiltersSheet({
     [setQuery]
   );
   const onPeopleChange = useCallback(
-    (people: Option<string>[]) => {
+    (people: Option<User>[]) => {
       setQuery((prev) => new MeetingsQuery({ ...prev, people, page: 0 }));
     },
     [setQuery]
@@ -45,6 +47,8 @@ function FiltersSheet({
     },
     [setQuery]
   );
+
+  const { org } = useOrg();
 
   return (
     <animated.div
@@ -63,6 +67,7 @@ function FiltersSheet({
         />
         <UserSelect
           label='People'
+          query={{ orgs: [org?.id || 'default'] }}
           onSelectedChange={onPeopleChange}
           selected={query.people}
           className={styles.field}
