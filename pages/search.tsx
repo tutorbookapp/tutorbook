@@ -96,7 +96,6 @@ function SearchPage(props: PageProps): JSX.Element {
         {
           subjects: updated.subjects.map((o) => o.value).join(' AND '),
           langs: updated.langs.map((o) => o.value).join(' AND '),
-          aspect: updated.aspect,
         },
         2500
       );
@@ -117,12 +116,11 @@ function SearchPage(props: PageProps): JSX.Element {
       !searching && {
         subjects: query.subjects.map((o) => o.value).join(' AND '),
         langs: query.langs.map((o) => o.value).join(' AND '),
-        aspect: query.aspect,
         users: results.map((res, idx) => ({
           ...User.fromJSON(res).toSegment(),
           position: idx,
           url: `${url}/${res.orgs[0] || 'default'}/users/${res.id}`,
-          subjects: res[query.aspect].subjects,
+          subjects: res.subjects,
         })),
       }
   );

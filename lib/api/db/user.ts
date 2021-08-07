@@ -103,7 +103,7 @@ export async function getUsers(
       query.langs.map((s) => s.value)
     )
     .contains(
-      query.aspect,
+      'subjects',
       query.subjects.map((s) => s.value)
     )
     .ilike('name', `%${query.search}%`)

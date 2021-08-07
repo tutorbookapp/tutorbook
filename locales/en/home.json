@@ -1,7 +1,5 @@
 {
   "about": "{{name}} is using Tutorbook to manage it's tutoring program. You can use Tutorbook to sign-up as a tutor or search {{name}}'s existing tutors.",
-  "search-tutoring": "Search tutors",
-  "search-mentoring": "Search mentors",
-  "signup-tutoring": "Become a tutor",
-  "signup-mentoring": "Become a mentor"
+  "search": "Search tutors",
+  "signup": "Become a tutor"
 }

@@ -67,8 +67,7 @@ function FiltersSheet({
           label={t('query:subjects')}
           onSelectedChange={onSubjectsChange}
           selected={query.subjects}
-          placeholder={t(`common:${query.aspect}-subjects-placeholder`)}
-          aspect={query.aspect}
+          placeholder={t('common:subjects-placeholder')}
           className={styles.field}
           renderToPortal
           outlined

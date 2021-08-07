@@ -29,15 +29,6 @@ interface UniqueSubjectSelectProps {
 export type SubjectSelectProps = SelectControllerProps<string> &
   UniqueSubjectSelectProps;
 
-/**
- * The `SubjectSelect` is a `Select` controller which means that it:
- * 1. Provides the `value` and `onChange` API surface on which to control the
- * values currently selected (i.e. the selected locale codes).
- * 2. Also exposes (an optional) `selected` and `onSelectedChange` API surface
- * that can be used to directly control the `selectedOptions`.
- * 3. Implements a `getSuggestions` callback that searches the `aspect` Algolia
- * index for relevant subjects (while filtering by `options` and `grade`).
- */
 function SubjectSelect({
   value,
   onChange,
@@ -126,7 +117,6 @@ function SubjectSelect({
       // TODO: Add i18n to subjects by including labels for all languages in that
       // search index (and then fetching the correct labels for the given subject
       // codes here by searching that index).
-      // TODO: Add the subject aspect to each option using the search indexes.
     });
   }, [value]);
 

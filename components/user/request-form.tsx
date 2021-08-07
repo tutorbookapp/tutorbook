@@ -4,21 +4,20 @@ import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
 import { dequal } from 'dequal';
 import to from 'await-to-js';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import SubjectSelect, { SubjectOption } from 'components/subject-select';
+import SubjectSelect from 'components/subject-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
 import TimeSelect from 'components/time-select';
 
-import { Aspect, isAspect } from 'lib/model/aspect';
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
-import { Role, User, UserJSON } from 'lib/model/user';
+import { User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/model/error';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import { Option } from 'lib/model/query/base';
 import { Timeslot } from 'lib/model/timeslot';
 import { UsersQuery } from 'lib/model/query/users';
 import { getErrorMessage } from 'lib/fetch';
@@ -40,7 +39,6 @@ export default function RequestForm({
   const [error, setError] = useState<string | undefined>();
 
   const { org } = useOrg();
-  const { query } = useRouter();
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
   const { data: children } = useSWR<ListUsersRes>(
@@ -66,7 +64,7 @@ export default function RequestForm({
     });
   }, [user, child, children]);
 
-  const [subjects, setSubjects] = useState<SubjectOption[]>([]);
+  const [subjects, setSubjects] = useState<Option<string>[]>([]);
   const [message, setMessage] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
 

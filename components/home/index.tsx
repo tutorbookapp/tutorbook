@@ -1,12 +1,11 @@
 import Image from 'next/image';
 import cn from 'classnames';
-import { useMemo } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 import Button from 'components/button';
 
-import { getEmailLink, join } from 'lib/utils';
+import { getEmailLink } from 'lib/utils';
 import Link from 'lib/intl/link';
 import { Org } from 'lib/model/org';
 
@@ -87,30 +86,28 @@ export default function Home({ org }: HomeProps): JSX.Element {
         </div>
         <div className={styles.right}>
           <div className={styles.sticky}>
-            {(org ? org.aspects : ['tutoring', 'mentoring']).map((aspect) => (
-              <div key={aspect} className={styles.card}>
-                <Link href={`/${org?.id || 'default'}/search?aspect=${aspect}`}>
-                  <a>
-                    <Button
-                      className={styles.btn}
-                      label={t(`home:search-${aspect}`)}
-                      raised
-                      arrow
-                    />
-                  </a>
-                </Link>
-                <Link href={`/${org?.id || 'default'}/signup?aspect=${aspect}`}>
-                  <a>
-                    <Button
-                      className={styles.btn}
-                      label={t(`home:signup-${aspect}`)}
-                      outlined
-                      arrow
-                    />
-                  </a>
-                </Link>
-              </div>
-            ))}
+            <div className={styles.card}>
+              <Link href={`/${org?.id || 'default'}/search`}>
+                <a>
+                  <Button
+                    className={styles.btn}
+                    label={t('home:search')}
+                    raised
+                    arrow
+                  />
+                </a>
+              </Link>
+              <Link href={`/${org?.id || 'default'}/signup`}>
+                <a>
+                  <Button
+                    className={styles.btn}
+                    label={t('home:signup')}
+                    outlined
+                    arrow
+                  />
+                </a>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
