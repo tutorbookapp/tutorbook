@@ -7,7 +7,6 @@ const { serialize } = require('cookie');
 const logger = require('./lib/logger');
 
 const admin = require('../cypress/fixtures/users/admin.json');
-const match = require('../cypress/fixtures/match.json');
 const meeting = require('../cypress/fixtures/meeting.json');
 const org = require('../cypress/fixtures/orgs/default.json');
 const school = require('../cypress/fixtures/orgs/school.json');
@@ -33,15 +32,9 @@ const search = algoliasearch(algoliaId, algoliaKey);
 
 const prefix = process.env.ALGOLIA_PREFIX || env;
 const usersIdx = search.initIndex(`${prefix}-users`);
-const matchesIdx = search.initIndex(`${prefix}-matches`);
 const meetingsIdx = search.initIndex(`${prefix}-meetings`);
 
 async function seed(overrides = {}) {
-  let matches = [];
-  matches.push({ ...match, ...overrides.match });
-  if (overrides.match === null) delete matches[0];
-  matches = matches.filter(Boolean);
-
   let orgs = [];
   orgs.push({ ...org, ...overrides.org });
   orgs.push({ ...school, ...overrides.school });
@@ -97,8 +90,6 @@ async function seed(overrides = {}) {
     'users',
     users.filter((u) => u.id !== 'admin')
   );
-
-  await create('matches', matches);
 
   await create('meetings', meetings);
 }
