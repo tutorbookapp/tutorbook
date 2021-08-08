@@ -55,12 +55,8 @@ const MeetingContent = forwardRef(
 
     const headerString = useMemo(() => {
       const subjects = join(meeting.subjects);
-      const student = meeting.people.find(
-        (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
-      );
-      const volunteer = meeting.people.find(
-        (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
-      );
+      const student = meeting.people.find((p) => p.roles.includes('tutee'));
+      const volunteer = meeting.people.find((p) => p.roles.includes('tutor'));
       if (student?.id === user.id) {
         // Students care more about the subjects than their teacher's name.
         if (volunteer?.name && subjects)

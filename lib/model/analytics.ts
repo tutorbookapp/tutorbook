@@ -33,8 +33,6 @@ export type TagTotals<Tag extends string> = { total: number } & {
 export interface AnalyticsInterface extends ResourceInterface {
   tutor: TagTotals<Exclude<UserTag, Role>>;
   tutee: TagTotals<Exclude<UserTag, Role>>;
-  mentor: TagTotals<Exclude<UserTag, Role>>;
-  mentee: TagTotals<Exclude<UserTag, Role>>;
   parent: TagTotals<Exclude<UserTag, Role>>;
   meeting: TagTotals<MeetingTag>;
   date: Date;
@@ -62,18 +60,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
     meeting: 0,
   };
 
-  public mentor: TagTotals<Exclude<UserTag, Role>> = {
-    total: 0,
-    vetted: 0,
-    meeting: 0,
-  };
-
-  public mentee: TagTotals<Exclude<UserTag, Role>> = {
-    total: 0,
-    vetted: 0,
-    meeting: 0,
-  };
-
   public parent: TagTotals<Exclude<UserTag, Role>> = {
     total: 0,
     vetted: 0,
@@ -93,22 +79,6 @@ export class Analytics extends Resource implements AnalyticsInterface {
       analytics,
       new Resource()
     );
-  }
-
-  public get volunteer(): TagTotals<Exclude<UserTag, Role>> {
-    return {
-      total: this.mentor.total + this.tutor.total,
-      vetted: this.mentor.vetted + this.tutor.vetted,
-      meeting: this.mentor.meeting + this.tutor.meeting,
-    };
-  }
-
-  public get student(): TagTotals<Exclude<UserTag, Role>> {
-    return {
-      total: this.mentee.total + this.tutee.total,
-      vetted: this.mentee.vetted + this.tutee.vetted,
-      meeting: this.mentee.meeting + this.tutee.meeting,
-    };
   }
 
   public get clone(): Analytics {

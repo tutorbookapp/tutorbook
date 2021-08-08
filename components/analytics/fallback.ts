@@ -36,8 +36,8 @@ function getFallbackNums(): AnalyticsRes {
     const prev = timeline[timeline.length - 1];
     timeline.push({
       date: date.valueOf(),
-      volunteers: getRandY(date, [200, 300], prev?.volunteers),
-      students: getRandY(date, [150, 350], prev?.students),
+      tutors: getRandY(date, [200, 300], prev?.tutors),
+      tutees: getRandY(date, [150, 350], prev?.tutees),
       meetings: getRandY(date, [400, 900], prev?.meetings),
     });
     date = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
@@ -46,14 +46,8 @@ function getFallbackNums(): AnalyticsRes {
   const current = timeline[timeline.length - 1];
   return {
     timeline,
-    volunteers: {
-      change: 12.5,
-      total: current.volunteers,
-    },
-    students: {
-      change: 12.5,
-      total: current.students,
-    },
+    tutors: { change: 12.5, total: current.tutors },
+    tutees: { change: 12.5, total: current.tutees },
     meetings: {
       change: 32.5,
       total: current.meetings,

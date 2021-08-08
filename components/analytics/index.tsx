@@ -59,16 +59,16 @@ export default function Analytics(): JSX.Element {
           <div className={styles.number}>
             <dt>
               Volunteers
-              <Label percent={nums.volunteers.change} />
+              <Label percent={nums.tutors.change} />
             </dt>
-            <dd>{nums.volunteers.total}</dd>
+            <dd>{nums.tutors.total}</dd>
           </div>
           <div className={styles.number}>
             <dt>
               Students
-              <Label percent={nums.students.change} />
+              <Label percent={nums.tutees.change} />
             </dt>
-            <dd>{nums.students.total}</dd>
+            <dd>{nums.tutees.total}</dd>
           </div>
           <div className={styles.number}>
             <dt>

@@ -16,7 +16,6 @@ import usePage from 'lib/hooks/page';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import signup from 'locales/en/signup.json';
 import user3rd from 'locales/en/user3rd.json';
 
 interface SignupPageProps extends PageProps {
@@ -63,4 +62,4 @@ export const getStaticPaths: GetStaticPaths<SignupPageQuery> = async () => {
   return { paths, fallback: true };
 };
 
-export default withI18n(SignupPage, { common, signup, user3rd });
+export default withI18n(SignupPage, { common, user3rd });

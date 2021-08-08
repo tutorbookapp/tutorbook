@@ -43,7 +43,7 @@ export default async function createUserAPI(
         user.orgs.map(async (orgId) => {
           // Skip the org signup notification emails if the user is a child
           // being created by a parent while they're booking a new meeting.
-          if (user.roles.some((r) => r === 'tutee' || r === 'mentee')) return;
+          if (user.roles.includes('tutee')) return;
 
           // Don't send a notification email to the admin who is being created.
           // This fixes a bug when seeding data for tests (e.g. when the org

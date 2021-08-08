@@ -1,5 +1,5 @@
 {
-  "description": "Search {{name}}'s volunteer tutors and mentors.{{bio}}",
+  "description": "Search {{name}}'s volunteer tutors.{{bio}}",
   "placeholder": "Search by name",
   "empty": "NO RESULTS TO SHOW",
   "any-subjects": "Any subjects",

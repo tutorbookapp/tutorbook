@@ -21,10 +21,10 @@ import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
 
-export type Role = 'tutor' | 'tutee' | 'mentor' | 'mentee' | 'parent';
+export type Role = 'tutor' | 'tutee' | 'parent';
 export function isRole(role: unknown): role is Role {
   if (typeof role !== 'string') return false;
-  return ['tutor', 'tutee', 'mentor', 'mentee', 'parent'].includes(role);
+  return ['tutor', 'tutee', 'parent'].includes(role);
 }
 
 /**
@@ -42,8 +42,6 @@ export type DBUserTag =
   | UserTag
   | 'not-tutor'
   | 'not-tutee'
-  | 'not-mentor'
-  | 'not-mentee'
   | 'not-parent'
   | 'not-vetted'
   | 'not-meeting';
@@ -51,8 +49,6 @@ export type DBUserTag =
 export const USER_TAGS: UserTag[] = [
   'tutor',
   'tutee',
-  'mentor',
-  'mentee',
   'parent',
   'vetted',
   'meeting',

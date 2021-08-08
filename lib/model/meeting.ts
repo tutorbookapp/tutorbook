@@ -148,15 +148,11 @@ export class Meeting extends Resource implements MeetingInterface {
   }
 
   public get volunteer(): User | undefined {
-    return this.people.find(
-      (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
-    );
+    return this.people.find((p) => p.roles.includes('tutor'));
   }
 
   public get student(): User | undefined {
-    return this.people.find(
-      (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
-    );
+    return this.people.find((p) => p.roles.includes('tutee'));
   }
 
   public toString(): string {

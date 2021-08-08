@@ -78,8 +78,7 @@ export default function CreatePage({
   const subjectOptions = useMemo(() => {
     const subjects = new Set<string>();
     people.forEach((p) => {
-      if (p.roles.includes('tutor') || p.roles.includes('mentor'))
-        p.subjects.forEach((s) => subjects.add(s));
+      if (p.roles.includes('tutor')) p.subjects.forEach((s) => subjects.add(s));
     });
     return subjects.size ? [...subjects] : undefined;
   }, [people]);
@@ -88,24 +87,16 @@ export default function CreatePage({
   // to query for the merged availability of multiple users (e.g. when all the
   // people in a match are available v.s. just one person).
   const timePersonId = useMemo(() => {
-    const idx = people.findIndex(
-      (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
-    );
+    const idx = people.findIndex((p) => p.roles.includes('tutor'));
     return idx < 0 ? (people[0] || { id: '' }).id : people[idx].id;
   }, [people]);
 
   const students = useMemo(
-    () =>
-      editing.people.filter(
-        (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
-      ),
+    () => editing.people.filter((p) => p.roles.includes('tutee')),
     [editing.people]
   );
   const tutors = useMemo(
-    () =>
-      editing.people.filter(
-        (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
-      ),
+    () => editing.people.filter((p) => p.roles.includes('tutor')),
     [editing.people]
   );
   const parents = useMemo(
@@ -115,9 +106,7 @@ export default function CreatePage({
   const onStudentsChange = useCallback(
     (u: User[]) => {
       setEditing((prev) => {
-        const ppl = prev.people.filter(
-          (p) => !p.roles.includes('tutee') && !p.roles.includes('mentee')
-        );
+        const ppl = prev.people.filter((p) => !p.roles.includes('tutee'));
         return new Meeting({
           ...prev,
           people: [
@@ -132,9 +121,7 @@ export default function CreatePage({
   const onTutorsChange = useCallback(
     (u: User[]) => {
       setEditing((prev) => {
-        const ppl = prev.people.filter(
-          (p) => !p.roles.includes('tutor') && !p.roles.includes('mentor')
-        );
+        const ppl = prev.people.filter((p) => !p.roles.includes('tutor'));
         return new Meeting({
           ...prev,
           people: [

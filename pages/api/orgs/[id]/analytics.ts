@@ -12,14 +12,14 @@ import { verifyQueryId } from 'lib/api/verify/query-id';
  * @typedef {Object} AnalyticsSnapshot
  * @description Snapshot of analytics at a given point in time.
  * @property date - The date in milliseconds form.
- * @property volunteers - Total number of volunteers.
- * @property students - Total number of students.
+ * @property tutors - Total number of tutors.
+ * @property tutees - Total number of tutees.
  * @property meetings - Total number of meetings.
  */
 export interface AnalyticsSnapshot {
   date: number;
-  volunteers: number;
-  students: number;
+  tutors: number;
+  tutees: number;
   meetings: number;
 }
 
@@ -29,8 +29,8 @@ export interface AnalyticsSnapshot {
  * `Analytics` objects stored in the `/org/<orgId>/analytics` subcollection.
  */
 export interface AnalyticsRes {
-  volunteers: { change: number; total: number };
-  students: { change: number; total: number };
+  tutors: { change: number; total: number };
+  tutees: { change: number; total: number };
   meetings: { change: number; total: number; recurring: number };
   timeline: AnalyticsSnapshot[];
 }
@@ -94,19 +94,13 @@ export default async function analytics(
         timeline.find((d) => d.date.valueOf() <= lastWeekDate) || current;
 
       res.status(200).json({
-        volunteers: {
-          change: getPercentChange(
-            lastWeek.volunteer.total,
-            current.volunteer.total
-          ),
-          total: current.volunteer.total,
+        tutors: {
+          change: getPercentChange(lastWeek.tutor.total, current.tutor.total),
+          total: current.tutor.total,
         },
-        students: {
-          change: getPercentChange(
-            lastWeek.student.total,
-            current.student.total
-          ),
-          total: current.student.total,
+        tutees: {
+          change: getPercentChange(lastWeek.tutee.total, current.tutee.total),
+          total: current.tutee.total,
         },
         meetings: {
           change: getPercentChange(
@@ -118,8 +112,8 @@ export default async function analytics(
         },
         timeline: timeline.reverse().map((a) => ({
           date: a.date.valueOf(),
-          volunteers: a.volunteer.total,
-          students: a.student.total,
+          tutors: a.tutor.total,
+          tutees: a.tutee.total,
           meetings: a.meeting.total,
         })),
       });
