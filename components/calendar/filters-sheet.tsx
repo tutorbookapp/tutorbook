@@ -9,8 +9,6 @@ import UserSelect from 'components/user-select';
 import { DBMeetingTag, MEETING_TAGS } from 'lib/model/meeting';
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
-import { Option } from 'lib/model/query/base';
-import { User } from 'lib/model/user';
 import { useOrg } from 'lib/context/org';
 
 import { config, width } from './spring-animation';
@@ -30,13 +28,13 @@ function FiltersSheet({
   const props = useSpring({ config, width: filtersOpen ? width : 0 });
 
   const onSubjectsChange = useCallback(
-    (subjects: Option<string>[]) => {
+    (subjects: string[]) => {
       setQuery((prev) => new MeetingsQuery({ ...prev, subjects, page: 0 }));
     },
     [setQuery]
   );
   const onPeopleChange = useCallback(
-    (people: Option<User>[]) => {
+    (people: string[]) => {
       setQuery((prev) => new MeetingsQuery({ ...prev, people, page: 0 }));
     },
     [setQuery]
@@ -59,8 +57,8 @@ function FiltersSheet({
       <form className={styles.form} style={{ width }}>
         <SubjectSelect
           label='Subjects'
-          onSelectedChange={onSubjectsChange}
-          selected={query.subjects}
+          onChange={onSubjectsChange}
+          value={query.subjects}
           className={styles.field}
           renderToPortal
           outlined
@@ -68,8 +66,8 @@ function FiltersSheet({
         <UserSelect
           label='People'
           query={{ orgs: [org?.id || 'default'] }}
-          onSelectedChange={onPeopleChange}
-          selected={query.people}
+          onChange={onPeopleChange}
+          value={query.people}
           className={styles.field}
           renderToPortal
           outlined

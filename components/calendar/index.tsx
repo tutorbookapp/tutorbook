@@ -79,9 +79,8 @@ export default function Calendar({
   useEffect(() => {
     setQuery((prev) => {
       if (!byUser || !user) return prev;
-      const people = [{ label: user.name, value: user.id }];
-      if (dequal(prev.people, people)) return prev;
-      return new MeetingsQuery({ ...prev, people });
+      if (dequal(prev.people, [user.id])) return prev;
+      return new MeetingsQuery({ ...prev, people: [user.id] });
     });
   }, [byUser, user]);
 

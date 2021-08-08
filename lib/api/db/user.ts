@@ -17,7 +17,7 @@ import supabase from 'lib/api/supabase';
 
 async function times(user: User): Promise<number[]> {
   const query = new MeetingsQuery({
-    people: [{ label: user.name, value: user.id }],
+    people: [user.id],
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 3),
     from: new Date(),
   });
@@ -98,14 +98,8 @@ export async function getUsers(
     .from<DBViewUser>('view_users')
     .select('*', { count: 'exact' })
     .contains('tags', query.tags)
-    .contains(
-      'langs',
-      query.langs.map((s) => s.value)
-    )
-    .contains(
-      'subjects',
-      query.subjects.map((s) => s.value)
-    )
+    .contains('langs', query.langs)
+    .contains('subjects', query.subjects)
     .ilike('name', `%${query.search}%`)
     .order('id', { ascending: false })
     .range(

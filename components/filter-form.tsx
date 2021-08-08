@@ -30,10 +30,10 @@ export default function FilterForm({
       <SubjectSelect
         className='field'
         label={t('query3rd:subjects')}
-        onSelectedChange={(subjects) =>
+        onChange={(subjects) =>
           onChange((prev) => new UsersQuery({ ...prev, subjects, page: 0 }))
         }
-        selected={query.subjects}
+        value={query.subjects}
         placeholder={t('common:subjects-placeholder')}
         outlined
       />
@@ -50,10 +50,10 @@ export default function FilterForm({
         className='field'
         label={t('query3rd:langs')}
         placeholder={t('common:langs-placeholder')}
-        onSelectedChange={(langs) =>
+        onChange={(langs) =>
           onChange((prev) => new UsersQuery({ ...prev, langs, page: 0 }))
         }
-        selected={query.langs}
+        value={query.langs}
         outlined
       />
       {onSubmit && (

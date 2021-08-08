@@ -10,7 +10,6 @@ import TagSelect from 'components/tag-select';
 import { USER_TAGS, DBUserTag } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { Callback } from 'lib/model/callback';
-import { Option } from 'lib/model/query/base';
 import { UsersQuery } from 'lib/model/query/users';
 
 import { config, width } from './spring-animation';
@@ -32,7 +31,7 @@ function FiltersSheet({
   const props = useSpring({ config, width: open ? width : 0 });
 
   const onSubjectsChange = useCallback(
-    (subjects: Option<string>[]) => {
+    (subjects: string[]) => {
       setQuery((prev) => new UsersQuery({ ...prev, subjects, page: 0 }));
     },
     [setQuery]
@@ -44,7 +43,7 @@ function FiltersSheet({
     [setQuery]
   );
   const onLangsChange = useCallback(
-    (langs: Option<string>[]) => {
+    (langs: string[]) => {
       setQuery((prev) => new UsersQuery({ ...prev, langs, page: 0 }));
     },
     [setQuery]
@@ -65,8 +64,8 @@ function FiltersSheet({
       <form className={styles.form} style={{ width }}>
         <SubjectSelect
           label={t('query:subjects')}
-          onSelectedChange={onSubjectsChange}
-          selected={query.subjects}
+          onChange={onSubjectsChange}
+          value={query.subjects}
           placeholder={t('common:subjects-placeholder')}
           className={styles.field}
           renderToPortal
@@ -83,8 +82,8 @@ function FiltersSheet({
         <LangSelect
           label={t('query:langs')}
           placeholder={t('common:langs-placeholder')}
-          onSelectedChange={onLangsChange}
-          selected={query.langs}
+          onChange={onLangsChange}
+          value={query.langs}
           className={styles.field}
           renderToPortal
           outlined

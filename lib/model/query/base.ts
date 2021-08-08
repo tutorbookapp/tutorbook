@@ -1,5 +1,11 @@
 import construct from 'lib/model/construct';
 
+export interface Option<T> {
+  label: string;
+  value: T;
+  key: string;
+}
+
 export interface QueryInterface {
   search: string;
   hitsPerPage: number;

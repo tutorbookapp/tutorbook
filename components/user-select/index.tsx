@@ -10,7 +10,7 @@ import { Option } from 'lib/model/query/base';
 import { User } from 'lib/model/user';
 import { fetcher } from 'lib/fetch';
 
-export type UserSelectProps = SelectControllerProps<User> & {
+export type UserSelectProps = SelectControllerProps<string> & {
   query: Partial<UsersQueryInterface>;
 };
 
@@ -22,9 +22,9 @@ export default function UserSelect({
   onSelectedChange,
   ...props
 }: UserSelectProps): JSX.Element {
-  const [options, setOptions] = useState<Option<User>[]>(selected || []);
+  const [options, setOptions] = useState<Option<string>[]>(selected || []);
   const onOptionsChange = useCallback(
-    (os: Option<User>[]) => {
+    (os: Option<string>[]) => {
       setOptions(os);
       if (onSelectedChange) onSelectedChange(os);
       if (onChange) onChange(os.map(({ value: val }) => val));
@@ -37,20 +37,20 @@ export default function UserSelect({
       const qry = new UsersQuery({ ...query, search });
       const { users: results } = await fetcher<ListUsersRes>(qry.endpoint);
       const users = results.map((u) => User.fromJSON(u));
-      return users.map((u) => ({ label: u.name, value: u, key: u.id }));
+      return users.map((u) => ({ label: u.name, value: u.id, key: u.id }));
     },
     [query]
   );
 
   useEffect(() => {
-    setOptions((prev: Option<User>[]) => {
+    setOptions((prev: Option<string>[]) => {
       const prevValue = prev.map((p) => p.value);
       if (!value || dequal(prevValue, value)) return prev;
-      return value.map((u) => ({ label: u.name, value: u, key: u.id }));
+      return value.map((u) => ({ label: u, value: u, key: u }));
     });
   }, [value]);
   useEffect(() => {
-    setOptions((prev: Option<User>[]) => {
+    setOptions((prev: Option<string>[]) => {
       if (!selected || dequal(prev, selected)) return prev;
       return selected;
     });
