@@ -36,9 +36,27 @@ const config: Config<
   org: [undefined, 'o', encodeString, decodeString],
   people: [[], 'pl', encodeArray, decodeArray],
   subjects: [[], 'sb', encodeArray, decodeArray],
-  tags: [[], 't', encodeArray, decodeArray],
-  from: [undefined, 'fr', encodeDate, decodeDate],
-  to: [undefined, 'to', encodeDate, decodeDate],
+  tags: [[], 'tg', encodeArray, decodeArray],
+  from: [
+    new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate() - new Date().getDay()
+    ),
+    'f',
+    encodeDate,
+    decodeDate,
+  ],
+  to: [
+    new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate() - new Date().getDay() + 7
+    ),
+    't',
+    encodeDate,
+    decodeDate,
+  ],
 };
 
 export class MeetingsQuery extends Query implements MeetingsQueryInterface {
