@@ -35,12 +35,11 @@ export default function useURLParamSync<T extends Query>(
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = Object.entries(query.params)
-      .filter(([key]) => overrides.includes(key))
+      .filter(([key]) => !overrides.includes(key))
       .map((entry) => entry.join('='))
       .join('&');
-    const updatedURL = `${window.location.pathname}?${params}`;
-    const prevURL = `${window.location.pathname}${window.location.search}`;
-    if (updatedURL === prevURL) return;
-    void Router.replace(updatedURL, undefined, { shallow: true });
+    const url = `${window.location.pathname}${params ? `?${params}` : ''}`;
+    if (url === `${window.location.pathname}${window.location.search}`) return;
+    void Router.replace(url, undefined, { shallow: true });
   }, [query, overrides]);
 }

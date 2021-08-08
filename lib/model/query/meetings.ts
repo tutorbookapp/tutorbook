@@ -73,7 +73,7 @@ export class MeetingsQuery extends Query implements MeetingsQueryInterface {
   }
 
   public get endpoint(): string {
-    return `/api/meetings?${this.query}`;
+    return this.getURL('/api/meetings');
   }
 
   public get params(): Record<string, string> {

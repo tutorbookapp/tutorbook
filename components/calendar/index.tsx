@@ -52,7 +52,7 @@ export default function Calendar({
   const [mutatedIds, setMutatedIds] = useState<Set<number>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(new MeetingsQuery());
 
-  useURLParamSync(query, setQuery, MeetingsQuery, byOrg ? ['org'] : ['people']);
+  useURLParamSync(query, setQuery, MeetingsQuery, byOrg ? ['o'] : ['pl']);
 
   const { org } = useOrg();
   const { user } = useUser();

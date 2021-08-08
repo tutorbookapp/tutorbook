@@ -29,11 +29,12 @@ export abstract class Query implements QueryInterface {
 
   public get query(): string {
     const params = Object.entries(this.params);
-    return params.map((entry) => entry.join('=')).join('&');
+    const str = params.map((entry) => entry.join('=')).join('&');
+    return str ? `?${str}` : '';
   }
 
   public getURL(pathname: string): string {
-    return `${pathname}?${this.query}`;
+    return `${pathname}${this.query}`;
   }
 
   public getPaginationString(hits: number): string {

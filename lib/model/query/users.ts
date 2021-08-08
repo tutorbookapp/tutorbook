@@ -36,14 +36,19 @@ const config: Config<
   >
 > = {
   search: ['', 's', encodeString, decodeString],
-  hitsPerPage: [1000, 'h', encodeNumber, decodeNumber],
+  hitsPerPage: [20, 'h', encodeNumber, decodeNumber],
   page: [0, 'p', encodeNumber, decodeNumber],
   parents: [[], 'pp', encodeArray, decodeArray],
   orgs: [[], 'o', encodeArray, decodeArray],
   tags: [[], 't', encodeArray, decodeArray],
   langs: [[], 'l', encodeArray, decodeArray],
   subjects: [[], 'sb', encodeArray, decodeArray],
-  availability: [[], 'a', encodeAvailability, decodeAvailability],
+  availability: [
+    new Availability(),
+    'a',
+    encodeAvailability,
+    decodeAvailability,
+  ],
   available: [undefined, 'av', encodeBoolean, decodeBoolean],
   visible: [undefined, 'v', encodeBoolean, decodeBoolean],
 };
@@ -71,7 +76,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
   }
 
   public get endpoint(): string {
-    return `/api/users?${this.query}`;
+    return this.getURL('/api/users');
   }
 
   public get params(): Record<string, string> {
