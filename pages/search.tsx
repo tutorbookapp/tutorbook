@@ -94,8 +94,8 @@ function SearchPage(props: PageProps): JSX.Element {
       track(
         'User List Filtered',
         {
-          subjects: updated.subjects.map((o) => o.value).join(' AND '),
-          langs: updated.langs.map((o) => o.value).join(' AND '),
+          subjects: updated.subjects.join(' AND '),
+          langs: updated.langs.join(' AND '),
         },
         2500
       );
@@ -114,8 +114,8 @@ function SearchPage(props: PageProps): JSX.Element {
     'User List Loaded',
     () =>
       !searching && {
-        subjects: query.subjects.map((o) => o.value).join(' AND '),
-        langs: query.langs.map((o) => o.value).join(' AND '),
+        subjects: query.subjects.join(' AND '),
+        langs: query.langs.join(' AND '),
         users: results.map((res, idx) => ({
           ...User.fromJSON(res).toSegment(),
           position: idx,

@@ -6,8 +6,6 @@ import {
   encodeBoolean,
   decodeAvailability,
   encodeAvailability,
-  decodeDate,
-  encodeDate,
   decodeArray,
   encodeArray,
   decodeString,
@@ -32,7 +30,10 @@ export interface UsersQueryInterface extends QueryInterface {
 }
 
 const config: Config<
-  Omit<UsersQuery, 'params' | 'endpoint' | 'getPaginationString'>
+  Omit<
+    UsersQuery,
+    'params' | 'endpoint' | 'query' | 'getURL' | 'getPaginationString'
+  >
 > = {
   search: ['', 's', encodeString, decodeString],
   hitsPerPage: [1000, 'h', encodeNumber, decodeNumber],

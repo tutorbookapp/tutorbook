@@ -29,6 +29,7 @@ export async function langsToOptions(
   return res.hits.map((lang: LangHit) => ({
     label: lang[locale].name,
     value: lang.objectID,
+    key: lang.objectID,
   }));
 }
 
@@ -41,7 +42,11 @@ export async function subjectsToOptions(
   subjects: string[],
   locale = 'en'
 ): Promise<Option<string>[]> {
-  return subjects.map((subject) => ({ label: subject, value: subject }));
+  return subjects.map((subject) => ({
+    label: subject,
+    value: subject,
+    key: subject,
+  }));
 }
 
 export async function getSubjectLabels(

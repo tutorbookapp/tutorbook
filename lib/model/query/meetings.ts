@@ -25,7 +25,10 @@ export interface MeetingsQueryInterface extends QueryInterface {
 }
 
 const config: Config<
-  Omit<MeetingsQuery, 'params' | 'endpoint' | 'getPaginationString'>
+  Omit<
+    MeetingsQuery,
+    'params' | 'endpoint' | 'query' | 'getURL' | 'getPaginationString'
+  >
 > = {
   search: ['', 's', encodeString, decodeString],
   hitsPerPage: [1000, 'h', encodeNumber, decodeNumber],

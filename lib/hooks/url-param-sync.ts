@@ -1,5 +1,3 @@
-import url from 'url';
-
 import Router from 'next/router';
 import { dequal } from 'dequal';
 import { useEffect } from 'react';
