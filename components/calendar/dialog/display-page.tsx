@@ -57,12 +57,8 @@ export default function DisplayPage({
           <dd>{join(editing.subjects)}</dd>
           <dt>Meeting link</dt>
           <dd>
-            <a
-              href={editing.venue.url}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              {editing.venue.url}
+            <a href={editing.venue} target='_blank' rel='noopener noreferrer'>
+              {editing.venue}
             </a>
           </dd>
           <dt>Recurring</dt>

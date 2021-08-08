@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 import {
   DBDate,
   DBTimeslot,
@@ -12,7 +14,6 @@ import {
   ResourceJSON,
   isResourceJSON,
 } from 'lib/model/resource';
-import { Venue, VenueJSON, isVenueJSON } from 'lib/model/venue';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import clone from 'lib/utils/clone';
@@ -56,20 +57,16 @@ export interface MeetingInterface extends ResourceInterface {
   people: User[];
   creator: User;
   description: string;
-  venue: Venue;
+  venue: string;
   time: Timeslot;
   parentId?: number;
 }
 
 export type MeetingJSON = Omit<
   MeetingInterface,
-  keyof Resource | 'time' | 'venue' | 'creator'
+  keyof Resource | 'time' | 'creator'
 > &
-  ResourceJSON & {
-    time: TimeslotJSON;
-    venue: VenueJSON;
-    creator: UserJSON;
-  };
+  ResourceJSON & { time: TimeslotJSON; creator: UserJSON };
 
 export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isResourceJSON(json)) return false;
@@ -81,7 +78,6 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isArray(json.people, isUserJSON)) return false;
   if (!isUserJSON(json.creator)) return false;
   if (typeof json.description !== 'string') return false;
-  if (!isVenueJSON(json.venue)) return false;
   if (!isTimeslotJSON(json.time)) return false;
   if (json.parentId && typeof json.parentId !== 'number') return false;
   return true;
@@ -132,7 +128,7 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public description = '';
 
-  public venue = new Venue();
+  public venue = `https://meet.jit.si/TB-${nanoid(10)}`;
 
   public time = new Timeslot();
 
@@ -173,7 +169,7 @@ export class Meeting extends Resource implements MeetingInterface {
       org: this.org,
       creator: this.creator.id,
       subjects: this.subjects,
-      venue: this.venue.url,
+      venue: this.venue,
       time: this.time.toDB(),
       description: this.description,
       tags: [...this.tags, ...notTags(this.tags, MEETING_TAGS)],
@@ -199,7 +195,7 @@ export class Meeting extends Resource implements MeetingInterface {
       creator: creator
         ? User.fromDB(creator)
         : new User({ id: record.creator }),
-      venue: new Venue({ url: record.venue }),
+      venue: record.venue,
       time: Timeslot.fromDB(record.time),
       description: record.description,
       tags: record.tags.filter(isMeetingTag),
@@ -213,7 +209,6 @@ export class Meeting extends Resource implements MeetingInterface {
       ...this,
       ...super.toJSON(),
       time: this.time.toJSON(),
-      venue: this.venue.toJSON(),
       creator: this.creator.toJSON(),
     });
   }
@@ -223,7 +218,6 @@ export class Meeting extends Resource implements MeetingInterface {
       ...json,
       ...Resource.fromJSON(json),
       time: Timeslot.fromJSON(json.time),
-      venue: Venue.fromJSON(json.venue),
       creator: User.fromJSON(json.creator),
     });
   }
