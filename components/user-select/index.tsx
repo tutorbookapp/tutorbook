@@ -7,11 +7,18 @@ import Select, { SelectControllerProps } from 'components/select';
 import { UsersQuery, UsersQueryInterface } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Option } from 'lib/model/query/base';
+import { TCallback } from 'lib/model/callback';
 import { User } from 'lib/model/user';
 import { fetcher } from 'lib/fetch';
 
-export type UserSelectProps = SelectControllerProps<string> & {
+interface UserOption extends Option<string> {
+  user: User;
+}
+
+export type UserSelectProps = SelectControllerProps<string, UserOption> & {
   query: Partial<UsersQueryInterface>;
+  users?: User[];
+  onUsersChange?: TCallback<User[]>;
 };
 
 export default function UserSelect({
@@ -20,37 +27,58 @@ export default function UserSelect({
   onChange,
   selected,
   onSelectedChange,
+  users,
+  onUsersChange,
   ...props
 }: UserSelectProps): JSX.Element {
-  const [options, setOptions] = useState<Option<string>[]>(selected || []);
+  const [options, setOptions] = useState<UserOption[]>(selected || []);
   const onOptionsChange = useCallback(
-    (os: Option<string>[]) => {
+    (os: UserOption[]) => {
       setOptions(os);
       if (onSelectedChange) onSelectedChange(os);
-      if (onChange) onChange(os.map(({ value: val }) => val));
+      if (onUsersChange) onUsersChange(os.map((o) => o.user));
+      if (onChange) onChange(os.map((o) => o.value));
     },
-    [onSelectedChange, onChange]
+    [onSelectedChange, onUsersChange, onChange]
   );
 
   const getSuggestions = useCallback(
     async (search: string = '') => {
       const qry = new UsersQuery({ ...query, search });
       const { users: results } = await fetcher<ListUsersRes>(qry.endpoint);
-      const users = results.map((u) => User.fromJSON(u));
-      return users.map((u) => ({ label: u.name, value: u.id, key: u.id }));
+      return results
+        .map((u) => User.fromJSON(u))
+        .map((u) => ({ label: u.name, value: u.id, key: u.id, user: u }));
     },
     [query]
   );
 
   useEffect(() => {
-    setOptions((prev: Option<string>[]) => {
+    setOptions((prev: UserOption[]) => {
       const prevValue = prev.map((p) => p.value);
       if (!value || dequal(prevValue, value)) return prev;
-      return value.map((u) => ({ label: u, value: u, key: u }));
+      return value.map((u) => ({
+        label: u,
+        value: u,
+        key: u,
+        user: new User({ id: u }),
+      }));
     });
   }, [value]);
   useEffect(() => {
-    setOptions((prev: Option<string>[]) => {
+    setOptions((prev: UserOption[]) => {
+      const prevUsers = prev.map((p) => p.user);
+      if (!users || dequal(prevUsers, users)) return prev;
+      return users.map((u) => ({
+        label: u.name,
+        value: u.id,
+        key: u.id,
+        user: u,
+      }));
+    });
+  }, [users]);
+  useEffect(() => {
+    setOptions((prev: UserOption[]) => {
       if (!selected || dequal(prev, selected)) return prev;
       return selected;
     });

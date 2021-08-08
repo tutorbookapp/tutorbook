@@ -13,11 +13,23 @@ import {
   decodeNumber,
   encodeNumber,
 } from 'lib/model/query/params';
+import { DBUserTag, Role } from 'lib/model/user';
 import { Query, QueryInterface } from 'lib/model/query/base';
 import { Availability } from 'lib/model/availability';
-import { DBUserTag } from 'lib/model/user';
 import construct from 'lib/model/construct';
 
+/**
+ * @typedef {UsersQueryInterface}
+ * @property parents - Show users who have these parents.
+ * @property orgs - Show users who are a part of one of these orgs.
+ * @property tags - Show users who have these tags.
+ * @property langs - Show users who can speak these languages.
+ * @property subjects - Show users who can tutor these subjects.
+ * @property availability - Show users who are available at these times.
+ * @property [available] - Only show users who have availability.
+ * @property [visible] - Only show users who are "visible in search".
+ * @property [met] - Show people who have met with this person.
+ */
 export interface UsersQueryInterface extends QueryInterface {
   parents: string[];
   orgs: string[];
@@ -27,6 +39,7 @@ export interface UsersQueryInterface extends QueryInterface {
   availability: Availability;
   available?: boolean;
   visible?: boolean;
+  met?: [string, Role];
 }
 
 const config: Config<
@@ -51,6 +64,7 @@ const config: Config<
   ],
   available: [undefined, 'av', encodeBoolean, decodeBoolean],
   visible: [undefined, 'v', encodeBoolean, decodeBoolean],
+  met: [undefined, 'm', encodeArray, decodeArray],
 };
 
 export class UsersQuery extends Query implements UsersQueryInterface {
@@ -69,6 +83,8 @@ export class UsersQuery extends Query implements UsersQueryInterface {
   public available?: boolean;
 
   public visible?: boolean;
+
+  public met?: [string, Role];
 
   public constructor(query: Partial<UsersQueryInterface> = {}) {
     super(query);

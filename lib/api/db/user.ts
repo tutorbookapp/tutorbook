@@ -94,8 +94,13 @@ export async function getUsers(
   query: UsersQuery
 ): Promise<{ hits: number; results: User[] }> {
   // TODO: Order by multiple attributes to show featured results first.
-  let select = supabase
-    .from<DBViewUser>('view_users')
+  let select = query.met
+    ? supabase.rpc<DBViewUser>('met', {
+        user_id: query.met[0],
+        user_role: query.met[1],
+      })
+    : supabase.from<DBViewUser>('view_users');
+  select = select
     .select('*', { count: 'exact' })
     .contains('tags', query.tags)
     .contains('langs', query.langs)
