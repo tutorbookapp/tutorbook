@@ -15,7 +15,7 @@ function LoginPage(props: PageProps): JSX.Element {
   return (
     <Page
       title='Login - Tutorbook'
-      description='Welcome to Tutorbook. Login with Google or email to manage your organization, onboard volunteers, match students, schedule lessons, and scale your tutoring and mentoring programs.'
+      description='Welcome to Tutorbook. Login with Google or email to manage your organization, onboard volunteers, match students, schedule lessons, and scale your tutoring programs.'
       {...props}
     >
       <EmptyHeader />
