@@ -145,16 +145,16 @@ export default function Graph({ timeline }: GraphProps): JSX.Element {
         />
         <Line
           type='monotone'
-          dataKey='volunteers'
-          stroke='var(--analytics-volunteers)'
+          dataKey='tutors'
+          stroke='var(--analytics-tutors)'
           activeDot={CustomDot}
           strokeWidth={2}
           dot={false}
         />
         <Line
           type='monotone'
-          dataKey='students'
-          stroke='var(--analytics-students)'
+          dataKey='tutees'
+          stroke='var(--analytics-tutees)'
           activeDot={CustomDot}
           strokeWidth={2}
           dot={false}
