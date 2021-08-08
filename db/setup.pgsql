@@ -230,22 +230,5 @@ $$
     ) as person group by meeting
   ) as people on meeting = meetings.id
   order by meetings.id;
-
-  -- FUNCTIONS
-  -- Function to get all the users that a person has meetings with. Note that
-  -- this includes the user itself (e.g. so a user can book a meeting with
-  -- themselves; a pretty common use-case when testing the app).
-  create or replace function meeting_users(user_id text)
-  returns table (like view_users)
-  as $$
-    select distinct on (view_users.id) view_users.*
-    from relation_people relation_people1
-    join relation_people relation_people2
-    on relation_people1.meeting = relation_people2.meeting
-    join view_users
-    on relation_people2.user = view_users.id
-    where relation_people1.user = user_id;
-  $$
-  language sql stable;
 $$
 language sql volatile;
