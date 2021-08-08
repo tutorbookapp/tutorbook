@@ -135,34 +135,19 @@ async function fetchUsers() {
     reference: d.reference || '',
     timezone: d.timezone || null,
     age: d.age ? Math.floor(d.age) : null,
-    tags: d.tags || [],
+    tags: (d.tags || []).filter((t) => t !== 'matched'),
     created: d.created.toDate(),
     updated: d.updated.toDate(),
     times: [],
   }));
 }
 
-async function fetchMatches() {
-  const userIds = require(path.resolve(__dirname, './ids-users.json'));
-  await fetch('matches', (d) => ({
-    org: d.org || 'default',
-    creator: userIds[d.creator.id],
-    subjects: d.subjects,
-    description: d.message,
-    tags: d.tags || [],
-    created: d.created.toDate(),
-    updated: d.updated.toDate(),
-  }));
-}
-
 async function fetchMeetings() {
-  const matchIds = require(path.resolve(__dirname, './ids-matches.json'));
   const userIds = require(path.resolve(__dirname, './ids-users.json'));
   await fetch('meetings', (d) => ({
     org: d.match.org || 'default',
     creator: userIds[d.creator.id],
     subjects: d.match.subjects,
-    match: matchIds[d.match.id],
     venue: url(d.venue.url || `https://meet.jit.si/TB-${nanoid(10)}`),
     time: {
       id: d.time.id || nanoid(),
@@ -214,39 +199,6 @@ function buildVerifications() {
   fs.writeFileSync(verificationsPath, JSON.stringify(verifications, null, 2));
 }
 
-function buildRelationMatchPeople() {
-  const matchIds = require(path.resolve(__dirname, './ids-matches.json'));
-  const userIds = require(path.resolve(__dirname, './ids-users.json'));
-  const matches = require(path.resolve(__dirname, './orig-matches.json'));
-  logger.info(`Parsing ${matches.length} people relations...`);
-  const people = matches
-    .map((m) =>
-      m.people.map((p) => {
-        if (!userIds[p.id]) {
-          logger.error(`No user (${m.id}): ${JSON.stringify(p, null, 2)}`);
-          debugger;
-        }
-        if (!matchIds[m.id]) {
-          logger.error(`No match (${m.id}): ${JSON.stringify(m, null, 2)}`);
-          debugger;
-        }
-        if (!p.roles.length) {
-          logger.error(`No roles (${m.id}): ${JSON.stringify(p, null, 2)}`);
-          debugger;
-        }
-        return {
-          user: userIds[p.id],
-          match: matchIds[m.id],
-          roles: p.roles,
-        };
-      })
-    )
-    .flat();
-  const peoplePath = path.resolve(__dirname, './relation_match_people.json');
-  logger.info(`Saving parsed people relations to ${peoplePath}...`);
-  fs.writeFileSync(peoplePath, JSON.stringify(people, null, 2));
-}
-
 function buildRelationMeetingPeople() {
   const meetingIds = require(path.resolve(__dirname, './ids-meetings.json'));
   const userIds = require(path.resolve(__dirname, './ids-users.json'));
@@ -275,7 +227,7 @@ function buildRelationMeetingPeople() {
       })
     )
     .flat();
-  const peoplePath = path.resolve(__dirname, './relation_meeting_people.json');
+  const peoplePath = path.resolve(__dirname, './relation_people.json');
   logger.info(`Saving parsed people relations to ${peoplePath}...`);
   fs.writeFileSync(peoplePath, JSON.stringify(people, null, 2));
 }
@@ -471,15 +423,10 @@ async function migrate() {
   buildVerifications();
   await insert('verifications');
 
-  await fetchMatches();
-  await insert('matches');
-  buildRelationMatchPeople();
-  await insert('relation_match_people');
-
   await fetchMeetings();
   await insert('meetings');
   buildRelationMeetingPeople();
-  await insert('relation_meeting_people');
+  await insert('relation_people');
 
   //buildUsersAvailability();
   //await insert('users', false, true);
