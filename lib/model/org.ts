@@ -71,7 +71,6 @@ export interface OrgInterface extends AccountInterface {
   signup: SignupConfig;
   home: HomeConfig;
   booking: BookingConfig;
-  matchURL?: string;
 }
 
 export interface DBOrg {
@@ -114,7 +113,6 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isSignupConfig(json.signup)) return false;
   if (!isHomeConfig(json.home)) return false;
   if (!isBookingConfig(json.booking)) return false;
-  if (json.matchURL && typeof json.matchURL !== 'string') return false;
   return true;
 }
 
@@ -176,8 +174,6 @@ export class Org extends Account implements OrgInterface {
         'Ex: {{person}} could really use your help with a {{subject}} project.',
     },
   };
-
-  public matchURL?: string;
 
   public constructor(org: Partial<OrgInterface> = {}) {
     super(org);
