@@ -97,17 +97,11 @@ export default function EditPage({
   }, [people]);
 
   const students = useMemo(
-    () =>
-      editing.people.filter(
-        (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
-      ),
+    () => editing.people.filter((p) => p.roles.includes('tutee')),
     [editing.people]
   );
   const tutors = useMemo(
-    () =>
-      editing.people.filter(
-        (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
-      ),
+    () => editing.people.filter((p) => p.roles.includes('tutor')),
     [editing.people]
   );
   const parents = useMemo(
@@ -117,9 +111,7 @@ export default function EditPage({
   const onStudentsChange = useCallback(
     (u: User[]) => {
       setEditing((prev) => {
-        const ppl = prev.people.filter(
-          (p) => !p.roles.includes('tutee') && !p.roles.includes('mentee')
-        );
+        const ppl = prev.people.filter((p) => !p.roles.includes('tutee'));
         return new Meeting({
           ...prev,
           people: [
@@ -134,9 +126,7 @@ export default function EditPage({
   const onTutorsChange = useCallback(
     (u: User[]) => {
       setEditing((prev) => {
-        const ppl = prev.people.filter(
-          (p) => !p.roles.includes('tutor') && !p.roles.includes('mentor')
-        );
+        const ppl = prev.people.filter((p) => !p.roles.includes('tutor'));
         return new Meeting({
           ...prev,
           people: [
