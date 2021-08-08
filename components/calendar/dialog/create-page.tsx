@@ -9,13 +9,16 @@ import Loader from 'components/loader';
 import RecurSelect from 'components/recur-select';
 import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
+import UserSelect from 'components/user-select';
 import { useNav } from 'components/dialog/context';
 
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
+import { useOrg } from 'lib/context/org';
 import usePrevious from 'lib/hooks/previous';
+import { useUser } from 'lib/context/user';
 
 import { DialogPage, useCalendarState } from '../state';
 
@@ -91,6 +94,77 @@ export default function CreatePage({
     return idx < 0 ? (people[0] || { id: '' }).id : people[idx].id;
   }, [people]);
 
+  const students = useMemo(
+    () =>
+      editing.people.filter(
+        (p) => p.roles.includes('tutee') || p.roles.includes('mentee')
+      ),
+    [editing.people]
+  );
+  const tutors = useMemo(
+    () =>
+      editing.people.filter(
+        (p) => p.roles.includes('tutor') || p.roles.includes('mentor')
+      ),
+    [editing.people]
+  );
+  const parents = useMemo(
+    () => editing.people.filter((p) => p.roles.includes('parent')),
+    [editing.people]
+  );
+  const onStudentsChange = useCallback(
+    (u: User[]) => {
+      setEditing((prev) => {
+        const ppl = prev.people.filter(
+          (p) => !p.roles.includes('tutee') && !p.roles.includes('mentee')
+        );
+        return new Meeting({
+          ...prev,
+          people: [
+            ...ppl,
+            ...u.map((p) => new User({ ...p, roles: ['tutee'] })),
+          ],
+        });
+      });
+    },
+    [setEditing]
+  );
+  const onTutorsChange = useCallback(
+    (u: User[]) => {
+      setEditing((prev) => {
+        const ppl = prev.people.filter(
+          (p) => !p.roles.includes('tutor') && !p.roles.includes('mentor')
+        );
+        return new Meeting({
+          ...prev,
+          people: [
+            ...ppl,
+            ...u.map((p) => new User({ ...p, roles: ['tutor'] })),
+          ],
+        });
+      });
+    },
+    [setEditing]
+  );
+  const onParentsChange = useCallback(
+    (u: User[]) => {
+      setEditing((prev) => {
+        const ppl = prev.people.filter((p) => !p.roles.includes('parent'));
+        return new Meeting({
+          ...prev,
+          people: [
+            ...ppl,
+            ...u.map((p) => new User({ ...p, roles: ['parent'] })),
+          ],
+        });
+      });
+    },
+    [setEditing]
+  );
+
+  const { user } = useUser();
+  const { org } = useOrg();
+
   return (
     <div className={styles.wrapper}>
       <Loader active={!!loading} checked={!!checked} />
@@ -98,6 +172,41 @@ export default function CreatePage({
         <IconButton icon={<CloseIcon />} className={styles.btn} onClick={nav} />
       </div>
       <form className={styles.form} onSubmit={onEditStop}>
+        <div className={styles.inputs}>
+          <UserSelect
+            required
+            label='Select students'
+            query={org ? { orgs: [org.id] } : { met: [user.id, 'tutee'] }}
+            onUsersChange={onStudentsChange}
+            users={students}
+            className={styles.field}
+            renderToPortal
+            autoOpenMenu
+            outlined
+          />
+          <UserSelect
+            required
+            label='Select tutors'
+            query={org ? { orgs: [org.id] } : { met: [user.id, 'tutor'] }}
+            onUsersChange={onTutorsChange}
+            users={tutors}
+            className={styles.field}
+            renderToPortal
+            autoOpenMenu
+            outlined
+          />
+          <UserSelect
+            label='Select parents'
+            query={org ? { orgs: [org.id] } : { met: [user.id, 'parent'] }}
+            onUsersChange={onParentsChange}
+            users={parents}
+            className={styles.field}
+            renderToPortal
+            autoOpenMenu
+            outlined
+          />
+        </div>
+        <div className={styles.divider} />
         <div className={styles.inputs}>
           <SubjectSelect
             required
