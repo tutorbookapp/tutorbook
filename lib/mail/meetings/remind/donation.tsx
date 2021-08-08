@@ -11,10 +11,10 @@ export default async function sendDonationReminderEmails(
   people: User[]
 ): Promise<void> {
   const students = people.filter((p) =>
-    ['mentee', 'tutee', 'parent'].some((r) => p.roles.includes(r as Role))
+    ['tutee', 'parent'].some((r) => p.roles.includes(r as Role))
   );
   const volunteer = people.filter((p) =>
-    ['mentor', 'tutor'].some((r) => p.roles.includes(r as Role))
+    ['tutor'].some((r) => p.roles.includes(r as Role))
   )[0];
   return send({
     to: students.map((p) => ({ name: p.name, email: p.email })),
