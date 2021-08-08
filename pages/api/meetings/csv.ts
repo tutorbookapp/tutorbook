@@ -1,15 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import {
-  MeetingsQuery,
-  MeetingsQueryURL,
-  isMeetingsQueryURL,
-} from 'lib/model/query/meetings';
+import { MeetingsQuery } from 'lib/model/query/meetings';
 import csv from 'lib/api/csv';
 import { getMeetings } from 'lib/api/db/meeting';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 /**
  * GET - Downloads a CSV list of the filtered meetings.
@@ -27,11 +22,7 @@ export default async function meetings(
   }
 
   try {
-    const query = verifyQuery<MeetingsQuery, MeetingsQueryURL>(
-      req.query,
-      isMeetingsQueryURL,
-      MeetingsQuery
-    );
+    const query = MeetingsQuery.params(req.query as Record<string, string>);
 
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
     // when we scale up (and have orgs with more than 1000 meetings per week).

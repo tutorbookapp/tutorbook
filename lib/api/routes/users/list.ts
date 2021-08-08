@@ -2,18 +2,13 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import to from 'await-to-js';
 
 import { User, UserJSON } from 'lib/model/user';
-import {
-  UsersQuery,
-  UsersQueryURL,
-  isUsersQueryURL,
-} from 'lib/model/query/users';
+import { UsersQuery } from 'lib/model/query/users';
 import { getOrgsByAdminId } from 'lib/api/db/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import { getUsers } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 export interface ListUsersRes {
   users: UserJSON[];
@@ -25,11 +20,7 @@ export default async function listUsers(
   res: Res<ListUsersRes>
 ): Promise<void> {
   try {
-    const query = verifyQuery<UsersQuery, UsersQueryURL>(
-      req.query,
-      isUsersQueryURL,
-      UsersQuery
-    );
+    const query = UsersQuery.params(req.query as Record<string, string>);
     const { results, hits } = await getUsers(query);
 
     // Conditionally truncate user data; only certain people can see others'
