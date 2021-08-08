@@ -9,8 +9,6 @@ $$
   create type role as enum(
     'tutor', 
     'tutee', 
-    'mentor', 
-    'mentee', 
     'parent'
   );
   create type social_type as enum(
@@ -42,15 +40,11 @@ $$
     'meeting', 
     'tutor', 
     'tutee', 
-    'mentor', 
-    'mentee', 
     'parent',
     'not-vetted', 
     'not-meeting', 
     'not-tutor', 
     'not-tutee', 
-    'not-mentor', 
-    'not-mentee', 
     'not-parent'
   );
   create table public.users (
