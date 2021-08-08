@@ -69,7 +69,11 @@ export default function SearchSelect<T extends string>({
   const hitToOption = useCallback(
     (hit: SearchHit) => {
       cache.current[hit.objectID] = hit;
-      return { label: hit[locale].name, value: hit.objectID as T };
+      return {
+        label: hit[locale].name,
+        value: hit.objectID as T,
+        key: hit.objectID,
+      };
     },
     [locale]
   );
@@ -89,15 +93,9 @@ export default function SearchSelect<T extends string>({
   useEffect(() => {
     setSelectedOptions((prev: Option<T>[]) => {
       // If they already match, do nothing.
-      if (!value) return prev;
+      const prevValue = prev.map((o) => o.value);
+      if (!value || dequal(prevValue, value)) return prev;
       if (!value.length) return [];
-      if (
-        dequal(
-          prev.map((o) => o.value),
-          value
-        )
-      )
-        return prev;
       // Otherwise, fetch the correct labels (for those locale codes).
       const updateLabelsFromAlgolia = async () => {
         const res: SearchResponse<SearchHit> = await searchIdx.search('', {
@@ -109,7 +107,7 @@ export default function SearchSelect<T extends string>({
       // Then, temporarily update the options based on locale codes and cache.
       return value.map((id: T) => {
         if (cache.current[id]) return hitToOption(cache.current[id]);
-        return { label: id, value: id };
+        return { label: id, value: id, key: id };
       });
     });
   }, [searchIdx, value, hitToOption]);

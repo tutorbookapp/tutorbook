@@ -2,6 +2,7 @@ import { List, ListItem, ListItemGraphic } from '@rmwc/list';
 import { MouseEvent, memo } from 'react';
 import { Checkbox } from '@rmwc/checkbox';
 import { dequal } from 'dequal/lite';
+import { nanoid } from 'nanoid';
 
 import { Option } from 'lib/model/query/base';
 
@@ -32,11 +33,7 @@ function SelectSurface<T, O extends Option<T>>({
       )}
       {suggestions.map((opt) => (
         <ListItem
-          key={
-            typeof opt.value === 'string' || typeof opt.value === 'number'
-              ? opt.value
-              : opt.label
-          }
+          key={opt.key || nanoid()}
           onClick={(evt: MouseEvent) => updateSelected(opt, evt)}
           className={styles.menuItem}
         >

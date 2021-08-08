@@ -342,11 +342,7 @@ export default function Select<T, O extends Option<T>>({
         >
           {value.map((opt) => (
             <Chip
-              key={
-                typeof opt.value === 'string' || typeof opt.value === 'number'
-                  ? opt.value
-                  : opt.label
-              }
+              key={opt.key || nanoid()}
               label={opt.label}
               trailingIcon={<CloseIcon />}
               onTrailingIconInteraction={() => updateSelected(opt)}

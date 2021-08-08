@@ -95,10 +95,7 @@ export async function getMeetings(
       ].join(',')
     );
   if (query.org) select = select.eq('org', query.org);
-  if (query.people.length) {
-    const peopleIds = query.people.map((p) => p.value);
-    select = select.overlaps('people_ids', peopleIds);
-  }
+  if (query.people.length) select = select.overlaps('people_ids', query.people);
   if (query.search) {
     const config = { config: 'english', type: 'websearch' as 'websearch' };
     select = select.textSearch('description', query.search, config);

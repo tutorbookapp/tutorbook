@@ -1,15 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import {
-  UsersQuery,
-  UsersQueryURL,
-  isUsersQueryURL,
-} from 'lib/model/query/users';
+import { UsersQuery } from 'lib/model/query/users';
 import csv from 'lib/api/csv';
 import { getUsers } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
 import verifyAuth from 'lib/api/verify/auth';
-import verifyQuery from 'lib/api/verify/query';
 
 /**
  * GET - Downloads a CSV list of the filtered users.
@@ -27,11 +22,7 @@ export default async function users(
   }
 
   try {
-    const query = verifyQuery<UsersQuery, UsersQueryURL>(
-      req.query,
-      isUsersQueryURL,
-      UsersQuery
-    );
+    const query = UsersQuery.params(req.query as Record<string, string>);
 
     // TODO: Update this using `paginationLimitedTo` or the `browseObjects` API
     // when we start scaling up (and have orgs with more than 1000 users each).

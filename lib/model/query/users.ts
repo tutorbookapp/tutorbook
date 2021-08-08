@@ -1,45 +1,57 @@
-import { Availability, AvailabilityJSON } from 'lib/model/availability';
-import { Option, Query, QueryInterface } from 'lib/model/query/base';
+import {
+  Config,
+  decode,
+  encode,
+  decodeBoolean,
+  encodeBoolean,
+  decodeAvailability,
+  encodeAvailability,
+  decodeArray,
+  encodeArray,
+  decodeString,
+  encodeString,
+  decodeNumber,
+  encodeNumber,
+} from 'lib/model/query/params';
+import { Query, QueryInterface } from 'lib/model/query/base';
+import { Availability } from 'lib/model/availability';
 import { DBUserTag } from 'lib/model/user';
 import construct from 'lib/model/construct';
 
-/**
- * All the supported filters for the search view.
- * @extends {QueryInterface}
- * @property parents - Parents that the user has to have.
- * @property orgs - Orgs that the user has to belong to.
- * @property tags - Algolia search index tags the user must have.
- * @property langs - The languages that the user can speak.
- * @property subjects - Subjects that the user can tutor or mentor.
- * @property availability - When the user is available.
- * @property [available] - When true, we only show results that are available.
- * We have to use this in order to only show results that are available in the
- * search view (for students) but to show all results in the users dashboard.
- * @property [visible] - Regular users can only ever see users where this is
- * `true`. Organization admins, however, can see all their users (regardless of
- * their visibility) which is why this property exists.
- */
 export interface UsersQueryInterface extends QueryInterface {
   parents: string[];
   orgs: string[];
   tags: DBUserTag[];
-  langs: Option<string>[];
-  subjects: Option<string>[];
+  langs: string[];
+  subjects: string[];
   availability: Availability;
   available?: boolean;
   visible?: boolean;
 }
 
-export type UsersQueryJSON = Omit<UsersQueryInterface, 'availability'> & {
-  availability: AvailabilityJSON;
+const config: Config<
+  Omit<
+    UsersQuery,
+    'params' | 'endpoint' | 'query' | 'getURL' | 'getPaginationString'
+  >
+> = {
+  search: ['', 's', encodeString, decodeString],
+  hitsPerPage: [20, 'h', encodeNumber, decodeNumber],
+  page: [0, 'p', encodeNumber, decodeNumber],
+  parents: [[], 'pp', encodeArray, decodeArray],
+  orgs: [[], 'o', encodeArray, decodeArray],
+  tags: [[], 't', encodeArray, decodeArray],
+  langs: [[], 'l', encodeArray, decodeArray],
+  subjects: [[], 'sb', encodeArray, decodeArray],
+  availability: [
+    new Availability(),
+    'a',
+    encodeAvailability,
+    decodeAvailability,
+  ],
+  available: [undefined, 'av', encodeBoolean, decodeBoolean],
+  visible: [undefined, 'v', encodeBoolean, decodeBoolean],
 };
-
-export type UsersQueryURL = { [key in keyof UsersQueryInterface]?: string };
-
-// TODO: Implement this to verify that the given query params are valid.
-export function isUsersQueryURL(query: unknown): query is UsersQueryURL {
-  return true;
-}
 
 export class UsersQuery extends Query implements UsersQueryInterface {
   public parents: string[] = [];
@@ -48,9 +60,9 @@ export class UsersQuery extends Query implements UsersQueryInterface {
 
   public tags: DBUserTag[] = [];
 
-  public langs: Option<string>[] = [];
+  public langs: string[] = [];
 
-  public subjects: Option<string>[] = [];
+  public subjects: string[] = [];
 
   public availability: Availability = new Availability();
 
@@ -67,60 +79,11 @@ export class UsersQuery extends Query implements UsersQueryInterface {
     return this.getURL('/api/users');
   }
 
-  // TODO: Use something like `serialize-query-params` to minify the way that
-  // these are sent in URL parameters. Main obstacle would just be serializing
-  // and deserializing the complex `Option` JSON objects.
-  // @see {@link https://www.npmjs.com/package/serialize-query-params}
-  // @see {@link https://github.com/pbeshai/use-query-params}
-  public getURLParams(): Record<string, string | number | boolean> {
-    function encode(p?: any[]): string {
-      return encodeURIComponent(JSON.stringify(p));
-    }
-
-    const query = super.getURLParams();
-    if (this.parents.length) query.parents = encode(this.parents);
-    if (this.orgs.length) query.orgs = encode(this.orgs);
-    if (this.tags.length) query.tags = encode(this.tags);
-    if (this.langs.length) query.langs = encode(this.langs);
-    if (this.subjects.length) query.subjects = encode(this.subjects);
-    if (this.availability.length)
-      query.availability = this.availability.toURLParam();
-    if (this.available === true) query.available = this.available;
-    if (typeof this.visible === 'boolean') query.visible = this.visible;
-    return query;
+  public get params(): Record<string, string> {
+    return encode(this, config);
   }
 
-  public static fromURLParams(params: UsersQueryURL): UsersQuery {
-    function decode<T>(p?: string): T[] {
-      return p ? (JSON.parse(decodeURIComponent(p)) as T[]) : [];
-    }
-
-    return new UsersQuery({
-      ...super.fromURLParams(params),
-      parents: decode<string>(params.parents),
-      orgs: decode<string>(params.orgs),
-      tags: decode<DBUserTag>(params.tags),
-      langs: decode<Option<string>>(params.langs),
-      subjects: decode<Option<string>>(params.subjects),
-      visible: params.visible ? params.visible === 'true' : undefined,
-      available: params.available ? params.available === 'true' : undefined,
-      availability: params.availability
-        ? Availability.fromURLParam(params.availability)
-        : new Availability(),
-    });
-  }
-
-  public toJSON(): UsersQueryJSON {
-    const { availability, ...rest } = this;
-    return { ...rest, availability: availability.toJSON() };
-  }
-
-  public static fromJSON(json: UsersQueryJSON): UsersQuery {
-    const { availability, ...rest } = json;
-    return new UsersQuery({
-      ...rest,
-      ...super.fromJSON(json),
-      availability: Availability.fromJSON(availability),
-    });
+  public static params(params: Record<string, string>): UsersQuery {
+    return new UsersQuery(decode(params, config));
   }
 }

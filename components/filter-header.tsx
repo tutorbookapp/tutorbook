@@ -28,11 +28,11 @@ export default function FilterHeader({
           <SubjectSelect
             className='field'
             label={t('query3rd:subjects')}
-            onSelectedChange={(subjects) =>
+            placeholder={t('common:subjects-placeholder')}
+            onChange={(subjects) =>
               onChange((prev) => new UsersQuery({ ...prev, subjects, page: 0 }))
             }
-            selected={query.subjects}
-            placeholder={t('common:subjects-placeholder')}
+            value={query.subjects}
             outlined
           />
           <AvailabilitySelect
@@ -50,10 +50,10 @@ export default function FilterHeader({
             className='field'
             label={t('query3rd:langs')}
             placeholder={t('common:langs-placeholder')}
-            onSelectedChange={(langs) =>
+            onChange={(langs) =>
               onChange((prev) => new UsersQuery({ ...prev, langs, page: 0 }))
             }
-            selected={query.langs}
+            value={query.langs}
             outlined
           />
         </form>

@@ -36,11 +36,7 @@ function SearchPage(props: PageProps): JSX.Element {
   const [hits, setHits] = useState<number>(query.hitsPerPage);
   const [searching, setSearching] = useState<boolean>(true);
 
-  useURLParamSync(query, setQuery, UsersQuery, [
-    'orgs',
-    'available',
-    'visible',
-  ]);
+  useURLParamSync(query, setQuery, UsersQuery, ['o', 'av', 'v']);
 
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
@@ -94,8 +90,8 @@ function SearchPage(props: PageProps): JSX.Element {
       track(
         'User List Filtered',
         {
-          subjects: updated.subjects.map((o) => o.value).join(' AND '),
-          langs: updated.langs.map((o) => o.value).join(' AND '),
+          subjects: updated.subjects.join(' AND '),
+          langs: updated.langs.join(' AND '),
         },
         2500
       );
@@ -114,8 +110,8 @@ function SearchPage(props: PageProps): JSX.Element {
     'User List Loaded',
     () =>
       !searching && {
-        subjects: query.subjects.map((o) => o.value).join(' AND '),
-        langs: query.langs.map((o) => o.value).join(' AND '),
+        subjects: query.subjects.join(' AND '),
+        langs: query.langs.join(' AND '),
         users: results.map((res, idx) => ({
           ...User.fromJSON(res).toSegment(),
           position: idx,

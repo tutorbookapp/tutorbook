@@ -1,5 +1,3 @@
-import url from 'url';
-
 import Router from 'next/router';
 import { dequal } from 'dequal';
 import { useEffect } from 'react';
@@ -8,7 +6,7 @@ import { Callback } from 'lib/model/callback';
 import { Query } from 'lib/model/query/base';
 
 interface Constructor<T extends Query> {
-  fromURLParams: (params: any) => T;
+  params: (params: any) => T;
 }
 
 // Syncs the initial query state in URL parameters. This gives users a sharable
@@ -24,11 +22,9 @@ export default function useURLParamSync<T extends Query>(
   useEffect(() => {
     setQuery((prev) => {
       if (typeof window === 'undefined') return prev;
-      const params = new URLSearchParams(window.location.search);
-      const updated = Model.fromURLParams({
-        ...prev.getURLParams(),
-        ...Object.fromEntries(params.entries()),
-      });
+      const searchParams = new URLSearchParams(window.location.search);
+      const params = Object.fromEntries(searchParams.entries());
+      const updated = Model.params({ ...prev.params, ...params });
       if (dequal(prev, updated)) return prev;
       return updated;
     });
@@ -38,16 +34,12 @@ export default function useURLParamSync<T extends Query>(
   // users dashboard specifies org in the `[org]` dynamic page param).
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const params = query.getURLParams();
-    overrides.forEach((field) => {
-      delete params[field];
-    });
-    const updatedURL = url.format({
-      pathname: window.location.pathname,
-      query: params,
-    });
-    const prevURL = `${window.location.pathname}${window.location.search}`;
-    if (updatedURL === prevURL) return;
-    void Router.replace(updatedURL, undefined, { shallow: true });
+    const params = Object.entries(query.params)
+      .filter(([key]) => !overrides.includes(key))
+      .map((entry) => entry.join('='))
+      .join('&');
+    const url = `${window.location.pathname}${params ? `?${params}` : ''}`;
+    if (url === `${window.location.pathname}${window.location.search}`) return;
+    void Router.replace(url, undefined, { shallow: true });
   }, [query, overrides]);
 }

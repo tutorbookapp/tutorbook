@@ -52,7 +52,7 @@ export default function Calendar({
   const [mutatedIds, setMutatedIds] = useState<Set<number>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(new MeetingsQuery());
 
-  useURLParamSync(query, setQuery, MeetingsQuery, byOrg ? ['org'] : ['people']);
+  useURLParamSync(query, setQuery, MeetingsQuery, byOrg ? ['o'] : ['pl']);
 
   const { org } = useOrg();
   const { user } = useUser();
@@ -79,9 +79,8 @@ export default function Calendar({
   useEffect(() => {
     setQuery((prev) => {
       if (!byUser || !user) return prev;
-      const people = [{ label: user.name, value: user.id }];
-      if (dequal(prev.people, people)) return prev;
-      return new MeetingsQuery({ ...prev, people });
+      if (dequal(prev.people, [user.id])) return prev;
+      return new MeetingsQuery({ ...prev, people: [user.id] });
     });
   }, [byUser, user]);
 

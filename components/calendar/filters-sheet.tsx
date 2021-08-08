@@ -1,15 +1,15 @@
 import { animated, useSpring } from 'react-spring';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { dequal } from 'dequal/lite';
 
 import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 import UserSelect from 'components/user-select';
 
-import { MEETING_TAGS, DBMeetingTag } from 'lib/model/meeting';
+import { DBMeetingTag, MEETING_TAGS } from 'lib/model/meeting';
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
-import { Option } from 'lib/model/query/base';
+import { useOrg } from 'lib/context/org';
 
 import { config, width } from './spring-animation';
 import styles from './filters-sheet.module.scss';
@@ -28,13 +28,13 @@ function FiltersSheet({
   const props = useSpring({ config, width: filtersOpen ? width : 0 });
 
   const onSubjectsChange = useCallback(
-    (subjects: Option<string>[]) => {
+    (subjects: string[]) => {
       setQuery((prev) => new MeetingsQuery({ ...prev, subjects, page: 0 }));
     },
     [setQuery]
   );
   const onPeopleChange = useCallback(
-    (people: Option<string>[]) => {
+    (people: string[]) => {
       setQuery((prev) => new MeetingsQuery({ ...prev, people, page: 0 }));
     },
     [setQuery]
@@ -46,6 +46,9 @@ function FiltersSheet({
     [setQuery]
   );
 
+  const { org } = useOrg();
+  const peopleQuery = useMemo(() => ({ orgs: [org?.id || 'default'] }), [org]);
+
   return (
     <animated.div
       data-cy='filters-sheet'
@@ -55,16 +58,17 @@ function FiltersSheet({
       <form className={styles.form} style={{ width }}>
         <SubjectSelect
           label='Subjects'
-          onSelectedChange={onSubjectsChange}
-          selected={query.subjects}
+          onChange={onSubjectsChange}
+          value={query.subjects}
           className={styles.field}
           renderToPortal
           outlined
         />
         <UserSelect
           label='People'
-          onSelectedChange={onPeopleChange}
-          selected={query.people}
+          query={peopleQuery}
+          onChange={onPeopleChange}
+          value={query.people}
           className={styles.field}
           renderToPortal
           outlined
