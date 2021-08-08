@@ -201,7 +201,7 @@ export function MeetingDisplay({
         <P>
           <b>WHERE</b>
           <br />
-          <Link href={meeting.venue.url}>{meeting.venue.url}</Link>
+          <Link href={meeting.venue}>{meeting.venue}</Link>
         </P>
         <P style={{ marginBottom: !meeting.description ? '0px' : undefined }}>
           <b>SUBJECTS</b>
