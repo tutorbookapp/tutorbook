@@ -55,22 +55,12 @@
 @mixin card-styles {
   .card {
     border: 1px solid var(--accents-2);
-    border-radius: 4px;
+    border-radius: 8px;
     position: relative;
   }
 
   :global(html:not(.dark)) .card {
-    @include elevation.elevation(0);
-    transition: elevation.transition-value(),
-      border elevation.$transition-duration
-        elevation.$transition-timing-function;
-    will-change: elevation.$property, border-color;
-
-    &:hover,
-    &:focus-within {
-      @include elevation.elevation(8);
-      border-color: var(--background);
-    }
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   }
 }
 
