@@ -1,5 +1,5 @@
 import { animated, useSpring } from 'react-spring';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { dequal } from 'dequal/lite';
 
 import SubjectSelect from 'components/subject-select';
@@ -47,6 +47,7 @@ function FiltersSheet({
   );
 
   const { org } = useOrg();
+  const peopleQuery = useMemo(() => ({ orgs: [org?.id || 'default'] }), [org]);
 
   return (
     <animated.div
@@ -65,7 +66,7 @@ function FiltersSheet({
         />
         <UserSelect
           label='People'
-          query={{ orgs: [org?.id || 'default'] }}
+          query={peopleQuery}
           onChange={onPeopleChange}
           value={query.people}
           className={styles.field}
