@@ -85,7 +85,10 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   }, [track, user, loggedIn]);
 
   // Consumers can update local app-wide org data (proxy to SWR's mutate FN).
-  const { data: orgsData } = useSWR<OrgJSON[], APIError>('/api/orgs', fetcher);
+  const { data: orgsData } = useSWR<OrgJSON[], APIError>(
+    '/api/account/orgs',
+    fetcher
+  );
   const orgs = useMemo(
     () => (orgsData ? orgsData.map((o) => Org.fromJSON(o)) : []),
     [orgsData]
