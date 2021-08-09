@@ -20,6 +20,7 @@ import { Meeting } from 'lib/model/meeting';
 import { Position } from 'lib/model/position';
 import { getDateWithDay } from 'lib/utils/time';
 import { useClickContext } from 'lib/hooks/click-outside';
+import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
 import { DialogPage, useCalendarState } from './state';
@@ -106,11 +107,13 @@ function WeeklyDisplay({
   // Create a new `TimeslotRND` closest to the user's click position. Assumes
   // each column is 82px wide and every hour is 48px tall (i.e. 12px = 15min).
   const { user } = useUser();
+  const { org } = useOrg();
   const onClick = useCallback(
     (event: MouseEvent) => {
       if (dragging) return;
       const pos = { x: event.clientX - offset.x, y: event.clientY - offset.y };
-      const creating = new Meeting({ id: 0, creator: user });
+      const orgId = org ? org.id : user.orgs[0] || 'default';
+      const creating = new Meeting({ id: 0, creator: user, org: orgId });
       setEventTarget(undefined);
       setEventData(undefined);
       setEditing(getMeeting(48, pos, creating, cellWidth, start));
@@ -119,6 +122,7 @@ function WeeklyDisplay({
       setRnd(true);
     },
     [
+      org,
       user,
       setEditing,
       setDialog,
