@@ -4,6 +4,8 @@ import { Checkbox } from '@rmwc/checkbox';
 import { dequal } from 'dequal/lite';
 import { nanoid } from 'nanoid';
 
+import AddIcon from 'components/icons/add';
+
 import { Option } from 'lib/model/query/base';
 
 import styles from './select.module.scss';
@@ -15,6 +17,8 @@ export interface SelectSurfaceProps<T, O extends Option<T> = Option<T>> {
   updateSelected: (option: any, event?: MouseEvent) => void;
   errored: boolean;
   value: O[];
+  create?: string;
+  onCreate?: () => void;
 }
 
 function SelectSurface<T, O extends Option<T>>({
@@ -23,10 +27,12 @@ function SelectSurface<T, O extends Option<T>>({
   updateSelected,
   errored,
   value,
+  create,
+  onCreate,
 }: SelectSurfaceProps<T, O>): JSX.Element {
   return (
     <List>
-      {!suggestions.length && (
+      {!suggestions.length && !create && (
         <div className={styles.noResults}>
           {errored ? 'Errored, try again' : noResultsMessage}
         </div>
@@ -48,6 +54,12 @@ function SelectSurface<T, O extends Option<T>>({
           {opt.label}
         </ListItem>
       ))}
+      {create && (
+        <ListItem onClick={onCreate} className={styles.menuItem}>
+          <ListItemGraphic icon={<AddIcon />} />
+          {create}
+        </ListItem>
+      )}
     </List>
   );
 }
