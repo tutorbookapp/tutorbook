@@ -38,7 +38,15 @@ export default function RequestForm({
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
 
-  const [students, setStudents] = useState<User[]>([]);
+  const [students, setStudents] = useState<User[]>([user]);
+  useEffect(() => {
+    setStudents((prev) => {
+      const idx = prev.findIndex((p) => p.id === user.id);
+      if (idx < 0) return prev;
+      return [...prev.slice(0, idx), user, ...prev.slice(idx + 1)];
+    });
+  }, [user]);
+
   const [subjects, setSubjects] = useState<Option<string>[]>([]);
   const [message, setMessage] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
