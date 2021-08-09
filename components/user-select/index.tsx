@@ -42,15 +42,17 @@ export default function UserSelect({
     [onSelectedChange, onUsersChange, onChange]
   );
 
+  const [qry, setQry] = useState<Partial<UsersQueryInterface>>({});
+  useEffect(() => setQry((p) => (dequal(p, query) ? p : query)), [query]);
   const getSuggestions = useCallback(
     async (search: string = '') => {
-      const qry = new UsersQuery({ ...query, search });
-      const { users: results } = await fetcher<ListUsersRes>(qry.endpoint);
+      const q = new UsersQuery({ ...qry, search });
+      const { users: results } = await fetcher<ListUsersRes>(q.endpoint);
       return results
         .map((u) => User.fromJSON(u))
         .map((u) => ({ label: u.name, value: u.id, key: u.id, user: u }));
     },
-    [query]
+    [qry]
   );
 
   useEffect(() => {
