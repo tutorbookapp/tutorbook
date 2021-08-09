@@ -2,24 +2,24 @@ import { Chip } from '@rmwc/chip';
 import Image from 'next/image';
 import Link from 'next/link';
 import cn from 'classnames';
+import { dequal } from 'dequal/lite';
 import useSWR from 'swr';
-import { useState } from 'react';
 
 import Avatar from 'components/avatar';
 import VolunteerActivismIcon from 'components/icons/volunteer-activism';
 
-import { Callback } from 'lib/model/callback';
+import { Callback, TCallback } from 'lib/model/callback';
 import { ListOrgsRes } from 'lib/api/routes/orgs/list';
 import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
 
 interface OrgCardProps {
   org?: Org;
+  joined?: boolean;
+  setJoined?: TCallback<boolean>;
 }
 
-function OrgCard({ org }: OrgCardProps): JSX.Element {
-  const [joined, setJoined] = useState<boolean>(false);
-
+function OrgCard({ org, joined, setJoined }: OrgCardProps): JSX.Element {
   return (
     <Link href={org ? `/${org.id}` : '#'}>
       <a className={cn('card', { loading: !org })}>
@@ -37,8 +37,8 @@ function OrgCard({ org }: OrgCardProps): JSX.Element {
           <div className='overlay'>
             <div className='chip'>
               <Chip
-                label={joined ? 'Volunteered' : `Volunteer at ${org?.name}`}
-                onInteraction={() => setJoined((prev) => !prev)}
+                label={joined ? 'Volunteered' : 'Become a volunteer'}
+                onInteraction={() => setJoined && setJoined(!joined)}
                 onClick={(evt) => {
                   evt.preventDefault();
                   evt.stopPropagation();
@@ -150,7 +150,20 @@ export default function Orgs({ user, setUser }: OrgsProps): JSX.Element {
             .fill(null)
             .map((_, idx) => <OrgCard key={idx} />)}
         {data?.map((o) => (
-          <OrgCard org={Org.fromJSON(o)} key={o.id} />
+          <OrgCard
+            org={Org.fromJSON(o)}
+            key={o.id}
+            joined={user.orgs.includes(o.id)}
+            setJoined={(joined) => {
+              setUser((prev) => {
+                const orgs = new Set(prev.orgs);
+                if (joined) orgs.add(o.id);
+                if (!joined) orgs.delete(o.id);
+                if (dequal(prev.orgs, [...orgs])) return prev;
+                return new User({ ...prev, orgs: [...orgs] });
+              });
+            }}
+          />
         ))}
       </div>
       <style jsx>{`
