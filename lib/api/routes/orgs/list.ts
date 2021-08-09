@@ -1,28 +1,23 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
+import to from 'await-to-js';
 
 import { OrgJSON } from 'lib/model/org';
-import { getOrgsByAdminId } from 'lib/api/db/org';
+import { getOrgs } from 'lib/api/db/org';
 import { handle } from 'lib/api/error';
 import segment from 'lib/api/segment';
 import verifyAuth from 'lib/api/verify/auth';
 
 export type ListOrgsRes = OrgJSON[];
 
-/**
- * Lists the orgs that you are an admin of.
- * @todo Perhaps we should rename this API route as it's much more opinionated
- * than one would expect (e.g. I would think, at first, that this just lists all
- * of the orgs on TB or something more general).
- */
 export default async function listOrgs(
   req: Req,
   res: Res<ListOrgsRes>
 ): Promise<void> {
   try {
-    const { uid } = await verifyAuth(req.headers);
-    const orgs = await getOrgsByAdminId(uid);
+    const orgs = await getOrgs();
     res.status(200).json(orgs.map((o) => o.toJSON()));
-    segment.track({ userId: uid, event: 'Orgs Listed' });
+    const attrs = (await to(verifyAuth(req.headers)))[1];
+    if (attrs) segment.track({ userId: attrs.uid, event: 'Orgs Listed' });
   } catch (e) {
     handle(e, res);
   }
