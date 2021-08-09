@@ -2,7 +2,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { User, UserJSON, isUserJSON } from 'lib/model/user';
 import { createUser, getUser } from 'lib/api/db/user';
-import analytics from 'lib/api/analytics';
 import createAuthUser from 'lib/api/create/auth-user';
 import createCustomToken from 'lib/api/create/custom-token';
 import { getOrg } from 'lib/api/db/org';
@@ -73,8 +72,6 @@ export default async function createUserAPI(
       event: 'User Created',
       properties: user.toSegment(),
     });
-
-    await analytics(user, 'created');
   } catch (e) {
     handle(e, res);
   }

@@ -1,7 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { DBUser, User, UserJSON, isUserJSON } from 'lib/model/user';
-import analytics from 'lib/api/analytics';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
@@ -53,8 +52,6 @@ export default async function updateUserAPI(
       event: 'User Updated',
       properties: user.toSegment(),
     });
-
-    await analytics(user, 'updated', User.fromDB(originalRecord));
   } catch (e) {
     handle(e, res);
   }
