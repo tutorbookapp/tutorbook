@@ -146,7 +146,7 @@ export default function Orgs({ user, setUser }: OrgsProps): JSX.Element {
     <div className='wrapper'>
       <div className='scroller'>
         {!data &&
-          Array(5)
+          Array(6)
             .fill(null)
             .map((_, idx) => <OrgCard key={idx} />)}
         {data?.map((o) => (
