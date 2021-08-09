@@ -182,6 +182,7 @@ export default function RequestForm({
           onUsersChange={setStudents}
           users={students}
           className={styles.field}
+          disabled={!user.id}
           autoOpenMenu
           outlined
         />
