@@ -105,7 +105,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
         updatedOrg.toJSON(),
         ...orgs.map((org: Org) => org.toJSON()).slice(idx + 1),
       ];
-      await mutate('/api/orgs', updated, loggedIn === undefined);
+      await mutate('/api/account/orgs', updated, loggedIn === undefined);
     },
     [orgs, loggedIn]
   );
