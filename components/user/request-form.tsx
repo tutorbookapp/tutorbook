@@ -48,6 +48,9 @@ export default function RequestForm({
     });
   }, [me]);
 
+  const [creating, setCreating] = useState<User>();
+  const onCreate = useCallback(() => setCreating(new User()), []);
+
   const [subjects, setSubjects] = useState<Option<string>[]>([]);
   const [message, setMessage] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
@@ -171,21 +174,62 @@ export default function RequestForm({
     <form className={styles.card} onSubmit={onSubmit}>
       <Loader active={loading} checked={checked} />
       <div className={styles.inputs}>
-        <UserSelect
-          required
-          label={t('match3rd:students')}
-          query={
-            org && org.members.includes(user.id)
-              ? { orgs: [org.id] }
-              : { parents: [user.id] }
-          }
-          onUsersChange={setStudents}
-          users={students}
-          className={styles.field}
-          disabled={!user.id}
-          autoOpenMenu
-          outlined
-        />
+        {!creating && (
+          <UserSelect
+            required
+            label={t('match3rd:students')}
+            query={
+              org && org.members.includes(user.id)
+                ? { orgs: [org.id] }
+                : { parents: [user.id] }
+            }
+            onUsersChange={setStudents}
+            users={students}
+            className={styles.field}
+            autoOpenMenu
+            outlined
+            create='Create student'
+            onCreate={onCreate}
+          />
+        )}
+        {creating && (
+          <>
+            <TextField
+              label='Student name'
+              value={creating.name}
+              onChange={(evt) => {
+                const name = evt.currentTarget.value;
+                setCreating((p) => new User({ ...p, name }));
+              }}
+              className={styles.field}
+              outlined
+              required
+            />
+            <TextField
+              label='Student age'
+              value={creating.age}
+              onChange={(evt) => {
+                const age = Number(evt.currentTarget.value);
+                setCreating((p) => new User({ ...p, age }));
+              }}
+              className={styles.field}
+              type='number'
+              outlined
+              required
+            />
+            <TextField
+              label='Student email address'
+              value={creating.email}
+              onChange={(evt) => {
+                const email = evt.currentTarget.value;
+                setCreating((p) => new User({ ...p, email }));
+              }}
+              className={styles.field}
+              type='email'
+              outlined
+            />
+          </>
+        )}
       </div>
       <div className={styles.divider} />
       <div className={styles.inputs}>
