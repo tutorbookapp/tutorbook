@@ -1,25 +1,22 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
 import { dequal } from 'dequal';
 import to from 'await-to-js';
-import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import SubjectSelect from 'components/subject-select';
 import Button from 'components/button';
 import Loader from 'components/loader';
+import SubjectSelect from 'components/subject-select';
 import TimeSelect from 'components/time-select';
+import UserSelect from 'components/user-select';
 
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/model/error';
-import { ListUsersRes } from 'lib/api/routes/users/list';
 import { Option } from 'lib/model/query/base';
 import { Timeslot } from 'lib/model/timeslot';
-import { UsersQuery } from 'lib/model/query/users';
 import { getErrorMessage } from 'lib/fetch';
 import { loginWithGoogle } from 'lib/firebase/login';
 import { useOrg } from 'lib/context/org';
@@ -41,28 +38,19 @@ export default function RequestForm({
   const { org } = useOrg();
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
-  const { data: children } = useSWR<ListUsersRes>(
-    user.id ? new UsersQuery({ parents: [user.id] }).endpoint : null
-  );
 
-  const [child, setChild] = useState<User>(new User());
-  const [student, setStudent] = useState<string>('Me');
-  const [options, setOptions] = useState<Record<string, User>>({
-    Me: user,
-    'My child': child,
-  });
+  const me = useMemo(() => new User({ ...user, name: 'Me' }), [user]);
+  const [students, setStudents] = useState<User[]>([me]);
   useEffect(() => {
-    setOptions((prev) => {
-      const kids = children?.users.map((u) => User.fromJSON(u)) || [];
-      const updated = {
-        Me: user,
-        'My child': child,
-        ...Object.fromEntries(kids.map((u) => [u.firstName, u])),
-      };
-      if (dequal(updated, prev)) return prev;
-      return updated;
+    setStudents((prev) => {
+      const idx = prev.findIndex((p) => p.id === me.id);
+      if (idx < 0) return prev;
+      return [...prev.slice(0, idx), me, ...prev.slice(idx + 1)];
     });
-  }, [user, child, children]);
+  }, [me]);
+
+  const [creating, setCreating] = useState<User>();
+  const onCreate = useCallback(() => setCreating(new User()), []);
 
   const [subjects, setSubjects] = useState<Option<string>[]>([]);
   const [message, setMessage] = useState<string>('');
@@ -82,22 +70,18 @@ export default function RequestForm({
   useEffect(() => setPhone(user.phone), [user.phone]);
   useEffect(() => setReference(user.reference), [user.reference]);
 
-  const userMissingData = useMemo(
-    () =>
-      (!user.phone && org?.profiles.includes('phone')) ||
-      (!user.reference && org?.profiles.includes('reference')),
-    [user.phone, user.reference, org]
-  );
-
   // TODO: Fix the `await-to-js` types so that TypeScript knows that `res` is
   // defined whenever `err` is not defined (that way I can get rid of all the
   // unnecessary `if (res)` statements).
   const onSubmit = useCallback(
-    async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
+    async (evt: FormEvent<HTMLFormElement>) => {
+      evt.preventDefault();
       setError('');
       setLoading(true);
-      let updatedUser = new User({ ...user, phone, reference });
+
+      // 1. Ensure that the user is logged in and has all the required info.
+      const orgs = org ? [...new Set([...user.orgs, org.id])] : user.orgs;
+      let updatedUser = new User({ ...user, phone, reference, orgs });
       if (!user.id) {
         const [err, signedUpUser] = await to(loginWithGoogle(updatedUser));
         if (err) {
@@ -111,7 +95,7 @@ export default function RequestForm({
           return;
         }
         if (signedUpUser) updatedUser = signedUpUser;
-      } else if (userMissingData) {
+      } else if (!dequal(updatedUser, user)) {
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
           AxiosError<APIErrorJSON>
@@ -126,38 +110,40 @@ export default function RequestForm({
           await updateUser(updatedUser);
         }
       }
-      const people: User[] = [new User({ ...volunteer, roles: ['tutor'] })];
-      const creator: User = new User({ ...updatedUser, roles: [] });
-      if (student === 'Me') {
-        creator.roles = ['tutee'];
-        people.push(creator);
-      } else if (student === 'My child') {
-        const updatedChild = {
-          ...child.toJSON(),
-          roles: ['tutee'], // Specifying roles skips signup emails.
-          parents: [updatedUser.id], // Use now-logged-in parent ID.
+
+      // 2. Ensure that the students are all created.
+      const creator = new User({ ...updatedUser, roles: [] });
+      const people = [new User({ ...volunteer, roles: ['tutor'] })];
+      if (!org?.members.includes(updatedUser.id)) creator.roles = ['parent'];
+      if (creating) {
+        const student = {
+          ...creating.toJSON(),
+          roles: ['tutee'],
+          orgs: [org?.id || 'default'],
+          parents: creator.roles.includes('parent') ? [creator.id] : [],
         };
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
           AxiosError<APIErrorJSON>
-        >(axios.post('/api/users', updatedChild));
+        >(axios.post('/api/users', student));
         if (err) {
           setLoading(false);
-          setError(getErrorMessage(err, 'creating child account', t));
+          setError(getErrorMessage(err, 'creating student account', t));
           return;
         }
-        if (res) {
-          creator.roles = ['parent'];
-          people.push(creator);
-          people.push(
-            new User({ ...User.fromJSON(res.data), roles: ['tutee'] })
-          );
-        }
+        if (res) people.push(User.fromJSON({ ...res.data, roles: ['tutee'] }));
       } else {
-        creator.roles = ['parent'];
-        people.push(creator);
-        people.push(new User({ ...options[student], roles: ['tutee'] }));
+        students.forEach((student) => {
+          if (student.id === creator.id) {
+            creator.roles = ['tutee'];
+            return;
+          }
+          people.push(new User({ ...student, roles: ['tutee'] }));
+        });
       }
+      if (creator.roles.length) people.push(creator);
+
+      // 3. Create the meeting.
       const meeting = new Meeting({
         time,
         people,
@@ -173,16 +159,15 @@ export default function RequestForm({
       if (err) {
         setLoading(false);
         setError(getErrorMessage(err, 'creating meeting', t));
-      } else {
-        setChecked(true);
+        return;
       }
+      setChecked(true);
     },
     [
       user,
-      student,
+      students,
+      creating,
       volunteer,
-      options,
-      child,
       org,
       time,
       message,
@@ -190,62 +175,92 @@ export default function RequestForm({
       phone,
       reference,
       updateUser,
-      userMissingData,
       t,
     ]
   );
 
-  const i18nPrefix = useMemo(() => (student !== 'Me' ? 'for-others-' : ''), [
-    student,
-  ]);
+  const i18nPrefix = useMemo(() => {
+    if (students.length === 1 && students[0].id === user.id) return '';
+    return 'for-others-';
+  }, [students, user.id]);
   const messagePlaceholder = useMemo(() => {
+    const studentIsMe = students.length === 1 && students[0].id === user.id;
+    const studentFirstNames = join(students.map((s) => s.firstName));
     const data = {
-      person: student === 'Me' ? 'I' : options[student].firstName || 'They',
+      person: studentIsMe ? 'I' : studentFirstNames || 'They',
       subject: join(subjects.map((s) => s.label)) || 'Computer Science',
     };
     if (org?.booking[locale]?.message)
       return translate(org.booking[locale].message, data);
     return t('match3rd:message-placeholder', data);
-  }, [t, locale, org, student, subjects, options]);
+  }, [t, locale, org, students, user.id, subjects]);
+  const userMissingData = useMemo(
+    () =>
+      (!user.phone && org?.profiles.includes('phone')) ||
+      (!user.reference && org?.profiles.includes('reference')),
+    [user.phone, user.reference, org]
+  );
+  const userSelectQuery = useMemo(
+    () =>
+      org && org.members.includes(user.id)
+        ? { orgs: [org.id] }
+        : { parents: [user.id] },
+    [org, user.id]
+  );
 
   return (
     <form className={styles.card} onSubmit={onSubmit}>
       <Loader active={loading} checked={checked} />
       <div className={styles.inputs}>
-        <Select
-          options={Object.keys(options)}
-          value={student}
-          onChange={(evt) => setStudent(evt.currentTarget.value)}
-          label={t('match3rd:students')}
-          className={styles.field}
-          enhanced
-          outlined
-          required
-        />
-        {student === 'My child' && (
+        {!creating && (
+          <UserSelect
+            required
+            label={t('match3rd:students')}
+            query={userSelectQuery}
+            onUsersChange={setStudents}
+            users={students}
+            className={styles.field}
+            autoOpenMenu
+            outlined
+            create='Create student'
+            onCreate={onCreate}
+          />
+        )}
+        {creating && (
           <>
             <TextField
-              label='Child name'
-              value={child.name}
+              label='Student name'
+              value={creating.name}
               onChange={(evt) => {
                 const name = evt.currentTarget.value;
-                setChild((prev) => new User({ ...prev, name }));
+                setCreating((p) => new User({ ...p, name }));
               }}
               className={styles.field}
               outlined
               required
             />
             <TextField
-              label='Child age'
-              value={child.age}
+              label='Student age'
+              value={creating.age}
               onChange={(evt) => {
                 const age = Number(evt.currentTarget.value);
-                setChild((prev) => new User({ ...prev, age }));
+                setCreating((p) => new User({ ...p, age }));
               }}
               className={styles.field}
               type='number'
               outlined
               required
+            />
+            <TextField
+              label='Student email address'
+              value={creating.email}
+              onChange={(evt) => {
+                const email = evt.currentTarget.value;
+                setCreating((p) => new User({ ...p, email }));
+              }}
+              className={styles.field}
+              type='email'
+              outlined
             />
           </>
         )}

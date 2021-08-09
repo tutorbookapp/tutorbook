@@ -40,6 +40,8 @@ interface UniqueSelectProps<T, O extends Option<T> = Option<T>> {
   focused?: boolean;
   onFocused?: () => any;
   onBlurred?: () => any;
+  create?: string;
+  onCreate?: () => void;
 }
 
 type Overrides<T, O extends Option<T> = Option<T>> =
@@ -89,6 +91,8 @@ export default function Select<T, O extends Option<T>>({
   focused = false,
   onFocused = () => {},
   onBlurred = () => {},
+  create,
+  onCreate,
   className,
   ...textFieldProps
 }: SelectProps<T, O>): JSX.Element {
@@ -313,7 +317,7 @@ export default function Select<T, O extends Option<T>>({
         }}
         anchorCorner='bottomStart'
         renderToPortal={renderToPortal ? '#portal' : false}
-        className={!suggestions.length ? styles.errMenu : ''}
+        className={!suggestions.length && !create ? styles.errMenu : ''}
       >
         <SelectSurface
           suggestions={suggestions}
@@ -321,6 +325,8 @@ export default function Select<T, O extends Option<T>>({
           updateSelected={updateSelected}
           errored={errored}
           value={value}
+          create={create}
+          onCreate={onCreate}
         />
       </MenuSurface>
       <SelectHint open={suggestionsOpen}>
