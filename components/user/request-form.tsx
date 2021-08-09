@@ -7,10 +7,11 @@ import to from 'await-to-js';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import SubjectSelect from 'components/subject-select';
 import Button from 'components/button';
+import SubjectSelect from 'components/subject-select';
 import Loader from 'components/loader';
 import TimeSelect from 'components/time-select';
+import UserSelect from 'components/user-select';
 
 import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { User, UserJSON } from 'lib/model/user';
@@ -45,6 +46,7 @@ export default function RequestForm({
     user.id ? new UsersQuery({ parents: [user.id] }).endpoint : null
   );
 
+  const [students, setStudents] = useState<User[]>([]);
   const [child, setChild] = useState<User>(new User());
   const [student, setStudent] = useState<string>('Me');
   const [options, setOptions] = useState<Record<string, User>>({
@@ -212,6 +214,20 @@ export default function RequestForm({
     <form className={styles.card} onSubmit={onSubmit}>
       <Loader active={loading} checked={checked} />
       <div className={styles.inputs}>
+        <UserSelect
+          required
+          label={t('match3rd:students')}
+          query={
+            org && org.members.includes(user.id)
+              ? { orgs: [org.id] }
+              : { parents: [user.id] }
+          }
+          onUsersChange={setStudents}
+          users={students}
+          className={styles.field}
+          autoOpenMenu
+          outlined
+        />
         <Select
           options={Object.keys(options)}
           value={student}
