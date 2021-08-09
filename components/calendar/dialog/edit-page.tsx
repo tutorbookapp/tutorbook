@@ -14,6 +14,7 @@ import UserSelect from 'components/user-select';
 import { Meeting } from 'lib/model/meeting';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
+import { UsersQueryInterface } from 'lib/model/query/users';
 import { join } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import usePrevious from 'lib/hooks/previous';
@@ -156,6 +157,18 @@ export default function EditPage({
 
   const { user } = useUser();
   const { org } = useOrg();
+  const studentsQuery = useMemo<Partial<UsersQueryInterface>>(
+    () => (org ? { orgs: [org.id] } : { met: [user.id, 'tutee'] }),
+    [org, user.id]
+  );
+  const tutorsQuery = useMemo<Partial<UsersQueryInterface>>(
+    () => (org ? { orgs: [org.id] } : { met: [user.id, 'tutor'] }),
+    [org, user.id]
+  );
+  const parentsQuery = useMemo<Partial<UsersQueryInterface>>(
+    () => (org ? { orgs: [org.id] } : { met: [user.id, 'parent'] }),
+    [org, user.id]
+  );
 
   return (
     <div className={styles.wrapper}>
@@ -172,7 +185,7 @@ export default function EditPage({
           <UserSelect
             required
             label='Select students'
-            query={org ? { orgs: [org.id] } : { met: [user.id, 'tutee'] }}
+            query={studentsQuery}
             onUsersChange={onStudentsChange}
             users={students}
             className={styles.field}
@@ -183,7 +196,7 @@ export default function EditPage({
           <UserSelect
             required
             label='Select tutors'
-            query={org ? { orgs: [org.id] } : { met: [user.id, 'tutor'] }}
+            query={tutorsQuery}
             onUsersChange={onTutorsChange}
             users={tutors}
             className={styles.field}
@@ -193,7 +206,7 @@ export default function EditPage({
           />
           <UserSelect
             label='Select parents'
-            query={org ? { orgs: [org.id] } : { met: [user.id, 'parent'] }}
+            query={parentsQuery}
             onUsersChange={onParentsChange}
             users={parents}
             className={styles.field}
