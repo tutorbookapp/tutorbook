@@ -214,13 +214,13 @@ export default function EditPage({
           />
           <SubjectSelect
             required
-            autoOpenMenu
             label={t('common:subjects')}
             onChange={onSubjectsChange}
             value={editing.subjects}
             className={styles.field}
             options={subjectOptions}
             renderToPortal
+            autoOpenMenu
             outlined
           />
           <TimeSelect

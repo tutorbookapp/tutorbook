@@ -203,6 +203,7 @@ export default function CreatePage({
             className={styles.field}
             options={subjectOptions}
             renderToPortal
+            autoOpenMenu
             outlined
           />
           <TimeSelect
