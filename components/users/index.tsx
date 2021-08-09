@@ -36,6 +36,8 @@ export default function Users(): JSX.Element {
   );
   const [hits, setHits] = useState<number>(query.hitsPerPage);
 
+  // TODO: Add configuration for different default values than the query config.
+  // Ex: This `/users` page uses a default `hitsPerPage` of 5 instead of 20.
   useURLParamSync(query, setQuery, UsersQuery, ['o']);
 
   const onQueryChange = useCallback((param: CallbackParam<UsersQuery>) => {
