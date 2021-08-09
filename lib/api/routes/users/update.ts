@@ -30,7 +30,7 @@ export default async function updateUserAPI(
       userId: body.id,
       orgIds: body.orgs,
     });
-    const originalRecord = await verifyRecordExists<DBUser>('users', body.id);
+    await verifyRecordExists<DBUser>('users', body.id);
 
     const withOrgsUpdate = updateUserOrgs(body);
     const withTagsUpdate = updateUserTags(withOrgsUpdate);
