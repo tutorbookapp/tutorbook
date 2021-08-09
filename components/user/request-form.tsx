@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { TextField } from '@rmwc/textfield';
+import { dequal } from 'dequal';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
@@ -69,22 +70,18 @@ export default function RequestForm({
   useEffect(() => setPhone(user.phone), [user.phone]);
   useEffect(() => setReference(user.reference), [user.reference]);
 
-  const userMissingData = useMemo(
-    () =>
-      (!user.phone && org?.profiles.includes('phone')) ||
-      (!user.reference && org?.profiles.includes('reference')),
-    [user.phone, user.reference, org]
-  );
-
   // TODO: Fix the `await-to-js` types so that TypeScript knows that `res` is
   // defined whenever `err` is not defined (that way I can get rid of all the
   // unnecessary `if (res)` statements).
   const onSubmit = useCallback(
-    async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
+    async (evt: FormEvent<HTMLFormElement>) => {
+      evt.preventDefault();
       setError('');
       setLoading(true);
-      let updatedUser = new User({ ...user, phone, reference });
+
+      // 1. Ensure that the user is logged in and has all the required info.
+      const orgs = org ? [...new Set([...user.orgs, org.id])] : user.orgs;
+      let updatedUser = new User({ ...user, phone, reference, orgs });
       if (!user.id) {
         const [err, signedUpUser] = await to(loginWithGoogle(updatedUser));
         if (err) {
@@ -98,7 +95,7 @@ export default function RequestForm({
           return;
         }
         if (signedUpUser) updatedUser = signedUpUser;
-      } else if (userMissingData) {
+      } else if (!dequal(updatedUser, user)) {
         const [err, res] = await to<
           AxiosResponse<UserJSON>,
           AxiosError<APIErrorJSON>
@@ -113,12 +110,40 @@ export default function RequestForm({
           await updateUser(updatedUser);
         }
       }
-      const people: User[] = [new User({ ...volunteer, roles: ['tutor'] })];
-      const creator: User = new User({ ...updatedUser, roles: [] });
-      students.forEach((student) => {
-        if (student.id === creator.id) creator.roles = ['tutee'];
-        people.push(new User({ ...student, roles: ['tutee'] }));
-      });
+
+      // 2. Ensure that the students are all created.
+      const creator = new User({ ...updatedUser, roles: [] });
+      const people = [new User({ ...volunteer, roles: ['tutor'] })];
+      if (!org?.members.includes(updatedUser.id)) creator.roles = ['parent'];
+      if (creating) {
+        const student = {
+          ...creating.toJSON(),
+          roles: ['tutee'],
+          orgs: [org?.id || 'default'],
+          parents: creator.roles.includes('parent') ? [creator.id] : [],
+        };
+        const [err, res] = await to<
+          AxiosResponse<UserJSON>,
+          AxiosError<APIErrorJSON>
+        >(axios.post('/api/users', student));
+        if (err) {
+          setLoading(false);
+          setError(getErrorMessage(err, 'creating student account', t));
+          return;
+        }
+        if (res) people.push(User.fromJSON({ ...res.data, roles: ['tutee'] }));
+      } else {
+        students.forEach((student) => {
+          if (student.id === creator.id) {
+            creator.roles = ['tutee'];
+            return;
+          }
+          people.push(new User({ ...student, roles: ['tutee'] }));
+        });
+      }
+      if (creator.roles.length) people.push(creator);
+
+      // 3. Create the meeting.
       const meeting = new Meeting({
         time,
         people,
@@ -134,13 +159,14 @@ export default function RequestForm({
       if (err) {
         setLoading(false);
         setError(getErrorMessage(err, 'creating meeting', t));
-      } else {
-        setChecked(true);
+        return;
       }
+      setChecked(true);
     },
     [
       user,
       students,
+      creating,
       volunteer,
       org,
       time,
@@ -149,7 +175,6 @@ export default function RequestForm({
       phone,
       reference,
       updateUser,
-      userMissingData,
       t,
     ]
   );
@@ -169,6 +194,19 @@ export default function RequestForm({
       return translate(org.booking[locale].message, data);
     return t('match3rd:message-placeholder', data);
   }, [t, locale, org, students, user.id, subjects]);
+  const userMissingData = useMemo(
+    () =>
+      (!user.phone && org?.profiles.includes('phone')) ||
+      (!user.reference && org?.profiles.includes('reference')),
+    [user.phone, user.reference, org]
+  );
+  const userSelectQuery = useMemo(
+    () =>
+      org && org.members.includes(user.id)
+        ? { orgs: [org.id] }
+        : { parents: [user.id] },
+    [org, user.id]
+  );
 
   return (
     <form className={styles.card} onSubmit={onSubmit}>
@@ -178,11 +216,7 @@ export default function RequestForm({
           <UserSelect
             required
             label={t('match3rd:students')}
-            query={
-              org && org.members.includes(user.id)
-                ? { orgs: [org.id] }
-                : { parents: [user.id] }
-            }
+            query={userSelectQuery}
             onUsersChange={setStudents}
             users={students}
             className={styles.field}
