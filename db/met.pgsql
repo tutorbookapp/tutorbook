@@ -13,6 +13,6 @@ as $$
   on relation_people2.user = view_users.id
   where 
     user_id = relation_people1.user and
-    user_role = any (relation_people2.roles);
+    user_role::role = any (relation_people2.roles);
 $$
 language sql stable;
