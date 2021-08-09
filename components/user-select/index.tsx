@@ -10,6 +10,7 @@ import { Option } from 'lib/model/query/base';
 import { TCallback } from 'lib/model/callback';
 import { User } from 'lib/model/user';
 import { fetcher } from 'lib/fetch';
+import { useUser } from 'lib/context/user';
 
 interface UserOption extends Option<string> {
   user: User;
@@ -42,17 +43,19 @@ export default function UserSelect({
     [onSelectedChange, onUsersChange, onChange]
   );
 
+  const { loggedIn } = useUser();
   const [qry, setQry] = useState<Partial<UsersQueryInterface>>({});
   useEffect(() => setQry((p) => (dequal(p, query) ? p : query)), [query]);
   const getSuggestions = useCallback(
     async (search: string = '') => {
+      if (!loggedIn) return [];
       const q = new UsersQuery({ ...qry, search });
       const { users: results } = await fetcher<ListUsersRes>(q.endpoint);
       return results
         .map((u) => User.fromJSON(u))
         .map((u) => ({ label: u.name, value: u.id, key: u.id, user: u }));
     },
-    [qry]
+    [qry, loggedIn]
   );
 
   useEffect(() => {
