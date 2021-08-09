@@ -38,14 +38,15 @@ export default function RequestForm({
   const { user, updateUser } = useUser();
   const { t, lang: locale } = useTranslation();
 
-  const [students, setStudents] = useState<User[]>([user]);
+  const me = useMemo(() => new User({ ...user, name: 'Me' }), [user]);
+  const [students, setStudents] = useState<User[]>([me]);
   useEffect(() => {
     setStudents((prev) => {
-      const idx = prev.findIndex((p) => p.id === user.id);
+      const idx = prev.findIndex((p) => p.id === me.id);
       if (idx < 0) return prev;
-      return [...prev.slice(0, idx), user, ...prev.slice(idx + 1)];
+      return [...prev.slice(0, idx), me, ...prev.slice(idx + 1)];
     });
-  }, [user]);
+  }, [me]);
 
   const [subjects, setSubjects] = useState<Option<string>[]>([]);
   const [message, setMessage] = useState<string>('');
