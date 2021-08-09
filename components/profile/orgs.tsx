@@ -22,8 +22,8 @@ interface OrgCardProps {
 function OrgCard({ org, joined, setJoined }: OrgCardProps): JSX.Element {
   return (
     <Link href={org ? `/${org.id}` : '#'}>
-      <a className={cn('card', { loading: !org })}>
-        <div className='background'>
+      <a className='card'>
+        <div className={cn('background', { loading: !org })}>
           {org?.background && (
             <Image
               priority
@@ -36,27 +36,29 @@ function OrgCard({ org, joined, setJoined }: OrgCardProps): JSX.Element {
           )}
           <div className='overlay'>
             <div className='chip'>
-              <Chip
-                label={joined ? 'Volunteered' : 'Become a volunteer'}
-                onInteraction={() => setJoined && setJoined(!joined)}
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  evt.stopPropagation();
-                }}
-                icon={joined ? undefined : <VolunteerActivismIcon />}
-                selected={joined}
-                checkmark
-              />
+              {org && (
+                <Chip
+                  label={joined ? 'Volunteered' : `Volunteer at ${org.name}`}
+                  onInteraction={() => setJoined && setJoined(!joined)}
+                  onClick={(evt) => {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                  }}
+                  icon={joined ? undefined : <VolunteerActivismIcon />}
+                  selected={joined}
+                  checkmark
+                />
+              )}
             </div>
             <div className='header'>
               <div className='avatar'>
                 <Avatar size={48} loading={!org} src={org?.photo} priority />
               </div>
-              <h2>{org?.name}</h2>
+              <h2 className={cn({ loading: !org })}>{org?.name}</h2>
             </div>
           </div>
         </div>
-        <p>{org?.bio}</p>
+        <p className={cn({ loading: !org })}>{org?.bio}</p>
         <style jsx>{`
           .card {
             border: 1px solid var(--accents-2);
@@ -73,7 +75,16 @@ function OrgCard({ org, joined, setJoined }: OrgCardProps): JSX.Element {
             position: relative;
             height: 140px;
             font-size: 0;
-            background: var(--accents-2);
+            background-image: linear-gradient(
+              270deg,
+              var(--accents-1),
+              var(--accents-2),
+              var(--accents-2),
+              var(--accents-1)
+            );
+            background-size: 400% 100%;
+            -webkit-animation: loadingAnimation 8s ease-in-out infinite;
+            animation: loadingAnimation 8s ease-in-out infinite;
           }
 
           .overlay {
@@ -120,6 +131,12 @@ function OrgCard({ org, joined, setJoined }: OrgCardProps): JSX.Element {
             color: var(--on-background);
           }
 
+          h2.loading {
+            width: 150px;
+            height: 24px;
+            border-radius: 6px;
+          }
+
           p {
             font-size: 14px;
             color: var(--accents-5);
@@ -127,6 +144,10 @@ function OrgCard({ org, joined, setJoined }: OrgCardProps): JSX.Element {
             height: 80px;
             overflow: hidden;
             margin: 6px 24px 24px;
+          }
+
+          p.loading {
+            border-radius: 6px;
           }
         `}</style>
       </a>
@@ -170,7 +191,7 @@ export default function Orgs({ user, setUser }: OrgsProps): JSX.Element {
         .wrapper {
           max-width: var(--page-width-with-margin);
           padding: 0 24px;
-          margin: 48px auto 12px;
+          margin: 48px auto;
         }
 
         .scroller {

@@ -3,7 +3,7 @@
 
 .wrapper {
   @include common.wrapper;
-  margin: 12px auto 48px;
+  margin: 48px auto;
 
   .card {
     border: 1px solid var(--accents-2);
