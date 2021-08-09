@@ -2,7 +2,6 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
 import { getUser, updateUser } from 'lib/api/db/user';
-import analytics from 'lib/api/analytics';
 import { createMeeting } from 'lib/api/db/meeting';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
@@ -77,7 +76,6 @@ export default async function createMeetingAPI(
     // TODO: Don't use fire-and-forget triggers for these tags updates. Ideally,
     // I'd calculate the existance of these user tags using PostgreSQL.
     await Promise.all([
-      analytics(meeting, 'created'),
       updatePeopleTags(people, { add: ['meeting'] }),
       Promise.all(people.map((p) => updateUser(p))),
     ]);

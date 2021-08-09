@@ -10,7 +10,6 @@ import {
 } from 'lib/model/meeting';
 import { createMeeting, updateMeeting } from 'lib/api/db/meeting';
 import { Timeslot } from 'lib/model/timeslot';
-import analytics from 'lib/api/analytics';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
@@ -127,7 +126,6 @@ export default async function updateMeetingAPI(
         });
 
         await Promise.all([
-          analytics(body, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
           Promise.all(people.map((p) => updateUser(p))),
         ]);
@@ -181,7 +179,6 @@ export default async function updateMeetingAPI(
         });
 
         await Promise.all([
-          analytics(newMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
           Promise.all(people.map((p) => updateUser(p))),
         ]);
@@ -230,7 +227,6 @@ export default async function updateMeetingAPI(
         });
 
         await Promise.all([
-          analytics(newRecurringMeeting, 'updated'),
           updatePeopleTags(people, { add: ['meeting'] }),
           Promise.all(people.map((p) => updateUser(p))),
         ]);
@@ -259,7 +255,6 @@ export default async function updateMeetingAPI(
       });
 
       await Promise.all([
-        analytics(meeting, 'updated'),
         updatePeopleTags(people, { add: ['meeting'] }),
         Promise.all(people.map((p) => updateUser(p))),
       ]);
