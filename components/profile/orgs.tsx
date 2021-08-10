@@ -98,8 +98,8 @@ function OrgCard({ org, joined, setJoined }: OrgCardProps): JSX.Element {
             padding: 6px 24px;
             background: linear-gradient(
               180deg,
-              transparent 50%,
-              var(--background) 100%
+              transparent 25%,
+              var(--background)
             );
           }
 
