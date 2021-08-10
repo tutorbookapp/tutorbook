@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Router from 'next/router';
 
 import FilterForm from 'components/filter-form';
@@ -15,6 +15,8 @@ interface SectionProps {
 
 function Section({ header, children, video }: SectionProps): JSX.Element {
   const { dark } = useTheme();
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => ref.current?.load(), [dark]);
   return (
     <section>
       <div className='content-wrapper'>
@@ -26,7 +28,15 @@ function Section({ header, children, video }: SectionProps): JSX.Element {
       <div className='wrapper'>
         <div className='video-wrapper'>
           <div className='video'>
-            <video autoPlay loop muted playsInline width='100%' height='100%'>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              width='100%'
+              height='100%'
+              ref={ref}
+            >
               <source
                 src={`/about/${video}${dark ? '-dark' : ''}.mp4`}
                 type='video/mp4'
