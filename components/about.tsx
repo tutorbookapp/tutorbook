@@ -5,6 +5,7 @@ import FilterForm from 'components/filter-form';
 import Title from 'components/title';
 
 import { UsersQuery } from 'lib/model/query/users';
+import { useTheme } from 'lib/context/theme';
 
 interface SectionProps {
   header: string;
@@ -13,6 +14,7 @@ interface SectionProps {
 }
 
 function Section({ header, children, video }: SectionProps): JSX.Element {
+  const { dark } = useTheme();
   return (
     <section>
       <div className='content-wrapper'>
@@ -25,7 +27,10 @@ function Section({ header, children, video }: SectionProps): JSX.Element {
         <div className='video-wrapper'>
           <div className='video'>
             <video autoPlay loop muted playsInline width='100%' height='100%'>
-              <source src={video} type='video/mp4' />
+              <source
+                src={`/about/${video}${dark ? '-dark' : ''}.mp4`}
+                type='video/mp4'
+              />
             </video>
           </div>
         </div>
@@ -109,16 +114,16 @@ export default function About(): JSX.Element {
       </header>
       <FilterForm query={query} onChange={setQuery} onSubmit={onSubmit} />
       <article>
-        <Section header='1. Search' video='/about/search.mp4'>
+        <Section header='1. Search' video='search'>
           Start by exploring our volunteer tutors. Apply filters like subject,
           availability, and language to narrow your options.
         </Section>
-        <Section header='2. Book' video='/about/book.mp4'>
+        <Section header='2. Book' video='book'>
           Once you’ve found a tutor you like, book a meeting with them in just a
           few clicks. You’ll both receive an email with contact info and your
           meeting link.
         </Section>
-        <Section header='3. Meet' video='/about/meet.mp4'>
+        <Section header='3. Meet' video='meet'>
           You’re all set! Manage your meetings and track service hours—all
           through Tutorbook. You can also contact us anytime for additional
           support.
