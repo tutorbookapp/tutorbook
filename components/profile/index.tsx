@@ -19,6 +19,7 @@ import useSocialProps from 'lib/hooks/social-props';
 import useTrack from 'lib/hooks/track';
 import { useUser } from 'lib/context/user';
 
+import Orgs from './orgs';
 import styles from './profile.module.scss';
 
 export default function Profile(): JSX.Element {
@@ -145,6 +146,7 @@ export default function Profile(): JSX.Element {
           },
         ]}
       />
+      <Orgs user={user} setUser={setUser} />
       <div className={styles.wrapper}>
         <div className={styles.card}>
           <div className={styles.inputs}>

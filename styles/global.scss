@@ -1,4 +1,5 @@
 @use 'typography';
+@use 'loader';
 @use 'sizes';
 
 @use '@material/theme';
@@ -90,4 +91,8 @@ button.reset {
   text-align: unset;
   appearance: unset;
   cursor: pointer;
+}
+
+.loading {
+  @include loader.loading();
 }
