@@ -224,5 +224,18 @@ $$
     ) as person group by meeting
   ) as people on meeting = meetings.id
   order by meetings.id;
+
+  create view meeting_instances as
+  select 
+    meetings.*, 
+    (event_instances((meetings.time).from, (meetings.time).recur)) instance_time 
+  from meetings
+  where (meetings.time).recur is not null
+  union
+  select
+    meetings.*,
+    ((meetings.time).from) instance_time
+  from meetings
+  where (meetings.time).recur is null;
 $$
 language sql volatile;
