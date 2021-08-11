@@ -1,5 +1,6 @@
 -- Users with meetings per week (and growth rate and total for time range).
-create function users_with_meetings(org_id text, timezone text)
+drop function if exists users_with_meetings;
+create or replace function users_with_meetings(org_id text, timezone text)
 returns table (week timestamptz, users bigint, growth float, total bigint)
 as $$
   select 
@@ -24,8 +25,9 @@ $$
 language sql stable;
 
 -- Users (and growth rate and total).
+drop function if exists users;
 create or replace function users(org_id text, timezone text)
-returns table (week timestamptz, users bigint, growth float, total bigint)
+returns table (week timestamptz, users bigint, growth float, total bigint, total_growth float)
 as $$
   select *, (total::float / lag(total) over (order by week) - 1) total_growth 
   from (
@@ -53,6 +55,7 @@ language sql stable;
 -- TODO: Support more time range (e.g. day, month, year).
 -- TODO: Start week off on Sundays instead of Mondays (to be consistent with the
 -- calendar and the availability select).
+drop function if exists meetings;
 create or replace function meetings(org_id text, timezone text)
 returns table (week timestamptz, meetings bigint, growth float, total bigint)
 as $$
@@ -77,6 +80,7 @@ $$
 language sql stable;
 
 -- Service hours per week (and growth rate and total for time range).
+drop function if exists service_hours;
 create or replace function service_hours(org_id text, timezone text)
 returns table (week timestamptz, hours float, growth float, total float)
 as $$

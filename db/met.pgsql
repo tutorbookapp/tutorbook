@@ -2,6 +2,7 @@
 -- Function to get all the users that a person has meetings with. Note that
 -- this includes the user itself (e.g. so a user can book a meeting with
 -- themselves; a pretty common use-case when testing the app).
+drop function if exists met;
 create or replace function met(user_id text, user_role text)
 returns table (like view_users)
 as $$
