@@ -1,22 +1,14 @@
 import cn from 'classnames';
-import dynamic from 'next/dynamic';
-import { useMemo } from 'react';
 import useSWR from 'swr';
-import useTranslation from 'next-translate/useTranslation';
 
 import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
 
-import { GraphProps } from 'components/analytics/graph';
-
 import { useOrg } from 'lib/context/org';
 
-import fallback from './fallback';
 import styles from './analytics.module.scss';
 
-const Graph = dynamic<GraphProps>(() => import('components/analytics/graph'));
-
 interface LabelProps {
-  percent: number;
+  percent?: number;
   positive?: boolean;
   negative?: boolean;
 }
@@ -25,23 +17,20 @@ function Label({ percent }: LabelProps): JSX.Element {
   return (
     <span
       className={cn(styles.label, {
-        [styles.positive]: percent > 0,
-        [styles.negative]: percent <= 0,
+        [styles.positive]: percent && percent > 0,
+        [styles.negative]: percent && percent <= 0,
       })}
     >
-      {`${percent > 0 ? '+' : ''}${percent}%`}
+      {percent ? `${percent > 0 ? '+' : ''}${percent.toFixed(2)}%` : undefined}
     </span>
   );
 }
 
 export default function Analytics(): JSX.Element {
   const { org } = useOrg();
-  const { t } = useTranslation();
   const { data } = useSWR<AnalyticsRes>(
     org?.id ? `/api/orgs/${org.id}/analytics` : null
   );
-
-  const nums = useMemo(() => data || fallback, [data]);
 
   // TODO: Ensure that the scale on the chart isn't dependent on the data points
   // being equally spaced out. Instead, it should be relative to the data point
@@ -52,28 +41,42 @@ export default function Analytics(): JSX.Element {
       <dl className={styles.numbers}>
         <div className={styles.number}>
           <dt>
-            Volunteers
-            <Label percent={nums.tutors.change} />
+            Users with meetings per week
+            <Label
+              percent={
+                data?.usersWithMeetings[data.usersWithMeetings.length - 1]
+                  .growth
+              }
+            />
           </dt>
-          <dd>{nums.tutors.total}</dd>
+          <dd>
+            {data?.usersWithMeetings[data.usersWithMeetings.length - 1].users}
+          </dd>
         </div>
         <div className={styles.number}>
           <dt>
-            Students
-            <Label percent={nums.tutees.change} />
+            Total users
+            <Label percent={data?.users[data.users.length - 1].total_growth} />
           </dt>
-          <dd>{nums.tutees.total}</dd>
+          <dd>{data?.users[data.users.length - 1].total}</dd>
         </div>
         <div className={styles.number}>
           <dt>
-            Meetings
-            <Label percent={nums.meetings.change} />
+            Meetings per week
+            <Label percent={data?.meetings[data.meetings.length - 1].growth} />
           </dt>
-          <dd>{nums.meetings.total}</dd>
-          <div>{nums.meetings.recurring} Recurring</div>
+          <dd>{data?.meetings[data.meetings.length - 1].meetings}</dd>
+        </div>
+        <div className={styles.number}>
+          <dt>
+            Service hours per week
+            <Label
+              percent={data?.serviceHours[data.meetings.length - 1].growth}
+            />
+          </dt>
+          <dd>{data?.serviceHours[data.meetings.length - 1].hours}</dd>
         </div>
       </dl>
-      <Graph timeline={nums.timeline} />
     </div>
   );
 }
