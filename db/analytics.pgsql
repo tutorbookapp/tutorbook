@@ -1,13 +1,12 @@
 -- Users with meetings per week (and growth rate and total for time range).
 drop function if exists users_with_meetings;
 create or replace function users_with_meetings(org_id text, timezone text)
-returns table (week timestamptz, users bigint, growth float, total bigint)
+returns table (week timestamptz, users bigint, growth float)
 as $$
   select 
     week, 
     users, 
-    (users::float /  lag(users) over (order by week) - 1) growth,
-    (sum(users) over (order by week)) total
+    (users::float /  lag(users) over (order by week) - 1) growth
   from (
     select 
       date_trunc('week', meeting_instances.instance_time, timezone) as week,
