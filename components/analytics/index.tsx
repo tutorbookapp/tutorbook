@@ -7,7 +7,6 @@ import useTranslation from 'next-translate/useTranslation';
 import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
 
 import { GraphProps } from 'components/analytics/graph';
-import Header from 'components/header';
 
 import { useOrg } from 'lib/context/org';
 
@@ -49,38 +48,32 @@ export default function Analytics(): JSX.Element {
   // `date` value.
   // @see {@link http://recharts.org/en-US/api/XAxis#scale}
   return (
-    <>
-      <Header
-        header={t('common:overview')}
-        body={t('overview:subtitle', { name: org ? `${org.name}'s` : 'your' })}
-      />
-      <div className={styles.wrapper}>
-        <dl className={styles.numbers}>
-          <div className={styles.number}>
-            <dt>
-              Volunteers
-              <Label percent={nums.tutors.change} />
-            </dt>
-            <dd>{nums.tutors.total}</dd>
-          </div>
-          <div className={styles.number}>
-            <dt>
-              Students
-              <Label percent={nums.tutees.change} />
-            </dt>
-            <dd>{nums.tutees.total}</dd>
-          </div>
-          <div className={styles.number}>
-            <dt>
-              Meetings
-              <Label percent={nums.meetings.change} />
-            </dt>
-            <dd>{nums.meetings.total}</dd>
-            <div>{nums.meetings.recurring} Recurring</div>
-          </div>
-        </dl>
-        <Graph timeline={nums.timeline} />
-      </div>
-    </>
+    <div className={styles.wrapper}>
+      <dl className={styles.numbers}>
+        <div className={styles.number}>
+          <dt>
+            Volunteers
+            <Label percent={nums.tutors.change} />
+          </dt>
+          <dd>{nums.tutors.total}</dd>
+        </div>
+        <div className={styles.number}>
+          <dt>
+            Students
+            <Label percent={nums.tutees.change} />
+          </dt>
+          <dd>{nums.tutees.total}</dd>
+        </div>
+        <div className={styles.number}>
+          <dt>
+            Meetings
+            <Label percent={nums.meetings.change} />
+          </dt>
+          <dd>{nums.meetings.total}</dd>
+          <div>{nums.meetings.recurring} Recurring</div>
+        </div>
+      </dl>
+      <Graph timeline={nums.timeline} />
+    </div>
   );
 }
