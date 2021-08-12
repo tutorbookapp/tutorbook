@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import useSWR from 'swr';
 
 import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
@@ -6,6 +6,25 @@ import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
 import { useOrg } from 'lib/context/org';
 
 import Graph from './graph';
+
+interface LinkProps {
+  href: string;
+  children: ReactNode;
+}
+
+function Link({ href, children }: LinkProps): JSX.Element {
+  return (
+    <a href={href} target='_blank' rel='noopener noreferrer'>
+      {children}
+      <style jsx>{`
+        a {
+          color: var(--accents-5);
+          text-decoration: underline;
+        }
+      `}</style>
+    </a>
+  );
+}
 
 export default function Analytics(): JSX.Element {
   const { org } = useOrg();
@@ -46,13 +65,9 @@ export default function Analytics(): JSX.Element {
             <p>
               The number of users who have had a meeting in the last week. This
               is your{' '}
-              <a
-                href='https://thoughtbot.com/blog/north-star-metric'
-                target='_blank'
-                rel='noopener noreferrer'
-              >
+              <Link href='https://thoughtbot.com/blog/north-star-metric'>
                 north star metric
-              </a>
+              </Link>
               ; it measures how much authentic value you are providing to your
               users.
             </p>
@@ -89,13 +104,9 @@ export default function Analytics(): JSX.Element {
               The growth rate of the number of users who have had a meeting in
               the last week. You should focus on growth rates to succeed; a
               growth rate of{' '}
-              <a
-                href='http://www.paulgraham.com/growth.html'
-                target='_blank'
-                rel='noopener noreferrer'
-              >
+              <Link href='http://www.paulgraham.com/growth.html'>
                 5-7% per week
-              </a>{' '}
+              </Link>{' '}
               is good.
             </p>
           </article>
@@ -167,10 +178,6 @@ export default function Analytics(): JSX.Element {
           margin: 0;
           font-size: 14px;
           font-weight: 400;
-          color: var(--accents-5);
-        }
-
-        .header a {
           color: var(--accents-5);
         }
 
