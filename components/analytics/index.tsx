@@ -100,7 +100,7 @@ function Card<T extends Record<string, number> & { week: number }>({
         }
 
         .header p {
-          margin: 0;
+          margin: 8px 0;
           font-size: 14px;
           font-weight: 400;
           color: var(--accents-5);
@@ -111,6 +111,10 @@ function Card<T extends Record<string, number> & { week: number }>({
           // @see {@link https://stackoverflow.com/a/34229584/10023158}
           shape-rendering: crispedges;
           stroke: var(--accents-2);
+        }
+
+        :global(.recharts-active-dot circle) {
+          stroke-width: 0;
         }
 
         :global(.recharts-reference-line-line) {
@@ -201,7 +205,7 @@ export default function Analytics(): JSX.Element {
               north star metric
             </Link>
             ; it measures how much authentic value you are providing to your
-            users.
+            community.
           </Card>
           <Card
             title={
@@ -224,15 +228,21 @@ export default function Analytics(): JSX.Element {
             color='#64B5F6'
           >
             The growth rate of the number of users who have had a meeting in the
-            last week. You should focus on growth rates to succeed; a growth
-            rate of{' '}
+            last week. You should always focus on growth rates instead of totals
+            to succeed; a growth rate of{' '}
             <Link href='http://www.paulgraham.com/growth.html'>
               5-7% per week
             </Link>{' '}
             is good.
           </Card>
           <Card
-            title='Meetings this week'
+            title={
+              <>
+                Meetings
+                <br />
+                this week
+              </>
+            }
             data={meetings}
             header='Meetings'
             content={[
@@ -245,7 +255,15 @@ export default function Analytics(): JSX.Element {
             ]}
             color='#81C784'
           >
-            The number of meetings per week.
+            The number of meetings per week. This is another{' '}
+            <Link href='https://kpi.org/KPI-Basics'>
+              key performance indicator
+            </Link>{' '}
+            that is directly correlated with your{' '}
+            <Link href='https://thoughtbot.com/blog/north-star-metric'>
+              north star metric
+            </Link>
+            : the number of users with meetings per week.
           </Card>
           <Card
             title={
@@ -267,10 +285,18 @@ export default function Analytics(): JSX.Element {
             ]}
             color='#81C784'
           >
-            The growth rate of the number of meetings per week.
+            The growth rate of the number of meetings per week. This graph
+            should look very similar to the growth rate of users with meetings
+            per week; both metrics are directly correlated.
           </Card>
           <Card
-            title='Service hours this week'
+            title={
+              <>
+                Service hours
+                <br />
+                this week
+              </>
+            }
             data={serviceHours}
             header='Service hours'
             content={[
@@ -308,7 +334,13 @@ export default function Analytics(): JSX.Element {
             The growth rate of the number of service hours tracked per week.
           </Card>
           <Card
-            title='New users this week'
+            title={
+              <>
+                New users
+                <br />
+                this week
+              </>
+            }
             data={users}
             header='New users'
             content={[
@@ -321,7 +353,10 @@ export default function Analytics(): JSX.Element {
             ]}
             color='#F06292'
           >
-            The number of users created per week.
+            The number of users created per week. You’ll notice this graph
+            correlates well with the <strong>Total users</strong> graph below
+            it; as the number of new users spikes, the total number of users
+            will spike too.
           </Card>
           <Card
             title={
@@ -343,10 +378,18 @@ export default function Analytics(): JSX.Element {
             ]}
             color='#F06292'
           >
-            The growth rate of the number of new users per week.
+            The growth rate of the number of users created per week. Note that
+            all of these growth rate graphs depict the derivatives of their
+            corresponding weekly metrics; they are graphs of the slopes.
           </Card>
           <Card
-            title='Total users'
+            title={
+              <>
+                Users
+                <br />
+                in all time
+              </>
+            }
             data={users}
             header='Total users'
             content={[
@@ -359,14 +402,20 @@ export default function Analytics(): JSX.Element {
             ]}
             color='#9575CD'
           >
-            The total number of users. Ever.
+            The total number of users. This is a{' '}
+            <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+              vanity metric
+            </Link>
+            ; a number that looks good on paper but isn’t action oriented. Use
+            it for press releases or marketing, but not to measure actual
+            growth.
           </Card>
           <Card
             title={
               <>
                 Weekly growth rate of
                 <br />
-                total users
+                the total number of users
               </>
             }
             data={users}
@@ -381,7 +430,13 @@ export default function Analytics(): JSX.Element {
             ]}
             color='#9575CD'
           >
-            The weekly growth rate of the total number of users. Ever.
+            The weekly growth rate of the total number of users. Again, this is
+            a{' '}
+            <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+              vanity metric
+            </Link>
+            ; this growth rate will <i>always</i> be positive and thus will{' '}
+            <i>never</i> provide meaningful feedback on how growth is doing.
           </Card>
         </div>
       )}
