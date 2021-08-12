@@ -93,19 +93,19 @@ export default function Tooltip({
 
         code {
           font-family: var(--font-mono);
-          background: rgba(0, 0, 0, 0.1);
+          background: var(--accents-2);
           border-radius: 2px;
           padding: 2px 4px;
         }
 
         code.rate {
-          background: rgba(255, 0, 0, 0.1);
-          color: rgb(255, 0, 0);
+          background: #ffdac3;
+          color: #c02f2c;
         }
 
         code.rate.positive {
-          background: rgba(0, 255, 0, 0.1);
-          color: rgb(0, 255, 0);
+          background: #e0ffe6;
+          color: #004c1b;
         }
       `}</style>
     </div>

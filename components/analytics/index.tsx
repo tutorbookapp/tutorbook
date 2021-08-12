@@ -193,7 +193,7 @@ export default function Analytics(): JSX.Element {
                 rate: true,
               },
             ]}
-            color='#8884d8'
+            color='#64B5F6'
           >
             The number of users who have had a meeting in the last week. This is
             your{' '}
@@ -221,7 +221,7 @@ export default function Analytics(): JSX.Element {
               },
               { dataKey: 'users', dataLabel: 'users with meetings' },
             ]}
-            color='#82ca9d'
+            color='#64B5F6'
           >
             The growth rate of the number of users who have had a meeting in the
             last week. You should focus on growth rates to succeed; a growth
@@ -243,7 +243,7 @@ export default function Analytics(): JSX.Element {
                 rate: true,
               },
             ]}
-            color='var(--analytics-tutors)'
+            color='#81C784'
           >
             The number of meetings per week.
           </Card>
@@ -265,7 +265,7 @@ export default function Analytics(): JSX.Element {
               },
               { dataKey: 'meetings', dataLabel: 'meetings per week' },
             ]}
-            color='var(--analytics-tutors)'
+            color='#81C784'
           >
             The growth rate of the number of meetings per week.
           </Card>
@@ -281,7 +281,7 @@ export default function Analytics(): JSX.Element {
                 rate: true,
               },
             ]}
-            color='var(--analytics-tutees)'
+            color='#FF8A65'
           >
             The number of service hours tracked per week.
           </Card>
@@ -303,7 +303,7 @@ export default function Analytics(): JSX.Element {
               },
               { dataKey: 'hours', dataLabel: 'service hours per week' },
             ]}
-            color='var(--analytics-tutees)'
+            color='#FF8A65'
           >
             The growth rate of the number of service hours tracked per week.
           </Card>
@@ -319,7 +319,7 @@ export default function Analytics(): JSX.Element {
                 rate: true,
               },
             ]}
-            color='var(--analytics-tutors)'
+            color='#F06292'
           >
             The number of users created per week.
           </Card>
@@ -341,7 +341,7 @@ export default function Analytics(): JSX.Element {
               },
               { dataKey: 'users', dataLabel: 'new users' },
             ]}
-            color='var(--analytics-tutors)'
+            color='#F06292'
           >
             The growth rate of the number of new users per week.
           </Card>
@@ -357,7 +357,7 @@ export default function Analytics(): JSX.Element {
                 rate: true,
               },
             ]}
-            color='var(--analytics-tutors)'
+            color='#9575CD'
           >
             The total number of users. Ever.
           </Card>
@@ -379,7 +379,7 @@ export default function Analytics(): JSX.Element {
               },
               { dataKey: 'total', dataLabel: 'total users' },
             ]}
-            color='var(--analytics-tutors)'
+            color='#9575CD'
           >
             The weekly growth rate of the total number of users. Ever.
           </Card>

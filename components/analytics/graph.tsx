@@ -46,7 +46,7 @@ export default function Graph<T>({
       >
         <defs>
           <linearGradient
-            id={`${content.map((c) => c.dataKey).join('-')}-color`}
+            id={`${color.replace('#', '')}-color`}
             x1='0'
             y1='0'
             x2='0'
@@ -135,7 +135,7 @@ export default function Graph<T>({
           dataKey={content[0].dataKey}
           stroke={color}
           fillOpacity={1}
-          fill={`url(#${content.map((c) => c.dataKey).join('-')}-color)`}
+          fill={`url(#${color.replace('#', '')}-color)`}
         />
       </AreaChart>
     </TooltipContext.Provider>
