@@ -2,14 +2,15 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  ReferenceLine,
   Tooltip as RechartsTooltip,
+  ReferenceLine,
   XAxis,
   YAxis,
 } from 'recharts';
 import useTranslation from 'next-translate/useTranslation';
 
 import Tooltip, { TooltipContext } from './tooltip';
+import { formatRate } from './utils';
 
 interface LabelProps {
   viewBox: { height: number; width: number; x: number; y: number };
@@ -45,7 +46,7 @@ export default function Graph<T>({
       >
         <defs>
           <linearGradient
-            id={`${content[0].dataKey}-color`}
+            id={`${content.map((c) => c.dataKey).join('-')}-color`}
             x1='0'
             y1='0'
             x2='0'
@@ -118,7 +119,7 @@ export default function Graph<T>({
               textAnchor='end'
             >
               <tspan x={x} dy='4px'>
-                {payload.value}
+                {content[0].rate ? formatRate(payload.value, 0) : payload.value}
               </tspan>
             </text>
           )}
@@ -134,7 +135,7 @@ export default function Graph<T>({
           dataKey={content[0].dataKey}
           stroke={color}
           fillOpacity={1}
-          fill={`url(#${content[0].dataKey}-color)`}
+          fill={`url(#${content.map((c) => c.dataKey).join('-')}-color)`}
         />
       </AreaChart>
     </TooltipContext.Provider>

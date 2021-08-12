@@ -54,7 +54,7 @@ export default async function analyticsAPI(
       const id = verifyQueryId(req.query);
       const { uid } = await verifyAuth(req.headers, { orgIds: [id] });
       // TODO: Get user's timezone from request or their profile.
-      const props = { org_id: id, timezone: 'America/Los_Angeles' };
+      const props = { org_id: id, time_zone: 'America/Los_Angeles' };
       const [
         { data: usersWithMeetings, error: usersWithMeetingsError },
         { data: users, error: usersError },

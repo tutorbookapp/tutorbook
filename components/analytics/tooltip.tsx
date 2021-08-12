@@ -3,6 +3,8 @@ import { TooltipProps as RechartsTooltipProps } from 'recharts';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
+import { formatRate } from './utils';
+
 export interface TooltipProps {
   header: string;
   content: { dataKey: string; dataLabel: string; rate?: boolean }[];
@@ -16,13 +18,12 @@ export const TooltipContext = createContext<TooltipProps>({
 });
 
 export default function Tooltip({
-  label,
   payload,
 }: RechartsTooltipProps<number, string>): JSX.Element {
   const { lang: locale } = useTranslation();
   const { header, content, color } = useContext(TooltipContext);
   if (!payload || !payload[0] || !payload[0].payload) return <></>;
-  const data = payload[0].payload;
+  const data = payload[0].payload as Record<string, number>;
   return (
     <div className='tooltip'>
       <h4>{header}</h4>
@@ -39,9 +40,7 @@ export default function Tooltip({
           {!rate && <code>{data[dataKey]}</code>}
           {rate && (
             <code className={cn('rate', { positive: data[dataKey] > 0 })}>
-              {data[dataKey] > 0
-                ? `+${(data[dataKey] * 100).toFixed(2)}%`
-                : `${(data[dataKey] * 100).toFixed(2)}%`}
+              {formatRate(data[dataKey])}
             </code>
           )}
           {` ${dataLabel}`}
