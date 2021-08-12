@@ -32,7 +32,7 @@ interface CardProps<T> {
   title: ReactNode;
   children: ReactNode;
   header: string;
-  content: { dataKey: keyof T; dataLabel: string; rate?: boolean }[];
+  content: { dataKey: string; dataLabel: string; rate?: boolean }[];
   color: string;
 }
 
