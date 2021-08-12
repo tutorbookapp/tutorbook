@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
-import Overview from 'components/overview';
+import Analytics from 'components/analytics';
+import Header from 'components/header';
 import Page from 'components/page';
 import { TabHeader } from 'components/navigation';
 
@@ -63,7 +64,13 @@ function OverviewPage(props: PageProps): JSX.Element {
             },
           ]}
         />
-        <Overview />
+        <Header
+          header={t('common:overview')}
+          body={t('overview:subtitle', {
+            name: org ? `${org.name}'s` : 'your',
+          })}
+        />
+        <Analytics />
       </Page>
     </OrgContext.Provider>
   );
