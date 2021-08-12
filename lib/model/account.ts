@@ -188,6 +188,10 @@ export class Account extends Resource implements AccountInterface {
       email: this.email,
       phone: this.phone,
       avatar: this.photo,
+      // We have to specify the `$avatar` trait separately for Mixpanel because
+      // Segment doesn't translate it's `avatar` trait to the special Mixpanel
+      // one. This is a limitation of theirs that shouldn't exist.
+      $avatar: this.photo,
       description: this.bio,
       website: this.website,
     };
