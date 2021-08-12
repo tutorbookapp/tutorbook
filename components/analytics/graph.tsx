@@ -77,54 +77,48 @@ export default function Graph<T>({
         axisLine={false}
         tickLine={false}
         tickMargin={4}
-        tick={({ x, y, payload }: TickProps) => {
-          console.log('X:', x);
-          return (
-            <text
-              fontSize='12px'
-              height='30'
-              type='text'
-              x={x}
-              y={y}
-              stroke='none'
-              fill='var(--accents-5)'
-              textAnchor='middle'
-            >
-              <tspan x={x} dy='12px'>
-                {new Date(payload.value).toLocaleString(locale, {
-                  day: 'numeric',
-                  month: 'short',
-                })}
-              </tspan>
-            </text>
-          );
-        }}
+        tick={({ x, y, payload }: TickProps) => (
+          <text
+            fontSize='12px'
+            height='30'
+            type='text'
+            x={x}
+            y={y}
+            stroke='none'
+            fill='var(--accents-5)'
+            textAnchor='middle'
+          >
+            <tspan x={x} dy='12px'>
+              {new Date(payload.value).toLocaleString(locale, {
+                day: 'numeric',
+                month: 'short',
+              })}
+            </tspan>
+          </text>
+        )}
       />
       <YAxis
         dataKey={dataKey as string}
         axisLine={false}
         tickLine={false}
         tickMargin={4}
-        tick={({ x, y, payload }: TickProps) => {
-          console.log('X:', x);
-          return (
-            <text
-              fontSize='12px'
-              height='30'
-              type='number'
-              x={x}
-              y={y}
-              stroke='none'
-              fill='var(--accents-5)'
-              orientation='left'
-              textAnchor='end'
-            >
-              <tspan x={x} dy='4px'>
-                {payload.value}
-              </tspan>
-            </text>
-          );
-        }}
+        tick={({ x, y, payload }: TickProps) => (
+          <text
+            fontSize='12px'
+            height='30'
+            type='number'
+            x={x}
+            y={y}
+            stroke='none'
+            fill='var(--accents-5)'
+            orientation='left'
+            textAnchor='end'
+          >
+            <tspan x={x} dy='4px'>
+              {payload.value}
+            </tspan>
+          </text>
+        )}
       />
       <CartesianGrid strokeDasharray='3 3' />
       <Tooltip
