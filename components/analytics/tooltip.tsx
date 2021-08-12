@@ -1,17 +1,31 @@
-import { TooltipProps } from 'recharts';
+import { createContext, useContext } from 'react';
+import { TooltipProps as RechartsTooltipProps } from 'recharts';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
+
+export interface TooltipProps {
+  header: string;
+  content: { dataKey: string; dataLabel: string; rate?: boolean }[];
+  color: string;
+}
+
+export const TooltipContext = createContext<TooltipProps>({
+  header: '',
+  content: [],
+  color: '',
+});
 
 export default function Tooltip({
   label,
   payload,
-}: TooltipProps<number, string>): JSX.Element {
+}: RechartsTooltipProps<number, string>): JSX.Element {
   const { lang: locale } = useTranslation();
+  const { header, content, color } = useContext(TooltipContext);
   if (!payload || !payload[0] || !payload[0].payload) return <></>;
   const data = payload[0].payload;
   return (
     <div className='tooltip'>
-      <h4>Users with meetings</h4>
+      <h4>{header}</h4>
       <h5>
         {new Date(data.week).toLocaleString(locale, {
           month: 'short',
@@ -20,19 +34,19 @@ export default function Tooltip({
           year: 'numeric',
         })}
       </h5>
-      <p>
-        <code>{data.users}</code> users with meetings
-      </p>
-      {data.growth !== null && (
+      {content.map(({ dataKey, dataLabel, rate }) => (
         <p>
-          <code className={cn('growth', { positive: data.growth > 0 })}>
-            {data.growth > 0
-              ? `+${data.growth.toFixed(2)}%`
-              : `${data.growth.toFixed(2)}%`}
-          </code>{' '}
-          from previous week
+          {!rate && <code>{data[dataKey]}</code>}
+          {rate && (
+            <code className={cn('rate', { positive: data[dataKey] > 0 })}>
+              {data[dataKey] > 0
+                ? `+${(data[dataKey] * 100).toFixed(2)}%`
+                : `${(data[dataKey] * 100).toFixed(2)}%`}
+            </code>
+          )}
+          {` ${dataLabel}`}
         </p>
-      )}
+      ))}
       <style jsx>{`
         .tooltip {
           border: 1px solid var(--accents-2);
@@ -51,7 +65,7 @@ export default function Tooltip({
           bottom: 8px;
           width: 4px;
           border-radius: 2px;
-          background: #82ca9d;
+          background: ${color};
           content: '';
         }
 
@@ -85,12 +99,12 @@ export default function Tooltip({
           padding: 2px 4px;
         }
 
-        code.growth {
+        code.rate {
           background: rgba(255, 0, 0, 0.1);
           color: rgb(255, 0, 0);
         }
 
-        code.growth.positive {
+        code.rate.positive {
           background: rgba(0, 255, 0, 0.1);
           color: rgb(0, 255, 0);
         }

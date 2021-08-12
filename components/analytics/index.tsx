@@ -57,7 +57,19 @@ export default function Analytics(): JSX.Element {
               users.
             </p>
           </article>
-          <Graph data={usersWithMeetings} dataKey='users' color='#8884d8' />
+          <Graph
+            data={usersWithMeetings}
+            header='Users with meetings'
+            content={[
+              { dataKey: 'users', dataLabel: 'users with meetings' },
+              {
+                dataKey: 'growth',
+                dataLabel: 'from previous week',
+                rate: true,
+              },
+            ]}
+            color='#8884d8'
+          />
         </div>
         <div className='graph'>
           <article className='header'>
@@ -87,7 +99,19 @@ export default function Analytics(): JSX.Element {
               is good.
             </p>
           </article>
-          <Graph data={usersWithMeetings} dataKey='growth' color='#82ca9d' />
+          <Graph
+            data={usersWithMeetings}
+            header='Users with meetings'
+            content={[
+              {
+                dataKey: 'growth',
+                dataLabel: 'from previous week',
+                rate: true,
+              },
+              { dataKey: 'users', dataLabel: 'users with meetings' },
+            ]}
+            color='#82ca9d'
+          />
         </div>
       </div>
       <style jsx>{`
