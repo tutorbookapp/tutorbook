@@ -1,127 +1,11 @@
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Tooltip,
-  TooltipProps,
-  YAxis,
-  XAxis,
-  ReferenceLine,
-  ReferenceDot,
-} from 'recharts';
-import cn from 'classnames';
 import { useMemo } from 'react';
 import useSWR from 'swr';
-import useTranslation from 'next-translate/useTranslation';
 
 import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
 
 import { useOrg } from 'lib/context/org';
 
-import Label from './label';
-
-interface TickProps {
-  x: number;
-  y: number;
-  payload: { value: number };
-}
-
-function CustomTooltip({
-  label,
-  payload,
-}: TooltipProps<number, string>): JSX.Element {
-  const { lang: locale } = useTranslation();
-  if (!payload || !payload[0] || !payload[0].payload) return <></>;
-  const data = payload[0].payload;
-  return (
-    <div className='tooltip'>
-      <h4>Users with meetings</h4>
-      <h5>
-        {new Date(data.week).toLocaleString(locale, {
-          month: 'short',
-          weekday: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        })}
-      </h5>
-      <p>
-        <code>{data.users}</code> users with meetings
-      </p>
-      {data.growth !== null && (
-        <p>
-          <code className={cn('growth', { positive: data.growth > 0 })}>
-            {data.growth > 0
-              ? `+${data.growth.toFixed(2)}%`
-              : `${data.growth.toFixed(2)}%`}
-          </code>{' '}
-          from previous week
-        </p>
-      )}
-      <style jsx>{`
-        .tooltip {
-          border: 1px solid var(--accents-2);
-          border-radius: 8px;
-          background: var(--background);
-          box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
-          padding: 8px;
-          padding-left: 18px;
-          position: relative;
-        }
-
-        .tooltip::before {
-          position: absolute;
-          top: 8px;
-          left: 8px;
-          bottom: 8px;
-          width: 4px;
-          border-radius: 2px;
-          background: #82ca9d;
-          content: '';
-        }
-
-        h4 {
-          margin: 0;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        h5 {
-          margin: 4px 0;
-          font-size: 10px;
-          font-weight: 400;
-          color: var(--accents-6);
-        }
-
-        p {
-          margin: 6px 0;
-          font-size: 12px;
-          font-weight: 400;
-        }
-
-        p:last-child {
-          margin-bottom: 2px;
-        }
-
-        code {
-          font-family: var(--font-mono);
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 2px;
-          padding: 2px 4px;
-        }
-
-        code.growth {
-          background: rgba(255, 0, 0, 0.1);
-          color: rgb(255, 0, 0);
-        }
-
-        code.growth.positive {
-          background: rgba(0, 255, 0, 0.1);
-          color: rgb(0, 255, 0);
-        }
-      `}</style>
-    </div>
-  );
-}
+import Graph from './graph';
 
 export default function Analytics(): JSX.Element {
   const { org } = useOrg();
@@ -136,7 +20,6 @@ export default function Analytics(): JSX.Element {
       })),
     [data]
   );
-  const { lang: locale } = useTranslation();
 
   // TODO: Ensure that the scale on the chart isn't dependent on the data points
   // being equally spaced out. Instead, it should be relative to the data point
@@ -174,110 +57,7 @@ export default function Analytics(): JSX.Element {
               users.
             </p>
           </article>
-          <AreaChart
-            width={500 - 12}
-            height={250}
-            data={usersWithMeetings}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
-            <defs>
-              <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='5%' stopColor='#8884d8' stopOpacity={0.8} />
-                <stop offset='95%' stopColor='#8884d8' stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id='colorPv' x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='5%' stopColor='#82ca9d' stopOpacity={0.8} />
-                <stop offset='95%' stopColor='#82ca9d' stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <ReferenceLine
-              x={new Date().valueOf()}
-              stroke='#ea4335'
-              strokeWidth={2}
-              isFront
-              label={({ viewBox }) => (
-                <circle
-                  fill='#ea4335'
-                  stroke='none'
-                  r='6'
-                  cx={viewBox.x}
-                  cy={viewBox.height + viewBox.y + 6 + 1}
-                  fillOpacity='1'
-                />
-              )}
-            />
-            <XAxis
-              dataKey='week'
-              scale='time'
-              type='number'
-              domain={['dataMin', 'dataMax']}
-              interval={10}
-              axisLine={false}
-              tickLine={false}
-              tickMargin={4}
-              tick={({ x, y, payload }: TickProps) => {
-                console.log('X:', x);
-                return (
-                  <text
-                    fontSize='12px'
-                    height='30'
-                    type='text'
-                    x={x}
-                    y={y}
-                    stroke='none'
-                    fill='var(--accents-5)'
-                    textAnchor='middle'
-                  >
-                    <tspan x={x} dy='12px'>
-                      {new Date(payload.value).toLocaleString(locale, {
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                    </tspan>
-                  </text>
-                );
-              }}
-            />
-            <YAxis
-              dataKey='users'
-              axisLine={false}
-              tickLine={false}
-              tickMargin={4}
-              tick={({ x, y, payload }: TickProps) => {
-                console.log('X:', x);
-                return (
-                  <text
-                    fontSize='12px'
-                    height='30'
-                    type='number'
-                    x={x}
-                    y={y}
-                    stroke='none'
-                    fill='var(--accents-5)'
-                    orientation='left'
-                    textAnchor='end'
-                  >
-                    <tspan x={x} dy='4px'>
-                      {payload.value}
-                    </tspan>
-                  </text>
-                );
-              }}
-            />
-            <CartesianGrid strokeDasharray='3 3' />
-            <Tooltip
-              cursor={false}
-              allowEscapeViewBox={{ x: false, y: true }}
-              content={CustomTooltip}
-            />
-            <Area
-              type='monotone'
-              dataKey='users'
-              stroke='#8884d8'
-              fillOpacity={1}
-              fill='url(#colorUv)'
-            />
-          </AreaChart>
+          <Graph data={usersWithMeetings} dataKey='users' color='#8884d8' />
         </div>
         <div className='graph'>
           <article className='header'>
@@ -307,117 +87,14 @@ export default function Analytics(): JSX.Element {
               is good.
             </p>
           </article>
-          <AreaChart
-            width={500 - 12}
-            height={250}
-            data={usersWithMeetings}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
-            <defs>
-              <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='5%' stopColor='#8884d8' stopOpacity={0.8} />
-                <stop offset='95%' stopColor='#8884d8' stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id='colorPv' x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='5%' stopColor='#82ca9d' stopOpacity={0.8} />
-                <stop offset='95%' stopColor='#82ca9d' stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <ReferenceLine
-              x={new Date().valueOf()}
-              stroke='#ea4335'
-              strokeWidth={2}
-              isFront
-              label={({ viewBox }) => (
-                <circle
-                  fill='#ea4335'
-                  stroke='none'
-                  r='6'
-                  cx={viewBox.x}
-                  cy={viewBox.height + viewBox.y + 6 + 1}
-                  fillOpacity='1'
-                />
-              )}
-            />
-            <XAxis
-              dataKey='week'
-              scale='time'
-              type='number'
-              domain={['dataMin', 'dataMax']}
-              interval={10}
-              axisLine={false}
-              tickLine={false}
-              tickMargin={4}
-              tick={({ x, y, payload }: TickProps) => {
-                console.log('X:', x);
-                return (
-                  <text
-                    fontSize='12px'
-                    height='30'
-                    type='text'
-                    x={x}
-                    y={y}
-                    stroke='none'
-                    fill='var(--accents-5)'
-                    textAnchor='middle'
-                  >
-                    <tspan x={x} dy='12px'>
-                      {new Date(payload.value).toLocaleString(locale, {
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                    </tspan>
-                  </text>
-                );
-              }}
-            />
-            <YAxis
-              dataKey='growth'
-              axisLine={false}
-              tickLine={false}
-              tickMargin={4}
-              tick={({ x, y, payload }: TickProps) => {
-                console.log('X:', x);
-                return (
-                  <text
-                    fontSize='12px'
-                    height='30'
-                    type='number'
-                    x={x}
-                    y={y}
-                    stroke='none'
-                    fill='var(--accents-5)'
-                    orientation='left'
-                    textAnchor='end'
-                  >
-                    <tspan x={x} dy='4px'>
-                      {payload.value}
-                    </tspan>
-                  </text>
-                );
-              }}
-            />
-            <CartesianGrid strokeDasharray='3 3' />
-            <Tooltip
-              cursor={false}
-              allowEscapeViewBox={{ x: false, y: true }}
-              content={CustomTooltip}
-            />
-            <Area
-              type='monotone'
-              dataKey='growth'
-              stroke='#82ca9d'
-              fillOpacity={1}
-              fill='url(#colorPv)'
-            />
-          </AreaChart>
+          <Graph data={usersWithMeetings} dataKey='growth' color='#82ca9d' />
         </div>
       </div>
       <style jsx>{`
         main {
           max-width: var(--page-width-with-margin);
-          margin: 48px auto;
-          padding: 0 24px;
+          padding: 48px 24px;
+          margin: 0 auto;
         }
 
         .graphs {
