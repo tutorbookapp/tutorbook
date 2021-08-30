@@ -30,6 +30,9 @@ export default function Footer({ formWidth, orgs }: FooterProps): JSX.Element {
           <Link href='https://github.com/tutorbookapp/tutorbook/issues/new/choose'>
             {t('common:footer-issue')}
           </Link>
+          <Link href='https://help.tutorbook.org'>
+            {t('common:footer-help')}
+          </Link>
         </Group>
         <Group label={t('common:footer-orgs')}>
           {(orgs || []).map((org) => (
