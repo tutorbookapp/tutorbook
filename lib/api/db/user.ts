@@ -27,20 +27,20 @@ async function times(user: User): Promise<number[]> {
 }
 
 export async function createUser(user: User): Promise<User> {
-  logger.verbose(`Inserting user (${user.toString()}) row...`);
+  logger.debug(`Inserting user (${user.toString()}) row...`);
   const { data, error } = await supabase
     .from<DBUser>('users')
     .insert({ ...user.toDB(), times: await times(user) });
   handle('creating', 'user', user, error);
   const u = data ? User.fromDB(data[0]) : user;
   const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
-  logger.verbose(`Inserting user parent (${JSON.stringify(parents)}) rows...`);
+  logger.debug(`Inserting user parent (${JSON.stringify(parents)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationParent>('relation_parents')
     .insert(parents);
   handle('creating', 'user parents', parents, err);
   const orgs = user.orgs.map((o) => ({ org: o, user: u.id }));
-  logger.verbose(`Inserting user org (${JSON.stringify(orgs)}) rows...`);
+  logger.debug(`Inserting user org (${JSON.stringify(orgs)}) rows...`);
   const { error: e } = await supabase
     .from<DBRelationOrg>('relation_orgs')
     .insert(orgs);
@@ -49,7 +49,7 @@ export async function createUser(user: User): Promise<User> {
 }
 
 export async function updateUser(user: User): Promise<User> {
-  logger.verbose(`Updating user (${user.toString()}) row...`);
+  logger.debug(`Updating user (${user.toString()}) row...`);
   const { data, error } = await supabase
     .from<DBUser>('users')
     .update({ ...user.toDB(), times: await times(user) })
@@ -57,13 +57,13 @@ export async function updateUser(user: User): Promise<User> {
   handle('updating', 'user', user, error);
   const u = data ? User.fromDB(data[0]) : user;
   const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
-  logger.verbose(`Upserting user parent (${JSON.stringify(parents)}) rows...`);
+  logger.debug(`Upserting user parent (${JSON.stringify(parents)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationParent>('relation_parents')
     .upsert(parents, { onConflict: 'user,parent' });
   handle('updating', 'user parents', parents, err);
   const orgs = user.orgs.map((o) => ({ org: o, user: u.id }));
-  logger.verbose(`Upserting user org (${JSON.stringify(orgs)}) rows...`);
+  logger.debug(`Upserting user org (${JSON.stringify(orgs)}) rows...`);
   const { error: e } = await supabase
     .from<DBRelationOrg>('relation_orgs')
     .upsert(orgs, { onConflict: 'user,org' });

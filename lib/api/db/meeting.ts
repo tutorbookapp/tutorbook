@@ -15,7 +15,7 @@ import numid from 'lib/utils/numid';
 import supabase from 'lib/api/supabase';
 
 export async function createMeeting(meeting: Meeting): Promise<Meeting> {
-  logger.verbose(`Inserting meeting (${meeting.toString()}) row...`);
+  logger.debug(`Inserting meeting (${meeting.toString()}) row...`);
   const { data, error } = await supabase
     .from<DBMeeting>('meetings')
     .insert({ ...meeting.toDB(), id: undefined });
@@ -26,7 +26,7 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
     roles: p.roles,
     meeting: m.id,
   }));
-  logger.verbose(`Inserting people (${JSON.stringify(people)}) rows...`);
+  logger.debug(`Inserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationPerson>('relation_people')
     .insert(people);
@@ -35,7 +35,7 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
 }
 
 export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
-  logger.verbose(`Updating meeting (${meeting.toString()}) row...`);
+  logger.debug(`Updating meeting (${meeting.toString()}) row...`);
   const { data, error } = await supabase
     .from<DBMeeting>('meetings')
     .update({ ...meeting.toDB(), id: undefined })
@@ -47,7 +47,7 @@ export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
     roles: p.roles,
     meeting: m.id,
   }));
-  logger.verbose(`Upserting people (${JSON.stringify(people)}) rows...`);
+  logger.debug(`Upserting people (${JSON.stringify(people)}) rows...`);
   const { error: err } = await supabase
     .from<DBRelationPerson>('relation_people')
     .upsert(people, { onConflict: 'user,meeting,roles' });
