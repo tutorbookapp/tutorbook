@@ -141,7 +141,7 @@
     "firebase-admin": "^9.6.0",
     "firebase-functions": "^3.13.0",
     "nanoid": "^3.1.12",
-    "next": "^10.1.2",
+    "next": "^11.1.1",
     "next-google-fonts": "^2.1.0",
     "next-translate": "^0.17.1",
     "nprogress": "^0.2.0",
