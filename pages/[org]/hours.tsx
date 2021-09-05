@@ -2,9 +2,10 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
+import Header from 'components/header';
 import Page from 'components/page';
+import Placeholder from 'components/placeholder';
 import { TabHeader } from 'components/navigation';
-import Users from 'components/users';
 
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
 import { OrgContext } from 'lib/context/org';
@@ -13,61 +14,71 @@ import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
-import query from 'locales/en/query.json';
-import user from 'locales/en/user.json';
-import users from 'locales/en/users.json';
-import request from 'locales/en/request.json';
-import search from 'locales/en/search.json';
+import meeting from 'locales/en/meeting.json';
 
-function UsersPage(props: PageProps): JSX.Element {
+function OrgHoursPage(props: PageProps): JSX.Element {
   const { orgs } = useUser();
-  const { query: params } = useRouter();
+  const { query } = useRouter();
   const { t } = useTranslation();
 
   const org = useMemo(() => {
-    const idx = orgs.findIndex((o) => o.id === params.org);
+    const idx = orgs.findIndex((o) => o.id === query.org);
     if (idx < 0) return;
     return orgs[idx];
-  }, [orgs, params.org]);
+  }, [orgs, query.org]);
 
   usePage({
-    name: 'Org Users',
-    url: `/${params.org as string}/users`,
-    org: params.org as string,
+    name: 'Org Hours',
+    url: `/${query.org as string}/hours`,
+    org: query.org as string,
     login: true,
     admin: true,
   });
 
   return (
     <OrgContext.Provider value={{ org }}>
-      <Page title={`${org?.name || 'Loading'} - Users - Tutorbook`} {...props}>
+      <Page title={`${org?.name || 'Loading'} - Hours - Tutorbook`} {...props}>
         <TabHeader
           switcher
           tabs={[
             {
               label: t('common:overview'),
-              href: `/${params.org as string}/overview`,
+              href: `/${query.org as string}/overview`,
+            },
+            {
+              label: t('common:users'),
+              href: `/${query.org as string}/users`,
             },
             {
               active: true,
-              label: t('common:users'),
-              href: `/${params.org as string}/users`,
-            },
-            {
               label: t('common:hours'),
               href: `/${query.org as string}/hours`,
             },
             {
               label: t('common:calendar'),
-              href: `/${params.org as string}/calendar`,
+              href: `/${query.org as string}/calendar`,
             },
             {
               label: t('common:settings'),
-              href: `/${params.org as string}/settings`,
+              href: `/${query.org as string}/settings`,
             },
           ]}
         />
-        <Users />
+        <Header
+          header='Hours'
+          body={`View ${org ? `${org.name}'s` : 'your'} service hours`}
+        />
+        <div className='wrapper'>
+          <Placeholder>COMING SOON</Placeholder>
+        </div>
+        <style jsx>{`
+          .wrapper {
+            max-width: var(--page-width-with-margin);
+            padding: 0 24px;
+            margin: 48px auto;
+            list-style: none;
+          }
+        `}</style>
       </Page>
     </OrgContext.Provider>
   );
@@ -76,11 +87,4 @@ function UsersPage(props: PageProps): JSX.Element {
 export const getStaticProps = getPageProps;
 export const getStaticPaths = getPagePaths;
 
-export default withI18n(UsersPage, {
-  common,
-  users,
-  search,
-  query,
-  user,
-  request,
-});
+export default withI18n(OrgHoursPage, { common, meeting });
