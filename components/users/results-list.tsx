@@ -26,7 +26,7 @@ export interface ResultsListProps {
   open: boolean;
 }
 
-export default memo(function ResultsList({
+function ResultsList({
   query,
   searching,
   setSearching,
@@ -53,14 +53,16 @@ export default memo(function ResultsList({
     setSearching((prev) => prev && (isValidating || !data));
   }, [isValidating, data]);
 
-  const loadingRows: JSX.Element[] = useMemo(() => {
-    // TODO: When we know there are only 3 results (i.e. results 111-113 of 113)
-    // only show 3 loading rows. We'll have to include some pagination parsing
-    // logic here (using `prevHits` and `query.page`).
-    return Array(query.hitsPerPage)
-      .fill(null)
-      .map(() => <Result className={styles.item} loading key={uuid()} />);
-  }, [query.hitsPerPage]);
+  const loadingRows: JSX.Element[] = useMemo(
+    () =>
+      // TODO: When we know there are only 3 results (i.e. results 111-113 of 113)
+      // only show 3 loading rows. We'll have to include some pagination parsing
+      // logic here (using `prevHits` and `query.page`).
+      Array(query.hitsPerPage)
+        .fill(null)
+        .map(() => <Result className={styles.item} loading key={uuid()} />),
+    [query.hitsPerPage]
+  );
   const props = useSpring({ config, marginLeft: open ? width : 0 });
 
   return (
@@ -83,4 +85,6 @@ export default memo(function ResultsList({
       {searching && loadingRows}
     </animated.div>
   );
-});
+}
+
+export default memo(ResultsList);

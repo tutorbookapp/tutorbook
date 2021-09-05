@@ -54,9 +54,10 @@ export function useError(action: string): ErrorProps {
   const [error, setError] = useState<AxiosError<APIErrorJSON>>();
 
   const { t } = useTranslation();
-  const message = useMemo(() => {
-    return error ? getErrorMessage(error, action, t) : '';
-  }, [error, action, t]);
+  const message = useMemo(
+    () => (error ? getErrorMessage(error, action, t) : ''),
+    [error, action, t]
+  );
 
   return { error: message, setError };
 }

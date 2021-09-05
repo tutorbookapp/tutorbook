@@ -88,8 +88,9 @@ export const getStaticProps: GetStaticProps<
 // TODO: We want to statically generate skeleton loading pages for each org.
 // @see {@link https://github.com/vercel/next.js/issues/14200}
 // @see {@link https://github.com/vercel/next.js/discussions/14486}
-export const getStaticPaths: GetStaticPaths<UserEditPageQuery> = async () => {
-  return { paths: [], fallback: true };
-};
+export const getStaticPaths: GetStaticPaths<UserEditPageQuery> = async () => ({
+  paths: [],
+  fallback: true,
+});
 
 export default withI18n(UserEditPage, { common, user });

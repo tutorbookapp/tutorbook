@@ -34,11 +34,13 @@ export default function Search({
   const { t } = useTranslation();
   const formRef = useRef<HTMLDivElement | null>();
 
-  const loadingResults = useMemo(() => {
-    return Array(query.hitsPerPage)
-      .fill(null)
-      .map(() => <Result loading key={nanoid()} />);
-  }, [query.hitsPerPage]);
+  const loadingResults = useMemo(
+    () =>
+      Array(query.hitsPerPage)
+        .fill(null)
+        .map(() => <Result loading key={nanoid()} />),
+    [query.hitsPerPage]
+  );
 
   useEffect(() => {
     const listener = () => {
