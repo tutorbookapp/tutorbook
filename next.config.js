@@ -2,7 +2,6 @@ const path = require('path');
 const { locales } = require('./lib/intl/config.json');
 
 module.exports = {
-  future: { webpack5: true },
   reactStrictMode: true,
   sassOptions: {
     includePaths: [
