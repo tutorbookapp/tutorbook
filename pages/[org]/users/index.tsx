@@ -54,10 +54,6 @@ function UsersPage(props: PageProps): JSX.Element {
               href: `/${params.org as string}/users`,
             },
             {
-              label: t('common:hours'),
-              href: `/${query.org as string}/hours`,
-            },
-            {
               label: t('common:calendar'),
               href: `/${params.org as string}/calendar`,
             },
