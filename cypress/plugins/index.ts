@@ -12,7 +12,6 @@ import dotenv from 'dotenv';
 
 import codecov from '@cypress/code-coverage/task';
 import firebase from 'firebase-admin';
-import { percyHealthCheck } from '@percy/cypress/task';
 
 import {
   DBMatch,
@@ -99,7 +98,6 @@ export default function plugins(
 ): Cypress.ConfigOptions {
   codecov(on, config);
   on('task', {
-    percyHealthCheck,
     async clear(): Promise<null> {
       await supabase.rpc('clear');
       return null;
