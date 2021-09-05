@@ -17,9 +17,9 @@
     "seed": "node scripts/seed.js",
     "clean": "node scripts/clean.js",
     "build": "next build",
-    "build:analyze": "cross-env ANALYZE=true next build",
     "build:functions": "cd firebase/functions && tsc",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "analyze": "cross-env ANALYZE=true next build",
+    "lint": "next lint",
     "style": "pretty-quick --staged"
   },
   "workspaces": [
