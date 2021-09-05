@@ -22,7 +22,7 @@
     "lint": "next lint",
     "style": "pretty-quick --staged",
     "db": "psql -h 0.0.0.0 -U postgres -W",
-    "db:setup": "yarn db -f db/reset.pgsql -f db/rrule.pgsql -f db/setup.pgsql -f db/hours.pgsql -f db/analytics.pgsql"
+    "db:setup": "yarn db -f db/reset.pgsql -f db/rrule.pgsql -f db/setup.pgsql -f db/hours.pgsql -f db/analytics.pgsql -f db/org.pgsql"
   },
   "workspaces": [
     "firebase/functions"
