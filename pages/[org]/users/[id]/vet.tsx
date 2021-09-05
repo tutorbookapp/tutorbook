@@ -26,14 +26,14 @@ interface UserVetPageProps extends PageProps {
 }
 
 function UserVetPage({
-  user: initialData,
+  user: fallbackData,
   org,
   ...props
 }: UserVetPageProps): JSX.Element {
   const { query } = useRouter();
   const { data } = useSWR<UserJSON>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { fallbackData, revalidateOnMount: true }
   );
 
   usePage({

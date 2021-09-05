@@ -23,11 +23,11 @@ interface HomePageProps extends PageProps {
   org?: OrgJSON;
 }
 
-function HomePage({ org: initialData, ...props }: HomePageProps): JSX.Element {
+function HomePage({ org: fallbackData, ...props }: HomePageProps): JSX.Element {
   const { query } = useRouter();
   const { data: org } = useSWR(
     typeof query.org === 'string' ? `/api/orgs/${query.org}` : null,
-    { initialData, revalidateOnMount: true }
+    { fallbackData, revalidateOnMount: true }
   );
 
   usePage({ name: 'Org Home', org: org?.id });
@@ -52,16 +52,14 @@ interface HomePageQuery extends ParsedUrlQuery {
   org: string;
 }
 
-export const getStaticProps: GetStaticProps<
-  HomePageProps,
-  HomePageQuery
-> = async (ctx: GetStaticPropsContext<HomePageQuery>) => {
-  if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
-  const [error, org] = await to(getOrg(ctx.params.org));
-  if (error || !org) return { notFound: true };
-  const { props } = await getPageProps();
-  return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
-};
+export const getStaticProps: GetStaticProps<HomePageProps, HomePageQuery> =
+  async (ctx: GetStaticPropsContext<HomePageQuery>) => {
+    if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
+    const [error, org] = await to(getOrg(ctx.params.org));
+    if (error || !org) return { notFound: true };
+    const { props } = await getPageProps();
+    return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
+  };
 
 export const getStaticPaths: GetStaticPaths<HomePageQuery> = async () => {
   const paths = (await getOrgs()).map((org) => ({ params: { org: org.id } }));

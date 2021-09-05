@@ -37,7 +37,7 @@ interface UserDisplayPageProps extends PageProps {
 
 function UserDisplayPage({
   org,
-  user: initialData,
+  user: fallbackData,
   langs: initialLangs,
   subjects: initialSubjects,
   ...props
@@ -50,7 +50,7 @@ function UserDisplayPage({
   // @see {@link https://github.com/vercel/next.js/issues/19492}
   const { data } = useSWR<UserJSON>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { fallbackData, revalidateOnMount: true }
   );
   const [langs, setLangs] = useState<string[]>(initialLangs || []);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects || []);

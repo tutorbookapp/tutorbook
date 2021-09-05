@@ -26,14 +26,14 @@ interface UserEditPageProps extends PageProps {
 }
 
 function UserEditPage({
-  user: initialData,
+  user: fallbackData,
   org,
   ...props
 }: UserEditPageProps): JSX.Element {
   const { query } = useRouter();
   const { data } = useSWR<UserJSON>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { fallbackData, revalidateOnMount: true }
   );
 
   usePage({

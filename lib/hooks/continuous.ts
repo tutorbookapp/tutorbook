@@ -31,11 +31,11 @@ interface ContinuousProps<T> {
  * we just fetched from our back-end API).
  */
 export default function useContinuous<T>(
-  initialData: T,
+  fallbackData: T,
   updateRemote: (data: T) => Promise<T | void>,
   updateLocal?: (data: T, hasBeenUpdated?: boolean) => Promise<void> | void
 ): ContinuousProps<T> {
-  const [data, setData] = useState<T>(initialData);
+  const [data, setData] = useState<T>(fallbackData);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -43,7 +43,7 @@ export default function useContinuous<T>(
 
   // The given changes are always initially saved; we don't want to show an
   // unnecessary "Saved changes" snackbar when the user first opens a page.
-  const lastReceivedResponse = useRef<T>(initialData);
+  const lastReceivedResponse = useRef<T>(fallbackData);
 
   // Don't mutate data with server response if local data has changed since we
   // sent the POST or PUT API request.
@@ -99,7 +99,7 @@ export default function useContinuous<T>(
 
   useEffect(() => {
     // Don't update remote data for unidentified resource.
-    if (((data as unknown) as { id: string })?.id === '') return;
+    if ((data as unknown as { id: string })?.id === '') return;
     // Don't update remote with the response the remote sent us.
     if (dequal(lastReceivedResponse.current, data)) return;
     // Immediately show loading state (if there isn't an error).
@@ -123,7 +123,7 @@ export default function useContinuous<T>(
   useEffect(() => {
     if (!updateLocal) return;
     // Don't update local data for unidentified resource.
-    if (((data as unknown) as { id: string })?.id === '') return;
+    if ((data as unknown as { id: string })?.id === '') return;
     // Throttle local updates (one sec) to prevent unecessary large re-renders.
     const timeoutId = setTimeout(() => {
       void updateLocal(data, dequal(lastReceivedResponse.current, data));
@@ -135,11 +135,11 @@ export default function useContinuous<T>(
     // Initial data takes precedence over local component-scoped data (e.g. when
     // editing a profile that can be updated from multiple locations).
     setData((prev: T) => {
-      if (dequal(prev, initialData)) return prev;
-      lastReceivedResponse.current = initialData;
-      return initialData;
+      if (dequal(prev, fallbackData)) return prev;
+      lastReceivedResponse.current = fallbackData;
+      return fallbackData;
     });
-  }, [initialData]);
+  }, [fallbackData]);
 
   const retry = useCallback(() => {
     const requestId = nanoid();

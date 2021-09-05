@@ -37,7 +37,7 @@ export interface VerificationsTableProps {
 }
 
 export default function VerificationsTable({
-  user: initialData,
+  user: fallbackData,
 }: VerificationsTableProps): JSX.Element {
   const { t } = useTranslation();
   const { orgs, user: currentUser } = useUser();
@@ -59,7 +59,7 @@ export default function VerificationsTable({
     error,
     retry,
     timeout,
-  } = useContinuous(initialData, updateRemote, updateLocal);
+  } = useContinuous(fallbackData, updateRemote, updateLocal);
 
   const org = useMemo(() => {
     const idx = orgs.findIndex((o) => user.orgs.includes(o.id));
@@ -99,9 +99,10 @@ export default function VerificationsTable({
     [currentUser.id, org, setUser]
   );
 
-  const someChecked = useMemo(() => user.verifications.length > 0, [
-    user.verifications,
-  ]);
+  const someChecked = useMemo(
+    () => user.verifications.length > 0,
+    [user.verifications]
+  );
   const allChecked = useMemo(
     () =>
       checks.every((c) => user.verifications.some((v) => v.checks.includes(c))),

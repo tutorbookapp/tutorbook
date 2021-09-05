@@ -40,7 +40,7 @@ export default function Settings({
     return Org.fromJSON(data);
   }, []);
 
-  const initialData = useMemo(
+  const fallbackData = useMemo(
     () => orgs.find((o) => o.id === orgId) || new Org(),
     [orgId, orgs]
   );
@@ -52,7 +52,7 @@ export default function Settings({
     error,
     retry,
     timeout,
-  } = useContinuous(initialData, updateRemote, updateLocal);
+  } = useContinuous(fallbackData, updateRemote, updateLocal);
 
   const settingsContextValue = useMemo(() => ({ org, setOrg }), [org, setOrg]);
 

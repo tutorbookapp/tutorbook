@@ -28,7 +28,7 @@ export interface UserEditProps {
 }
 
 export default function UserEdit({
-  user: initialData,
+  user: fallbackData,
 }: UserEditProps): JSX.Element {
   const updateLocal = useCallback(async (updated: User) => {
     await mutate(`/api/users/${updated.id}`, updated.toJSON(), false);
@@ -44,7 +44,7 @@ export default function UserEdit({
     return User.fromJSON(data);
   }, []);
 
-  // TODO: Prevent revalidations of `initialData` when local data has been
+  // TODO: Prevent revalidations of `fallbackData` when local data has been
   // updated (i.e. when switching between tabs to copy-and-paste data).
 
   const {
@@ -55,7 +55,7 @@ export default function UserEdit({
     error,
     retry,
     timeout,
-  } = useContinuous(initialData || empty, updateRemote, updateLocal);
+  } = useContinuous(fallbackData || empty, updateRemote, updateLocal);
 
   const router = useRouter();
   const getSocialProps = useSocialProps(
@@ -158,7 +158,7 @@ export default function UserEdit({
       <div className={styles.wrapper}>
         <Result
           user={user}
-          loading={!initialData}
+          loading={!fallbackData}
           className={styles.display}
           onClick={() => router.push(`/${org?.id}/users/${user.id}`)}
         />
