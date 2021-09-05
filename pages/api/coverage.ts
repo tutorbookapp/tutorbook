@@ -1,14 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-declare global {
-  /* eslint-disable-next-line @typescript-eslint/no-namespace */
-  namespace NodeJS {
-    interface Global {
-      __coverage__: unknown;
-    }
-  }
-}
-
 /**
  * GET - Fetches the server-side code coverage.
  *
@@ -28,8 +19,8 @@ export default function coverage(
 ): void {
   switch (req.method) {
     case 'GET': // Only GET is supported.
-      /* eslint-disable-next-line no-underscore-dangle */
-      res.status(200).json({ coverage: global.__coverage__ || null });
+      /* eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+      res.status(200).json({ coverage: (global as any).__coverage__ || null });
       break;
     default:
       res.setHeader('Allow', ['GET']);

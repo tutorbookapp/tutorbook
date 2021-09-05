@@ -50,7 +50,7 @@ export interface SingleOptions {
  * remote is properly updated?
  */
 export default function useSingle<T>(
-  initialData: T,
+  fallbackData: T,
   updateRemote: (data: T) => Promise<T | void>,
   updateLocal?: (
     data: T,
@@ -59,7 +59,7 @@ export default function useSingle<T>(
   ) => Promise<void> | void,
   options?: SingleOptions
 ): SingleProps<T> {
-  const [data, setData] = useState<T>(initialData);
+  const [data, setData] = useState<T>(fallbackData);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -67,7 +67,7 @@ export default function useSingle<T>(
 
   // The given changes are always initially saved; we don't want to show an
   // unnecessary "Saved changes" snackbar when the user first opens a page.
-  const lastReceivedResponse = useRef<T>(initialData);
+  const lastReceivedResponse = useRef<T>(fallbackData);
 
   const onSubmit = useCallback(
     async (evt?: FormEvent) => {
@@ -111,11 +111,11 @@ export default function useSingle<T>(
     // Initial data takes precedence over local component-scoped data (e.g. when
     // editing a profile that can be updated from multiple locations).
     setData((prev: T) => {
-      if (dequal(prev, initialData)) return prev;
-      lastReceivedResponse.current = initialData;
-      return initialData;
+      if (dequal(prev, fallbackData)) return prev;
+      lastReceivedResponse.current = fallbackData;
+      return fallbackData;
     });
-  }, [initialData]);
+  }, [fallbackData]);
 
   useEffect(() => {
     if (!options?.sync || !updateLocal) return;

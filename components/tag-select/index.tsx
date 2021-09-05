@@ -27,8 +27,8 @@ export default function TagSelect<
   // be UserTag (and cannot be a MeetingTag) and vice versa.
   const selectOptions = useMemo(
     () => [
-      ...((options as unknown) as HitTag[]),
-      ...options.map((o) => `not-${o}` as HitTag),
+      ...(options as unknown as HitTag[]),
+      ...options.map((o) => `not-${o}` as unknown as HitTag),
     ],
     [options]
   );

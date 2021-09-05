@@ -1,15 +1,15 @@
 import {
   Config,
   decode,
-  encode,
-  decodeDate,
-  encodeDate,
   decodeArray,
-  encodeArray,
-  decodeString,
-  encodeString,
+  decodeDate,
   decodeNumber,
+  decodeString,
+  encode,
+  encodeArray,
+  encodeDate,
   encodeNumber,
+  encodeString,
 } from 'lib/model/query/params';
 import { Query, QueryInterface } from 'lib/model/query/base';
 import { DBMeetingTag } from 'lib/model/meeting';

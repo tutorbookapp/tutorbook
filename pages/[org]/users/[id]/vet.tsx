@@ -26,14 +26,14 @@ interface UserVetPageProps extends PageProps {
 }
 
 function UserVetPage({
-  user: initialData,
+  user: fallbackData,
   org,
   ...props
 }: UserVetPageProps): JSX.Element {
   const { query } = useRouter();
   const { data } = useSWR<UserJSON>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
-    { initialData, revalidateOnMount: true }
+    { fallbackData, revalidateOnMount: true }
   );
 
   usePage({
@@ -88,8 +88,9 @@ export const getStaticProps: GetStaticProps<
 // TODO: We want to statically generate skeleton loading pages for each org.
 // @see {@link https://github.com/vercel/next.js/issues/14200}
 // @see {@link https://github.com/vercel/next.js/discussions/14486}
-export const getStaticPaths: GetStaticPaths<UserVetPageQuery> = async () => {
-  return { paths: [], fallback: true };
-};
+export const getStaticPaths: GetStaticPaths<UserVetPageQuery> = async () => ({
+  paths: [],
+  fallback: true,
+});
 
 export default withI18n(UserVetPage, { common, user });

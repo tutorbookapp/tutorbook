@@ -1,17 +1,17 @@
 import {
   Config,
   decode,
-  encode,
-  decodeBoolean,
-  encodeBoolean,
-  decodeAvailability,
-  encodeAvailability,
   decodeArray,
-  encodeArray,
-  decodeString,
-  encodeString,
+  decodeAvailability,
+  decodeBoolean,
   decodeNumber,
+  decodeString,
+  encode,
+  encodeArray,
+  encodeAvailability,
+  encodeBoolean,
   encodeNumber,
+  encodeString,
 } from 'lib/model/query/params';
 import { DBUserTag, Role } from 'lib/model/user';
 import { Query, QueryInterface } from 'lib/model/query/base';

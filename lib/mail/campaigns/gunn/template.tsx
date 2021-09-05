@@ -30,7 +30,7 @@ export default function GunnTemplate({ name }: GunnTemplateProps): JSX.Element {
         <P>Or copy and paste this URL into a new tab of your browser:</P>
         <P style={{ marginBottom: '0px !important' }}>
           <Link href='https://tutorbook.org/profile'>
-            {'https://tutorbook.org/profile'}
+            https://tutorbook.org/profile
           </Link>
         </P>
         <br />

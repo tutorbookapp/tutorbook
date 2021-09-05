@@ -26,9 +26,10 @@ async function importNamespaces(
     )
   );
 
-  return namespacesToFetch.reduce((obj: Namespaces, ns, idx) => {
-    return { ...obj, [ns]: pageNamespaces[idx] };
-  }, {});
+  return namespacesToFetch.reduce(
+    (obj: Namespaces, ns, idx) => ({ ...obj, [ns]: pageNamespaces[idx] }),
+    {}
+  );
 }
 
 /**

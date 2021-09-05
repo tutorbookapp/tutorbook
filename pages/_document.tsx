@@ -1,4 +1,4 @@
-import NextDocument, { Html, Head, Main, NextScript } from 'next/document';
+import NextDocument, { Head, Html, Main, NextScript } from 'next/document';
 
 // Prevent FOUC on Firefox due to an age-old script processing bug.
 // @see {@link https://nextjs.org/docs/advanced-features/custom-document}

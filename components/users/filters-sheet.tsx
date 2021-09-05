@@ -7,7 +7,7 @@ import LangSelect from 'components/lang-select';
 import SubjectSelect from 'components/subject-select';
 import TagSelect from 'components/tag-select';
 
-import { USER_TAGS, DBUserTag } from 'lib/model/user';
+import { DBUserTag, USER_TAGS } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { Callback } from 'lib/model/callback';
 import { UsersQuery } from 'lib/model/query/users';

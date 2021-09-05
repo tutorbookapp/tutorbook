@@ -3,8 +3,9 @@ import { Snackbar } from '@rmwc/snackbar';
 import useTranslation from 'next-translate/useTranslation';
 import to from 'await-to-js';
 
-import Intercom from 'lib/intercom';
 import TitleHeader from 'components/header';
+
+import Intercom from 'lib/intercom';
 
 export interface HeaderProps {
   orgId: string;
@@ -39,10 +40,7 @@ async function copyTextToClipboard(text: string): Promise<void> {
   if (err) return fallbackCopyTextToClipboard(text);
 }
 
-export default memo(function Header({
-  orgId,
-  orgName,
-}: HeaderProps): JSX.Element {
+function Header({ orgId, orgName }: HeaderProps): JSX.Element {
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const hideSnackbar = useCallback(() => setSnackbar(false), []);
   const copySignupLink = useCallback(async () => {
@@ -59,9 +57,10 @@ export default memo(function Header({
   }, [orgId]);
 
   const { t } = useTranslation();
-  const importData = useCallback(() => {
-    return Intercom('showNewMessage', t('users:import-data-msg'));
-  }, [t]);
+  const importData = useCallback(
+    () => Intercom('showNewMessage', t('users:import-data-msg')),
+    [t]
+  );
 
   // TODO: Once the types are updated, restore the snackbar's SVG dismiss icon.
   // @see {@link https://github.com/jamesmfriedman/rmwc/pull/727}
@@ -96,4 +95,6 @@ export default memo(function Header({
       />
     </>
   );
-});
+}
+
+export default memo(Header);

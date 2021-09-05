@@ -1,8 +1,8 @@
 import {
   Button,
-  Header,
   Email,
   Footer,
+  Header,
   Item,
   Link,
   P,
