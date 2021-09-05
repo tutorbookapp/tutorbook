@@ -4,7 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Header from 'components/header';
 import Page from 'components/page';
-import Placeholder from 'components/placeholder';
+import Hours from 'components/hours';
 import { TabHeader } from 'components/navigation';
 
 import { PageProps, getPagePaths, getPageProps } from 'lib/page';
@@ -69,7 +69,7 @@ function OrgHoursPage(props: PageProps): JSX.Element {
           body={`View ${org ? `${org.name}'s` : 'your'} service hours`}
         />
         <div className='wrapper'>
-          <Placeholder>COMING SOON</Placeholder>
+          <Hours />
         </div>
         <style jsx>{`
           .wrapper {
