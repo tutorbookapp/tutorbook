@@ -21,15 +21,13 @@ create or replace view hours_total as
 select
   sum(extract(epoch from ((meeting_instances.time).to - (meeting_instances.time).from)) / 60 / 60) as hours,
   meeting_instances.org,
-  users.*
+  relation_people.user
 from 
   meeting_instances
 inner join
   relation_people on meeting_instances.id = relation_people.meeting
-inner join
-  users on relation_people.user = users.id
 where
   meeting_instances.instance_time <= current_date
 group by
-  users.id,
+  relation_people.user,
   meeting_instances.org;

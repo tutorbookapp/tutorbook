@@ -141,10 +141,7 @@ export interface DBViewUser extends DBUser {
   orgs: string[] | null;
   parents: string[] | null;
   available: boolean;
-}
-export interface DBTotalHours extends DBUser {
-  org: string;
-  hours: number;
+  hours: Record<string, number>;
 }
 export interface DBPerson extends DBUser {
   roles: Role[] | null;
