@@ -13683,17 +13683,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"next-google-fonts@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "next-google-fonts@npm:2.2.0"
-  peerDependencies:
-    next: ">= 10.0.7"
-    react: ">= 17.0.1"
-    react-dom: ">= 17.0.1"
-  checksum: 7cd54d183d41c6eba54eb269f72fe38926cbd7a06257bb720d66a1606761f913dc58bc7d0f80164306c7e166509d3a27cf07a70073985358740565bb636b78a3
-  languageName: node
-  linkType: hard
-
 "next-tick@npm:1, next-tick@npm:^1.1.0":
   version: 1.1.0
   resolution: "next-tick@npm:1.1.0"
@@ -18449,7 +18438,6 @@ resolve@^2.0.0-next.3:
     istanbul-lib-coverage: ^3.0.0
     nanoid: ^3.1.25
     next: ^11.1.2
-    next-google-fonts: ^2.2.0
     next-translate: ^0.17.3
     nprogress: ^0.2.0
     nyc: ^15.1.0

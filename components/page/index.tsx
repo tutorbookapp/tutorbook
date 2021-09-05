@@ -1,5 +1,4 @@
 import { ReactNode, useEffect } from 'react';
-import { GoogleFonts } from 'next-google-fonts';
 import Head from 'next/head';
 import cn from 'classnames';
 
@@ -147,7 +146,6 @@ export default function PageComponent({
         <link rel='preconnect' href='https://track.tutorbook.org' />
         <script dangerouslySetInnerHTML={{ __html: segmentSnippet }} />
       </Head>
-      <GoogleFonts href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' />
       <div
         data-cy='page'
         className={cn(styles.wrapper, { [styles.borderless]: borderless })}
