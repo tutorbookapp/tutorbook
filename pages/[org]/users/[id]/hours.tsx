@@ -20,16 +20,16 @@ import { withI18n } from 'lib/intl';
 import common from 'locales/en/common.json';
 import user from 'locales/en/user.json';
 
-interface UserEditPageProps extends PageProps {
+interface UserHoursPageProps extends PageProps {
   user?: UserJSON;
   org?: OrgJSON;
 }
 
-function UserEditPage({
+function UserHoursPage({
   user: fallbackData,
   org,
   ...props
-}: UserEditPageProps): JSX.Element {
+}: UserHoursPageProps): JSX.Element {
   const { query } = useRouter();
   const { data } = useSWR<UserJSON>(
     typeof query.id === 'string' ? `/api/users/${query.id}` : null,
@@ -37,8 +37,8 @@ function UserEditPage({
   );
 
   usePage({
-    name: 'User Edit',
-    url: `/${query.org as string}/users/${query.id as string}/edit`,
+    name: 'User Hours',
+    url: `/${query.org as string}/users/${query.id as string}/hours`,
     org: query.org as string,
     login: true,
     admin: true,
@@ -47,7 +47,7 @@ function UserEditPage({
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
       <Page
-        title={`${data?.name || 'Loading'} - Edit - Tutorbook`}
+        title={`${data?.name || 'Loading'} - Hours - Tutorbook`}
         formWidth
         {...props}
       >
@@ -70,7 +70,7 @@ function UserEditPage({
   );
 }
 
-interface UserEditPageQuery extends ParsedUrlQuery {
+interface UserHoursPageQuery extends ParsedUrlQuery {
   org: string;
   id: string;
 }
@@ -78,9 +78,9 @@ interface UserEditPageQuery extends ParsedUrlQuery {
 // Only public (truncated) data is used when generating static pages. Once
 // hydrated, SWR is used client-side to continually update the full page data.
 export const getStaticProps: GetStaticProps<
-  UserEditPageProps,
-  UserEditPageQuery
-> = async (ctx: GetStaticPropsContext<UserEditPageQuery>) => {
+  UserHoursPageProps,
+  UserHoursPageQuery
+> = async (ctx: GetStaticPropsContext<UserHoursPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org and user w/out params.');
   try {
     const [org, user] = await Promise.all([
@@ -100,9 +100,9 @@ export const getStaticProps: GetStaticProps<
 // TODO: We want to statically generate skeleton loading pages for each org.
 // @see {@link https://github.com/vercel/next.js/issues/14200}
 // @see {@link https://github.com/vercel/next.js/discussions/14486}
-export const getStaticPaths: GetStaticPaths<UserEditPageQuery> = async () => ({
+export const getStaticPaths: GetStaticPaths<UserHoursPageQuery> = async () => ({
   paths: [],
   fallback: true,
 });
 
-export default withI18n(UserEditPage, { common, user });
+export default withI18n(UserHoursPage, { common, user });
