@@ -13,6 +13,7 @@ import { APIError } from 'lib/model/error';
 import { fetcher } from 'lib/fetch';
 import useTrack from 'lib/hooks/track';
 
+import 'styles/fonts.css';
 import 'styles/global.scss';
 
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
