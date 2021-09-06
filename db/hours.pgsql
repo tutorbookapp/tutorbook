@@ -5,15 +5,23 @@ select
   *
 from (
   select
-    extract(epoch from ((meeting_instances.time).to - (meeting_instances.time).from)) / 60 / 60 as hours,
-    meeting_instances.*,
-    relation_people.*
-  from
-    meeting_instances
+    extract(epoch from ((meeting_instances_ppl.time).to - (meeting_instances_ppl.time).from)) / 60 / 60 as hours,
+    meeting_instances_ppl.*,
+    relation_people.user
+  from (
+    select meeting_instances.*, people from meeting_instances left outer join (
+      select meeting, json_agg(person.*) as people
+      from (
+        select meeting,roles,users.* 
+        from relation_people 
+        inner join users on relation_people.user = users.id
+      ) as person group by meeting
+    ) as people on meeting = meeting_instances.id
+  ) as meeting_instances_ppl 
   inner join
-    relation_people on meeting_instances.id = relation_people.meeting
+    relation_people on meeting_instances_ppl.id = relation_people.meeting
   where
-    meeting_instances.instance_time <= current_date
+    meeting_instances_ppl.instance_time <= current_date
 ) as _;
 
 drop view if exists hours_total;
