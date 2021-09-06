@@ -10,7 +10,7 @@ import supabase from 'lib/api/supabase';
 import verifyAuth from 'lib/api/verify/auth';
 import { verifyQueryId } from 'lib/api/verify/query-id';
 
-export default async function availability(
+export default async function hoursAPI(
   req: Req,
   res: Res<DBHoursCumulative[] | APIError>
 ): Promise<void> {
