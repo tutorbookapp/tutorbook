@@ -111,25 +111,33 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     [orgs, loggedIn]
   );
 
-  // Initially set theme using system preferences, cache settings when changed.
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof localStorage === 'undefined') return 'system';
-    return localStorage.getItem('theme') as Theme;
-  });
-  const [dark, setDark] = useState<boolean>(theme === 'dark');
-
+  const [theme, setTheme] = useState<Theme>('system');
+  const dark = useMemo(
+    () =>
+      theme === 'dark' ||
+      (theme === 'system' &&
+        typeof matchMedia !== 'undefined' &&
+        matchMedia('(prefers-color-scheme: dark)').matches),
+    [theme]
+  );
   useEffect(() => {
-    let isDark = theme === 'dark';
-    if (theme === 'system') {
-      const mq = matchMedia('(prefers-color-scheme: dark)');
-      if (mq.matches) isDark = true;
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.remove('system');
+    } else if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove('system');
+    } else {
+      document.documentElement.classList.add('system');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove('light');
     }
-    setDark(isDark);
   }, [theme]);
   useEffect(() => {
-    if (dark) return document.documentElement.classList.add('dark');
-    return document.documentElement.classList.remove('dark');
-  }, [dark]);
+    setTheme((prev) => (localStorage.getItem('theme') as Theme) || prev);
+  }, []);
   useEffect(() => {
     localStorage.setItem('theme', theme);
   }, [theme]);
