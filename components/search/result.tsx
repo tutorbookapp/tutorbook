@@ -46,7 +46,7 @@ function ResultButton({
         )}
         <div className={styles.name}>
           {user && user.name}
-          {hours && org && (
+          {user && hours && org && (
             <div className={styles.hours}>{user.hours[org.id] || 0} hours</div>
           )}
         </div>
@@ -97,7 +97,7 @@ function ResultLink({
             )}
             <div className={styles.name}>
               {user && user.name}
-              {hours && org && (
+              {user && hours && org && (
                 <div className={styles.hours}>
                   {user.hours[org.id] || 0} hours
                 </div>
