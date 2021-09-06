@@ -81,6 +81,7 @@ function mergeUsers(overrides: User, baseline: User): User {
     venue: overrides.venue || baseline.venue,
     socials: mergeSocials(overrides.socials, baseline.socials),
     orgs: mergeArrays(overrides.orgs, baseline.orgs),
+    hours: { ...baseline.hours, ...overrides.hours },
     availability: mergeAvailability(
       overrides.availability,
       baseline.availability
