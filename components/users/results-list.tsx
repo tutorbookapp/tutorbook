@@ -9,8 +9,8 @@ import Result from 'components/search/result';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Callback } from 'lib/model/callback';
-import { UsersQuery } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import { UsersQuery } from 'lib/model/query/users';
 import clone from 'lib/utils/clone';
 import { prefetch } from 'lib/fetch';
 import { useOrg } from 'lib/context/org';
@@ -51,7 +51,7 @@ function ResultsList({
   useEffect(() => setHits((prev) => data?.hits || prev), [setHits, data?.hits]);
   useEffect(() => {
     setSearching((prev) => prev && (isValidating || !data));
-  }, [isValidating, data]);
+  }, [isValidating, data, setSearching]);
 
   const loadingRows: JSX.Element[] = useMemo(
     () =>
@@ -75,6 +75,7 @@ function ResultsList({
             className={styles.item}
             key={user.id}
             newTab
+            hours
           />
         ))}
       {!searching && !(data?.users || []).length && (

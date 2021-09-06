@@ -1,12 +1,12 @@
 import { ParsedUrlQuery } from 'querystring';
 
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { EmptyHeader } from 'components/navigation';
+import { EmptyHeader, TabHeader } from 'components/navigation';
 import Page from 'components/page';
 import UserDisplay from 'components/user/display';
 
@@ -19,6 +19,7 @@ import { getOrg } from 'lib/api/db/org';
 import getTruncatedUser from 'lib/api/get/truncated-user';
 import { getUser } from 'lib/api/db/user';
 import usePage from 'lib/hooks/page';
+import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
@@ -43,6 +44,7 @@ function UserDisplayPage({
   ...props
 }: UserDisplayPageProps): JSX.Element {
   const { query } = useRouter();
+  const { orgs } = useUser();
 
   // TODO: The router query should update before Next.js fetches static props.
   // That way, SWR will fetch the full user data while Next.js fetches the
@@ -54,6 +56,11 @@ function UserDisplayPage({
   );
   const [langs, setLangs] = useState<string[]>(initialLangs || []);
   const [subjects, setSubjects] = useState<string[]>(initialSubjects || []);
+
+  const admin = useMemo(
+    () => orgs.some((o) => data?.orgs.includes(o.id)),
+    [orgs, data?.orgs]
+  );
 
   useEffect(() => setLangs((p) => initialLangs || p), [initialLangs]);
   useEffect(() => setSubjects((p) => initialSubjects || p), [initialSubjects]);
@@ -82,7 +89,24 @@ function UserDisplayPage({
         description={data?.bio}
         {...props}
       >
-        <EmptyHeader />
+        {!admin && <EmptyHeader />}
+        {admin && (
+          <TabHeader
+            tabs={[
+              {
+                active: true,
+                label: 'About',
+                href: `/${query.org as string}/users/${query.id as string}`,
+              },
+              {
+                label: 'Hours',
+                href: `/${query.org as string}/users/${
+                  query.id as string
+                }/hours`,
+              },
+            ]}
+          />
+        )}
         <UserDisplay
           user={data ? User.fromJSON(data) : undefined}
           subjects={subjects}

@@ -99,6 +99,13 @@ export interface DBViewMeeting extends DBMeeting {
   people: DBPerson[] | null;
   people_ids: string[];
 }
+export interface DBHoursCumulative extends DBMeeting {
+  people: DBPerson[] | null;
+  instance_time: string;
+  user: string;
+  hours: number;
+  total: number;
+}
 export interface DBRelationPerson {
   user: string;
   meeting: number;
