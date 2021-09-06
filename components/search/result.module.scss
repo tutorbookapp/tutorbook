@@ -66,12 +66,23 @@ $height: $image-size + 2 * $margin;
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--on-background);
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     position: absolute;
     left: $margin;
     top: $margin;
     width: calc(100% - #{2 * $margin});
     height: 24px;
+
+    .hours {
+      color: var(--accents-6);
+      font-size: 12px;
+      background: var(--accents-2);
+      padding: 4px 8px;
+      border-radius: 12px;
+      line-height: 1;
+      margin: 0 8px;
+    }
   }
 
   .bio {

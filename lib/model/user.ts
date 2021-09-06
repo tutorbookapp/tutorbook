@@ -73,6 +73,7 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  * @extends AccountInterface
  * @property [age] - The user's age (mostly used for students).
  * @property orgs - An array of the IDs of the orgs this user belongs to.
+ * @property hours - The total number of this user's service hours per org.
  * @property availability - An array of `Timeslot`'s when the user is free.
  * @property subjects - The subjects that the user can tutor for.
  * @property langs - The languages (as ISO codes) the user can speak fluently.
@@ -89,6 +90,7 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export interface UserInterface extends AccountInterface {
   age?: number;
   orgs: string[];
+  hours: Record<string, number>;
   availability: Availability;
   subjects: string[];
   langs: string[];
@@ -193,6 +195,8 @@ export class User extends Account implements UserInterface {
 
   public orgs: string[] = [];
 
+  public hours: Record<string, number> = {};
+
   public availability: Availability = new Availability();
 
   public subjects: string[] = [];
@@ -296,6 +300,7 @@ export class User extends Account implements UserInterface {
       created: new Date(record.created),
       updated: new Date(record.updated),
       orgs: 'orgs' in record ? record.orgs || [] : [],
+      hours: 'hours' in record ? record.hours || {} : {},
       parents: 'parents' in record ? record.parents || [] : [],
       roles: 'roles' in record ? record.roles || [] : [],
     });
