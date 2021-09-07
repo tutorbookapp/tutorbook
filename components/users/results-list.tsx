@@ -75,7 +75,6 @@ function ResultsList({
             className={styles.item}
             key={user.id}
             newTab
-            hours
           />
         ))}
       {!searching && !(data?.users || []).length && (
