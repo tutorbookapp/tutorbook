@@ -64,9 +64,9 @@ export interface MeetingInterface extends ResourceInterface {
 
 export type MeetingJSON = Omit<
   MeetingInterface,
-  keyof Resource | 'time' | 'creator'
+  keyof Resource | 'time' | 'creator' | 'people'
 > &
-  ResourceJSON & { time: TimeslotJSON; creator: UserJSON };
+  ResourceJSON & { time: TimeslotJSON; creator: UserJSON; people: UserJSON[] };
 
 export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (!isResourceJSON(json)) return false;
@@ -213,6 +213,7 @@ export class Meeting extends Resource implements MeetingInterface {
       ...super.toJSON(),
       time: this.time.toJSON(),
       creator: this.creator.toJSON(),
+      people: this.people.map((p) => p.toJSON()),
     });
   }
 
@@ -222,6 +223,7 @@ export class Meeting extends Resource implements MeetingInterface {
       ...Resource.fromJSON(json),
       time: Timeslot.fromJSON(json.time),
       creator: User.fromJSON(json.creator),
+      people: json.people.map((p) => User.fromJSON(p)),
     });
   }
 
