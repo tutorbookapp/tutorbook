@@ -14,14 +14,8 @@ import codecov from '@cypress/code-coverage/task';
 import firebase from 'firebase-admin';
 
 import {
-  DBMatch,
-  DBRelationMatchPerson,
-  Match,
-  MatchJSON,
-} from 'lib/model/match';
-import {
   DBMeeting,
-  DBRelationMeetingPerson,
+  DBRelationPerson,
   Meeting,
   MeetingJSON,
 } from 'lib/model/meeting';
@@ -37,7 +31,6 @@ import { IntercomGlobal } from 'lib/intercom';
 import supabase from 'lib/api/supabase';
 
 import admin from 'cypress/fixtures/users/admin.json';
-import match from 'cypress/fixtures/match.json';
 import meeting from 'cypress/fixtures/meeting.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
@@ -69,7 +62,6 @@ const app = firebase.initializeApp({
 const auth = app.auth();
 
 export interface Overrides {
-  match?: Partial<MatchJSON> | null;
   meeting?: Partial<MeetingJSON> | null;
   org?: Partial<OrgJSON> | null;
   school?: Partial<OrgJSON> | null;
@@ -129,25 +121,11 @@ export default function plugins(
         return user;
       });
 
-      let matches: Match[] = [];
-      const matchJSON: MatchJSON = {
-        ...(match as Omit<MatchJSON, 'creator' | 'people'>),
-        creator,
-        people: [
-          { ...tutor, roles: ['tutor'] },
-          { ...tutee, roles: ['tutee'] },
-        ],
-        ...overrides.match,
-      };
-      matches.push(Match.fromJSON(matchJSON));
-      if (overrides.match === null) delete matches[0];
-      matches = matches.filter(Boolean);
-
       let meetings: Meeting[] = [];
       const meetingJSON: MeetingJSON = {
-        ...(meeting as Omit<MeetingJSON, 'creator' | 'match'>),
+        ...(meeting as Omit<MeetingJSON, 'creator' | 'people'>),
         creator,
-        match: matchJSON,
+        people: [tutor, tutee],
         ...overrides.meeting,
       };
       meetings.push(Meeting.fromJSON(meetingJSON));
@@ -171,26 +149,10 @@ export default function plugins(
         .flat();
       await supabase.from<DBRelationMember>('relation_members').insert(members);
 
-      const { data: matchesData } = await supabase
-        .from<DBMatch>('matches')
-        .insert(matches.map((m) => ({ ...m.toDB(), id: undefined })));
-      const matchPeople = matches
-        .map((m, idx) =>
-          m.people.map((p) => ({
-            user: p.id,
-            roles: p.roles,
-            match: matchesData ? matchesData[idx].id : Number(m.id),
-          }))
-        )
-        .flat();
-      await supabase
-        .from<DBRelationMatchPerson>('relation_match_people')
-        .insert(matchPeople);
-
       const { data: meetingsData } = await supabase
         .from<DBMeeting>('meetings')
         .insert(meetings.map((m) => ({ ...m.toDB(), id: undefined })));
-      const meetingPeople = matches
+      const meetingPeople = meetings
         .map((m, idx) =>
           m.people.map((p) => ({
             user: p.id,
@@ -200,7 +162,7 @@ export default function plugins(
         )
         .flat();
       await supabase
-        .from<DBRelationMeetingPerson>('relation_meeting_people')
+        .from<DBRelationPerson>('relation_meeting_people')
         .insert(meetingPeople);
 
       return null;
