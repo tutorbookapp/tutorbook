@@ -43,18 +43,34 @@
   }
 }
 
-:root .title {
+@mixin light {
   @include gradient-text(
     'linear-gradient(to right, var(--title-left) 9.38%, var(--title-right) 88.54%)',
     'light'
   );
 }
 
-:global(.dark) .title {
+@mixin dark {
   @include gradient-text(
     'linear-gradient(to right, var(--title-left) 9.38%, var(--title-right) 88.54%)',
     'dark'
   );
+}
+
+:root .title {
+  @include light();
+  @media (prefers-color-scheme: light) {
+    @include light();
+  }
+  @media (prefers-color-scheme: dark) {
+    @include dark();
+  }
+}
+:global(.light) .title {
+  @include light();
+}
+:global(.dark) .title {
+  @include dark();
 }
 
 .title {
