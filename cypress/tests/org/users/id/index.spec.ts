@@ -4,7 +4,7 @@ import { getDateWithDay, getDaysInMonth } from 'lib/utils/time';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
 import child from 'cypress/fixtures/users/child.json';
-import match from 'cypress/fixtures/match.json';
+import meeting from 'cypress/fixtures/meeting.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
@@ -221,7 +221,6 @@ describe('User display page', () => {
       student: { phone: '', reference: '' },
       school: { profiles: ['phone', 'reference'] },
       meeting: null,
-      match: null,
     });
     cy.login(student.id);
     cy.visit(`/${school.id}/users/${volunteer.id}`);
@@ -284,7 +283,7 @@ describe('User display page', () => {
     cy.contains('What specifically do you need help with?')
       .click()
       .should('have.class', 'mdc-text-field--focused')
-      .type(match.message);
+      .type(meeting.message);
     cy.percySnapshot('User Display Page with Message Populated');
 
     cy.contains('Your phone number')
@@ -312,7 +311,7 @@ describe('User display page', () => {
     cy.percySnapshot('User Display Page in Loading State');
 
     // TODO: Make assertions about the content within our Firestore database
-    // simulator and SendGrid API to ensure that it matches what we submitted.
+    // simulator and SendGrid API to ensure that it meetings what we submitted.
     cy.wait('@update-account');
     cy.get('@phone-input').should('not.exist');
     cy.get('@reference-input').should('not.exist');
@@ -327,7 +326,7 @@ describe('User display page', () => {
   });
 
   it('lets parents book meetings for their kids', () => {
-    cy.setup({ meeting: null, match: null });
+    cy.setup({ meeting: null });
     cy.login(student.id);
     cy.visit(`/${school.id}/users/${volunteer.id}`);
     cy.wait('@get-user', { timeout: 60000 });
@@ -357,7 +356,7 @@ describe('User display page', () => {
     selectTime(true);
 
     cy.contains('What specifically do they need help with?').type(
-      match.message
+      meeting.message
     );
     cy.percySnapshot('User Display Page with Child with Message Populated');
 
@@ -380,7 +379,7 @@ describe('User display page', () => {
   });
 
   it('restricts subjects based on query aspect', () => {
-    cy.setup({ student: null, match: null, meeting: null });
+    cy.setup({ student: null, meeting: null });
     cy.logout();
     cy.visit(`/${org.id}/users/${volunteer.id}?aspect=tutoring`);
 
@@ -405,7 +404,7 @@ describe('User display page', () => {
   });
 
   it('signs users up before booking meetings', () => {
-    cy.setup({ student: null, match: null, meeting: null });
+    cy.setup({ student: null, meeting: null });
     cy.logout();
     cy.visit(`/${org.id}/users/${volunteer.id}`, {
       onBeforeLoad(win: Window): void {
@@ -428,7 +427,9 @@ describe('User display page', () => {
 
     selectTime();
 
-    cy.contains('What specifically do you need help with?').type(match.message);
+    cy.contains('What specifically do you need help with?').type(
+      meeting.message
+    );
     cy.percySnapshot('User Display Page with Signup with Message Populated');
 
     cy.contains('button', 'Signup and book').click().should('be.disabled');
