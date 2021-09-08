@@ -63,14 +63,8 @@
       "id": "XNsG0de1YnEqmAWnA4A_M"
     }
   ],
-  "mentoring": {
-    "subjects": ["Computer Science", "Artificial Intelligence"],
-    "searches": []
-  },
-  "tutoring": {
-    "subjects": ["Computer Science", "Math"],
-    "searches": []
-  },
+  "subjects": ["Computer Science", "Artificial Intelligence", "Math"],
+  "hours": {},
   "langs": ["en", "es"],
   "parents": [],
   "verifications": [],

@@ -1,21 +1,15 @@
 {
-  "id": "meeting",
+  "id": 0,
   "tags": [],
-  "status": "pending",
-  "created": "2020-10-20T19:03:00",
-  "updated": "2020-10-20T19:03:00",
+  "org": "gunn",
+  "subjects": ["Computer Science"],
+  "description": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
+  "venue": "https://meet.jit.si/TB-bffQbpagCt",
   "time": {
     "from": "2020-12-23T10:00:00.000Z",
     "to": "2020-12-23T11:00:00.000Z",
     "id": "CEzvTUDpaM9f9pDCTyI75"
   },
-  "venue": {
-    "type": "jitsi",
-    "id": "bffQbpagCt",
-    "url": "https://meet.jit.si/TB-bffQbpagCt",
-    "invite": "Open https://meet.jit.si/TB-bffQbpagCt to join your meeting.",
-    "created": "2020-10-15T19:04:10",
-    "updated": "2020-10-15T19:04:10"
-  },
-  "description": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers."
+  "created": "2020-10-15T19:04:10",
+  "updated": "2020-10-15T19:04:10"
 }

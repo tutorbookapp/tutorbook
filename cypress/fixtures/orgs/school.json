@@ -42,11 +42,9 @@
   "aspects": ["tutoring"],
   "signup": {
     "en": {
-      "tutoring": {
-        "body": "Gunn High School's Academic Center is an inclusive support center where all Gunn students can receive tutoring, do homework, study, and work collaboratively on projects. In the AC, students requesting support in their academics can receive free tutoring. If you are interested in volunteering as a tutor, please fill out the form below. You'll be contacted when a match with a student requesting a tutor is made.",
-        "header": "Become a peer tutor at Gunn's Academic Center",
-        "bio": ""
-      }
+      "body": "Gunn High School's Academic Center is an inclusive support center where all Gunn students can receive tutoring, do homework, study, and work collaboratively on projects. In the AC, students requesting support in their academics can receive free tutoring. If you are interested in volunteering as a tutor, please fill out the form below. You'll be contacted when a match with a student requesting a tutor is made.",
+      "header": "Become a peer tutor at Gunn's Academic Center",
+      "bio": ""
     }
   },
   "home": {

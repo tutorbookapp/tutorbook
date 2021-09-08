@@ -42,14 +42,8 @@
   "featured": [],
   "orgs": ["gunn"],
   "availability": [],
-  "mentoring": {
-    "subjects": [],
-    "searches": ["Computer Science", "Data Science", "Artificial Intelligence"]
-  },
-  "tutoring": {
-    "subjects": [],
-    "searches": ["Computer Science"]
-  },
+  "subjects": [],
+  "hours": {},
   "langs": ["en"],
   "parents": [],
   "verifications": [],

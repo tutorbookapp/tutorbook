@@ -63,23 +63,17 @@
       "id": "XNsG0de1YnEqmAWnA4A_M"
     }
   ],
-  "mentoring": {
-    "subjects": ["Computer Science"],
-    "searches": []
-  },
-  "tutoring": {
-    "subjects": [
-      "Math",
-      "Algebra",
-      "Geometry",
-      "Trigonometry",
-      "Science",
-      "Computer Science",
-      "Chemistry",
-      "Biology"
-    ],
-    "searches": []
-  },
+  "subjects": [
+    "Math",
+    "Algebra",
+    "Geometry",
+    "Trigonometry",
+    "Science",
+    "Computer Science",
+    "Chemistry",
+    "Biology"
+  ],
+  "hours": {},
   "langs": ["en"],
   "parents": [],
   "verifications": [
