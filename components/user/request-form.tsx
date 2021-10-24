@@ -111,7 +111,11 @@ export default function RequestForm({
         }
       }
 
-      // 2. Ensure that the students are all created.
+      // 2. Replace the "Me" student with the `updatedUser` if necessary.
+      const meIdx = students.findIndex((s) => s.name === 'Me');
+      if (meIdx >= 0) students[meIdx] = updatedUser;
+
+      // 3. Ensure that the students are all created.
       const creator = new User({ ...updatedUser, roles: [] });
       const people = [new User({ ...volunteer, roles: ['tutor'] })];
       if (!org?.members.includes(updatedUser.id)) creator.roles = ['parent'];
@@ -143,7 +147,7 @@ export default function RequestForm({
       }
       if (creator.roles.length) people.push(creator);
 
-      // 3. Create the meeting.
+      // 4. Create the meeting.
       const meeting = new Meeting({
         time,
         people,
