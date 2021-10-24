@@ -1,8 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
-import { renderToStaticMarkup } from 'react-dom/server';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
-import Email from 'lib/mail/meetings/create';
 import { createMeeting } from 'lib/api/db/meeting';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
@@ -11,8 +9,8 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
+import mail from 'lib/mail/meetings/create';
 import segment from 'lib/api/segment';
-import send from 'lib/mail/send';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import { updateUser } from 'lib/api/db/user';
@@ -62,12 +60,7 @@ export default async function createMeetingAPI(
 
     const meeting = await createMeeting(updateMeetingTags(body));
 
-    await send({
-      to: meeting.people.filter((p) => p.email && p.id !== meeting.creator.id),
-      cc: meeting.creator,
-      subject: `${meeting.creator.firstName} booked a meeting with you`,
-      html: renderToStaticMarkup(<Email meeting={meeting} />),
-    });
+    await mail(meeting);
 
     res.status(200).json(meeting.toJSON());
 

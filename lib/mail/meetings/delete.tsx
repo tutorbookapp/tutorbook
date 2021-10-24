@@ -2,13 +2,14 @@ import { A, Footer, MeetingDisplay, Message, P } from 'lib/mail/components';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
+import send from 'lib/mail/send';
 
-export interface EmailProps {
+interface EmailProps {
   meeting: Meeting;
   deleter: User;
 }
 
-export default function Email({ meeting: mtg, deleter }: EmailProps): JSX.Element {
+function Email({ meeting: mtg, deleter }: EmailProps): JSX.Element {
   const recipients = mtg.people.filter((p) => p.id !== deleter.id);
   
   return (
@@ -28,4 +29,13 @@ export default function Email({ meeting: mtg, deleter }: EmailProps): JSX.Elemen
       <Footer />
     </Message>
   );
+}
+
+export default function mail(meeting: Meeting, deleter: User): Promise<void> {
+  return send({
+    to: meeting.people.filter((p) => p.email && p.id !== deleter.id),
+    cc: deleter,
+    subject: `${deleter.firstName} canceled a meeting with you`,
+    template: <Email meeting={meeting} deleter={deleter} />,
+  });
 }

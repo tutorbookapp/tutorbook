@@ -5,13 +5,11 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { APIError } from 'lib/model/error';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 import { getMeetings } from 'lib/api/db/meeting';
-import getPeople from 'lib/api/get/people';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
-import send1hrReminders from 'lib/mail/meetings/remind/1hr';
-import send24hrReminders from 'lib/mail/meetings/remind/24hr';
-import sendDonationReminders from 'lib/mail/meetings/remind/donation';
-import sendMakeRecurReminders from 'lib/mail/meetings/remind/make-recur';
+import mail1hr from 'lib/mail/meetings/1hr';
+import mail24hr from 'lib/mail/meetings/24hr';
+import mailRecur from 'lib/mail/meetings/recur';
 
 function verifyAuth(headers: IncomingHttpHeaders): void {
   if (typeof headers.authorization !== 'string')
@@ -95,20 +93,9 @@ export default async function remind(req: Req, res: Res): Promise<void> {
           `${meetings1hrInPast.results.length} donation reminders...`
       );
       await Promise.all([
-        ...meetings1hrInFuture.results.map(async (meeting) => {
-          const people = await getPeople(meeting.people);
-          return send1hrReminders(meeting, people);
-        }),
-        ...meetings24hrsInFuture.results.map(async (meeting) => {
-          const people = await getPeople(meeting.people);
-          return send24hrReminders(meeting, people);
-        }),
-        ...meetings1hrInPast.results.map(async (meeting) => {
-          const people = await getPeople(meeting.people);
-          await sendDonationReminders(meeting, people);
-          if (meeting.time.recur) return;
-          await sendMakeRecurReminders(meeting, people);
-        }),
+        ...meetings1hrInFuture.results.map((meeting) => mail1hr(meeting)),
+        ...meetings24hrsInFuture.results.map((meeting) => mail24hr(meeting)),
+        ...meetings1hrInPast.results.map((meeting) => mailRecur(meeting)),
       ]);
       res.status(200).end();
       logger.info('Sent all reminder emails.');

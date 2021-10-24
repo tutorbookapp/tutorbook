@@ -1,16 +1,17 @@
 import { MailData } from '@sendgrid/helpers/classes/mail';
+import { ReactElement } from 'react';
 import mail from '@sendgrid/mail';
+import { renderToStaticMarkup } from 'react-dom/server';
 import to from 'await-to-js';
 
 import { APIError } from 'lib/model/error';
 
 export type Email = {
-  html: string;
+  template: ReactElement;
   replyTo?: { name?: string; email: string };
   from?: { name?: string; email: string };
   to: { name?: string; email: string }[];
 } & Omit<MailData, 'replyTo' | 'from' | 'to'>;
-
 
 export default async function send(email: Email): Promise<void> {
   if (['development', 'test'].includes(process.env.APP_ENV as string)) return;
@@ -24,6 +25,7 @@ export default async function send(email: Email): Promise<void> {
         from: { name: 'Tutorbook', email: 'team@tutorbook.org' },
         bcc: { name: 'Tutorbook', email: 'team@tutorbook.org' },
         replyTo: email.replyTo?.email ? email.replyTo : undefined,
+        html: renderToStaticMarkup(email.template),
         to: email.to.filter((p) => p.email),
       })
     );

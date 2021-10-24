@@ -2,13 +2,14 @@ import { A, Footer, Message, P, UserDisplay } from 'lib/mail/components';
 import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
 import { join } from 'lib/utils';
+import send from 'lib/mail/send';
 
-export interface EmailProps {
+interface EmailProps {
   user: User;
   org: Org;
 }
 
-export default function Email({ user, org }: EmailProps): JSX.Element {
+function Email({ user, org }: EmailProps): JSX.Element {
   return (
     <Message>
       <P style={{ marginTop: '0' }}>Hi {org.name} admins,</P>
@@ -60,4 +61,12 @@ export default function Email({ user, org }: EmailProps): JSX.Element {
       <Footer />
     </Message>
   );
+}
+
+export default function mail(user: User, org: Org, admins: User[]): Promise<void> {
+  return send({
+    to: admins,
+    subject: `${user.firstName} signed up on Tutorbook`,
+    template: <Email user={user} org={org} />,
+  });
 }

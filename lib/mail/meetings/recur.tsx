@@ -1,12 +1,13 @@
 import { A, Footer, MeetingDisplay, Message, P } from 'lib/mail/components';
 import { Meeting } from 'lib/model/meeting';
 import { join } from 'lib/utils';
+import send from 'lib/mail/send';
 
-export interface EmailProps {
+interface EmailProps {
   meeting: Meeting;
 }
 
-export default function Email({ meeting: mtg }: EmailProps): JSX.Element {
+function Email({ meeting: mtg }: EmailProps): JSX.Element {
   return (
     <Message>
       <P style={{ marginTop: '0' }}>Hi {join(mtg.people.map((p) => p.firstName))},</P>
@@ -23,4 +24,12 @@ export default function Email({ meeting: mtg }: EmailProps): JSX.Element {
       <Footer />
     </Message>
   );
+}
+
+export default function mail(meeting: Meeting): Promise<void> {
+  return send({
+    to: meeting.people.filter((p) => p.email),
+    subject: `Enjoy your ${meeting.subjects[0].toLowerCase()} lesson? Make it recurring!`,
+    template: <Email meeting={meeting} />,
+  });
 }

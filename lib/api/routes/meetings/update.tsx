@@ -1,6 +1,5 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
-import { renderToStaticMarkup } from 'react-dom/server';
 
 import {
   DBMeeting,
@@ -10,7 +9,6 @@ import {
   isMeetingJSON,
 } from 'lib/model/meeting';
 import { createMeeting, updateMeeting } from 'lib/api/db/meeting';
-import Email from 'lib/mail/meetings/update';
 import { Timeslot } from 'lib/model/timeslot';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
@@ -19,8 +17,8 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
+import mail from 'lib/mail/meetings/update';
 import segment from 'lib/api/segment';
-import send from 'lib/mail/send';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import { updateUser } from 'lib/api/db/user';
@@ -114,12 +112,7 @@ export default async function updateMeetingAPI(
         // in a human readable format (e.g. 'Weekly on Tuesdays 3-4pm').
         await Promise.all([
           updateMeeting(withTagsUpdate),
-          send({
-            to: people.filter((p) => p.email && p.id !== updater.id),
-            cc: updater,
-            subject: `${updater.firstName} updated a meeting with you`,
-            html: renderToStaticMarkup(<Email meeting={withTagsUpdate} updater={updater} />),
-          }),
+          mail(withTagsUpdate, updater),
         ]);
 
         res.status(200).json(body.toJSON());
@@ -172,12 +165,7 @@ export default async function updateMeetingAPI(
 
         await Promise.all([
           updateMeeting(originalWithTagsUpdate),
-          send({
-            to: people.filter((p) => p.email && p.id !== updater.id),
-            cc: updater,
-            subject: `${updater.firstName} updated a meeting with you`,
-            html: renderToStaticMarkup(<Email meeting={newMeeting} updater={updater} />),
-          }),
+          mail(newMeeting, updater),
         ]);
 
         res.status(200).json(newMeeting.toJSON());
@@ -225,12 +213,7 @@ export default async function updateMeetingAPI(
 
         await Promise.all([
           updateMeeting(originalWithTagsUpdate),
-          send({
-            to: people.filter((p) => p.email && p.id !== updater.id),
-            cc: updater,
-            subject: `${updater.firstName} updated a meeting with you`,
-            html: renderToStaticMarkup(<Email meeting={newRecurringMeeting} updater={updater} />),
-          }),
+          mail(newRecurringMeeting, updater),
         ]);
 
         res.status(200).json(newRecurringMeeting.toJSON());
@@ -258,12 +241,7 @@ export default async function updateMeetingAPI(
       // make the front-end feel faster? Or is that a bad development practice?
       await Promise.all([
         updateMeeting(meeting),
-        send({
-          to: people.filter((p) => p.email && p.id !== updater.id),
-          cc: updater,
-          subject: `${updater.firstName} updated a meeting with you`,
-          html: renderToStaticMarkup(<Email meeting={meeting} updater={updater} />),
-        }),
+        mail(meeting, updater),
       ]);
 
       res.status(200).json(meeting.toJSON());
