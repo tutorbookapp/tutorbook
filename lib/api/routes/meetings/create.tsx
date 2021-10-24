@@ -10,7 +10,6 @@ import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
-import { join } from 'lib/utils';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import send from 'lib/mail/send';
@@ -66,7 +65,7 @@ export default async function createMeetingAPI(
     await send({
       to: meeting.people.filter((p) => p.email && p.id !== meeting.creator.id),
       cc: meeting.creator,
-      subject: `${meeting.creator.name} booked a ${join(meeting.subjects)} meeting`,
+      subject: `${meeting.creator.name} booked a ${meeting.subjects[0]} meeting`,
       html: renderToStaticMarkup(<Email meeting={meeting} />),
     });
 

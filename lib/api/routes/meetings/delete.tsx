@@ -11,7 +11,6 @@ import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
-import { join } from 'lib/utils';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import send from 'lib/mail/send';
@@ -86,7 +85,7 @@ export default async function deleteMeetingAPI(
         send({
           to: people.filter((p) => p.email && p.id !== deleter.id),
           cc: deleter,
-          subject: `${deleter.name} canceled a ${join(deleting.subjects)} meeting`,
+          subject: `${deleter.name} canceled a ${deleting.subjects[0]} meeting`,
           html: renderToStaticMarkup(<Email meeting={deleting} deleter={deleter} />),
         }),
       ]);
@@ -113,7 +112,7 @@ export default async function deleteMeetingAPI(
         send({
           to: people.filter((p) => p.email && p.id !== deleter.id),
           cc: deleter,
-          subject: `${deleter.name} canceled a ${join(deleting.subjects)} meeting`,
+          subject: `${deleter.name} canceled a ${deleting.subjects[0]} meeting`,
           html: renderToStaticMarkup(<Email meeting={deleting} deleter={deleter} />),
         }),
       ]);
@@ -124,7 +123,7 @@ export default async function deleteMeetingAPI(
         send({
           to: people.filter((p) => p.email && p.id !== deleter.id),
           cc: deleter,
-          subject: `${deleter.name} canceled a ${join(meeting.subjects)} meeting`,
+          subject: `${deleter.name} canceled a ${meeting.subjects[0]} meeting`,
           html: renderToStaticMarkup(<Email meeting={meeting} deleter={deleter} />),
         }),
       ]);
