@@ -9,9 +9,8 @@
   "scripts": {
     "stop:sb": "docker-compose --file .supabase/docker/docker-compose.yml --project-name supabase stop",
     "start:sb": "docker-compose --file .supabase/docker/docker-compose.yml --project-name supabase up --detach",
-    "start:next": "next start -p 3000",
     "start:cy": "percy exec -- cypress run",
-    "start": "cross-env NODE_ENV=test concurrently yarn:start:db yarn:start:next yarn:start:cy",
+    "start": "next start -p 3000",
     "dev:cy": "cross-env NODE_ENV=development PERCY_BRANCH=local percy exec -- cypress open",
     "dev": "next dev -p 3000",
     "seed": "node scripts/seed.js",

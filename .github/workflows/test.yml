@@ -68,7 +68,7 @@ jobs:
             node_modules
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - run: yarn install --immutable --immutable-cache
-      - run: yarn start:next & yarn wait-on http-get://localhost:3000
+      - run: yarn start & yarn wait-on http-get://localhost:3000
       - run: yarn start:cy --record --parallel --headless --group ${{ matrix.browser }} -b ${{ matrix.browser }}
       - uses: codecov/codecov-action@v1
         if: ${{ success() || failure() }}
