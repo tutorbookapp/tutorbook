@@ -5,7 +5,7 @@ import { caps, getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
 
-const fontFamily = [
+export const fontFamily = [
   '"Google Sans"',
   '-apple-system',
   'BlinkMacSystemFont',
@@ -240,7 +240,11 @@ export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Eleme
   );
 }
 
-export function Footer(): JSX.Element {
+export interface FooterProps {
+  children?: ReactNode;
+}
+
+export function Footer({ children }: FooterProps): JSX.Element {
   return (
     <div
       style={{
@@ -267,6 +271,7 @@ export function Footer(): JSX.Element {
           nicholas@tutorbook.org
         </a>
       </P>
+      {children}
     </div>
   );
 }
