@@ -31,7 +31,7 @@ export async function createMeeting(meeting: Meeting): Promise<Meeting> {
     .from<DBRelationPerson>('relation_people')
     .insert(people);
   handle('creating', 'meeting people', people, err);
-  return new Meeting({ ...m, people: meeting.people });
+  return new Meeting({ ...m, people: meeting.people, creator: meeting.creator });
 }
 
 export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
@@ -52,7 +52,7 @@ export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
     .from<DBRelationPerson>('relation_people')
     .upsert(people, { onConflict: 'user,meeting,roles' });
   handle('updating', 'meeting people', people, err);
-  return new Meeting({ ...m, people: meeting.people });
+  return new Meeting({ ...m, people: meeting.people, creator: meeting.creator });
 }
 
 export async function deleteMeeting(id: number): Promise<Meeting> {
