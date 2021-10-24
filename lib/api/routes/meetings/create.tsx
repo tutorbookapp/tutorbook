@@ -2,7 +2,7 @@ import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { Meeting, MeetingJSON, isMeetingJSON } from 'lib/model/meeting';
-import Email from 'lib/mail/meeting';
+import Email from 'lib/mail/meetings/create';
 import { createMeeting } from 'lib/api/db/meeting';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
@@ -65,7 +65,7 @@ export default async function createMeetingAPI(
     await send({
       to: meeting.people.filter((p) => p.email && p.id !== meeting.creator.id),
       cc: meeting.creator,
-      subject: `${meeting.creator.name} booked a ${meeting.subjects[0]} meeting`,
+      subject: `${meeting.creator.firstName} booked a meeting with you`,
       html: renderToStaticMarkup(<Email meeting={meeting} />),
     });
 

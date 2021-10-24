@@ -85,7 +85,7 @@ export default async function deleteMeetingAPI(
         send({
           to: people.filter((p) => p.email && p.id !== deleter.id),
           cc: deleter,
-          subject: `${deleter.name} canceled a ${deleting.subjects[0]} meeting`,
+          subject: `${deleter.firstName} canceled a meeting with you`,
           html: renderToStaticMarkup(<Email meeting={deleting} deleter={deleter} />),
         }),
       ]);
@@ -112,7 +112,7 @@ export default async function deleteMeetingAPI(
         send({
           to: people.filter((p) => p.email && p.id !== deleter.id),
           cc: deleter,
-          subject: `${deleter.name} canceled a ${deleting.subjects[0]} meeting`,
+          subject: `${deleter.firstName} canceled a meeting with you`,
           html: renderToStaticMarkup(<Email meeting={deleting} deleter={deleter} />),
         }),
       ]);
@@ -123,7 +123,7 @@ export default async function deleteMeetingAPI(
         send({
           to: people.filter((p) => p.email && p.id !== deleter.id),
           cc: deleter,
-          subject: `${deleter.name} canceled a ${meeting.subjects[0]} meeting`,
+          subject: `${deleter.firstName} canceled a meeting with you`,
           html: renderToStaticMarkup(<Email meeting={meeting} deleter={deleter} />),
         }),
       ]);

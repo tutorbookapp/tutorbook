@@ -55,7 +55,7 @@ export default async function createUserAPI(
           );
           if (admins.length) await send({
             to: admins,
-            subject: `${user.name} signed up on Tutorbook`,
+            subject: `${user.firstName} signed up on Tutorbook`,
             html: renderToStaticMarkup(<Email user={user} org={org} />),
           });
         })
