@@ -16,6 +16,14 @@ import useTrack from 'lib/hooks/track';
 import 'styles/fonts.css';
 import 'styles/global.scss';
 
+// I have to define this constant outside of `App` because otherwise it'll be
+// re-initialized with different `created` and `updated` dates and thus will
+// trigger app-wide changes (e.g. the signup page `useSingle` this account).
+const emptyUser = new User({
+  langs: ['en'],
+  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+});
+
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   // The user account state must be defined as a hook here. Otherwise, it gets
   // reset during client-side page navigation.
@@ -23,16 +31,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   const { data, error } = useSWR<UserJSON, APIError>('/api/account', fetcher);
   // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
   // effect from within the `withI18n` HOC) to properly set these `langs`.
-  const user = useMemo(
-    () =>
-      data
-        ? User.fromJSON(data)
-        : new User({
-            langs: ['en'],
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          }),
-    [data]
-  );
+  const user = useMemo(() => data ? User.fromJSON(data) : emptyUser, [data]);
   const loggedIn = useMemo(() => {
     if (user.id) {
       userLoaded.current = true;

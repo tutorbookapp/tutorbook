@@ -1,5 +1,5 @@
-import { v4 as uuid } from 'uuid';
 import to from 'await-to-js';
+import { v4 as uuid } from 'uuid';
 
 import { FirebaseError, UserRecord, auth } from 'lib/api/firebase';
 import { APIError } from 'lib/model/error';

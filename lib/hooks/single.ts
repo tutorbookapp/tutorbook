@@ -112,6 +112,7 @@ export default function useSingle<T>(
     // editing a profile that can be updated from multiple locations).
     setData((prev: T) => {
       if (dequal(prev, fallbackData)) return prev;
+      if (dequal(lastReceivedResponse.current, fallbackData)) return prev;
       lastReceivedResponse.current = fallbackData;
       return fallbackData;
     });
