@@ -1,8 +1,16 @@
+import { MailData } from '@sendgrid/helpers/classes/mail';
 import mail from '@sendgrid/mail';
 import to from 'await-to-js';
 
 import { APIError } from 'lib/model/error';
-import { Email } from 'lib/mail/types';
+
+export type Email = {
+  html: string;
+  replyTo?: { name?: string; email: string };
+  from?: { name?: string; email: string };
+  to: { name?: string; email: string }[];
+} & Omit<MailData, 'replyTo' | 'from' | 'to'>;
+
 
 export default async function send(email: Email): Promise<void> {
   if (['development', 'test'].includes(process.env.APP_ENV as string)) return;
