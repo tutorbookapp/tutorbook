@@ -7439,9 +7439,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^8.3.1":
-  version: 8.3.1
-  resolution: "cypress@npm:8.3.1"
+"cypress@npm:^8.6.0":
+  version: 8.6.0
+  resolution: "cypress@npm:8.6.0"
   dependencies:
     "@cypress/request": ^2.88.6
     "@cypress/xvfb": ^1.2.4
@@ -7477,6 +7477,7 @@ __metadata:
     minimist: ^1.2.5
     ospath: ^1.2.2
     pretty-bytes: ^5.6.0
+    proxy-from-env: 1.0.0
     ramda: ~0.27.1
     request-progress: ^3.0.0
     supports-color: ^8.1.1
@@ -7486,7 +7487,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: fc2b3500b43a27f8a9c9ed421739147b4722b017d745068c7cdb76d576126576aac9e218769992cfb4ed32b591fb1e2b6c7d16f589597b4971c4ae60ec5149fa
+  checksum: aa092f70817445020fb8079a6d64d46453247b36b8a6c50ab517e848465311e20d61e1638941ab6eaec998eb65954f8261b64727146a2255097f697731c6b10c
   languageName: node
   linkType: hard
 
@@ -15341,6 +15342,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"proxy-from-env@npm:1.0.0":
+  version: 1.0.0
+  resolution: "proxy-from-env@npm:1.0.0"
+  checksum: 292e28d1de0c315958d71d8315eb546dd3cd8c8cbc2dab7c54eeb9f5c17f421771964ad0b5e1f77011bab2305bdae42e1757ce33bdb1ccc3e87732322a8efcf1
+  languageName: node
+  linkType: hard
+
 "proxy-from-env@npm:^1.0.0":
   version: 1.1.0
   resolution: "proxy-from-env@npm:1.1.0"
@@ -18414,7 +18422,7 @@ resolve@^2.0.0-next.3:
     cross-env: ^7.0.3
     csv: ^5.5.3
     csv-stringify: ^5.6.5
-    cypress: ^8.3.1
+    cypress: ^8.6.0
     cypress-file-upload: ^5.0.8
     dequal: ^2.0.2
     dotenv: ^10.0.0
