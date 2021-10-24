@@ -240,11 +240,7 @@ export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Eleme
   );
 }
 
-export interface FooterProps {
-  children?: ReactNode;
-}
-
-export function Footer({ children }: FooterProps): JSX.Element {
+export function Footer(): JSX.Element {
   return (
     <div
       style={{
@@ -271,7 +267,6 @@ export function Footer({ children }: FooterProps): JSX.Element {
           nicholas@tutorbook.org
         </a>
       </P>
-      {children}
     </div>
   );
 }

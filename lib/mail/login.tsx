@@ -29,7 +29,7 @@ export default function mail(email: string, location: string, link: string): Pro
                       textDecoration: 'none',
                       backgroundColor: '#000000',
                       display: 'inline-block',
-                      fontWeight: 600,
+                      fontWeight: 500,
                       width: '200px',
                       textAlign: 'center'
                     }}
@@ -41,14 +41,14 @@ export default function mail(email: string, location: string, link: string): Pro
             </tr>
           </tbody>
         </table>
-        <Footer>
-          <P style={{ color: '#666666' }}>
-            If you didn&apos;t attempt to log in but received this email, or if
-            the location doesn&apos;t match, please ignore this email. If you are
-            concerned about your account&apos;s safety, please reply to this email
-            to get in touch with us.
-          </P>
-        </Footer>
+        <br />
+        <P>
+          If you didn&apos;t attempt to log in but received this email, or if
+          the location doesn&apos;t match, please ignore this email. If you are
+          concerned about your account&apos;s safety, please reply to this email
+          to get in touch with us.
+        </P>
+        <Footer />
       </Message>
     ),
   });
