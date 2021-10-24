@@ -35,17 +35,17 @@ export default async function createMeetingAPI(
       isMeetingJSON,
       Meeting
     );
-    const people = await getPeople(body.people);
+    body.people = await getPeople(body.people);
 
     logger.info(`Creating ${body.toString()}...`);
 
     // TODO: Actually implement availability verification.
-    verifyTimeInAvailability(body.time, people);
-    verifySubjectsCanBeTutored(body.subjects, people);
+    verifyTimeInAvailability(body.time, body.people);
+    verifySubjectsCanBeTutored(body.subjects, body.people);
 
     const org = await getOrg(body.org);
-    const creator = await getPerson(body.creator, people);
-    await verifyAuth(req.headers, { userId: creator.id });
+    body.creator = await getPerson(body.creator, body.people);
+    await verifyAuth(req.headers, { userId: body.creator.id });
 
     // TODO: Verify that the creator is creating a meeting with people who:
     // - They've had a meeting with before, OR;
@@ -55,18 +55,18 @@ export default async function createMeetingAPI(
     // Verify the meeting creator is:
     // a) One of the meeting people, OR;
     // b) Admin of the meeting's org (e.g. Gunn High School).
-    const isMeetingPerson = body.people.some((p) => p.id === creator.id);
-    if (!isMeetingPerson) verifyIsOrgAdmin(org, creator.id);
+    const isMeetingPerson = body.people.some((p) => p.id === body.creator.id);
+    if (!isMeetingPerson) verifyIsOrgAdmin(org, body.creator.id);
 
-    body.venue = getMeetingVenue(body, org, people);
+    body.venue = getMeetingVenue(body, org, body.people);
     body.time.last = getLastTime(body.time);
 
     const meeting = await createMeeting(updateMeetingTags(body));
 
     await send({
-      to: people.filter((p) => p.email && p.id !== creator.id),
-      cc: creator,
-      subject: `${creator.name} booked a ${join(meeting.subjects)} meeting`,
+      to: meeting.people.filter((p) => p.email && p.id !== meeting.creator.id),
+      cc: meeting.creator,
+      subject: `${meeting.creator.name} booked a ${join(meeting.subjects)} meeting`,
       html: renderToStaticMarkup(<Email meeting={meeting} />),
     });
 
@@ -75,7 +75,7 @@ export default async function createMeetingAPI(
     logger.info(`Created ${meeting.toString()}.`);
 
     segment.track({
-      userId: creator.id,
+      userId: meeting.creator.id,
       event: 'Meeting Created',
       properties: meeting.toSegment(),
     });
@@ -83,8 +83,8 @@ export default async function createMeetingAPI(
     // TODO: Don't use fire-and-forget triggers for these tags updates. Ideally,
     // I'd calculate the existance of these user tags using PostgreSQL.
     await Promise.all([
-      updatePeopleTags(people, { add: ['meeting'] }),
-      Promise.all(people.map((p) => updateUser(p))),
+      updatePeopleTags(meeting.people, { add: ['meeting'] }),
+      Promise.all(meeting.people.map((p) => updateUser(p))),
     ]);
   } catch (e) {
     handle(e, res);
