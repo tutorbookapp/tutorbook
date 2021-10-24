@@ -1,4 +1,7 @@
+/* eslint-disable import/first */
 import path from 'path';
+
+/* eslint-disable-next-line import/order */
 import dotenv from 'dotenv';
 
 // Follow the Next.js convention for loading `.env` files.
@@ -21,9 +24,9 @@ import {
 } from 'lib/model/meeting';
 import { DBOrg, DBRelationMember, Org, OrgJSON } from 'lib/model/org';
 import {
-  DBUser,
   DBRelationOrg,
   DBRelationParent,
+  DBUser,
   User,
   UserJSON,
 } from 'lib/model/user';
