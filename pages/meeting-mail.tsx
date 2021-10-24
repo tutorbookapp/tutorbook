@@ -61,45 +61,20 @@ export default function Mail(): JSX.Element {
     <div
       style={{
         maxWidth: '524px',
-        margin: '24px auto',
-        padding: '0 12px',
+        margin: '0 auto',
+        padding: '12px',
+        backgroundColor: '#ffffff',
+        color: '#000000',
       }}
     >
-      <div
-        style={{ marginTop: '24px', marginBottom: '48px', textAlign: 'center' }}
-      >
-        <img
-          src='https://tutorbook.org/favicon/favicon-maskable-32x32.png'
-          style={{ verticalAlign: 'middle', borderRadius: '50%' }}
-          width={32}
-          height={32}
-        />
-        <h1
-          style={{
-            fontFamily,
-            fontSize: '22px',
-            fontWeight: 'bold',
-            lineHeight: '26px',
-            marginTop: '12px',
-            marginBottom: '0',
-            letterSpacing: '-0.011em',
-            color: '#1a1a1a',
-          }}
-        >
-          New {join(mtg.subjects)} meeting
-        </h1>
-        <P style={{ color: '#666' }}>
-          {mtg.creator.name} booked a meeting with you
-        </P>
-      </div>
-      <P>Hi {join(recipients.map((p) => p.firstName))},</P>
+      <P style={{ marginTop: '0' }}>Hi {join(recipients.map((p) => p.firstName))},</P>
       <P>{mtg.creator.name} scheduled a new meeting with you:</P>
       <hr
         style={{
           border: 'none',
-          borderTop: '1px solid #eaeaea',
+          borderTop: '2px solid #eaeaea',
           marginBottom: '18px',
-          marginTop: '32px',
+          marginTop: '36px',
           width: '100%',
         }}
       />
@@ -113,7 +88,7 @@ export default function Mail(): JSX.Element {
             borderCollapse: 'collapse',
             borderSpacing: '0',
             tableLayout: 'fixed',
-            marginTop: idx === 0 ? '4px' : '8px',
+            marginTop: idx === 0 ? '6px' : '8px',
             width: '100%',
           }}
         >
@@ -164,11 +139,11 @@ export default function Mail(): JSX.Element {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    color: '#666',
+                    color: '#666666',
                   }}
                 >
                   <a
-                    style={{ color: '#666', textDecoration: 'none' }}
+                    style={{ color: '#666666', textDecoration: 'none' }}
                     href={getEmailLink(p)}
                   >
                     {p.email}
@@ -182,11 +157,11 @@ export default function Mail(): JSX.Element {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    color: '#666',
+                    color: '#666666',
                   }}
                 >
                   <a
-                    style={{ color: '#666', textDecoration: 'none' }}
+                    style={{ color: '#666666', textDecoration: 'none' }}
                     href={getPhoneLink(p)}
                   >
                     {p.phone}
@@ -214,16 +189,17 @@ export default function Mail(): JSX.Element {
           href={mtg.venue}
           style={{
             borderRadius: '4px',
-            color: '#fff',
+            color: '#ffffff',
             lineHeight: '36px',
-            fontSize: '14px',
+            fontSize: '16px',
             textDecoration: 'none',
             backgroundColor: '#0070f3',
             display: 'inline-block',
             textAlign: 'center',
             padding: '0 16px',
             fontWeight: 600,
-            marginTop: '4px',
+            marginTop: '6px',
+            marginBottom: '2px',
           }}
         >
           Join with Google Meet
@@ -231,7 +207,7 @@ export default function Mail(): JSX.Element {
         <br />
         <a
           href={mtg.venue}
-          style={{ fontSize: '12px', color: '#666', textDecoration: 'none' }}
+          style={{ fontSize: '16px', color: '#666666', textDecoration: 'none' }}
         >
           {mtg.venue.replace('https://', '').replace('http://', '')}
         </a>
@@ -249,14 +225,14 @@ export default function Mail(): JSX.Element {
       <hr
         style={{
           border: 'none',
-          borderTop: '1px solid #eaeaea',
-          marginBottom: '32px',
+          borderTop: '2px solid #eaeaea',
+          marginBottom: '36px',
           marginTop: '18px',
           width: '100%',
         }}
       />
       <P>
-        To edit or cancel this meeting, go to{' '}
+        To edit or cancel this meeting, open{' '}
         <a style={{ color: '#0070f3' }} href='https://tutorbook.org/calendar'>
           your Tutorbook calendar
         </a>
@@ -270,7 +246,6 @@ export default function Mail(): JSX.Element {
       <div
         style={{
           marginTop: '48px',
-          marginBottom: '24px',
           textAlign: 'center',
           borderRadius: '4px',
           border: '1px solid #eaeaea',
@@ -278,21 +253,20 @@ export default function Mail(): JSX.Element {
           padding: '24px',
         }}
       >
-        <P style={{ color: '#666' }}>
-          <a style={{ color: '#666' }} href='https://tutorbook.org'>
+        <P style={{ color: '#666666' }}>
+          <a style={{ color: '#666666' }} href='https://tutorbook.org'>
             Tutorbook
           </a>{' '}
           - Created with ✨ by{' '}
-          <a style={{ color: '#666' }} href='https://nicholaschiang.com'>
+          <a style={{ color: '#666666' }} href='https://nicholaschiang.com'>
             Nicholas Chiang
           </a>
         </P>
-        <P style={{ color: '#666' }}>
+        <P style={{ color: '#666666' }}>
           If this is spam, let me know at{' '}
-          <a style={{ color: '#666' }} href='mailto:nicholas@tutorbook.org'>
+          <a style={{ color: '#666666' }} href='mailto:nicholas@tutorbook.org'>
             nicholas@tutorbook.org
           </a>
-          .
         </P>
       </div>
     </div>
