@@ -229,7 +229,7 @@ export default function Email({ meeting: mtg, deleter }: EmailProps): JSX.Elemen
         }}
       />
       <P>
-        To book another meeting, open{' '}
+        To book a different meeting, open{' '}
         <a style={{ color: '#0070f3' }} href='https://tutorbook.org/calendar'>
           your Tutorbook calendar
         </a>
