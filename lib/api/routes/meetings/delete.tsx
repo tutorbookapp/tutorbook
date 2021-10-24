@@ -1,17 +1,20 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 import { RRule } from 'rrule';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 import { Meeting, MeetingAction, MeetingJSON } from 'lib/model/meeting';
 import { deleteMeeting, getMeeting, updateMeeting } from 'lib/api/db/meeting';
+import Email from 'lib/mail/meetings/delete';
 import getLastTime from 'lib/api/get/last-time';
 import getMeetingVenue from 'lib/api/get/meeting-venue';
 import { getOrg } from 'lib/api/db/org';
 import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
+import { join } from 'lib/utils';
 import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
-import sendEmails from 'lib/mail/meetings/delete';
+import send from 'lib/mail/send';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import { updateUser } from 'lib/api/db/user';
 import verifyAuth from 'lib/api/verify/auth';
@@ -80,7 +83,12 @@ export default async function deleteMeetingAPI(
       // TODO: Specify in email that this is only canceling this meeting.
       await Promise.all([
         updateMeeting(meeting),
-        sendEmails(deleting, people, deleter, org),
+        send({
+          to: people.filter((p) => p.email && p.id !== deleter.id),
+          cc: deleter,
+          subject: `${deleter.name} canceled a ${join(deleting.subjects)} meeting`,
+          html: renderToStaticMarkup(<Email meeting={deleting} deleter={deleter} />),
+        }),
       ]);
     } else if (isRecurring && options.action === 'future') {
       // Delete this and all following meetings:
@@ -102,13 +110,23 @@ export default async function deleteMeetingAPI(
       // TODO: Specify in email that this is canceling all following meetings.
       await Promise.all([
         updateMeeting(meeting),
-        sendEmails(deleting, people, deleter, org),
+        send({
+          to: people.filter((p) => p.email && p.id !== deleter.id),
+          cc: deleter,
+          subject: `${deleter.name} canceled a ${join(deleting.subjects)} meeting`,
+          html: renderToStaticMarkup(<Email meeting={deleting} deleter={deleter} />),
+        }),
       ]);
     } else {
       // Delete all meetings. Identical to deleting a non-recurring meeting.
       await Promise.all([
         deleteMeeting(meeting.id),
-        sendEmails(meeting, people, deleter, org),
+        send({
+          to: people.filter((p) => p.email && p.id !== deleter.id),
+          cc: deleter,
+          subject: `${deleter.name} canceled a ${join(meeting.subjects)} meeting`,
+          html: renderToStaticMarkup(<Email meeting={meeting} deleter={deleter} />),
+        }),
       ]);
     }
 
