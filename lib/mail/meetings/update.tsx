@@ -9,7 +9,7 @@ export default function mail(meeting: Meeting, updater: User): Promise<void> {
   return send({
     to,
     cc: updater,
-    subject: `${updater.firstName} canceled a meeting with you`,
+    subject: `${updater.firstName} updated a meeting with you`,
     template: (
       <Message>
         <P style={{ marginTop: '0' }}>Hi {join(to.map((p) => p.firstName))},</P>
