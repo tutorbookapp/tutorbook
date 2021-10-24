@@ -197,7 +197,7 @@ export default function Email({ meeting: mtg }: EmailProps): JSX.Element {
             marginBottom: '2px',
           }}
         >
-          Join with Google Meet
+          Join video call 
         </a>
         <br />
         <a
