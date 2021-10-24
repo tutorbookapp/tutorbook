@@ -207,7 +207,7 @@ export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Eleme
             marginBottom: '2px',
           }}
         >
-          Join video call 
+          Join meeting 
         </a>
         <br />
         <a
