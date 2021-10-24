@@ -15,6 +15,7 @@ node_modules
 
 # Email Previews
 pages/mail.tsx
+pages/api/mail.ts
 
 # Next.js
 /.next/

@@ -1,13 +1,11 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
-import { renderToStaticMarkup } from 'react-dom/server';
 import to from 'await-to-js';
 
 import { FirebaseError, auth } from 'lib/api/firebase';
 import { APIError } from 'lib/model/error';
-import LoginEmail from 'lib/mail/login';
 import { handle } from 'lib/api/error';
 import { isJSON } from 'lib/model/json';
-import send from 'lib/mail/send';
+import mail from 'lib/mail/login';
 
 async function sendLoginLink(req: Req, res: Res<void>): Promise<void> {
   if (!isJSON(req.body)) throw new APIError('Invalid request body', 400);
@@ -26,13 +24,7 @@ async function sendLoginLink(req: Req, res: Res<void>): Promise<void> {
     auth.generateSignInWithEmailLink(req.body.email, actionCodeSettings)
   );
   if (err) throw new APIError(`${err.name} creating link: ${err.message}`, 500);
-  await send({
-    to: [{ email: req.body.email }],
-    subject: `Tutorbook Login Confirmation (${req.body.location}).`,
-    html: renderToStaticMarkup(
-      <LoginEmail link={link as string} location={req.body.location} />
-    ),
-  });
+  await mail(req.body.email, req.body.location, link as string);
   res.status(200).end();
 }
 

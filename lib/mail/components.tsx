@@ -1,12 +1,12 @@
-import { CSSProperties, createContext, useContext } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { RRule } from 'rrule';
 
-import { Role, User } from 'lib/model/user';
 import { caps, getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { Meeting } from 'lib/model/meeting';
-import { Org } from 'lib/model/org';
+import { User } from 'lib/model/user';
 
-const fontFamily = [
+export const fontFamily = [
+  '"Google Sans"',
   '-apple-system',
   'BlinkMacSystemFont',
   '"Segoe UI"',
@@ -19,388 +19,82 @@ const fontFamily = [
   '"Helvetica Neue"',
   'sans-serif',
 ].join(',');
-const colors = {
-  background: '#ffffff',
-  onBackground: '#000000',
-  accents1: '#fafafa',
-  accents2: '#eaeaea',
-  accents3: '#999999',
-  accents4: '#888888',
-  accents5: '#666666',
-  accents6: '#444444',
-};
-const borderColor = '#dddddd';
-const borderRadius = '8px';
 
-const textStyle = {
-  fontFamily,
-  fontSize: '18px',
-  lineHeight: '28px',
-  color: colors.onBackground,
-};
+export interface AProps {
+  href: string;
+  children: ReactNode;
+}
 
-const quoteStyle = {
-  margin: '0',
-  color: '#474747',
-  borderLeft: '4px solid #a6a6a6',
-  padding: '0 0 0 24px',
-  display: 'block',
-  quotes: 'none',
-};
+export function A({ href, children }: AProps): JSX.Element {
+  return <a style={{ color: '#0070f3' }} href={href}>{children}</a>;
+}
 
-const linkStyle = {
-  ...textStyle,
-  textDecoration: 'none',
-  color: '#067df7 !important',
-};
-
-const buttonStyle = {
-  fontFamily,
-  borderRadius,
-  color: '#ffffff !important',
-  lineHeight: '56px',
-  fontSize: '16px',
-  textDecoration: 'none',
-  backgroundColor: '#000000',
-  display: 'inline-block',
-  fontWeight: 600,
-  width: '200px',
-};
-
-const dividerStyle = {
-  border: 'none',
-  borderTop: `1px solid ${borderColor}`,
-  marginBottom: '26px',
-  width: '100%',
-};
-
-const tableStyle = {
-  borderCollapse: 'collapse' as CSSProperties['borderCollapse'],
-  borderSpacing: '0',
-  tableLayout: 'fixed' as CSSProperties['tableLayout'],
-  width: '100%',
-};
-
-const rowStyle = {
-  padding: '0px !important',
-  margin: '0px !important',
-};
-
-const ColorContext = createContext<string>(colors.onBackground);
-const useColor = () => useContext<string>(ColorContext);
-
-interface Props {
-  children: React.ReactNode;
+export interface PProps {
   style?: CSSProperties;
+  children: ReactNode;
 }
 
-export function P({ style, children }: Props): JSX.Element {
-  const color = useColor();
-  return <p style={{ ...textStyle, ...style, color }}>{children}</p>;
-}
-
-export function I({ style, children }: Props): JSX.Element {
-  const color = useColor();
-  return <i style={{ ...textStyle, ...style, color }}>{children}</i>;
-}
-
-export function Cite({ style, children }: Props): JSX.Element {
-  const color = useColor();
-  return <cite style={{ ...textStyle, ...style, color }}>{children}</cite>;
-}
-
-type QuoteProps = { text: string; cite: string; style?: CSSProperties };
-
-export function Quote({ text, cite, style }: QuoteProps): JSX.Element {
+export function P({ style, children }: PProps): JSX.Element {
   return (
-    <ColorContext.Provider value={quoteStyle.color}>
-      <blockquote style={{ ...quoteStyle, ...style }}>
-        <P style={{ marginTop: '0px' }}>
-          <I>&quot;{text}&quot;</I>
-        </P>
-        <Cite>—{cite}</Cite>
-      </blockquote>
-    </ColorContext.Provider>
-  );
-}
-
-type HrefProps = { href: string } & Props;
-
-export function Link({ href, style, children }: HrefProps): JSX.Element {
-  return (
-    <a href={href} style={{ ...linkStyle, ...style }}>
+    <p
+      style={{
+        fontFamily,
+        fontSize: '16px',
+        lineHeight: '20px',
+        margin: '8px 0',
+        ...style,
+      }}
+    >
       {children}
-    </a>
-  );
-}
-
-export function Button({ href, style, children }: HrefProps): JSX.Element {
-  return (
-    <table width='100%'>
-      <tbody>
-        <tr>
-          <td align='center' style={{ padding: '0' }}>
-            <div>
-              <a
-                href={href}
-                style={{ ...buttonStyle, ...style, textAlign: 'center' }}
-              >
-                {children}
-              </a>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  );
-}
-
-interface MeetingDisplayProps {
-  timeZone: string;
-  meeting: Meeting;
-  people: User[];
-  sender: User;
-  org?: Org;
-}
-
-export function MeetingDisplay({
-  timeZone,
-  meeting,
-  people,
-  sender,
-  org,
-}: MeetingDisplayProps): JSX.Element {
-  // TODO: Store the user's timezone in their profile and show the meeting time
-  // in their local timezone when sending emails, text messages, etc.
-  const rrule = new RRule({
-    ...RRule.parseString(meeting.time.recur || ''),
-    dtstart: meeting.time.from,
-  });
-
-  return (
-    <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
-      <Item top='24px' bottom='24px' left='24px' right='24px'>
-        <P style={{ marginTop: '0px', marginBottom: '8px' }}>
-          <b>WHO</b>
-        </P>
-        {people.map((person) => (
-          <Person key={person.id} {...person} org={meeting.org} />
-        ))}
-        <P>
-          <b>WHEN</b>
-          <br />
-          {meeting.time.toString('en', timeZone)}
-        </P>
-        {meeting.time.recur && rrule.isFullyConvertibleToText() && (
-          <P>
-            <b>RECURRING</b>
-            <br />
-            {caps(rrule.toText())}
-          </P>
-        )}
-        <P>
-          <b>WHERE</b>
-          <br />
-          <Link href={meeting.venue}>{meeting.venue}</Link>
-        </P>
-        <P style={{ marginBottom: !meeting.description ? '0px' : undefined }}>
-          <b>SUBJECTS</b>
-          <br />
-          {join(meeting.subjects)}
-        </P>
-        {meeting.description && (
-          <P style={{ marginBottom: '0px' }}>
-            <b>DESCRIPTION</b>
-            <br />
-            {meeting.description}
-          </P>
-        )}
-      </Item>
-    </div>
-  );
-}
-
-interface ContactsTableProps {
-  contacts: { name: string; email: string }[];
-}
-
-export function ContactsTable({ contacts }: ContactsTableProps): JSX.Element {
-  return (
-    <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th
-              role='columnheader'
-              scope='col'
-              style={{
-                ...textStyle,
-                fontWeight: 600,
-                textAlign: 'left',
-                padding: '24px 0 24px 24px',
-              }}
-            >
-              Name
-            </th>
-            <th
-              role='columnheader'
-              scope='col'
-              style={{
-                ...textStyle,
-                fontWeight: 600,
-                textAlign: 'left',
-                padding: '24px',
-              }}
-            >
-              Email
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {contacts.map(({ name, email }) => (
-            <tr key={email} style={{ borderTop: `1px solid ${borderColor}` }}>
-              <td style={{ ...textStyle, padding: '24px 0 24px 24px' }}>
-                {name}
-              </td>
-              <td style={{ ...textStyle, padding: '24px' }}>
-                <Link href={getEmailLink({ name, email })}>{email}</Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-type ItemProps = {
-  top?: string;
-  bottom?: string;
-  left?: string;
-  right?: string;
-} & Omit<Props, 'style'>;
-
-export function Item({
-  top,
-  bottom,
-  left,
-  right,
-  children,
-}: ItemProps): JSX.Element {
-  return (
-    <table style={tableStyle} cellPadding='0'>
-      <tbody>
-        <tr style={rowStyle}>
-          <td style={{ paddingLeft: left, paddingRight: right }}>
-            <table style={tableStyle}>
-              <tbody>
-                <tr style={rowStyle}>
-                  <td
-                    style={{ paddingTop: top, paddingBottom: bottom }}
-                    align='left'
-                  >
-                    {children}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    </p>
   );
 }
 
 export interface UserDisplayProps {
-  org?: Org;
+  style?: CSSProperties;
+  orgId: string;
   user: User;
-  subjects: string[];
-  langs: string[];
 }
 
-export function UserDisplay({
-  org,
-  user,
-  subjects,
-  langs,
-}: UserDisplayProps): JSX.Element {
+export function UserDisplay({ style, user: p, orgId }: UserDisplayProps): JSX.Element {
   return (
-    <div style={{ border: `1px solid ${borderColor}`, borderRadius }}>
-      <Item top='24px' bottom='24px' left='24px' right='24px'>
-        <Person {...user} org={org?.id} />
-        <P>
-          <b>ABOUT</b>
-          <br />
-          {user.bio}
-        </P>
-        {user.reference && (
-          <P>
-            <b>REFERENCE</b>
-            <br />
-            {user.reference}
-          </P>
-        )}
-        <P>
-          <b>TEACHES</b>
-          <br />
-          {join(subjects)}
-        </P>
-        <P style={{ marginBottom: '0px' }}>
-          <b>SPEAKS</b>
-          <br />
-          {join(langs)}
-        </P>
-      </Item>
-    </div>
-  );
-}
-
-export interface PersonProps {
-  name: string;
-  photo: string;
-  phone: string;
-  email: string;
-  roles: Role[];
-  org?: string;
-  id: string;
-}
-
-export function Person({
-  name,
-  photo,
-  phone,
-  email,
-  roles,
-  org,
-  id,
-}: PersonProps): JSX.Element {
-  return (
-    <table style={{ ...tableStyle, marginBottom: '18px' }} cellPadding='0'>
+    <table
+      key={p.id}
+      style={{
+        borderCollapse: 'collapse',
+        borderSpacing: '0',
+        tableLayout: 'fixed',
+        width: '100%',
+        ...style,
+      }}
+    >
       <tbody>
-        <tr style={rowStyle}>
-          <td style={{ width: '112px', height: '100px' }}>
+        <tr>
+          <td style={{ width: '76px', height: '64px', padding: '0' }}>
             <a
               style={{
-                width: '100px',
-                height: '100px',
+                width: '64px',
+                height: '64px',
+                display: 'block',
                 textDecoration: 'none',
-                display: 'block !important',
               }}
-              href={`https://tutorbook.org/${org || 'default'}/users/${id}`}
+              href={`https://tutorbook.org/${orgId}/users/${p.id}`}
             >
               <img
                 style={{
-                  backgroundColor: colors.accents2,
+                  backgroundColor: '#eaeaea',
                   borderRadius: '4px',
                 }}
-                src={photo || 'https://assets.tutorbook.org/pngs/profile.png'}
-                width='100px'
-                height='100px'
+                src={
+                  p.photo || 'https://assets.tutorbook.org/pngs/profile.png'
+                }
+                width='64px'
+                height='64px'
                 alt=''
               />
             </a>
           </td>
-          <td style={{ height: '100px' }}>
+          <td style={{ height: '64px' }}>
             <P
               style={{
                 marginTop: '0px',
@@ -411,34 +105,44 @@ export function Person({
                 whiteSpace: 'nowrap',
               }}
             >
-              {roles.length ? `${name} (${join(roles)})` : name}
+              <a style={{ color: '#000000', textDecoration: 'none' }} href={`https://tutorbook.org/${orgId}/users/${p.id}`}>{p.roles.length ? `${p.name} (${join(p.roles)})` : p.name}</a>
             </P>
-            <ColorContext.Provider value={linkStyle.color}>
-              <P
-                style={{
-                  marginTop: '0px',
-                  marginBottom: '0px',
-                  maxHeight: '28px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
+            <P
+              style={{
+                marginTop: '0px',
+                marginBottom: '0px',
+                maxHeight: '28px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                color: '#666666',
+              }}
+            >
+              <a
+                style={{ color: '#666666', textDecoration: 'none' }}
+                href={getEmailLink(p)}
               >
-                <Link href={getEmailLink({ name, email })}>{email}</Link>
-              </P>
-              <P
-                style={{
-                  marginTop: '0px',
-                  marginBottom: '0px',
-                  maxHeight: '28px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
+                {p.email}
+              </a>
+            </P>
+            <P
+              style={{
+                marginTop: '0px',
+                marginBottom: '0px',
+                maxHeight: '28px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                color: '#666666',
+              }}
+            >
+              <a
+                style={{ color: '#666666', textDecoration: 'none' }}
+                href={getPhoneLink(p)}
               >
-                <Link href={getPhoneLink({ name, phone })}>{phone}</Link>
-              </P>
-            </ColorContext.Provider>
+                {p.phone}
+              </a>
+            </P>
           </td>
         </tr>
       </tbody>
@@ -446,75 +150,143 @@ export function Person({
   );
 }
 
-export function Header(): JSX.Element {
+export interface MeetingDisplayProps {
+  meeting: Meeting;
+}
+
+export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Element {
+  const rrule = new RRule({
+    ...RRule.parseString(mtg.time.recur || ''),
+    dtstart: mtg.time.from,
+  });
+
   return (
-    <Item top='48px' bottom='48px' left='48px' right='48px'>
-      <a
+    <>
+      <hr
         style={{
-          ...linkStyle,
-          width: '64px',
-          height: '64px',
-          display: 'block !important',
+          border: 'none',
+          borderTop: '2px solid #eaeaea',
+          marginBottom: '18px',
+          marginTop: '36px',
+          width: '100%',
         }}
-        href='https://tutorbook.org'
-        aria-label='Tutorbook'
-      >
-        <img
-          style={{ backgroundColor: colors.accents2, borderRadius: '4px' }}
-          alt=''
-          src='https://tutorbook.org/favicon/favicon-96x96.png'
-          width='64px'
-          height='64px'
-        />
-      </a>
-    </Item>
+      />
+      <P style={{ margin: '0' }}>
+        <b>WHO</b>
+      </P>
+      {mtg.people.map((p, idx) => (
+        <UserDisplay user={p} orgId={mtg.org} style={{ marginTop: idx === 0 ? '6px' : '8px' }} />
+      ))}
+      <P style={{ margin: '18px 0' }}>
+        <b>WHEN</b>
+        <br />
+        {mtg.time.toString('en')}
+      </P>
+      <P style={{ margin: '18px 0' }}>
+        <b>RECURRING</b>
+        <br />
+        {caps(rrule.toText())}
+      </P>
+      <P style={{ margin: '18px 0' }}>
+        <b>WHERE</b>
+        <br />
+        <a
+          href={mtg.venue}
+          style={{
+            borderRadius: '4px',
+            color: '#ffffff',
+            lineHeight: '36px',
+            fontSize: '16px',
+            textDecoration: 'none',
+            backgroundColor: '#0070f3',
+            display: 'inline-block',
+            textAlign: 'center',
+            padding: '0 16px',
+            fontWeight: 600,
+            marginTop: '6px',
+            marginBottom: '2px',
+          }}
+        >
+          Join meeting 
+        </a>
+        <br />
+        <a
+          href={mtg.venue}
+          style={{ fontSize: '16px', color: '#666666', textDecoration: 'none' }}
+        >
+          {mtg.venue.replace('https://', '').replace('http://', '')}
+        </a>
+      </P>
+      <P style={{ margin: '18px 0' }}>
+        <b>SUBJECTS</b>
+        <br />
+        {join(mtg.subjects)}
+      </P>
+      <P style={{ margin: '18px 0' }}>
+        <b>DESCRIPTION</b>
+        <br />
+        {mtg.description}
+      </P>
+      <hr
+        style={{
+          border: 'none',
+          borderTop: '2px solid #eaeaea',
+          marginBottom: '36px',
+          marginTop: '18px',
+          width: '100%',
+        }}
+      />
+    </>
   );
 }
 
-export function Footer({ children }: Partial<Props>): JSX.Element {
+export function Footer(): JSX.Element {
   return (
-    <ColorContext.Provider value='#666666'>
-      <Item top='48px' bottom='48px' left='48px' right='48px'>
-        <hr style={dividerStyle} />
-        <P>
-          Tutorbook - <Link href='https://tutorbook.org'>tutorbook.org</Link>
-        </P>
-        {children}
-      </Item>
-    </ColorContext.Provider>
+    <div
+      style={{
+        marginTop: '48px',
+        textAlign: 'center',
+        borderRadius: '4px',
+        border: '1px solid #eaeaea',
+        backgroundColor: '#fafafa',
+        padding: '24px',
+      }}
+    >
+      <P style={{ color: '#666666' }}>
+        <a style={{ color: '#666666' }} href='https://tutorbook.org'>
+          Tutorbook
+        </a>{' '}
+        - Created with ✨ by{' '}
+        <a style={{ color: '#666666' }} href='https://nicholaschiang.com'>
+          Nicholas Chiang
+        </a>
+      </P>
+      <P style={{ color: '#666666' }}>
+        If this is spam, let me know at{' '}
+        <a style={{ color: '#666666' }} href='mailto:nicholas@tutorbook.org'>
+          nicholas@tutorbook.org
+        </a>
+      </P>
+    </div>
   );
 }
 
-export function Email({ children }: Props): JSX.Element {
+export interface MessageProps {
+  children: ReactNode;
+}
+
+export function Message({ children }: MessageProps): JSX.Element {
   return (
-    <div>
-      <table
-        style={{
-          ...tableStyle,
-          display: 'table',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          maxWidth: '580px',
-          padding: 0,
-          verticalAlign: 'top',
-        }}
-      >
-        <tbody>
-          <tr style={rowStyle}>
-            <td>
-              <div
-                style={{
-                  borderRadius: '12px',
-                  border: `1px solid ${borderColor}`,
-                  overflow: 'hidden',
-                }}
-              >
-                {children}
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div
+      style={{
+        maxWidth: '524px',
+        margin: '0 auto',
+        padding: '12px',
+        backgroundColor: '#ffffff',
+        color: '#000000',
+      }}
+    >
+      {children}
     </div>
   );
 }

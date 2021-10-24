@@ -8,8 +8,8 @@ import { getOrg } from 'lib/api/db/org';
 import getUserHash from 'lib/api/get/user-hash';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
+import mail from 'lib/mail/users/create';
 import segment from 'lib/api/segment';
-import sendEmails from 'lib/mail/users/create';
 import updatePhoto from 'lib/api/update/photo';
 import updateUserOrgs from 'lib/api/update/user-orgs';
 import updateUserTags from 'lib/api/update/user-tags';
@@ -48,10 +48,10 @@ export default async function createUserAPI(
           // This fixes a bug when seeding data for tests (e.g. when the org
           // admin is the one being created so his/her data doesn't exist yet).
           const org = await getOrg(orgId);
-          const orgAdmins = await Promise.all(
+          const admins = await Promise.all(
             org.members.filter((id) => user.id !== id).map((id) => getUser(id))
           );
-          if (orgAdmins.length) await sendEmails(user, org, orgAdmins);
+          if (admins.length) await mail(user, org, admins);
         })
       ),
     ]);

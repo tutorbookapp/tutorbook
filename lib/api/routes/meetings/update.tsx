@@ -17,8 +17,8 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
+import mail from 'lib/mail/meetings/update';
 import segment from 'lib/api/segment';
-import sendEmails from 'lib/mail/meetings/update';
 import updateMeetingTags from 'lib/api/update/meeting-tags';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import { updateUser } from 'lib/api/db/user';
@@ -112,7 +112,7 @@ export default async function updateMeetingAPI(
         // in a human readable format (e.g. 'Weekly on Tuesdays 3-4pm').
         await Promise.all([
           updateMeeting(withTagsUpdate),
-          sendEmails(withTagsUpdate, people, updater, org),
+          mail(withTagsUpdate, updater),
         ]);
 
         res.status(200).json(body.toJSON());
@@ -165,7 +165,7 @@ export default async function updateMeetingAPI(
 
         await Promise.all([
           updateMeeting(originalWithTagsUpdate),
-          sendEmails(newMeeting, people, updater, org),
+          mail(newMeeting, updater),
         ]);
 
         res.status(200).json(newMeeting.toJSON());
@@ -213,7 +213,7 @@ export default async function updateMeetingAPI(
 
         await Promise.all([
           updateMeeting(originalWithTagsUpdate),
-          sendEmails(newRecurringMeeting, people, updater, org),
+          mail(newRecurringMeeting, updater),
         ]);
 
         res.status(200).json(newRecurringMeeting.toJSON());
@@ -241,7 +241,7 @@ export default async function updateMeetingAPI(
       // make the front-end feel faster? Or is that a bad development practice?
       await Promise.all([
         updateMeeting(meeting),
-        sendEmails(meeting, people, updater, org),
+        mail(meeting, updater),
       ]);
 
       res.status(200).json(meeting.toJSON());

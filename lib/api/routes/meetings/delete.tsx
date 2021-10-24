@@ -10,8 +10,8 @@ import getPeople from 'lib/api/get/people';
 import getPerson from 'lib/api/get/person';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
+import mail from 'lib/mail/meetings/delete';
 import segment from 'lib/api/segment';
-import sendEmails from 'lib/mail/meetings/delete';
 import updatePeopleTags from 'lib/api/update/people-tags';
 import { updateUser } from 'lib/api/db/user';
 import verifyAuth from 'lib/api/verify/auth';
@@ -80,7 +80,7 @@ export default async function deleteMeetingAPI(
       // TODO: Specify in email that this is only canceling this meeting.
       await Promise.all([
         updateMeeting(meeting),
-        sendEmails(deleting, people, deleter, org),
+        mail(deleting, deleter),
       ]);
     } else if (isRecurring && options.action === 'future') {
       // Delete this and all following meetings:
@@ -102,13 +102,13 @@ export default async function deleteMeetingAPI(
       // TODO: Specify in email that this is canceling all following meetings.
       await Promise.all([
         updateMeeting(meeting),
-        sendEmails(deleting, people, deleter, org),
+        mail(deleting, deleter),
       ]);
     } else {
       // Delete all meetings. Identical to deleting a non-recurring meeting.
       await Promise.all([
         deleteMeeting(meeting.id),
-        sendEmails(meeting, people, deleter, org),
+        mail(meeting, deleter),
       ]);
     }
 
