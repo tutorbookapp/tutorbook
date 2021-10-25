@@ -80,7 +80,7 @@ function UserDisplayPage({
     void fetchSubjects();
   }, [data, locale]);
 
-  usePage({ name: 'User Display', org: org?.id });
+  usePage('User Display');
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

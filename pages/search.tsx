@@ -28,7 +28,7 @@ import search from 'locales/en/search.json';
 // TODO: Reduce code duplication between this public "all orgs combined" search
 // page and the org-specific search page at `/pages/[org]/search.tsx`.
 function SearchPage(props: PageProps): JSX.Element {
-  usePage({ name: 'Search' });
+  usePage('Search');
 
   const { t } = useTranslation();
 

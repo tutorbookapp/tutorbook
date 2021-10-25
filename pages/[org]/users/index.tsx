@@ -30,13 +30,7 @@ function UsersPage(props: PageProps): JSX.Element {
     return orgs[idx];
   }, [orgs, params.org]);
 
-  usePage({
-    name: 'Org Users',
-    url: `/${params.org as string}/users`,
-    org: params.org as string,
-    login: true,
-    admin: true,
-  });
+  usePage('Org Users', { login: true, admin: true });
 
   return (
     <OrgContext.Provider value={{ org }}>

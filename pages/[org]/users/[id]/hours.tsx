@@ -36,13 +36,7 @@ function UserHoursPage({
     { fallbackData, revalidateOnMount: true }
   );
 
-  usePage({
-    name: 'User Hours',
-    url: `/${query.org as string}/users/${query.id as string}/hours`,
-    org: query.org as string,
-    login: true,
-    admin: true,
-  });
+  usePage('User Hours', { login: true, admin: true });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

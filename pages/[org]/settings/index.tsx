@@ -28,13 +28,7 @@ function SettingsPage(props: PageProps): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  usePage({
-    name: 'Org Settings',
-    url: `/${query.org as string}/settings`,
-    org: query.org as string,
-    login: true,
-    admin: true,
-  });
+  usePage('Org Settings', { login: true, admin: true });
 
   return (
     <OrgContext.Provider value={{ org }}>

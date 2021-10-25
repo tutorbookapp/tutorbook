@@ -36,13 +36,7 @@ function UserEditPage({
     { fallbackData, revalidateOnMount: true }
   );
 
-  usePage({
-    name: 'User Edit',
-    url: `/${query.org as string}/users/${query.id as string}/edit`,
-    org: query.org as string,
-    login: true,
-    admin: true,
-  });
+  usePage('User Edit', { login: true, admin: true });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

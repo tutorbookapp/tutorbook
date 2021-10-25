@@ -36,13 +36,7 @@ function UserVetPage({
     { fallbackData, revalidateOnMount: true }
   );
 
-  usePage({
-    name: 'User Vet',
-    url: `/${query.org as string}/users/${query.id as string}/vet`,
-    org: query.org as string,
-    login: true,
-    admin: true,
-  });
+  usePage('User Vet', { login: true, admin: true });
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

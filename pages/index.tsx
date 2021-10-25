@@ -11,7 +11,7 @@ import query3rd from 'locales/en/query3rd.json';
 import search from 'locales/en/search.json';
 
 function AboutPage(props: PageProps): JSX.Element {
-  usePage({ name: 'About' });
+  usePage('About');
 
   return (
     <Page

@@ -28,13 +28,7 @@ function SignupSettingsPage(props: PageProps): JSX.Element {
     return orgs[idx];
   }, [orgs, query.org]);
 
-  usePage({
-    name: 'Org Signup Settings',
-    url: `/${query.org as string}/settings/signup`,
-    org: query.org as string,
-    login: true,
-    admin: true,
-  });
+  usePage('Org Signup Settings', { login: true, admin: true });
 
   return (
     <OrgContext.Provider value={{ org }}>

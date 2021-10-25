@@ -15,7 +15,7 @@ import meeting from 'locales/en/meeting.json';
 function CalendarPage(props: PageProps): JSX.Element {
   const { t } = useTranslation();
 
-  usePage({ name: 'Calendar', url: '/calendar', login: true });
+  usePage('Calendar', { login: true });
 
   return (
     <Page title='Calendar - Tutorbook' {...props}>

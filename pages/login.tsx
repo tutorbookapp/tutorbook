@@ -10,7 +10,7 @@ import common from 'locales/en/common.json';
 import login from 'locales/en/login.json';
 
 function LoginPage(props: PageProps): JSX.Element {
-  useLoginPage({ name: 'Login' });
+  useLoginPage('Login');
 
   return (
     <Page
