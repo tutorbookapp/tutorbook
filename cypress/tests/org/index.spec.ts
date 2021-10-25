@@ -2,7 +2,7 @@ import org from 'cypress/fixtures/orgs/default.json';
 
 describe('Org home page', () => {
   beforeEach(() => {
-    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
+    cy.setup({ student: null, volunteer: null, meeting: null });
     cy.visit(`/${org.id}`);
   });
 
@@ -13,22 +13,12 @@ describe('Org home page', () => {
         cy.contains('a', 'Search tutors').should(
           'have.attr',
           'href',
-          `/${org.id}/search?aspect=tutoring`
-        );
-        cy.contains('a', 'Search mentors').should(
-          'have.attr',
-          'href',
-          `/${org.id}/search?aspect=mentoring`
+          `/${org.id}/search`
         );
         cy.contains('a', 'Become a tutor').should(
           'have.attr',
           'href',
-          `/${org.id}/signup?aspect=tutoring`
-        );
-        cy.contains('a', 'Become a mentor').should(
-          'have.attr',
-          'href',
-          `/${org.id}/signup?aspect=mentoring`
+          `/${org.id}/signup`
         );
 
         cy.getBySel('name').should('have.text', org.name);

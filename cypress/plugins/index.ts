@@ -1,4 +1,7 @@
+/* eslint-disable import/first */
 import path from 'path';
+
+/* eslint-disable-next-line import/order */
 import dotenv from 'dotenv';
 
 // Follow the Next.js convention for loading `.env` files.
@@ -14,22 +17,16 @@ import codecov from '@cypress/code-coverage/task';
 import firebase from 'firebase-admin';
 
 import {
-  DBMatch,
-  DBRelationMatchPerson,
-  Match,
-  MatchJSON,
-} from 'lib/model/match';
-import {
   DBMeeting,
-  DBRelationMeetingPerson,
+  DBRelationPerson,
   Meeting,
   MeetingJSON,
 } from 'lib/model/meeting';
 import { DBOrg, DBRelationMember, Org, OrgJSON } from 'lib/model/org';
 import {
-  DBUser,
   DBRelationOrg,
   DBRelationParent,
+  DBUser,
   User,
   UserJSON,
 } from 'lib/model/user';
@@ -37,7 +34,6 @@ import { IntercomGlobal } from 'lib/intercom';
 import supabase from 'lib/api/supabase';
 
 import admin from 'cypress/fixtures/users/admin.json';
-import match from 'cypress/fixtures/match.json';
 import meeting from 'cypress/fixtures/meeting.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
@@ -69,7 +65,6 @@ const app = firebase.initializeApp({
 const auth = app.auth();
 
 export interface Overrides {
-  match?: Partial<MatchJSON> | null;
   meeting?: Partial<MeetingJSON> | null;
   org?: Partial<OrgJSON> | null;
   school?: Partial<OrgJSON> | null;
@@ -120,77 +115,53 @@ export default function plugins(
       if (overrides.volunteer === null) delete users[0];
       if (overrides.student === null) delete users[1];
       if (overrides.admin === null) delete users[2];
-      users = users.filter(Boolean).map((user) => {
-        // Workaround for bug where custom array class methods disappear.
-        // @see {@link https://github.com/cypress-io/cypress/issues/17603}
-        user.availability.toDB = function toDB() {
-          return Array.from(this.map((t) => t.toDB()));
-        };
-        return user;
-      });
-
-      let matches: Match[] = [];
-      const matchJSON: MatchJSON = {
-        ...(match as Omit<MatchJSON, 'creator' | 'people'>),
-        creator,
-        people: [
-          { ...tutor, roles: ['tutor'] },
-          { ...tutee, roles: ['tutee'] },
-        ],
-        ...overrides.match,
-      };
-      matches.push(Match.fromJSON(matchJSON));
-      if (overrides.match === null) delete matches[0];
-      matches = matches.filter(Boolean);
+      users = users.filter(Boolean);
 
       let meetings: Meeting[] = [];
       const meetingJSON: MeetingJSON = {
-        ...(meeting as Omit<MeetingJSON, 'creator' | 'match'>),
+        ...(meeting as Omit<MeetingJSON, 'creator' | 'people'>),
         creator,
-        match: matchJSON,
+        people: [
+          { ...tutor, roles: ['tutor'] }, 
+          { ...tutee, roles: ['tutee'] },
+        ],
         ...overrides.meeting,
       };
       meetings.push(Meeting.fromJSON(meetingJSON));
       if (overrides.meeting === null) delete meetings[0];
       meetings = meetings.filter(Boolean);
 
-      await supabase.from<DBOrg>('orgs').insert(orgs.map((o) => o.toDB()));
+      let { error } = await supabase.from<DBOrg>('orgs').insert(orgs.map((o) => o.toDB()));
+      if (error) throw new Error(`Error seeding orgs: ${error.message}`);
 
-      await supabase.from<DBUser>('users').insert(users.map((u) => u.toDB()));
+      ({ error } = await supabase.from<DBUser>('users').insert(users.map((u) => u.toDB())));
+      if (error) throw new Error(`Error seeding users: ${error.message}`);
       const parents = users
         .map((u) => u.parents.map((p) => ({ parent: p, user: u.id })))
         .flat();
-      await supabase.from<DBRelationParent>('relation_parents').insert(parents);
+      ({ error } = await supabase.from<DBRelationParent>('relation_parents').insert(parents));
+      if (error) throw new Error(`Error seeding relation_parents: ${error.message}`);
       const userOrgs = users
         .map((u) => u.orgs.map((o) => ({ org: o, user: u.id })))
         .flat();
-      await supabase.from<DBRelationOrg>('relation_orgs').insert(userOrgs);
+      ({ error } = await supabase.from<DBRelationOrg>('relation_orgs').insert(userOrgs));
+      if (error) throw new Error(`Error seeding relation_orgs: ${error.message}`);
 
       const members = orgs
         .map((o) => o.members.map((m) => ({ user: m, org: o.id })))
         .flat();
-      await supabase.from<DBRelationMember>('relation_members').insert(members);
+      ({ error } = await supabase.from<DBRelationMember>('relation_members').insert(members));
+      if (error) throw new Error(`Error seeding relation_members: ${error.message}`);
 
-      const { data: matchesData } = await supabase
-        .from<DBMatch>('matches')
-        .insert(matches.map((m) => ({ ...m.toDB(), id: undefined })));
-      const matchPeople = matches
-        .map((m, idx) =>
-          m.people.map((p) => ({
-            user: p.id,
-            roles: p.roles,
-            match: matchesData ? matchesData[idx].id : Number(m.id),
-          }))
-        )
-        .flat();
-      await supabase
-        .from<DBRelationMatchPerson>('relation_match_people')
-        .insert(matchPeople);
-
-      const { data: meetingsData } = await supabase
+      const { error: e, data: meetingsData } = await supabase
         .from<DBMeeting>('meetings')
-        .insert(meetings.map((m) => ({ ...m.toDB(), id: undefined })));
-      const meetingPeople = matches
+        .insert(meetings.map((m) => {
+          const row: Omit<DBMeeting, 'id'> & { id?: number } = m.toDB();
+          delete row.id;
+          return row;
+        }));
+      if (e) throw new Error(`Error seeding meetings: ${e.message}`);
+      const meetingPeople = meetings
         .map((m, idx) =>
           m.people.map((p) => ({
             user: p.id,
@@ -199,9 +170,10 @@ export default function plugins(
           }))
         )
         .flat();
-      await supabase
-        .from<DBRelationMeetingPerson>('relation_meeting_people')
-        .insert(meetingPeople);
+      ({ error } = await supabase
+        .from<DBRelationPerson>('relation_people')
+        .insert(meetingPeople));
+      if (error) throw new Error(`Error seeding relation_people: ${error.message}`);
 
       return null;
     },

@@ -35,6 +35,10 @@ describe('Login page', () => {
 
     // TODO: Find some way to simulate a correct Google login response so we can
     // get 100% code coverage on `components/login` (perhaps using emulators).
+    cy.on('uncaught:exception', (err) => {
+      expect(err.message).to.include('Unable to establish a connection with the popup. It may have been blocked by the browser.');
+      return false;
+    });
     cy.window().its('open').should('be.calledOnce').loading(false);
     cy.getBySel('error')
       .should('be.visible')
@@ -104,7 +108,7 @@ describe('Login page', () => {
   });
 
   it('navigates to overview on successful login', () => {
-    cy.setup({ volunteer: null, match: null, meeting: null });
+    cy.setup({ volunteer: null, meeting: null });
     cy.login(student.id);
     cy.visit('/login');
     cy.wait('@get-account');
@@ -113,7 +117,7 @@ describe('Login page', () => {
   });
 
   it('navigates to specified redirect destination', () => {
-    cy.setup({ student: null, match: null, meeting: null });
+    cy.setup({ student: null, meeting: null });
     cy.login(volunteer.id);
     cy.visit('/login?href=%2Fprofile');
     cy.wait('@get-account');

@@ -3,7 +3,6 @@ returns void as
 $$
   delete from orgs;
   delete from users;
-  delete from matches;
   delete from meetings;
 $$
 language sql volatile;

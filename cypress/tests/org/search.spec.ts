@@ -8,7 +8,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Search page', () => {
   it('restricts access to school data', () => {
-    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
+    cy.setup({ student: null, volunteer: null, meeting: null });
     cy.logout();
     cy.visit(`/${school.id}/search`, {
       onBeforeLoad(win: Window): void {
@@ -48,6 +48,10 @@ describe('Search page', () => {
     // TODO: Find some way to trick the application into thinking that it was
     // logged in successfully so we can make assertions about the user being
     // created and subsequently logged in.
+    cy.on('uncaught:exception', (err) => {
+      expect(err.message).to.include('Unable to establish a connection with the popup. It may have been blocked by the browser.');
+      return false;
+    });
     cy.window().its('open').should('be.called');
 
     cy.getBySel('loader').should('not.be.visible');
@@ -62,12 +66,9 @@ describe('Search page', () => {
   });
 
   it('partitions search results by org', () => {
-    cy.setup({ student: null, match: null, meeting: null });
+    cy.setup({ student: null, meeting: null });
     cy.login(admin.id);
     cy.visit(`/${org.id}/search`);
-    cy.get('header')
-      .contains('button', 'Tutors')
-      .should('have.attr', 'aria-selected', 'true');
 
     // TODO: Perhaps make assertions about the 'api/users' query to remove this
     // awkward result item selection timeout workaround.
@@ -83,14 +84,7 @@ describe('Search page', () => {
       .should('have.img', volunteer.photo, 85);
     cy.percySnapshot('Search Page');
 
-    cy.get('#open-nav').click();
-    cy.getBySel('picker')
-      .find(`[href="/${school.id}/search"]`)
-      .should('have.text', 'Search')
-      .click();
-
-    cy.url({ timeout: 60000 }).should('contain', `/${school.id}/search`);
-    cy.get('header').contains('button', 'Tutors').should('not.exist');
+    cy.visit(`/${school.id}/search`);
 
     cy.wait('@list-users');
     cy.get('@results').should('have.length', 2);
@@ -112,7 +106,7 @@ describe('Search page', () => {
   // TODO: Refactor this into reusable tests and assertions to test a variety of
   // different filter combinations (in order to reach 100% back-end coverage).
   it('filters users by subjects, langs, and name', () => {
-    cy.setup({ student: { phone: '' }, match: null, meeting: null });
+    cy.setup({ student: { phone: '' }, meeting: null });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);
 
@@ -141,7 +135,7 @@ describe('Search page', () => {
       .should('have.img', admin.photo, 85);
     cy.percySnapshot('Search Page for Schools');
 
-    cy.get('input[placeholder="Search results"]')
+    cy.get('input[placeholder="Search by name"]')
       .as('search-input')
       .type(admin.name.substring(0, 5));
     cy.wait('@list-users');
@@ -150,22 +144,15 @@ describe('Search page', () => {
       .and('not.have.attr', 'disabled', '')
       .children('a')
       .should('contain', onlyFirstNameAndLastInitial(admin.name))
-      .and(
-        'have.attr',
-        'href',
-        `/${school.id}/users/${admin.id}?aspect=${school.aspects[0]}`
-      )
+      .and('have.attr', 'href', `/${school.id}/users/${admin.id}`)
       .and('have.attr', 'target', '_blank');
     cy.percySnapshot('Search Page with Search Populated');
     cy.get('@search-input').clear().should('have.value', '');
 
     // TODO: Perhaps create some `Select` component tests to test the different
     // error and content states (e.g. multiple lines of selected chips).
-    cy.contains('button', 'Any languages').click();
-    cy.focused()
+    cy.contains('What languages do you speak?')
       .type('Span')
-      .closest('label')
-      .should('contain', 'What languages do you speak?')
       .as('langs-input');
     cy.percySnapshot('Search Page with Lang Select Focused');
 
@@ -191,19 +178,12 @@ describe('Search page', () => {
       .should('not.have.attr', 'disabled', '')
       .children('a')
       .should('contain', onlyFirstNameAndLastInitial(volunteer.name))
-      .and(
-        'have.attr',
-        'href',
-        `/${school.id}/users/${volunteer.id}?aspect=${school.aspects[0]}`
-      )
+      .and('have.attr', 'href', `/${school.id}/users/${volunteer.id}`)
       .and('have.attr', 'target', '_blank');
     cy.percySnapshot('Search Page with Lang Filters');
 
-    cy.contains('button', 'Any subjects').click();
-    cy.focused()
-      .type('Artificial')
-      .closest('label')
-      .should('contain', 'What would you like to learn?');
+    cy.contains('What would you like to learn?')
+      .type('Lorem Ipsum');
     cy.contains('.mdc-menu-surface', 'No subjects').should('be.visible');
     cy.percySnapshot('Search Page with Subject Select Focused');
 
@@ -219,11 +199,15 @@ describe('Search page', () => {
     cy.getBySel('results').should('contain', 'NO RESULTS TO SHOW');
     cy.percySnapshot('Search Page with No Results');
 
-    cy.contains('button', 'Spanish').click();
-    cy.focused()
+    cy.contains('What languages do you speak?')
       .parent()
       .within(() => {
-        cy.get('.mdc-chip').first().find('[role="button"]').last().click();
+        cy.get('.mdc-chip')
+          .first()
+          .should('contain', 'Spanish')
+          .find('[role="button"]')
+          .last()
+          .click();
         cy.get('.mdc-chip').should('have.length', 0);
         cy.percySnapshot('Search Page with Subject Selected');
       });
@@ -235,11 +219,7 @@ describe('Search page', () => {
       .should('not.have.attr', 'disabled', '')
       .children('a')
       .should('contain', onlyFirstNameAndLastInitial(admin.name))
-      .and(
-        'have.attr',
-        'href',
-        `/${school.id}/users/${admin.id}?aspect=${school.aspects[0]}`
-      )
+      .and('have.attr', 'href', `/${school.id}/users/${admin.id}`)
       .and('have.attr', 'target', '_blank');
     cy.percySnapshot('Search Page with Subject Filters');
   });

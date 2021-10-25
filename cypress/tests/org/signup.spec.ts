@@ -3,7 +3,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Signup page', () => {
   beforeEach(() => {
-    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
+    cy.setup({ student: null, volunteer: null, meeting: null });
     cy.logout();
     cy.visit(`/${org.id}/signup`);
   });
@@ -97,7 +97,7 @@ describe('Signup page', () => {
       .last()
       .should('contain', 'Spanish');
 
-    cy.contains('What are your fields of expertise?')
+    cy.contains('What can you tutor?')
       .as('subjects-input')
       .type('Computer');
 
@@ -160,12 +160,6 @@ describe('Signup page', () => {
     cy.getBySel('error').as('error').should('not.exist');
     cy.get('@btn').should('contain', 'Update profile');
 
-    cy.get('header').contains('button', 'Tutors').click();
-
-    cy.get('@name-input').should('have.value', volunteer.name);
-    cy.get('@email-input').should('have.value', volunteer.email);
-    cy.get('@phone-input').should('have.value', volunteer.phone);
-
     cy.get('@subjects-input')
       .should('contain', 'What can you tutor?')
       .and('have.value', '')
@@ -175,10 +169,11 @@ describe('Signup page', () => {
     cy.contains('li:visible', 'Trigonometry').trigger('click');
     cy.get('@subjects-input')
       .children('.mdc-chip')
-      .should('have.length', 3)
+      .should('have.length', 4)
       .and('contain', 'Algebra')
       .and('contain', 'Geometry')
-      .and('contain', 'Trigonometry');
+      .and('contain', 'Trigonometry')
+      .and('contain', 'Computer Science');
 
     cy.get('@btn').click().should('be.disabled');
     cy.get('@loader').should('be.visible');

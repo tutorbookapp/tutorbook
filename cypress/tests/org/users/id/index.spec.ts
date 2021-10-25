@@ -4,7 +4,7 @@ import { getDateWithDay, getDaysInMonth } from 'lib/utils/time';
 import { onlyFirstNameAndLastInitial } from 'lib/api/get/truncated-user';
 
 import child from 'cypress/fixtures/users/child.json';
-import match from 'cypress/fixtures/match.json';
+import meeting from 'cypress/fixtures/meeting.json';
 import org from 'cypress/fixtures/orgs/default.json';
 import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
@@ -80,8 +80,7 @@ function selectTime(they: boolean = false): void {
     .as('days')
     .should('have.length', getDaysInMonth(now.getMonth()))
     .eq(now.getDate() - 1)
-    .should('have.attr', 'aria-selected', 'true')
-    .and('have.css', 'background-color', 'rgb(0, 112, 243)');
+    .should('have.attr', 'aria-selected', 'true');
 
   // Days before our `from` threshold (of 3 days in advance) should be disabled.
   let past = new Date(now.getFullYear(), now.getMonth());
@@ -139,8 +138,7 @@ function selectTime(they: boolean = false): void {
   cy.get('@days')
     .eq(selected.getDate() - 1)
     .trigger('click')
-    .should('have.attr', 'aria-selected', 'true')
-    .and('have.css', 'background-color', 'rgb(0, 112, 243)');
+    .should('have.attr', 'aria-selected', 'true');
   cy.getBySel('selected-day')
     .scrollIntoView({ offset: { top: -100, left: 0 } })
     .should('be.visible')
@@ -196,7 +194,7 @@ function selectTime(they: boolean = false): void {
 }
 
 // TODO: Test flashes of truncated data, edit and vet action links, request form
-// behavior, subjects displayed (based on org and query aspect), etc.
+// behavior, subjects displayed (based on org), etc.
 describe('User display page', () => {
   it('shows not found error for missing users', () => {
     cy.setup(null);
@@ -219,9 +217,8 @@ describe('User display page', () => {
   it('collects profiles before booking meetings', () => {
     cy.setup({
       student: { phone: '', reference: '' },
-      school: { profiles: ['phone', 'reference'] },
+      school: { profiles: ['name', 'email', 'phone', 'reference'] },
       meeting: null,
-      match: null,
     });
     cy.login(student.id);
     cy.visit(`/${school.id}/users/${volunteer.id}`);
@@ -253,7 +250,7 @@ describe('User display page', () => {
 
       cy.getBySel('bio').should('have.text', volunteer.bio);
       cy.getBySel('subjects')
-        .should('not.contain', 'Artificial Intelligence')
+        .should('contain', 'Artificial Intelligence')
         .and('contain', 'Computer Science')
         .and('contain', 'Math');
       cy.getBySel('langs')
@@ -262,9 +259,10 @@ describe('User display page', () => {
       cy.percySnapshot('User Display Page');
     });
 
-    cy.contains('.mdc-select', 'Who needs help?')
-      .find('.mdc-select__selected-text')
-      .should('have.text', 'Me');
+    cy.contains('Who needs help?')
+      .children('.mdc-chip')
+      .should('have.length', 1)
+      .and('contain', 'Me');
 
     cy.contains('What would you like to learn?')
       .as('subject-input')
@@ -284,7 +282,7 @@ describe('User display page', () => {
     cy.contains('What specifically do you need help with?')
       .click()
       .should('have.class', 'mdc-text-field--focused')
-      .type(match.message);
+      .type(meeting.description);
     cy.percySnapshot('User Display Page with Message Populated');
 
     cy.contains('Your phone number')
@@ -306,13 +304,14 @@ describe('User display page', () => {
 
     cy.contains('button', 'Book meeting').click().should('be.disabled');
     cy.getBySel('loader')
+      .scrollIntoView()
       .should('be.visible')
       .find('svg')
       .should('have.attr', 'data-cy-checked', 'false');
     cy.percySnapshot('User Display Page in Loading State');
 
     // TODO: Make assertions about the content within our Firestore database
-    // simulator and SendGrid API to ensure that it matches what we submitted.
+    // simulator and SendGrid API to ensure that it meetings what we submitted.
     cy.wait('@update-account');
     cy.get('@phone-input').should('not.exist');
     cy.get('@reference-input').should('not.exist');
@@ -327,24 +326,24 @@ describe('User display page', () => {
   });
 
   it('lets parents book meetings for their kids', () => {
-    cy.setup({ meeting: null, match: null });
+    cy.setup({ meeting: null });
     cy.login(student.id);
     cy.visit(`/${school.id}/users/${volunteer.id}`);
     cy.wait('@get-user', { timeout: 60000 });
 
-    cy.contains('.mdc-select', 'Who needs help?')
-      .find('.mdc-select__selected-text')
-      .should('have.text', 'Me')
-      .as('child-select')
+    cy.contains('Who needs help?')
+      .children('.mdc-chip')
+      .should('have.length', 1)
+      .and('contain', 'Me')
       .click();
     cy.percySnapshot('User Display Page with Child Select Open');
 
-    cy.contains('.mdc-menu ul li', 'My child').click();
-    cy.get('@child-select').should('have.text', 'My child');
+    cy.contains('.mdc-menu-surface ul li', 'Create student').trigger('click');
+    cy.contains('Who needs help?').should('not.exist');
     cy.percySnapshot('User Display Page with Child Selected');
 
-    cy.contains('Child name').type(child.name);
-    cy.contains('Child age').type(child.age.toFixed(0));
+    cy.contains('Student name').type(child.name);
+    cy.contains('Student age').type(child.age.toFixed(0));
     cy.percySnapshot('User Display Page with Child Populated');
 
     cy.contains('What would they like to learn?').type('Computer');
@@ -357,7 +356,7 @@ describe('User display page', () => {
     selectTime(true);
 
     cy.contains('What specifically do they need help with?').type(
-      match.message
+      meeting.description
     );
     cy.percySnapshot('User Display Page with Child with Message Populated');
 
@@ -379,33 +378,8 @@ describe('User display page', () => {
     cy.percySnapshot('User Display Page with Child with Checkmark');
   });
 
-  it('restricts subjects based on query aspect', () => {
-    cy.setup({ student: null, match: null, meeting: null });
-    cy.logout();
-    cy.visit(`/${org.id}/users/${volunteer.id}?aspect=tutoring`);
-
-    cy.getBySel('subjects')
-      .should('not.contain', 'Artificial Intelligence')
-      .and('contain', 'Computer Science')
-      .and('contain', 'Math');
-    cy.percySnapshot('User Display Page for Tutoring');
-
-    cy.contains('What would you like to learn?')
-      .as('subject-input')
-      .type('Artificial');
-    cy.contains('No subjects').should('be.visible');
-    cy.percySnapshot('User Display Page for Tutoring with No Subjects');
-
-    cy.get('@subject-input').find('textarea').clear().type('Computer');
-    cy.contains('li', 'Computer Science')
-      .trigger('click')
-      .find('input[type="checkbox"]')
-      .should('be.checked');
-    cy.percySnapshot('User Display Page for Tutoring with Subject Selected');
-  });
-
   it('signs users up before booking meetings', () => {
-    cy.setup({ student: null, match: null, meeting: null });
+    cy.setup({ student: null, meeting: null });
     cy.logout();
     cy.visit(`/${org.id}/users/${volunteer.id}`, {
       onBeforeLoad(win: Window): void {
@@ -415,9 +389,10 @@ describe('User display page', () => {
     cy.wait('@get-user', { timeout: 60000 });
     cy.percySnapshot('User Display Page with Signup Button');
 
-    cy.contains('.mdc-select', 'Who needs help?')
-      .find('.mdc-select__selected-text')
-      .should('have.text', 'Me');
+    cy.contains('Who needs help?')
+      .children('.mdc-chip')
+      .should('have.length', 1)
+      .and('contain', 'Me');
 
     cy.contains('What would you like to learn?').type('Artificial');
     cy.contains('li', 'Artificial Intelligence')
@@ -428,15 +403,25 @@ describe('User display page', () => {
 
     selectTime();
 
-    cy.contains('What specifically do you need help with?').type(match.message);
+    cy.contains('What specifically do you need help with?').type(
+      meeting.description
+    );
     cy.percySnapshot('User Display Page with Signup with Message Populated');
 
-    cy.contains('button', 'Signup and book').click().should('be.disabled');
-    cy.getBySel('loader').should('be.visible');
+    cy.contains('button', 'Login and book').click().should('be.disabled');
+    cy.getBySel('loader')
+      .scrollIntoView()
+      .should('be.visible')
+      .find('svg')
+      .should('have.attr', 'data-cy-checked', 'false');
     cy.percySnapshot('User Display Page with Signup in Loading State');
 
     // TODO: Stub out the Google OAuth response using the Google OAuth
     // server-side REST API. That way, we can test this programmatically.
+    cy.on('uncaught:exception', (err) => {
+      expect(err.message).to.include('Unable to establish a connection with the popup. It may have been blocked by the browser.');
+      return false;
+    });
     cy.window().its('open').should('be.called');
 
     cy.getBySel('loader').should('not.be.visible');
