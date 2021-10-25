@@ -104,7 +104,7 @@ describe('Login page', () => {
   });
 
   it('navigates to overview on successful login', () => {
-    cy.setup({ volunteer: null, match: null, meeting: null });
+    cy.setup({ volunteer: null, meeting: null });
     cy.login(student.id);
     cy.visit('/login');
     cy.wait('@get-account');
@@ -113,7 +113,7 @@ describe('Login page', () => {
   });
 
   it('navigates to specified redirect destination', () => {
-    cy.setup({ student: null, match: null, meeting: null });
+    cy.setup({ student: null, meeting: null });
     cy.login(volunteer.id);
     cy.visit('/login?href=%2Fprofile');
     cy.wait('@get-account');
