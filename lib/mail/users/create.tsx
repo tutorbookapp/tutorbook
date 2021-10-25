@@ -53,7 +53,7 @@ export default function mail(user: User, org: Org, admins: User[]): Promise<void
           }}
         />
         <P>
-          To add {user.firstName}’s profile to <A href={`https://tutorbook.org/${org.id}/search`}>{org.name}’s search page</A>, open <A href={`https://tutorbook.org/${org.id}/users/${user.id}/vet`}>this vetting page</A> and toggle the “Visible in search results” switch on.
+          To add {user.firstName}’s profile to <A href={`https://tutorbook.org/${org.id}/search`}>{org.name}’s search page</A>, simply open <A href={`https://tutorbook.org/${org.id}/users/${user.id}/vet`}>this vetting page</A> and toggle the “Visible in search results” switch on.
         </P>
         <P>Thank you.</P>
         <Footer />
