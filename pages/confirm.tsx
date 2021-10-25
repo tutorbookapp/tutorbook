@@ -46,7 +46,7 @@ function ConfirmPage(props: PageProps): JSX.Element {
 
       // As cookies are to be used, do not persist any state client side.
       // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
-      auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+      await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
       if (!auth.isSignInWithEmailLink(window.location.href))
         return setError(confirm['invalid-link']);
