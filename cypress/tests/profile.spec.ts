@@ -4,7 +4,7 @@ import volunteer from 'cypress/fixtures/users/volunteer.json';
 
 describe('Profile page', () => {
   beforeEach(() => {
-    cy.setup({ student: null, match: null, meeting: null });
+    cy.setup({ student: null, meeting: null });
   });
 
   it('redirects to login page when logged out', () => {
@@ -159,18 +159,10 @@ describe('Profile page', () => {
 
     cy.contains('What can you tutor?')
       .children('.mdc-chip')
-      .should('have.length', volunteer.tutoring.subjects.length)
-      .as('tutoring-subjects');
-    volunteer.tutoring.subjects.forEach((subject: string, idx: number) => {
-      cy.get('@tutoring-subjects').eq(idx).should('contain', subject);
-    });
-
-    cy.contains('What are your fields of expertise?')
-      .children('.mdc-chip')
-      .should('have.length', volunteer.mentoring.subjects.length)
-      .as('mentoring-subjects');
-    volunteer.mentoring.subjects.forEach((subject: string, idx: number) => {
-      cy.get('@mentoring-subjects').eq(idx).should('contain', subject);
+      .should('have.length', volunteer.subjects.length)
+      .as('subjects');
+    volunteer.subjects.forEach((subject: string, idx: number) => {
+      cy.get('@subjects').eq(idx).should('contain', subject);
     });
 
     const langs: Record<string, string> = { en: 'English', es: 'Spanish' };
@@ -233,7 +225,7 @@ describe('Profile page', () => {
     // Drag-and-drop the timeslots and assert that their content changes.
     // @see {@link https://bit.ly/2TIuE3i}
     volunteer.availability.forEach((timeslot: TimeslotJSON, idx: number) => {
-      const config = { hour: 'numeric', minute: 'numeric' };
+      const config = { hour: 'numeric' as const, minute: 'numeric' as const };
       cy.get('@timeslots')
         .eq(idx)
         .should('contain', new Date(timeslot.from).toLocaleString('en', config))
