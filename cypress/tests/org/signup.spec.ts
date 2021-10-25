@@ -57,7 +57,7 @@ describe('Signup page', () => {
     cy.percySnapshot('Signup Page with Photo Errored');
   });
 
-  it.only('signs new volunteers up', () => {
+  it('signs new volunteers up', () => {
     cy.intercept('POST', 'https://firebasestorage.googleapis.com/**', {
       fixture: 'users/volunteer.jpg.json',
     }).as('upload-photo');

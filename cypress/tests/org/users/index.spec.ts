@@ -45,7 +45,7 @@ describe('Users page', () => {
     cy.url({ timeout: 60000 }).should('contain', url);
   });
 
-  it.only('falls back to invisible textarea copy-paste', () => {
+  it('falls back to invisible textarea copy-paste', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {
@@ -60,7 +60,7 @@ describe('Users page', () => {
     cy.get('@copy').should('be.calledOnce');
   });
 
-  it.only('copies org links and filters users', () => {
+  it('copies org links and filters users', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {

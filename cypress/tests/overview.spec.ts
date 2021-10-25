@@ -14,7 +14,7 @@ describe('Overview page', () => {
     cy.loading(false).percySnapshot('Login Page');
   });
 
-  it.only('only shows org accounts to admins', () => {
+  it('only shows org accounts to admins', () => {
     cy.setup({ volunteer: null, meeting: null });
     cy.login(student.id);
     cy.visit('/overview');
@@ -43,7 +43,7 @@ describe('Overview page', () => {
     cy.percySnapshot('Overview Page for Students');
   });
 
-  it.only('shows placeholders and accounts when logged in', () => {
+  it('shows placeholders and accounts when logged in', () => {
     cy.setup({ student: null, volunteer: null, meeting: null });
     cy.login(admin.id);
     cy.visit('/overview');
