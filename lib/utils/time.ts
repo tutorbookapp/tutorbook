@@ -281,10 +281,10 @@ export function sliceAvailability(
  */
 export function getAlgoliaAvailability(
   availability: Availability,
-  booked: Availability,
-  until: Date,
-  interval: number = 15,
-  duration: number = 60
+  booked = (new Availability()),
+  until = (new Date(new Date().getFullYear(), new Date().getMonth() + 3)),
+  interval = 15,
+  duration = 60
 ): number[] {
   const sliced = sliceAvailability(availability, interval, duration);
   const filtered = sliced.filter((timeslot) => {

@@ -20,6 +20,7 @@ import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
 import definedVals from 'lib/model/defined-vals';
+import { getAlgoliaAvailability } from 'lib/utils/time';
 
 export type Role = 'tutor' | 'tutee' | 'parent';
 export function isRole(role: unknown): role is Role {
@@ -274,7 +275,7 @@ export class User extends Account implements UserInterface {
       tags: [...this.tags, ...notTags(this.tags, USER_TAGS)],
       created: this.created.toISOString(),
       updated: this.updated.toISOString(),
-      times: [],
+      times: getAlgoliaAvailability(this.availability),
     };
   }
 
