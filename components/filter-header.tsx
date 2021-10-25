@@ -64,12 +64,12 @@ export default function FilterHeader({
           background: var(--background);
           position: relative;
           padding: 48px 0 8px;
-          z-index: 9;
+          z-index: 6;
         }
 
         header {
           position: sticky;
-          z-index: 8;
+          z-index: 5;
           top: 0;
           border-bottom: 1px solid var(--accents-2);
           background: var(--background);
