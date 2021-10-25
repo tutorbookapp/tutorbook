@@ -115,14 +115,7 @@ export default function plugins(
       if (overrides.volunteer === null) delete users[0];
       if (overrides.student === null) delete users[1];
       if (overrides.admin === null) delete users[2];
-      users = users.filter(Boolean).map((user) => {
-        // Workaround for bug where custom array class methods disappear.
-        // @see {@link https://github.com/cypress-io/cypress/issues/17603}
-        user.availability.toDB = function toDB() {
-          return Array.from(this.map((t) => t.toDB()));
-        };
-        return user;
-      });
+      users = users.filter(Boolean);
 
       let meetings: Meeting[] = [];
       const meetingJSON: MeetingJSON = {
@@ -162,7 +155,11 @@ export default function plugins(
 
       const { error: e, data: meetingsData } = await supabase
         .from<DBMeeting>('meetings')
-        .insert(meetings.map((m) => ({ ...m.toDB(), id: undefined })));
+        .insert(meetings.map((m) => {
+          const row: Omit<DBMeeting, 'id'> & { id?: number } = m.toDB();
+          delete row.id;
+          return row;
+        }));
       if (e) throw new Error(`Error seeding meetings: ${e.message}`);
       const meetingPeople = meetings
         .map((m, idx) =>
