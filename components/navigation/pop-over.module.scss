@@ -132,9 +132,12 @@
     outline: none;
     cursor: pointer;
 
+    &:disabled {
+      cursor: wait;
+    }
+
     .wrapper {
       box-sizing: border-box;
-      cursor: pointer;
       display: inline-table;
       position: relative;
 

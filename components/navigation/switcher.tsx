@@ -15,7 +15,7 @@ import styles from './pop-over.module.scss';
 export default function Switcher(): JSX.Element {
   const { t } = useTranslation();
   const { pathname, query } = useRouter();
-  const { user, orgs } = useUser();
+  const { user, orgs, loggedIn } = useUser();
 
   const [open, setOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>('Account');
@@ -76,6 +76,7 @@ export default function Switcher(): JSX.Element {
       <div className={styles.selector}>
         <button
           type='button'
+          disabled={!loggedIn}
           onClick={() => setOpen(true)}
           data-cy='switcher-btn'
           aria-expanded={open}
