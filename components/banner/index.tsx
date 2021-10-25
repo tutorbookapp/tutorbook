@@ -1,6 +1,6 @@
+import cn from 'classnames';
 import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
-import cn from 'classnames';
 
 import styles from './banner.module.scss';
 

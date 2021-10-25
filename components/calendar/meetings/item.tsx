@@ -82,10 +82,7 @@ export default function MeetingItem({
         const edit = (e: MouseEvent) => {
           e.stopPropagation();
           if (lastPosition)
-            mouseMovement += Math.sqrt(
-              Math.pow(lastPosition.x - e.clientX, 2) +
-                Math.pow(lastPosition.y - e.clientY, 2)
-            );
+            mouseMovement += Math.sqrt(((lastPosition.x - e.clientX) ** 2 + (lastPosition.y - e.clientY) ** 2));
           lastPosition = { x: e.clientX, y: e.clientY };
           if (mouseMovement > 10) {
             removeListeners();

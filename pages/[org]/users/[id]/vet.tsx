@@ -71,13 +71,13 @@ export const getStaticProps: GetStaticProps<
 > = async (ctx: GetStaticPropsContext<UserVetPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org and user w/out params.');
   try {
-    const [org, user] = await Promise.all([
+    const [org, usr] = await Promise.all([
       getOrg(ctx.params.org),
       getUser(ctx.params.id),
     ]);
     const { props } = await getPageProps();
     return {
-      props: { org: org.toJSON(), user: user.toJSON(), ...props },
+      props: { org: org.toJSON(), user: usr.toJSON(), ...props },
       revalidate: 1,
     };
   } catch (e) {
@@ -88,7 +88,7 @@ export const getStaticProps: GetStaticProps<
 // TODO: We want to statically generate skeleton loading pages for each org.
 // @see {@link https://github.com/vercel/next.js/issues/14200}
 // @see {@link https://github.com/vercel/next.js/discussions/14486}
-export const getStaticPaths: GetStaticPaths<UserVetPageQuery> = async () => ({
+export const getStaticPaths: GetStaticPaths<UserVetPageQuery> = () => ({
   paths: [],
   fallback: true,
 });

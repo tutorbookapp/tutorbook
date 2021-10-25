@@ -5,8 +5,8 @@ import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
 import Page from 'components/page';
-import { TabHeader } from 'components/navigation';
 import Hours from 'components/user/hours';
+import { TabHeader } from 'components/navigation';
 
 import { Org, OrgJSON } from 'lib/model/org';
 import { PageProps, getPageProps } from 'lib/page';
@@ -83,13 +83,13 @@ export const getStaticProps: GetStaticProps<
 > = async (ctx: GetStaticPropsContext<UserHoursPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org and user w/out params.');
   try {
-    const [org, user] = await Promise.all([
+    const [org, usr] = await Promise.all([
       getOrg(ctx.params.org),
       getUser(ctx.params.id),
     ]);
     const { props } = await getPageProps();
     return {
-      props: { org: org.toJSON(), user: user.toJSON(), ...props },
+      props: { org: org.toJSON(), user: usr.toJSON(), ...props },
       revalidate: 1,
     };
   } catch (e) {
@@ -100,7 +100,7 @@ export const getStaticProps: GetStaticProps<
 // TODO: We want to statically generate skeleton loading pages for each org.
 // @see {@link https://github.com/vercel/next.js/issues/14200}
 // @see {@link https://github.com/vercel/next.js/discussions/14486}
-export const getStaticPaths: GetStaticPaths<UserHoursPageQuery> = async () => ({
+export const getStaticPaths: GetStaticPaths<UserHoursPageQuery> = () => ({
   paths: [],
   fallback: true,
 });

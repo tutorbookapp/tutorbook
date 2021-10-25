@@ -5,7 +5,7 @@ import { serialize } from 'cookie';
  * GET - Logs the user out by removing the HttpOnly authentication cookie and
  *       redirecting to the login page.
  */
-export default async function logout(req: Req, res: Res): Promise<void> {
+export default function logout(req: Req, res: Res): void {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     res.status(405).end(`Method ${req.method as string} Not Allowed`);

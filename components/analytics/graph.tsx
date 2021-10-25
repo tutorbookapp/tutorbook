@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unused-prop-types, react/prop-types */
+
 import {
   Area,
   AreaChart,
