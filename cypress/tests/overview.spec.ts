@@ -14,8 +14,8 @@ describe('Overview page', () => {
     cy.loading(false).percySnapshot('Login Page');
   });
 
-  it('only shows org accounts to admins', () => {
-    cy.setup({ volunteer: null, match: null, meeting: null });
+  it.only('only shows org accounts to admins', () => {
+    cy.setup({ volunteer: null, meeting: null });
     cy.login(student.id);
     cy.visit('/overview');
     cy.percySnapshot('Overview Page in Loading State');
@@ -28,7 +28,7 @@ describe('Overview page', () => {
       .find('a')
       .should('have.length', 1)
       .first()
-      .should('have.text', student.name)
+      .should('contain', student.name)
       .and('have.attr', 'href', '/overview');
 
     cy.window().then((win) => cy.stub(win, 'Intercom').as('intercom'));
@@ -43,8 +43,8 @@ describe('Overview page', () => {
     cy.percySnapshot('Overview Page for Students');
   });
 
-  it('shows placeholders and accounts when logged in', () => {
-    cy.setup({ student: null, volunteer: null, match: null, meeting: null });
+  it.only('shows placeholders and accounts when logged in', () => {
+    cy.setup({ student: null, volunteer: null, meeting: null });
     cy.login(admin.id);
     cy.visit('/overview');
 
@@ -62,15 +62,15 @@ describe('Overview page', () => {
       .should('have.length', 3);
     cy.get('@accounts')
       .eq(0)
-      .should('have.text', admin.name)
+      .should('contain', admin.name)
       .and('have.attr', 'href', '/overview');
     cy.get('@accounts')
       .eq(1)
-      .should('have.text', org.name)
+      .should('contain', org.name)
       .and('have.attr', 'href', `/${org.id}/overview`);
     cy.get('@accounts')
       .eq(2)
-      .should('have.text', school.name)
+      .should('contain', school.name)
       .and('have.attr', 'href', `/${school.id}/overview`);
 
     cy.percySnapshot('Overview Page for Admins with Switcher Open');

@@ -1,5 +1,3 @@
-import { Aspect } from 'lib/model/aspect';
-
 import admin from 'cypress/fixtures/users/admin.json';
 import school from 'cypress/fixtures/orgs/school.json';
 import student from 'cypress/fixtures/users/student.json';
@@ -31,10 +29,7 @@ function snackbarIsOpen(label: string = 'Link copied to clipboard.'): void {
 // TODO: Add `cy.percySnapshot` calls to add visual snapshot testing.
 describe('Users page', () => {
   beforeEach(() => {
-    // TODO: Update our fixtures so we can accurately test that the aspect chips
-    // only appear when the aspect is within the given org.
-    const aspects: Aspect[] = ['tutoring', 'mentoring'];
-    cy.setup({ school: { aspects }, match: null, meeting: null });
+    cy.setup({ meeting: null });
   });
 
   it('redirects to login page when logged out', () => {
@@ -50,7 +45,7 @@ describe('Users page', () => {
     cy.url({ timeout: 60000 }).should('contain', url);
   });
 
-  it('falls back to invisible textarea copy-paste', () => {
+  it.only('falls back to invisible textarea copy-paste', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {
@@ -65,7 +60,7 @@ describe('Users page', () => {
     cy.get('@copy').should('be.calledOnce');
   });
 
-  it('copies org links and filters users', () => {
+  it.only('copies org links and filters users', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {

@@ -35,6 +35,10 @@ describe('Login page', () => {
 
     // TODO: Find some way to simulate a correct Google login response so we can
     // get 100% code coverage on `components/login` (perhaps using emulators).
+    cy.on('uncaught:exception', (err) => {
+      expect(err.message).to.include('Unable to establish a connection with the popup. It may have been blocked by the browser.');
+      return false;
+    });
     cy.window().its('open').should('be.calledOnce').loading(false);
     cy.getBySel('error')
       .should('be.visible')
