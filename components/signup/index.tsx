@@ -17,7 +17,6 @@ import VenueInput from 'components/venue-input';
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { ValidationsContext } from 'lib/context/validations';
-import { login } from 'lib/firebase/login';
 import useAnalytics from 'lib/hooks/analytics';
 import { useOrg } from 'lib/context/org';
 import useSingle from 'lib/hooks/single';
@@ -34,12 +33,27 @@ export default function Signup(): JSX.Element {
     async (updated: User) => {
       if (!updated.id) {
         track('User Signup Started', updated.toSegment());
-        const created = await login(updated);
-        track('User Signed Up', created.toSegment());
-        return created;
+        const { default: firebase } = await import('lib/firebase');
+        await import('firebase/auth');
+        const auth = firebase.auth();
+
+        // As httpOnly cookies are to be used, do not persist any state client side.
+        // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
+        await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+        
+        const { data: created } = 
+          await axios.post<UserJSON>('/api/users', updated.toJSON());
+        await auth.signInWithCustomToken(created.token as string);
+        const token = await auth.currentUser?.getIdToken();
+        
+        const { data: loggedIn } = 
+          await axios.put<UserJSON>('/api/account', { ...created, token });
+        const loggedInUser = User.fromJSON(loggedIn);
+        track('User Signed Up', loggedInUser.toSegment());
+        return loggedInUser;
       }
-      const url = `/api/users/${updated.id}`;
-      const { data } = await axios.put<UserJSON>(url, updated.toJSON());
+      const { data } = 
+        await axios.put<UserJSON>(`/api/users/${updated.id}`, updated.toJSON());
       track('User Updated', updated.toSegment());
       return User.fromJSON(data);
     },

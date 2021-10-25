@@ -5,29 +5,6 @@ import to from 'await-to-js';
 import { User, UserInterface, UserJSON } from 'lib/model/user';
 import { APIErrorJSON } from 'lib/model/error';
 
-// TODO: This is very insecure; it allows anyone to create an account for and be
-// authenticated as anyone that they have contact info for.
-export async function login(user: User): Promise<User> {
-  const { default: firebase } = await import('lib/firebase');
-  await import('firebase/auth');
-
-  const auth = firebase.auth();
-  const [err, res] = await to<
-    AxiosResponse<UserJSON>,
-    AxiosError<APIErrorJSON>
-  >(axios.post('/api/users', user.toJSON()));
-
-  if (err && err.response) throw new Error(err.response.data.message);
-  if (err && err.request) throw new Error('Users API did not respond.');
-  if (err) throw new Error(`Error calling user API: ${err.message}`);
-
-  const { data } = res as AxiosResponse<UserJSON>;
-  await auth.signInWithCustomToken(data.token as string);
-  await mutate('/api/account', data, false);
-
-  return User.fromJSON(data);
-}
-
 export async function loginWithGoogle(
   user?: User,
   gsuite?: boolean
