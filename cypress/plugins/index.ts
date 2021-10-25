@@ -128,33 +128,42 @@ export default function plugins(
       const meetingJSON: MeetingJSON = {
         ...(meeting as Omit<MeetingJSON, 'creator' | 'people'>),
         creator,
-        people: [tutor, tutee],
+        people: [
+          { ...tutor, roles: ['tutor'] }, 
+          { ...tutee, roles: ['tutee'] },
+        ],
         ...overrides.meeting,
       };
       meetings.push(Meeting.fromJSON(meetingJSON));
       if (overrides.meeting === null) delete meetings[0];
       meetings = meetings.filter(Boolean);
 
-      await supabase.from<DBOrg>('orgs').insert(orgs.map((o) => o.toDB()));
+      let { error } = await supabase.from<DBOrg>('orgs').insert(orgs.map((o) => o.toDB()));
+      if (error) throw new Error(`Error seeding orgs: ${error.message}`);
 
-      await supabase.from<DBUser>('users').insert(users.map((u) => u.toDB()));
+      ({ error } = await supabase.from<DBUser>('users').insert(users.map((u) => u.toDB())));
+      if (error) throw new Error(`Error seeding users: ${error.message}`);
       const parents = users
         .map((u) => u.parents.map((p) => ({ parent: p, user: u.id })))
         .flat();
-      await supabase.from<DBRelationParent>('relation_parents').insert(parents);
+      ({ error } = await supabase.from<DBRelationParent>('relation_parents').insert(parents));
+      if (error) throw new Error(`Error seeding relation_parents: ${error.message}`);
       const userOrgs = users
         .map((u) => u.orgs.map((o) => ({ org: o, user: u.id })))
         .flat();
-      await supabase.from<DBRelationOrg>('relation_orgs').insert(userOrgs);
+      ({ error } = await supabase.from<DBRelationOrg>('relation_orgs').insert(userOrgs));
+      if (error) throw new Error(`Error seeding relation_orgs: ${error.message}`);
 
       const members = orgs
         .map((o) => o.members.map((m) => ({ user: m, org: o.id })))
         .flat();
-      await supabase.from<DBRelationMember>('relation_members').insert(members);
+      ({ error } = await supabase.from<DBRelationMember>('relation_members').insert(members));
+      if (error) throw new Error(`Error seeding relation_members: ${error.message}`);
 
-      const { data: meetingsData } = await supabase
+      const { error: e, data: meetingsData } = await supabase
         .from<DBMeeting>('meetings')
         .insert(meetings.map((m) => ({ ...m.toDB(), id: undefined })));
+      if (e) throw new Error(`Error seeding meetings: ${e.message}`);
       const meetingPeople = meetings
         .map((m, idx) =>
           m.people.map((p) => ({
@@ -164,9 +173,10 @@ export default function plugins(
           }))
         )
         .flat();
-      await supabase
-        .from<DBRelationPerson>('relation_meeting_people')
-        .insert(meetingPeople);
+      ({ error } = await supabase
+        .from<DBRelationPerson>('relation_people')
+        .insert(meetingPeople));
+      if (error) throw new Error(`Error seeding relation_people: ${error.message}`);
 
       return null;
     },
