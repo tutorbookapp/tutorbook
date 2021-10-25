@@ -93,7 +93,7 @@ export const getStaticProps: GetStaticProps<
       revalidate: 1,
     };
   } catch (e) {
-    return { notFound: true };
+    return { notFound: true, revalidate: 1 };
   }
 };
 

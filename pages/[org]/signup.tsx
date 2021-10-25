@@ -52,7 +52,7 @@ export const getStaticProps: GetStaticProps<
 > = async (ctx: GetStaticPropsContext<SignupPageQuery>) => {
   if (!ctx.params) throw new Error('Cannot fetch org w/out params.');
   const [error, org] = await to(getOrg(ctx.params.org));
-  if (error || !org) return { notFound: true };
+  if (error || !org) return { notFound: true, revalidate: 1 };
   const { props } = await getPageProps();
   return { props: { org: org.toJSON(), ...props }, revalidate: 1 };
 };
