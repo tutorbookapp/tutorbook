@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "target": "es6",
     "isolatedModules": false,
     "lib": ["dom", "esnext"],
     "types": ["cypress", "@percy/cypress", "node"]
