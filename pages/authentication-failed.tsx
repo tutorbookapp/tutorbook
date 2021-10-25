@@ -17,7 +17,7 @@ function AuthenticationFailedPage(props: PageProps): JSX.Element {
   const { query } = useRouter();
   const { t } = useTranslation();
 
-  useLoginPage({ name: 'Authenticated Failed' });
+  useLoginPage('Authenticated Failed');
 
   return (
     <Page title='Authentication Failed - Tutorbook' intercom {...props}>

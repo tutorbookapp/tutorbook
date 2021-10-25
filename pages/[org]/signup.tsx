@@ -25,7 +25,7 @@ interface SignupPageProps extends PageProps {
 function SignupPage({ org, ...props }: SignupPageProps): JSX.Element {
   const { lang: locale } = useTranslation();
 
-  usePage({ name: 'Org Signup', org: org?.id });
+  usePage('Org Signup');
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

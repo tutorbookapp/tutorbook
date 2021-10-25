@@ -1,29 +1,21 @@
+import Router, { useRouter } from 'next/router';
 import { useEffect, useMemo } from 'react';
-import Router from 'next/router';
 
 import { useUser } from 'lib/context/user';
 
 export interface PageData {
-  name: string;
-  url?: string;
-  org?: string;
   login?: boolean;
   admin?: boolean;
 }
 
-export default function usePage({
-  name,
-  url,
-  org = 'default',
-  login,
-  admin,
-}: PageData): void {
+export default function usePage(name: string, { login, admin }: PageData = {}): void {
   const { loggedIn, orgs } = useUser();
+  const { query, asPath } = useRouter();
 
   // Redirect to the login page if authentication is required but missing.
   const loginURL = useMemo(
-    () => (url ? `/login?href=${encodeURIComponent(url)}` : '/login'),
-    [url]
+    () => `/login?href=${encodeURIComponent(asPath)}`,
+    [asPath]
   );
   useEffect(() => {
     if (login) {
@@ -43,8 +35,8 @@ export default function usePage({
   useEffect(() => {
     // The `orgId` prop is required to connect events with Mixpanel groups.
     // @see {@link https://bit.ly/36YrRsT}
-    window.analytics?.page('', name, { orgId: org });
-  }, [name, org]);
+    window.analytics?.page('', name, { orgId: query.org || 'default' });
+  }, [name, query.org]);
 
   // Redirect to a 404 page if admin access is required but missing.
   // TODO: Should we instead redirect to a 403 page?
@@ -54,8 +46,8 @@ export default function usePage({
     }
   }, [admin]);
   useEffect(() => {
-    if (admin && loggedIn === true && !orgs.some((o) => o.id === org)) {
+    if (admin && loggedIn === true && !orgs.some((o) => o.id === query.org)) {
       void Router.replace('/404');
     }
-  }, [admin, loggedIn, orgs, org]);
+  }, [admin, loggedIn, orgs, query.org]);
 }

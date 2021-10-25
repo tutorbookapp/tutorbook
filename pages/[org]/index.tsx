@@ -30,7 +30,7 @@ function HomePage({ org: fallbackData, ...props }: HomePageProps): JSX.Element {
     { fallbackData, revalidateOnMount: true }
   );
 
-  usePage({ name: 'Org Home', org: org?.id });
+  usePage('Org Home');
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>

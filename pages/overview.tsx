@@ -14,7 +14,7 @@ import overview from 'locales/en/overview.json';
 function OverviewPage(props: PageProps): JSX.Element {
   const { t } = useTranslation();
 
-  usePage({ name: 'Overview', url: '/overview', login: true });
+  usePage('Overview', { login: true });
 
   return (
     <Page title='Overview - Tutorbook' intercom {...props}>

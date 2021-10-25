@@ -14,7 +14,7 @@ import error from 'locales/en/error.json';
 function Custom500Page(props: PageProps): JSX.Element {
   const { t } = useTranslation();
 
-  usePage({ name: '500' });
+  usePage('500');
 
   return (
     <Page title={`${t('error:500-header')} - Tutorbook`} intercom {...props}>

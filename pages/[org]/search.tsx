@@ -39,7 +39,7 @@ interface SearchPageProps extends PageProps {
 }
 
 function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
-  usePage({ name: 'Org Search', org: org?.id });
+  usePage('Org Search');
 
   const { t } = useTranslation();
   const { user: currentUser, orgs, loggedIn } = useUser();

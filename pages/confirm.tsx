@@ -24,7 +24,7 @@ function ConfirmPage(props: PageProps): JSX.Element {
   const { t } = useTranslation();
   const { query } = useRouter();
 
-  useLoginPage({ name: 'Confirm' });
+  useLoginPage('Confirm');
 
   const [error, setError] = useState<string>('');
 

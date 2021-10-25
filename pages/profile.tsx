@@ -15,7 +15,7 @@ import user3rd from 'locales/en/user3rd.json';
 function ProfilePage(props: PageProps): JSX.Element {
   const { t } = useTranslation();
 
-  usePage({ name: 'Profile', url: '/profile', login: true });
+  usePage('Profile', { login: true });
 
   return (
     <Page title='Profile - Tutorbook' {...props}>

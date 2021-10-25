@@ -14,7 +14,7 @@ import error from 'locales/en/error.json';
 function Custom404Page(props: PageProps): JSX.Element {
   const { t } = useTranslation();
 
-  usePage({ name: '404' });
+  usePage('404');
 
   return (
     <Page title={`${t('error:404-header')} - Tutorbook`} intercom {...props}>

@@ -13,7 +13,7 @@ import common from 'locales/en/common.json';
 function AwaitingConfirmPage(props: PageProps): JSX.Element {
   const { query } = useRouter();
 
-  useLoginPage({ name: 'Awaiting Confirmation' });
+  useLoginPage('Awaiting Confirmation');
 
   return (
     <Page title='Awaiting Confirmation - Tutorbook' intercom {...props}>
