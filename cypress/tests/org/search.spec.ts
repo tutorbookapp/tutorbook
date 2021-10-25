@@ -65,9 +65,8 @@ describe('Search page', () => {
       .and('have.attr', 'disabled');
   });
 
-  it.only('partitions search results by org', () => {
+  it('partitions search results by org', () => {
     cy.setup({ student: null, meeting: null });
-    cy.debug();
     cy.login(admin.id);
     cy.visit(`/${org.id}/search`);
 
@@ -85,13 +84,7 @@ describe('Search page', () => {
       .should('have.img', volunteer.photo, 85);
     cy.percySnapshot('Search Page');
 
-    cy.get('#open-nav').click();
-    cy.getBySel('picker')
-      .find(`[href="/${school.id}/search"]`)
-      .should('have.text', 'Search')
-      .click();
-
-    cy.url({ timeout: 60000 }).should('contain', `/${school.id}/search`);
+    cy.visit(`/${school.id}/search`);
 
     cy.wait('@list-users');
     cy.get('@results').should('have.length', 2);
@@ -112,7 +105,7 @@ describe('Search page', () => {
 
   // TODO: Refactor this into reusable tests and assertions to test a variety of
   // different filter combinations (in order to reach 100% back-end coverage).
-  it.only('filters users by subjects, langs, and name', () => {
+  it('filters users by subjects, langs, and name', () => {
     cy.setup({ student: { phone: '' }, meeting: null });
     cy.login(student.id);
     cy.visit(`/${school.id}/search`);
@@ -206,11 +199,15 @@ describe('Search page', () => {
     cy.getBySel('results').should('contain', 'NO RESULTS TO SHOW');
     cy.percySnapshot('Search Page with No Results');
 
-    cy.contains('button', 'Spanish').click();
-    cy.focused()
+    cy.contains('What languages do you speak?')
       .parent()
       .within(() => {
-        cy.get('.mdc-chip').first().find('[role="button"]').last().click();
+        cy.get('.mdc-chip')
+          .first()
+          .should('contain', 'Spanish')
+          .find('[role="button"]')
+          .last()
+          .click();
         cy.get('.mdc-chip').should('have.length', 0);
         cy.percySnapshot('Search Page with Subject Selected');
       });
