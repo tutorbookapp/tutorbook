@@ -2,7 +2,11 @@
   "$schema": "http://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -20,9 +24,12 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "downlevelIteration": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "incremental": true
   },
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
     "next-env.d.ts",
     "lib/**/*.ts",
