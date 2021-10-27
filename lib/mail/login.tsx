@@ -1,4 +1,4 @@
-import { Footer, Message, P, fontFamily } from 'lib/mail/components';
+import { A, Footer, Message, P, fontFamily } from 'lib/mail/components';
 import send from 'lib/mail/send';
 
 export default function mail(email: string, location: string, link: string): Promise<void> {
@@ -18,7 +18,8 @@ export default function mail(email: string, location: string, link: string): Pro
             <tr>
               <td align='center' style={{ padding: '0' }}>
                 <div>
-                  <a
+                  <A
+                    name='Login'
                     href={link}
                     style={{
                       fontFamily,
@@ -35,7 +36,7 @@ export default function mail(email: string, location: string, link: string): Pro
                     }}
                   >
                     CONFIRM LOGIN 
-                  </a>
+                  </A>
                 </div>
               </td>
             </tr>

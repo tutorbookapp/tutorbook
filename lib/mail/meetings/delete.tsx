@@ -17,7 +17,7 @@ export default function mail(meeting: Meeting, deleter: User): Promise<void> {
         <MeetingDisplay meeting={meeting} />
         <P>
           To book a different meeting, open{' '}
-          <A href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
+          <A name='Canceled Meeting Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
         </P>
         <P>
           To get in touch with {deleter.firstName}, simply reply-all to this

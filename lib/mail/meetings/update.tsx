@@ -17,7 +17,7 @@ export default function mail(meeting: Meeting, updater: User): Promise<void> {
         <MeetingDisplay meeting={meeting} />
         <P>
           To edit or cancel this meeting, open{' '}
-          <A href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
+          <A name='Updated Meeting Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
         </P>
         <P>
           To get in touch with {updater.firstName}, simply reply-all to this

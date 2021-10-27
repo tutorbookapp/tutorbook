@@ -15,7 +15,7 @@ export default function mail(meeting: Meeting): Promise<void> {
         <MeetingDisplay meeting={meeting} />
         <P>
           To make this meeting recurring, open it in{' '}
-          <A href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
+          <A name='Recurring Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
         </P>
         <P>
           To get in touch, simply reply-all to this email or use the contact info provided above.
