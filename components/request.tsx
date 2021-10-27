@@ -60,24 +60,6 @@ export default function RequestForm(): JSX.Element {
             outlined
             required={org ? org.profiles.includes('phone') : false}
           />
-          <TextField
-            label={t('user3rd:reference', {
-              org: org?.name || 'Tutorbook',
-            })}
-            placeholder={t('common:reference-placeholder', {
-              org: org?.name || 'Tutorbook',
-            })}
-            value={user.reference}
-            onChange={(e) => {
-              const reference = e.currentTarget.value;
-              setUser((p) => new User({ ...p, reference }));
-            }}
-            className='field'
-            required={org ? org.profiles.includes('reference') : true}
-            outlined
-            rows={3}
-            textarea
-          />
         </div>
         <hr />
         <div className='section'>
