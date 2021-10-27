@@ -6,7 +6,7 @@ import { join } from 'lib/utils';
 import send from 'lib/mail/send';
 
 export default function mail(subjects: string[], description: string, user: User, org: Org, admins: User[]): Promise<void> {
-  const query = new UsersQuery({ orgs: [org.id], subjects, availability: user.availability });
+  const query = new UsersQuery({ orgs: [org.id], subjects });
   return send({
     to: admins.filter((p) => p.email),
     cc: user,
@@ -26,10 +26,7 @@ export default function mail(subjects: string[], description: string, user: User
             width: '100%',
           }}
         />
-        <P style={{ margin: '0' }}>
-          <b>WHO</b>
-        </P>
-        <UserDisplay user={user} orgId={org.id} style={{ marginTop: '6px' }} />
+        <UserDisplay user={user} orgId={org.id} />
         <P style={{ margin: '18px 0' }}>
           <b>AVAILABLE</b>
           <br />
