@@ -1,7 +1,6 @@
 import { FormEvent, useCallback, useState } from 'react';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
-import { mutate } from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
 import AvailabilitySelect from 'components/availability-select';
@@ -10,7 +9,8 @@ import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
 
-import { User, UserJSON } from 'lib/model/user';
+import { User } from 'lib/model/user';
+import { loginWithGoogle } from 'lib/firebase/login';
 import { useOrg } from 'lib/context/org';
 
 export default function RequestForm(): JSX.Element {
@@ -29,18 +29,9 @@ export default function RequestForm(): JSX.Element {
     setLoading(true);
     setError('');
     try {
-      const { default: firebase } = await import('lib/firebase');
-      await import('firebase/auth');
-      const auth = firebase.auth();
-      await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
-      const { data: created } = 
-        await axios.post<UserJSON>('/api/users', user.toJSON());
-      await auth.signInWithCustomToken(created.token as string);
-      const token = await auth.currentUser?.getIdToken();
-      await mutate('/api/account', axios.put('/api/account', { ...created, token }));
+      await loginWithGoogle(user);
       await axios.post('/api/requests', { subjects, description, org: org?.id });
       setChecked(true);
-      setLoading(false);
     } catch (err) {
       setChecked(false);
       setLoading(false);
@@ -145,7 +136,11 @@ export default function RequestForm(): JSX.Element {
           text-align: center;
           margin: 0 0 48px;
         }
-        
+       
+        header p {
+          color: var(--accents-5);
+        }
+
         form {
           border: 1px solid var(--accents-2);
           border-radius: 8px;
@@ -208,6 +203,14 @@ export default function RequestForm(): JSX.Element {
         form :global(.button) {
           margin-top: 8px;
           width: 100%;
+        }
+
+        .error {
+          color: var(--error);
+          font-weight: 450;
+          font-size: 12px;
+          margin-top: 16px;
+          text-align: initial;
         }
       `}</style>
     </div>
