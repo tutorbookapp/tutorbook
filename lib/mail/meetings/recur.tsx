@@ -9,13 +9,13 @@ export default function mail(meeting: Meeting): Promise<void> {
     to,
     subject: `Enjoy your ${meeting.subjects[0].toLowerCase()} lesson? Make it recurring!`,
     template: (
-      <Message>
+      <Message name='Recur'>
         <P style={{ marginTop: '0' }}>Hi {join(to.map((p) => p.firstName))},</P>
         <P>This is just a friendly reminder to make your meeting recurring:</P>
         <MeetingDisplay meeting={meeting} />
         <P>
           To make this meeting recurring, open it in{' '}
-          <A name='Recurring Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
+          <A name='Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
         </P>
         <P>
           To get in touch, simply reply-all to this email or use the contact info provided above.

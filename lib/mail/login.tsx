@@ -6,7 +6,7 @@ export default function mail(email: string, location: string, link: string): Pro
     to: [{ email }],
     subject: `Login Confirmation (${location})`,
     template: (
-      <Message>
+      <Message name='Login'>
         <P style={{ marginTop: '0px !important' }}>Hi there,</P>
         <P>
           We just received a login attempt from {location}. To complete the
@@ -19,7 +19,7 @@ export default function mail(email: string, location: string, link: string): Pro
               <td align='center' style={{ padding: '0' }}>
                 <div>
                   <A
-                    name='Login'
+                    name='Confirm'
                     href={link}
                     style={{
                       fontFamily,

@@ -11,13 +11,13 @@ export default function mail(meeting: Meeting, deleter: User): Promise<void> {
     cc: deleter,
     subject: `${deleter.firstName} canceled a meeting with you`,
     template: (
-      <Message>
+      <Message name='Meeting Canceled'>
         <P style={{ marginTop: '0' }}>Hi {join(to.map((p) => p.firstName))},</P>
         <P>{deleter.name} canceled a meeting with you:</P>
         <MeetingDisplay meeting={meeting} />
         <P>
           To book a different meeting, open{' '}
-          <A name='Canceled Meeting Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
+          <A name='Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
         </P>
         <P>
           To get in touch with {deleter.firstName}, simply reply-all to this
