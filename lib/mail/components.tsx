@@ -1,9 +1,12 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, createContext, useContext } from 'react';
 import { RRule } from 'rrule';
 
 import { caps, getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { Meeting } from 'lib/model/meeting';
 import { User } from 'lib/model/user';
+
+const EmailContext = createContext('');
+const useEmail = () => useContext(EmailContext);
 
 export const fontFamily = [
   '"Google Sans"',
@@ -21,12 +24,25 @@ export const fontFamily = [
 ].join(',');
 
 export interface AProps {
-  href: string;
+  style?: CSSProperties;
   children: ReactNode;
+  name: string;
+  href: string;
 }
 
-export function A({ href, children }: AProps): JSX.Element {
-  return <a style={{ color: '#0070f3' }} href={href}>{children}</a>;
+export function A({ style, children, name, href }: AProps): JSX.Element {
+  const email = useEmail();
+  const event = `${email} Email ${name} Link Clicked`;
+  const segmentQueryString = href.includes('?') ? `${href}&ajs_event=${encodeURIComponent(event)}` : `${href}?ajs_event=${encodeURIComponent(event)}`;
+  const segmentRedirect = `https://tutorbook.org/api/track?event=${encodeURIComponent(event)}&href=${encodeURIComponent(href)}`;
+  return (
+    <a 
+      style={{ color: '#0070f3', ...style }} 
+      href={href.startsWith('https://tutorbook.org') ? segmentQueryString : segmentRedirect}
+    >
+      {children}
+    </a>
+  );
 }
 
 export interface PProps {
@@ -71,7 +87,7 @@ export function UserDisplay({ style, user: p, orgId }: UserDisplayProps): JSX.El
       <tbody>
         <tr>
           <td style={{ width: '76px', height: '64px', padding: '0' }}>
-            <a
+            <A
               style={{
                 width: '64px',
                 height: '64px',
@@ -79,6 +95,7 @@ export function UserDisplay({ style, user: p, orgId }: UserDisplayProps): JSX.El
                 textDecoration: 'none',
               }}
               href={`https://tutorbook.org/${orgId}/users/${p.id}`}
+              name='User Display Photo'
             >
               <img
                 style={{
@@ -92,7 +109,7 @@ export function UserDisplay({ style, user: p, orgId }: UserDisplayProps): JSX.El
                 height='64px'
                 alt=''
               />
-            </a>
+            </A>
           </td>
           <td style={{ height: '64px' }}>
             <P
@@ -105,7 +122,7 @@ export function UserDisplay({ style, user: p, orgId }: UserDisplayProps): JSX.El
                 whiteSpace: 'nowrap',
               }}
             >
-              <a style={{ color: '#000000', textDecoration: 'none' }} href={`https://tutorbook.org/${orgId}/users/${p.id}`}>{p.roles.length ? `${p.name} (${join(p.roles)})` : p.name}</a>
+              <A name='User Display Name' style={{ color: '#000000', textDecoration: 'none' }} href={`https://tutorbook.org/${orgId}/users/${p.id}`}>{p.roles.length ? `${p.name} (${join(p.roles)})` : p.name}</A>
             </P>
             <P
               style={{
@@ -190,7 +207,8 @@ export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Eleme
       <P style={{ margin: '18px 0' }}>
         <b>WHERE</b>
         <br />
-        <a
+        <A
+          name='User Display Meeting Button'
           href={mtg.venue}
           style={{
             borderRadius: '4px',
@@ -208,14 +226,15 @@ export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Eleme
           }}
         >
           Join meeting 
-        </a>
+        </A>
         <br />
-        <a
+        <A
+          name='User Display Meeting Text'
           href={mtg.venue}
           style={{ fontSize: '16px', color: '#666666', textDecoration: 'none' }}
         >
           {mtg.venue.replace('https://', '').replace('http://', '')}
-        </a>
+        </A>
       </P>
       <P style={{ margin: '18px 0' }}>
         <b>SUBJECTS</b>
@@ -253,13 +272,13 @@ export function Footer(): JSX.Element {
       }}
     >
       <P style={{ color: '#666666' }}>
-        <a style={{ color: '#666666' }} href='https://tutorbook.org'>
+        <A name='Footer TB' style={{ color: '#666666' }} href='https://tutorbook.org'>
           Tutorbook
-        </a>{' '}
+        </A>{' '}
         - Created with ✨ by{' '}
-        <a style={{ color: '#666666' }} href='https://nicholaschiang.com'>
+        <A name='Footer Me' style={{ color: '#666666' }} href='https://nicholaschiang.com'>
           Nicholas Chiang
-        </a>
+        </A>
       </P>
       <P style={{ color: '#666666' }}>
         If this is spam, let me know at{' '}
@@ -273,9 +292,16 @@ export function Footer(): JSX.Element {
 
 export interface MessageProps {
   children: ReactNode;
+  name: string;
 }
 
-export function Message({ children }: MessageProps): JSX.Element {
+export function Message({ children, name }: MessageProps): JSX.Element {
+  const pixelJSON = JSON.stringify({
+    writeKey: process.env.SEGMENT_PIXEL_KEY as string,
+    event: `${name} Opened`,
+  });
+  const pixelData = Buffer.from(pixelJSON, 'utf-8').toString('base64');
+  const pixel = `https://api.segment.io/v1/pixel/track?data=${pixelData}`;
   return (
     <div
       style={{
@@ -286,7 +312,10 @@ export function Message({ children }: MessageProps): JSX.Element {
         color: '#000000',
       }}
     >
-      {children}
+      <EmailContext.Provider value={name}>
+        {children}
+      </EmailContext.Provider>
+      <img alt='' src={pixel} />
     </div>
   );
 }

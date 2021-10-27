@@ -11,13 +11,13 @@ export default function mail(meeting: Meeting, updater: User): Promise<void> {
     cc: updater,
     subject: `${updater.firstName} updated a meeting with you`,
     template: (
-      <Message>
+      <Message name='Meeting Updated'>
         <P style={{ marginTop: '0' }}>Hi {join(to.map((p) => p.firstName))},</P>
         <P>{updater.name} updated a meeting with you:</P>
         <MeetingDisplay meeting={meeting} />
         <P>
           To edit or cancel this meeting, open{' '}
-          <A href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
+          <A name='Calendar' href='https://tutorbook.org/calendar'>your Tutorbook calendar</A>.
         </P>
         <P>
           To get in touch with {updater.firstName}, simply reply-all to this

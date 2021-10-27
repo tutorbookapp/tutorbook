@@ -1,4 +1,4 @@
-import { Footer, Message, P, fontFamily } from 'lib/mail/components';
+import { A, Footer, Message, P, fontFamily } from 'lib/mail/components';
 import send from 'lib/mail/send';
 
 export default function mail(email: string, location: string, link: string): Promise<void> {
@@ -6,7 +6,7 @@ export default function mail(email: string, location: string, link: string): Pro
     to: [{ email }],
     subject: `Login Confirmation (${location})`,
     template: (
-      <Message>
+      <Message name='Login'>
         <P style={{ marginTop: '0px !important' }}>Hi there,</P>
         <P>
           We just received a login attempt from {location}. To complete the
@@ -18,7 +18,8 @@ export default function mail(email: string, location: string, link: string): Pro
             <tr>
               <td align='center' style={{ padding: '0' }}>
                 <div>
-                  <a
+                  <A
+                    name='Confirm'
                     href={link}
                     style={{
                       fontFamily,
@@ -35,7 +36,7 @@ export default function mail(email: string, location: string, link: string): Pro
                     }}
                   >
                     CONFIRM LOGIN 
-                  </a>
+                  </A>
                 </div>
               </td>
             </tr>
