@@ -19,6 +19,7 @@ export default async function requestAPI(req: Req, res: Res): Promise<void> {
       const org = await getOrg(body.org);
       const admins = await Promise.all(org.members.map((id) => getUser(id)));
       await mail(body.subjects, body.description, user, org, admins);
+      res.status(201).end();
       segment.track({ event: 'Request Created', userId: uid });
     } catch (e) {
       handle(e, res);
