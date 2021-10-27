@@ -15,7 +15,7 @@ export default function mail(subjects: string[], description: string, user: User
       <Message name='Login'>
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
         <P>
-          {user.name} just submitted a tutor request:
+          {user.name} just submitted a new tutor request:
         </P>
         <hr
           style={{
