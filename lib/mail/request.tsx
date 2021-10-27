@@ -10,12 +10,12 @@ export default function mail(subjects: string[], description: string, user: User
   return send({
     to: admins.filter((p) => p.email),
     cc: user,
-    subject: `${user.firstName} requested a tutor`,
+    subject: `Request - ${user.firstName} for ${join(subjects)}`,
     template: (
       <Message name='Login'>
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
         <P>
-          {user.name} just requested a tutor:
+          {user.name} just submitted a tutor request:
         </P>
         <hr
           style={{
@@ -33,12 +33,12 @@ export default function mail(subjects: string[], description: string, user: User
           {user.availability.toString('en')}
         </P>
         <P style={{ margin: '18px 0' }}>
-          <b>SUBJECTS</b>
+          <b>NEEDS HELP WITH</b>
           <br />
           {join(subjects)}
         </P>
         <P style={{ margin: '18px 0' }}>
-          <b>DESCRIPTION</b>
+          <b>SPECIFICALLY</b>
           <br />
           {description}
         </P>
@@ -52,7 +52,7 @@ export default function mail(subjects: string[], description: string, user: User
           }}
         />
         <P>
-          To find {user.firstName} a {subjects[0].toLowerCase()} tutor, simply click the button below:
+          To find {user.firstName} a tutor, simply click the button below:
         </P>
         <br />
         <table width='100%'>
