@@ -7481,9 +7481,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^8.6.0":
-  version: 8.6.0
-  resolution: "cypress@npm:8.6.0"
+"cypress@npm:^8.7.0":
+  version: 8.7.0
+  resolution: "cypress@npm:8.7.0"
   dependencies:
     "@cypress/request": ^2.88.6
     "@cypress/xvfb": ^1.2.4
@@ -7529,7 +7529,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: aa092f70817445020fb8079a6d64d46453247b36b8a6c50ab517e848465311e20d61e1638941ab6eaec998eb65954f8261b64727146a2255097f697731c6b10c
+  checksum: 607771bda6c37228cd8537a7faa2ae89ae9bcf2720210b22865f532059d8c7e0741bb7520f241c46ceacd503ff349e41f0eea104734e71423071dd67a79098b9
   languageName: node
   linkType: hard
 
@@ -18426,7 +18426,7 @@ resolve@^2.0.0-next.3:
     cross-env: ^7.0.3
     csv: ^5.5.3
     csv-stringify: ^5.6.5
-    cypress: ^8.6.0
+    cypress: ^8.7.0
     cypress-file-upload: ^5.0.8
     dequal: ^2.0.2
     dotenv: ^10.0.0

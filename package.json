@@ -72,7 +72,7 @@
     "concurrently": "^6.2.1",
     "cross-env": "^7.0.3",
     "csv": "^5.5.3",
-    "cypress": "^8.6.0",
+    "cypress": "^8.7.0",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
