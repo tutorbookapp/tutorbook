@@ -63,9 +63,9 @@ export default async function remind(req: Req, res: Res): Promise<void> {
         ).toString()}...`
       );
       const [
-        meetings1hrInFuture,
-        meetings24hrsInFuture,
-        meetings1hrInPast,
+        mtgs1hrInFuture,
+        mtgs24hrsInFuture,
+        mtgs1hrInPast,
       ] = await Promise.all([
         getMeetings(
           new MeetingsQuery({
@@ -88,14 +88,14 @@ export default async function remind(req: Req, res: Res): Promise<void> {
         ),
       ]);
       logger.info(
-        `Sending ${meetings1hrInFuture.results.length} 1hr reminders, ` +
-          `${meetings24hrsInFuture.results.length} 24hr reminders, and ` +
-          `${meetings1hrInPast.results.length} donation reminders...`
+        `Sending ${mtgs1hrInFuture.results.length} 1hr reminders, ` +
+          `${mtgs24hrsInFuture.results.length} 24hr reminders, and ` +
+          `${mtgs1hrInPast.results.length} donation reminders...`
       );
       await Promise.all([
-        ...meetings1hrInFuture.results.map((meeting) => mail1hr(meeting)),
-        ...meetings24hrsInFuture.results.map((meeting) => mail24hr(meeting)),
-        ...meetings1hrInPast.results.map((meeting) => mailRecur(meeting)),
+        ...mtgs1hrInFuture.results.map(mail1hr),
+        ...mtgs24hrsInFuture.results.map(mail24hr),
+        ...mtgs1hrInPast.results.filter((m) => !m.time.recur).map(mailRecur),
       ]);
       res.status(200).end();
       logger.info('Sent all reminder emails.');
