@@ -5,7 +5,6 @@ import useTranslation from 'next-translate/useTranslation';
 import { v4 as uuid } from 'uuid';
 
 import Placeholder from 'components/placeholder';
-import Result from 'components/search/result';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Callback } from 'lib/model/callback';
@@ -13,9 +12,9 @@ import { ListUsersRes } from 'lib/api/routes/users/list';
 import { UsersQuery } from 'lib/model/query/users';
 import clone from 'lib/utils/clone';
 import { prefetch } from 'lib/fetch';
-import { useOrg } from 'lib/context/org';
 
 import { config, width } from './spring-animation';
+import Result from './result';
 import styles from './results-list.module.scss';
 
 export interface ResultsListProps {
@@ -33,7 +32,6 @@ function ResultsList({
   setHits,
   open,
 }: ResultsListProps): JSX.Element {
-  const { org } = useOrg();
   const { t } = useTranslation();
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
@@ -60,7 +58,7 @@ function ResultsList({
       // logic here (using `prevHits` and `query.page`).
       Array(query.hitsPerPage)
         .fill(null)
-        .map(() => <Result className={styles.item} loading key={uuid()} />),
+        .map(() => <Result loading key={uuid()} />),
     [query.hitsPerPage]
   );
   const props = useSpring({ config, marginLeft: open ? width : 0 });
@@ -69,13 +67,7 @@ function ResultsList({
     <animated.div data-cy='results' className={styles.wrapper} style={props}>
       {!searching &&
         (data?.users || []).map((user: UserJSON) => (
-          <Result
-            href={`/${org?.id || ''}/users/${user.id}`}
-            user={User.fromJSON(user)}
-            className={styles.item}
-            key={user.id}
-            newTab
-          />
+          <Result user={User.fromJSON(user)} key={user.id} />
         ))}
       {!searching && !(data?.users || []).length && (
         <div className={styles.empty}>
