@@ -49,7 +49,9 @@ describe('Users page', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {
-        cy.stub(win.navigator.clipboard, 'writeText').as('copy');
+        const value = { writeText: async () => {} };
+        cy.spy(value, 'writeText').as('copy');
+        Object.defineProperty(win.navigator, 'clipboard', { value });
       },
     });
 
@@ -64,7 +66,9 @@ describe('Users page', () => {
     cy.login(admin.id);
     cy.visit(`/${school.id}/users`, {
       onBeforeLoad(win: Window): void {
-        cy.spy(win.navigator.clipboard, 'writeText').as('copy');
+        const value = { writeText: async () => {} };
+        cy.spy(value, 'writeText').as('copy');
+        Object.defineProperty(win.navigator, 'clipboard', { value });
       },
     });
     cy.wait('@get-account');
@@ -94,23 +98,27 @@ describe('Users page', () => {
     // access Intercom locally. But do we really need to test Intercom?
     cy.contains('button', 'Import data').click();
 
-    // Showing featured tutors first.
     cy.wait('@list-users');
+    cy.contains('.mdc-chip', 'Visible in search')
+      .as('visible-chip')
+      .should('have.class', 'mdc-chip--selected');
     cy.getBySel('result')
       .should('not.have.css', 'cursor', 'wait')
       .as('results')
-      .should('have.length', 3)
+      .should('have.length', 2)
       .first()
       .find('a')
       .should('contain', volunteer.name)
       .and('have.attr', 'href', `/${school.id}/users/${volunteer.id}`)
       .and('have.attr', 'target', '_blank');
-
-    // Showing featured tutors first; users must be hidden from search.
+    cy.get('@results').last().should('contain', admin.name);
+    
+    // Users must be hidden from search.
     cy.contains('.mdc-chip', 'Hidden from search')
       .as('hidden-chip')
       .click()
       .should('have.class', 'mdc-chip--selected');
+    cy.get('@visible-chip').should('not.have.class', 'mdc-chip--selected');
     cy.wait('@list-users');
     cy.get('@results')
       .should('have.length', 1)
@@ -120,37 +128,17 @@ describe('Users page', () => {
       .and('have.attr', 'href', `/${school.id}/users/${student.id}`)
       .and('have.attr', 'target', '_blank');
 
-    // Showing featured tutors first; users must be visible in search.
-    cy.contains('.mdc-chip', 'Visible in search')
-      .as('visible-chip')
+    // Users must be visible in search.
+    cy.get('@hidden-chip')
       .click()
-      .should('have.class', 'mdc-chip--selected');
-    cy.get('@hidden-chip').should('not.have.class', 'mdc-chip--selected');
+      .should('not.have.class', 'mdc-chip--selected');
     cy.wait('@list-users');
     cy.get('@results')
-      .should('have.length', 2)
+      .should('have.length', 3)
       .first()
       .should('contain', volunteer.name);
-    cy.get('@results').last().should('contain', admin.name);
 
-    // Showing featured mentors first; users must be visible in search.
-    cy.contains('.mdc-chip', 'Tutoring')
-      .as('tutors-chip')
-      .should('have.class', 'mdc-chip--selected');
-    cy.contains('.mdc-chip', 'Mentoring')
-      .as('mentors-chip')
-      .click()
-      .should('have.class', 'mdc-chip--selected');
-    cy.get('@tutors-chip').should('not.have.class', 'mdc-chip--selected');
-    cy.wait('@list-users');
-    cy.get('@results')
-      .should('have.length', 2)
-      .first()
-      .should('contain', admin.name);
-    cy.get('@results').last().should('contain', volunteer.name);
-
-    // Showing featured mentors first; users must be visible in search AND speak
-    // Spanish.
+    // Users must be visible in search AND speak Spanish.
     cy.getBySel('filters-button').click();
     filterSheetIsOpen();
     cy.contains('Languages').as('langs-input').type('spanish');
@@ -177,47 +165,7 @@ describe('Users page', () => {
     cy.get('@spanish-chip').find('[role="button"]').last().click();
     cy.get('@langs-input').children('.mdc-chip').should('have.length', 0);
 
-    // Showing featured mentors first; users must be visible in search AND not
-    // yet vetted.
-    cy.contains('Tags').as('tags-input').type('vetted');
-    cy.get('@portal')
-      .contains('li:visible', 'Not vetted')
-      .trigger('click')
-      .find('input[type="checkbox"]')
-      .should('be.checked');
-    cy.get('@tags-input')
-      .children('.mdc-chip')
-      .should('have.length', 1)
-      .first()
-      .as('not-vetted-chip')
-      .should('contain', 'Not vetted');
-
-    cy.wait('@list-users');
-
-    cy.get('@results')
-      .should('have.length', 1)
-      .first()
-      .should('contain', volunteer.name);
-    cy.getBySel('filters-button').click();
-    filterSheetIsOpen(false);
-
-    // Showing featured tutors first; users must not yet be vetted.
-    cy.get('@tutors-chip').click().should('have.class', 'mdc-chip--selected');
-    cy.get('@mentors-chip').should('not.have.class', 'mdc-chip--selected');
-    cy.get('@visible-chip')
-      .click()
-      .should('not.have.class', 'mdc-chip--selected');
-    cy.wait('@list-users');
-    cy.get('@results')
-      .should('have.length', 2)
-      .first()
-      .should('contain', volunteer.name);
-    cy.get('@results').last().should('contain', student.name);
-
-    // Showing featured tutors first; users must not yet be vetted AND must
-    // tutor Computer Science.
-    cy.getBySel('filters-button').click();
-    filterSheetIsOpen();
+    // Users must tutor Computer Science.
     cy.contains('Subjects').as('subjects-input').type('computer');
     cy.get('@portal')
       .contains('li:visible', 'Computer Science')
@@ -232,24 +180,45 @@ describe('Users page', () => {
       .should('contain', 'Computer Science');
     cy.wait('@list-users');
     cy.get('@results')
+      .should('have.length', 2)
+      .first()
+      .should('contain', volunteer.name);
+    cy.get('@results').last().should('contain', admin.name);
+    
+    // Users must tutor both Computer Science AND Artificial Intelligence.
+    cy.get('@subjects-input').type('artificial');
+    cy.get('@portal')
+      .contains('li:visible', 'Artificial Intelligence')
+      .trigger('click')
+      .find('input[type="checkbox"]')
+      .should('be.checked');
+    cy.get('@subjects-input')
+      .children('.mdc-chip')
+      .should('have.length', 2)
+      .last()
+      .as('ai-chip')
+      .should('contain', 'Artificial Intelligence');
+    cy.wait('@list-users')
+    cy.get('@results')
       .should('have.length', 1)
       .first()
       .should('contain', volunteer.name);
+    cy.get('@ai-chip').find('[role="button"]').last().click();
     cy.get('@cs-chip').find('[role="button"]').last().click();
     cy.get('@subjects-input').children('.mdc-chip').should('have.length', 0);
     cy.getBySel('filters-button').click();
     filterSheetIsOpen(false);
 
     // Search by text (using 'Erik' name).
-    cy.get('[placeholder="Search users"]').as('query-input').type('Erik');
+    cy.get('[placeholder="Search by name"]').as('query-input').type('Erik');
     cy.wait('@list-users');
     cy.get('@results')
       .should('have.length', 1)
       .first()
       .should('contain', student.name);
 
-    // Search by text (using 'Nicholas' name).
-    cy.get('@query-input').clear().type('Nicholas');
+    // Search by text (using 'Lorem Ipsum' name).
+    cy.get('@query-input').clear().type('Lorem Ipsum');
     cy.wait('@list-users');
     cy.getBySel('result').should('not.exist');
     cy.contains('NO USERS TO SHOW').should('be.visible');
