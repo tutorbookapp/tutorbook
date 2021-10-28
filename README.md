@@ -16,8 +16,8 @@
   <a aria-label='Coverage status' href='https://codecov.io/gh/tutorbookapp/tutorbook'>
     <img src='https://img.shields.io/codecov/c/gh/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
   </a>
-  <a aria-label='Dependencies' href='https://david-dm.org/tutorbookapp/tutorbook'>
-    <img src='https://img.shields.io/david/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
+  <a aria-label='Dependencies' href='https://libraries.io/github/tutorbookapp/tutorbook'>
+    <img src='https://img.shields.io/librariesio/github/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
   </a>
   <a aria-label='Maintainability' href='https://codeclimate.com/github/tutorbookapp/tutorbook'>
     <img src='https://img.shields.io/codeclimate/maintainability/tutorbookapp/tutorbook?style=flat-square&labelColor=000000'>
