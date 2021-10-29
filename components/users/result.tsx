@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import cn from 'classnames';
 
 import Avatar from 'components/avatar';
 
@@ -19,13 +20,16 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
         <div className='header'>
           <Avatar className='avatar' src={user.photo} loading={loading} size={100} />
           <div className='content'>
-            <span className='name'>{user.name}</span>
-            <a href={getEmailLink(user)} target='_blank' rel='noopener noreferrer'>{user.email}</a>
-            <a href={getPhoneLink(user)} target='_blank' rel='noopener noreferrer'>{user.phone || '+16508612723'}</a>
+            <h4 className={cn('name', { loading })}>
+              <span>{user.name}</span>
+              {!loading && <a href={getEmailLink(user)} target='_blank' rel='noopener noreferrer'>{user.email}</a>}
+              {!loading && <a href={getPhoneLink(user)} target='_blank' rel='noopener noreferrer'>{user.phone || '+16508612723'}</a>}
+            </h4>
             <ul className='subjects'>
               {user.subjects.map((s) => <li key={s}>{s}</li>)}
+              {loading && Array(5).fill(null).map((_, idx) => <li key={idx} className='loading' />)}
             </ul>
-            <p className='bio'>{user.bio}</p>
+            <p className={cn('bio', { loading })}>{user.bio}</p>
           </div>
         </div>
         <table>
@@ -95,14 +99,27 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
 
           .header .content {
             margin-left: 12px;
+            flex-grow: 1;
           }
 
           .name {
+            margin: 0;
+          }
+
+          .name.loading {
+            width: 100px;
+            height: 16px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+          }
+
+          .name span {
+            font-weight: 500;
             font-size: 14px;
             font-weight: 500;
           }
 
-          .header .content a {
+          .name a {
             font-size: 12px;
             font-weight: 400;
             text-decoration: none;
@@ -114,23 +131,37 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
             list-style: none;
             padding: 0;
             margin: 4px -2px;
+            display: flex;
+            flex-wrap: wrap;
           }
 
           .subjects li {
-            display: inline-block;
+            display: block;
             font-size: 12px;
             line-height: 1;
-            background: var(--accents-1);
+            background-color: var(--accents-1);
             border: 1px solid var(--accents-2);
             border-radius: 8px;
             padding: 4px;
             margin: 2px;
+            height: 22px;
+          }
+
+          .subjects li.loading {
+            width: 50px;
           }
 
           .bio {
             font-size: 12px;
             color: var(--accents-5);
             margin: 0;
+          }
+
+          .bio.loading {
+            height: 45px;
+            width: 100%;
+            border-radius: 4px;
+            margin-top: 6px;
           }
 
           table {
