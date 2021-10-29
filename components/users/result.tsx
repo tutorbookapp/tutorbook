@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import cn from 'classnames';
+import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 
 import { getEmailLink, getPhoneLink } from 'lib/utils';
 import { User } from 'lib/model/user';
+import { getDateWithDay } from 'lib/utils/time';
 import { useOrg } from 'lib/context/org';
+import { useUser } from 'lib/context/user';
 
 export interface ResultProps {
   loading?: boolean;
@@ -14,6 +17,8 @@ export interface ResultProps {
 
 export default function Result({ loading, user = new User() }: ResultProps): JSX.Element {
   const { org } = useOrg();
+  const { lang: locale } = useTranslation();
+  const { user: { timezone } } = useUser();
   return (
     <Link href={`/${org?.id || 'default'}/users/${user?.id || ''}`}>
       <a className='result'>
@@ -34,47 +39,21 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
         </div>
         <table>
           <tr>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-            <th>Sunday</th>
+            {Array(7).fill(null).map((_, day) => (
+              <th key={day}>{getDateWithDay(day).toLocaleString(locale, { weekday: 'long' })}</th> 
+            ))}
           </tr>
           <tr>
-            <td>
-              <div className='available'>
-                <span>Available</span><br />
-                4:00-6:00 PM
-              </div>
-            </td>
-            <td>
-              <div className='available'>
-                <span>Available</span><br />
-                1:00-5:00 PM
-              </div>
-              <div className='booked'>
-                <span>Booked</span><br />
-                3:15-4:00 PM<br /> 
-                Julia Chiang for Computer Science
-              </div>
-            </td>
-            <td />
-            <td>
-              <div className='available'>
-                <span>Available</span><br />
-                1:00-5:00 PM
-              </div>
-              <div className='booked'>
-                <span>Booked</span><br />
-                3:15-4:00 PM<br />
-                Julia Chiang for Computer Science
-              </div>
-            </td>
-            <td />
-            <td />
-            <td />
+            {Array(7).fill(null).map((_, day) => (
+              <td key={day}>
+                {user.availability.filter((t) => t.from.getDay() === day).map((t) => (
+                  <div className='available' key={t.id}>
+                    <span>Available</span><br />
+                    {t.toString(locale, timezone, true, true)}
+                  </div>
+                ))}
+              </td>
+            ))}
           </tr>
         </table>
         <style jsx>{`
@@ -197,6 +176,7 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
           td div span {
             text-transform: uppercase;
             font-weight: 500;
+            color: var(--accents-5);
           }
         `}</style>
       </a>
