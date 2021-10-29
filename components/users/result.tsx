@@ -53,7 +53,7 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
                     <li>{t.toString(locale, timezone, false, true)}</li>
                   ))}
                   {user.meetings.filter((m) => m.time.from.getDay() === day).map((m) => (
-                    <li className='meeting'>{`${m.time.toString(locale, timezone, false, true)} for ${join(m.subjects)}`}</li>
+                    <li className='meeting'>{`${join(m.subjects)} at ${m.time.toString(locale, timezone, false, true)}`}</li>
                   ))}
                 </ul>
               </td>
