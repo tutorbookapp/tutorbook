@@ -46,12 +46,14 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
           <tr>
             {Array(7).fill(null).map((_, day) => (
               <td key={day}>
-                {user.availability.filter((t) => t.from.getDay() === day).map((t) => (
-                  <div className='available' key={t.id}>
-                    <span>Available</span><br />
-                    {t.toString(locale, timezone, true, true)}
-                  </div>
-                ))}
+                <h5 className={cn({ loading })}>{loading ? '' : user.availability.some((t) => t.from.getDay() === day) ? 'Available' : 'Unavailable'}</h5>
+                {user.availability.some((t) => t.from.getDay() === day) && (
+                  <ul>
+                    {user.availability.filter((t) => t.from.getDay() === day).map((t) => (
+                      <li>{t.toString(locale, timezone, false, true)}</li>
+                    ))}
+                  </ul>
+                )}
               </td>
             ))}
           </tr>
@@ -63,6 +65,10 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
             color: var(--on-background);
             border-bottom: 1px solid var(--accents-2);
             padding: 12px;
+          }
+
+          .result:last-of-type {
+            border-bottom: none;
           }
 
           .header {
@@ -86,7 +92,8 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
           }
 
           .name.loading {
-            width: 100px;
+            width: 100%;
+            max-width: 250px;
             height: 16px;
             border-radius: 4px;
             margin-bottom: 6px;
@@ -127,18 +134,19 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
           }
 
           .subjects li.loading {
-            width: 50px;
+            width: 75px;
           }
 
           .bio {
             font-size: 12px;
             color: var(--accents-5);
+            overflow: hidden;
+            height: 45px;
+            width: 100%;
             margin: 0;
           }
 
           .bio.loading {
-            height: 45px;
-            width: 100%;
             border-radius: 4px;
             margin-top: 6px;
           }
@@ -164,19 +172,32 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
             border-left: none;
           }
 
-          td div {
-            margin-top: 8px;
-            padding: 6px;
-            background: var(--accents-1);
-            border: 1px solid var(--accents-2);
-            border-radius: 8px;
+          td h5 {
             font-size: 10px;
+            font-weight: 400;
+            text-align: center;
+            text-transform: uppercase;
+            color: var(--accents-5);
+            height: 12.5px;
+            margin: 0;
           }
 
-          td div span {
-            text-transform: uppercase;
-            font-weight: 500;
-            color: var(--accents-5);
+          td h5.loading {
+            border-radius: 4px;
+            max-width: 100px;
+            margin: 4px auto;
+          }
+
+          td ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+
+          td li {
+            text-align: center;
+            font-size: 10px;
+            margin: 4px 0;
           }
         `}</style>
       </a>
