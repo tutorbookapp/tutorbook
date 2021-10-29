@@ -7,6 +7,7 @@ import Avatar from 'components/avatar';
 import { getEmailLink, getPhoneLink } from 'lib/utils';
 import { User } from 'lib/model/user';
 import { getDateWithDay } from 'lib/utils/time';
+import { join } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
@@ -47,13 +48,14 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
             {Array(7).fill(null).map((_, day) => (
               <td key={day}>
                 <h5 className={cn({ loading })}>{loading ? '' : user.availability.some((t) => t.from.getDay() === day) ? 'Available' : 'Unavailable'}</h5>
-                {user.availability.some((t) => t.from.getDay() === day) && (
-                  <ul>
-                    {user.availability.filter((t) => t.from.getDay() === day).map((t) => (
-                      <li>{t.toString(locale, timezone, false, true)}</li>
-                    ))}
-                  </ul>
-                )}
+                <ul>
+                  {user.availability.filter((t) => t.from.getDay() === day).map((t) => (
+                    <li>{t.toString(locale, timezone, false, true)}</li>
+                  ))}
+                  {user.meetings.filter((m) => m.time.from.getDay() === day).map((m) => (
+                    <li className='meeting'>{`${m.time.toString(locale, timezone, false, true)} for ${join(m.subjects)}`}</li>
+                  ))}
+                </ul>
               </td>
             ))}
           </tr>
@@ -198,6 +200,10 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
             text-align: center;
             font-size: 10px;
             margin: 4px 0;
+          }
+
+          td li.meeting {
+            color: var(--accents-5);
           }
         `}</style>
       </a>

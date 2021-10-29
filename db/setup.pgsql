@@ -263,7 +263,8 @@ select
   users.*,
   cardinality(times) > 0 as available,
   coalesce(orgs, array[]::text[]) as orgs,
-  coalesce(parents, array[]::text[]) as parents
+  coalesce(parents, array[]::text[]) as parents,
+  coalesce(meetings, '[]'::json) as meetings
 from users 
   left outer join (
     select "user",array_agg(org) as orgs 
@@ -273,4 +274,12 @@ from users
     select "user",array_agg(parent) as parents 
     from relation_parents group by "user"
   ) as parents on parents."user" = id
+  left outer join (
+    select "user",json_agg(meetings.*) as meetings
+    from (
+      select "user",meetings.*
+      from meetings inner join relation_people
+      on relation_people.meeting = meetings.id
+    ) as meetings group by meetings."user"
+  ) as meetings on meetings."user" = id
 order by id;

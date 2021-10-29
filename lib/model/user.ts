@@ -10,6 +10,7 @@ import {
   isAvailabilityJSON,
 } from 'lib/model/availability';
 import { DBDate, DBTimeslot } from 'lib/model/timeslot';
+import { DBMeeting, MeetingJSON, Meeting, isMeetingJSON } from 'lib/model/meeting';
 import {
   Verification,
   VerificationJSON,
@@ -78,6 +79,7 @@ export type GradeAlias = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  * @property subjects - The subjects that the user can tutor for.
  * @property langs - The languages (as ISO codes) the user can speak fluently.
  * @property parents - The Firebase uIDs of linked parent accounts.
+ * @property meetings - An array of the user's meetings (w/out people data).
  * @property visible - Whether or not this user appears in search results.
  * @property roles - Always empty unless in context of match or request.
  * @property tags - An array of user tags used for analytics and filtering.
@@ -95,6 +97,7 @@ export interface UserInterface extends AccountInterface {
   langs: string[];
   parents: string[];
   verifications: Verification[];
+  meetings: Meeting[];
   visible: boolean;
   roles: Role[];
   tags: UserTag[];
@@ -139,8 +142,9 @@ export interface DBUser {
   times: number[];
 }
 export interface DBViewUser extends DBUser {
-  orgs: string[] | null;
-  parents: string[] | null;
+  orgs: string[];
+  parents: string[];
+  meetings: DBMeeting[];
   available: boolean;
 }
 export interface DBPerson extends DBUser {
@@ -157,11 +161,12 @@ export interface DBRelationOrg {
 
 export type UserJSON = Omit<
   UserInterface,
-  keyof Account | 'availability' | 'verifications'
+  keyof Account | 'availability' | 'verifications' | 'meetings'
 > &
   AccountJSON & {
     availability: AvailabilityJSON;
     verifications: VerificationJSON[];
+    meetings: MeetingJSON[];
   };
 
 export function isUserJSON(json: unknown): json is UserJSON {
@@ -174,6 +179,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isStringArray(json.langs)) return false;
   if (!isStringArray(json.parents)) return false;
   if (!isArray(json.verifications, isVerificationJSON)) return false;
+  if (!isArray(json.meetings, isMeetingJSON)) return false;
   if (typeof json.visible !== 'boolean') return false;
   if (!isArray(json.roles, isRole)) return false;
   if (!isArray(json.tags, isUserTag)) return false;
@@ -202,6 +208,8 @@ export class User extends Account implements UserInterface {
   public parents: string[] = [];
 
   public verifications: Verification[] = [];
+
+  public meetings: Meeting[] = [];
 
   public visible = false;
 
@@ -297,17 +305,19 @@ export class User extends Account implements UserInterface {
       updated: new Date(record.updated),
       orgs: 'orgs' in record ? record.orgs || [] : [],
       parents: 'parents' in record ? record.parents || [] : [],
+      meetings: 'meetings' in record ? (record.meetings || []).map(Meeting.fromDB) : [],
       roles: 'roles' in record ? record.roles || [] : [],
     });
   }
 
   public toJSON(): UserJSON {
-    const { availability, verifications, ...rest } = this;
+    const { availability, verifications, meetings, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toJSON(),
       availability: availability.toJSON(),
       verifications: verifications.map((v) => v.toJSON()),
+      meetings: meetings.map((m) => m.toJSON()),
       token: undefined,
       hash: undefined,
     });
@@ -316,13 +326,15 @@ export class User extends Account implements UserInterface {
   public static fromJSON({
     availability,
     verifications = [],
+    meetings = [],
     ...rest
   }: UserJSON): User {
     return new User({
       ...rest,
       ...Account.fromJSON(rest),
       availability: Availability.fromJSON(availability),
-      verifications: verifications.map((v) => Verification.fromJSON(v)),
+      verifications: verifications.map(Verification.fromJSON),
+      meetings: meetings.map(Meeting.fromJSON),
     });
   }
 
