@@ -5,12 +5,14 @@ import {
   decodeAvailability,
   decodeBoolean,
   decodeNumber,
+  decodeOptionalBool,
   decodeString,
   encode,
   encodeArray,
   encodeAvailability,
   encodeBoolean,
   encodeNumber,
+  encodeOptionalBool,
   encodeString,
 } from 'lib/model/query/params';
 import { DBUserTag, Role } from 'lib/model/user';
@@ -63,7 +65,7 @@ const config: Config<
     decodeAvailability,
   ],
   available: [undefined, 'av', encodeBoolean, decodeBoolean],
-  visible: [undefined, 'v', encodeBoolean, decodeBoolean],
+  visible: [true, 'v', encodeOptionalBool, decodeOptionalBool],
   met: [undefined, 'm', encodeArray, decodeArray],
 };
 
@@ -82,7 +84,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
 
   public available?: boolean;
 
-  public visible?: boolean;
+  public visible?: boolean = true;
 
   public met?: [string, Role];
 
