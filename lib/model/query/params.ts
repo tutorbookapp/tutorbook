@@ -10,6 +10,15 @@ export function decodeBoolean(bool: string): boolean {
   return bool === '1';
 }
 
+export function encodeOptionalBool(bool?: boolean): string {
+  if (bool === undefined) return '';
+  return bool ? '1' : '0';
+}
+export function decodeOptionalBool(bool: string): boolean | undefined {
+  if (bool === '') return undefined;
+  return bool === '1';
+}
+
 export function encodeString(str: string): string {
   return str.split(' ').map(encodeURIComponent).join('+');
 }
@@ -75,7 +84,8 @@ export function decode<T extends Record<string, unknown>>(
   Object.keys(config).forEach((originalKey: keyof T) => {
     const queryKey = config[originalKey][1];
     const decodeVal = config[originalKey][3];
-    if (query[queryKey]) obj[originalKey] = decodeVal(query[queryKey]);
+    if (query[queryKey] !== undefined) 
+      obj[originalKey] = decodeVal(query[queryKey]);
   });
   return obj;
 }

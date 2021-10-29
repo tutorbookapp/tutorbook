@@ -8,6 +8,7 @@ import { User, UserInterface, UserJSON, isUserJSON } from 'lib/model/user';
 import { createUser, getUser, updateUser } from 'lib/api/db/user';
 import { APIError } from 'lib/model/error';
 import { Availability } from 'lib/model/availability';
+import { Meeting } from 'lib/model/meeting';
 import { SocialInterface } from 'lib/model/account';
 import { Timeslot } from 'lib/model/timeslot';
 import { Verification } from 'lib/model/verification';
@@ -81,7 +82,6 @@ function mergeUsers(overrides: User, baseline: User): User {
     venue: overrides.venue || baseline.venue,
     socials: mergeSocials(overrides.socials, baseline.socials),
     orgs: mergeArrays(overrides.orgs, baseline.orgs),
-    hours: { ...baseline.hours, ...overrides.hours },
     availability: mergeAvailability(
       overrides.availability,
       baseline.availability
@@ -94,6 +94,7 @@ function mergeUsers(overrides: User, baseline: User): User {
       baseline.verifications,
       Verification
     ),
+    meetings: mergeArrays(overrides.meetings, baseline.meetings, Meeting),
     visible: overrides.visible || baseline.visible,
     roles: mergeArrays(overrides.roles, baseline.roles),
     tags: mergeArrays(overrides.tags, baseline.tags),

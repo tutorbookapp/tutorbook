@@ -36,7 +36,7 @@ function SearchPage(props: PageProps): JSX.Element {
   const [hits, setHits] = useState<number>(query.hitsPerPage);
   const [searching, setSearching] = useState<boolean>(true);
 
-  useURLParamSync(query, setQuery, UsersQuery, ['o', 'av', 'v']);
+  useURLParamSync(query, setQuery, UsersQuery, ['o', 'av']);
 
   const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 

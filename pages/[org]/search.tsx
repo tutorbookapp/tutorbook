@@ -50,7 +50,7 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(true);
 
-  useURLParamSync(query, setQuery, UsersQuery, ['o', 'av', 'v']);
+  useURLParamSync(query, setQuery, UsersQuery, ['o', 'av']);
 
   const { data, isValidating } = useSWR<ListUsersRes>(
     canSearch ? query.endpoint : null

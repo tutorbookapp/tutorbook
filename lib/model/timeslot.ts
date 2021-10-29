@@ -133,7 +133,8 @@ export class Timeslot implements TimeslotInterface {
   public toString(
     locale = 'en',
     timeZone = 'America/Los_Angeles',
-    showTimeZone = true
+    showTimeZone = true,
+    showTimeOnly = false 
   ): string {
     const hideAMPM =
       (this.from.getHours() >= 12 && this.to.getHours() >= 12) ||
@@ -150,10 +151,10 @@ export class Timeslot implements TimeslotInterface {
     return `${this.from
       .toLocaleString(locale, {
         timeZone: timeZone || 'America/Los_Angeles',
-        year: showYear ? 'numeric' : undefined,
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
+        year: showYear && !showTimeOnly ? 'numeric' : undefined,
+        weekday: !showTimeOnly ? 'long' : undefined,
+        month: !showTimeOnly ? 'long' : undefined,
+        day: !showTimeOnly ? 'numeric' : undefined,
         hour: 'numeric',
         minute: 'numeric',
       })
@@ -163,10 +164,10 @@ export class Timeslot implements TimeslotInterface {
         ''
       )}–${this.to.toLocaleString(locale, {
       timeZone: timeZone || 'America/Los_Angeles',
-      year: showSecondDate && showYear ? 'numeric' : undefined,
-      weekday: showSecondDate ? 'long' : undefined,
-      month: showSecondDate ? 'long' : undefined,
-      day: showSecondDate ? 'numeric' : undefined,
+      year: showSecondDate && showYear && !showTimeOnly ? 'numeric' : undefined,
+      weekday: showSecondDate && !showTimeOnly ? 'long' : undefined,
+      month: showSecondDate && !showTimeOnly ? 'long' : undefined,
+      day: showSecondDate && !showTimeOnly ? 'numeric' : undefined,
       hour: 'numeric',
       minute: 'numeric',
       timeZoneName: showTimeZone ? 'short' : undefined,
