@@ -7,7 +7,6 @@ import Avatar from 'components/avatar';
 
 import { TCallback } from 'lib/model/callback';
 import { User } from 'lib/model/user';
-import { useOrg } from 'lib/context/org';
 
 import styles from './result.module.scss';
 
@@ -16,7 +15,6 @@ interface ResultButtonProps {
   className?: string;
   loading?: boolean;
   avatar?: boolean;
-  hours?: boolean;
   onClick?: TCallback<MouseEvent<HTMLElement>>;
 }
 
@@ -26,9 +24,7 @@ function ResultButton({
   loading,
   onClick,
   avatar = true,
-  hours = false,
 }: ResultButtonProps): JSX.Element {
-  const { org } = useOrg();
   return (
     <Ripple disabled={loading || !onClick} onClick={onClick}>
       <div
@@ -46,9 +42,6 @@ function ResultButton({
         )}
         <div className={styles.name}>
           {user && user.name}
-          {user && hours && org && (
-            <div className={styles.hours}>{user.hours[org.id] || 0} hours</div>
-          )}
         </div>
         <div className={styles.bio}>{user && user.bio}</div>
       </div>
@@ -61,7 +54,6 @@ interface ResultLinkProps {
   className?: string;
   loading?: boolean;
   avatar?: boolean;
-  hours?: boolean;
   href: string;
   newTab?: boolean;
 }
@@ -75,9 +67,7 @@ function ResultLink({
   href,
   newTab,
   avatar = true,
-  hours = false,
 }: ResultLinkProps): JSX.Element {
-  const { org } = useOrg();
   return (
     <Ripple disabled={loading || !href}>
       <div
@@ -97,11 +87,6 @@ function ResultLink({
             )}
             <div className={styles.name}>
               {user && user.name}
-              {user && hours && org && (
-                <div className={styles.hours}>
-                  {user.hours[org.id] || 0} hours
-                </div>
-              )}
             </div>
             <div className={styles.bio}>{user && user.bio}</div>
           </a>
