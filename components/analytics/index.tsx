@@ -107,8 +107,6 @@ function Card<T extends Record<string, number> & { week: number }>({
         }
 
         :global(.recharts-cartesian-grid line) {
-          // Ensure that our 1px lines actually stay 1px (to match other borders).
-          // @see {@link https://stackoverflow.com/a/34229584/10023158}
           shape-rendering: crispedges;
           stroke: var(--accents-2);
         }
