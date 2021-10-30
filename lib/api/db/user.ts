@@ -66,27 +66,46 @@ export async function updateUser(user: User): Promise<User> {
     .eq('id', user.id);
   handle('updating', 'user', user, error);
   const u = data ? User.fromDB(data[0]) : user;
+  
   const subjects: DBRelationUserSubject[] = user.subjects.map((s) => ({
     subject: s.id,
     user: u.id,
   }));
-  logger.debug(`Upserting subjects (${JSON.stringify(subjects)}) rows...`);
-  const { error: erro } = await supabase
+  logger.debug(`Replacing subjects (${JSON.stringify(subjects)}) rows...`);
+  const { error: deleteSubjectsErr } = await supabase
     .from<DBRelationUserSubject>('relation_user_subjects')
-    .upsert(subjects, { onConflict: 'user,subject' });
-  handle('updating', 'user subjects', subjects, erro);
+    .delete()
+    .eq('user', u.id);
+  handle('deleting', 'user subjects', u.id, deleteSubjectsErr);
+  const { error: insertSubjectsErr } = await supabase
+    .from<DBRelationUserSubject>('relation_user_subjects')
+    .insert(subjects);
+  handle('inserting', 'user subjects', subjects, insertSubjectsErr);
+  
   const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
-  logger.debug(`Upserting user parent (${JSON.stringify(parents)}) rows...`);
-  const { error: err } = await supabase
+  logger.debug(`Replacing user parent (${JSON.stringify(parents)}) rows...`);
+  const { error: deleteParentsErr } = await supabase
     .from<DBRelationParent>('relation_parents')
-    .upsert(parents, { onConflict: 'user,parent' });
-  handle('updating', 'user parents', parents, err);
+    .delete()
+    .eq('user', u.id);
+  handle('deleting', 'user parents', parents, deleteParentsErr);
+  const { error: insertParentsErr } = await supabase
+    .from<DBRelationParent>('relation_parents')
+    .insert(parents);
+  handle('inserting', 'user parents', parents, insertParentsErr);
+  
   const orgs = user.orgs.map((o) => ({ org: o, user: u.id }));
-  logger.debug(`Upserting user org (${JSON.stringify(orgs)}) rows...`);
-  const { error: e } = await supabase
+  logger.debug(`Replacing user org (${JSON.stringify(orgs)}) rows...`);
+  const { error: deleteOrgsErr } = await supabase
     .from<DBRelationOrg>('relation_orgs')
-    .upsert(orgs, { onConflict: 'user,org' });
-  handle('updating', 'user orgs', orgs, e);
+    .delete()
+    .eq('user', u.id);
+  handle('deleting', 'user orgs', orgs, deleteOrgsErr);
+  const { error: insertOrgsErr } = await supabase
+    .from<DBRelationOrg>('relation_orgs')
+    .insert(orgs);
+  handle('inserting', 'user orgs', orgs, insertOrgsErr);
+  
   return new User({ ...u, parents: user.parents, orgs: user.orgs });
 }
 

@@ -52,25 +52,38 @@ export async function updateMeeting(meeting: Meeting): Promise<Meeting> {
     .eq('id', meeting.id);
   handle('updating', 'meeting', meeting, error);
   const m = data ? Meeting.fromDB(data[0]) : meeting;
+  
   const subjects: DBRelationMeetingSubject[] = meeting.subjects.map((s) => ({
     subject: s.id,
     meeting: m.id,
   }));
-  logger.debug(`Upserting subjects (${JSON.stringify(subjects)}) rows...`);
-  const { error: err } = await supabase
+  logger.debug(`Replacing subjects (${JSON.stringify(subjects)}) rows...`);
+  const { error: deleteSubjectsErr } = await supabase
     .from<DBRelationMeetingSubject>('relation_meeting_subjects')
-    .upsert(subjects, { onConflict: 'subject,meeting' });
-  handle('updating', 'meeting subjects', subjects, err);
+    .delete()
+    .eq('meeting', m.id);
+  handle('deleting', 'meeting subjects', subjects, deleteSubjectsErr);
+  const { error: insertSubjectsErr } = await supabase
+    .from<DBRelationMeetingSubject>('relation_meeting_subjects')
+    .insert(subjects);
+  handle('inserting', 'meeting subjects', subjects, insertSubjectsErr);
+  
   const people: DBRelationPerson[] = meeting.people.map((p) => ({
     user: p.id,
     roles: p.roles,
     meeting: m.id,
   }));
-  logger.debug(`Upserting people (${JSON.stringify(people)}) rows...`);
-  const { error: e } = await supabase
+  logger.debug(`Replacing people (${JSON.stringify(people)}) rows...`);
+  const { error: deletePeopleErr } = await supabase
     .from<DBRelationPerson>('relation_people')
-    .upsert(people, { onConflict: 'user,meeting,roles' });
-  handle('updating', 'meeting people', people, e);
+    .delete()
+    .eq('meeting', m.id);
+  handle('deleting', 'meeting people', people, deletePeopleErr);
+  const { error: insertPeopleErr } = await supabase
+    .from<DBRelationPerson>('relation_people')
+    .insert(people);
+  handle('inserting', 'meeting people', people, insertPeopleErr);
+  
   return new Meeting({ ...m, people: meeting.people, creator: meeting.creator });
 }
 
