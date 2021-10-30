@@ -40,11 +40,15 @@
   "timezone": "America/Los_Angeles",
   "roles": [],
   "featured": [],
-  "orgs": ["gunn"],
+  "orgs": [
+    "gunn"
+  ],
   "availability": [],
   "subjects": [],
   "hours": {},
-  "langs": ["en"],
+  "langs": [
+    "en"
+  ],
   "parents": [],
   "verifications": [],
   "meetings": [],

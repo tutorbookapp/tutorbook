@@ -2,7 +2,12 @@
   "id": 0,
   "tags": [],
   "org": "gunn",
-  "subjects": ["Computer Science"],
+  "subjects": [
+    {
+      "name": "Computer Science",
+      "id": 10
+    }
+  ],
   "description": "We chatted about Cypress, Selenium, and how Erik might use them with different CI providers.",
   "venue": "https://meet.jit.si/TB-bffQbpagCt",
   "time": {

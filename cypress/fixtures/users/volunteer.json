@@ -39,8 +39,13 @@
   "reference": "",
   "timezone": "America/Los_Angeles",
   "roles": [],
-  "featured": ["tutoring"],
-  "orgs": ["default", "gunn"],
+  "featured": [
+    "tutoring"
+  ],
+  "orgs": [
+    "default",
+    "gunn"
+  ],
   "availability": [
     {
       "from": "1970-01-04T17:00:00.000Z",
@@ -63,9 +68,25 @@
       "id": "XNsG0de1YnEqmAWnA4A_M"
     }
   ],
-  "subjects": ["Computer Science", "Artificial Intelligence", "Math"],
+  "subjects": [
+    {
+      "name": "Computer Science",
+      "id": 10
+    },
+    {
+      "name": "Artificial Intelligence",
+      "id": 70
+    },
+    {
+      "name": "Math",
+      "id": 24
+    }
+  ],
   "hours": {},
-  "langs": ["en", "es"],
+  "langs": [
+    "en",
+    "es"
+  ],
   "parents": [],
   "verifications": [],
   "meetings": [],
