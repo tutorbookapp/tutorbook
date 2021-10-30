@@ -14,6 +14,7 @@ import { Timeslot } from 'lib/model/timeslot';
 import { Verification } from 'lib/model/verification';
 import clone from 'lib/utils/clone';
 import { handle } from 'lib/api/error';
+import logger from 'lib/api/logger';
 import segment from 'lib/api/segment';
 import updateAuthUser from 'lib/api/update/auth-user';
 import updatePhoto from 'lib/api/update/photo';
@@ -157,7 +158,10 @@ async function updateAccount(req: Req, res: Res): Promise<void> {
   const withAuthUpdate = await updateAuthUser(withPhotoUpdate);
 
   const [error] = await to(updateUser(withAuthUpdate));
-  if (error) await createUser(withAuthUpdate);
+  if (error) {
+    logger.warn(`Error updating user (${error.message}), creating instead...`);
+    await createUser(withAuthUpdate);
+  }
 
   res.status(200).json(withAuthUpdate.toJSON());
   segment.track({
