@@ -14,7 +14,7 @@ import { Query, QueryInterface } from 'lib/model/query/base';
 import construct from 'lib/model/construct';
 
 export interface SubjectsQueryInterface extends QueryInterface {
-  options: Subject[];
+  options?: Subject[];
 }
 
 const config: Config<
@@ -26,11 +26,11 @@ const config: Config<
   search: ['', 's', encodeString, decodeString],
   hitsPerPage: [20, 'h', encodeNumber, decodeNumber],
   page: [0, 'p', encodeNumber, decodeNumber],
-  options: [[], 'o', encodeSubjects, decodeSubjects],
+  options: [undefined, 'o', encodeSubjects, decodeSubjects],
 };
 
 export class SubjectsQuery extends Query implements SubjectsQueryInterface {
-  public options: Subject[] = [];
+  public options?: Subject[];
 
   public constructor(query: Partial<SubjectsQueryInterface> = {}) {
     super(query);
