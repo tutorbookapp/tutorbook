@@ -27,7 +27,7 @@ const meetingIds = {};
 const subjectsPath = path.resolve(__dirname, './subjects.json');
 const subjects = require(subjectsPath);
 
-async function main(col = 'user', table = `${col}s`) {
+async function migrate(col = 'user', table = `${col}s`) {
   logger.info(`Selecting ${table} from production...`);
   const { data, error } = await prod.from(table).select();
   if (error) {
@@ -97,4 +97,55 @@ async function main(col = 'user', table = `${col}s`) {
   }
 }
 
-if (require.main === module) main('meeting');
+async function copyPeople() {
+  const table = 'relation_people';
+  logger.info(`Selecting ${table} from production...`);
+  const { data, error } = await prod.from(table).select();
+  if (error) {
+    logger.error(`Error selecting ${table}: ${error.message}`);
+    debugger;
+  } else if (!data) {
+    logger.error(`Missing data: ${data}`);
+    debugger;
+  } else {
+    logger.info(`Inserting ${data.length} ${table} into development...`);
+    const { error } = await dev
+      .from(table)
+      .insert(data.map((d) => ({ ...d, meeting: meetingIds[d.meeting] })));
+    if (error) {
+      logger.error(`Error inserting ${table}: ${error.message}`);
+      debugger;
+    }
+  }
+}
+
+async function copy(table = 'users') {
+  logger.info(`Selecting ${table} from production...`);
+  const { data, error } = await prod.from(table).select();
+  if (error) {
+    logger.error(`Error selecting ${table}: ${error.message}`);
+    debugger;
+  } else if (!data) {
+    logger.error(`Missing data: ${data}`);
+    debugger;
+  } else {
+    logger.info(`Inserting ${data.length} ${table} into development...`);
+    const { error } = await dev.from(table).insert(data);
+    if (error) {
+      logger.error(`Error inserting ${table}: ${error.message}`);
+      debugger;
+    }
+  }
+}
+
+async function main() {
+  await migrate('user');
+  await migrate('org');
+  await copy('relation_orgs');
+  await copy('relation_members');
+  await copy('relation_parents');
+  await migrate('meeting');
+  await copyPeople();
+}
+
+if (require.main === module) main();
