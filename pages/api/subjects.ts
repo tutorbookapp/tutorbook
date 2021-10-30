@@ -13,12 +13,19 @@ export default async function account(req: Req, res: Res<Subject[]>): Promise<vo
   } else {
     try {
       const query = SubjectsQuery.params(req.query as Record<string, string>);
-      const { data, error } = await supabase
-        .from<Subject>('subjects')
-        .select()
-        .ilike('name', `%${query.search}%`);
-      handleSupabaseError('getting', 'subjects', query, error);
-      res.status(200).json(data || []);
+      if (query.options && !query.options.length) {
+        res.status(200).json([]);
+      } else {
+        let select = supabase
+          .from<Subject>('subjects')
+          .select()       
+          .ilike('name', `%${query.search.trim()}%`);
+        if (query.options) 
+          select = select.or(query.options.map((s) => `id.eq.${s.id}`).join(','));
+        const { data, error } = await select;
+        handleSupabaseError('getting', 'subjects', query, error);
+        res.status(200).json(data || []);
+      }
     } catch (e) {
       handle(e, res);
     }
