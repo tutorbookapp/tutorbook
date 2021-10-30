@@ -34,8 +34,7 @@ async function copyMeetings() {
   }
 }
 
-async function copyPeople() {
-  const table = 'relation_people';
+async function copyMeetingRelation(table = 'relation_people') {
   logger.info(`Selecting ${table} from production...`);
   const { data, error } = await prod.from(table).select();
   if (error) {
@@ -76,13 +75,16 @@ async function copy(table = 'users') {
 }
 
 async function main() {
-  //await copy('orgs');
-  //await copy('users');
-  //await copy('relation_orgs');
-  //await copy('relation_members');
-  //await copy('relation_parents');
+  await copy('orgs');
+  await copy('relation_org_subjects');
+  await copy('users');
+  await copy('relation_user_subjects');
+  await copy('relation_orgs');
+  await copy('relation_members');
+  await copy('relation_parents');
   await copyMeetings();
-  await copyPeople();
+  await copyMeetingRelation('relation_meeting_subjects');
+  await copyMeetingRelation('relation_people');
 }
 
 if (require.main === module) main();
