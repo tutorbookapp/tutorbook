@@ -1,10 +1,14 @@
+// Imports production data (from before the `relation_subject` tables were
+// created) and maps it to the new `relation_subject` tables in development,
+// creating subjects as needed.
+
 const fs = require('fs');
 const path = require('path');
 const prompt = require('prompt-sync')();
 
-const dev = require('../supabase')('development');
-const prod = require('../supabase')('production');
-const logger = require('../lib/logger');
+const dev = require('../../supabase')('development');
+const prod = require('../../supabase')('production');
+const logger = require('../../lib/logger');
 
 const CATEGORIES = [
   'math',
@@ -25,7 +29,7 @@ const CATEGORIES = [
 const meetingIds = {};
 
 const subjectsPath = path.resolve(__dirname, './subjects.json');
-const subjects = require(subjectsPath);
+const subjects = [];
 
 async function migrate(col = 'user', table = `${col}s`) {
   logger.info(`Selecting ${table} from production...`);
@@ -139,13 +143,24 @@ async function copy(table = 'users') {
 }
 
 async function main() {
-  await migrate('user');
-  await migrate('org');
-  await copy('relation_orgs');
-  await copy('relation_members');
-  await copy('relation_parents');
-  await migrate('meeting');
-  await copyPeople();
+  const { data, error } = await dev.from('subjects').select();
+  if (error) {
+    logger.error(`Error selecting subjects: ${error.message}`);
+    debugger;
+  } else if (!data) {
+    logger.error(`Missing subjects data: ${data}`);
+    debugger;
+  } else {
+    data.forEach((subject) => subjects.push(subject));
+    fs.writeFileSync(subjectsPath, JSON.stringify(subjects, null, 2));
+    await migrate('user');
+    await migrate('org');
+    await copy('relation_orgs');
+    await copy('relation_members');
+    await copy('relation_parents');
+    await migrate('meeting');
+    await copyPeople();
+  }
 }
 
 if (require.main === module) main();

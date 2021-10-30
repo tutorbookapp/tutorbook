@@ -1,7 +1,10 @@
+// Uses the `subjects` table (from our development database) to update the
+// Cypress JSON fixtures that use the old string-based `subjects` field.
+
 const fs = require('fs');
 const path = require('path');
-const supabase = require('./supabase')('development');
-const logger = require('./lib/logger');
+const supabase = require('../../supabase')('development');
+const logger = require('../../lib/logger');
 
 const fixtures = [
   'users/volunteer.json',
@@ -17,7 +20,7 @@ async function main() {
   const { data } = await supabase.from('subjects').select();
   logger.info(`Updating ${fixtures.length} fixtures' subjects...`);
   fixtures.forEach((fixturePath) => {
-    const full = path.resolve(__dirname, `../cypress/fixtures/${fixturePath}`);
+    const full = path.resolve(__dirname, `../../../cypress/fixtures/${fixturePath}`);
     logger.verbose(`Updating ${full} subjects...`);
     const fixture = require(full);
     if (!fixture.subjects) return;
