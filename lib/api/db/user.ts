@@ -73,7 +73,7 @@ export async function updateUser(user: User): Promise<User> {
   logger.debug(`Upserting subjects (${JSON.stringify(subjects)}) rows...`);
   const { error: erro } = await supabase
     .from<DBRelationUserSubject>('relation_user_subjects')
-    .upsert(subjects, { onConflict: 'user,subjects' });
+    .upsert(subjects, { onConflict: 'user,subject' });
   handle('updating', 'user subjects', subjects, erro);
   const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
   logger.debug(`Upserting user parent (${JSON.stringify(parents)}) rows...`);
