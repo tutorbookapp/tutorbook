@@ -26,7 +26,7 @@ describe('Request page', () => {
     cy.contains('No subjects').should('be.visible');
     cy.percySnapshot('Request Page with No Subjects');
 
-    cy.get('@subject-input').find('textarea').clear().type('Math');
+    cy.get('@subject-input').find('textarea').clear().type('Trig');
     cy.contains('li', 'Trigonometry')
       .trigger('click')
       .find('input[type="checkbox"]')

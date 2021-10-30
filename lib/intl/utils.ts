@@ -1,6 +1,7 @@
 import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import algoliasearch from 'algoliasearch/lite';
 
+import { Subject } from 'lib/model/subject';
 import { Option } from 'lib/model/query/base';
 
 const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
@@ -39,18 +40,18 @@ export async function langsToOptions(
  * @todo Actually add i18n to subjects.
  */
 export async function subjectsToOptions(
-  subjects: string[],
+  subjects: Subject[],
   locale = 'en'
 ): Promise<Option<string>[]> {
   return subjects.map((subject) => ({
-    label: subject,
-    value: subject,
-    key: subject,
+    label: subject.name,
+    value: subject.id.toString(),
+    key: subject.id.toString(),
   }));
 }
 
 export async function getSubjectLabels(
-  subjects: string[],
+  subjects: Subject[],
   locale = 'en'
 ): Promise<string[]> {
   return (await subjectsToOptions(subjects, locale)).map((o) => o.label);

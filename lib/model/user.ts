@@ -11,6 +11,7 @@ import {
 } from 'lib/model/availability';
 import { DBDate, DBTimeslot } from 'lib/model/timeslot';
 import { DBMeeting, MeetingJSON, Meeting, isMeetingJSON } from 'lib/model/meeting';
+import { Subject, isSubject } from 'lib/model/subject';
 import {
   Verification,
   VerificationJSON,
@@ -93,7 +94,7 @@ export interface UserInterface extends AccountInterface {
   age?: number;
   orgs: string[];
   availability: Availability;
-  subjects: string[];
+  subjects: Subject[];
   langs: string[];
   parents: string[];
   verifications: Verification[];
@@ -130,7 +131,6 @@ export interface DBUser {
   venue: string | null;
   socials: DBSocial[];
   availability: DBTimeslot[];
-  subjects: string[];
   langs: string[];
   visible: boolean;
   reference: string;
@@ -142,6 +142,8 @@ export interface DBUser {
   times: number[];
 }
 export interface DBViewUser extends DBUser {
+  subjects: Subject[];
+  subject_ids: number[];
   orgs: string[];
   parents: string[];
   meetings: DBMeeting[];
@@ -149,6 +151,10 @@ export interface DBViewUser extends DBUser {
 }
 export interface DBPerson extends DBUser {
   roles: Role[] | null;
+}
+export interface DBRelationUserSubject {
+  user: string;
+  subject: number;
 }
 export interface DBRelationParent {
   user: string;
@@ -175,7 +181,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (json.age && typeof json.age !== 'number') return false;
   if (!isStringArray(json.orgs)) return false;
   if (!isAvailabilityJSON(json.availability)) return false;
-  if (!isStringArray(json.subjects)) return false;
+  if (!isArray(json.subjects, isSubject)) return false;
   if (!isStringArray(json.langs)) return false;
   if (!isStringArray(json.parents)) return false;
   if (!isArray(json.verifications, isVerificationJSON)) return false;
@@ -201,7 +207,7 @@ export class User extends Account implements UserInterface {
 
   public availability: Availability = new Availability();
 
-  public subjects: string[] = [];
+  public subjects: Subject[] = [];
 
   public langs: string[] = ['en'];
 
@@ -269,7 +275,6 @@ export class User extends Account implements UserInterface {
       venue: this.venue?.trim() || null,
       socials: this.socials,
       availability: this.availability.toDB(),
-      subjects: this.subjects,
       langs: this.langs,
       visible: this.visible,
       reference: this.reference.trim(),
@@ -294,7 +299,6 @@ export class User extends Account implements UserInterface {
       venue: record.venue || '',
       socials: record.socials,
       availability: Availability.fromDB(record.availability),
-      subjects: record.subjects,
       langs: record.langs,
       visible: record.visible,
       reference: record.reference,
@@ -303,6 +307,7 @@ export class User extends Account implements UserInterface {
       tags: record.tags.filter(isUserTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
+      subjects: 'subjects' in record ? record.subjects || [] : [],
       orgs: 'orgs' in record ? record.orgs || [] : [],
       parents: 'parents' in record ? record.parents || [] : [],
       meetings: 'meetings' in record ? (record.meetings || []).map(Meeting.fromDB) : [],
@@ -349,7 +354,7 @@ export class User extends Account implements UserInterface {
       'User Reference': this.reference,
       'User Languages': join(this.langs),
       'User Tags': join(this.tags),
-      Subjects: join(this.subjects),
+      Subjects: join(this.subjects.map((s) => s.name)),
       'Profile Image URL': this.photo,
       'Banner Image URL': this.background,
       'Website URL': this.website,

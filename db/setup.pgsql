@@ -56,7 +56,6 @@ create table public.users (
   "venue" url,
   "socials" social[] not null,
   "availability" timeslot[] not null,
-  "subjects" text[] not null,
   "langs" text[] not null check(cardinality(langs) > 0),
   "visible" boolean not null,
   "reference" text not null,
@@ -94,7 +93,6 @@ create table public.orgs (
   "domains" text[] check(cardinality(domains) > 0),
   -- TODO: Check that at least one contact info field is included.
   "profiles" profile_field[] not null check(cardinality(profiles) > 3),
-  "subjects" text[] check(cardinality(subjects) > 0),
   -- TODO: Verify these are valid config objects.
   "signup" jsonb not null,
   "home" jsonb not null,
@@ -126,7 +124,6 @@ create table public.meetings (
   "id" bigint generated always as identity primary key,
   "org" text references public.orgs(id) on delete cascade on update cascade not null,
   "creator" text references public.users(id) on delete cascade on update cascade not null,
-  "subjects" text[] not null check(cardinality(subjects) > 0),
   "description" text not null,
   "tags" meeting_tag[] not null,
   "time" timeslot not null,
@@ -135,9 +132,44 @@ create table public.meetings (
   "updated" timestamptz not null
 );
 
+-- create type category as enum (
+  -- 'math',
+  -- 'science',
+  -- 'history',
+  -- 'english',
+  -- 'language',
+  -- 'business',
+  -- 'music',
+  -- 'tests',
+  -- 'art',
+  -- 'cs'
+-- );
+-- create table public.subjects (
+  -- "id" bigint generated always as identity primary key,
+  -- "name" text not null check(length(name) > 1 AND name !~ '^\s+$') unique,
+  -- "category" category not null
+-- );
+
 -- RELATIONS
 -- These are the best way to setup many-to-many relationships in a relational
 -- database like PostgreSQL (in order to use references properly).
+
+create table relation_user_subjects (
+  "user" text references public.users(id) on delete cascade on update cascade not null,
+  "subject" bigint references public.subjects(id) on delete cascade on update cascade not null,
+  primary key ("user", "subject")
+);
+create table relation_org_subjects (
+  "org" text references public.orgs(id) on delete cascade on update cascade not null,
+  "subject" bigint references public.subjects(id) on delete cascade on update cascade not null,
+  primary key ("org", "subject")
+);
+create table relation_meeting_subjects (
+  "meeting" bigint references public.meetings(id) on delete cascade on update cascade not null,
+  "subject" bigint references public.subjects(id) on delete cascade on update cascade not null,
+  primary key ("meeting", "subject")
+);
+
 create table relation_parents (
   "user" text references public.users(id) on delete cascade on update cascade not null,
   "parent" text references public.users(id) on delete cascade on update cascade not null,
@@ -171,8 +203,16 @@ create table relation_people (
 create view view_orgs as 
 select 
   orgs.*,
+  coalesce(subjects, null) as subjects,
   coalesce(members, array[]::text[]) as members
 from orgs
+  left outer join (
+    select "org",json_agg(subjects.*) as subjects 
+    from (
+      select * from relation_org_subjects inner join 
+      subjects on subjects.id = relation_org_subjects.subject
+    ) as subjects group by "org"
+  ) as subjects on subjects."org" = id
   left outer join (
     select "org",array_agg("user") as members 
     from relation_members group by "org"
@@ -182,6 +222,8 @@ order by id;
 create view view_meetings as
 select 
   meetings.*,
+  coalesce(subjects, '[]'::json) as subjects,
+  coalesce(subject_ids, array[]::bigint[]) as subject_ids,
   -- TODO: Remove this `time_from` columns as they're only required b/c of an
   -- upstream limitation with PostgREST that disallows composite types.
   -- See: https://github.com/PostgREST/postgrest/issues/1543
@@ -189,33 +231,60 @@ select
   (meetings.time).to as time_to,
   (meetings.time).last as time_last,
   people,
-  coalesce(people_ids,array[]::text[]) as people_ids 
-from meetings left outer join (
-  select 
-    meeting,
-    json_agg(person.*) as people,
-    array_agg(person.id) as people_ids 
-  from (
-    -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
-    -- the `meeting` property from the aggregated `people` column of objs.
-    select meeting,roles,users.* 
-    from relation_people 
-    inner join users on "user" = users.id
-  ) as person group by meeting
-) as people on meeting = meetings.id
+  coalesce(people_ids, array[]::text[]) as people_ids 
+from meetings 
+  left outer join (
+    select 
+      meeting,
+      json_agg(subject.*) as subjects,
+      array_agg(subject.id) as subject_ids
+    from (
+      select * from relation_meeting_subjects inner join 
+      subjects on subjects.id = relation_meeting_subjects.subject
+    ) as subject group by meeting
+  ) as subjects on subjects.meeting = meetings.id
+  left outer join (
+    select 
+      meeting,
+      json_agg(person.*) as people,
+      array_agg(person.id) as people_ids 
+    from (
+      -- TODO: Find a way to `json_agg(users.*, roles)` so that I can get rid of
+      -- the `meeting` property from the aggregated `people` column of objs.
+      select meeting,roles,users.* 
+      from relation_people 
+      inner join users on "user" = users.id
+    ) as person group by meeting
+  ) as people on people.meeting = meetings.id
 order by meetings.id;
 
 create view meeting_instances as
 select 
-  meetings.*, 
+  meetings.*,
+  coalesce(subjects, '[]'::json) as subjects,
   (event_instances((meetings.time).from, (meetings.time).recur)) instance_time 
 from meetings
+  left outer join (
+    select "meeting",json_agg(subjects.*) as subjects
+    from (
+      select * from relation_meeting_subjects inner join
+      subjects on subjects.id = relation_meeting_subjects.subject
+    ) as subjects group by "meeting"
+  ) as subjects on subjects."meeting" = id
 where (meetings.time).recur is not null
-union
+union all
 select
   meetings.*,
+  coalesce(subjects, '[]'::json) as subjects,
   ((meetings.time).from) instance_time
 from meetings
+  left outer join (
+    select "meeting",json_agg(subjects.*) as subjects
+    from (
+      select * from relation_meeting_subjects inner join
+      subjects on subjects.id = relation_meeting_subjects.subject
+    ) as subjects group by "meeting"
+  ) as subjects on subjects."meeting" = id
 where (meetings.time).recur is null;
 
 create view hours_cumulative as
@@ -262,10 +331,22 @@ create view view_users as
 select 
   users.*,
   cardinality(times) > 0 as available,
+  coalesce(subjects, '[]'::json) as subjects,
+  coalesce(subject_ids, array[]::bigint[]) as subject_ids,
   coalesce(orgs, array[]::text[]) as orgs,
   coalesce(parents, array[]::text[]) as parents,
   coalesce(meetings, '[]'::json) as meetings
 from users 
+  left outer join (
+    select 
+      "user",
+      json_agg(subject.*) as subjects,
+      array_agg(subject.id) as subject_ids
+    from (
+      select * from relation_user_subjects inner join 
+      subjects on subjects.id = relation_user_subjects.subject
+    ) as subject group by "user"
+  ) as subjects on subjects."user" = id
   left outer join (
     select "user",array_agg(org) as orgs 
     from relation_orgs group by "user"
@@ -283,3 +364,22 @@ from users
     ) as meetings group by meetings."user"
   ) as meetings on meetings."user" = id
 order by id;
+
+-- FUNCTIONS
+-- Function to get all the users that a person has meetings with. Note that
+-- this includes the user itself (e.g. so a user can book a meeting with
+-- themselves; a pretty common use-case when testing the app).
+create function met(user_id text, user_role text)
+returns table (like view_users)
+as $$
+  select distinct on (view_users.id) view_users.*
+  from relation_people relation_people1
+  join relation_people relation_people2
+  on relation_people1.meeting = relation_people2.meeting
+  join view_users
+  on relation_people2.user = view_users.id
+  where 
+    user_id = relation_people1.user and
+    user_role::role = any (relation_people2.roles);
+$$
+language sql stable;

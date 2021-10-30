@@ -161,8 +161,8 @@ describe('Profile page', () => {
       .children('.mdc-chip')
       .should('have.length', volunteer.subjects.length)
       .as('subjects');
-    volunteer.subjects.forEach((subject: string, idx: number) => {
-      cy.get('@subjects').eq(idx).should('contain', subject);
+    volunteer.subjects.forEach(({ name }: { name: string }, idx: number) => {
+      cy.get('@subjects').eq(idx).should('contain', name);
     });
 
     const langs: Record<string, string> = { en: 'English', es: 'Spanish' };

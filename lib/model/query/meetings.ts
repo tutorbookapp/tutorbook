@@ -5,20 +5,23 @@ import {
   decodeDate,
   decodeNumber,
   decodeString,
+  decodeSubjects,
   encode,
   encodeArray,
   encodeDate,
   encodeNumber,
   encodeString,
+  encodeSubjects,
 } from 'lib/model/query/params';
 import { Query, QueryInterface } from 'lib/model/query/base';
 import { DBMeetingTag } from 'lib/model/meeting';
+import { Subject } from 'lib/model/subject';
 import construct from 'lib/model/construct';
 
 export interface MeetingsQueryInterface extends QueryInterface {
   org?: string;
   people: string[];
-  subjects: string[];
+  subjects: Subject[];
   tags: DBMeetingTag[];
   from: Date;
   to: Date;
@@ -35,7 +38,7 @@ const config: Config<
   page: [0, 'p', encodeNumber, decodeNumber],
   org: [undefined, 'o', encodeString, decodeString],
   people: [[], 'pl', encodeArray, decodeArray],
-  subjects: [[], 'sb', encodeArray, decodeArray],
+  subjects: [[], 'sb', encodeSubjects, decodeSubjects],
   tags: [[], 'tg', encodeArray, decodeArray],
   from: [
     new Date(
@@ -64,7 +67,7 @@ export class MeetingsQuery extends Query implements MeetingsQueryInterface {
 
   public people: string[] = [];
 
-  public subjects: string[] = [];
+  public subjects: Subject[] = [];
 
   public tags: DBMeetingTag[] = [];
 

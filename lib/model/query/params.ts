@@ -1,6 +1,7 @@
 import { dequal } from 'dequal';
 
 import { Availability } from 'lib/model/availability';
+import { Subject } from 'lib/model/subject';
 import { Timeslot } from 'lib/model/timeslot';
 
 export function encodeBoolean(bool: boolean): string {
@@ -45,6 +46,16 @@ export function encodeArray(arr: string[]): string {
 }
 export function decodeArray(arr: string): string[] {
   return arr.split(',').map((str) => decodeString(str));
+}
+
+export function encodeSubjects(subjects: Subject[]): string {
+  return subjects.map((s) => `${encodeNumber(s.id)}:${encodeString(s.name)}`).join(',');
+}
+export function decodeSubjects(subjects: string): Subject[] {
+  return subjects.split(',').map((s) => {
+    const [id, name] = s.split(':');
+    return { id: decodeNumber(id), name: decodeString(name) };
+  });
 }
 
 export function encodeAvailability(a: Availability): string {

@@ -16,6 +16,7 @@ import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
+import { Subject } from 'lib/model/subject';
 import { ValidationsContext } from 'lib/context/validations';
 import useAnalytics from 'lib/hooks/analytics';
 import { useOrg } from 'lib/context/org';
@@ -153,7 +154,7 @@ export default function Signup(): JSX.Element {
     [track, setUser]
   );
   const onSubjectsChange = useCallback(
-    (subjects: string[]) => {
+    (subjects: Subject[]) => {
       track('User Subjects Updated', { subjects }, 2500);
       setUser((prev) => new User({ ...prev, subjects }));
     },

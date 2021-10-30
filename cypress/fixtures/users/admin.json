@@ -39,8 +39,12 @@
   "reference": "",
   "timezone": "America/Los_Angeles",
   "roles": [],
-  "featured": ["mentoring"],
-  "orgs": ["gunn"],
+  "featured": [
+    "mentoring"
+  ],
+  "orgs": [
+    "gunn"
+  ],
   "availability": [
     {
       "from": "1970-01-04T17:00:00.000Z",
@@ -64,17 +68,43 @@
     }
   ],
   "subjects": [
-    "Math",
-    "Algebra",
-    "Geometry",
-    "Trigonometry",
-    "Science",
-    "Computer Science",
-    "Chemistry",
-    "Biology"
+    {
+      "name": "Math",
+      "id": 24
+    },
+    {
+      "name": "Algebra",
+      "id": 12
+    },
+    {
+      "name": "Geometry",
+      "id": 17
+    },
+    {
+      "name": "Trigonometry",
+      "id": 8
+    },
+    {
+      "name": "Science",
+      "id": 11
+    },
+    {
+      "name": "Computer Science",
+      "id": 10
+    },
+    {
+      "name": "Chemistry",
+      "id": 14
+    },
+    {
+      "name": "Biology",
+      "id": 15
+    }
   ],
   "hours": {},
-  "langs": ["en"],
+  "langs": [
+    "en"
+  ],
   "parents": [],
   "verifications": [
     {
@@ -82,7 +112,9 @@
       "org": "default",
       "created": "2020-11-26T19:13:42",
       "updated": "2020-11-26T19:13:42",
-      "checks": ["email"],
+      "checks": [
+        "email"
+      ],
       "notes": ""
     },
     {
@@ -90,7 +122,9 @@
       "org": "default",
       "created": "2020-11-26T19:13:42",
       "updated": "2020-11-26T19:13:44",
-      "checks": ["interview"],
+      "checks": [
+        "interview"
+      ],
       "notes": "I chatted with John Doe over Zoom; he's a great guy! Very passionate about CS."
     }
   ],

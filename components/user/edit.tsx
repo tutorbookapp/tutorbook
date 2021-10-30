@@ -15,6 +15,7 @@ import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
+import { Subject } from 'lib/model/subject';
 import { useOrg } from 'lib/context/org';
 import useContinuous from 'lib/hooks/continuous';
 import useSocialProps from 'lib/hooks/social-props';
@@ -121,7 +122,7 @@ export default function UserEdit({
     [setUser]
   );
   const onSubjectsChange = useCallback(
-    (subjects: string[]) => {
+    (subjects: Subject[]) => {
       setUser((prev) => new User({ ...prev, subjects }));
     },
     [setUser]

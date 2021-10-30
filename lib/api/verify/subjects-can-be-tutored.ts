@@ -1,14 +1,14 @@
 import { APIError } from 'lib/model/error';
+import { Subject } from 'lib/model/subject';
 import { User } from 'lib/model/user';
 
 export default function verifySubjectsCanBeTutored(
-  subjects: string[],
+  subjects: Subject[],
   people: User[]
 ): void {
-  people.forEach((person: User) => {
-    const isTutor = person.roles.includes('tutor');
-    const canTutor = (s: string) => person.subjects.includes(s);
-    if (isTutor && !subjects.every(canTutor))
-      throw new APIError(`${person.toString()} cannot tutor these subjects`);
+  people.forEach((p) => {
+    if (!p.roles.includes('tutor')) return;
+    if (subjects.every((s) => p.subjects.some((o) => o.id === s.id))) return;
+    throw new APIError(`${p.toString()} cannot tutor these subjects`);
   });
 }

@@ -109,8 +109,7 @@ describe('Users page', () => {
       .first()
       .find('a')
       .should('contain', volunteer.name)
-      .and('have.attr', 'href', `/${school.id}/users/${volunteer.id}`)
-      .and('have.attr', 'target', '_blank');
+      .and('have.attr', 'href', `/${school.id}/users/${volunteer.id}`);
     cy.get('@results').last().should('contain', admin.name);
     
     // Users must be hidden from search.
@@ -125,8 +124,7 @@ describe('Users page', () => {
       .first()
       .find('a')
       .should('contain', student.name)
-      .and('have.attr', 'href', `/${school.id}/users/${student.id}`)
-      .and('have.attr', 'target', '_blank');
+      .and('have.attr', 'href', `/${school.id}/users/${student.id}`);
 
     // Users must be visible in search.
     cy.get('@hidden-chip')

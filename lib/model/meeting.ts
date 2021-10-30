@@ -14,7 +14,8 @@ import {
   ResourceJSON,
   isResourceJSON,
 } from 'lib/model/resource';
-import { isArray, isJSON, isStringArray } from 'lib/model/json';
+import { Subject, isSubject } from 'lib/model/subject';
+import { isArray, isJSON } from 'lib/model/json';
 import { join, notTags } from 'lib/utils';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
@@ -53,7 +54,7 @@ export interface MeetingInterface extends ResourceInterface {
   id: number;
   tags: MeetingTag[];
   org: string;
-  subjects: string[];
+  subjects: Subject[];
   people: User[];
   creator: User;
   description: string;
@@ -74,7 +75,7 @@ export function isMeetingJSON(json: unknown): json is MeetingJSON {
   if (typeof json.id !== 'number') return false;
   if (!isArray(json.tags, isMeetingTag)) return false;
   if (typeof json.org !== 'string') return false;
-  if (!isStringArray(json.subjects)) return false;
+  if (!isArray(json.subjects, isSubject)) return false;
   if (!isArray(json.people, isUserJSON)) return false;
   if (!isUserJSON(json.creator)) return false;
   if (typeof json.description !== 'string') return false;
@@ -87,7 +88,6 @@ export interface DBMeeting {
   id: number;
   org: string;
   creator: string;
-  subjects: string[];
   description: string;
   tags: DBMeetingTag[];
   time: DBTimeslot;
@@ -96,26 +96,33 @@ export interface DBMeeting {
   updated: DBDate;
 }
 export interface DBViewMeeting extends DBMeeting {
+  subjects: Subject[];
+  subject_ids: number[];
   people: DBPerson[] | null;
   people_ids: string[];
 }
 export interface DBHoursCumulative extends DBMeeting {
+  subjects: Subject[];
   people: DBPerson[] | null;
   instance_time: string;
   user: string;
   hours: number;
   total: number;
 }
-export interface DBRelationPerson {
-  user: string;
+export interface DBRelationMeetingSubject {
   meeting: number;
+  subject: number;
+}
+export interface DBRelationPerson {
+  meeting: number;
+  user: string;
   roles: Role[];
 }
 
 export interface MeetingSegment {
   id: number;
   description: string;
-  subjects: string[];
+  subjects: Subject[];
   start: Date;
   end: Date;
 }
@@ -127,7 +134,7 @@ export class Meeting extends Resource implements MeetingInterface {
 
   public org = 'default';
 
-  public subjects: string[] = [];
+  public subjects: Subject[] = [];
 
   public people: User[] = [];
 
@@ -171,7 +178,6 @@ export class Meeting extends Resource implements MeetingInterface {
       id: this.id,
       org: this.org,
       creator: this.creator.id,
-      subjects: this.subjects,
       venue: this.venue,
       time: this.time.toDB(),
       description: this.description,
@@ -194,7 +200,7 @@ export class Meeting extends Resource implements MeetingInterface {
       people,
       id: record.id,
       org: record.org,
-      subjects: record.subjects,
+      subjects: 'subjects' in record ? record.subjects || [] : [],
       creator: creator
         ? User.fromDB(creator)
         : new User({ id: record.creator }),
@@ -230,7 +236,7 @@ export class Meeting extends Resource implements MeetingInterface {
   public toCSV(): Record<string, string> {
     return {
       'Meeting ID': this.id.toString(),
-      'Meeting Subjects': join(this.subjects),
+      'Meeting Subjects': join(this.subjects.map((s) => s.name)),
       'Meeting Description': this.description,
       'Meeting Tags': join(this.tags),
       'Meeting Created': this.created.toString(),

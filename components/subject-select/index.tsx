@@ -1,34 +1,28 @@
-import { ObjectWithObjectID, SearchResponse } from '@algolia/client-search';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import algoliasearch from 'algoliasearch/lite';
+import axios from 'axios';
 import { dequal } from 'dequal/lite';
 import useTranslation from 'next-translate/useTranslation';
 
 import Select, { SelectControllerProps } from 'components/select';
 
-import { GradeAlias } from 'lib/model/user';
+import { Subject } from 'lib/model/subject';
+import { SubjectsQuery } from 'lib/model/query/subjects';
+import { TCallback } from 'lib/model/callback';
 import { Option } from 'lib/model/query/base';
 import { intersection } from 'lib/utils';
 import { useOrg } from 'lib/context/org';
 import usePrevious from 'lib/hooks/previous';
 
-const algoliaId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string;
-const algoliaKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY as string;
+export type SubjectSelectProps = 
+  Omit<SelectControllerProps<string>, 'value' | 'onChange'> &
+  { value: Subject[]; onChange: TCallback<Subject[]>; options?: Subject[] };
 
-const client = algoliasearch(algoliaId, algoliaKey);
-const searchIdx = client.initIndex('subjects');
-
-interface SubjectHit extends ObjectWithObjectID {
-  name: string;
+function optionToSubject(option: Option<string>): Subject {
+  return { id: Number(option.value || option.key), name: option.label };
 }
-
-interface UniqueSubjectSelectProps {
-  options?: string[];
-  grade?: GradeAlias;
+function subjectToOption(subject: Subject): Option<string> {
+  return { value: subject.id.toString(), label: subject.name, key: subject.id.toString() };
 }
-
-export type SubjectSelectProps = SelectControllerProps<string> &
-  UniqueSubjectSelectProps;
 
 function SubjectSelect({
   value,
@@ -37,7 +31,6 @@ function SubjectSelect({
   onSelectedChange,
   options: subjectOptions,
   placeholder: subjectPlaceholder,
-  grade,
   ...props
 }: SubjectSelectProps): JSX.Element {
   // Directly control the `Select` component with this internal state.
@@ -48,7 +41,7 @@ function SubjectSelect({
     (os: Option<string>[]) => {
       setSelectedOptions(os);
       if (onSelectedChange) onSelectedChange(os);
-      if (onChange) onChange(os.map(({ value: val }) => val));
+      if (onChange) onChange(os.map(optionToSubject));
     },
     [onSelectedChange, onChange]
   );
@@ -63,32 +56,19 @@ function SubjectSelect({
   }, [org?.subjects, subjectOptions]);
   const placeholder = useMemo(() => {
     if (!options || !options.length) return subjectPlaceholder;
-    return `Ex: ${options.slice(0, 2).join(' or ')}`;
+    return `Ex: ${options.slice(0, 2).map((s) => s.name).join(' or ')}`;
   }, [options, subjectPlaceholder]);
 
   // Search the Algolia index (filtering by options and grade) to get select
   // options/suggestions (for the drop-down menu).
   const getSuggestions = useCallback(
-    async (query = '') => {
+    async (search = '') => {
       if (options && !options.length) return [];
-      const filters: string | undefined =
-        options !== undefined
-          ? options.map((subject: string) => `name:"${subject}"`).join(' OR ')
-          : undefined;
-      const optionalFilters: string[] | undefined =
-        grade !== undefined ? [`grades:${grade}`] : undefined;
-      const suggestions: Option<string>[] = [];
-      const res: SearchResponse<SubjectHit> = await searchIdx.search(query, {
-        filters,
-        optionalFilters,
-      });
-      res.hits.forEach((h: SubjectHit) => {
-        if (suggestions.findIndex((s) => s.label === h.name) >= 0) return;
-        suggestions.push({ label: h.name, value: h.name, key: h.name });
-      });
-      return suggestions;
+      const query = new SubjectsQuery({ search, options });
+      const { data } = await axios.get<Subject[]>(query.endpoint);
+      return data.map(subjectToOption);
     },
-    [options, grade]
+    [options]
   );
 
   // Sync the controlled values (i.e. subject codes) with the internally stored
@@ -100,10 +80,7 @@ function SubjectSelect({
       if (!value || dequal(prevValue, value)) return prev;
       if (!value.length) return [];
       // Otherwise, update the options based on the subject codes.
-      return value.map((val) => ({ label: val, value: val, key: val }));
-      // TODO: Add i18n to subjects by including labels for all languages in that
-      // search index (and then fetching the correct labels for the given subject
-      // codes here by searching that index).
+      return value.map(subjectToOption);
     });
   }, [value]);
 
@@ -118,10 +95,10 @@ function SubjectSelect({
   // Don't allow selections not included in `options` prop.
   useEffect(() => {
     setSelectedOptions((prev: Option<string>[]) => {
-      const os = prev.filter((s) => !options || options.includes(s.value));
+      const os = prev.filter((s) => !options || options.some((o) => o.id === Number(s.value)));
       if (dequal(os, prev)) return prev;
       if (onSelectedChange) onSelectedChange(os);
-      if (onChange) onChange(os.map(({ value: val }) => val));
+      if (onChange) onChange(os.map(optionToSubject));
       return os;
     });
   }, [options, onSelectedChange, onChange]);

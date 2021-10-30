@@ -7,6 +7,7 @@ import {
   decodeNumber,
   decodeOptionalBool,
   decodeString,
+  decodeSubjects,
   encode,
   encodeArray,
   encodeAvailability,
@@ -14,10 +15,12 @@ import {
   encodeNumber,
   encodeOptionalBool,
   encodeString,
+  encodeSubjects,
 } from 'lib/model/query/params';
 import { DBUserTag, Role } from 'lib/model/user';
 import { Query, QueryInterface } from 'lib/model/query/base';
 import { Availability } from 'lib/model/availability';
+import { Subject } from 'lib/model/subject';
 import construct from 'lib/model/construct';
 
 /**
@@ -37,7 +40,7 @@ export interface UsersQueryInterface extends QueryInterface {
   orgs: string[];
   tags: DBUserTag[];
   langs: string[];
-  subjects: string[];
+  subjects: Subject[];
   availability: Availability;
   available?: boolean;
   visible?: boolean;
@@ -57,7 +60,7 @@ const config: Config<
   orgs: [[], 'o', encodeArray, decodeArray],
   tags: [[], 't', encodeArray, decodeArray],
   langs: [[], 'l', encodeArray, decodeArray],
-  subjects: [[], 'sb', encodeArray, decodeArray],
+  subjects: [[], 'sb', encodeSubjects, decodeSubjects],
   availability: [
     new Availability(),
     'a',
@@ -78,7 +81,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
 
   public langs: string[] = [];
 
-  public subjects: string[] = [];
+  public subjects: Subject[] = [];
 
   public availability: Availability = new Availability();
 

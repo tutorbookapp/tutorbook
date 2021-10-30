@@ -5,7 +5,8 @@ import {
   isAccountJSON,
 } from 'lib/model/account';
 import { DBSocial, DBUser, UserInterface } from 'lib/model/user';
-import { isJSON, isStringArray } from 'lib/model/json';
+import { Subject, isSubject } from 'lib/model/subject';
+import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
@@ -67,7 +68,7 @@ export interface OrgInterface extends AccountInterface {
   members: string[];
   domains: string[];
   profiles: (keyof UserInterface | 'subjects')[];
-  subjects?: string[];
+  subjects?: Subject[];
   signup: SignupConfig;
   home: HomeConfig;
   booking: BookingConfig;
@@ -85,7 +86,6 @@ export interface DBOrg {
   socials: DBSocial[];
   domains: string[] | null;
   profiles: (keyof DBUser)[];
-  subjects: string[] | null;
   signup: object;
   home: object;
   booking: object;
@@ -93,11 +93,16 @@ export interface DBOrg {
   updated: DBDate;
 }
 export interface DBViewOrg extends DBOrg {
+  subjects: Subject[] | null;
   members: string[];
 }
-export interface DBRelationMember {
-  user: string;
+export interface DBRelationOrgSubject {
   org: string;
+  subject: number;
+}
+export interface DBRelationMember {
+  org: string;
+  user: string;
 }
 
 export type OrgJSON = Omit<OrgInterface, keyof Account> & AccountJSON;
@@ -109,7 +114,7 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isStringArray(json.members)) return false;
   if (!isStringArray(json.domains)) return false;
   if (!isStringArray(json.profiles)) return false;
-  if (json.subjects && !isStringArray(json.subjects)) return false;
+  if (json.subjects && !isArray(json.subjects, isSubject)) return false;
   if (!isSignupConfig(json.signup)) return false;
   if (!isHomeConfig(json.home)) return false;
   if (!isBookingConfig(json.booking)) return false;
@@ -130,7 +135,7 @@ export class Org extends Account implements OrgInterface {
     'availability',
   ];
 
-  public subjects?: string[];
+  public subjects?: Subject[];
 
   // TODO: Don't only include org data that the user is an admin of. Instead,
   // keep an app-wide org context that includes the org configurations for all
@@ -197,7 +202,6 @@ export class Org extends Account implements OrgInterface {
       socials: this.socials,
       domains: this.domains.length ? this.domains : null,
       profiles: this.profiles as (keyof DBUser)[],
-      subjects: this.subjects?.length ? this.subjects : null,
       signup: this.signup,
       home: this.home,
       booking: this.booking,
@@ -219,12 +223,12 @@ export class Org extends Account implements OrgInterface {
       socials: record.socials,
       domains: record.domains?.length ? record.domains : [],
       profiles: record.profiles as (keyof UserInterface | 'subjects')[],
-      subjects: record.subjects?.length ? record.subjects : undefined,
       signup: record.signup as SignupConfig,
       home: record.home as HomeConfig,
       booking: record.booking as BookingConfig,
       created: new Date(record.created),
       updated: new Date(record.updated),
+      subjects: 'subjects' in record ? record.subjects || undefined : undefined,
       members: 'members' in record ? record.members : [],
     });
   }
