@@ -199,11 +199,13 @@ export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Eleme
         <br />
         {mtg.time.toString('en')}
       </P>
-      <P style={{ margin: '18px 0' }}>
-        <b>RECURRING</b>
-        <br />
-        {caps(rrule.toText())}
-      </P>
+      {mtg.time.recur && (
+        <P style={{ margin: '18px 0' }}>
+          <b>RECURRING</b>
+          <br />
+          {caps(rrule.toText())}
+        </P>
+      )}
       <P style={{ margin: '18px 0' }}>
         <b>WHERE</b>
         <br />
