@@ -132,21 +132,23 @@ create table public.meetings (
   "updated" timestamptz not null
 );
 
--- create type category as enum (
-  -- 'math',
-  -- 'science',
-  -- 'history',
-  -- 'english',
-  -- 'language',
-  -- 'business',
-  -- 'music',
-  -- 'cs'
--- );
--- create table public.subjects (
-  -- "id" bigint generated always as identity primary key,
-  -- "name" text not null check(length(name) > 1 AND name !~ '^\s+$'),
-  -- "category" category not null
--- );
+create type category as enum (
+  'math',
+  'science',
+  'history',
+  'english',
+  'language',
+  'business',
+  'music',
+  'tests',
+  'art',
+  'cs'
+);
+create table public.subjects (
+  "id" bigint generated always as identity primary key,
+  "name" text not null check(length(name) > 1 AND name !~ '^\s+$') unique,
+  "category" category not null
+);
 
 -- RELATIONS
 -- These are the best way to setup many-to-many relationships in a relational
