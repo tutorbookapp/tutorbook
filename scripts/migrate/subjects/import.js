@@ -6,8 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const prompt = require('prompt-sync')();
 
-const dev = require('../../supabase')('development');
-const prod = require('../../supabase')('production');
+const dest = require('../../supabase')('test');
+const src = require('../../supabase')('development');
 const logger = require('../../lib/logger');
 
 const CATEGORIES = [
@@ -32,8 +32,8 @@ const subjectsPath = path.resolve(__dirname, './subjects.json');
 const subjects = [];
 
 async function migrate(col = 'user', table = `${col}s`) {
-  logger.info(`Selecting ${table} from production...`);
-  const { data, error } = await prod.from(table).select();
+  logger.info(`Selecting ${table} from source...`);
+  const { data, error } = await src.from(table).select();
   if (error) {
     logger.error(`Error selecting ${table}: ${error.message}`);
     debugger;
@@ -52,8 +52,8 @@ async function migrate(col = 'user', table = `${col}s`) {
       }
     }));
 
-    logger.info(`Inserting ${subjectsToCreate.length} subjects into development...`);
-    const { data: created, error } = await dev.from('subjects').insert(subjectsToCreate);
+    logger.info(`Inserting ${subjectsToCreate.length} subjects into destination...`);
+    const { data: created, error } = await dest.from('subjects').insert(subjectsToCreate);
     if (error) {
       logger.error(`Error inserting subjects: ${error.message}`);
       debugger;
@@ -76,8 +76,8 @@ async function migrate(col = 'user', table = `${col}s`) {
       delete row.subjects;
       if (col === 'meeting') delete row.id;
     });
-    logger.info(`Inserting ${data.length} ${table} into development...`);
-    const { error: err, data: inserted } = await dev.from(table).insert(data);
+    logger.info(`Inserting ${data.length} ${table} into destination...`);
+    const { error: err, data: inserted } = await dest.from(table).insert(data);
     if (err) {
       logger.error(`Error inserting ${table}: ${err.message}`);
       debugger;
@@ -91,8 +91,8 @@ async function migrate(col = 'user', table = `${col}s`) {
         row[col] = meetingIds[row[col]];
       });
     }
-    logger.info(`Inserting ${relationSubjects.length} relation_${col}_subjects into development...`);
-    const { error: e } = await dev.from(`relation_${col}_subjects`).insert(relationSubjects);
+    logger.info(`Inserting ${relationSubjects.length} relation_${col}_subjects into destination...`);
+    const { error: e } = await dest.from(`relation_${col}_subjects`).insert(relationSubjects);
     if (e) {
       logger.error(`Error inserting relation_${col}_subjects: ${e.message}`);
       debugger;
@@ -103,8 +103,8 @@ async function migrate(col = 'user', table = `${col}s`) {
 
 async function copyPeople() {
   const table = 'relation_people';
-  logger.info(`Selecting ${table} from production...`);
-  const { data, error } = await prod.from(table).select();
+  logger.info(`Selecting ${table} from source...`);
+  const { data, error } = await src.from(table).select();
   if (error) {
     logger.error(`Error selecting ${table}: ${error.message}`);
     debugger;
@@ -112,8 +112,8 @@ async function copyPeople() {
     logger.error(`Missing data: ${data}`);
     debugger;
   } else {
-    logger.info(`Inserting ${data.length} ${table} into development...`);
-    const { error } = await dev
+    logger.info(`Inserting ${data.length} ${table} into destination...`);
+    const { error } = await dest
       .from(table)
       .insert(data.map((d) => ({ ...d, meeting: meetingIds[d.meeting] })));
     if (error) {
@@ -124,8 +124,8 @@ async function copyPeople() {
 }
 
 async function copy(table = 'users') {
-  logger.info(`Selecting ${table} from production...`);
-  const { data, error } = await prod.from(table).select();
+  logger.info(`Selecting ${table} from source...`);
+  const { data, error } = await src.from(table).select();
   if (error) {
     logger.error(`Error selecting ${table}: ${error.message}`);
     debugger;
@@ -133,8 +133,8 @@ async function copy(table = 'users') {
     logger.error(`Missing data: ${data}`);
     debugger;
   } else {
-    logger.info(`Inserting ${data.length} ${table} into development...`);
-    const { error } = await dev.from(table).insert(data);
+    logger.info(`Inserting ${data.length} ${table} into destination...`);
+    const { error } = await dest.from(table).insert(data);
     if (error) {
       logger.error(`Error inserting ${table}: ${error.message}`);
       debugger;
@@ -143,7 +143,7 @@ async function copy(table = 'users') {
 }
 
 async function main() {
-  const { data, error } = await dev.from('subjects').select();
+  const { data, error } = await dest.from('subjects').select();
   if (error) {
     logger.error(`Error selecting subjects: ${error.message}`);
     debugger;
