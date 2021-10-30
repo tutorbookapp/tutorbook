@@ -40,7 +40,7 @@ export default function mail(user: User, org: Org, admins: User[]): Promise<void
           <P style={{ margin: '18px 0' }}>
             <b>TEACHES</b>
             <br />
-            {join(user.subjects)}
+            {join(user.subjects.map((s) => s.name))}
           </P>
         )}
         <hr

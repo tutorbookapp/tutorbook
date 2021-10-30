@@ -241,7 +241,7 @@ export function MeetingDisplay({ meeting: mtg }: MeetingDisplayProps): JSX.Eleme
       <P style={{ margin: '18px 0' }}>
         <b>SUBJECTS</b>
         <br />
-        {join(mtg.subjects)}
+        {join(mtg.subjects.map((s) => s.name))}
       </P>
       <P style={{ margin: '18px 0' }}>
         <b>DESCRIPTION</b>
