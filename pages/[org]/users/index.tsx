@@ -14,10 +14,10 @@ import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
 import query from 'locales/en/query.json';
-import user from 'locales/en/user.json';
-import users from 'locales/en/users.json';
 import request from 'locales/en/request.json';
 import search from 'locales/en/search.json';
+import user from 'locales/en/user.json';
+import users from 'locales/en/users.json';
 
 function UsersPage(props: PageProps): JSX.Element {
   const { orgs } = useUser();

@@ -3,8 +3,8 @@ import { nanoid } from 'nanoid';
 import { useEffect } from 'react';
 
 import { User, UserJSON } from 'lib/model/user';
-import { UsersQuery } from 'lib/model/query/users';
 import { ListUsersRes } from 'lib/api/routes/users/list';
+import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
 
 import { LoadingCard, UserCard } from './cards';

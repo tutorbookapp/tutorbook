@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import { Callback, CallbackParam } from 'lib/model/callback';
+import { Callback } from 'lib/model/callback';
 import { Org } from 'lib/model/org';
 
 export interface SettingsContextValue {
@@ -10,7 +10,7 @@ export interface SettingsContextValue {
 
 export const SettingsContext = createContext<SettingsContextValue>({
   org: new Org(),
-  setOrg: (org: CallbackParam<Org>) => {},
+  setOrg: () => {},
 });
 
 export const useSettings = () =>

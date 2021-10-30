@@ -5,9 +5,9 @@ import useTranslation from 'next-translate/useTranslation';
 import Avatar from 'components/avatar';
 import Button from 'components/button';
 
-import { getEmailLink } from 'lib/utils';
 import Link from 'lib/intl/link';
 import { Org } from 'lib/model/org';
+import { getEmailLink } from 'lib/utils';
 
 import styles from './home.module.scss';
 

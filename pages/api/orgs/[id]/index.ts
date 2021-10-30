@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { APIError } from 'lib/model/error';
 import fetchOrg, { FetchOrgRes } from 'lib/api/routes/orgs/fetch';
 import updateOrg, { UpdateOrgRes } from 'lib/api/routes/orgs/update';
+import { APIError } from 'lib/model/error';
 
 /**
  * GET - Fetches the org's profile document.

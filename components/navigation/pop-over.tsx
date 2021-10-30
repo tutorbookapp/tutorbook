@@ -10,11 +10,11 @@ import AddIcon from 'components/icons/add';
 import Avatar from 'components/avatar';
 import ContactSupportIcon from 'components/icons/contact-support';
 
-import Intercom from 'lib/intercom';
 import { AccountInterface } from 'lib/model/account';
+import Intercom from 'lib/intercom';
+import Link from 'lib/intl/link';
 import { Org } from 'lib/model/org';
 import { User } from 'lib/model/user';
-import Link from 'lib/intl/link';
 import { useTheme } from 'lib/context/theme';
 import { useUser } from 'lib/context/user';
 
@@ -168,7 +168,7 @@ export default function PopOverMenu({
     window.analytics?.reset();
     Intercom('shutdown');
     Intercom('boot');
-  }, []);
+  }, [updateUser]);
 
   return (
     <MenuSurfaceAnchor className={styles.anchor}>

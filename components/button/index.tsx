@@ -4,8 +4,8 @@ import {
   ButtonProps as MDCButtonProps,
 } from '@rmwc/button';
 import Link from 'next/link';
-import { useMemo } from 'react';
 import cn from 'classnames';
+import { useMemo } from 'react';
 
 import Arrow from './arrow';
 import styles from './button.module.scss';

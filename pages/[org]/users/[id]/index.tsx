@@ -161,6 +161,6 @@ export const getStaticProps: GetStaticProps<
 };
 
 export const getStaticPaths: GetStaticPaths<UserDisplayPageQuery> =
-  async () => ({ paths: [], fallback: true });
+  () => ({ paths: [], fallback: true });
 
 export default withI18n(UserDisplayPage, { common, error, match3rd, user3rd });
