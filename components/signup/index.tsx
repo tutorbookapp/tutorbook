@@ -42,16 +42,17 @@ export default function Signup(): JSX.Element {
         // @see {@link https://firebase.google.com/docs/auth/admin/manage-cookies}
         await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
         
-        const { data: created } = 
+        const { data: createdJSON } = 
           await axios.post<UserJSON>('/api/users', updated.toJSON());
+        const created = User.fromJSON(createdJSON);
         await auth.signInWithCustomToken(created.token as string);
         const token = await auth.currentUser?.getIdToken();
         
-        const { data: loggedIn } = 
-          await axios.put<UserJSON>('/api/account', { ...created, token });
-        const loggedInUser = User.fromJSON(loggedIn);
-        track('User Signed Up', loggedInUser.toSegment());
-        return loggedInUser;
+        const { data: loggedInJSON } = 
+          await axios.put<UserJSON>('/api/account', { ...created.toJSON(), token });
+        const loggedIn = User.fromJSON(loggedInJSON);
+        track('User Signed Up', loggedIn.toSegment());
+        return loggedIn;
       }
       const { data } = 
         await axios.put<UserJSON>(`/api/users/${updated.id}`, updated.toJSON());
