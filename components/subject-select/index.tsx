@@ -56,7 +56,7 @@ function SubjectSelect({
   }, [org?.subjects, subjectOptions]);
   const placeholder = useMemo(() => {
     if (!options || !options.length) return subjectPlaceholder;
-    return `Ex: ${options.slice(0, 2).join(' or ')}`;
+    return `Ex: ${options.slice(0, 2).map((s) => s.name).join(' or ')}`;
   }, [options, subjectPlaceholder]);
 
   // Search the Algolia index (filtering by options and grade) to get select
