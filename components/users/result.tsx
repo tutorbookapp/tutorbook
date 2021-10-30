@@ -32,7 +32,7 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
               {!loading && <a href={getPhoneLink(user)} target='_blank' rel='noopener noreferrer'>{user.phone || '+16508612723'}</a>}
             </h4>
             <ul className='subjects'>
-              {user.subjects.map((s) => <li key={s.id}>{s}</li>)}
+              {user.subjects.map((s) => <li key={s.id}>{s.name}</li>)}
               {loading && Array(5).fill(null).map((_, idx) => <li key={idx} className='loading' />)}
             </ul>
             <p className={cn('bio', { loading })}>{user.bio}</p>
