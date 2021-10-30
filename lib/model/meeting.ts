@@ -87,7 +87,6 @@ export interface DBMeeting {
   id: number;
   org: string;
   creator: string;
-  subjects: string[];
   description: string;
   tags: DBMeetingTag[];
   time: DBTimeslot;
@@ -96,6 +95,7 @@ export interface DBMeeting {
   updated: DBDate;
 }
 export interface DBViewMeeting extends DBMeeting {
+  subjects: string[];
   people: DBPerson[] | null;
   people_ids: string[];
 }
@@ -106,9 +106,13 @@ export interface DBHoursCumulative extends DBMeeting {
   hours: number;
   total: number;
 }
-export interface DBRelationPerson {
-  user: string;
+export interface DBRelationMeetingSubject {
   meeting: number;
+  subject: number;
+}
+export interface DBRelationPerson {
+  meeting: number;
+  user: string;
   roles: Role[];
 }
 
@@ -171,7 +175,6 @@ export class Meeting extends Resource implements MeetingInterface {
       id: this.id,
       org: this.org,
       creator: this.creator.id,
-      subjects: this.subjects,
       venue: this.venue,
       time: this.time.toDB(),
       description: this.description,
@@ -194,7 +197,7 @@ export class Meeting extends Resource implements MeetingInterface {
       people,
       id: record.id,
       org: record.org,
-      subjects: record.subjects,
+      subjects: 'subjects' in record ? record.subjects || [] : [],
       creator: creator
         ? User.fromDB(creator)
         : new User({ id: record.creator }),

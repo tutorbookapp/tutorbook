@@ -130,7 +130,6 @@ export interface DBUser {
   venue: string | null;
   socials: DBSocial[];
   availability: DBTimeslot[];
-  subjects: string[];
   langs: string[];
   visible: boolean;
   reference: string;
@@ -142,6 +141,7 @@ export interface DBUser {
   times: number[];
 }
 export interface DBViewUser extends DBUser {
+  subjects: string[];
   orgs: string[];
   parents: string[];
   meetings: DBMeeting[];
@@ -149,6 +149,10 @@ export interface DBViewUser extends DBUser {
 }
 export interface DBPerson extends DBUser {
   roles: Role[] | null;
+}
+export interface DBRelationUserSubject {
+  user: string;
+  subject: number;
 }
 export interface DBRelationParent {
   user: string;
@@ -269,7 +273,6 @@ export class User extends Account implements UserInterface {
       venue: this.venue?.trim() || null,
       socials: this.socials,
       availability: this.availability.toDB(),
-      subjects: this.subjects,
       langs: this.langs,
       visible: this.visible,
       reference: this.reference.trim(),
@@ -294,7 +297,6 @@ export class User extends Account implements UserInterface {
       venue: record.venue || '',
       socials: record.socials,
       availability: Availability.fromDB(record.availability),
-      subjects: record.subjects,
       langs: record.langs,
       visible: record.visible,
       reference: record.reference,
@@ -303,6 +305,7 @@ export class User extends Account implements UserInterface {
       tags: record.tags.filter(isUserTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
+      subjects: 'subjects' in record ? record.subjects || [] : [],
       orgs: 'orgs' in record ? record.orgs || [] : [],
       parents: 'parents' in record ? record.parents || [] : [],
       meetings: 'meetings' in record ? (record.meetings || []).map(Meeting.fromDB) : [],

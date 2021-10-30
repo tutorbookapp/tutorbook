@@ -201,7 +201,7 @@ create table relation_people (
 create view view_orgs as 
 select 
   orgs.*,
-  coalesce(subjects, array[]::text[]) as subjects,
+  coalesce(subjects, null) as subjects,
   coalesce(members, array[]::text[]) as members
 from orgs
   left outer join (

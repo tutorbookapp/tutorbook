@@ -85,7 +85,6 @@ export interface DBOrg {
   socials: DBSocial[];
   domains: string[] | null;
   profiles: (keyof DBUser)[];
-  subjects: string[] | null;
   signup: object;
   home: object;
   booking: object;
@@ -93,11 +92,16 @@ export interface DBOrg {
   updated: DBDate;
 }
 export interface DBViewOrg extends DBOrg {
+  subjects: string[] | null;
   members: string[];
 }
-export interface DBRelationMember {
-  user: string;
+export interface DBRelationOrgSubject {
   org: string;
+  subject: number;
+}
+export interface DBRelationMember {
+  org: string;
+  user: string;
 }
 
 export type OrgJSON = Omit<OrgInterface, keyof Account> & AccountJSON;
@@ -197,7 +201,6 @@ export class Org extends Account implements OrgInterface {
       socials: this.socials,
       domains: this.domains.length ? this.domains : null,
       profiles: this.profiles as (keyof DBUser)[],
-      subjects: this.subjects?.length ? this.subjects : null,
       signup: this.signup,
       home: this.home,
       booking: this.booking,
@@ -219,12 +222,12 @@ export class Org extends Account implements OrgInterface {
       socials: record.socials,
       domains: record.domains?.length ? record.domains : [],
       profiles: record.profiles as (keyof UserInterface | 'subjects')[],
-      subjects: record.subjects?.length ? record.subjects : undefined,
       signup: record.signup as SignupConfig,
       home: record.home as HomeConfig,
       booking: record.booking as BookingConfig,
       created: new Date(record.created),
       updated: new Date(record.updated),
+      subjects: 'subjects' in record ? record.subjects || undefined : undefined,
       members: 'members' in record ? record.members : [],
     });
   }
