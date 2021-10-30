@@ -18,14 +18,22 @@ import firebase from 'firebase-admin';
 
 import {
   DBMeeting,
+  DBRelationMeetingSubject,
   DBRelationPerson,
   Meeting,
   MeetingJSON,
 } from 'lib/model/meeting';
-import { DBOrg, DBRelationMember, Org, OrgJSON } from 'lib/model/org';
+import { 
+  DBOrg, 
+  DBRelationMember, 
+  DBRelationOrgSubject,
+  Org, 
+  OrgJSON 
+} from 'lib/model/org';
 import {
   DBRelationOrg,
   DBRelationParent,
+  DBRelationUserSubject,
   DBUser,
   User,
   UserJSON,
@@ -133,9 +141,19 @@ export default function plugins(
 
       let { error } = await supabase.from<DBOrg>('orgs').insert(orgs.map((o) => o.toDB()));
       if (error) throw new Error(`Error seeding orgs: ${error.message}`);
+      const orgSubjects = orgs
+        .map((o) => (o.subjects || []).map((s) => ({ subject: s.id, org: o.id })))
+        .flat();
+      ({ error } = await supabase.from<DBRelationOrgSubject>('relation_org_subjects').insert(orgSubjects));
+      if (error) throw new Error(`Error seeding relation_org_subjects: ${error.message}`);
 
       ({ error } = await supabase.from<DBUser>('users').insert(users.map((u) => u.toDB())));
       if (error) throw new Error(`Error seeding users: ${error.message}`);
+      const userSubjects = users
+        .map((u) => u.subjects.map((s) => ({ subject: s.id, user: u.id })))
+        .flat();
+      ({ error } = await supabase.from<DBRelationUserSubject>('relation_user_subjects').insert(userSubjects));
+      if (error) throw new Error(`Error seeding relation_user_subjects: ${error.message}`);
       const parents = users
         .map((u) => u.parents.map((p) => ({ parent: p, user: u.id })))
         .flat();
@@ -161,6 +179,16 @@ export default function plugins(
           return row;
         }));
       if (e) throw new Error(`Error seeding meetings: ${e.message}`);
+      const meetingSubjects = meetings
+        .map((m, idx) => 
+          m.subjects.map((s) => ({ 
+            subject: s.id, 
+            meeting: meetingsData ? meetingsData[idx].id : Number(m.id) 
+          }))
+        )
+        .flat();
+      ({ error } = await supabase.from<DBRelationMeetingSubject>('relation_meeting_subjects').insert(meetingSubjects));
+      if (error) throw new Error(`Error seeding relation_meeting_subjects: ${error.message}`);
       const meetingPeople = meetings
         .map((m, idx) =>
           m.people.map((p) => ({
