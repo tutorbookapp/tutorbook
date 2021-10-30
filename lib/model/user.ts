@@ -307,7 +307,7 @@ export class User extends Account implements UserInterface {
       tags: record.tags.filter(isUserTag),
       created: new Date(record.created),
       updated: new Date(record.updated),
-      subjects: 'subjects' in record ? record.subjects || [] : [],
+      subjects: 'subjects' in record ? (record.subjects || []).map((s) => ({ name: s.name, id: s.id })) : [],
       orgs: 'orgs' in record ? record.orgs || [] : [],
       parents: 'parents' in record ? record.parents || [] : [],
       meetings: 'meetings' in record ? (record.meetings || []).map(Meeting.fromDB) : [],

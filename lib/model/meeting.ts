@@ -200,7 +200,7 @@ export class Meeting extends Resource implements MeetingInterface {
       people,
       id: record.id,
       org: record.org,
-      subjects: 'subjects' in record ? record.subjects || [] : [],
+      subjects: 'subjects' in record ? (record.subjects || []).map((s) => ({ name: s.name, id: s.id })) : [],
       creator: creator
         ? User.fromDB(creator)
         : new User({ id: record.creator }),

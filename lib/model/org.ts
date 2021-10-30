@@ -228,7 +228,7 @@ export class Org extends Account implements OrgInterface {
       booking: record.booking as BookingConfig,
       created: new Date(record.created),
       updated: new Date(record.updated),
-      subjects: 'subjects' in record ? record.subjects || undefined : undefined,
+      subjects: 'subjects' in record ? record.subjects?.map((s) => ({ name: s.name, id: s.id })) || undefined : undefined,
       members: 'members' in record ? record.members : [],
     });
   }
