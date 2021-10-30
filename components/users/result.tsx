@@ -22,7 +22,7 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
   const { user: { timezone } } = useUser();
   return (
     <Link href={`/${org?.id || 'default'}/users/${user?.id || ''}`}>
-      <a className='result'>
+      <a data-cy='result' className={cn('result', { fallback: loading })}>
         <div className='header'>
           <Avatar className='avatar' src={user.photo} loading={loading} size={100} />
           <div className='content'>
@@ -66,7 +66,12 @@ export default function Result({ loading, user = new User() }: ResultProps): JSX
             text-decoration: none;
             color: var(--on-background);
             border-bottom: 1px solid var(--accents-2);
+            cursor: pointer;
             padding: 12px;
+          }
+
+          .result.fallback {
+            cursor: wait;
           }
 
           .result:last-of-type {

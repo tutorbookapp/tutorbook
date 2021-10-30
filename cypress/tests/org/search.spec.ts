@@ -187,7 +187,7 @@ describe('Search page', () => {
     cy.contains('.mdc-menu-surface', 'No subjects').should('be.visible');
     cy.percySnapshot('Search Page with Subject Select Focused');
 
-    cy.focused().clear().type('Math').should('have.value', 'Math');
+    cy.focused().clear().type('Geo').should('have.value', 'Geo');
     cy.contains('li:visible', 'Geometry')
       .trigger('click')
       .find('input[type="checkbox"]')
