@@ -56,7 +56,7 @@ async function migrate(col = 'user', table = `${col}s`) {
       throw new Error(`Error inserting subjects: ${error.message}`);
     }
     created.forEach((s) => subjects.push(s));
-    fs.writeFileSync(subjectsPath, JSON.stringify(subjects));
+    fs.writeFileSync(subjectsPath, JSON.stringify(subjects, null, 2));
 
     const relationSubjects = [];
     const originalIds = data.map((row) => row.id);
