@@ -5,7 +5,8 @@ import {
   isAccountJSON,
 } from 'lib/model/account';
 import { DBSocial, DBUser, UserInterface } from 'lib/model/user';
-import { isJSON, isStringArray } from 'lib/model/json';
+import { Subject, isSubject } from 'lib/model/subject';
+import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import { DBDate } from 'lib/model/timeslot';
 import clone from 'lib/utils/clone';
 import construct from 'lib/model/construct';
@@ -67,7 +68,7 @@ export interface OrgInterface extends AccountInterface {
   members: string[];
   domains: string[];
   profiles: (keyof UserInterface | 'subjects')[];
-  subjects?: string[];
+  subjects?: Subject[];
   signup: SignupConfig;
   home: HomeConfig;
   booking: BookingConfig;
@@ -92,7 +93,7 @@ export interface DBOrg {
   updated: DBDate;
 }
 export interface DBViewOrg extends DBOrg {
-  subjects: string[] | null;
+  subjects: Subject[] | null;
   members: string[];
 }
 export interface DBRelationOrgSubject {
@@ -113,7 +114,7 @@ export function isOrgJSON(json: unknown): json is OrgJSON {
   if (!isStringArray(json.members)) return false;
   if (!isStringArray(json.domains)) return false;
   if (!isStringArray(json.profiles)) return false;
-  if (json.subjects && !isStringArray(json.subjects)) return false;
+  if (json.subjects && !isArray(json.subjects, isSubject)) return false;
   if (!isSignupConfig(json.signup)) return false;
   if (!isHomeConfig(json.home)) return false;
   if (!isBookingConfig(json.booking)) return false;
@@ -134,7 +135,7 @@ export class Org extends Account implements OrgInterface {
     'availability',
   ];
 
-  public subjects?: string[];
+  public subjects?: Subject[];
 
   // TODO: Don't only include org data that the user is an admin of. Instead,
   // keep an app-wide org context that includes the org configurations for all

@@ -205,7 +205,7 @@ select
   coalesce(members, array[]::text[]) as members
 from orgs
   left outer join (
-    select "org",array_agg("name") as subjects 
+    select "org",json_agg(subjects.*) as subjects 
     from (
       select * from relation_org_subjects inner join 
       subjects on subjects.id = relation_org_subjects.subject
@@ -220,7 +220,7 @@ order by id;
 create view view_meetings as
 select 
   meetings.*,
-  coalesce(subjects, array[]::text[]) as subjects,
+  coalesce(subjects, '[]'::json) as subjects,
   -- TODO: Remove this `time_from` columns as they're only required b/c of an
   -- upstream limitation with PostgREST that disallows composite types.
   -- See: https://github.com/PostgREST/postgrest/issues/1543
@@ -231,7 +231,7 @@ select
   coalesce(people_ids, array[]::text[]) as people_ids 
 from meetings 
   left outer join (
-    select "meeting",array_agg("name") as subjects 
+    select "meeting",json_agg(subjects.*) as subjects 
     from (
       select * from relation_meeting_subjects inner join 
       subjects on subjects.id = relation_meeting_subjects.subject
@@ -254,15 +254,31 @@ order by meetings.id;
 
 create view meeting_instances as
 select 
-  meetings.*, 
+  meetings.*,
+  coalesce(subjects, '[]'::json) as subjects,
   (event_instances((meetings.time).from, (meetings.time).recur)) instance_time 
 from meetings
+  left outer join (
+    select "meeting",json_agg(subjects.*) as subjects
+    from (
+      select * from relation_meeting_subjects inner join
+      subjects on subjects.id = relation_meeting_subjects.subject
+    ) as subjects group by "meeting"
+  ) as subjects on subjects."meeting" = id
 where (meetings.time).recur is not null
-union
+union all
 select
   meetings.*,
+  coalesce(subjects, '[]'::json) as subjects,
   ((meetings.time).from) instance_time
 from meetings
+  left outer join (
+    select "meeting",json_agg(subjects.*) as subjects
+    from (
+      select * from relation_meeting_subjects inner join
+      subjects on subjects.id = relation_meeting_subjects.subject
+    ) as subjects group by "meeting"
+  ) as subjects on subjects."meeting" = id
 where (meetings.time).recur is null;
 
 create view hours_cumulative as
@@ -309,13 +325,13 @@ create view view_users as
 select 
   users.*,
   cardinality(times) > 0 as available,
-  coalesce(subjects, array[]::text[]) as subjects,
+  coalesce(subjects, '[]'::json) as subjects,
   coalesce(orgs, array[]::text[]) as orgs,
   coalesce(parents, array[]::text[]) as parents,
   coalesce(meetings, '[]'::json) as meetings
 from users 
   left outer join (
-    select "user",array_agg("name") as subjects 
+    select "user",json_agg(subjects.*) as subjects 
     from (
       select * from relation_user_subjects inner join 
       subjects on subjects.id = relation_user_subjects.subject

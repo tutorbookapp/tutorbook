@@ -1,5 +1,6 @@
 import { NextApiRequest as Req, NextApiResponse as Res } from 'next';
 
+import { Subject } from 'lib/model/subject';
 import { getOrg } from 'lib/api/db/org';
 import { getUser } from 'lib/api/db/user';
 import { handle } from 'lib/api/error';
@@ -15,10 +16,11 @@ export default async function requestAPI(req: Req, res: Res): Promise<void> {
     try {
       const { uid } = await verifyAuth(req.headers);
       const user = await getUser(uid);
-      const body = req.body as { subjects: string[]; description: string; org: string };
+      const body = req.body as { subjects: Subject[]; description: string; org: string };
       const org = await getOrg(body.org);
       const admins = await Promise.all(org.members.map((id) => getUser(id)));
-      await mail(body.subjects, body.description, user, org, admins);
+      const subjects = body.subjects.map((s) => s.name);
+      await mail(subjects, body.description, user, org, admins);
       res.status(201).end();
       segment.track({ event: 'Request Created', userId: uid });
     } catch (e) {

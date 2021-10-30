@@ -15,7 +15,7 @@ import { Meeting, MeetingJSON } from 'lib/model/meeting';
 import { User, UserJSON } from 'lib/model/user';
 import { join, translate } from 'lib/utils';
 import { APIErrorJSON } from 'lib/model/error';
-import { Option } from 'lib/model/query/base';
+import { Subject } from 'lib/model/subject';
 import { Timeslot } from 'lib/model/timeslot';
 import { getErrorMessage } from 'lib/fetch';
 import { loginWithGoogle } from 'lib/firebase/login';
@@ -52,7 +52,7 @@ export default function RequestForm({
   const [creating, setCreating] = useState<User>();
   const onCreate = useCallback(() => setCreating(new User()), []);
 
-  const [subjects, setSubjects] = useState<Option<string>[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [message, setMessage] = useState<string>('');
   const [time, setTime] = useState<Timeslot>();
 
@@ -152,9 +152,9 @@ export default function RequestForm({
         time,
         people,
         creator,
+        subjects,
         description: message,
         org: org?.id || 'default',
-        subjects: subjects.map((s) => s.value),
       });
       const [err] = await to<
         AxiosResponse<MeetingJSON>,
@@ -193,7 +193,7 @@ export default function RequestForm({
     const studentFirstNames = join(students.map((s) => s.firstName));
     const data = {
       person: studentIsMe ? 'I' : studentFirstNames || 'They',
-      subject: join(subjects.map((s) => s.label)) || 'Computer Science',
+      subject: join(subjects.map((s) => s.name)) || 'Computer Science',
     };
     if (org?.booking[locale]?.message)
       return translate(org.booking[locale].message, data);
@@ -278,8 +278,8 @@ export default function RequestForm({
           autoOpenMenu
           label={t(`match3rd:${i18nPrefix}subjects`)}
           className={styles.field}
-          onSelectedChange={setSubjects}
-          selected={subjects}
+          onChange={setSubjects}
+          value={subjects}
           options={volunteer.subjects}
         />
         <TimeSelect

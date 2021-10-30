@@ -13,6 +13,7 @@ import UserSelect from 'components/user-select';
 import { useNav } from 'components/dialog/context';
 
 import { Meeting } from 'lib/model/meeting';
+import { Subject } from 'lib/model/subject';
 import { Timeslot } from 'lib/model/timeslot';
 import { User } from 'lib/model/user';
 import { UsersQueryInterface } from 'lib/model/query/users';
@@ -48,7 +49,7 @@ export default function CreatePage({
   }, [prevLoading, loading, checked, setDialogPage]);
 
   const onSubjectsChange = useCallback(
-    (subjects: string[]) => {
+    (subjects: Subject[]) => {
       setEditing((prev) => new Meeting({ ...prev, subjects }));
     },
     [setEditing]
@@ -77,11 +78,14 @@ export default function CreatePage({
   );
 
   const subjectOptions = useMemo(() => {
-    const subjects = new Set<string>();
+    const subjects: Subject[] = []; 
     people.forEach((p) => {
-      if (p.roles.includes('tutor')) p.subjects.forEach((s) => subjects.add(s));
+      if (p.roles.includes('tutor')) 
+        p.subjects.forEach((s) => {
+          if (subjects.every((o) => o.id !== s.id)) subjects.push(s)
+        });
     });
-    return subjects.size ? [...subjects] : undefined;
+    return subjects.length ? subjects : undefined;
   }, [people]);
 
   // TODO: Add support to the `TimeSelect` and the `/api/users/availability` API

@@ -13,6 +13,7 @@ import VenueInput from 'components/venue-input';
 
 import { User, UserJSON } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
+import { Subject } from 'lib/model/subject';
 import useAnalytics from 'lib/hooks/analytics';
 import useContinuous from 'lib/hooks/continuous';
 import useSocialProps from 'lib/hooks/social-props';
@@ -101,7 +102,7 @@ export default function Profile(): JSX.Element {
     [setUser]
   );
   const onSubjectsChange = useCallback(
-    (subjects: string[]) => {
+    (subjects: Subject[]) => {
       setUser((prev) => new User({ ...prev, subjects }));
     },
     [setUser]

@@ -9,6 +9,7 @@ import Loader from 'components/loader';
 import SubjectSelect from 'components/subject-select';
 import Title from 'components/title';
 
+import { Subject } from 'lib/model/subject';
 import { User } from 'lib/model/user';
 import { loginWithGoogle } from 'lib/firebase/login';
 import { useOrg } from 'lib/context/org';
@@ -17,7 +18,7 @@ export default function RequestForm(): JSX.Element {
   const { org } = useOrg();
   const { t } = useTranslation();
   const [user, setUser] = useState<User>(new User());
-  const [subjects, setSubjects] = useState<string[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [description, setDescription] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);

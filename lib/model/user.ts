@@ -11,6 +11,7 @@ import {
 } from 'lib/model/availability';
 import { DBDate, DBTimeslot } from 'lib/model/timeslot';
 import { DBMeeting, MeetingJSON, Meeting, isMeetingJSON } from 'lib/model/meeting';
+import { Subject, isSubject } from 'lib/model/subject';
 import {
   Verification,
   VerificationJSON,
@@ -93,7 +94,7 @@ export interface UserInterface extends AccountInterface {
   age?: number;
   orgs: string[];
   availability: Availability;
-  subjects: string[];
+  subjects: Subject[];
   langs: string[];
   parents: string[];
   verifications: Verification[];
@@ -141,7 +142,7 @@ export interface DBUser {
   times: number[];
 }
 export interface DBViewUser extends DBUser {
-  subjects: string[];
+  subjects: Subject[];
   orgs: string[];
   parents: string[];
   meetings: DBMeeting[];
@@ -179,7 +180,7 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (json.age && typeof json.age !== 'number') return false;
   if (!isStringArray(json.orgs)) return false;
   if (!isAvailabilityJSON(json.availability)) return false;
-  if (!isStringArray(json.subjects)) return false;
+  if (!isArray(json.subjects, isSubject)) return false;
   if (!isStringArray(json.langs)) return false;
   if (!isStringArray(json.parents)) return false;
   if (!isArray(json.verifications, isVerificationJSON)) return false;
@@ -205,7 +206,7 @@ export class User extends Account implements UserInterface {
 
   public availability: Availability = new Availability();
 
-  public subjects: string[] = [];
+  public subjects: Subject[] = [];
 
   public langs: string[] = ['en'];
 
@@ -352,7 +353,7 @@ export class User extends Account implements UserInterface {
       'User Reference': this.reference,
       'User Languages': join(this.langs),
       'User Tags': join(this.tags),
-      Subjects: join(this.subjects),
+      Subjects: join(this.subjects.map((s) => s.name)),
       'Profile Image URL': this.photo,
       'Banner Image URL': this.background,
       'Website URL': this.website,

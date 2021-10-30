@@ -9,6 +9,7 @@ import UserSelect from 'components/user-select';
 import { DBMeetingTag, MEETING_TAGS } from 'lib/model/meeting';
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
+import { Subject } from 'lib/model/subject';
 import { useOrg } from 'lib/context/org';
 
 import { config, width } from './spring-animation';
@@ -28,7 +29,7 @@ function FiltersSheet({
   const props = useSpring({ config, width: filtersOpen ? width : 0 });
 
   const onSubjectsChange = useCallback(
-    (subjects: string[]) => {
+    (subjects: Subject[]) => {
       setQuery((prev) => new MeetingsQuery({ ...prev, subjects, page: 0 }));
     },
     [setQuery]

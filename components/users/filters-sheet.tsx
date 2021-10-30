@@ -10,6 +10,7 @@ import TagSelect from 'components/tag-select';
 import { DBUserTag, USER_TAGS } from 'lib/model/user';
 import { Availability } from 'lib/model/availability';
 import { Callback } from 'lib/model/callback';
+import { Subject } from 'lib/model/subject';
 import { UsersQuery } from 'lib/model/query/users';
 
 import { config, width } from './spring-animation';
@@ -31,7 +32,7 @@ function FiltersSheet({
   const props = useSpring({ config, width: open ? width : 0 });
 
   const onSubjectsChange = useCallback(
-    (subjects: string[]) => {
+    (subjects: Subject[]) => {
       setQuery((prev) => new UsersQuery({ ...prev, subjects, page: 0 }));
     },
     [setQuery]
