@@ -358,8 +358,19 @@ from users
   left outer join (
     select "user",json_agg(meetings.*) as meetings
     from (
-      select "user",meetings.*
-      from meetings inner join relation_people
+      select 
+        "user",
+        meetings.*,
+        coalesce(subjects, '[]'::json) as subjects
+      from meetings 
+      left outer join (
+        select meeting,json_agg(subject.*) as subjects
+        from (
+          select * from relation_meeting_subjects inner join 
+          subjects on subjects.id = relation_meeting_subjects.subject
+        ) as subject group by meeting
+      ) as subjects on subjects.meeting = meetings.id 
+      inner join relation_people
       on relation_people.meeting = meetings.id
     ) as meetings group by meetings."user"
   ) as meetings on meetings."user" = id
