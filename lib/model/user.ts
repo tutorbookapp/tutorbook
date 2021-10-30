@@ -143,6 +143,7 @@ export interface DBUser {
 }
 export interface DBViewUser extends DBUser {
   subjects: Subject[];
+  subject_ids: number[];
   orgs: string[];
   parents: string[];
   meetings: DBMeeting[];

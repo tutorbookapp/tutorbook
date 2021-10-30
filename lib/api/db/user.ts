@@ -1,6 +1,7 @@
 import {
   DBRelationOrg,
   DBRelationParent,
+  DBRelationUserSubject,
   DBUser,
   DBViewUser,
   User,
@@ -33,6 +34,15 @@ export async function createUser(user: User): Promise<User> {
     .insert({ ...user.toDB(), times: await times(user) });
   handle('creating', 'user', user, error);
   const u = data ? User.fromDB(data[0]) : user;
+  const subjects: DBRelationUserSubject[] = user.subjects.map((s) => ({
+    subject: s.id,
+    user: u.id,
+  }));
+  logger.debug(`Inserting subjects (${JSON.stringify(subjects)}) rows...`);
+  const { error: erro } = await supabase
+    .from<DBRelationUserSubject>('relation_user_subjects')
+    .insert(subjects);
+  handle('creating', 'user subjects', subjects, erro);
   const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
   logger.debug(`Inserting user parent (${JSON.stringify(parents)}) rows...`);
   const { error: err } = await supabase
@@ -56,6 +66,15 @@ export async function updateUser(user: User): Promise<User> {
     .eq('id', user.id);
   handle('updating', 'user', user, error);
   const u = data ? User.fromDB(data[0]) : user;
+  const subjects: DBRelationUserSubject[] = user.subjects.map((s) => ({
+    subject: s.id,
+    user: u.id,
+  }));
+  logger.debug(`Upserting subjects (${JSON.stringify(subjects)}) rows...`);
+  const { error: erro } = await supabase
+    .from<DBRelationUserSubject>('relation_user_subjects')
+    .upsert(subjects, { onConflict: 'user,subjects' });
+  handle('updating', 'user subjects', subjects, erro);
   const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
   logger.debug(`Upserting user parent (${JSON.stringify(parents)}) rows...`);
   const { error: err } = await supabase
@@ -104,7 +123,7 @@ export async function getUsers(
     .select('*', { count: 'exact' })
     .contains('tags', query.tags)
     .contains('langs', query.langs)
-    .contains('subjects', query.subjects)
+    .contains('subject_ids', query.subjects.map((s) => s.id))
     .ilike('name', `%${query.search}%`)
     .order('id', { ascending: false })
     .range(

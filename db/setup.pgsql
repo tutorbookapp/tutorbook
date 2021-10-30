@@ -223,6 +223,7 @@ create view view_meetings as
 select 
   meetings.*,
   coalesce(subjects, '[]'::json) as subjects,
+  coalesce(subject_ids, array[]::bigint[]) as subject_ids,
   -- TODO: Remove this `time_from` columns as they're only required b/c of an
   -- upstream limitation with PostgREST that disallows composite types.
   -- See: https://github.com/PostgREST/postgrest/issues/1543
@@ -233,12 +234,15 @@ select
   coalesce(people_ids, array[]::text[]) as people_ids 
 from meetings 
   left outer join (
-    select "meeting",json_agg(subjects.*) as subjects 
+    select 
+      meeting,
+      json_agg(subject.*) as subjects,
+      array_agg(subject.id) as subject_ids
     from (
       select * from relation_meeting_subjects inner join 
       subjects on subjects.id = relation_meeting_subjects.subject
-    ) as subjects group by "meeting"
-  ) as subjects on subjects."meeting" = id
+    ) as subject group by meeting
+  ) as subjects on subjects.meeting = meetings.id
   left outer join (
     select 
       meeting,
@@ -251,7 +255,7 @@ from meetings
       from relation_people 
       inner join users on "user" = users.id
     ) as person group by meeting
-  ) as people on people."meeting" = meetings.id
+  ) as people on people.meeting = meetings.id
 order by meetings.id;
 
 create view meeting_instances as
@@ -328,16 +332,20 @@ select
   users.*,
   cardinality(times) > 0 as available,
   coalesce(subjects, '[]'::json) as subjects,
+  coalesce(subject_ids, array[]::bigint[]) as subject_ids,
   coalesce(orgs, array[]::text[]) as orgs,
   coalesce(parents, array[]::text[]) as parents,
   coalesce(meetings, '[]'::json) as meetings
 from users 
   left outer join (
-    select "user",json_agg(subjects.*) as subjects 
+    select 
+      "user",
+      json_agg(subject.*) as subjects,
+      array_agg(subject.id) as subject_ids
     from (
       select * from relation_user_subjects inner join 
       subjects on subjects.id = relation_user_subjects.subject
-    ) as subjects group by "user"
+    ) as subject group by "user"
   ) as subjects on subjects."user" = id
   left outer join (
     select "user",array_agg(org) as orgs 

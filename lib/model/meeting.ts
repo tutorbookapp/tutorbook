@@ -97,6 +97,7 @@ export interface DBMeeting {
 }
 export interface DBViewMeeting extends DBMeeting {
   subjects: Subject[];
+  subject_ids: number[];
   people: DBPerson[] | null;
   people_ids: string[];
 }
