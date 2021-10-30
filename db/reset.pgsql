@@ -39,3 +39,5 @@ drop view if exists meeting_instances cascade;
 drop view if exists hours_cumulative cascade; 
 drop view if exists hours_total cascade;
 drop view if exists view_users cascade;
+
+drop function if exists met cascade;
