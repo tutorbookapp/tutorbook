@@ -21,6 +21,13 @@ drop table public.verifications cascade;
 drop type meeting_tag cascade;
 drop table public.meetings cascade;
 
+-- drop type category cascade;
+-- drop table public.subjects cascade;
+
+drop table relation_user_subjects cascade;
+drop table relation_org_subjects cascade;
+drop table relation_meeting_subjects cascade;
+
 drop table relation_parents cascade;
 drop table relation_orgs cascade;
 drop table relation_members cascade;
