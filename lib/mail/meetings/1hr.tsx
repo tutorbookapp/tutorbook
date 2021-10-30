@@ -7,7 +7,7 @@ export default function mail(meeting: Meeting): Promise<void> {
   const to = meeting.people.filter((p) => p.email); 
   return send({
     to,
-    subject: `Reminder - ${meeting.subjects[0]} lesson today`,
+    subject: `Reminder - ${meeting.subjects[0].name} lesson today`,
     template: (
       <Message name='1HR Reminder'>
         <P style={{ marginTop: '0' }}>Hi {join(to.map((p) => p.firstName))},</P>

@@ -1,11 +1,12 @@
 import { A, Footer, Message, P, UserDisplay, fontFamily } from 'lib/mail/components';
 import { Org } from 'lib/model/org';
+import { Subject } from 'lib/model/subject';
 import { User } from 'lib/model/user';
 import { UsersQuery } from 'lib/model/query/users';
 import { join } from 'lib/utils';
 import send from 'lib/mail/send';
 
-export default function mail(subjects: string[], description: string, user: User, org: Org, admins: User[]): Promise<void> {
+export default function mail(subjects: Subject[], description: string, user: User, org: Org, admins: User[]): Promise<void> {
   // TODO: This filters by the `AND` operator to see tutors who can tutor all of
   // the requested subjects but that's not necessarily what we want. Instead, we
   // want to show users who can tutor ANY of the subjects and then we can match
