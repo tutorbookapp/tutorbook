@@ -40,7 +40,6 @@ export type DBUserTag =
   | 'not-tutor'
   | 'not-tutee'
   | 'not-parent'
-  | 'not-vetted'
   | 'not-meeting';
 
 export const USER_TAGS: UserTag[] = [
@@ -52,7 +51,7 @@ export const USER_TAGS: UserTag[] = [
 
 export function isUserTag(tag: unknown): tag is UserTag {
   if (typeof tag !== 'string') return false;
-  return ['vetted', 'meeting'].includes(tag) || isRole(tag);
+  return ['meeting'].includes(tag) || isRole(tag);
 }
 
 /**

@@ -33,12 +33,10 @@ create type timeslot as (
 
 -- TODO: See if there's a way to simply extend the existing `role` enum.
 create type user_tag as enum (
-  'vetted', 
   'meeting', 
   'tutor', 
   'tutee', 
   'parent',
-  'not-vetted', 
   'not-meeting', 
   'not-tutor', 
   'not-tutee', 
