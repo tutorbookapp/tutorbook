@@ -21,13 +21,5 @@
   "facebook": "Facebook profile",
   "instagram": "Instagram profile",
   "github": "GitHub profile",
-  "indiehackers": "IndieHackers profile",
-  "verification-title": "Verifications",
-  "verification-description": "Description",
-  "verification-notes": "Notes",
-  "verification-background-check": "Background check",
-  "verification-email": "Verified email address",
-  "verification-academic-email": "University email address",
-  "verification-training": "Safeguarding training",
-  "verification-interview": "Face-to-face interview"
+  "indiehackers": "IndieHackers profile"
 }
