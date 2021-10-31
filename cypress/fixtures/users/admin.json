@@ -106,28 +106,6 @@
     "en"
   ],
   "parents": [],
-  "verifications": [
-    {
-      "user": "admin",
-      "org": "default",
-      "created": "2020-11-26T19:13:42",
-      "updated": "2020-11-26T19:13:42",
-      "checks": [
-        "email"
-      ],
-      "notes": ""
-    },
-    {
-      "user": "admin",
-      "org": "default",
-      "created": "2020-11-26T19:13:42",
-      "updated": "2020-11-26T19:13:44",
-      "checks": [
-        "interview"
-      ],
-      "notes": "I chatted with John Doe over Zoom; he's a great guy! Very passionate about CS."
-    }
-  ],
   "meetings": [],
   "visible": true
 }
