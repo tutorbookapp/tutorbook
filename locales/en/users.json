@@ -6,13 +6,11 @@
   "share-signup-link": "Share signup link",
   "filters": "Filters",
   "roles": "User roles",
-  "filters-not-vetted": "Not vetted",
   "filters-visible": "Visible in search",
   "filters-hidden": "Hidden from search",
   "filters-available": "Available",
   "search-placeholder": "Search by name",
   "link-copied": "Link copied to clipboard.",
   "visible": "Visible",
-  "vetted": "Vetted",
   "empty": "NO USERS TO SHOW"
 }

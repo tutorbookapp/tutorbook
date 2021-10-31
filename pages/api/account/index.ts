@@ -11,7 +11,6 @@ import { Availability } from 'lib/model/availability';
 import { Meeting } from 'lib/model/meeting';
 import { SocialInterface } from 'lib/model/account';
 import { Timeslot } from 'lib/model/timeslot';
-import { Verification } from 'lib/model/verification';
 import clone from 'lib/utils/clone';
 import { handle } from 'lib/api/error';
 import logger from 'lib/api/logger';
@@ -90,11 +89,6 @@ function mergeUsers(overrides: User, baseline: User): User {
     subjects: mergeArrays(overrides.subjects, baseline.subjects),
     langs: mergeArrays(overrides.langs, baseline.langs),
     parents: mergeArrays(overrides.parents, baseline.parents),
-    verifications: mergeArrays(
-      overrides.verifications,
-      baseline.verifications,
-      Verification
-    ),
     meetings: mergeArrays(overrides.meetings, baseline.meetings, Meeting),
     visible: overrides.visible || baseline.visible,
     roles: mergeArrays(overrides.roles, baseline.roles),

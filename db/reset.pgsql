@@ -15,9 +15,6 @@ drop table public.users cascade;
 drop type profile_field cascade;
 drop table public.orgs cascade;
 
-drop type verification_check cascade;
-drop table public.verifications cascade;
-
 drop type meeting_tag cascade;
 drop table public.meetings cascade;
 

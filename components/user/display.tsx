@@ -7,7 +7,6 @@ import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
 import EditIcon from 'components/icons/edit';
-import FactCheckIcon from 'components/icons/fact-check';
 import RequestForm from 'components/user/request-form';
 
 import { getEmailLink, getPhoneLink, join } from 'lib/utils';
@@ -107,9 +106,6 @@ export default function UserDisplay({
             <div className={styles.actions}>
               <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
                 <IconButton icon={<EditIcon />} label='Edit user' />
-              </Link>
-              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/vet`}>
-                <IconButton icon={<FactCheckIcon />} label='Vet user' />
               </Link>
             </div>
           )}
