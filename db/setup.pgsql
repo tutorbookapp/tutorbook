@@ -101,24 +101,6 @@ create table public.orgs (
   "updated" timestamptz not null
 );
 
-create type verification_check as enum(
-  'email', 
-  'background-check', 
-  'academic-email', 
-  'training', 
-  'interview'
-);
-create table public.verifications (
-  "id" bigint generated always as identity primary key,
-  "creator" text references public.users(id) on delete cascade on update cascade not null,
-  "user" text references public.users(id) on delete cascade on update cascade not null,
-  "org" text references public.orgs(id) on delete cascade on update cascade not null,
-  "checks" verification_check[] not null check(cardinality(checks) > 0),
-  "notes" text not null,
-  "created" timestamptz not null,
-  "updated" timestamptz not null
-);
-
 create type meeting_tag as enum('recurring', 'not-recurring');
 create table public.meetings (
   "id" bigint generated always as identity primary key,
