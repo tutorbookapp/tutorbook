@@ -54,7 +54,7 @@ const MeetingContent = forwardRef(
     }, [eventTarget, eventData]);
 
     const headerString = useMemo(() => {
-      const subjects = join(meeting.subjects);
+      const subjects = join(meeting.subjects.map((s) => s.name));
       const student = meeting.people.find((p) => p.roles.includes('tutee'));
       const volunteer = meeting.people.find((p) => p.roles.includes('tutor'));
       if (student?.id === user.id) {

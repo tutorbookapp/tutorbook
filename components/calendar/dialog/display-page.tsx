@@ -54,7 +54,7 @@ export default function DisplayPage({
         ))}
         <dl className={styles.info}>
           <dt>Subjects</dt>
-          <dd>{join(editing.subjects)}</dd>
+          <dd>{join(editing.subjects.map((s) => s.name))}</dd>
           <dt>Meeting link</dt>
           <dd>
             <a href={editing.venue} target='_blank' rel='noopener noreferrer'>

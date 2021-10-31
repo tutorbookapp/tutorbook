@@ -262,7 +262,7 @@ export default function EditPage({
             textarea
             rows={4}
             placeholder={t('meeting:description-placeholder', {
-              subject: join(editing.subjects) || 'Computer Science',
+              subject: join(editing.subjects.map((s) => s.name)) || 'Computer Science',
             })}
             label={t('meeting:description')}
             className={styles.field}

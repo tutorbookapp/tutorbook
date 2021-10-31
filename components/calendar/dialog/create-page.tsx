@@ -245,7 +245,7 @@ export default function CreatePage({
             textarea
             rows={4}
             placeholder={t('meeting:description-placeholder', {
-              subject: join(editing.subjects) || 'Computer Science',
+              subject: join(editing.subjects.map((s) => s.name)) || 'Computer Science',
             })}
             label='Add description'
             className={styles.field}
