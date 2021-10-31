@@ -1,6 +1,14 @@
 @use 'styles/common';
 @use 'styles/sizes';
 
+.switch {
+  margin: 16px;
+
+  label {
+    margin-left: 16px;
+  }
+}
+
 .wrapper {
   @include common.wrapper(sizes.$form-width-with-margin);
   padding: 48px 24px;

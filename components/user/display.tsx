@@ -108,9 +108,6 @@ export default function UserDisplay({
               <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
                 <IconButton icon={<EditIcon />} label='Edit user' />
               </Link>
-              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/vet`}>
-                <IconButton icon={<FactCheckIcon />} label='Vet user' />
-              </Link>
             </div>
           )}
         </a>

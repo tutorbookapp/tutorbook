@@ -1,5 +1,6 @@
 import { FormEvent, useCallback } from 'react';
 import { Snackbar, SnackbarAction } from '@rmwc/snackbar';
+import { Switch } from '@rmwc/switch';
 import { TextField } from '@rmwc/textfield';
 import axios from 'axios';
 import { mutate } from 'swr';
@@ -140,6 +141,13 @@ export default function UserEdit({
     },
     [setUser]
   );
+  const onVisibilityChange = useCallback(
+    (evt: FormEvent<HTMLInputElement>) => {
+      const visible = evt.currentTarget.checked;
+      return setUser((prev) => new User({ ...prev, visible }));
+    },
+    [setUser]
+  );
 
   return (
     <>
@@ -162,6 +170,12 @@ export default function UserEdit({
           loading={!fallbackData}
           className={styles.display}
           onClick={() => router.push(`/${org?.id}/users/${user.id}`)}
+        />
+        <Switch
+          className={styles.switch}
+          label={t('user:visible')}
+          checked={user.visible}
+          onChange={onVisibilityChange}
         />
         <div className={styles.card}>
           <div className={styles.inputs}>
