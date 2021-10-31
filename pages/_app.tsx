@@ -85,10 +85,11 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   }, [track, user, loggedIn]);
 
   // Consumers can update local app-wide org data (proxy to SWR's mutate FN).
-  const { data: orgsData } = useSWR<OrgJSON[], APIError>(
+  const { data: orgsData, error: orgsError } = useSWR<OrgJSON[], APIError>(
     '/api/account/orgs',
     fetcher
   );
+  const orgsLoaded = useMemo(() => !!orgsData || !!orgsError, [orgsData, orgsError]);
   const orgs = useMemo(
     () => (orgsData ? orgsData.map((o) => Org.fromJSON(o)) : []),
     [orgsData]
@@ -145,7 +146,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     <ThemeContext.Provider value={{ dark, theme, setTheme }}>
       <SWRConfig value={{ fetcher }}>
         <UserContext.Provider
-          value={{ user, orgs, updateUser, updateOrg, loggedIn }}
+          value={{ user, orgs, updateUser, updateOrg, loggedIn, orgsLoaded }}
         >
           <NProgress />
           <div id='portal' />
