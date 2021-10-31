@@ -12,11 +12,6 @@ import {
 import { DBDate, DBTimeslot } from 'lib/model/timeslot';
 import { DBMeeting, MeetingJSON, Meeting, isMeetingJSON } from 'lib/model/meeting';
 import { Subject, isSubject } from 'lib/model/subject';
-import {
-  Verification,
-  VerificationJSON,
-  isVerificationJSON,
-} from 'lib/model/verification';
 import { caps, join, notTags } from 'lib/utils';
 import { isArray, isJSON, isStringArray } from 'lib/model/json';
 import clone from 'lib/utils/clone';
@@ -37,7 +32,6 @@ export function isRole(role: unknown): role is Role {
  * @see {@link https://github.com/tutorbookapp/tutorbook/tree/TAGS.md}
  */
 export type UserTag =
-  | 'vetted' // Has at least one verification.
   | 'meeting' // Has at least one meeting.
   | Role; // Has this role in at least one match.
 
@@ -53,7 +47,6 @@ export const USER_TAGS: UserTag[] = [
   'tutor',
   'tutee',
   'parent',
-  'vetted',
   'meeting',
 ];
 
@@ -97,7 +90,6 @@ export interface UserInterface extends AccountInterface {
   subjects: Subject[];
   langs: string[];
   parents: string[];
-  verifications: Verification[];
   meetings: Meeting[];
   visible: boolean;
   roles: Role[];
@@ -167,11 +159,10 @@ export interface DBRelationOrg {
 
 export type UserJSON = Omit<
   UserInterface,
-  keyof Account | 'availability' | 'verifications' | 'meetings'
+  keyof Account | 'availability' | 'meetings'
 > &
   AccountJSON & {
     availability: AvailabilityJSON;
-    verifications: VerificationJSON[];
     meetings: MeetingJSON[];
   };
 
@@ -184,7 +175,6 @@ export function isUserJSON(json: unknown): json is UserJSON {
   if (!isArray(json.subjects, isSubject)) return false;
   if (!isStringArray(json.langs)) return false;
   if (!isStringArray(json.parents)) return false;
-  if (!isArray(json.verifications, isVerificationJSON)) return false;
   if (!isArray(json.meetings, isMeetingJSON)) return false;
   if (typeof json.visible !== 'boolean') return false;
   if (!isArray(json.roles, isRole)) return false;
@@ -212,8 +202,6 @@ export class User extends Account implements UserInterface {
   public langs: string[] = ['en'];
 
   public parents: string[] = [];
-
-  public verifications: Verification[] = [];
 
   public meetings: Meeting[] = [];
 
@@ -316,12 +304,11 @@ export class User extends Account implements UserInterface {
   }
 
   public toJSON(): UserJSON {
-    const { availability, verifications, meetings, ...rest } = this;
+    const { availability, meetings, ...rest } = this;
     return definedVals({
       ...rest,
       ...super.toJSON(),
       availability: availability.toJSON(),
-      verifications: verifications.map((v) => v.toJSON()),
       meetings: meetings.map((m) => m.toJSON()),
       token: undefined,
       hash: undefined,
@@ -330,7 +317,6 @@ export class User extends Account implements UserInterface {
 
   public static fromJSON({
     availability,
-    verifications = [],
     meetings = [],
     ...rest
   }: UserJSON): User {
@@ -338,7 +324,6 @@ export class User extends Account implements UserInterface {
       ...rest,
       ...Account.fromJSON(rest),
       availability: Availability.fromJSON(availability),
-      verifications: verifications.map(Verification.fromJSON),
       meetings: meetings.map(Meeting.fromJSON),
     });
   }
