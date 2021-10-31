@@ -9,9 +9,6 @@ export default function updateUserTags(
 
   if (user.subjects.length) tags.add('tutor');
 
-  if (user.verifications.length) tags.add('vetted');
-  if (!user.verifications.length) tags.delete('vetted');
-
   actions?.add?.forEach((tag) => tags.add(tag));
   actions?.remove?.forEach((tag) => tags.delete(tag));
 
