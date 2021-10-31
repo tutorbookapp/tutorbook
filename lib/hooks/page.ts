@@ -9,7 +9,7 @@ export interface PageData {
 }
 
 export default function usePage(name: string, { login, admin }: PageData = {}): void {
-  const { loggedIn, orgs } = useUser();
+  const { loggedIn, orgs, orgsLoaded } = useUser();
   const { query, asPath } = useRouter();
 
   // Redirect to the login page if authentication is required but missing.
@@ -46,8 +46,8 @@ export default function usePage(name: string, { login, admin }: PageData = {}): 
     }
   }, [admin]);
   useEffect(() => {
-    if (admin && loggedIn === true && !orgs.some((o) => o.id === query.org)) {
+    if (admin && loggedIn === true && orgsLoaded && !orgs.some((o) => o.id === query.org)) {
       void Router.replace('/404');
     }
-  }, [admin, loggedIn, orgs, query.org]);
+  }, [admin, loggedIn, orgs, query.org, orgsLoaded]);
 }

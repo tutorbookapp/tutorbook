@@ -12,6 +12,7 @@ export interface UserContextValue {
   updateUser: (user: UpdateUserParam) => Promise<void>;
   updateOrg: (orgId: string, org: UpdateOrgParam) => Promise<void>;
   loggedIn?: boolean;
+  orgsLoaded: boolean;
 }
 
 export const UserContext = createContext<UserContextValue>({
@@ -22,6 +23,7 @@ export const UserContext = createContext<UserContextValue>({
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   updateOrg: async (orgId: string, org: UpdateOrgParam) => {},
   loggedIn: undefined,
+  orgsLoaded: false,
 });
 
 export const useUser = () => useContext<UserContextValue>(UserContext);
