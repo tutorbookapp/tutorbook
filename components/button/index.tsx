@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import cn from 'classnames';
 
+import GoogleIcon from 'components/icons/google';
+
 import Arrow from './arrow';
 import styles from './button.module.scss';
 
@@ -35,7 +37,11 @@ export default function Button({
           [styles.googleButton]: google,
         })}
       >
-        {google && <div className={styles.googleLogo} />}
+        {google && (
+          <div className={styles.googleLogo}>
+            <GoogleIcon />
+          </div>
+        )}
         {children}
         {arrow && <Arrow className={styles.arrowIcon} />}
       </MDCButton>
