@@ -277,7 +277,7 @@ export function Footer(): JSX.Element {
         <A name='Footer TB' style={{ color: '#666666' }} href='https://tutorbook.org'>
           Tutorbook
         </A>{' '}
-        - Created with ✨ by{' '}
+        - Created with ⚡ by{' '}
         <A name='Footer Me' style={{ color: '#666666' }} href='https://nicholaschiang.com'>
           Nicholas Chiang
         </A>
