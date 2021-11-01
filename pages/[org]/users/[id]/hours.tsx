@@ -40,11 +40,7 @@ function UserHoursPage({
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page
-        title={`${data?.name || 'Loading'} - Hours - Tutorbook`}
-        formWidth
-        {...props}
-      >
+      <Page title={`${data?.name || 'Loading'} - Hours - Tutorbook`} {...props}>
         <TabHeader
           tabs={[
             {
