@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { getDateWithDay, getDateWithTime } from 'lib/utils/time';
 
-import styles from './weekly-display.module.scss';
+import styles from './display.module.scss';
 import { useCalendarState } from './state';
 
 const COLS = Array(7).fill(null);

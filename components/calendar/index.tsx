@@ -34,7 +34,7 @@ import FiltersSheet from './filters-sheet';
 import Header from './header';
 import RecurDialog from './recur-dialog';
 import SearchBar from './search-bar';
-import WeeklyDisplay from './weekly-display';
+import DailyDisplay from './daily-display';
 import styles from './calendar.module.scss';
 
 const initialEditData = new Meeting();
@@ -370,7 +370,7 @@ export default function Calendar({
             byOrg={byOrg}
           />
           <div className={styles.content}>
-            <WeeklyDisplay
+            <DailyDisplay
               searching={!data}
               meetings={meetings}
               filtersOpen={filtersOpen}
