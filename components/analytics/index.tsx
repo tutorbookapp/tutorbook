@@ -1,4 +1,5 @@
 import { ReactNode, useMemo } from 'react';
+import cn from 'classnames';
 import useSWR from 'swr';
 
 import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
@@ -28,12 +29,13 @@ function Link({ href, children }: LinkProps): JSX.Element {
 }
 
 interface CardProps<T> {
-  data: T[];
-  title: ReactNode;
-  children: ReactNode;
-  header: string;
-  content: { dataKey: string; dataLabel: string; rate?: boolean }[];
-  color: string;
+  data?: T[];
+  title?: ReactNode;
+  children?: ReactNode;
+  header?: string;
+  content?: { dataKey: string; dataLabel: string; rate?: boolean }[];
+  color?: string;
+  loading?: boolean;
 }
 
 function Card<T extends Record<string, number> & { week: number }>({
@@ -43,8 +45,10 @@ function Card<T extends Record<string, number> & { week: number }>({
   header,
   content,
   color,
+  loading,
 }: CardProps<T>): JSX.Element {
   const num = useMemo(() => {
+    if (!data || !content) return undefined;
     const today = data.find((d) => sameWeek(new Date(d.week), new Date()));
     return today ? today[content[0].dataKey] : 0;
   }, [data, content]);
@@ -53,12 +57,15 @@ function Card<T extends Record<string, number> & { week: number }>({
     <div className='card'>
       <article className='header'>
         <header>
-          <h2>{content[0].rate ? formatRate(num) : num}</h2>
-          <h3>{title}</h3>
+          <h2 className={cn({ loading })}>{content && content[0].rate && num ? formatRate(num) : num}</h2>
+          <h3 className={cn({ loading })}>{title}</h3>
         </header>
-        <p>{children}</p>
+        <p className={cn({ loading })}>{children}</p>
       </article>
-      <Graph data={data} header={header} content={content} color={color} />
+      {loading && <div className='graph loading' />}
+      {!loading && data && header && content && color && (
+        <Graph data={data} header={header} content={content} color={color} />
+      )}
       <style jsx>{`
         .card {
           border: 1px solid var(--accents-2);
@@ -90,6 +97,12 @@ function Card<T extends Record<string, number> & { week: number }>({
           font-size: 48px;
           font-weight: 500;
           letter-spacing: -4px;
+          line-height: 1;
+          height: 48px;
+        }
+
+        h2.loading {
+          width: 60px;
         }
 
         .header h3 {
@@ -97,6 +110,11 @@ function Card<T extends Record<string, number> & { week: number }>({
           font-size: 16px;
           font-weight: 400;
           margin-left: 12px;
+          height: 40px;
+        }
+
+        h3.loading {
+          width: 150px;
         }
 
         .header p {
@@ -104,6 +122,20 @@ function Card<T extends Record<string, number> & { week: number }>({
           font-size: 14px;
           font-weight: 400;
           color: var(--accents-5);
+        }
+
+        p.loading {
+          height: 52.5px;
+        }
+
+        .loading {
+          border-radius: 6px;
+        }
+
+        .graph.loading {
+          width: calc(488px - 48px);
+          height: 250px;
+          margin: 0 24px;
         }
 
         :global(.recharts-cartesian-grid line) {
@@ -175,6 +207,11 @@ export default function Analytics(): JSX.Element {
   // @see {@link http://recharts.org/en-US/api/XAxis#scale}
   return (
     <main>
+      {!(usersWithMeetings && meetings && serviceHours && users) && (
+        <div className='graphs'>
+          {Array(10).fill(null).map((_, idx) => <Card key={idx} loading />)}
+        </div>
+      )}
       {usersWithMeetings && meetings && serviceHours && users && (
         <div className='graphs'>
           <Card
