@@ -84,8 +84,8 @@ export default function DialogSurface({
       document.documentElement.clientHeight || 0,
       window.innerHeight || 0
     );
-    if (alignedCenter < 0) return PREVIEW_MARGIN;
-    if (alignedCenter + bounds.height > vh) return vh - bounds.height - PREVIEW_MARGIN;
+    if (alignedCenter < 24) return 24;
+    if (alignedCenter + bounds.height + 24 > vh) return vh - bounds.height - 24;
     return alignedCenter;
   }, [alignedCenter, bounds.height]);
 
