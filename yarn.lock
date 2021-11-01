@@ -3737,35 +3737,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sendgrid/client@npm:^7.4.6":
-  version: 7.4.6
-  resolution: "@sendgrid/client@npm:7.4.6"
-  dependencies:
-    "@sendgrid/helpers": ^7.4.6
-    axios: ^0.21.1
-  checksum: 45554a1c1f0f31758df31637c810ded4d5d993d1846413c633d80ee89531ba31aa2e85704290419d8529b751f498ea892a1c6e4c7f43d2c0dbffa8db6e609cdb
-  languageName: node
-  linkType: hard
-
-"@sendgrid/helpers@npm:^7.4.6":
-  version: 7.4.6
-  resolution: "@sendgrid/helpers@npm:7.4.6"
-  dependencies:
-    deepmerge: ^4.2.2
-  checksum: 64d6e489087ff90e3f8fee2ffb07876911140bdebe7713be129f8438329c8bfbedff2f87a0e89b1043e000780ca706b25a48cb86248c5d2b2f46b6c2c828c054
-  languageName: node
-  linkType: hard
-
-"@sendgrid/mail@npm:^7.4.6":
-  version: 7.4.6
-  resolution: "@sendgrid/mail@npm:7.4.6"
-  dependencies:
-    "@sendgrid/client": ^7.4.6
-    "@sendgrid/helpers": ^7.4.6
-  checksum: e923fc3bd4ce84abfb5294c580dc6066c92f9b9159829685e9fe5eb070fbdd887a734618ce472875c71077a12619b5bb0582bceb04c82627e9ca699c51cadcde
-  languageName: node
-  linkType: hard
-
 "@sideway/address@npm:^4.1.0":
   version: 4.1.2
   resolution: "@sideway/address@npm:4.1.2"
@@ -7831,7 +7802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deepmerge@npm:^4.0.0, deepmerge@npm:^4.2.2":
+"deepmerge@npm:^4.0.0":
   version: 4.2.2
   resolution: "deepmerge@npm:4.2.2"
   checksum: a8c43a1ed8d6d1ed2b5bf569fa4c8eb9f0924034baf75d5d406e47e157a451075c4db353efea7b6bcc56ec48116a8ce72fccf867b6e078e7c561904b5897530b
@@ -18412,9 +18383,6 @@ resolve@^2.0.0-next.3:
     "@rmwc/textfield": ^6.1.4
     "@rmwc/tooltip": ^6.1.4
     "@segment/analytics.js-core": ^4.1.11
-    "@sendgrid/client": ^7.4.6
-    "@sendgrid/helpers": ^7.4.6
-    "@sendgrid/mail": ^7.4.6
     "@supabase/supabase-js": ^1.25.0
     "@types/accept-language-parser": ^1.5.2
     "@types/analytics-node": ^3.1.5
