@@ -25,7 +25,7 @@ import useSingle from 'lib/hooks/single';
 import useURLParamSync from 'lib/hooks/url-param-sync';
 import { useUser } from 'lib/context/user';
 
-import { CalendarStateContext, DialogPage } from './state';
+import { CalendarDisplay, CalendarStateContext, DialogPage } from './state';
 import CreatePage from './dialog/create-page';
 import DialogSurface from './dialog/surface';
 import DisplayPage from './dialog/display-page';
@@ -35,6 +35,7 @@ import Header from './header';
 import RecurDialog from './recur-dialog';
 import SearchBar from './search-bar';
 import DailyDisplay from './daily-display';
+import WeeklyDisplay from './weekly-display';
 import styles from './calendar.module.scss';
 
 const initialEditData = new Meeting();
@@ -48,6 +49,7 @@ export default function Calendar({
   org: byOrg,
   user: byUser,
 }: CalendarProps): JSX.Element {
+  const [display, setDisplay] = useState<CalendarDisplay>('Week');
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [mutatedIds, setMutatedIds] = useState<Set<number>>(new Set());
   const [query, setQuery] = useState<MeetingsQuery>(new MeetingsQuery());
@@ -236,6 +238,8 @@ export default function Calendar({
       dragging,
       setDragging,
       start: query.from,
+      display,
+      setDisplay,
     }),
     [
       editing,
@@ -252,6 +256,8 @@ export default function Calendar({
       dragging,
       setDragging,
       query.from,
+      display,
+      setDisplay,
     ]
   );
 
@@ -370,15 +376,28 @@ export default function Calendar({
             byOrg={byOrg}
           />
           <div className={styles.content}>
-            <DailyDisplay
-              searching={!data}
-              meetings={meetings}
-              filtersOpen={filtersOpen}
-              width={width}
-              setWidth={setWidth}
-              offset={offset}
-              setOffset={setOffset}
-            />
+            {display === 'Day' && (
+              <DailyDisplay
+                searching={!data}
+                meetings={meetings}
+                filtersOpen={filtersOpen}
+                width={width}
+                setWidth={setWidth}
+                offset={offset}
+                setOffset={setOffset}
+              />
+            )}
+            {display === 'Week' && (
+              <WeeklyDisplay
+                searching={!data}
+                meetings={meetings}
+                filtersOpen={filtersOpen}
+                width={width}
+                setWidth={setWidth}
+                offset={offset}
+                setOffset={setOffset}
+              />
+            )}
             <FiltersSheet
               query={query}
               setQuery={setQuery}

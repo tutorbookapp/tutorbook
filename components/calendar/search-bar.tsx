@@ -1,5 +1,6 @@
 import { memo, useCallback } from 'react';
 import { IconButton } from '@rmwc/icon-button';
+import { Select } from '@rmwc/select';
 import { TextField } from '@rmwc/textfield';
 import { dequal } from 'dequal/lite';
 
@@ -9,6 +10,7 @@ import FilterListIcon from 'components/icons/filter-list';
 import { Callback } from 'lib/model/callback';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 
+import { CalendarDisplay, useCalendarState } from './state';
 import styles from './search-bar.module.scss';
 
 export interface SearchBarProps {
@@ -27,6 +29,7 @@ function SearchBar({
   const downloadResults = useCallback(() => {
     window.open(query.getURL('/api/meetings/csv'));
   }, [query]);
+  const { display, setDisplay } = useCalendarState();
 
   return (
     <div className={styles.filters}>
@@ -48,6 +51,14 @@ function SearchBar({
         )}
       </div>
       <div className={styles.right}>
+        <div className={styles.select}>
+          <Select
+            enhanced
+            value={display}
+            options={['Day', 'Week']}
+            onChange={(evt) => setDisplay(evt.currentTarget.value as CalendarDisplay)}
+          />
+        </div>
         <TextField
           outlined
           placeholder='Search by description'
