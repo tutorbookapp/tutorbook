@@ -40,3 +40,11 @@
 :global(html.dark) .wrapper {
   border: 1px solid var(--accents-2);
 }
+
+:global(html.system) {
+  @media (prefers-color-scheme: dark) {
+    .wrapper {
+      border: 1px solid var(--accents-2);
+    }
+  }
+}
