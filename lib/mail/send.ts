@@ -28,7 +28,7 @@ export interface Email {
 export default async function send(email: Email): Promise<void> {
   if (['development', 'test'].includes(process.env.APP_ENV as string)) return;
   const key = email.stream.includes('meeting') ? 
-    process.env.POSTMARK_MTGS_KEY : 
+    process.env.POSTMARK_MTG_KEY : 
     process.env.POSTMARK_API_KEY;
   const client = new ServerClient(key as string);
   const [e] = await to(
