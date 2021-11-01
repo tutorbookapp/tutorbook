@@ -40,16 +40,16 @@ function UserHoursPage({
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page
-        title={`${data?.name || 'Loading'} - Hours - Tutorbook`}
-        formWidth
-        {...props}
-      >
+      <Page title={`${data?.name || 'Loading'} - Hours - Tutorbook`} {...props}>
         <TabHeader
           tabs={[
             {
               label: 'About',
               href: `/${query.org as string}/users/${query.id as string}`,
+            },
+            {
+              label: 'Edit',
+              href: `/${query.org as string}/users/${query.id as string}/edit`,
             },
             {
               active: true,

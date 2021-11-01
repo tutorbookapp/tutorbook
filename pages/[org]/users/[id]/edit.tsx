@@ -4,8 +4,8 @@ import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
-import { EmptyHeader } from 'components/navigation';
 import Page from 'components/page';
+import { TabHeader } from 'components/navigation';
 import UserEdit from 'components/user/edit';
 
 import { Org, OrgJSON } from 'lib/model/org';
@@ -40,12 +40,24 @@ function UserEditPage({
 
   return (
     <OrgContext.Provider value={{ org: org ? Org.fromJSON(org) : undefined }}>
-      <Page
-        title={`${data?.name || 'Loading'} - Edit - Tutorbook`}
-        formWidth
-        {...props}
-      >
-        <EmptyHeader formWidth />
+      <Page title={`${data?.name || 'Loading'} - Edit - Tutorbook`} {...props}>
+        <TabHeader
+          tabs={[
+            {
+              label: 'About',
+              href: `/${query.org as string}/users/${query.id as string}`,
+            },
+            {
+              active: true,
+              label: 'Edit',
+              href: `/${query.org as string}/users/${query.id as string}/edit`,
+            },
+            {
+              label: 'Hours',
+              href: `/${query.org as string}/users/${query.id as string}/hours`,
+            },
+          ]}
+        />
         <UserEdit user={data ? User.fromJSON(data) : undefined} />
       </Page>
     </OrgContext.Provider>

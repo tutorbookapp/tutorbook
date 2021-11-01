@@ -99,6 +99,10 @@ function UserDisplayPage({
                 href: `/${query.org as string}/users/${query.id as string}`,
               },
               {
+                label: 'Edit',
+                href: `/${query.org as string}/users/${query.id as string}/edit`,
+              },
+              {
                 label: 'Hours',
                 href: `/${query.org as string}/users/${
                   query.id as string

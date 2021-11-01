@@ -1,17 +1,13 @@
 import { Fragment, useMemo } from 'react';
-import { IconButton } from '@rmwc/icon-button';
 import Image from 'next/image';
-import Link from 'next/link';
 import cn from 'classnames';
 import useTranslation from 'next-translate/useTranslation';
 
 import Avatar from 'components/avatar';
-import EditIcon from 'components/icons/edit';
 import RequestForm from 'components/user/request-form';
 
 import { getEmailLink, getPhoneLink, join } from 'lib/utils';
 import { User } from 'lib/model/user';
-import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
 import styles from './display.module.scss';
@@ -27,7 +23,6 @@ export default function UserDisplay({
   langs,
   subjects,
 }: UserDisplayProps): JSX.Element {
-  const { org } = useOrg();
   const { orgs } = useUser();
   const { t, lang: locale } = useTranslation();
 
@@ -102,13 +97,6 @@ export default function UserDisplay({
             src={user?.photo}
             priority
           />
-          {user && admin && (
-            <div className={styles.actions}>
-              <Link href={`/${org?.id || ''}/users/${user?.id || ''}/edit`}>
-                <IconButton icon={<EditIcon />} label='Edit user' />
-              </Link>
-            </div>
-          )}
         </a>
         <a
           rel='noopener noreferrer'

@@ -10,7 +10,7 @@
 }
 
 .wrapper {
-  @include common.wrapper(sizes.$form-width-with-margin);
+  @include common.wrapper();
   padding: 48px 24px;
 
   .display {
