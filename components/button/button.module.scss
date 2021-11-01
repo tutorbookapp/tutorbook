@@ -26,11 +26,7 @@ $radius: 4px;
 }
 
 .googleLogo {
-  background-image: url(./svgs/google.svg);
   background-color: #fff;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 45px;
   position: absolute;
   height: $height - 4px;
   width: $height - 4px;
@@ -38,6 +34,9 @@ $radius: 4px;
   border-bottom-left-radius: $radius;
   top: 2px;
   left: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .arrowButton :global(.mdc-button__label) {
