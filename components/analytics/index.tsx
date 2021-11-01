@@ -6,7 +6,7 @@ import { AnalyticsRes } from 'pages/api/orgs/[id]/analytics';
 
 import { useOrg } from 'lib/context/org';
 
-import { formatRate, sameWeek } from './utils';
+import { formatRate } from './utils';
 import Graph from './graph';
 
 interface LinkProps {
@@ -47,7 +47,15 @@ function Card<T extends Record<string, number> & { week: number }>({
 }: CardProps<T>): JSX.Element {
   const num = useMemo(() => {
     if (!data || !content) return undefined;
-    const today = data.find((d) => sameWeek(new Date(d.week), new Date()));
+    console.log('Finding current week date...', data);
+    const today = data.find((d) => {
+      const now = new Date();
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      monday.setDate(monday.getDate() - 7 - monday.getDay() + 1);
+      return monday.valueOf() === new Date(d.week).valueOf();
+    });
+    console.log('Found current week date:', today);
+    console.log('Accessing data:', content[0].dataKey);
     return today ? today[content[0].dataKey] : 0;
   }, [data, content]);
 
@@ -104,7 +112,7 @@ function Card<T extends Record<string, number> & { week: number }>({
         }
 
         h2.loading {
-          width: 100px;
+          width: 50px;
         }
 
         .header h3 {
