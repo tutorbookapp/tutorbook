@@ -8,6 +8,7 @@ export default function mail(meeting: Meeting): Promise<void> {
   return send({
     to,
     cc: meeting.creator,
+    stream: 'meeting-created',
     subject: `${meeting.creator.firstName} booked a meeting with you`,
     template: (
       <Message name='Meeting Created'>

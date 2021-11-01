@@ -9,6 +9,7 @@ export default function mail(meeting: Meeting, deleter: User): Promise<void> {
   return send({
     to,
     cc: deleter,
+    stream: 'meeting-deleted',
     subject: `${deleter.firstName} canceled a meeting with you`,
     template: (
       <Message name='Meeting Canceled'>

@@ -283,9 +283,9 @@ export function Footer(): JSX.Element {
         </A>
       </P>
       <P style={{ color: '#666666' }}>
-        If this is spam, let me know at{' '}
-        <a style={{ color: '#666666' }} href='mailto:nicholas@tutorbook.org'>
-          nicholas@tutorbook.org
+        If this is annoying, you can always{' '}
+        <a style={{ color: '#666666' }} href='{{{ pm:unsubscribe }}}'>
+          unsubscribe 
         </a>
       </P>
     </div>

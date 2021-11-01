@@ -9,6 +9,7 @@ export default function mail(meeting: Meeting, updater: User): Promise<void> {
   return send({
     to,
     cc: updater,
+    stream: 'meeting-updated',
     subject: `${updater.firstName} updated a meeting with you`,
     template: (
       <Message name='Meeting Updated'>

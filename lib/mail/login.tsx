@@ -4,6 +4,7 @@ import send from 'lib/mail/send';
 export default function mail(email: string, location: string, link: string): Promise<void> {
   return send({
     to: [{ email }],
+    stream: 'login',
     subject: `Login Confirmation (${location})`,
     template: (
       <Message name='Login'>

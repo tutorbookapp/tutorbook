@@ -7,6 +7,7 @@ import send from 'lib/mail/send';
 export default function mail(user: User, org: Org, admins: User[]): Promise<void> {
   return send({
     to: admins.filter((p) => p.email),
+    stream: 'user-created',
     subject: `${user.firstName} signed up on Tutorbook`,
     template: (
       <Message name='New User'>
