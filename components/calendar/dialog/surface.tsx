@@ -74,14 +74,6 @@ export default function DialogSurface({
     return visible && !dragging ? x : x - 12;
   }, [offset.x, dragging, visible, rndPosition.x, rndWidth, editingWidthPercent]);
 
-  const alignedTop = useMemo(() => offset.y + rndPosition.y, [
-    offset.y,
-    rndPosition.y,
-  ]);
-  const alignedBottom = useMemo(
-    () => offset.y + rndPosition.y - bounds.height + rndHeight,
-    [offset.y, rndPosition.y, bounds.height, rndHeight]
-  );
   const alignedCenter = useMemo(
     () => offset.y + rndPosition.y - 0.5 * (bounds.height - rndHeight),
     [offset.y, rndPosition.y, bounds.height, rndHeight]
@@ -92,10 +84,10 @@ export default function DialogSurface({
       document.documentElement.clientHeight || 0,
       window.innerHeight || 0
     );
-    if (alignedCenter < 0) return alignedTop;
-    if (alignedCenter + bounds.height > vh) return alignedBottom;
+    if (alignedCenter < 0) return PREVIEW_MARGIN;
+    if (alignedCenter + bounds.height > vh) return vh - bounds.height - PREVIEW_MARGIN;
     return alignedCenter;
-  }, [alignedTop, alignedCenter, alignedBottom, bounds.height]);
+  }, [alignedCenter, bounds.height]);
 
   const props = useSpring({
     onRest: () => (!visible && measured.current ? setDialog(false) : undefined),
