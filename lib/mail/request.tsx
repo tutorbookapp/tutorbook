@@ -15,6 +15,7 @@ export default function mail(subjects: Subject[], description: string, user: Use
   return send({
     to: admins.filter((p) => p.email),
     cc: user,
+    stream: 'request',
     subject: `Request - ${user.firstName} for ${join(subjects)}`,
     template: (
       <Message name='Login'>
