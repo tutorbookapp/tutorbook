@@ -49,8 +49,6 @@ function SearchBar({
             icon={<DownloadIcon />}
           />
         )}
-      </div>
-      <div className={styles.right}>
         <div className={styles.select}>
           <Select
             enhanced
@@ -59,6 +57,8 @@ function SearchBar({
             onChange={(evt) => setDisplay(evt.currentTarget.value as CalendarDisplay)}
           />
         </div>
+      </div>
+      <div className={styles.right}>
         <TextField
           outlined
           placeholder='Search by description'
