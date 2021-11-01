@@ -6,6 +6,7 @@
   position: relative;
   display: flex;
   height: 100%;
+  max-height: calc(100vh - 12px);
 
   .nav {
     display: flex;
