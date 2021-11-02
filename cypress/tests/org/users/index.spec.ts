@@ -92,11 +92,7 @@ describe('Users page', () => {
     );
     snackbarIsOpen();
 
-    // TODO: Right now, we can't test the Intercom integration due to
-    // `localhost` not being whitelisted. We'll have to change the development
-    // server hostname to something like `127.0.0.1` or `0.0.0.0` to be able to
-    // access Intercom locally. But do we really need to test Intercom?
-    cy.contains('button', 'Import data').click();
+    // TODO: Test the new "Create user" dialog.
 
     cy.wait('@list-users');
     cy.contains('.mdc-chip', 'Visible in search')
