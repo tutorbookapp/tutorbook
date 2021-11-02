@@ -5,11 +5,13 @@ import to from 'await-to-js';
 
 import TitleHeader from 'components/header';
 
+import { Callback } from 'lib/model/callback';
 import Intercom from 'lib/intercom';
 
 export interface HeaderProps {
   orgId: string;
   orgName: string;
+  setDialogOpen: Callback<boolean>;
 }
 
 function fallbackCopyTextToClipboard(text: string): void {
@@ -40,7 +42,7 @@ async function copyTextToClipboard(text: string): Promise<void> {
   if (err) return fallbackCopyTextToClipboard(text);
 }
 
-function Header({ orgId, orgName }: HeaderProps): JSX.Element {
+function Header({ orgId, orgName, setDialogOpen }: HeaderProps): JSX.Element {
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const hideSnackbar = useCallback(() => setSnackbar(false), []);
   const copySignupLink = useCallback(async () => {
@@ -57,10 +59,6 @@ function Header({ orgId, orgName }: HeaderProps): JSX.Element {
   }, [orgId]);
 
   const { t } = useTranslation();
-  const importData = useCallback(
-    () => Intercom('showNewMessage', t('users:import-data-msg')),
-    [t]
-  );
 
   // TODO: Once the types are updated, restore the snackbar's SVG dismiss icon.
   // @see {@link https://github.com/jamesmfriedman/rmwc/pull/727}
@@ -80,16 +78,16 @@ function Header({ orgId, orgName }: HeaderProps): JSX.Element {
         body={t('users:subtitle', { name: orgName ? `${orgName}'s` : 'your' })}
         actions={[
           {
+            label: 'Create user',
+            onClick: () => setDialogOpen(true),
+          },
+          {
             label: t('users:share-signup-link'),
             onClick: copySignupLink,
           },
           {
             label: t('users:share-search-link'),
             onClick: copySearchLink,
-          },
-          {
-            label: t('common:import-data'),
-            onClick: importData,
           },
         ]}
       />
