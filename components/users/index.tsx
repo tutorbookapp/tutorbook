@@ -8,6 +8,7 @@ import { UsersQuery } from 'lib/model/query/users';
 import { useOrg } from 'lib/context/org';
 import useURLParamSync from 'lib/hooks/url-param-sync';
 
+import Dialog from './dialog';
 import FiltersSheet from './filters-sheet';
 import Header from './header';
 import ResultsList from './results-list';
@@ -30,6 +31,7 @@ export default function Users(): JSX.Element {
   const { org } = useOrg();
 
   const [searching, setSearching] = useState<boolean>(true);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [query, setQuery] = useState<UsersQuery>(
     new UsersQuery({ orgs: org ? [org.id] : [], hitsPerPage: 5 })
@@ -60,7 +62,12 @@ export default function Users(): JSX.Element {
 
   return (
     <>
-      <Header orgId={org?.id || ''} orgName={org?.name || ''} />
+      {dialogOpen && <Dialog setDialogOpen={setDialogOpen} />}
+      <Header 
+        orgId={org?.id || ''} 
+        orgName={org?.name || ''}
+        setDialogOpen={setDialogOpen}
+      />
       <div className={styles.wrapper}>
         <SearchBar
           query={query}
