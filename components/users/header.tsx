@@ -6,7 +6,6 @@ import to from 'await-to-js';
 import TitleHeader from 'components/header';
 
 import { Callback } from 'lib/model/callback';
-import Intercom from 'lib/intercom';
 
 export interface HeaderProps {
   orgId: string;
