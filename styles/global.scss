@@ -1,4 +1,5 @@
 @use 'typography';
+@use 'common';
 @use 'loader';
 @use 'sizes';
 
@@ -95,4 +96,12 @@ button.reset {
 
 .loading {
   @include loader.loading();
+}
+
+.field {
+  @include common.field();
+}
+
+.error {
+  @include common.error();
 }
