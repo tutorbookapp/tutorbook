@@ -21,6 +21,7 @@ import { Subject } from 'lib/model/subject';
 import { ValidationsContext } from 'lib/context/validations';
 import useAnalytics from 'lib/hooks/analytics';
 import { useOrg } from 'lib/context/org';
+import usePrevious from 'lib/hooks/previous';
 import useSingle from 'lib/hooks/single';
 import useSocialProps from 'lib/hooks/social-props';
 import useTrack from 'lib/hooks/track';
@@ -166,6 +167,10 @@ export default function UserDialog({ setDialogOpen }: UserDialogProps): JSX.Elem
   );
   
   const [open, setOpen] = useState<boolean>(true);
+  const prevLoading = usePrevious(loading);
+  useEffect(() => {
+    if (prevLoading && !loading && checked) setOpen(false);
+  }, [prevLoading, loading, checked]);
 
   return (
     <Dialog open={open} onClosed={() => setDialogOpen(false)}>
