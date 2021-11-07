@@ -1,6 +1,6 @@
 import { FormEvent, createContext, useContext } from 'react';
 
-import { Callback, CallbackParam } from 'lib/model/callback';
+import { Callback } from 'lib/model/callback';
 import { Meeting } from 'lib/model/meeting';
 import { MeetingsQuery } from 'lib/model/query/meetings';
 
@@ -15,6 +15,10 @@ export interface CalendarState {
   editing: Meeting;
   setEditing: Callback<Meeting>;
   onEditStop: (evt?: FormEvent) => void;
+  editingLeftPercent: number;
+  setEditingLeftPercent: Callback<number>;
+  editingWidthPercent: number;
+  setEditingWidthPercent: Callback<number>;
   rnd: boolean;
   setRnd: Callback<boolean>;
   dialog: boolean;
@@ -27,15 +31,19 @@ export interface CalendarState {
 export const CalendarStateContext = createContext<CalendarState>({
   start: new MeetingsQuery().from,
   editing: new Meeting(),
-  setEditing: (param: CallbackParam<Meeting>) => {},
-  onEditStop: (evt?: FormEvent) => {},
+  setEditing: () => {},
+  onEditStop: () => {},
+  editingLeftPercent: 0,
+  setEditingLeftPercent: () => {},
+  editingWidthPercent: 0,
+  setEditingWidthPercent: () => {},
   rnd: false,
-  setRnd: (param: CallbackParam<boolean>) => {},
+  setRnd: () => {},
   dialog: false,
-  setDialog: (param: CallbackParam<boolean>) => {},
-  setDialogPage: (param: CallbackParam<DialogPage>) => {},
+  setDialog: () => {},
+  setDialogPage: () => {},
   dragging: false,
-  setDragging: (param: CallbackParam<boolean>) => {},
+  setDragging: () => {},
 });
 
 export const useCalendarState = (): CalendarState =>

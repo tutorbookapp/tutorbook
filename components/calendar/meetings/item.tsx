@@ -55,6 +55,8 @@ export default function MeetingItem({
   const {
     editing,
     setEditing,
+    setEditingLeftPercent,
+    setEditingWidthPercent,
     rnd,
     setRnd,
     dialog,
@@ -90,6 +92,8 @@ export default function MeetingItem({
           if (mouseMovement > 10) {
             removeListeners();
             setEditing(meeting);
+            setEditingLeftPercent(leftPercent);
+            setEditingWidthPercent(widthPercent);
             setEventTarget('middle');
             setEventData({
               screenX: e.screenX,
@@ -107,6 +111,8 @@ export default function MeetingItem({
           removeListeners();
           setRnd(false);
           setEditing(meeting);
+          setEditingLeftPercent(leftPercent);
+          setEditingWidthPercent(widthPercent);
           setDialogPage(DialogPage.Display);
           setDialog(true);
         };
@@ -126,6 +132,8 @@ export default function MeetingItem({
           onMouseDown={(evt) => {
             evt.stopPropagation();
             setEditing(meeting);
+            setEditingLeftPercent(leftPercent);
+            setEditingWidthPercent(widthPercent);
             setEventTarget('bottom');
             setEventData({
               screenX: evt.screenX,
@@ -143,6 +151,8 @@ export default function MeetingItem({
           onMouseDown={(evt) => {
             evt.stopPropagation();
             setEditing(meeting);
+            setEditingLeftPercent(leftPercent);
+            setEditingWidthPercent(widthPercent);
             setEventTarget('top');
             setEventData({
               screenX: evt.screenX,

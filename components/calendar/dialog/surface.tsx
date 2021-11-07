@@ -34,7 +34,7 @@ export default function DialogSurface({
   offset,
   children,
 }: DialogSurfaceProps): JSX.Element {
-  const { editing, setDialog, dragging, setRnd } = useCalendarState();
+  const { editing, editingLeftPercent, editingWidthPercent, setDialog, dragging, setRnd } = useCalendarState();
 
   const measured = useRef<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -57,8 +57,11 @@ export default function DialogSurface({
   const [measureRef, bounds] = useMeasure({ polyfill });
 
   const rndPosition = useMemo(
-    () => getPosition(editing.time.from, rndWidth + RND_MARGIN),
-    [editing.time.from, rndWidth]
+    () => {
+      const { x, y } = getPosition(editing.time.from, rndWidth + RND_MARGIN);
+      return { y, x: x + editingLeftPercent * rndWidth };
+    },
+    [editing.time.from, rndWidth, editingLeftPercent]
   );
   const rndHeight = useMemo(() => getHeight(editing.time), [editing.time]);
 
@@ -67,18 +70,10 @@ export default function DialogSurface({
     return visible && !dragging ? x : x + 12;
   }, [offset.x, dragging, visible, rndPosition.x, bounds.width]);
   const onRight = useMemo(() => {
-    const x = offset.x + rndPosition.x + rndWidth + PREVIEW_MARGIN;
+    const x = offset.x + rndPosition.x + rndWidth * editingWidthPercent + PREVIEW_MARGIN;
     return visible && !dragging ? x : x - 12;
-  }, [offset.x, dragging, visible, rndPosition.x, rndWidth]);
+  }, [offset.x, dragging, visible, rndPosition.x, rndWidth, editingWidthPercent]);
 
-  const alignedTop = useMemo(() => offset.y + rndPosition.y, [
-    offset.y,
-    rndPosition.y,
-  ]);
-  const alignedBottom = useMemo(
-    () => offset.y + rndPosition.y - bounds.height + rndHeight,
-    [offset.y, rndPosition.y, bounds.height, rndHeight]
-  );
   const alignedCenter = useMemo(
     () => offset.y + rndPosition.y - 0.5 * (bounds.height - rndHeight),
     [offset.y, rndPosition.y, bounds.height, rndHeight]
@@ -89,14 +84,14 @@ export default function DialogSurface({
       document.documentElement.clientHeight || 0,
       window.innerHeight || 0
     );
-    if (alignedCenter < 0) return alignedTop;
-    if (alignedCenter + bounds.height > vh) return alignedBottom;
+    if (alignedCenter < 24) return 24;
+    if (alignedCenter + bounds.height + 24 > vh) return vh - bounds.height - 24;
     return alignedCenter;
-  }, [alignedTop, alignedCenter, alignedBottom, bounds.height]);
+  }, [alignedCenter, bounds.height]);
 
   const props = useSpring({
     onRest: () => (!visible && measured.current ? setDialog(false) : undefined),
-    left: rndPosition.x < rndWidth * 3 ? onRight : onLeft,
+    left: onRight + bounds.width < window.innerWidth ? onRight : onLeft,
     config: { tension: 250, velocity: 50 },
     immediate: !measured.current || dragging,
     top,

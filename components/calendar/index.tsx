@@ -202,6 +202,8 @@ export default function Calendar({
   // the body scrollbar disappear, moving the `fixed` position values).
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
   const [width, setWidth] = useState<number>(0);
+  const [editingLeftPercent, setEditingLeftPercent] = useState<number>(0);
+  const [editingWidthPercent, setEditingWidthPercent] = useState<number>(0);
 
   const onEditStop = useCallback(
     (evt?: FormEvent) => {
@@ -222,6 +224,10 @@ export default function Calendar({
       editing,
       setEditing,
       onEditStop,
+      editingLeftPercent,
+      setEditingLeftPercent,
+      editingWidthPercent,
+      setEditingWidthPercent,
       rnd,
       setRnd,
       dialog,
@@ -235,6 +241,10 @@ export default function Calendar({
       editing,
       setEditing,
       onEditStop,
+      editingLeftPercent,
+      setEditingLeftPercent,
+      editingWidthPercent,
+      setEditingWidthPercent,
       rnd,
       setRnd,
       dialog,
