@@ -16,7 +16,7 @@ export default function mail(subjects: Subject[], description: string, user: Use
     to: admins.filter((p) => p.email),
     cc: user,
     stream: 'request',
-    subject: `Request - ${user.firstName} for ${join(subjects)}`,
+    subject: `Request - ${user.firstName} for ${join(subjects.map((s) => s.name))}`,
     template: (
       <Message name='Login'>
         <P style={{ marginTop: '0px !important' }}>Hi {org.name} admins,</P>
@@ -41,7 +41,7 @@ export default function mail(subjects: Subject[], description: string, user: Use
         <P style={{ margin: '18px 0' }}>
           <b>NEEDS HELP WITH</b>
           <br />
-          {join(subjects)}
+          {join(subjects.map((s) => s.name))}
         </P>
         <P style={{ margin: '18px 0' }}>
           <b>SPECIFICALLY</b>
