@@ -51,7 +51,7 @@ function SubjectSelect({
   // @see {@link https://github.com/tutorbookapp/tutorbook/issues/133}
   const { org } = useOrg();
   const options = useMemo(() => {
-    if (org?.subjects) return intersection(org?.subjects, subjectOptions);
+    if (org?.subjects) return intersection(org?.subjects, subjectOptions, (a: Subject, b: Subject) => a.id === b.id);
     return subjectOptions;
   }, [org?.subjects, subjectOptions]);
   const placeholder = useMemo(() => {
