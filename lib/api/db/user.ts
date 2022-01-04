@@ -66,7 +66,7 @@ export async function updateUser(user: User): Promise<User> {
     .eq('id', user.id);
   handle('updating', 'user', user, error);
   const u = data ? User.fromDB(data[0]) : user;
-  
+
   const subjects: DBRelationUserSubject[] = user.subjects.map((s) => ({
     subject: s.id,
     user: u.id,
@@ -81,7 +81,7 @@ export async function updateUser(user: User): Promise<User> {
     .from<DBRelationUserSubject>('relation_user_subjects')
     .insert(subjects);
   handle('inserting', 'user subjects', subjects, insertSubjectsErr);
-  
+
   const parents = user.parents.map((p) => ({ parent: p, user: u.id }));
   logger.debug(`Replacing user parent (${JSON.stringify(parents)}) rows...`);
   const { error: deleteParentsErr } = await supabase
@@ -93,7 +93,7 @@ export async function updateUser(user: User): Promise<User> {
     .from<DBRelationParent>('relation_parents')
     .insert(parents);
   handle('inserting', 'user parents', parents, insertParentsErr);
-  
+
   const orgs = user.orgs.map((o) => ({ org: o, user: u.id }));
   logger.debug(`Replacing user org (${JSON.stringify(orgs)}) rows...`);
   const { error: deleteOrgsErr } = await supabase
@@ -105,7 +105,7 @@ export async function updateUser(user: User): Promise<User> {
     .from<DBRelationOrg>('relation_orgs')
     .insert(orgs);
   handle('inserting', 'user orgs', orgs, insertOrgsErr);
-  
+
   return new User({ ...u, parents: user.parents, orgs: user.orgs });
 }
 
@@ -140,9 +140,13 @@ export async function getUsers(
     : supabase.from<DBViewUser>('view_users');
   select = select
     .select('*', { count: 'exact' })
+    .neq('bio', '')
     .contains('tags', query.tags)
     .contains('langs', query.langs)
-    .contains('subject_ids', query.subjects.map((s) => s.id))
+    .contains(
+      'subject_ids',
+      query.subjects.map((s) => s.id)
+    )
     .ilike('name', `%${query.search}%`)
     .order('id', { ascending: false })
     .range(
