@@ -6,6 +6,7 @@ import styles from './dialog.module.scss';
 interface DialogContentProps {
   page: number;
   children: JSX.Element[];
+  forceMinHeight?: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ interface DialogContentProps {
 export default function DialogContent({
   page,
   children,
+  forceMinHeight,
 }: DialogContentProps): JSX.Element {
   const springs = useSprings(
     children.length,
@@ -40,7 +42,7 @@ export default function DialogContent({
   );
 
   return (
-    <div className={styles.pages}>
+    <div className={cn(styles.pages, { [styles.height]: forceMinHeight })}>
       {children.map((child, idx) => (
         <animated.div
           key={idx}

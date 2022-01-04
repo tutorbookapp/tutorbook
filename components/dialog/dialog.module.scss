@@ -4,6 +4,12 @@
   position: relative;
 }
 
+.pages.height .page:first-child {
+  min-height: 100%;
+  height: 80vh;
+  max-height: 600px;
+}
+
 .page {
   position: absolute;
   height: 100%;

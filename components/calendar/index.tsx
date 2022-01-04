@@ -339,7 +339,7 @@ export default function Calendar({
         )}
         {dialog && (
           <DialogSurface width={width} offset={offset}>
-            <DialogContent page={dialogPage}>
+            <DialogContent page={dialogPage} forceMinHeight={!editing.id}>
               <DisplayPage
                 people={editing.people}
                 loading={editLoading}
