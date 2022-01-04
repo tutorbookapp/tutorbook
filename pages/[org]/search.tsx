@@ -7,7 +7,6 @@ import { dequal } from 'dequal/lite';
 import to from 'await-to-js';
 import useTranslation from 'next-translate/useTranslation';
 
-import AuthDialog from 'components/auth-dialog';
 import FilterHeader from 'components/filter-header';
 import Page from 'components/page';
 import Search from 'components/search';
@@ -26,7 +25,6 @@ import useAnalytics from 'lib/hooks/analytics';
 import usePage from 'lib/hooks/page';
 import useTrack from 'lib/hooks/track';
 import useURLParamSync from 'lib/hooks/url-param-sync';
-import { useUser } from 'lib/context/user';
 import { withI18n } from 'lib/intl';
 
 import common from 'locales/en/common.json';
@@ -42,44 +40,14 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
   usePage('Org Search');
 
   const { t } = useTranslation();
-  const { user: currentUser, orgs, loggedIn } = useUser();
 
   const [query, setQuery] = useState<UsersQuery>(new UsersQuery());
   const [hits, setHits] = useState<number>(query.hitsPerPage);
-  const [auth, setAuth] = useState<boolean>(false);
-  const [canSearch, setCanSearch] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(true);
 
   useURLParamSync(query, setQuery, UsersQuery, ['o', 'av']);
 
-  const { data, isValidating } = useSWR<ListUsersRes>(
-    canSearch ? query.endpoint : null
-  );
-
-  /**
-   * If the user isn't a part of this org, attempt to add them using the
-   * `/api/users` endpoint. If that endpoint errors, show an undismissable
-   * dialog explaining the error (includes an org-configurable prompt too).
-   * @todo Add this validation to the back-end as well.
-   * @see {@link https://github.com/tutorbookapp/tutorbook/issues/115}
-   */
-  useEffect(() => {
-    if (!org || loggedIn === undefined) {
-      setAuth(false);
-      setCanSearch(false);
-    } else if (
-      currentUser.orgs.includes(org.id) ||
-      !org.domains.length ||
-      org.domains.some((d: string) => currentUser.email.endsWith(`@${d}`)) ||
-      orgs.some(({ id }) => id === org.id)
-    ) {
-      setAuth(false);
-      setCanSearch(true);
-    } else {
-      setAuth(true);
-      setCanSearch(false);
-    }
-  }, [loggedIn, currentUser, org, orgs]);
+  const { data, isValidating } = useSWR<ListUsersRes>(query.endpoint);
 
   // Save the number of hits from the last successful request.
   useEffect(() => setHits((prev) => data?.hits || prev), [data?.hits]);
@@ -176,13 +144,12 @@ function SearchPage({ org, ...props }: SearchPageProps): JSX.Element {
         })}
         {...props}
       >
-        {auth && <AuthDialog />}
         <FilterHeader query={query} onChange={setQuery} />
         <Search
           hits={hits}
           query={query}
           results={results}
-          searching={searching || !canSearch}
+          searching={searching}
           onChange={onQueryChange}
         />
       </Page>
