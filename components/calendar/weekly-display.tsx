@@ -95,6 +95,7 @@ function WeeklyDisplay({
     rnd,
     setRnd,
     setEditing,
+    setEditingWidthPercent,
     dragging,
     setDialog,
     setDialogPage,
@@ -116,6 +117,7 @@ function WeeklyDisplay({
       const creating = new Meeting({ id: 0, creator: user, org: orgId });
       setEventTarget(undefined);
       setEventData(undefined);
+      setEditingWidthPercent(1);
       setEditing(getMeeting(48, pos, creating, cellWidth, start));
       setDialogPage(DialogPage.Create);
       setDialog(true);
@@ -125,6 +127,7 @@ function WeeklyDisplay({
       org,
       user,
       setEditing,
+      setEditingWidthPercent,
       setDialog,
       setDialogPage,
       setRnd,
