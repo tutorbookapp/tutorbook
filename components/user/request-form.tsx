@@ -217,7 +217,11 @@ export default function RequestForm({
 
   return (
     <form className={styles.card} onSubmit={onSubmit}>
-      <Loader active={loading} checked={checked} />
+      <Loader active={loading} checked={checked}>
+        That’s it! You’ve been CC-ed on an email notifying {volunteer.firstName}{' '}
+        of your booking. Feel free to reach out directly; their contact info is
+        in that email.
+      </Loader>
       <div className={styles.inputs}>
         {!creating && (
           <UserSelect

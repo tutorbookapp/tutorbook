@@ -1,15 +1,20 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import cn from 'classnames';
 
 import Checkmark from './checkmark';
 import styles from './loader.module.scss';
 
-interface Props {
-  readonly active: boolean;
-  readonly checked?: boolean;
+export interface LoaderProps {
+  active: boolean;
+  checked?: boolean;
+  children?: ReactNode;
 }
 
-export default function Loader({ active, checked }: Props): JSX.Element {
+export default function Loader({
+  active,
+  checked,
+  children,
+}: LoaderProps): JSX.Element {
   const [visible, setVisible] = useState<boolean>(active);
   const [closing, setClosing] = useState<boolean>(false);
 
@@ -39,9 +44,10 @@ export default function Loader({ active, checked }: Props): JSX.Element {
           className={styles.overlayCheckmark}
           checked={checked}
         />
+        <article className={cn(styles.message, { [styles.visible]: checked })}>
+          {children}
+        </article>
       </div>
     </div>
   );
 }
-
-Loader.defaultProps = { checked: false };
