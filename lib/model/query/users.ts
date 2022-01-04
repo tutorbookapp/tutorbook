@@ -68,7 +68,7 @@ const config: Config<
     decodeAvailability,
   ],
   available: [undefined, 'av', encodeBoolean, decodeBoolean],
-  visible: [true, 'v', encodeOptionalBool, decodeOptionalBool],
+  visible: [undefined, 'v', encodeOptionalBool, decodeOptionalBool],
   met: [undefined, 'm', encodeArray, decodeArray],
 };
 
@@ -87,7 +87,7 @@ export class UsersQuery extends Query implements UsersQueryInterface {
 
   public available?: boolean;
 
-  public visible?: boolean = true;
+  public visible?: boolean;
 
   public met?: [string, Role];
 
