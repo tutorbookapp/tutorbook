@@ -41,6 +41,8 @@ export default function CreatePage({
 }: CreatePageProps): JSX.Element {
   const { editing, setEditing, onEditStop, setDialogPage } = useCalendarState();
   const { t } = useTranslation();
+  const { user } = useUser();
+  const { org } = useOrg();
   const nav = useNav();
 
   const prevLoading = usePrevious(loading);
@@ -78,11 +80,11 @@ export default function CreatePage({
   );
 
   const subjectOptions = useMemo(() => {
-    const subjects: Subject[] = []; 
+    const subjects: Subject[] = [];
     people.forEach((p) => {
-      if (p.roles.includes('tutor')) 
+      if (p.roles.includes('tutor'))
         p.subjects.forEach((s) => {
-          if (subjects.every((o) => o.id !== s.id)) subjects.push(s)
+          if (subjects.every((o) => o.id !== s.id)) subjects.push(s);
         });
     });
     return subjects.length ? subjects : undefined;
@@ -111,26 +113,33 @@ export default function CreatePage({
   const onStudentsChange = useCallback(
     (u: User[]) => {
       setEditing((prev) => {
-        const ppl = prev.people.filter((p) => !p.roles.includes('tutee'));
+        const ppl = [
+          ...prev.people.filter((p) => !p.roles.includes('tutee')),
+          ...u.map((p) => new User({ ...p, roles: ['tutee'] })),
+        ];
+        u.forEach((p) =>
+          p.parents.forEach((parentId) => {
+            if (ppl.some((person) => person.id === parentId)) return;
+            const usr =
+              user.id === parentId ? user : { name: `${p.name}'s Parent` };
+            ppl.push(new User({ ...usr, id: parentId, roles: ['parent'] }));
+          })
+        );
         return new Meeting({
           ...prev,
-          people: [
-            ...ppl,
-            ...u.map((p) => new User({ ...p, roles: ['tutee'] })),
-          ],
+          people: ppl,
         });
       });
     },
-    [setEditing]
+    [setEditing, user]
   );
   const onTutorsChange = useCallback(
     (u: User[]) => {
       setEditing((prev) => {
-        const ppl = prev.people.filter((p) => !p.roles.includes('tutor'));
         return new Meeting({
           ...prev,
           people: [
-            ...ppl,
+            ...prev.people.filter((p) => !p.roles.includes('tutor')),
             ...u.map((p) => new User({ ...p, roles: ['tutor'] })),
           ],
         });
@@ -141,11 +150,10 @@ export default function CreatePage({
   const onParentsChange = useCallback(
     (u: User[]) => {
       setEditing((prev) => {
-        const ppl = prev.people.filter((p) => !p.roles.includes('parent'));
         return new Meeting({
           ...prev,
           people: [
-            ...ppl,
+            ...prev.people.filter((p) => !p.roles.includes('parent')),
             ...u.map((p) => new User({ ...p, roles: ['parent'] })),
           ],
         });
@@ -154,8 +162,6 @@ export default function CreatePage({
     [setEditing]
   );
 
-  const { user } = useUser();
-  const { org } = useOrg();
   const studentsQuery = useMemo<Partial<UsersQueryInterface>>(
     () => (org ? { orgs: [org.id] } : { met: [user.id, 'tutee'] }),
     [org, user.id]
@@ -245,7 +251,8 @@ export default function CreatePage({
             textarea
             rows={4}
             placeholder={t('meeting:description-placeholder', {
-              subject: join(editing.subjects.map((s) => s.name)) || 'Computer Science',
+              subject:
+                join(editing.subjects.map((s) => s.name)) || 'Computer Science',
             })}
             label='Add description'
             className={styles.field}
