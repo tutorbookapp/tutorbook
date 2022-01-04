@@ -183,11 +183,13 @@ export default function RequestForm({
     ]
   );
 
-  const i18nPrefix = useMemo(() => (
-    students.length === 1 &&
-    students[0].name === 'Me' &&
-    !creating ? '' : 'for-others-'
-  ), [students, creating]);
+  const i18nPrefix = useMemo(
+    () =>
+      students.length === 1 && students[0].name === 'Me' && !creating
+        ? ''
+        : 'for-others-',
+    [students, creating]
+  );
   const messagePlaceholder = useMemo(() => {
     const studentIsMe = students.length === 1 && students[0].id === user.id;
     const studentFirstNames = join(students.map((s) => s.firstName));
@@ -208,8 +210,8 @@ export default function RequestForm({
   const userSelectQuery = useMemo(
     () =>
       org && org.members.includes(user.id)
-        ? { orgs: [org.id] }
-        : { parents: [user.id] },
+        ? { orgs: [org.id], visible: undefined }
+        : { parents: [user.id], visible: undefined },
     [org, user.id]
   );
 

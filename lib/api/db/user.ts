@@ -140,7 +140,6 @@ export async function getUsers(
     : supabase.from<DBViewUser>('view_users');
   select = select
     .select('*', { count: 'exact' })
-    .neq('bio', '')
     .contains('tags', query.tags)
     .contains('langs', query.langs)
     .contains(
@@ -155,6 +154,7 @@ export async function getUsers(
     );
   if (typeof query.visible === 'boolean')
     select = select.eq('visible', query.visible);
+  if (query.visible === true) select = select.neq('bio', '');
   if (query.parents.length) select = select.overlaps('parents', query.parents);
   if (query.orgs.length) select = select.overlaps('orgs', query.orgs);
   // Filtering by availability shows volunteers that the student can book. In
