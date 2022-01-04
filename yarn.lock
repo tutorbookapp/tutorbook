@@ -5282,9 +5282,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"analytics-node@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "analytics-node@npm:5.1.2"
+"analytics-node@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "analytics-node@npm:6.0.0"
   dependencies:
     "@segment/loosely-validate-event": ^2.0.0
     axios: ^0.21.4
@@ -5294,7 +5294,7 @@ __metadata:
     ms: ^2.0.0
     remove-trailing-slash: ^0.1.0
     uuid: ^8.3.2
-  checksum: eaf303eed866cd91ac1915922fa53a7d8d95e005fdb48d93ce19fb0ecda2fb181b39738b171c97aa7d2d2cd66bf904d73ae3dfa1d889d86bae01f919fed5456b
+  checksum: 29e4491caebcd7e21da7155a1028a56d5362e26dba303b9c545b0f9e84f9aa764bfd8e2dfdd37d8fa5451ffdd0c164f6640eb3cfa1b168331e88452cde1b42d3
   languageName: node
   linkType: hard
 
@@ -18730,7 +18730,7 @@ resolve@^2.0.0-next.3:
     "@typescript-eslint/parser": ^4.33.0
     accept-language-parser: ^1.5.0
     algoliasearch: ^4.11.0
-    analytics-node: ^5.1.2
+    analytics-node: ^6.0.0
     await-to-js: ^3.0.0
     axios: ^0.24.0
     babel-plugin-istanbul: ^6.1.1
