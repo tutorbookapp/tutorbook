@@ -15,7 +15,7 @@ function AboutPage(props: PageProps): JSX.Element {
 
   return (
     <Page
-      title='Tutorbook: Airbnb for free tutoring'
+      title='Tutorbook: Volunteer tutors for every subject imaginable'
       description='Tutorbook is the best way to manage virtual tutoring programs. Simple tutoring management software to onboard volunteers, match students, schedule lessons, and scale your organization.'
       intercom
       {...props}
