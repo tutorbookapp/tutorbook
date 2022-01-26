@@ -1,20 +1,28 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-import { Callback } from 'lib/model/callback';
+import { Callback } from 'lib/callback';
 
 export type Theme = 'system' | 'dark' | 'light';
 export interface ThemeContextType {
-  dark: boolean;
   theme: Theme;
   setTheme: Callback<Theme>;
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
-  dark: false,
   theme: 'system',
   setTheme: () => {},
 });
 
-export function useTheme(): ThemeContextType {
-  return useContext(ThemeContext);
+export function useTheme(): ThemeContextType & { dark: boolean } {
+  const { theme, setTheme } = useContext(ThemeContext);
+  const [dark, setDark] = useState(theme === 'dark');
+  useEffect(() => {
+    setDark(
+      theme === 'dark' ||
+        (theme === 'system' &&
+          typeof matchMedia !== 'undefined' &&
+          matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+  }, [theme]);
+  return useMemo(() => ({ theme, setTheme, dark }), [theme, setTheme, dark]);
 }

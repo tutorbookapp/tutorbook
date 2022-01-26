@@ -31,7 +31,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   const { data, error } = useSWR<UserJSON, APIError>('/api/account', fetcher);
   // TODO: Hoist the i18n locale to the top-level of the app (or trigger an
   // effect from within the `withI18n` HOC) to properly set these `langs`.
-  const user = useMemo(() => data ? User.fromJSON(data) : emptyUser, [data]);
+  const user = useMemo(() => (data ? User.fromJSON(data) : emptyUser), [data]);
   const loggedIn = useMemo(() => {
     if (user.id) {
       userLoaded.current = true;
@@ -89,7 +89,10 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     '/api/account/orgs',
     fetcher
   );
-  const orgsLoaded = useMemo(() => !!orgsData || !!orgsError, [orgsData, orgsError]);
+  const orgsLoaded = useMemo(
+    () => !!orgsData || !!orgsError,
+    [orgsData, orgsError]
+  );
   const orgs = useMemo(
     () => (orgsData ? orgsData.map((o) => Org.fromJSON(o)) : []),
     [orgsData]
@@ -112,14 +115,6 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   );
 
   const [theme, setTheme] = useState<Theme>('system');
-  const dark = useMemo(
-    () =>
-      theme === 'dark' ||
-      (theme === 'system' &&
-        typeof matchMedia !== 'undefined' &&
-        matchMedia('(prefers-color-scheme: dark)').matches),
-    [theme]
-  );
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -143,7 +138,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ dark, theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       <SWRConfig value={{ fetcher }}>
         <UserContext.Provider
           value={{ user, orgs, updateUser, updateOrg, loggedIn, orgsLoaded }}
