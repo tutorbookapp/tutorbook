@@ -79,7 +79,8 @@
   font-size: 72px;
   display: inline-block;
   border: 1px solid var(--background); // Otherwise, blue peaks out underneath.
-  line-height: 1;
+  padding-bottom: 2px;
+  line-height: 1.15;
   margin: -1px;
 
   @media (max-width: 800px) {

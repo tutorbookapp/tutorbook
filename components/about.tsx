@@ -117,9 +117,9 @@ export default function About(): JSX.Element {
     <main>
       <header>
         <Title>
-          Tutorbook is the
+          Volunteer tutors for
           <br />
-          Airbnb for free tutors
+          every subject imaginable
         </Title>
       </header>
       <FilterForm query={query} onChange={setQuery} onSubmit={onSubmit} />
@@ -148,7 +148,7 @@ export default function About(): JSX.Element {
 
         header {
           text-align: center;
-          margin: 36px 0;
+          margin: 48px 0;
         }
 
         article {
