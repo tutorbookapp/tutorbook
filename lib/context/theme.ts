@@ -4,8 +4,8 @@ import { Callback } from 'lib/model/callback';
 
 export type Theme = 'system' | 'dark' | 'light';
 export interface ThemeContextType {
-  theme: Theme;
-  setTheme: Callback<Theme>;
+  theme?: Theme;
+  setTheme: Callback<Theme | undefined>;
 }
 
 export const ThemeContext = createContext<ThemeContextType>({

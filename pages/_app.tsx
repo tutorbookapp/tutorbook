@@ -114,7 +114,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     [orgs, loggedIn]
   );
 
-  const [theme, setTheme] = useState<Theme>('system');
+  const [theme, setTheme] = useState<Theme>();
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -124,7 +124,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
       document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.remove('system');
-    } else {
+    } else if (theme === 'system') {
       document.documentElement.classList.add('system');
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.remove('light');
@@ -134,7 +134,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     setTheme((prev) => (localStorage.getItem('theme') as Theme) || prev);
   }, []);
   useEffect(() => {
-    localStorage.setItem('theme', theme);
+    if (theme) localStorage.setItem('theme', theme);
   }, [theme]);
 
   return (
