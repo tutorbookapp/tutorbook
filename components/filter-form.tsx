@@ -1,7 +1,6 @@
 import useTranslation from 'next-translate/useTranslation';
 
 import AvailabilitySelect from 'components/availability-select';
-import LangSelect from 'components/lang-select';
 import SearchIcon from 'components/icons/search';
 import SubjectSelect from 'components/subject-select';
 
@@ -44,16 +43,6 @@ export default function FilterForm({
           onChange((prev) => new UsersQuery({ ...prev, availability, page: 0 }))
         }
         value={query.availability}
-        outlined
-      />
-      <LangSelect
-        className='field'
-        label={t('query3rd:langs')}
-        placeholder={t('common:langs-placeholder')}
-        onChange={(langs) =>
-          onChange((prev) => new UsersQuery({ ...prev, langs, page: 0 }))
-        }
-        value={query.langs}
         outlined
       />
       {onSubmit && (
