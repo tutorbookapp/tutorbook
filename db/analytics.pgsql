@@ -25,7 +25,7 @@ language sql stable;
 
 -- Users (and growth rate and total).
 drop function if exists users;
-create or replace function users(org_id text, time_zone text)
+create or replace function users(org_id text, time_zone text, tag user_tag)
 returns table (week timestamptz, users bigint, growth float, total numeric, total_growth float)
 as $$
   select *, (total::float / lag(total) over (order by week) - 1) total_growth 
@@ -43,7 +43,8 @@ as $$
         users
         inner join relation_orgs on relation_orgs.user = users.id
       where
-        relation_orgs.org = org_id
+        (relation_orgs.org = org_id) and
+        (tag is null or tag = any (users.tags))
       group by week
     ) as _
   ) as _;

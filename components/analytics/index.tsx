@@ -53,7 +53,7 @@ function Card<T extends Record<string, number> & { week: number }>({
       monday.setDate(monday.getDate() - 7 - monday.getDay() + 1);
       return monday.valueOf() === new Date(d.week).valueOf();
     });
-    return today ? today[content[0].dataKey] : 0;
+    return (today ?? data[data.length - 1])[content[0].dataKey];
   }, [data, content]);
 
   return (
@@ -61,7 +61,9 @@ function Card<T extends Record<string, number> & { week: number }>({
       <article className='header'>
         <header>
           <h2 className={cn({ loading: num === undefined })}>
-            {content && content[0].rate && num !== undefined ? formatRate(num) : num}
+            {content && content[0].rate && num !== undefined
+              ? formatRate(num)
+              : num}
           </h2>
           <h3>{title}</h3>
         </header>
@@ -199,6 +201,30 @@ export default function Analytics(): JSX.Element {
       })),
     [data]
   );
+  const tutors = useMemo(
+    () =>
+      data?.tutors.map((d) => ({
+        ...d,
+        week: new Date(d.week).valueOf(),
+      })),
+    [data]
+  );
+  const tutees = useMemo(
+    () =>
+      data?.tutees.map((d) => ({
+        ...d,
+        week: new Date(d.week).valueOf(),
+      })),
+    [data]
+  );
+  const parents = useMemo(
+    () =>
+      data?.parents.map((d) => ({
+        ...d,
+        week: new Date(d.week).valueOf(),
+      })),
+    [data]
+  );
 
   // TODO: Ensure that the scale on the chart isn't dependent on the data points
   // being equally spaced out. Instead, it should be relative to the data point
@@ -313,9 +339,9 @@ export default function Analytics(): JSX.Element {
           ]}
           color='#81C784'
         >
-          The growth rate of the number of meetings per week. This graph
-          should look very similar to the growth rate of users with meetings
-          per week; both metrics are directly correlated.
+          The growth rate of the number of meetings per week. This graph should
+          look very similar to the growth rate of users with meetings per week;
+          both metrics are directly correlated.
         </Card>
         <Card
           title={
@@ -382,9 +408,9 @@ export default function Analytics(): JSX.Element {
           color='#F06292'
         >
           The number of users created per week. You’ll notice this graph
-          correlates well with the <strong>Total users</strong> graph below
-          it; as the number of new users spikes, the total number of users
-          will spike too.
+          correlates well with the <strong>Total users</strong> graph below it;
+          as the number of new users spikes, the total number of users will
+          spike too.
         </Card>
         <Card
           title={
@@ -406,8 +432,8 @@ export default function Analytics(): JSX.Element {
           ]}
           color='#F06292'
         >
-          The growth rate of the number of users created per week. Note that
-          all of these growth rate graphs depict the derivatives of their
+          The growth rate of the number of users created per week. Note that all
+          of these growth rate graphs depict the derivatives of their
           corresponding weekly metrics; they are graphs of the slopes.
         </Card>
         <Card
@@ -434,9 +460,8 @@ export default function Analytics(): JSX.Element {
           <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
             vanity metric
           </Link>
-          ; a number that looks good on paper but isn’t action oriented. Use
-          it for press releases or marketing, but not to measure actual
-          growth.
+          ; a number that looks good on paper but isn’t action oriented. Use it
+          for press releases or marketing, but not to measure actual growth.
         </Card>
         <Card
           title={
@@ -458,7 +483,169 @@ export default function Analytics(): JSX.Element {
           ]}
           color='#9575CD'
         >
-          The weekly growth rate of the total number of users. Again, this is
+          The weekly growth rate of the total number of users. Again, this is a{' '}
+          <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+            vanity metric
+          </Link>
+          ; this growth rate will <i>always</i> be positive and thus will{' '}
+          <i>never</i> provide meaningful feedback on how growth is doing.
+        </Card>
+        <Card
+          title={
+            <>
+              Tutors
+              <br />
+              in all time
+            </>
+          }
+          data={tutors}
+          header='Total tutors'
+          content={[
+            { dataKey: 'total', dataLabel: 'total tutors' },
+            {
+              dataKey: 'total_growth',
+              dataLabel: 'from previous week',
+              rate: true,
+            },
+          ]}
+          color='#9575CD'
+        >
+          The total number of tutors. This is a{' '}
+          <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+            vanity metric
+          </Link>
+          ; a number that looks good on paper but isn’t action oriented. Use it
+          for press releases or marketing, but not to measure actual growth.
+        </Card>
+        <Card
+          title={
+            <>
+              Weekly growth rate of
+              <br />
+              the total number of tutors
+            </>
+          }
+          data={tutors}
+          header='Total tutors'
+          content={[
+            {
+              dataKey: 'total_growth',
+              dataLabel: 'from previous week',
+              rate: true,
+            },
+            { dataKey: 'total', dataLabel: 'total tutors' },
+          ]}
+          color='#9575CD'
+        >
+          The weekly growth rate of the total number of tutors. Again, this is a{' '}
+          <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+            vanity metric
+          </Link>
+          ; this growth rate will <i>always</i> be positive and thus will{' '}
+          <i>never</i> provide meaningful feedback on how growth is doing.
+        </Card>
+        <Card
+          title={
+            <>
+              Tutees
+              <br />
+              in all time
+            </>
+          }
+          data={tutees}
+          header='Total tutees'
+          content={[
+            { dataKey: 'total', dataLabel: 'total tutees' },
+            {
+              dataKey: 'total_growth',
+              dataLabel: 'from previous week',
+              rate: true,
+            },
+          ]}
+          color='#9575CD'
+        >
+          The total number of tutees. This is a{' '}
+          <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+            vanity metric
+          </Link>
+          ; a number that looks good on paper but isn’t action oriented. Use it
+          for press releases or marketing, but not to measure actual growth.
+        </Card>
+        <Card
+          title={
+            <>
+              Weekly growth rate of
+              <br />
+              the total number of tutees
+            </>
+          }
+          data={tutees}
+          header='Total tutees'
+          content={[
+            {
+              dataKey: 'total_growth',
+              dataLabel: 'from previous week',
+              rate: true,
+            },
+            { dataKey: 'total', dataLabel: 'total tutees' },
+          ]}
+          color='#9575CD'
+        >
+          The weekly growth rate of the total number of tutees. Again, this is a{' '}
+          <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+            vanity metric
+          </Link>
+          ; this growth rate will <i>always</i> be positive and thus will{' '}
+          <i>never</i> provide meaningful feedback on how growth is doing.
+        </Card>
+        <Card
+          title={
+            <>
+              Parents
+              <br />
+              in all time
+            </>
+          }
+          data={parents}
+          header='Total parents'
+          content={[
+            { dataKey: 'total', dataLabel: 'total parents' },
+            {
+              dataKey: 'total_growth',
+              dataLabel: 'from previous week',
+              rate: true,
+            },
+          ]}
+          color='#9575CD'
+        >
+          The total number of parents. This is a{' '}
+          <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
+            vanity metric
+          </Link>
+          ; a number that looks good on paper but isn’t action oriented. Use it
+          for press releases or marketing, but not to measure actual growth.
+        </Card>
+        <Card
+          title={
+            <>
+              Weekly growth rate of
+              <br />
+              the total number of parents
+            </>
+          }
+          data={parents}
+          header='Total parents'
+          content={[
+            {
+              dataKey: 'total_growth',
+              dataLabel: 'from previous week',
+              rate: true,
+            },
+            { dataKey: 'total', dataLabel: 'total parents' },
+          ]}
+          color='#9575CD'
+        >
+          The weekly growth rate of the total number of parents. Again, this is
           a{' '}
           <Link href='https://hbr.org/2010/02/entrepreneurs-beware-of-vanity-metrics'>
             vanity metric

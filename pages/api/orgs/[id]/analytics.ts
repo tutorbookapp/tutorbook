@@ -38,6 +38,9 @@ export interface DBServiceHours {
 export interface AnalyticsRes {
   usersWithMeetings: DBUsersWithMeetings[];
   users: DBUsers[];
+  tutors: DBUsers[];
+  tutees: DBUsers[];
+  parents: DBUsers[];
   meetings: DBMeetings[];
   serviceHours: DBServiceHours[];
 }
@@ -58,11 +61,17 @@ export default async function analyticsAPI(
       const [
         { data: usersWithMeetings, error: usersWithMeetingsError },
         { data: users, error: usersError },
+        { data: tutors, error: tutorsError },
+        { data: tutees, error: tuteesError },
+        { data: parents, error: parentsError },
         { data: meetings, error: meetingsError },
         { data: serviceHours, error: serviceHoursError },
       ] = await Promise.all([
         supabase.rpc<DBUsersWithMeetings>('users_with_meetings', props),
-        supabase.rpc<DBUsers>('users', props),
+        supabase.rpc<DBUsers>('users', { ...props, tag: null }),
+        supabase.rpc<DBUsers>('users', { ...props, tag: 'tutor' }),
+        supabase.rpc<DBUsers>('users', { ...props, tag: 'tutee' }),
+        supabase.rpc<DBUsers>('users', { ...props, tag: 'parent' }),
         supabase.rpc<DBMeetings>('meetings', props),
         supabase.rpc<DBServiceHours>('service_hours', props),
       ]);
@@ -73,6 +82,18 @@ export default async function analyticsAPI(
       if (usersError || !users) {
         const msg = 'Error fetching "users" analytics';
         throw new APIError(`${msg}: ${usersError?.message}`, 500);
+      }
+      if (tutorsError || !tutors) {
+        const msg = 'Error fetching "tutors" analytics';
+        throw new APIError(`${msg}: ${tutorsError?.message}`, 500);
+      }
+      if (tuteesError || !tutees) {
+        const msg = 'Error fetching "tutees" analytics';
+        throw new APIError(`${msg}: ${tuteesError?.message}`, 500);
+      }
+      if (parentsError || !parents) {
+        const msg = 'Error fetching "parents" analytics';
+        throw new APIError(`${msg}: ${parentsError?.message}`, 500);
       }
       if (meetingsError || !meetings) {
         const msg = 'Error fetching "meetings" analytics';
@@ -85,6 +106,9 @@ export default async function analyticsAPI(
       res.status(200).json({
         usersWithMeetings,
         users,
+        tutors,
+        tutees,
+        parents,
         meetings,
         serviceHours,
       });
