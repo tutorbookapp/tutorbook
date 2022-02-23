@@ -170,5 +170,6 @@
   },
   "browser": {
     "firebase-admin": false
-  }
+  },
+  "packageManager": "yarn@3.2.0"
 }
