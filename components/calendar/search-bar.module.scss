@@ -22,6 +22,26 @@
     .filterChips {
       flex-wrap: nowrap;
     }
+
+    .select {
+      :global(.mdc-select) {
+        background-color: transparent;
+        border-radius: 0;
+
+        :global(.mdc-select__anchor) {
+          border-radius: 0;
+          width: 90px;
+
+          :global(.mdc-line-ripple::before) {
+            border: none;
+          }
+        }
+      }
+
+      :global(.mdc-select:not(.mdc-select--disabled) .mdc-select__anchor) {
+        background-color: transparent;
+      }
+    }
   }
 
   .right {

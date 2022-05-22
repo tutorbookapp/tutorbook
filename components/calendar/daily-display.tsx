@@ -9,31 +9,32 @@ import {
   useState,
 } from 'react';
 import { animated, useSpring } from 'react-spring';
+import cn from 'classnames';
 import mergeRefs from 'react-merge-refs';
 import { ResizeObserver as polyfill } from '@juggle/resize-observer';
 import useMeasure from 'react-use-measure';
+import useTranslation from 'next-translate/useTranslation';
 
 import LoadingDots from 'components/loading-dots';
 
 import { Callback } from 'lib/model/callback';
 import { Meeting } from 'lib/model/meeting';
 import { Position } from 'lib/model/position';
-import { getDateWithDay } from 'lib/utils/time';
 import { useClickContext } from 'lib/hooks/click-outside';
 import { useOrg } from 'lib/context/org';
 import { useUser } from 'lib/context/user';
 
 import { DialogPage, useCalendarState } from './state';
-import { Headers, Lines, Times, Weekdays } from './components';
+import { Lines, Times } from './components';
 import { MouseEventHackData, MouseEventHackTarget } from './hack-types';
 import { config, width } from './spring-animation';
-import { expand, placeMeetingsInWeek } from './place-meetings';
+import { expand, placeMeetingsInDay } from './place-meetings';
 import { getMeeting, getPosition } from './utils';
 import MeetingItem from './meetings/item';
 import MeetingRnd from './meetings/rnd';
 import styles from './display.module.scss';
 
-export interface WeeklyDisplayProps {
+export interface DailyDisplayProps {
   searching: boolean;
   meetings: Meeting[];
   filtersOpen: boolean;
@@ -43,7 +44,7 @@ export interface WeeklyDisplayProps {
   setOffset: Callback<Position>;
 }
 
-function WeeklyDisplay({
+function DailyDisplay({
   searching,
   meetings,
   filtersOpen,
@@ -51,7 +52,7 @@ function WeeklyDisplay({
   setWidth: setCellWidth,
   offset,
   setOffset,
-}: WeeklyDisplayProps): JSX.Element {
+}: DailyDisplayProps): JSX.Element {
   const [cellsMeasureIsCorrect, setCellsMeasureIsCorrect] = useState(false);
   const [rowsMeasureRef, rowsMeasure] = useMeasure({ polyfill });
   const [cellsMeasureRef, cellsMeasure] = useMeasure({
@@ -95,7 +96,6 @@ function WeeklyDisplay({
     rnd,
     setRnd,
     setEditing,
-    setEditingWidthPercent,
     dragging,
     setDialog,
     setDialogPage,
@@ -117,7 +117,6 @@ function WeeklyDisplay({
       const creating = new Meeting({ id: 0, creator: user, org: orgId });
       setEventTarget(undefined);
       setEventData(undefined);
-      setEditingWidthPercent(1);
       setEditing(getMeeting(48, pos, creating, cellWidth, start));
       setDialogPage(DialogPage.Create);
       setDialog(true);
@@ -127,7 +126,6 @@ function WeeklyDisplay({
       org,
       user,
       setEditing,
-      setEditingWidthPercent,
       setDialog,
       setDialogPage,
       setRnd,
@@ -157,7 +155,7 @@ function WeeklyDisplay({
     }
   }, []);
 
-  const eventGroups = useMemo(() => placeMeetingsInWeek(meetings), [meetings]);
+  const eventGroups = useMemo(() => placeMeetingsInDay(meetings, start.getDay()), [meetings, start]);
   const props = useSpring({ config, marginRight: filtersOpen ? width : 0 });
 
   const [now, setNow] = useState<Date>(new Date());
@@ -175,16 +173,32 @@ function WeeklyDisplay({
     },
     [updateEl, removeEl]
   );
+  
+  const { lang: locale } = useTranslation();
+  const today =
+    now.getFullYear() === start.getFullYear() &&
+    now.getMonth() === start.getMonth() &&
+    now.getDate() === start.getDate();
 
+  // Show current time indicator if today is current date.
+  const { y: top } = getPosition(now);
+  
   return (
     <animated.div className={styles.wrapper} style={props}>
       <div className={styles.headerWrapper}>
         <div ref={headerRef} className={styles.headerContent}>
           <div className={styles.headers}>
-            <Weekdays now={now} />
+            <div className={styles.titleWrapper}>
+              <h2 className={cn({ [styles.today]: today })}>
+                <div className={styles.weekday}>
+                  {start.toLocaleString(locale, { weekday: 'short' })}
+                </div>
+                <div className={styles.date}>{start.getDate()}</div>
+              </h2>
+            </div>
           </div>
           <div className={styles.headerCells}>
-            <Headers />
+            <div className={styles.headerCell} />
           </div>
         </div>
         <div className={styles.scroller} />
@@ -225,45 +239,38 @@ function WeeklyDisplay({
                     eventTarget={eventTarget}
                   />
                 )}
-                {eventGroups.map((groups: Meeting[][][], day) => {
-                  // Show current time indicator if today is current date.
-                  const date = getDateWithDay(day, start);
-                  const today =
-                    now.getFullYear() === date.getFullYear() &&
-                    now.getMonth() === date.getMonth() &&
-                    now.getDate() === date.getDate();
-                  const { y: top } = getPosition(now);
-
-                  return (
-                    <div key={day} className={styles.cell} ref={cellMeasureRef}>
-                      {today && (
-                        <div style={{ top }} className={styles.indicator}>
-                          <div className={styles.dot} />
-                          <div className={styles.line} />
-                        </div>
-                      )}
-                      {groups
-                        .map((cols: Meeting[][]) =>
-                          cols.map((col: Meeting[], colIdx) =>
-                            col.map((e: Meeting) => (
-                              <MeetingItem
-                                now={now}
-                                meeting={e}
-                                setEventTarget={setEventTarget}
-                                setEventData={setEventData}
-                                widthPercent={
-                                  expand(e, colIdx, cols) / cols.length
-                                }
-                                leftPercent={colIdx / cols.length}
-                                key={e.id}
-                              />
-                            ))
-                          )
-                        )
-                        .flat(2)}
+                <div className={styles.cell} ref={cellMeasureRef}>
+                  {today && (
+                    <div style={{ top }} className={styles.indicator}>
+                      <div className={styles.dot} />
+                      <div className={styles.line} />
                     </div>
-                  );
-                })}
+                  )}
+                  {eventGroups
+                    .map((cols: Meeting[][]) =>
+                      cols.map((col: Meeting[], colIdx) =>
+                        col.map((e: Meeting) => (
+                          <MeetingItem
+                            now={now}
+                            meeting={e}
+                            setEventTarget={setEventTarget}
+                            setEventData={setEventData}
+                            widthPercent={
+                              expand(e, colIdx, cols) / cols.length
+                            }
+                            leftPercent={colIdx / cols.length}
+                            key={e.id}
+                          />
+                        ))
+                      )
+                    )
+                    .flat(2)}
+                  <style jsx>{`
+                    div {
+                      max-width: calc(100% - 10px) !important;
+                    }
+                  `}</style>
+                </div>
               </div>
             </div>
           </div>
@@ -273,4 +280,4 @@ function WeeklyDisplay({
   );
 }
 
-export default memo(WeeklyDisplay);
+export default memo(DailyDisplay);

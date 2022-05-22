@@ -10,6 +10,8 @@ export enum DialogPage {
   Create,
 }
 
+export type CalendarDisplay = 'Day' | 'Week';
+
 export interface CalendarState {
   start: Date;
   editing: Meeting;
@@ -26,6 +28,8 @@ export interface CalendarState {
   setDialogPage: Callback<DialogPage>;
   dragging: boolean;
   setDragging: Callback<boolean>;
+  display: CalendarDisplay;
+  setDisplay: Callback<CalendarDisplay>;
 }
 
 export const CalendarStateContext = createContext<CalendarState>({
@@ -44,6 +48,8 @@ export const CalendarStateContext = createContext<CalendarState>({
   setDialogPage: () => {},
   dragging: false,
   setDragging: () => {},
+  display: 'Week',
+  setDisplay: () => {},
 });
 
 export const useCalendarState = (): CalendarState =>
